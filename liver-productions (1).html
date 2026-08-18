@@ -653,7 +653,7 @@ function renderMarketing(){
  const prods=DB.products.filter(p=>p.active);
  $('mkRoot').innerHTML=
  '<nav class="mk-nav"><div class="logo-wrap">'+brandLogo(34)+'</div><div class="mk-links">'+
- [['pr',t('nav_process')],['pf',t('nav_pf')],['st',t('nav_store')],['ct',t('nav_contact')]].map(([i,l])=>'<button onclick="document.getElementById(\'sec-'+i+'\').scrollIntoView()">'+l+'</button>').join('')+
+ [['pr',t('nav_process')],['pf',t('nav_pf')]].concat(prods.length?[['st',t('nav_store')]]:[]).concat([['ct',t('nav_contact')]]).map(([i,l])=>'<button onclick="var _e=document.getElementById(\'sec-'+i+'\');if(_e)_e.scrollIntoView()">'+l+'</button>').join('')+
  '</div><div class="row" style="gap:7px">'+authNavBtn()+'<button class="btn btn-dark btn-sm" onclick="document.getElementById(\'sec-ct\').scrollIntoView()">'+t('plan')+'</button></div></nav>'+
  '<header class="hero"><div class="eyebrow">'+t('hero_eyebrow')+'</div><h1>'+t('hero_a')+'<br><span>'+t('hero_b')+'</span> '+t('hero_c')+'</h1>'+
  '<p>'+t('hero_p')+'</p><div class="row" style="justify-content:center">'+
