@@ -1226,11 +1226,11 @@ const CT_TPL=()=>B('הסכם הפקת אירוע\n\nבין: '+producer().brand.h
 let ctFile=null,ctFileName='';
 function renderContracts(cid){const list=DB.contracts.filter(x=>x.cid===cid);
  return '<div class="card" style="margin-bottom:14px"><b>'+t('ct_t')+'</b><p class="muted" style="font-size:13.4px;margin-top:4px">'+t('ct_p')+'</p></div>'+
- (list.length?list.map(x=>'<div class="card" style="margin-bottom:10px"><div class="spread"><b>'+esc(L(x.title))+'</b><span class="badge b-'+x.status+'">'+t(x.status)+'</span></div>'+
+ (list.length?list.map(x=>'<div class="card" style="margin-bottom:10px"><div class="spread"><b>'+esc(L(x.title))+'</b><span class="badge b-'+esc(x.status)+'">'+t(x.status)+'</span></div>'+
  '<div class="muted" style="font-size:12.4px;margin-top:4px">'+fmt(x.sentDate)+(x.status==='signed'?' · '+t('ct_signed_by')+' <b>'+esc(x.signerName)+'</b> '+t('ct_on')+' '+fmt(x.signedDate):'')+'</div>'+
- (x.file?'<div style="margin-top:8px"><a class="btn btn-ghost btn-xs" href="'+x.file+'" download="'+esc(x.fileName)+'">📎 '+esc(x.fileName)+'</a></div>':'')+
+ (x.file?'<div style="margin-top:8px"><a class="btn btn-ghost btn-xs" href="'+esc(x.file)+'" download="'+esc(x.fileName)+'">📎 '+esc(x.fileName)+'</a></div>':'')+
  (x.signature?'<div style="margin-top:10px"><span class="muted" style="font-size:12px">'+t('ct_sig')+'</span><br>'+
- '<img src="'+x.signature+'" style="height:56px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:4px" alt=""></div>':'')+'</div>').join('')
+ '<img src="'+esc(x.signature)+'" style="height:56px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:4px" alt=""></div>':'')+'</div>').join('')
  :'<div class="card"><p class="muted">'+t('no_ct')+'</p></div>')+
  '<div class="card"><b>➕ '+t('ct_new')+'</b><input id="ctTitle" placeholder="'+t('ct_title_ph')+'" style="margin:10px 0 8px">'+
  '<textarea id="ctBody" rows="8" style="font-size:13px">'+esc(L(CT_TPL()))+'</textarea>'+
@@ -1398,7 +1398,7 @@ function adminOrders(){
  let h='<div class="page-h"><h2>'+t('orders_t')+'</h2></div>';
  if(!DB.orders.length)return h+empty(t('no_orders'),t('store_p'));
  return h+'<div class="card tbl-wrap" style="padding:8px"><table class="tbl"><thead><tr><th>'+t('order')+'</th><th>'+t('customer')+'</th><th>'+t('items')+'</th><th>'+t('total')+'</th><th>'+t('status')+'</th></tr></thead><tbody>'+
- DB.orders.map(o=>'<tr><td><b>'+o.num+'</b><div class="muted" style="font-size:12px">'+fmt(o.date)+'</div></td>'+
+ DB.orders.map(o=>'<tr><td><b>'+esc(o.num)+'</b><div class="muted" style="font-size:12px">'+fmt(o.date)+'</div></td>'+
  '<td>'+esc(o.name)+'<div class="muted" style="font-size:12px">'+esc(o.email)+(o.phone?' · '+esc(o.phone):'')+'</div></td>'+
  '<td style="font-size:12.5px">'+o.items.map(i=>i.qty+'× '+esc(L(i.name))).join('<br>')+'</td>'+
  '<td><b>'+ils(o.total)+'</b></td><td><span class="badge b-paid">'+t('pay_done')+'</span></td></tr>').join('')+'</tbody></table></div>';}
@@ -1794,7 +1794,7 @@ adminCal=function(){
  DB.staff.map(s=>'<option value="'+s.id+'">'+esc(s.name)+' · '+((CREW_ROLES().find(r=>r[0]===s.role)||['',''])[1])+'</option>').join('')+'</select></div>'+
  '<div style="margin-top:8px"><label for="cvNotes" class="muted" style="font-size:12.5px;font-weight:600">'+t('cal_notes')+'</label>'+
  '<textarea id="cvNotes" rows="2"></textarea></div>'+
- '<button class="btn btn-gold" style="margin-top:12px" onclick="addCalEvent()">'+t('cal_add')+'</button></div>';
+ '<button class="btn btn-gold" style="margin-top:12px" onclick="addMeeting()">'+t('cal_add')+'</button></div>';
  if(!DB.calEvents.length)return h+empty(t('cal_none'),t('cal2_p'));
  h+='<div class="row" style="margin-bottom:12px">'+
  '<a class="btn btn-ghost btn-sm" href="#" onclick="downloadICS();return false">'+t('cal_ics')+'</a></div>';
@@ -3934,9 +3934,24 @@ const sbHeaders=(auth)=>{
 };
 async function sbFetch(path,opts){
  const o=opts||{};
- const res=await fetch(SB.url+path,{method:o.method||'GET',
-  headers:Object.assign(sbHeaders(o.auth!==false),o.headers||{}),
-  body:o.body?JSON.stringify(o.body):undefined});
+ /* Never let a cloud call hang the UI. fetch() has no timeout of its own,
+    so an unreachable or slow Supabase left login stuck on "syncing" until
+    the browser eventually gave up — minutes on a bad mobile connection,
+    with the local fallback unable to run until then. Fail fast instead so
+    the offline path takes over while the password still works locally. */
+ const ctl=(typeof AbortController!=='undefined')?new AbortController():null;
+ const timer=ctl?setTimeout(function(){ctl.abort();},8000):null;
+ let res;
+ try{
+  res=await fetch(SB.url+path,{method:o.method||'GET',
+   headers:Object.assign(sbHeaders(o.auth!==false),o.headers||{}),
+   body:o.body?JSON.stringify(o.body):undefined,
+   signal:ctl?ctl.signal:undefined});
+ }catch(e){
+  if(timer)clearTimeout(timer);
+  throw new Error((e&&e.name==='AbortError')?'cloud timeout':(e&&e.message)||'network error');
+ }
+ if(timer)clearTimeout(timer);
  const txt=await res.text();
  let data=null; try{data=txt?JSON.parse(txt):null;}catch(e){data=txt;}
  if(!res.ok){const msg=(data&&(data.message||data.error_description||data.error||data.msg))||('HTTP '+res.status);
@@ -4031,12 +4046,29 @@ doLogin=function(){
   }
   pullFromCloud();
  }).catch(err=>{
-  /* cloud unreachable — try the local mirror so work can continue */
+  /* Cloud unreachable — fall back to the local mirror so work continues.
+     setAuthMsg('syncing') above re-rendered the auth card, which wiped the
+     two inputs; the local path re-reads them, so without putting the
+     captured credentials back it always saw empty fields and refused to
+     sign in with "fill in email and password". Restoring them first lets
+     the local login run with all of its own role and status checks. */
   console.warn('[cloud] login failed, trying local:',err&&err.message);
   SB.status='error';
-  const u=findUser(e);
-  if(u&&u.pass===p){_doLoginLocal();}
-  else setAuthMsg(t('sb_login_err'));
+  const em=$('lgEmail'), pw=$('lgPass');
+  if(em)em.value=e;
+  if(pw)pw.value=p;
+  if(!em||!pw){
+   /* the form is gone entirely — sign in from the captured values */
+   const u=findUser(e);
+   if(u&&u.pass===p){session=u;
+    if(u.role==='client')portalClient=u.refId;
+    if(u.role==='staff')staffMe=u.refId;
+    if(u.role==='producer'){const pr=DB.producers.find(x=>x.id===u.refId);if(pr)DB.activeProducer=pr.id;}
+    authMsg='';goHome();
+   } else setAuthMsg(t('sb_login_err'));
+   return;
+  }
+  _doLoginLocal();
  });
 };
 const _doLogoutV18=doLogout;
