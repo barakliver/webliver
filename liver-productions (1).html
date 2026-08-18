@@ -8,10 +8,10 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="LIver">
-<meta name="description" content="LIver Productions — הפקת אירועים מקצה לקצה. חתונות, אירועים עסקיים והפקות שטח.">
+<meta name="description" content="Liver productions — הפקת אירועים מקצה לקצה. חתונות, אירועים עסקיים והפקות שטח.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20512%20512'%3E%3Crect%20width='512'%20height='512'%20rx='96'%20fill='%2314130f'/%3E%3Ctext%20x='256'%20y='335'%20font-family='Georgia,serif'%20font-size='250'%20fill='%23a8874f'%20text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20512%20512'%3E%3Crect%20width='512'%20height='512'%20rx='96'%20fill='%2314130f'/%3E%3Ctext%20x='256'%20y='335'%20font-family='Georgia,serif'%20font-size='250'%20fill='%23a8874f'%20text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
-<title>LIver Productions</title>
+<title>Liver productions</title>
 <style>
 :root{
  --ink:#14130f; --ink2:#3a372f; --paper:#f8f5ef; --card:#fffdfa; --deep:#1c1a15;
@@ -246,7 +246,7 @@ html[dir="rtl"] .sw[aria-checked="true"]::after{transform:translateX(-23px)}
 <body>
 <a href="#mainContent" class="skip-link">דלג לתוכן הראשי / Skip to main content</a>
 <div id="toasts" role="status" aria-live="polite" aria-atomic="false"></div>
-<div id="topCtl"><button id="userChip" class="userchip" onclick="openModal('userModal')" hidden></button><button id="a11yBtn" onclick="openModal('a11yModal')" aria-label="תפריט נגישות / Accessibility menu" title="נגישות">♿</button><button id="langBtn" onclick="toggleLang()"></button></div>
+<div id="topCtl"><button id="userChip" class="userchip" onclick="openModal('userModal')" hidden></button><button id="fbBtn" onclick="openFeedback()" aria-label="דיווח על תקלה / משוב" title="דיווח על תקלה">🛠</button><button id="a11yBtn" onclick="openModal('a11yModal')" aria-label="תפריט נגישות / Accessibility menu" title="נגישות">♿</button><button id="langBtn" onclick="toggleLang()"></button></div>
 
 <div class="screen active" id="screen-marketing"><div id="mkRoot"></div>
  <button id="cartBtn" onclick="openCart()">🛍 <span id="cartCount">0</span></button></div>
@@ -307,6 +307,13 @@ html[dir="rtl"] .sw[aria-checked="true"]::after{transform:translateX(-23px)}
  <p class="muted" id="thkP" style="font-size:14.5px"></p>
  <div id="thkStatus" style="margin-top:14px"></div>
  <button class="btn btn-gold" style="width:100%;margin-top:16px" onclick="closeModal('thankModal')" id="thkBtn"></button></div></div>
+<div class="modal" id="feedbackModal" onclick="if(event.target===this)closeModal('feedbackModal')" role="dialog" aria-modal="true" aria-labelledby="fbT">
+ <div class="modal-box" style="max-width:420px">
+ <h3 id="fbT" style="font-size:20px;margin-bottom:4px"></h3>
+ <p class="muted" id="fbSub" style="font-size:13px;margin-bottom:12px"></p>
+ <input id="fbName" style="margin-bottom:8px"><input id="fbEmail" type="email" style="margin-bottom:8px">
+ <textarea id="fbMsg" rows="4" style="margin-bottom:10px"></textarea>
+ <button class="btn btn-gold" style="width:100%" onclick="sendFeedback()" id="fbSend"></button></div></div>
 <script>
 /* ══ Boot guard: a runtime error must never produce a blank screen ══ */
 (function(){
@@ -611,7 +618,7 @@ const num=v=>Number(v)||0;
 const uid=p=>p+Math.random().toString(36).slice(2,9);
 
 const DB={
- producers:[{id:'pr_me',pname:'',brand:B('LIver Productions','LIver Productions'),email:'',logo:null,status:'approved',since:iso(TODAY)}],
+ producers:[{id:'pr_me',pname:'',brand:B('Liver productions','Liver productions'),email:'',logo:null,status:'approved',since:iso(TODAY)}],
  activeProducer:'pr_me',
  portfolio:[], products:[], leads:[], clients:[], tasks:{}, eventFiles:{}, budgets:{}, alcohol:{}, field:{},
  contracts:[], messages:[], payRequests:[], orders:[], carts:[], myTasks:[], meetings:[], aiChat:[], coupleChat:{},
@@ -1982,7 +1989,10 @@ Object.assign(D_.en,{
 /* ── accounts ── */
 DB.users=[];            // {id,email,pass,role,refId,name,created}
 DB.notify={email:'',w3f:'',wa:'',waKey:''};
+DB.pendingClients=[];   // {id,name,email,pass,kind,eventKey,requested} — awaiting owner approval
+DB.feedback=[];         // {id,name,email,msg,page,created} — bug reports / suggestions from site users
 let session=null, authMode='login', authMsg='', pendingRole=null;
+let authRole='client', authKind='couple', authEventKey='wedding';
 const ROLE_HOME={master:'owner',producer:'admin',staff:'staff',client:'portal'};
 const ROLE_LBL=r=>t(r==='master'?'r_master':r==='producer'?'r_producer':r==='staff'?'r_staff':'r_client');
 const findUser=(em)=>DB.users.find(u=>u.email.toLowerCase()===String(em||'').toLowerCase().trim());
@@ -2004,7 +2014,7 @@ function setupCard(){
  return '<h1 class="serif">LIver <span style="color:var(--gold)">Productions</span></h1>'+
  '<p class="sub">'+t('su_sub')+'</p>'+
  (authMsg?'<div class="auth-err" role="alert">'+esc(authMsg)+'</div>':'')+
- fld('suBrand',t('su_brand'),'text','LIver Productions')+fld('suName',t('su_name'))+
+ fld('suBrand',t('su_brand'),'text','Liver productions')+fld('suName',t('su_name'))+
  fld('suEmail',t('su_email'),'email')+fld('suPass',t('su_pass'),'password')+fld('suPass2',t('su_pass2'),'password')+
  '<button class="btn btn-gold" style="width:100%;margin-top:8px" onclick="doSetup()">'+t('su_btn')+'</button>';
 }
@@ -2326,6 +2336,22 @@ const EVENT_LIB={
   ['עיצוב, הזמנות ואישורי הגעה','Design, invitations and RSVP',-45,'producer'],
   ['סדר נאומים וטקס נרות','Speech order and candle ceremony',-14,'producer']],
   N:[['קהל מעורב ילדים ומבוגרים — תכננו שני אזורים ושני פסקולים.','Mixed kids and adults — plan two zones and two soundtracks.']]},
+ {k:'brit',icon:'🕊',lbl:'e_brit',T:[
+  ['תיאום מוהל/רב ותאריך הטקס','Coordinate mohel/rabbi and ceremony date',-14,'producer'],
+  ['סגירת מקום ותפריט לסעודת מצווה','Book venue and menu for the celebratory meal',-10,'producer'],
+  ['הזמנות טלפוניות/דיגיטליות למשפחה וחברים','Phone/digital invitations to family and friends',-7,'producer'],
+  ['הכנת פרחים, קישוט ושילוט לברכות','Flowers, decor and blessing signage',-3,'producer'],
+  ['תיאום סדר הטקס והכיבוד עם המשפחה','Confirm ceremony order and refreshments with the family',-1,'producer']],
+  N:[['הטקס קצר אך לו"ז הבוקר צפוף — תאמו עם המוהל שעת התחלה מדויקת מול שעת הגעת האורחים.','The ceremony is short but the morning is tight — align the exact start time with the mohel against guest arrival.'],
+   ['סגרו מראש מי מברך ומי מכריז, זה חוסך בלבול בבוקר האירוע.','Decide in advance who blesses and who announces — it prevents confusion on the morning itself.']]},
+ {k:'birthday',icon:'🎂',lbl:'e_birthday',T:[
+  ['בחירת קונספט וגיל/נושא החגיגה','Choose concept and the age/theme of the celebration',-45,'producer'],
+  ['סגירת מקום ותאריך','Book venue and date',-40,'producer'],
+  ['הזמנת עוגה, קישוט ובלונים','Order cake, decor and balloons',-14,'producer'],
+  ['סגירת אטרקציה / מנחה / DJ לפי גיל החוגג/ת','Book an age-appropriate attraction / host / DJ',-21,'producer'],
+  ['רשימת מוזמנים ואישורי הגעה','Guest list and RSVP',-14,'couple'],
+  ['תיאום הפתעה אם יש','Coordinate a surprise, if planned',-2,'producer']],
+  N:[['התאימו את משך האירוע ואת התוכן לגיל החוגג/ת — קהל ילדים דורש קצב אחר מקהל מבוגרים.','Match the event length and content to the celebrant\'s age — a kids\' crowd needs a different pace than an adult one.']]},
  ],
  business:[
  {k:'trip',icon:'🚌',lbl:'e_trip',T:[
@@ -2561,7 +2587,7 @@ renderAuth=function(){
  $('authMain').innerHTML='<div class="auth-card">'+card+'</div>';
 };
 function brandTitle(){
- const b=DB.users.length?brandName():'LIver Productions';
+ const b=DB.users.length?brandName():'Liver productions';
  const parts=String(b).split(' ');
  return parts.length>1
   ? '<h1 class="serif">'+esc(parts[0])+' <span style="color:var(--gold)">'+esc(parts.slice(1).join(' '))+'</span></h1>'
@@ -2578,11 +2604,20 @@ function loginCard2(){
  '<button class="btn btn-ghost btn-sm" style="width:100%;margin-top:10px;border:none" onclick="gotoSite()">'+t('back_site')+'</button>';
 }
 function signupCard(first){
+ const roleChips=[['producer',t('su2_role_producer')],['client',t('su2_role_client')]]
+  .map(([v,l])=>'<button type="button" class="chip '+(authRole===v?'active':'')+'" onclick="authRole=\''+v+'\';renderAuth()">'+l+'</button>').join('');
+ const kindChips=[['couple',t('su2_kind_private')],['business',t('su2_kind_business')]]
+  .map(([v,l])=>'<button type="button" class="chip '+(authKind===v?'active':'')+'" onclick="authKind=\''+v+'\';renderAuth()">'+l+'</button>').join('');
+ const eventOpts=EVENT_LIB.couple.map(e=>'<option value="'+e.k+'"'+(authEventKey===e.k?' selected':'')+'>'+e.icon+' '+t(e.lbl)+'</option>').join('');
  return brandTitle()+'<p class="sub">'+t('su2_title')+'</p>'+
- '<div class="'+(first?'auth-ok':'advice')+'" style="font-size:13px;margin-bottom:14px">'+(first?'👑 '+t('su2_first'):'ℹ️ '+t('su2_next'))+'</div>'+
+ '<div class="advice" style="font-size:13px;margin-bottom:14px">ℹ️ '+t('su2_pending_generic')+'</div>'+
  (authMsg?'<div class="auth-err" role="alert">'+esc(authMsg)+'</div>':'')+
+ '<div class="auth-field"><label>'+t('su2_role')+'</label><div class="row" role="group" aria-label="'+esc(t('su2_role'))+'" style="gap:6px">'+roleChips+'</div></div>'+
  afld('su2Name',t('su2_name'),'text','doSignup')+
- afld('su2Brand',t('su2_brand'),'text','doSignup')+
+ (authRole==='producer'?afld('su2Brand',t('su2_brand'),'text','doSignup'):'')+
+ (authRole==='client'?'<div class="auth-field"><label>'+t('su2_kind')+'</label><div class="row" role="group" aria-label="'+esc(t('su2_kind'))+'" style="gap:6px">'+kindChips+'</div></div>':'')+
+ (authRole==='client'&&authKind==='couple'?'<div class="auth-field"><label for="su2Event">'+t('su2_event')+'</label>'+
+  '<select id="su2Event" onchange="authEventKey=this.value">'+eventOpts+'</select></div>':'')+
  afld('su2Email',t('su2_email'),'email','doSignup')+
  afld('su2Pass',t('su2_pass'),'password','doSignup')+
  afld('su2Pass2',t('su2_pass2'),'password','doSignup')+
@@ -2595,7 +2630,9 @@ function signupCard(first){
 function afld(id,lbl,type,fn){return '<div class="auth-field"><label for="'+id+'">'+lbl+'</label>'+
  '<input id="'+id+'" type="'+(type||'text')+'" autocomplete="'+(type==='password'?'current-password':type==='email'?'email':'name')+
  '" onkeydown="if(event.key===\'Enter\')'+fn+'()"></div>';}
-function setAuthMode(m){authMode=m;authMsg='';renderAuth();
+function setAuthMode(m){authMode=m;authMsg='';
+ if(m==='signup'){authRole='client';authKind='couple';authEventKey='wedding';}
+ renderAuth();
  setTimeout(()=>{const f=$(m==='signup'?'su2Name':'lgEmail');if(f&&f.focus)f.focus()},60);}
 function gotoLogin(){setAuthMode('login');_setRoleBase('auth');}
 function gotoSignup(){setAuthMode('signup');_setRoleBase('auth');}
@@ -2723,6 +2760,55 @@ renderOwner=function(){
  if(ownerTab==='clients')$('ownerMain').innerHTML=ownerClients();
  if(ownerTab==='site')$('ownerMain').innerHTML=ownerSite();
 };
+/* ── owner: approve/reject client self-signups + review site feedback ── */
+const _renderOwnerV12=renderOwner;
+renderOwner=function(){
+ _renderOwnerV12();
+ if(ownerTab==='prod'){
+  const m=$('ownerMain');
+  if(m)m.innerHTML+=pendingClientsPanel()+feedbackPanel();
+ }
+};
+function pendingClientsPanel(){
+ const pend=DB.pendingClients||[];
+ const row=r=>{
+  const kindLbl=t(r.kind==='business'?'ct_business':'ct_couple');
+  const evDefObj=r.eventKey?evDef('couple',r.eventKey):null;
+  return '<div class="card" style="margin-bottom:10px"><div class="spread"><div>'+
+  '<b>'+esc(r.name)+'</b><div class="muted" style="font-size:12.4px">'+esc(r.email)+'</div>'+
+  '<div class="muted" style="font-size:11.8px">'+t('requested')+' '+fmt(r.requested)+'</div></div>'+
+  '<div class="row"><span class="chip">'+kindLbl+(evDefObj?' · '+evDefObj.icon+' '+t(evDefObj.lbl):'')+'</span>'+
+  '<button class="btn btn-green btn-xs" onclick="approveClientSignup(\''+r.id+'\')">'+t('approve')+'</button>'+
+  '<button class="btn btn-red btn-xs" onclick="rejectClientSignup(\''+r.id+'\')">'+t('reject')+'</button></div></div></div>';
+ };
+ return '<h3 style="font-size:16.5px;margin:22px 0 10px">🙋 '+t('pc_title')+' ('+pend.length+')</h3>'+
+ (pend.length?pend.map(row).join(''):'<div class="card"><p class="muted">'+t('pc_none')+'</p></div>');
+}
+function approveClientSignup(id){
+ const req=(DB.pendingClients||[]).find(x=>x.id===id);if(!req)return;
+ const c=_makeClientBase(req.name,req.email,'','',null,false);
+ c.ctype=req.kind==='business'?'business':'couple';
+ c.producerId=DB.activeProducer;
+ if(c.ctype==='couple'&&req.eventKey)addClientEvent(c.id,req.eventKey,true);
+ addUser(req.email,req.pass,'client',c.id,req.name);
+ DB.pendingClients=DB.pendingClients.filter(x=>x.id!==id);
+ toast(t('pc_approved')+' '+esc(req.email));renderAll();
+}
+function rejectClientSignup(id){
+ DB.pendingClients=(DB.pendingClients||[]).filter(x=>x.id!==id);
+ toast(t('pc_rejected'));renderAll();
+}
+function feedbackPanel(){
+ const items=DB.feedback||[];
+ const row=f=>'<div class="card" style="margin-bottom:10px"><div class="spread"><div>'+
+  '<b>'+esc(f.name||t('anon'))+'</b>'+(f.email?' · <span class="muted" style="font-size:12.4px">'+esc(f.email)+'</span>':'')+
+  '<p style="font-size:13.5px;margin-top:6px">'+esc(f.msg)+'</p>'+
+  '<div class="muted" style="font-size:11.5px;margin-top:4px">'+fmt(f.created)+'</div></div>'+
+  '<button class="btn btn-ghost btn-xs" onclick="DB.feedback=DB.feedback.filter(x=>x.id!==\''+f.id+'\');renderAll()">✕</button></div></div>';
+ return '<h3 style="font-size:16.5px;margin:22px 0 10px">🛠 '+t('fb_admin_t')+' ('+items.length+')</h3>'+
+ '<p class="muted" style="font-size:13px;margin-bottom:10px">'+t('fb_admin_p')+'</p>'+
+ (items.length?items.map(row).join(''):'<div class="card"><p class="muted">'+t('fb_none')+'</p></div>');
+}
 function ownerClients(){
  let h='<div class="page-h"><h2>💍 '+t('oc_t')+'</h2><p class="muted">'+t('oc_p')+'</p></div>';
  if(!DB.clients.length)return h+empty(t('oc_none'),t('oc_p'));
@@ -3264,7 +3350,9 @@ function loginCard3(){
  '<button class="btn btn-ghost" style="width:100%" onclick="setAuthMode(\'signup\')">'+t('signup')+'</button>'+
  '<button class="btn btn-ghost btn-sm" style="width:100%;margin-top:10px;border:none" onclick="gotoSite()">'+t('back_site')+'</button>';
 }
-setAuthMode=function(m){authMode=m;authMsg='';if(m!=='otp')stopTimer();renderAuth();
+setAuthMode=function(m){authMode=m;authMsg='';if(m!=='otp')stopTimer();
+ if(m==='signup'){authRole='client';authKind='couple';authEventKey='wedding';}
+ renderAuth();
  setTimeout(()=>{const f=$(m==='signup'?'su2Name':m==='forgot'?'fpEmail':m==='otp'?'otp0':m==='reset'?'npPass':'lgEmail');
   if(f&&f.focus)f.focus()},60);};
 renderAll();
@@ -4300,20 +4388,22 @@ renderAll = function () { _renderAllV20(); fixNavArrows(); };
    root super-admin strictly reserved for one email ── */
 var ROOT_ADMIN_EMAIL = 'barakliver@gmail.com';
 doSignup = function () {
- var n = $('su2Name').value.trim(), b = $('su2Brand').value.trim(),
+ var n = $('su2Name').value.trim(),
+     b = ($('su2Brand') ? $('su2Brand').value.trim() : ''),
      e = $('su2Email').value.trim().toLowerCase(),
-     p = $('su2Pass').value, p2 = $('su2Pass2').value;
- if (!n || !b || !e || !p) return setAuthMsg(t('su_need'));
+     p = $('su2Pass').value, p2 = $('su2Pass2').value,
+     role = authRole, kind = authKind, eventKey = authEventKey;
+ var isRoot = e === ROOT_ADMIN_EMAIL;
+ if (!n || !e || !p || ((role === 'producer' || isRoot) && !b)) return setAuthMsg(t('su_need'));
  if (!/.+@.+\..+/.test(e)) return setAuthMsg(t('lg_bad'));
  if (p.length < 6) return setAuthMsg(t('su_short'));
  if (p !== p2) return setAuthMsg(t('su_match'));
  if (findUser(e)) return setAuthMsg(t('su2_taken'));
-
- var isRoot = e === ROOT_ADMIN_EMAIL;
+ if (DB.pendingClients.some(function (x) { return x.email === e; })) return setAuthMsg(t('su2_taken'));
 
  if (sbReady()) {
   setAuthMsg(t('sb_syncing'));
-  sbSignUp(e, p, { full_name: n, role: isRoot ? 'super_admin' : 'producer' }).then(function(){
+  sbSignUp(e, p, { full_name: n, role: isRoot ? 'super_admin' : role }).then(function(){
    /* mirror the brand/site settings to the cloud so a fresh device sees the same site */
    return sbInsert('site_settings', { producer_id: SB.uid, brand_name: b, notify_email: e });
   }).catch(function () {});
@@ -4321,16 +4411,22 @@ doSignup = function () {
 
  if (isRoot) {
   var pr = DB.producers[0];
-  pr.brand = B(b, b); pr.pname = n; pr.email = e; pr.status = 'approved';
+  pr.brand = B(b || n, b || n); pr.pname = n; pr.email = e; pr.status = 'approved';
   DB.masters[0] = { id: 'own_root', name: n, email: e, role: 'owner' };
   DB.notify.email = e;
   session = addUser(e, p, 'master', 'own_root', n);
   authMsg = ''; toast(t('su2_ok_master')); goHome();
- } else {
+ } else if (role === 'producer') {
   var newPr = { id: uid('pr'), pname: n, brand: B(b, b), email: e, logo: null, status: 'pending', since: iso(TODAY) };
   DB.producers.push(newPr);
   addUser(e, p, 'producer', newPr.id, n);
   authMode = 'login'; authMsg = t('su2_ok_prod'); renderAll(); toast(t('su2_ok_prod'));
+ } else {
+  /* client self-signup — held for owner approval; personalization (kind/eventKey)
+     is applied to the real client record once approved (see approveClientSignup) */
+  DB.pendingClients.push({ id: uid('pc'), name: n, email: e, pass: p, kind: kind,
+   eventKey: kind === 'couple' ? eventKey : '', requested: iso(TODAY) });
+  authMode = 'login'; authMsg = t('su2_ok_client'); renderAll(); toast(t('su2_ok_client'));
  }
 };
 renderAll();
@@ -4636,6 +4732,53 @@ function conciergeSend(text){
 }
 
 function conciergeToggle(){ CONCIERGE.open = !CONCIERGE.open; if (CONCIERGE.open && !CONCIERGE.log.length) conciergeReset(); renderConcierge(); }
+
+/* ── site-wide feedback / bug report box ── */
+function openFeedback(){
+ $('fbT').textContent=t('fb_title');
+ $('fbSub').textContent=t('fb_sub');
+ $('fbName').placeholder=t('fb_name_ph');
+ $('fbEmail').placeholder=t('fb_email_ph');
+ $('fbMsg').placeholder=t('fb_msg_ph');
+ $('fbSend').textContent=t('fb_send');
+ if(session){$('fbName').value=session.name||'';$('fbEmail').value=session.email||'';}
+ else{$('fbName').value='';$('fbEmail').value='';}
+ $('fbMsg').value='';
+ openModal('feedbackModal');
+}
+function feedbackText(f){
+ const L1=lang==='he';
+ return (L1?'🛠 דיווח/משוב חדש מהאתר':'🛠 New feedback from the website')+'\n'+
+ (L1?'שם: ':'Name: ')+(f.name||(L1?'אנונימי':'Anonymous'))+'\n'+
+ (f.email?(L1?'אימייל: ':'Email: ')+f.email+'\n':'')+
+ (L1?'מסך: ':'Screen: ')+f.page+'\n'+
+ (L1?'הודעה: ':'Message: ')+f.msg+'\n'+
+ brandName();
+}
+async function notifyFeedback(f){
+ const n=DB.notify;let mailed=false;
+ if(n.w3f){
+  try{
+   const r=await fetch('https://api.web3forms.com/submit',{method:'POST',
+    headers:{'Content-Type':'application/json',Accept:'application/json'},
+    body:JSON.stringify({access_key:n.w3f,subject:'🛠 משוב/דיווח תקלה — '+(f.name||'אנונימי'),
+     from_name:brandName(),name:f.name||'Anonymous',email:f.email||'',
+     message:feedbackText(f),replyto:f.email||undefined})});
+   const j=await r.json();mailed=!!j.success;
+  }catch(e){mailed=false;}
+ }
+ return {mailed};
+}
+function sendFeedback(){
+ const msg=$('fbMsg').value.trim();
+ if(!msg)return toast(t('fb_need'));
+ const f={id:uid('fb'),name:$('fbName').value.trim(),email:$('fbEmail').value.trim(),
+  msg:msg,page:(typeof activeRole!=='undefined'&&activeRole)?activeRole:'marketing',created:iso(TODAY)};
+ DB.feedback.unshift(f);
+ closeModal('feedbackModal');
+ toast(t('fb_sent'));
+ notifyFeedback(f).catch(()=>{});
+}
 
 function renderConcierge(){
  var host = document.getElementById('concierge-root');
@@ -5095,24 +5238,50 @@ renderAll = function(){
 })();
 
 renderAll();
-/* ══ PWA: manifest + service worker generated at runtime (single-file safe) ══ */
+/* ══════════════════════════════════════════════════════════
+   v30 — signup role/type selection, client approval queue,
+   site feedback box
+   ══════════════════════════════════════════════════════════ */
+Object.assign(D_.he,{
+ su2_role:'נרשם/ת בתור',su2_role_producer:'מפיק',su2_role_client:'לקוח',
+ su2_kind:'סוג לקוח',su2_kind_private:'פרטי',su2_kind_business:'עסקי',
+ su2_event:'סוג האירוע',
+ su2_pending_generic:'החשבון ייווצר ויישלח לאישור מנהל האתר. תקבלו הודעה כשיאושר.',
+ su2_ok_client:'✅ החשבון נוצר וממתין לאישור מנהל האתר. תקבלו הודעה כשיאושר.',
+ pc_title:'בקשות לקוחות חדשות',pc_none:'אין בקשות לקוחות ממתינות.',
+ pc_approved:'✅ הלקוח אושר ונוצר עבורו חשבון:',pc_rejected:'הבקשה נדחתה.',
+ fb_title:'דיווח על תקלה / משוב',fb_sub:'משהו לא עובד כמו שצריך? יש רעיון לשיפור? נשמח לשמוע.',
+ fb_name_ph:'שם (לא חובה)',fb_email_ph:'אימייל (לא חובה, לצורך מענה)',fb_msg_ph:'מה קרה, או מה אפשר לשפר?',
+ fb_send:'שליחה',fb_need:'נא לכתוב הודעה.',fb_sent:'תודה! הפנייה נשלחה למנהל האתר.',
+ fb_admin_t:'משוב ודיווחי תקלה מהאתר',fb_admin_p:'הודעות שהתקבלו מהכפתור הצף 🛠 בכל מסך באתר.',fb_none:'אין עדיין משוב.',
+ e_birthday:'יום הולדת',
+});
+Object.assign(D_.en,{
+ su2_role:'Signing up as',su2_role_producer:'Producer',su2_role_client:'Client',
+ su2_kind:'Client type',su2_kind_private:'Private',su2_kind_business:'Business',
+ su2_event:'Event type',
+ su2_pending_generic:'Your account will be created and sent for the site manager\'s approval. You will be notified once approved.',
+ su2_ok_client:'✅ Account created and awaiting the site manager\'s approval. You will be notified once approved.',
+ pc_title:'New client requests',pc_none:'No pending client requests.',
+ pc_approved:'✅ Client approved, account created for:',pc_rejected:'Request rejected.',
+ fb_title:'Report a problem / feedback',fb_sub:'Something not working as expected? Have an idea? We would love to hear it.',
+ fb_name_ph:'Name (optional)',fb_email_ph:'Email (optional, so we can reply)',fb_msg_ph:'What happened, or what could be better?',
+ fb_send:'Send',fb_need:'Please write a message.',fb_sent:'Thank you! Your message was sent to the site manager.',
+ fb_admin_t:'Site feedback & bug reports',fb_admin_p:'Messages received from the 🛠 floating button on every screen.',fb_none:'No feedback yet.',
+ e_birthday:'Birthday',
+});
+renderAll();
+/* ══ PWA: real manifest.json + sw.js on the server so "Install app" works.
+   (Blob/data: URLs cannot be used to register a service worker — that was
+   the reason the previous version never satisfied install criteria.) ══ */
 (function(){
  try{
-  const icon="data:image/svg+xml,"+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="96" fill="#14130f"/><text x="256" y="335" font-family="Georgia,serif" font-size="250" fill="#a8874f" text-anchor="middle">L</text></svg>');
-  const manifest={name:"LIver Productions",short_name:"LIver",start_url:".",scope:".",display:"standalone",
-   orientation:"portrait",background_color:"#f8f5ef",theme_color:"#14130f",lang:"he",dir:"rtl",
-   description:"הפקת אירועים מקצה לקצה",
-   icons:[{src:icon,sizes:"512x512",type:"image/svg+xml",purpose:"any maskable"},
-          {src:icon,sizes:"192x192",type:"image/svg+xml",purpose:"any maskable"}]};
-  const url=URL.createObjectURL(new Blob([JSON.stringify(manifest)],{type:"application/manifest+json"}));
-  const link=document.createElement("link");link.rel="manifest";link.href=url;document.head.appendChild(link);
+  if(!document.querySelector('link[rel="manifest"]')){
+   const link=document.createElement("link");link.rel="manifest";link.href="./manifest.json";
+   document.head.appendChild(link);
+  }
   if("serviceWorker" in navigator&&location.protocol==="https:"){
-   const sw=`self.addEventListener('install',e=>self.skipWaiting());
-self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));
-self.addEventListener('fetch',e=>{if(e.request.mode==='navigate'){
- e.respondWith(fetch(e.request).catch(()=>caches.match('./')||caches.match(e.request)));}});`;
-   const swUrl=URL.createObjectURL(new Blob([sw],{type:"text/javascript"}));
-   navigator.serviceWorker.register(swUrl).catch(()=>{});
+   navigator.serviceWorker.register("./sw.js").catch(()=>{});
   }
  }catch(e){}
 })();
