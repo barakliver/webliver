@@ -3748,7 +3748,7 @@ const SCHEMA_VERSION=14;
 const PERSIST=['producers','activeProducer','portfolio','products','leads','clients','tasks',
  'eventFiles','budgets','alcohol','field','contracts','messages','payRequests','orders','myTasks',
  'meetings','calEvents','staff','crew','crewTasks','perms','masters','users','notify','site',
- 'clientEvents','coupleChat','aiChat','pendingClients','feedback','salesCalls'];
+ 'clientEvents','coupleChat','aiChat','pendingClients','feedback','salesCalls','seating'];
 let storageOK=true, lastSaved=null, saveTimer=null;
 
 function storageAvailable(){
@@ -5988,6 +5988,239 @@ renderOwner=function(){
   var m=$('ownerMain');
   if(m)m.innerHTML=ownerSet();
  }
+};
+
+renderAll();
+/* ══════════════════════════════════════════════════════════
+   v34 — Seating plan (סידורי הושבה), editable by the producer
+   and by the client
+   ══════════════════════════════════════════════════════════
+   Until now "seating" existed only as checklist lines and a single
+   guest-count number. This adds a real plan: tables with capacities,
+   a guest list, and assignment of guests to tables — with the same
+   editable panel on both sides, so the couple can work on it
+   themselves and the producer sees the same live plan.
+   Assignment is a <select> rather than drag-and-drop on purpose: it
+   works on a phone and with a keyboard, which drag-and-drop does not. */
+DB.seating=DB.seating||{};   // cid → {tables:[{id,name,cap}], guests:[{id,name,grp,tableId}]}
+
+Object.assign(D_.he,{
+ p_seat:'סידורי הושבה',ws_seat:'🪑 הושבה',
+ seat_t:'סידורי הושבה',
+ seat_p:'בנו את מפת השולחנות ושבצו אליה את האורחים. כל שינוי נשמר מיד ונראה גם לצד השני.',
+ seat_guests:'אורחים',seat_seated:'משובצים',seat_unseated:'ללא שולחן',
+ seat_tables:'שולחנות',seat_cap:'מקומות סה״כ',
+ seat_add_table:'הוספת שולחן',seat_tname:'שם / מספר השולחן',seat_tcap:'מקומות',
+ seat_add_guest:'הוספת אורח',seat_gname:'שם האורח',seat_grp:'קבוצה (צד חתן, משפחה, עבודה…)',
+ seat_bulk:'הדבקת רשימת אורחים (שם בכל שורה)',seat_bulk_add:'הוספת כל השמות',
+ seat_bulk_ok:'✅ נוספו {n} אורחים.',seat_bulk_need:'הדביקו לפחות שם אחד.',
+ seat_none_t:'אין שולחן',seat_assign:'שיבוץ לשולחן',
+ seat_no_tables:'עדיין לא הוגדרו שולחנות.',seat_no_guests:'עדיין לא נוספו אורחים.',
+ seat_over:'⚠️ מעל הקיבולת',seat_full:'מלא',
+ seat_need_t:'נדרש שם לשולחן.',seat_need_g:'נדרש שם לאורח.',
+ seat_added_t:'✅ השולחן נוסף.',seat_added_g:'✅ האורח נוסף.',
+ seat_del_t:'למחוק את השולחן? האורחים שבו יחזרו לרשימה ללא שולחן.',
+ seat_list:'רשימת האורחים',seat_by_table:'לפי שולחנות',
+});
+Object.assign(D_.en,{
+ p_seat:'Seating plan',ws_seat:'🪑 Seating',
+ seat_t:'Seating plan',
+ seat_p:'Build the table map and assign guests to it. Every change saves immediately and is visible to the other side too.',
+ seat_guests:'Guests',seat_seated:'Seated',seat_unseated:'Unseated',
+ seat_tables:'Tables',seat_cap:'Total seats',
+ seat_add_table:'Add table',seat_tname:'Table name / number',seat_tcap:'Seats',
+ seat_add_guest:'Add guest',seat_gname:'Guest name',seat_grp:'Group (bride’s side, family, work…)',
+ seat_bulk:'Paste a guest list (one name per line)',seat_bulk_add:'Add all names',
+ seat_bulk_ok:'✅ Added {n} guests.',seat_bulk_need:'Paste at least one name.',
+ seat_none_t:'No table',seat_assign:'Assign to table',
+ seat_no_tables:'No tables defined yet.',seat_no_guests:'No guests added yet.',
+ seat_over:'⚠️ Over capacity',seat_full:'Full',
+ seat_need_t:'A table name is required.',seat_need_g:'A guest name is required.',
+ seat_added_t:'✅ Table added.',seat_added_g:'✅ Guest added.',
+ seat_del_t:'Delete this table? Its guests return to the unseated list.',
+ seat_list:'Guest list',seat_by_table:'By table',
+});
+
+function seatData(cid){
+ if(!DB.seating[cid])DB.seating[cid]={tables:[],guests:[]};
+ var s=DB.seating[cid];
+ s.tables=s.tables||[];s.guests=s.guests||[];
+ return s;
+}
+function seatCount(cid,tid){
+ return seatData(cid).guests.filter(function(g){return g.tableId===tid;}).length;
+}
+function seatAddTable(cid,ns){
+ var s=seatData(cid);
+ var nameEl=$('seatTName_'+ns), capEl=$('seatTCap_'+ns);
+ var name=(nameEl&&nameEl.value.trim())||'';
+ var cap=Math.max(1,Number(capEl&&capEl.value)||12);
+ if(!name)name=(lang==='he'?'שולחן ':'Table ')+(s.tables.length+1);
+ s.tables.push({id:uid('tb'),name:name,cap:cap});
+ toast(t('seat_added_t'));renderAll();
+}
+function seatAddGuest(cid,ns){
+ var s=seatData(cid);
+ var nameEl=$('seatGName_'+ns);
+ var name=(nameEl&&nameEl.value.trim())||'';
+ if(!name)return toast(t('seat_need_g'));
+ var grpEl=$('seatGGrp_'+ns), tblEl=$('seatGTbl_'+ns);
+ s.guests.push({id:uid('g'),name:name,grp:(grpEl&&grpEl.value.trim())||'',
+  tableId:(tblEl&&tblEl.value)||''});
+ toast(t('seat_added_g'));renderAll();
+}
+function seatBulkAdd(cid,ns){
+ var el=$('seatBulk_'+ns);
+ var raw=(el&&el.value)||'';
+ var names=raw.split('\n').map(function(x){return x.trim();}).filter(Boolean);
+ if(!names.length)return toast(t('seat_bulk_need'));
+ var s=seatData(cid);
+ names.forEach(function(n){s.guests.push({id:uid('g'),name:n,grp:'',tableId:''});});
+ toast(t('seat_bulk_ok').replace('{n}',names.length));renderAll();
+}
+function seatAssign(cid,gid,tid){
+ var g=seatData(cid).guests.find(function(x){return x.id===gid;});
+ if(g){g.tableId=tid||'';saveSoon&&saveSoon();renderAll();}
+}
+function seatDelGuest(cid,gid){
+ var s=seatData(cid);
+ s.guests=s.guests.filter(function(x){return x.id!==gid;});
+ renderAll();
+}
+function seatDelTable(cid,tid){
+ if(typeof confirm==='function'&&!confirm(t('seat_del_t')))return;
+ var s=seatData(cid);
+ s.tables=s.tables.filter(function(x){return x.id!==tid;});
+ s.guests.forEach(function(g){if(g.tableId===tid)g.tableId='';});
+ renderAll();
+}
+function seatSetCap(cid,tid,v){
+ var tb=seatData(cid).tables.find(function(x){return x.id===tid;});
+ if(tb){tb.cap=Math.max(1,Number(v)||1);saveSoon&&saveSoon();renderAll();}
+}
+function seatSetTableName(cid,tid,v){
+ var tb=seatData(cid).tables.find(function(x){return x.id===tid;});
+ if(tb){tb.name=String(v||'').trim()||tb.name;saveSoon&&saveSoon();renderAll();}
+}
+function seatTableOptions(cid,selected){
+ return '<option value="">'+esc(t('seat_none_t'))+'</option>'+
+  seatData(cid).tables.map(function(tb){
+   var n=seatCount(cid,tb.id), full=n>=tb.cap&&tb.id!==selected;
+   return '<option value="'+tb.id+'"'+(selected===tb.id?' selected':'')+(full?' disabled':'')+'>'+
+    esc(tb.name)+' ('+n+'/'+tb.cap+(full?' · '+esc(t('seat_full')):'')+')</option>';
+  }).join('');
+}
+
+/* one panel, used unchanged by the couple and by the producer */
+function seatingPanel(cid,ns){
+ var s=seatData(cid);
+ var seated=s.guests.filter(function(g){return g.tableId;}).length;
+ var cap=s.tables.reduce(function(a,tb){return a+tb.cap;},0);
+ var stat=function(v,l){return '<div class="card stat"><div class="n">'+v+'</div><div class="l">'+esc(l)+'</div></div>';};
+
+ var head='<div class="page-h"><h2>🪑 '+esc(t('seat_t'))+'</h2><p class="muted">'+esc(t('seat_p'))+'</p></div>';
+
+ var stats='<div class="stat-grid" style="margin-bottom:14px">'+
+  stat(s.guests.length,t('seat_guests'))+
+  stat(seated,t('seat_seated'))+
+  '<div class="card stat"><div class="n" style="color:'+(s.guests.length-seated?'var(--gold)':'inherit')+'">'+
+   (s.guests.length-seated)+'</div><div class="l">'+esc(t('seat_unseated'))+'</div></div>'+
+  stat(s.tables.length,t('seat_tables'))+
+  stat(cap,t('seat_cap'))+'</div>';
+
+ var addTable='<div class="card" style="margin-bottom:12px"><b style="font-size:15px">➕ '+esc(t('seat_add_table'))+'</b>'+
+  '<div class="row" style="margin-top:10px">'+
+   '<input id="seatTName_'+ns+'" placeholder="'+esc(t('seat_tname'))+'" style="flex:2;min-width:150px" '+
+    'onkeydown="if(event.key===\'Enter\')seatAddTable(\''+cid+'\',\''+ns+'\')">'+
+   '<input id="seatTCap_'+ns+'" type="number" min="1" value="12" placeholder="'+esc(t('seat_tcap'))+'" style="width:110px">'+
+   '<button class="btn btn-dark btn-sm" onclick="seatAddTable(\''+cid+'\',\''+ns+'\')">'+esc(t('seat_add_table'))+'</button>'+
+  '</div></div>';
+
+ var addGuest='<div class="card" style="margin-bottom:12px"><b style="font-size:15px">➕ '+esc(t('seat_add_guest'))+'</b>'+
+  '<div class="row" style="margin-top:10px">'+
+   '<input id="seatGName_'+ns+'" placeholder="'+esc(t('seat_gname'))+'" style="flex:2;min-width:150px" '+
+    'onkeydown="if(event.key===\'Enter\')seatAddGuest(\''+cid+'\',\''+ns+'\')">'+
+   '<input id="seatGGrp_'+ns+'" placeholder="'+esc(t('seat_grp'))+'" style="flex:2;min-width:150px">'+
+   '<select id="seatGTbl_'+ns+'" style="width:auto">'+seatTableOptions(cid,'')+'</select>'+
+   '<button class="btn btn-dark btn-sm" onclick="seatAddGuest(\''+cid+'\',\''+ns+'\')">'+esc(t('seat_add_guest'))+'</button>'+
+  '</div>'+
+  '<div style="margin-top:10px">'+
+   '<label for="seatBulk_'+ns+'" class="muted" style="font-size:12.5px;font-weight:700">'+esc(t('seat_bulk'))+'</label>'+
+   '<textarea id="seatBulk_'+ns+'" rows="3" style="margin-top:5px"></textarea>'+
+   '<button class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="seatBulkAdd(\''+cid+'\',\''+ns+'\')">'+esc(t('seat_bulk_add'))+'</button>'+
+  '</div></div>';
+
+ var guestRow=function(g){
+  return '<div class="spread" style="padding:8px 0;border-top:1px solid var(--line)">'+
+   '<div style="min-width:0"><b style="font-size:13.8px">'+esc(g.name)+'</b>'+
+    (g.grp?'<div class="muted" style="font-size:12px">'+esc(g.grp)+'</div>':'')+'</div>'+
+   '<div class="row" style="gap:6px">'+
+    '<select class="cell-in" style="width:auto" onchange="seatAssign(\''+cid+'\',\''+g.id+'\',this.value)">'+
+     seatTableOptions(cid,g.tableId)+'</select>'+
+    '<button class="btn btn-red btn-xs" onclick="seatDelGuest(\''+cid+'\',\''+g.id+'\')">✕</button>'+
+   '</div></div>';
+ };
+
+ var tables=s.tables.length
+  ? '<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">'+
+    s.tables.map(function(tb){
+     var mine=s.guests.filter(function(g){return g.tableId===tb.id;});
+     var over=mine.length>tb.cap;
+     return '<div class="card" style="'+(over?'border-color:var(--red)':'')+'">'+
+      '<div class="spread">'+
+       '<input class="cell-in" style="font-weight:700;max-width:150px" value="'+esc(tb.name)+'" '+
+        'onchange="seatSetTableName(\''+cid+'\',\''+tb.id+'\',this.value)">'+
+       '<div class="row" style="gap:5px">'+
+        '<span class="badge b-'+(over?'suspended':(mine.length>=tb.cap?'pending':'approved'))+'">'+mine.length+'/'+tb.cap+'</span>'+
+        '<input class="cell-in" type="number" min="1" style="width:64px" value="'+tb.cap+'" '+
+         'onchange="seatSetCap(\''+cid+'\',\''+tb.id+'\',this.value)">'+
+        '<button class="btn btn-red btn-xs" onclick="seatDelTable(\''+cid+'\',\''+tb.id+'\')">✕</button>'+
+       '</div></div>'+
+      (over?'<div class="muted" style="font-size:12px;color:var(--red);font-weight:700;margin-top:4px">'+esc(t('seat_over'))+'</div>':'')+
+      (mine.length?mine.map(guestRow).join(''):'<p class="muted" style="font-size:12.5px;margin-top:8px">—</p>')+
+     '</div>';
+    }).join('')+'</div>'
+  : '<div class="card"><p class="muted">'+esc(t('seat_no_tables'))+'</p></div>';
+
+ var unseated=s.guests.filter(function(g){return !g.tableId;});
+ var unseatedBlock='<h3 style="font-size:16.5px;margin:20px 0 10px">'+esc(t('seat_unseated'))+' ('+unseated.length+')</h3>'+
+  (s.guests.length
+    ? (unseated.length
+        ? '<div class="card" style="padding:6px 16px">'+unseated.map(guestRow).join('')+'</div>'
+        : '<div class="card"><p class="muted">🎉 —</p></div>')
+    : '<div class="card"><p class="muted">'+esc(t('seat_no_guests'))+'</p></div>');
+
+ return head+stats+addTable+addGuest+
+  '<h3 style="font-size:16.5px;margin:20px 0 10px">'+esc(t('seat_by_table'))+'</h3>'+tables+
+  unseatedBlock;
+}
+
+/* couple portal — fully editable */
+var _renderPortalV34=renderPortal;
+renderPortal=function(){
+ _renderPortalV34();
+ injectTab('portalNav','portalTabbar','seat',esc(t('p_seat')),'🪑','portalTab');
+ if(portalTab==='seat'&&portalClient){
+  var m=$('portalMain');
+  if(m)m.innerHTML=seatingPanel(portalClient,'p');
+ }
+};
+
+/* producer workspace — the same editable plan */
+var _renderWsV34=renderWs;
+renderWs=function(cid){
+ var base=_renderWsV34(cid);
+ if(base.indexOf('data-seat-tab')<0){
+  base=base.replace(/(<div class="sub-tabs">)/,
+   '$1<button data-seat-tab class="'+(wsTab==='seat'?'active':'')+'" onclick="wsTab=\'seat\';renderAll()">'+esc(t('ws_seat'))+'</button>');
+ }
+ if(wsTab==='seat'){
+  var backBtn=base.match(/<button class="btn btn-ghost btn-sm"[^>]*>[\s\S]*?<\/button>/);
+  var header=base.match(/<div class="page-h">[\s\S]*?<\/div>/);
+  var tabs=base.match(/<div class="sub-tabs">[\s\S]*?<\/div>/);
+  base=(backBtn?backBtn[0]:'')+(header?header[0]:'')+(tabs?tabs[0]:'')+seatingPanel(cid,'w');
+ }
+ return base;
 };
 
 renderAll();
