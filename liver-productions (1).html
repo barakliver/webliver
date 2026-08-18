@@ -1991,6 +1991,7 @@ DB.users=[];            // {id,email,pass,role,refId,name,created}
 DB.notify={email:'',w3f:'',wa:'',waKey:''};
 DB.pendingClients=[];   // {id,name,email,pass,kind,eventKey,requested} — awaiting owner approval
 DB.feedback=[];         // {id,name,email,msg,page,created} — bug reports / suggestions from site users
+DB.salesCalls=[];       // {id,leadId,name,phone,when,notes,remindOn,done,created} — sales follow-ups
 let session=null, authMode='login', authMsg='', pendingRole=null;
 let authRole='client', authKind='couple', authEventKey='wedding';
 const ROLE_HOME={master:'owner',producer:'admin',staff:'staff',client:'portal'};
@@ -3747,7 +3748,7 @@ const SCHEMA_VERSION=14;
 const PERSIST=['producers','activeProducer','portfolio','products','leads','clients','tasks',
  'eventFiles','budgets','alcohol','field','contracts','messages','payRequests','orders','myTasks',
  'meetings','calEvents','staff','crew','crewTasks','perms','masters','users','notify','site',
- 'clientEvents','coupleChat','aiChat'];
+ 'clientEvents','coupleChat','aiChat','pendingClients','feedback','salesCalls'];
 let storageOK=true, lastSaved=null, saveTimer=null;
 
 function storageAvailable(){
@@ -4018,8 +4019,14 @@ doLogin=function(){
    if(u.role==='producer'){const pr=DB.producers.find(x=>x.id===u.refId);if(pr)DB.activeProducer=pr.id;}
    authMsg='';toast(t('lg_welcome')+' <b>'+esc(u.name||u.email)+'</b>');goHome();
   } else {
-   /* signed in to the cloud but no local mirror yet — create one */
-   const nu=addUser(e,p,'super_admin'==='x'?'client':'master','own_root',e.split('@')[0]);
+   /* Signed in to the cloud but this device has no local mirror yet.
+      The mirrored account must NEVER be granted master rights: master is
+      reserved for ROOT_ADMIN_EMAIL alone, and a cloud login is not proof
+      of that. Anyone else is mirrored as a client with no elevated access. */
+   const isRootEmail=String(e).trim().toLowerCase()===ROOT_ADMIN_EMAIL;
+   const nu=isRootEmail
+    ? addUser(e,p,'master','own_root',e.split('@')[0])
+    : addUser(e,p,'client',null,e.split('@')[0]);
    session=nu;authMsg='';goHome();
   }
   pullFromCloud();
@@ -5270,6 +5277,598 @@ Object.assign(D_.en,{
  fb_admin_t:'Site feedback & bug reports',fb_admin_p:'Messages received from the 🛠 floating button on every screen.',fb_none:'No feedback yet.',
  e_birthday:'Birthday',
 });
+renderAll();
+/* ══════════════════════════════════════════════════════════
+   v31 — dual-role root workspace · client invitations with
+   credential dispatch · manual lead / sales-call / order entry ·
+   two-way task creation · producer inbox · floating-dock fix
+   ══════════════════════════════════════════════════════════ */
+Object.assign(D_.he,{
+ ws_switch_prod:'⇄ מעבר לדשבורד המפיק שלי',
+ ws_switch_owner:'⇄ חזרה לניהול-על',
+ ws_now_owner:'ניהול-על',ws_now_prod:'דשבורד מפיק',
+
+ iv_btn:'✉️ זימון לקוח',
+ iv_title:'זימון לקוח חדש',
+ iv_sub:'נייצר ללקוח סביבה אישית וגם שם משתמש וסיסמה — בלי שהוא יצטרך להירשם בעצמו.',
+ iv_kind:'סוג האירוע',iv_wedding:'חתונה',iv_corp:'אירוע עסקי',
+ iv_names:'שמות הלקוח / החברה',iv_date:'תאריך האירוע',iv_phone:'טלפון',
+ iv_email1:'אימייל ראשי (שם המשתמש)',iv_email2:'אימייל נוסף (לא חובה)',
+ iv_create:'יצירה ושליחת פרטים',
+ iv_need:'נדרשים שם ואימייל ראשי תקין.',
+ iv_ok:'✅ נוצרה סביבה אישית ללקוח.',
+ iv_creds_t:'פרטי הכניסה של הלקוח',
+ iv_creds_p:'אלה הפרטים שהלקוח צריך כדי להיכנס. שלחו לו אותם באחת מהדרכים הבאות:',
+ iv_wa:'💬 שליחה בוואטסאפ',iv_mail:'✉️ פתיחת מייל מוכן',iv_copy:'📋 העתקת ההודעה',
+ iv_copied:'✅ ההודעה הועתקה.',
+ iv_email_note:'ℹ️ שליחת מייל אוטומטית ללקוח דורשת שירות דיוור (למשל Resend). כרגע הכפתורים מכינים עבורכם את ההודעה לשליחה בלחיצה אחת.',
+
+ ld_manual:'➕ קליטת ליד חדש',ld_call:'📞 יצירת שיחת מכירה',
+ ld_m_title:'קליטת ליד חדש',ld_m_sub:'לפניות טלפוניות, הפניות או פגישות מזדמנות.',
+ ld_m_need:'נדרשים שם ואימייל או טלפון.',ld_m_ok:'✅ הליד נקלט.',
+ sc_title:'שיחת מכירה',sc_sub:'תיעוד שיחה, סיכום ותאריך למעקב חוזר.',
+ sc_who:'לקוח / ליד',sc_free:'— ליד חדש (הקלדה ידנית) —',
+ sc_name:'שם',sc_phone:'טלפון',sc_when:'מועד השיחה',sc_notes:'סיכום השיחה',
+ sc_remind:'תזכורת למעקב בתאריך',sc_save:'שמירת השיחה',sc_need:'נדרש שם.',
+ sc_ok:'✅ השיחה נשמרה.',sc_list:'שיחות מכירה ומעקבים',sc_none:'אין עדיין שיחות מכירה.',
+ sc_done:'בוצע',sc_open:'למעקב',
+
+ or_manual:'➕ הוספת הזמנה ידנית',or_m_title:'הזמנה ידנית',
+ or_m_sub:'חבילות שירות, מקדמות או מוצרים שנמכרו מחוץ לחנות.',
+ or_desc:'תיאור החבילה / הפריט',or_amount:'סכום ₪',or_status:'סטטוס תשלום',
+ or_paid:'שולם',or_deposit:'מקדמה',or_pending:'ממתין לתשלום',
+ or_need:'נדרשים שם, תיאור וסכום.',or_ok:'✅ ההזמנה נוספה.',
+
+ pt_add:'➕ הוספת משימה משלי',pt_ph:'מה צריך לעשות?',pt_added:'✅ המשימה נוספה.',
+
+ inbox_t:'הודעות שממתינות לכם',inbox_p:'הודעות מזוגות ומהצוות שטרם נקראו.',
+ inbox_open:'פתיחת השיחה',inbox_none:'אין הודעות חדשות.',
+});
+Object.assign(D_.en,{
+ ws_switch_prod:'⇄ Switch to my producer dashboard',
+ ws_switch_owner:'⇄ Back to super admin',
+ ws_now_owner:'Super admin',ws_now_prod:'Producer dashboard',
+
+ iv_btn:'✉️ Invite client',
+ iv_title:'Invite a new client',
+ iv_sub:'Creates the client a personal workspace plus a username and password — no self-registration needed.',
+ iv_kind:'Event type',iv_wedding:'Wedding',iv_corp:'Corporate event',
+ iv_names:'Client / company names',iv_date:'Event date',iv_phone:'Phone',
+ iv_email1:'Primary email (the username)',iv_email2:'Additional email (optional)',
+ iv_create:'Create and send details',
+ iv_need:'A name and a valid primary email are required.',
+ iv_ok:'✅ Personal workspace created for the client.',
+ iv_creds_t:'The client’s login details',
+ iv_creds_p:'These are the details the client needs in order to log in. Send them one of these ways:',
+ iv_wa:'💬 Send on WhatsApp',iv_mail:'✉️ Open a prepared email',iv_copy:'📋 Copy the message',
+ iv_copied:'✅ Message copied.',
+ iv_email_note:'ℹ️ Sending the client an automatic email requires a mail service (e.g. Resend). For now these buttons prepare the message for one-click sending.',
+
+ ld_manual:'➕ Add lead manually',ld_call:'📞 Log a sales call',
+ ld_m_title:'Add a lead manually',ld_m_sub:'For phone enquiries, referrals or walk-ins.',
+ ld_m_need:'A name plus an email or phone are required.',ld_m_ok:'✅ Lead captured.',
+ sc_title:'Sales call',sc_sub:'Record the call, its summary and a follow-up date.',
+ sc_who:'Client / lead',sc_free:'— New lead (type manually) —',
+ sc_name:'Name',sc_phone:'Phone',sc_when:'Call time',sc_notes:'Call summary',
+ sc_remind:'Follow-up reminder on',sc_save:'Save call',sc_need:'A name is required.',
+ sc_ok:'✅ Call saved.',sc_list:'Sales calls and follow-ups',sc_none:'No sales calls yet.',
+ sc_done:'Done',sc_open:'Follow up',
+
+ or_manual:'➕ Add manual order',or_m_title:'Manual order',
+ or_m_sub:'Service packages, deposits or products sold outside the store.',
+ or_desc:'Package / item description',or_amount:'Amount ₪',or_status:'Payment status',
+ or_paid:'Paid',or_deposit:'Deposit',or_pending:'Awaiting payment',
+ or_need:'Name, description and amount are required.',or_ok:'✅ Order added.',
+
+ pt_add:'➕ Add my own task',pt_ph:'What needs doing?',pt_added:'✅ Task added.',
+
+ inbox_t:'Messages waiting for you',inbox_p:'Unread messages from couples and crew.',
+ inbox_open:'Open the thread',inbox_none:'No new messages.',
+});
+
+/* ── layout: the fixed bottom control dock sat on top of the sidebar's
+      own footer (the logout button), and the floating stack could collide
+      with the mobile tab bar. Reserve space instead of overlapping. ── */
+(function(){
+ var css=
+  '@media(min-width:900px){.side{padding-bottom:72px}}'+
+  '#topCtl{flex-wrap:wrap;max-width:min(92vw,320px);justify-content:flex-start}'+
+  '#concierge-panel{max-width:min(340px,92vw)}';
+ var s=document.createElement('style');
+ s.setAttribute('data-v31-layout','1');
+ s.textContent=css;
+ document.head.appendChild(s);
+})();
+
+/* ── modal plumbing: build the new dialogs once, in JS, so the
+      single-file document stays untouched ── */
+function v31Modal(id,inner,wide){
+ if(document.getElementById(id))return;
+ var m=document.createElement('div');
+ m.className='modal';m.id=id;
+ m.setAttribute('role','dialog');m.setAttribute('aria-modal','true');
+ m.onclick=function(ev){if(ev.target===m)closeModal(id);};
+ m.innerHTML='<div class="modal-box" style="max-width:'+(wide||460)+'px">'+inner+'</div>';
+ document.body.appendChild(m);
+}
+
+/* ══ 1. dual-role workspace for the root super admin ══ */
+function myProducerRecord(){
+ var em=session&&session.email?String(session.email).toLowerCase():'';
+ return DB.producers.find(function(p){return p.email&&String(p.email).toLowerCase()===em;})
+     || DB.producers[0] || null;
+}
+function switchWorkspace(target){
+ if(!session||session.role!=='master')return;
+ masterViewing=null;wsClient=null;portalClient=null;
+ if(target==='admin'){
+  var mine=myProducerRecord();
+  if(mine){if(mine.status!=='approved')mine.status='approved';DB.activeProducer=mine.id;}
+  adminTab='over';setRole('admin');
+ }else{
+  ownerTab='prod';setRole('owner');
+ }
+}
+function wsSwitchBtn(target){
+ return '<button class="btn btn-gold btn-sm" style="width:100%;margin-bottom:10px" '+
+  'onclick="switchWorkspace(\''+target+'\')">'+
+  t(target==='admin'?'ws_switch_prod':'ws_switch_owner')+'</button>';
+}
+var _renderOwnerV31=renderOwner;
+renderOwner=function(){
+ _renderOwnerV31();
+ if(session&&session.role==='master'){
+  var nav=$('ownerNav');
+  if(nav&&nav.innerHTML.indexOf('data-wsw')<0)
+   nav.innerHTML='<div data-wsw>'+wsSwitchBtn('admin')+'</div>'+nav.innerHTML;
+ }
+};
+var _renderAdminV31=renderAdmin;
+renderAdmin=function(){
+ _renderAdminV31();
+ if(session&&session.role==='master'){
+  var nav=$('adminNav');
+  if(nav&&nav.innerHTML.indexOf('data-wsw')<0)
+   nav.innerHTML='<div data-wsw>'+wsSwitchBtn('owner')+'</div>'+nav.innerHTML;
+ }
+};
+
+/* ══ 2. invite a client + hand them working credentials ══ */
+var inviteKind='wedding';
+function openInvite(){
+ v31Modal('inviteModal',
+  '<h3 id="ivT" style="font-size:20px;margin-bottom:4px"></h3>'+
+  '<p class="muted" id="ivSub" style="font-size:13px;margin-bottom:12px"></p>'+
+  '<div id="ivBody"></div>'+
+  '<button class="btn btn-gold" style="width:100%;margin-top:12px" onclick="submitInvite()" id="ivGo"></button>');
+ renderInvite();
+ openModal('inviteModal');
+}
+function renderInvite(){
+ $('ivT').textContent=t('iv_title');
+ $('ivSub').textContent=t('iv_sub');
+ $('ivGo').textContent=t('iv_create');
+ var chips=[['wedding',t('iv_wedding')],['corporate',t('iv_corp')]].map(function(o){
+  return '<button type="button" class="chip '+(inviteKind===o[0]?'active':'')+'" '+
+   'onclick="inviteKind=\''+o[0]+'\';renderInvite()">'+o[1]+'</button>';}).join('');
+ $('ivBody').innerHTML=
+  '<div class="kv"><label>'+t('iv_kind')+'</label><div class="row" style="gap:6px">'+chips+'</div></div>'+
+  '<div class="kv"><label for="ivNames">'+t('iv_names')+'</label><input id="ivNames"></div>'+
+  '<div class="kv"><label for="ivDate">'+t('iv_date')+'</label><input id="ivDate" type="date" min="'+MIN_DATE+'"></div>'+
+  '<div class="kv"><label for="ivPhone">'+t('iv_phone')+'</label><input id="ivPhone" inputmode="tel"></div>'+
+  '<div class="kv"><label for="ivEmail1">'+t('iv_email1')+'</label><input id="ivEmail1" type="email" dir="ltr"></div>'+
+  '<div class="kv"><label for="ivEmail2">'+t('iv_email2')+'</label><input id="ivEmail2" type="email" dir="ltr"></div>';
+}
+function submitInvite(){
+ var names=$('ivNames').value.trim(),
+     date=$('ivDate').value,
+     phone=$('ivPhone').value.trim(),
+     e1=$('ivEmail1').value.trim().toLowerCase(),
+     e2=$('ivEmail2').value.trim().toLowerCase();
+ if(!names||!/.+@.+\..+/.test(e1))return toast(t('iv_need'));
+ if(e2&&!/.+@.+\..+/.test(e2))return toast(t('lg_bad'));
+ if(findUser(e1)||(e2&&findUser(e2)))return toast(t('su2_taken'));
+
+ var c=_makeClientBase(names,e1,date||'','','',false);
+ c.ctype=inviteKind==='corporate'?'business':'couple';
+ c.producerId=DB.activeProducer;
+ c.phone=phone;
+ c.emails=e2?[e1,e2]:[e1];
+ if(inviteKind==='wedding')addClientEvent(c.id,'wedding',true);
+
+ var pass=genPass();
+ addUser(e1,pass,'client',c.id,names);
+ if(e2)addUser(e2,pass,'client',c.id,names);
+
+ closeModal('inviteModal');
+ toast(t('iv_ok'));
+ showInviteCreds(c,c.emails,pass,phone);
+ renderAll();
+}
+function inviteMessage(c,emails,pass){
+ var he=lang==='he';
+ var site=(location&&location.origin&&location.protocol!=='file:')?location.origin:'';
+ return (he?'שלום '+c.names+',':'Hello '+c.names+',')+'\n'+
+  (he?'נפתחה עבורכם סביבה אישית לניהול האירוע אצל '+brandName()+'.'
+    :'A personal event workspace has been opened for you at '+brandName()+'.')+'\n\n'+
+  (he?'שם משתמש: ':'Username: ')+emails[0]+'\n'+
+  (he?'סיסמה: ':'Password: ')+pass+'\n'+
+  (site?(he?'כניסה: ':'Log in: ')+site+'\n':'')+'\n'+
+  (he?'מומלץ להחליף סיסמה אחרי הכניסה הראשונה.':'We recommend changing the password after the first login.')+'\n'+
+  '— '+brandName();
+}
+function showInviteCreds(c,emails,pass,phone){
+ var msg=inviteMessage(c,emails,pass);
+ v31Modal('ivCredsModal',
+  '<h3 id="ivcT" style="font-size:20px;margin-bottom:4px"></h3>'+
+  '<p class="muted" id="ivcP" style="font-size:13px;margin-bottom:12px"></p>'+
+  '<div id="ivcBody"></div>'+
+  '<button class="btn btn-dark" style="width:100%;margin-top:12px" onclick="closeModal(\'ivCredsModal\')" id="ivcClose"></button>');
+ $('ivcT').textContent=t('iv_creds_t');
+ $('ivcP').textContent=t('iv_creds_p');
+ $('ivcClose').textContent=t('close');
+ var digits=String(phone||'').replace(/\D/g,'');
+ var wa=digits?('https://wa.me/'+(digits.charAt(0)==='0'?'972'+digits.slice(1):digits)+'?text='+encodeURIComponent(msg)):'';
+ var mailto='mailto:'+encodeURIComponent(emails.join(','))+
+   '?subject='+encodeURIComponent(brandName()+' — '+t('iv_creds_t'))+
+   '&body='+encodeURIComponent(msg);
+ $('ivcBody').innerHTML=
+  '<div class="kv"><label>'+t('lg_email')+'</label><b dir="ltr">'+esc(emails.join(', '))+'</b></div>'+
+  '<div class="kv"><label>'+t('pw_set')+'</label><b style="font-family:monospace;font-size:17px;letter-spacing:.08em">'+esc(pass)+'</b></div>'+
+  '<div class="row" style="margin-top:12px;gap:7px">'+
+   (wa?'<a class="btn btn-green btn-sm" href="'+wa+'" target="_blank" rel="noopener">'+t('iv_wa')+'</a>':'')+
+   '<a class="btn btn-ghost btn-sm" href="'+mailto+'">'+t('iv_mail')+'</a>'+
+   '<button class="btn btn-ghost btn-sm" onclick="v31Copy(this)" data-msg="'+esc(msg)+'">'+t('iv_copy')+'</button>'+
+  '</div>'+
+  '<p class="muted" style="font-size:12px;margin-top:12px">'+t('iv_email_note')+'</p>';
+ openModal('ivCredsModal');
+}
+function v31Copy(btn){
+ var txt=btn.getAttribute('data-msg')||'';
+ var done=function(){toast(t('iv_copied'));};
+ if(navigator.clipboard&&navigator.clipboard.writeText){
+  navigator.clipboard.writeText(txt).then(done).catch(function(){v31CopyFallback(txt,done);});
+ }else v31CopyFallback(txt,done);
+}
+function v31CopyFallback(txt,done){
+ try{
+  var ta=document.createElement('textarea');
+  ta.value=txt;ta.setAttribute('readonly','');
+  ta.style.position='fixed';ta.style.opacity='0';
+  document.body.appendChild(ta);ta.select();
+  document.execCommand('copy');document.body.removeChild(ta);done();
+ }catch(e){toast(t('dl_note')||'');}
+}
+
+/* ══ 3. manual lead capture + sales calls ══ */
+function openManualLead(){
+ v31Modal('mLeadModal',
+  '<h3 id="mlT" style="font-size:20px;margin-bottom:4px"></h3>'+
+  '<p class="muted" id="mlSub" style="font-size:13px;margin-bottom:12px"></p>'+
+  '<div id="mlBody"></div>'+
+  '<button class="btn btn-gold" style="width:100%;margin-top:12px" onclick="submitManualLead()" id="mlGo"></button>');
+ $('mlT').textContent=t('ld_m_title');
+ $('mlSub').textContent=t('ld_m_sub');
+ $('mlGo').textContent=t('ld_manual').replace('➕ ','');
+ $('mlBody').innerHTML=
+  '<div class="kv"><label for="mlName">'+t('f_name')+'</label><input id="mlName"></div>'+
+  '<div class="kv"><label for="mlEmail">'+t('f_email')+'</label><input id="mlEmail" type="email" dir="ltr"></div>'+
+  '<div class="kv"><label for="mlPhone">'+t('f_phone')+'</label><input id="mlPhone" inputmode="tel"></div>'+
+  '<div class="kv"><label for="mlType">'+t('ct_type')+'</label><select id="mlType">'+
+   CATS().map(function(o){return '<option value="'+o[0]+'">'+o[1]+'</option>';}).join('')+'</select></div>'+
+  '<div class="kv"><label for="mlDate">'+t('ef_date')+'</label><input id="mlDate" type="date"></div>'+
+  '<div class="kv"><label for="mlGuests">'+t('f_guests')+'</label><input id="mlGuests" type="number" min="1"></div>'+
+  '<div class="kv"><label for="mlMsg">'+t('note')+'</label><textarea id="mlMsg" rows="3"></textarea></div>';
+ openModal('mLeadModal');
+}
+function submitManualLead(){
+ var n=$('mlName').value.trim(),e=$('mlEmail').value.trim(),p=$('mlPhone').value.trim();
+ if(!n||(!e&&!p))return toast(t('ld_m_need'));
+ DB.leads.unshift({id:uid('l'),name:n,email:e,phone:p,type:$('mlType').value,
+  date:$('mlDate').value||'',guests:$('mlGuests').value||'',
+  msg:$('mlMsg').value.trim(),status:'new',created:iso(TODAY),note:'',
+  producerId:DB.activeProducer,source:'manual'});
+ closeModal('mLeadModal');toast(t('ld_m_ok'));renderAll();
+}
+function openSalesCall(leadId){
+ v31Modal('sCallModal',
+  '<h3 id="scT" style="font-size:20px;margin-bottom:4px"></h3>'+
+  '<p class="muted" id="scSub" style="font-size:13px;margin-bottom:12px"></p>'+
+  '<div id="scBody"></div>'+
+  '<button class="btn btn-gold" style="width:100%;margin-top:12px" onclick="submitSalesCall()" id="scGo"></button>');
+ $('scT').textContent=t('sc_title');
+ $('scSub').textContent=t('sc_sub');
+ $('scGo').textContent=t('sc_save');
+ var opts='<option value="">'+t('sc_free')+'</option>'+
+  DB.leads.map(function(l){
+   return '<option value="'+l.id+'"'+(leadId===l.id?' selected':'')+'>'+esc(l.name)+(l.phone?' · '+esc(l.phone):'')+'</option>';
+  }).join('');
+ var pre=leadId?DB.leads.find(function(l){return l.id===leadId;}):null;
+ $('scBody').innerHTML=
+  '<div class="kv"><label for="scLead">'+t('sc_who')+'</label><select id="scLead" onchange="scPickLead()">'+opts+'</select></div>'+
+  '<div class="kv"><label for="scName">'+t('sc_name')+'</label><input id="scName" value="'+esc(pre?pre.name:'')+'"></div>'+
+  '<div class="kv"><label for="scPhone">'+t('sc_phone')+'</label><input id="scPhone" inputmode="tel" value="'+esc(pre&&pre.phone?pre.phone:'')+'"></div>'+
+  '<div class="kv"><label for="scWhen">'+t('sc_when')+'</label><input id="scWhen" type="datetime-local"></div>'+
+  '<div class="kv"><label for="scNotes">'+t('sc_notes')+'</label><textarea id="scNotes" rows="3"></textarea></div>'+
+  '<div class="kv"><label for="scRemind">'+t('sc_remind')+'</label><input id="scRemind" type="date"></div>';
+ openModal('sCallModal');
+}
+function scPickLead(){
+ var l=DB.leads.find(function(x){return x.id===$('scLead').value;});
+ if(!l)return;
+ $('scName').value=l.name||'';$('scPhone').value=l.phone||'';
+}
+function submitSalesCall(){
+ var n=$('scName').value.trim();
+ if(!n)return toast(t('sc_need'));
+ DB.salesCalls.unshift({id:uid('sc'),leadId:$('scLead').value||'',name:n,
+  phone:$('scPhone').value.trim(),when:$('scWhen').value||'',
+  notes:$('scNotes').value.trim(),remindOn:$('scRemind').value||'',
+  done:false,created:iso(TODAY),producerId:DB.activeProducer});
+ closeModal('sCallModal');toast(t('sc_ok'));renderAll();
+}
+function toggleSalesCall(id){
+ var s=DB.salesCalls.find(function(x){return x.id===id;});
+ if(s){s.done=!s.done;renderAll();}
+}
+function salesCallsPanel(){
+ var mine=DB.salesCalls.filter(function(s){return !s.producerId||s.producerId===DB.activeProducer||isSuper();});
+ var row=function(s){
+  var late=!s.done&&s.remindOn&&d(s.remindOn)<TODAY;
+  return '<div class="card" style="margin-bottom:8px"><div class="spread"><div>'+
+   '<b>'+esc(s.name)+'</b>'+(s.phone?' <span class="muted" style="font-size:12.4px">· '+esc(s.phone)+'</span>':'')+
+   (s.when?'<div class="muted" style="font-size:12px">'+esc(String(s.when).replace('T',' '))+'</div>':'')+
+   (s.notes?'<p style="font-size:13.4px;margin-top:5px">'+esc(s.notes)+'</p>':'')+
+   (s.remindOn?'<div class="muted" style="font-size:12px;margin-top:4px'+(late?';color:var(--red);font-weight:700':'')+'">'+
+     t('sc_remind')+' '+fmt(s.remindOn)+'</div>':'')+
+   '</div><div class="row">'+
+   '<button class="btn '+(s.done?'btn-ghost':'btn-green')+' btn-xs" onclick="toggleSalesCall(\''+s.id+'\')">'+
+    (s.done?t('sc_done'):t('sc_open'))+'</button>'+
+   '<button class="btn btn-red btn-xs" onclick="DB.salesCalls=DB.salesCalls.filter(function(x){return x.id!==\''+s.id+'\'});renderAll()">✕</button>'+
+   '</div></div></div>';
+ };
+ return '<h3 style="font-size:16.5px;margin:22px 0 10px">📞 '+t('sc_list')+' ('+mine.length+')</h3>'+
+  (mine.length?mine.map(row).join(''):'<div class="card"><p class="muted">'+t('sc_none')+'</p></div>');
+}
+/* insert markup straight after the panel's own <div class="page-h">…</div>
+   heading — the first </div> after that class closes it, since the inner
+   tags are <h2>/<p> */
+function afterPageHead(html,inject){
+ var i=html.indexOf('class="page-h"');
+ if(i<0)return inject+html;
+ var j=html.indexOf('</div>',i);
+ if(j<0)return inject+html;
+ return html.slice(0,j+6)+inject+html.slice(j+6);
+}
+var _adminLeadsV31=adminLeads;
+adminLeads=function(){
+ var actions='<div class="row" style="margin-bottom:14px;gap:8px">'+
+  '<button class="btn btn-gold btn-sm" onclick="openManualLead()">'+t('ld_manual')+'</button>'+
+  '<button class="btn btn-dark btn-sm" onclick="openSalesCall()">'+t('ld_call')+'</button></div>';
+ return afterPageHead(_adminLeadsV31(),actions)+salesCallsPanel();
+};
+
+/* ══ 4. manual orders ══ */
+function openManualOrder(){
+ v31Modal('mOrderModal',
+  '<h3 id="moT" style="font-size:20px;margin-bottom:4px"></h3>'+
+  '<p class="muted" id="moSub" style="font-size:13px;margin-bottom:12px"></p>'+
+  '<div id="moBody"></div>'+
+  '<button class="btn btn-gold" style="width:100%;margin-top:12px" onclick="submitManualOrder()" id="moGo"></button>');
+ $('moT').textContent=t('or_m_title');
+ $('moSub').textContent=t('or_m_sub');
+ $('moGo').textContent=t('or_manual').replace('➕ ','');
+ $('moBody').innerHTML=
+  '<div class="kv"><label for="moName">'+t('customer')+'</label><input id="moName"></div>'+
+  '<div class="kv"><label for="moEmail">'+t('f_email')+'</label><input id="moEmail" type="email" dir="ltr"></div>'+
+  '<div class="kv"><label for="moPhone">'+t('f_phone')+'</label><input id="moPhone" inputmode="tel"></div>'+
+  '<div class="kv"><label for="moDesc">'+t('or_desc')+'</label><input id="moDesc"></div>'+
+  '<div class="kv"><label for="moAmount">'+t('or_amount')+'</label><input id="moAmount" type="number" min="0" step="1"></div>'+
+  '<div class="kv"><label for="moStatus">'+t('or_status')+'</label><select id="moStatus">'+
+   '<option value="paid">'+t('or_paid')+'</option>'+
+   '<option value="deposit">'+t('or_deposit')+'</option>'+
+   '<option value="pending">'+t('or_pending')+'</option></select></div>';
+ openModal('mOrderModal');
+}
+function submitManualOrder(){
+ var n=$('moName').value.trim(),desc=$('moDesc').value.trim(),amt=Number($('moAmount').value);
+ if(!n||!desc||!(amt>0))return toast(t('or_need'));
+ DB.orders.unshift({id:uid('o'),num:'M-'+String(Date.now()).slice(-6),date:iso(TODAY),
+  name:n,email:$('moEmail').value.trim(),phone:$('moPhone').value.trim(),
+  items:[{qty:1,name:B(desc,desc),price:amt}],total:amt,
+  payStatus:$('moStatus').value,manual:true,producerId:DB.activeProducer});
+ closeModal('mOrderModal');toast(t('or_ok'));renderAll();
+}
+var _adminOrdersV31=adminOrders;
+adminOrders=function(){
+ var actions='<div class="row" style="margin-bottom:14px">'+
+  '<button class="btn btn-gold btn-sm" onclick="openManualOrder()">'+t('or_manual')+'</button></div>';
+ return afterPageHead(_adminOrdersV31(),actions);
+};
+
+/* ══ 5. clients can create their own tasks too ══ */
+function addOwnTask(){
+ var cid=portalClient;if(!cid)return;
+ var el=$('ptTitle');var ti=el?el.value.trim():'';
+ if(!ti)return;
+ DB.tasks[cid]=DB.tasks[cid]||[];
+ DB.tasks[cid].push({id:uid('t'),phase:B('המשימות שלי','My tasks'),title:B(ti,ti),
+  due:($('ptDue')&&$('ptDue').value)||'',done:false,owner:'couple',mine:true});
+ toast(t('pt_added'));renderAll();
+}
+function delOwnTask(id){
+ var cid=portalClient;if(!cid||!DB.tasks[cid])return;
+ DB.tasks[cid]=DB.tasks[cid].filter(function(x){return x.id!==id;});
+ renderAll();
+}
+var _renderPortalV31=renderPortal;
+renderPortal=function(){
+ _renderPortalV31();
+ if(portalTab!=='tasks'||!portalClient)return;
+ var main=$('portalMain');if(!main)return;
+ if(main.innerHTML.indexOf('id="ptTitle"')>=0)return;
+ var own=(DB.tasks[portalClient]||[]).filter(function(x){return x.mine;});
+ var adder='<div class="card" style="margin:14px 0"><div class="row">'+
+  '<input id="ptTitle" placeholder="'+esc(t('pt_ph'))+'" style="flex:2;min-width:160px" '+
+   'onkeydown="if(event.key===\'Enter\')addOwnTask()">'+
+  '<input id="ptDue" type="date" style="flex:1;min-width:130px">'+
+  '<button class="btn btn-dark btn-sm" onclick="addOwnTask()">'+t('pt_add')+'</button></div>'+
+  (own.length?'<div style="margin-top:10px">'+own.map(function(x){
+    return '<div class="spread" style="padding:6px 0;border-top:1px solid var(--line)">'+
+     '<span style="font-size:13.4px'+(x.done?';text-decoration:line-through;opacity:.6':'')+'">'+esc(L(x.title))+
+     (x.due?' <span class="muted">· '+fmt(x.due)+'</span>':'')+'</span>'+
+     '<button class="btn btn-red btn-xs" onclick="delOwnTask(\''+x.id+'\')">✕</button></div>';
+   }).join('')+'</div>':'')+
+  '</div>';
+ var head=main.querySelector('.page-h');
+ if(head&&head.insertAdjacentHTML)head.insertAdjacentHTML('afterend',adder);
+ else main.insertAdjacentHTML('afterbegin',adder);
+};
+
+/* a modal left open must never survive a screen change — it would sit on
+   top of the next screen and swallow every click */
+var _setRoleV31=setRole;
+setRole=function(r){
+ var open=document.querySelectorAll('.modal.open');
+ for(var i=0;i<open.length;i++)open[i].classList.remove('open');
+ return _setRoleV31(r);
+};
+
+/* ══ 6. a visible inbox for the producer ══ */
+function producerInbox(){
+ var mine=myClients().map(function(c){return c.id;});
+ var unread=DB.messages.filter(function(m){
+  return !m.read&&(m.from==='couple'||m.from==='staff')&&mine.indexOf(m.cid)>=0;});
+ if(!unread.length)return '';
+ var byClient={};
+ unread.forEach(function(m){(byClient[m.cid]=byClient[m.cid]||[]).push(m);});
+ var rows=Object.keys(byClient).map(function(cid){
+  var c=DB.clients.find(function(x){return x.id===cid;});
+  var last=byClient[cid][byClient[cid].length-1];
+  return '<div class="spread" style="padding:9px 0;border-top:1px solid var(--line)"><div>'+
+   '<b>'+esc(c?c.names:'—')+'</b> <span class="dot">'+byClient[cid].length+'</span>'+
+   '<div class="muted" style="font-size:12.5px;max-width:420px">'+esc(String(last.text||'').slice(0,90))+'</div></div>'+
+   '<button class="btn btn-dark btn-xs" onclick="wsTab=\'msg\';openWs(\''+cid+'\')">'+t('inbox_open')+'</button></div>';
+ }).join('');
+ return '<div class="card" style="margin-bottom:16px;border-color:var(--gold);background:#fffaf0">'+
+  '<div class="spread"><b style="font-size:15px">💬 '+t('inbox_t')+' <span class="dot">'+unread.length+'</span></b></div>'+
+  '<p class="muted" style="font-size:13px;margin:4px 0 2px">'+t('inbox_p')+'</p>'+rows+'</div>';
+}
+var _adminOverV31=adminOver;
+adminOver=function(){return producerInbox()+_adminOverV31();};
+
+renderAll();
+/* ══════════════════════════════════════════════════════════
+   v32 — concierge that can actually hold a conversation, and an
+   honest, actionable password-reset message
+   ══════════════════════════════════════════════════════════
+   Note on "connect the concierge to Claude/OpenAI": this site is a
+   static page served straight from the web server, so any API key put
+   here would be readable by every visitor and billable by anyone who
+   views source. A real model call therefore needs a small server-side
+   proxy that keeps the key. Until that exists, the concierge answers
+   from the knowledge base below — which covers the questions couples
+   actually ask, instead of deflecting every one of them. */
+
+/* topic → answer. First match wins, so put the specific ones first. */
+var CONCIERGE_KB=[
+ {re:/(תקציב|מחיר|עולה|כמה כסף|עלות|budget|cost|price|how much)/i,
+  a:B('התקציב נגזר מארבעה דברים: עונה, יום בשבוע, כמות אורחים וסגנון. חתונה בקיץ ביום חמישי עולה אחרת מחתונה בחורף ביום שלישי. באתר יש מחשבון תקציב שנותן טווח תוך שניות, ואם תרצו — ברק יעבור איתכם על המספרים לעומק בפגישת היכרות.',
+     'Budget comes down to four things: season, day of week, guest count and style. A Thursday wedding in summer prices differently from a Tuesday in winter. There is a budget simulator on this page that gives you a range in seconds, and if you like, Barak will go through the real numbers with you at an intro meeting.')},
+
+ {re:/(אולם|מקום|לוקיישן|גן איר|venue|location|place|hall)/i,
+  a:B('בחירת המקום נעשית אחרי שמבינים תקציב, כמות אורחים וסגנון — אחרת מבזבזים סיורים על מקומות שלא מתאימים. ברק מלווה אתכם בסבב הסיורים, בודק מולם עלויות נסתרות (מלצרות, חשמל, קורקאז׳) ומוודא שמה שסיכמתם נכנס לחוזה.',
+     'Venue selection happens after budget, guest count and style are clear — otherwise you burn tours on places that were never going to fit. Barak joins the tours, checks the hidden costs with them (staffing, power, corkage) and makes sure what you agreed actually lands in the contract.')},
+
+ {re:/(ספק|צלם|צילום|dj|די ג|להקה|מוזיקה|מאפר|איפור|vendor|photograph|music|band)/i,
+  a:B('הספקים נבחרים סביב הזוג, לא ההפך. ברק עובד עם אנשים שהוא כבר הפיק איתם אירועים ויודע איך הם מתנהגים תחת לחץ — לא רק איך נראה הפורטפוליו. תמיד תקבלו שקיפות מלאה על מחיר, מה כלול ומה לא.',
+     'Vendors are chosen around the couple, not the other way round. Barak works with people he has already produced events with and knows how they behave under pressure — not just how the portfolio looks. You always get full transparency on price and on what is and is not included.')},
+
+ {re:/(מתי|תאריך|כמה זמן מראש|מראש|when|date|how (early|long|far))/i,
+  a:B('הכלל הפשוט: לוקיישן ותאריך נסגרים ראשונים, בערך 10-12 חודשים מראש לחתונה בעונה מבוקשת. אפשר בהחלט להתחיל בלי תאריך סגור — לרוב דווקא עדיף, כי התאריך נבחר יחד עם המקום ולא לפניו.',
+     'Simple rule: venue and date get locked first, roughly 10-12 months ahead for a peak-season wedding. You can absolutely start without a fixed date — usually it is better, because the date gets chosen together with the venue rather than before it.')},
+
+ {re:/(כולל|שירות|מה אתם עושים|תהליך|איך זה עובד|חבילה|what.*(include|offer)|service|process|package)/i,
+  a:B('הליווי הוא מקצה לקצה: אפיון וסגנון, תקציב, בחירת לוקיישן, סגירת כל הספקים, לוחות זמנים, ניהול מלא ביום האירוע ופירוק. באתר יש פירוט של ששת השלבים, וכל זוג מקבל סביבה אישית עם משימות, תקציב וצ׳אט ישיר עם ברק.',
+     'It is end-to-end: concept and style, budget, venue selection, booking every vendor, timelines, full on-the-day management and breakdown. The six stages are laid out on this page, and every couple gets a personal workspace with tasks, budget and a direct chat with Barak.')},
+
+ {re:/(עבודות|פורטפוליו|תמונות|גלריה|דוגמ|portfolio|gallery|photos|previous work)/i,
+  a:B('יש באתר תיק עבודות עם אירועים אמיתיים — אפשר לגלול למעלה לקטע "תיק עבודות" וללחוץ על כל תמונה כדי לראות פרטים. בפגישה ברק גם מראה אירועים דומים לשלכם בגודל ובסגנון.',
+     'There is a portfolio of real events on this page — scroll up to the portfolio section and click any image for details. At the meeting Barak also shows events close to yours in size and style.')},
+
+ {re:/(אורח|כמה אנשים|כמות|guests|headcount|how many people)/i,
+  a:B('כמות האורחים היא המשתנה שהכי משפיע על העלות — היא קובעת מקום, קייטרינג, אלכוהול והושבה. כדאי להתחיל מרשימה גסה ולדייק אותה; מניסיון, שיעור ההגעה בפועל הוא בערך 80-85% מהמוזמנים.',
+     'Guest count is the variable that drives cost the most — it sets venue, catering, alcohol and seating. Start from a rough list and refine it; in practice attendance tends to land around 80-85% of those invited.')},
+
+ {re:/(אוכל|תפריט|קייטרינג|בר|אלכוהול|שתי|catering|menu|food|bar|alcohol|drink)/i,
+  a:B('אף פעם לא סוגרים קייטרינג לפני טעימות — זה הסעיף שהכי מתחרטים עליו. לגבי הבר: כדאי להגביל את החבילה בזמן ולא בכמות, וחשוב לסכם בכתב מי מספק קרח, כוסות והדרים. באתר יש גם מחשבון אלכוהול לפי כמות שולחנות.',
+     'Never close catering before a tasting — it is the most regretted line item. For the bar: cap the package by time rather than quantity, and always put in writing who supplies ice, glassware and citrus. There is also an alcohol calculator here based on table count.')},
+
+ {re:/(כשר|רב|רבנות|דת|מסורת|kosher|rabbi|religious|tradition)/i,
+  a:B('ברק מפיק אירועים דתיים, מסורתיים וחילוניים כאחד — כולל תיאום רבנות, כשרות המקום והקייטרינג, שבת חתן וחינה. חשוב להגיד לנו את הדרישות בשיחה הראשונה, כי הן משפיעות על בחירת המקום והספקים.',
+     'Barak produces religious, traditional and secular events alike — including rabbinate coordination, venue and catering kashrut, Shabbat Chatan and henna. Tell us the requirements at the first conversation, since they affect venue and vendor selection.')},
+
+ {re:/(עסק|חברה|כנס|גיבוש|corporate|company|conference|team ?building|business)/i,
+  a:B('בהחלט — חוץ מחתונות ברק מפיק כנסים, ערבי גיבוש, השקות, טיולי חברה וגאלות. שם התהליך דומה אבל מתחיל משאלה אחרת: מה המטרה העסקית של האירוע, כי היא קובעת הכל אחריה.',
+     'Absolutely — beyond weddings Barak produces conferences, team events, launches, company trips and galas. The process is similar but starts from a different question: what the business goal of the event is, because everything else follows from it.')},
+
+ {re:/(חינה|שבת חתן|אירוסין|רווק|ברית|בר מצווה|בת מצווה|יום הולדת|henna|engagement|bachelor|brit|mitzvah|birthday)/i,
+  a:B('כן — חוץ מהחתונה עצמה מפיקים גם חינה, שבת חתן, ארוחת שישי, אירוסין, מסיבת רווקות/רווקים, ברית, בר/בת מצווה ויום הולדת. אפשר להפיק אירוע בודד או את כל הרצף סביב החתונה.',
+     'Yes — beyond the wedding itself we produce henna nights, Shabbat Chatan, Friday dinners, engagements, bachelor/ette parties, brit, bar/bat mitzvah and birthdays. You can book a single event or the whole sequence around the wedding.')},
+
+ {re:/(מרחק|אזור|צפון|דרום|ירושלים|תל אביב|חו"ל|חול|area|region|travel|abroad)/i,
+  a:B('ברק מפיק בכל הארץ — צפון, מרכז, דרום וגם אירועי שטח מחוץ לאולמות. אם האירוע רחוק, זה פשוט נכנס לתכנון מראש (הסעות, לינת ספקים, זמני הגעה) ולא מהווה בעיה.',
+     'Barak produces across the whole country — north, centre, south, and open-air events outside conventional venues. If the event is far away it simply gets planned for in advance (transport, vendor accommodation, arrival times) and is not a problem.')},
+
+ {re:/(גשם|מזג ?אוויר|חורף|קיץ|עונה|weather|rain|winter|summer|season)/i,
+  a:B('לכל אירוע פתוח יש תוכנית ב׳ שנקבעת מראש, כולל נקודת החלטה בשעה מוגדרת ביום האירוע — לא מאלתרים בגשם. חורף זול יותר משמעותית ויפה מאוד בפנים; קיץ דורש התייחסות לשעת החופה מול השקיעה.',
+     'Every open-air event has a plan B agreed in advance, including a decision point at a set hour on the day — nobody improvises in the rain. Winter is significantly cheaper and looks beautiful indoors; summer needs the ceremony hour planned against sunset.')},
+
+ {re:/(פגישה|לתאם|להיפגש|שיחה|טלפון|ליצור קשר|meeting|call|contact|talk|book)/i,
+  a:B('בשמחה — פגישת ההיכרות היא ללא התחייבות, ובה עוברים על מה שאתם רוצים, מה התקציב ואיך זה מתחבר. רוצים שאעביר לברק את הפרטים שלכם והוא יחזור אליכם?',
+     'Gladly — the intro meeting is with no commitment, and covers what you want, what the budget is and how those fit together. Would you like me to pass your details to Barak so he can get back to you?')},
+
+ {re:/(תודה|מעולה|סבבה|thanks|thank you|great)/i,
+  a:B('בכיף! אם תרצו, אפשר להשאיר פרטים ואני אעביר אותם לברק לתיאום שיחה.',
+     'Any time! If you like, leave your details and I will pass them to Barak to arrange a call.')},
+
+ {re:/(שלום|היי|הי|אהלן|בוקר טוב|ערב טוב|hello|hi|hey)/i,
+  a:B('שלום! אפשר לשאול אותי על תקציב, לוקיישנים, ספקים, לוחות זמנים, כשרות, אירועים עסקיים או כל דבר אחר בתכנון. מה מעניין אתכם?',
+     'Hello! Ask me about budget, venues, vendors, timelines, kashrut, corporate events or anything else in the planning. What would you like to know?')},
+];
+
+/* varied fallbacks, so an unmatched question never reads like a wall */
+var CONCIERGE_FALLBACKS=[
+ B('לא בטוח שהבנתי במדויק — אפשר לנסח קצת אחרת? אני יודע לעזור בתקציב, לוקיישן, ספקים, לוחות זמנים, כשרות ואירועים עסקיים.',
+   'I am not sure I caught that exactly — could you rephrase? I can help with budget, venue, vendors, timelines, kashrut and corporate events.'),
+ B('זו שאלה שברק יענה עליה הכי טוב באופן אישי. רוצים להשאיר פרטים ולתאם שיחה קצרה?',
+   'That one is best answered by Barak personally. Would you like to leave your details and set up a short call?'),
+ B('אין לי תשובה מדויקת לזה, אבל אל תוותרו — כתבו לי על איזה חלק בתכנון מדובר (תקציב? מקום? ספקים? תאריך?) ואנסה לכוון.',
+   'I do not have a precise answer for that, but do not give up — tell me which part of the planning it touches (budget? venue? vendors? date?) and I will point you in the right direction.'),
+];
+var _cFallbackIx=0;
+
+conciergeAnswer=function(q){
+ var s=String(q||'');
+ for(var i=0;i<CONCIERGE_KB.length;i++){
+  if(CONCIERGE_KB[i].re.test(s))return CONCIERGE_KB[i].a;
+ }
+ var f=CONCIERGE_FALLBACKS[_cFallbackIx%CONCIERGE_FALLBACKS.length];
+ _cFallbackIx++;
+ return f;
+};
+
+/* ── password reset: say what actually went wrong ──
+   Accounts live in this browser's own storage, so an account created on
+   another device genuinely is not here. "No such user" sent people in
+   circles; name the real cause instead. */
+Object.assign(D_.he,{
+ fp_nouser:'לא נמצא משתמש עם האימייל הזה במכשיר הזה. אם נרשמתם ממחשב או טלפון אחר — נסו לאפס משם, או פנו למנהל האתר כדי שיזמין אתכם מחדש.',
+});
+Object.assign(D_.en,{
+ fp_nouser:'No account with this email exists on this device. If you registered from another computer or phone, reset from there, or ask the site manager to re-invite you.',
+});
+
 renderAll();
 /* ══ PWA: real manifest.json + sw.js on the server so "Install app" works.
    (Blob/data: URLs cannot be used to register a service worker — that was
