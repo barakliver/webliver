@@ -3748,7 +3748,7 @@ const SCHEMA_VERSION=14;
 const PERSIST=['producers','activeProducer','portfolio','products','leads','clients','tasks',
  'eventFiles','budgets','alcohol','field','contracts','messages','payRequests','orders','myTasks',
  'meetings','calEvents','staff','crew','crewTasks','perms','masters','users','notify','site',
- 'clientEvents','coupleChat','aiChat','pendingClients','feedback','salesCalls','seating'];
+ 'clientEvents','coupleChat','aiChat','pendingClients','feedback','salesCalls','seating','dayPlan'];
 let storageOK=true, lastSaved=null, saveTimer=null;
 
 function storageAvailable(){
@@ -6219,6 +6219,374 @@ renderWs=function(cid){
   var header=base.match(/<div class="page-h">[\s\S]*?<\/div>/);
   var tabs=base.match(/<div class="sub-tabs">[\s\S]*?<\/div>/);
   base=(backBtn?backBtn[0]:'')+(header?header[0]:'')+(tabs?tabs[0]:'')+seatingPanel(cid,'w');
+ }
+ return base;
+};
+
+renderAll();
+/* ══════════════════════════════════════════════════════════
+   v35 — separate day schedules per partner · moodboard titled
+   by the event itself · a drag-to-design hall floor plan
+   ══════════════════════════════════════════════════════════ */
+DB.dayPlan=DB.dayPlan||{};   // cid → {aTitle,bTitle,a:[{id,time,what}],b:[…]}
+
+Object.assign(D_.he,{
+ p_day:'לוז היום שלנו',ws_day:'⏱ לוז היום',
+ day_t:'לוז היום של כל אחד',
+ day_p:'שני לוחות זמנים נפרדים — כל אחד ממלא מה הוא עושה במהלך היום. אפשר להוסיף ולמחוק שורות בחופשיות.',
+ day_a:'לוז חתן',day_b:'לוז כלה',
+ day_time:'שעה',day_what:'מה קורה',
+ day_add:'➕ הוספת שורה',day_empty:'עדיין אין שורות. הוסיפו את הראשונה.',
+ day_title_hint:'אפשר לשנות את שם הלוז',
+ day_sort:'מיון לפי שעה',day_sorted:'✅ מוין לפי שעה.',
+ day_copy:'העתקה מהצד השני',day_copied:'✅ הועתק.',
+
+ mood_untitled:'האירוע שלנו',
+
+ plan_t:'סרטוט האולם',
+ plan_p:'גררו את השולחנות והאלמנטים כדי לעצב את מפת האולם. בנייד אפשר לגרור באצבע; במקלדת — Tab לבחירה וחיצים להזזה.',
+ plan_add_el:'הוספת אלמנט',
+ plan_chuppah:'חופה',plan_dance:'רחבת ריקודים',plan_bar:'בר',plan_stage:'במה',plan_entrance:'כניסה',plan_food:'עמדת מזון',
+ plan_shape:'צורת שולחנות',plan_round:'עגול',plan_rect:'מלבני',
+ plan_reset:'סידור מחדש',plan_reset_ask:'לסדר מחדש את כל השולחנות בפריסה אוטומטית?',
+ plan_no_tables:'הוסיפו שולחנות למעלה והם יופיעו כאן לגרירה.',
+ plan_del_el:'למחוק את האלמנט?',
+});
+Object.assign(D_.en,{
+ p_day:'Our day schedule',ws_day:'⏱ Day schedule',
+ day_t:'Each partner’s day schedule',
+ day_p:'Two separate schedules — each fills in what they are doing through the day. Rows can be added and removed freely.',
+ day_a:'Groom’s schedule',day_b:'Bride’s schedule',
+ day_time:'Time',day_what:'What happens',
+ day_add:'➕ Add row',day_empty:'No rows yet. Add the first one.',
+ day_title_hint:'You can rename this schedule',
+ day_sort:'Sort by time',day_sorted:'✅ Sorted by time.',
+ day_copy:'Copy from the other side',day_copied:'✅ Copied.',
+
+ mood_untitled:'Our event',
+
+ plan_t:'Hall floor plan',
+ plan_p:'Drag the tables and elements to design the hall map. On a phone drag with a finger; with a keyboard use Tab to select and the arrow keys to move.',
+ plan_add_el:'Add element',
+ plan_chuppah:'Chuppah',plan_dance:'Dance floor',plan_bar:'Bar',plan_stage:'Stage',plan_entrance:'Entrance',plan_food:'Food station',
+ plan_shape:'Table shape',plan_round:'Round',plan_rect:'Rectangular',
+ plan_reset:'Re-arrange',plan_reset_ask:'Re-arrange every table into an automatic layout?',
+ plan_no_tables:'Add tables above and they will appear here to drag.',
+ plan_del_el:'Delete this element?',
+});
+
+/* ══ 1. two day schedules, one per partner ══ */
+function dayData(cid){
+ if(!DB.dayPlan[cid])DB.dayPlan[cid]={aTitle:'',bTitle:'',a:[],b:[]};
+ var d0=DB.dayPlan[cid];
+ d0.a=d0.a||[];d0.b=d0.b||[];
+ return d0;
+}
+function daySideTitle(cid,side){
+ var d0=dayData(cid);
+ var custom=side==='a'?d0.aTitle:d0.bTitle;
+ return custom||t(side==='a'?'day_a':'day_b');
+}
+function daySetTitle(cid,side,v){
+ var d0=dayData(cid);
+ if(side==='a')d0.aTitle=String(v||'').trim();else d0.bTitle=String(v||'').trim();
+ saveSoon&&saveSoon();
+}
+function dayAddRow(cid,side){
+ var d0=dayData(cid);
+ var list=side==='a'?d0.a:d0.b;
+ var last=list.length?list[list.length-1].time:'';
+ list.push({id:uid('dp'),time:last||'',what:''});
+ renderAll();
+}
+function daySetRow(cid,side,id,field,v){
+ var d0=dayData(cid);
+ var row=(side==='a'?d0.a:d0.b).find(function(x){return x.id===id;});
+ if(row){row[field]=v;saveSoon&&saveSoon();}
+}
+function dayDelRow(cid,side,id){
+ var d0=dayData(cid);
+ if(side==='a')d0.a=d0.a.filter(function(x){return x.id!==id;});
+ else d0.b=d0.b.filter(function(x){return x.id!==id;});
+ renderAll();
+}
+function daySort(cid,side){
+ var d0=dayData(cid);
+ var key=function(r){return r.time?r.time:'99:99';};
+ if(side==='a')d0.a.sort(function(x,y){return key(x).localeCompare(key(y));});
+ else d0.b.sort(function(x,y){return key(x).localeCompare(key(y));});
+ toast(t('day_sorted'));renderAll();
+}
+function dayCopyAcross(cid,to){
+ var d0=dayData(cid);
+ var from=to==='a'?d0.b:d0.a;
+ var target=to==='a'?'a':'b';
+ from.forEach(function(r){
+  d0[target].push({id:uid('dp'),time:r.time,what:r.what});
+ });
+ toast(t('day_copied'));renderAll();
+}
+function daySideBlock(cid,side){
+ var d0=dayData(cid);
+ var list=side==='a'?d0.a:d0.b;
+ var rows=list.map(function(r){
+  return '<div class="row" style="gap:6px;margin-bottom:6px;flex-wrap:nowrap">'+
+   '<input class="cell-in" type="time" style="width:110px;flex:none" value="'+esc(r.time)+'" '+
+    'onchange="daySetRow(\''+cid+'\',\''+side+'\',\''+r.id+'\',\'time\',this.value)">'+
+   '<input class="cell-in" style="flex:1;min-width:0" placeholder="'+esc(t('day_what'))+'" value="'+esc(r.what)+'" '+
+    'onchange="daySetRow(\''+cid+'\',\''+side+'\',\''+r.id+'\',\'what\',this.value)">'+
+   '<button class="btn btn-red btn-xs" style="flex:none" onclick="dayDelRow(\''+cid+'\',\''+side+'\',\''+r.id+'\')">✕</button>'+
+  '</div>';
+ }).join('');
+ return '<div class="card">'+
+  '<input class="cell-in" style="font-weight:700;font-size:15px;margin-bottom:8px" '+
+   'value="'+esc(daySideTitle(cid,side))+'" title="'+esc(t('day_title_hint'))+'" '+
+   'onchange="daySetTitle(\''+cid+'\',\''+side+'\',this.value);renderAll()">'+
+  (list.length?rows:'<p class="muted" style="font-size:13px">'+esc(t('day_empty'))+'</p>')+
+  '<div class="row" style="margin-top:10px;gap:6px">'+
+   '<button class="btn btn-dark btn-sm" onclick="dayAddRow(\''+cid+'\',\''+side+'\')">'+esc(t('day_add'))+'</button>'+
+   (list.length>1?'<button class="btn btn-ghost btn-xs" onclick="daySort(\''+cid+'\',\''+side+'\')">'+esc(t('day_sort'))+'</button>':'')+
+   '<button class="btn btn-ghost btn-xs" onclick="dayCopyAcross(\''+cid+'\',\''+side+'\')">'+esc(t('day_copy'))+'</button>'+
+  '</div></div>';
+}
+function dayPanel(cid){
+ return '<div class="page-h"><h2>⏱ '+esc(t('day_t'))+'</h2><p class="muted">'+esc(t('day_p'))+'</p></div>'+
+  '<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))">'+
+   daySideBlock(cid,'a')+daySideBlock(cid,'b')+
+  '</div>';
+}
+
+/* ══ 2. the moodboard is titled by the event it belongs to ══ */
+function eventHeading(cid){
+ var c=DB.clients.find(function(x){return x.id===cid;});
+ if(!c)return t('mood_untitled');
+ var ef=DB.eventFiles[cid];
+ var place=(ef&&ef.details&&ef.details.place)||c.venue||'';
+ var parts=[c.names||t('mood_untitled')];
+ if(c.date)parts.push(fmt(c.date));
+ if(place)parts.push(place);
+ return parts.join(' · ');
+}
+
+/* ══ 3. drag-to-design hall floor plan ══
+   Guests are seated with a <select> (works on a phone, works with a
+   keyboard). Positioning a table in a room is genuinely spatial, so
+   here dragging is the right tool — via pointer events, which cover
+   touch and mouse alike, with arrow-key nudging as the accessible
+   equivalent. */
+var PLAN_KINDS=function(){return [
+ ['chuppah',t('plan_chuppah'),'💒',18,10],
+ ['dance',  t('plan_dance'),  '🕺',26,18],
+ ['bar',    t('plan_bar'),    '🍸',16,8],
+ ['stage',  t('plan_stage'),  '🎤',20,9],
+ ['food',   t('plan_food'),   '🍽',16,8],
+ ['entrance',t('plan_entrance'),'🚪',12,7],
+];};
+function planData(cid){
+ var s=seatData(cid);
+ s.elements=s.elements||[];
+ if(!s.shape)s.shape='round';
+ return s;
+}
+function planAutoPos(i){
+ var perRow=4;
+ return {x:12+(i%perRow)*25, y:22+Math.floor(i/perRow)*24};
+}
+function planEnsurePositions(cid){
+ var s=planData(cid);
+ s.tables.forEach(function(tb,i){
+  if(typeof tb.x!=='number'||typeof tb.y!=='number'){
+   var p=planAutoPos(i);tb.x=p.x;tb.y=p.y;
+  }
+ });
+ return s;
+}
+function planSetPos(cid,id,isEl,x,y){
+ var s=planData(cid);
+ var item=isEl?s.elements.find(function(e){return e.id===id;})
+              :s.tables.find(function(tb){return tb.id===id;});
+ if(item){item.x=x;item.y=y;saveSoon&&saveSoon();}
+}
+function planAddEl(cid,kind){
+ var s=planData(cid);
+ var def=PLAN_KINDS().find(function(k){return k[0]===kind;});
+ if(!def)return;
+ /* stagger each new element instead of dropping them all on one spot,
+    where they stack into an unreadable pile of overlapping labels */
+ var n=s.elements.length;
+ s.elements.push({id:uid('el'),kind:kind,
+  x:22+(n%3)*28, y:10+Math.floor(n/3)*14,
+  w:def[3],h:def[4]});
+ renderAll();
+}
+function planDelEl(cid,id){
+ if(typeof confirm==='function'&&!confirm(t('plan_del_el')))return;
+ var s=planData(cid);
+ s.elements=s.elements.filter(function(e){return e.id!==id;});
+ renderAll();
+}
+function planSetShape(cid,shape){
+ planData(cid).shape=shape;renderAll();
+}
+function planReset(cid){
+ if(typeof confirm==='function'&&!confirm(t('plan_reset_ask')))return;
+ var s=planData(cid);
+ s.tables.forEach(function(tb,i){var p=planAutoPos(i);tb.x=p.x;tb.y=p.y;});
+ renderAll();
+}
+function planIsRTL(node){
+ try{
+  return getComputedStyle(node||document.documentElement).direction==='rtl';
+ }catch(e){
+  return (document.documentElement.getAttribute('dir')||'').toLowerCase()==='rtl';
+ }
+}
+/* pointer drag, shared by tables and elements */
+function planDrag(ev,cid,id,isEl){
+ if(ev.button!=null&&ev.button!==0)return;
+ var el=ev.currentTarget, canvas=el.parentElement;
+ if(!canvas)return;
+ ev.preventDefault();
+ var box=canvas.getBoundingClientRect();
+ /* positions are stored as an offset from the inline-start edge, which in
+    an RTL document is the RIGHT edge — measuring from the left here would
+    invert the horizontal axis and send every drag the wrong way */
+ var rtl=planIsRTL(canvas);
+ el.style.zIndex='40';
+ var nx=null,ny=null;
+ var move=function(e){
+  var raw=rtl?((box.right-e.clientX)/box.width)*100:((e.clientX-box.left)/box.width)*100;
+  nx=Math.max(3,Math.min(97,raw));
+  ny=Math.max(4,Math.min(96,((e.clientY-box.top)/box.height)*100));
+  el.style.insetInlineStart=nx+'%';el.style.top=ny+'%';
+ };
+ var up=function(){
+  /* listeners live on the window, not the dragged node: pointer capture
+     is not dependable across browsers here, and the pointer routinely
+     leaves the node mid-drag */
+  window.removeEventListener('pointermove',move);
+  window.removeEventListener('pointerup',up);
+  window.removeEventListener('pointercancel',up);
+  el.style.zIndex='';
+  if(nx!=null)planSetPos(cid,id,isEl,nx,ny);
+ };
+ window.addEventListener('pointermove',move);
+ window.addEventListener('pointerup',up);
+ window.addEventListener('pointercancel',up);
+}
+/* arrow keys move the focused item — the keyboard equivalent of dragging */
+function planKey(ev,cid,id,isEl){
+ var step=ev.shiftKey?5:1;
+ /* arrow keys move the item the way it looks on screen, so in RTL the
+    horizontal pair is flipped against the stored inline-start offset */
+ var h=planIsRTL(ev.currentTarget&&ev.currentTarget.parentElement)?-step:step;
+ var map={ArrowLeft:[-h,0],ArrowRight:[h,0],ArrowUp:[0,-step],ArrowDown:[0,step]};
+ var d0=map[ev.key];
+ if(!d0)return;
+ ev.preventDefault();
+ var s=planData(cid);
+ var item=isEl?s.elements.find(function(e){return e.id===id;})
+              :s.tables.find(function(tb){return tb.id===id;});
+ if(!item)return;
+ item.x=Math.max(3,Math.min(97,(item.x||50)+d0[0]));
+ item.y=Math.max(4,Math.min(96,(item.y||50)+d0[1]));
+ saveSoon&&saveSoon();renderAll();
+ setTimeout(function(){var n=document.getElementById('plan_'+id);if(n&&n.focus)n.focus();},0);
+}
+function planPanel(cid){
+ var s=planEnsurePositions(cid);
+ var round=s.shape!=='rect';
+
+ var tables=s.tables.map(function(tb){
+  var n=seatCount(cid,tb.id), over=n>tb.cap;
+  return '<div id="plan_'+tb.id+'" tabindex="0" role="button" '+
+   'aria-label="'+esc(tb.name)+' '+n+'/'+tb.cap+'" '+
+   'onpointerdown="planDrag(event,\''+cid+'\',\''+tb.id+'\',false)" '+
+   'onkeydown="planKey(event,\''+cid+'\',\''+tb.id+'\',false)" '+
+   'style="position:absolute;inset-inline-start:'+tb.x+'%;top:'+tb.y+'%;transform:translate(50%,-50%);'+
+    'width:74px;height:'+(round?'74px':'52px')+';border-radius:'+(round?'50%':'10px')+';'+
+    'background:'+(over?'#fdeaea':'var(--card)')+';border:2px solid '+(over?'var(--red)':'var(--gold)')+';'+
+    'display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;'+
+    'cursor:grab;touch-action:none;user-select:none;box-shadow:0 2px 8px rgba(0,0,0,.12);padding:3px">'+
+   '<span style="font-size:10.5px;font-weight:700;line-height:1.1;text-align:center;max-width:68px;overflow:hidden">'+esc(tb.name)+'</span>'+
+   '<span style="font-size:10px;color:var(--muted)">'+n+'/'+tb.cap+'</span></div>';
+ }).join('');
+
+ var els=s.elements.map(function(e){
+  var def=PLAN_KINDS().find(function(k){return k[0]===e.kind;})||['','','',16,8];
+  return '<div id="plan_'+e.id+'" tabindex="0" role="button" aria-label="'+esc(def[1])+'" '+
+   'onpointerdown="planDrag(event,\''+cid+'\',\''+e.id+'\',true)" '+
+   'onkeydown="planKey(event,\''+cid+'\',\''+e.id+'\',true)" '+
+   'ondblclick="planDelEl(\''+cid+'\',\''+e.id+'\')" '+
+   'style="position:absolute;inset-inline-start:'+e.x+'%;top:'+e.y+'%;transform:translate(50%,-50%);'+
+    'width:'+(e.w||def[3])+'%;height:'+(e.h||def[4])+'%;min-width:64px;min-height:34px;'+
+    'border-radius:10px;background:rgba(168,135,79,.13);border:1.5px dashed var(--gold);'+
+    'display:flex;align-items:center;justify-content:center;gap:5px;font-size:11.5px;font-weight:700;'+
+    'cursor:grab;touch-action:none;user-select:none;text-align:center;padding:2px">'+
+   '<span aria-hidden="true">'+def[2]+'</span><span>'+esc(def[1])+'</span></div>';
+ }).join('');
+
+ var addBtns=PLAN_KINDS().map(function(k){
+  return '<button class="btn btn-ghost btn-xs" onclick="planAddEl(\''+cid+'\',\''+k[0]+'\')">'+k[2]+' '+esc(k[1])+'</button>';
+ }).join('');
+
+ return '<h3 style="font-size:16.5px;margin:22px 0 8px">🗺 '+esc(t('plan_t'))+'</h3>'+
+  '<p class="muted" style="font-size:13px;margin-bottom:10px">'+esc(t('plan_p'))+'</p>'+
+  '<div class="card" style="margin-bottom:10px">'+
+   '<div class="row" style="gap:6px;margin-bottom:8px"><b style="font-size:13px">'+esc(t('plan_add_el'))+':</b>'+addBtns+'</div>'+
+   '<div class="row" style="gap:6px"><b style="font-size:13px">'+esc(t('plan_shape'))+':</b>'+
+    '<button class="chip '+(round?'active':'')+'" onclick="planSetShape(\''+cid+'\',\'round\')">'+esc(t('plan_round'))+'</button>'+
+    '<button class="chip '+(!round?'active':'')+'" onclick="planSetShape(\''+cid+'\',\'rect\')">'+esc(t('plan_rect'))+'</button>'+
+    '<button class="btn btn-ghost btn-xs" onclick="planReset(\''+cid+'\')">'+esc(t('plan_reset'))+'</button>'+
+   '</div></div>'+
+  (s.tables.length||s.elements.length
+   ? '<div style="position:relative;width:100%;aspect-ratio:16/10;min-height:320px;border:1px solid var(--line);'+
+     'border-radius:14px;background:repeating-linear-gradient(0deg,transparent,transparent 29px,rgba(0,0,0,.045) 30px),'+
+     'repeating-linear-gradient(90deg,transparent,transparent 29px,rgba(0,0,0,.045) 30px),var(--paper);overflow:hidden">'+
+     els+tables+'</div>'
+   : '<div class="card"><p class="muted">'+esc(t('plan_no_tables'))+'</p></div>');
+}
+
+/* ── wire the plan into the existing seating panel ── */
+var _seatingPanelV35=seatingPanel;
+seatingPanel=function(cid,ns){
+ return _seatingPanelV35(cid,ns)+planPanel(cid);
+};
+
+/* ── couple portal: day-schedule tab + retitled moodboard ── */
+var _renderPortalV35=renderPortal;
+renderPortal=function(){
+ _renderPortalV35();
+ injectTab('portalNav','portalTabbar','day',esc(t('p_day')),'⏱','portalTab');
+ if(portalTab==='day'&&portalClient){
+  var m=$('portalMain');
+  if(m)m.innerHTML=dayPanel(portalClient);
+ }
+ if(portalTab==='mood'&&portalClient){
+  var mm=$('portalMain');
+  if(mm){
+   var h2=mm.querySelector('.page-h h2');
+   if(h2)h2.textContent=eventHeading(portalClient);
+  }
+ }
+};
+
+/* ── producer workspace: same day schedule, same retitled moodboard ── */
+var _renderWsV35=renderWs;
+renderWs=function(cid){
+ var base=_renderWsV35(cid);
+ if(base.indexOf('data-day-tab')<0){
+  base=base.replace(/(<div class="sub-tabs">)/,
+   '$1<button data-day-tab class="'+(wsTab==='day'?'active':'')+'" onclick="wsTab=\'day\';renderAll()">'+esc(t('ws_day'))+'</button>');
+ }
+ if(wsTab==='day'){
+  var backBtn=base.match(/<button class="btn btn-ghost btn-sm"[^>]*>[\s\S]*?<\/button>/);
+  var header=base.match(/<div class="page-h">[\s\S]*?<\/div>/);
+  var tabs=base.match(/<div class="sub-tabs">[\s\S]*?<\/div>/);
+  base=(backBtn?backBtn[0]:'')+(header?header[0]:'')+(tabs?tabs[0]:'')+dayPanel(cid);
+ }
+ if(wsTab==='mood'){
+  base=base.replace(/(<div class="page-h"><h2>)[\s\S]*?(<\/h2>)/,'$1'+esc(eventHeading(cid))+'$2');
  }
  return base;
 };
