@@ -5870,6 +5870,127 @@ Object.assign(D_.en,{
 });
 
 renderAll();
+/* ══════════════════════════════════════════════════════════
+   v33 — "הגדרות-על" becomes a real platform hub
+   ══════════════════════════════════════════════════════════
+   It used to be two sentences of text and nothing else, which is why
+   its purpose was unclear: everything configurable lived on the
+   producer's branding tab instead. This screen is now the platform
+   level — the settings that apply to the whole system rather than to
+   one producer's brand: where alerts are delivered, which integrations
+   are connected, who the producers are, and the backup of all data.  */
+Object.assign(D_.he,{
+ os_p:'👑 זהו המסך של בעל הפלטפורמה. כאן נמצאות ההגדרות שחלות על כל המערכת — לאן מגיעות התראות, אילו חיבורים חיצוניים פעילים, מי המפיקים, וגיבוי של כל הנתונים. הגדרות המיתוג של מותג מסוים נמצאות בדשבורד המפיק, תחת "מיתוג".',
+ osx_status:'מצב הפלטפורמה',
+ osx_producers:'מפיקים מאושרים',osx_clients:'לקוחות',osx_leads:'לידים',osx_users:'משתמשים',
+ osx_contact:'פרטי עסק ויצירת קשר',
+ osx_contact_p:'המספר והקישור שמופיעים לגולשים באתר ובכפתורים הצפים.',
+ osx_wa_num:'מספר וואטסאפ להצגה (כולל 972)',
+ osx_cal_url:'קישור ליומן תיאום פגישות',
+ osx_notif:'התראות ודיוור',
+ osx_notif_p:'לאן נשלחת הודעה כשמגיע ליד חדש או פנייה מהאתר.',
+ osx_notify_mail:'אימייל לקבלת התראות',
+ osx_key_w3f:'מפתח Web3Forms (שליחת מייל)',
+ osx_wa_alert:'מספר וואטסאפ לקבלת התראות',
+ osx_key_wa:'מפתח CallMeBot (וואטסאפ)',
+ osx_save:'שמירת ההגדרות',osx_saved:'✅ ההגדרות נשמרו.',
+ osx_team:'מפיקים והרשאות',
+ osx_team_p:'ניהול המפיקים נעשה בלשונית "מפיקים"; ניהול המשתמשים בלשונית "משתמשים והרשאות".',
+ osx_go_prod:'← לניהול מפיקים',osx_go_users:'← לניהול משתמשים',
+ osx_root_note:'הרשאת מנהל-על שמורה אך ורק לכתובת:',
+});
+Object.assign(D_.en,{
+ os_p:'👑 This is the platform owner’s screen. It holds the settings that apply to the whole system — where alerts are delivered, which external integrations are connected, who the producers are, and the backup of all data. A single brand’s own settings live on that producer’s dashboard, under “Branding”.',
+ osx_status:'Platform status',
+ osx_producers:'Approved producers',osx_clients:'Clients',osx_leads:'Leads',osx_users:'Users',
+ osx_contact:'Business and contact details',
+ osx_contact_p:'The number and link shown to visitors on the site and in the floating buttons.',
+ osx_wa_num:'WhatsApp number to display (with 972)',
+ osx_cal_url:'Booking calendar link',
+ osx_notif:'Alerts and delivery',
+ osx_notif_p:'Where a message is sent when a new lead or enquiry arrives.',
+ osx_notify_mail:'Email for alerts',
+ osx_key_w3f:'Web3Forms key (email delivery)',
+ osx_wa_alert:'WhatsApp number for alerts',
+ osx_key_wa:'CallMeBot key (WhatsApp)',
+ osx_save:'Save settings',osx_saved:'✅ Settings saved.',
+ osx_team:'Producers and permissions',
+ osx_team_p:'Producers are managed on the “Producers” tab; user accounts on “Users and permissions”.',
+ osx_go_prod:'← Manage producers',osx_go_users:'← Manage users',
+ osx_root_note:'Super-admin rights are reserved solely for:',
+});
+
+function osxSave(){
+ DB.notify=DB.notify||{};
+ DB.notify.email=$('osxMail').value.trim();
+ DB.notify.w3f=$('osxW3f').value.trim();
+ DB.notify.wa=$('osxWaAlert').value.replace(/\D/g,'');
+ DB.notify.waKey=$('osxWaKey').value.trim();
+ DB.site=DB.site||{};
+ DB.site.wa=$('osxWaNum').value.replace(/\D/g,'');
+ DB.site.cal=$('osxCal').value.trim();
+ toast(t('osx_saved'));renderAll();
+}
+function osxField(id,label,val,ltr){
+ return '<div class="kv"><label for="'+id+'">'+label+'</label>'+
+  '<input id="'+id+'"'+(ltr?' dir="ltr"':'')+' value="'+esc(val==null?'':val)+'"></div>';
+}
+function ownerSet(){
+ var n=DB.notify||{}, s=DB.site||{}, st=notifyStatus();
+ var stat=function(v,l){return '<div class="card stat"><div class="n">'+v+'</div><div class="l">'+l+'</div></div>';};
+ return '<div class="page-h"><h2>'+t('os_t')+'</h2></div>'+
+  '<div class="card" style="max-width:640px;margin-bottom:16px"><p style="font-size:14.2px;line-height:1.75">'+t('os_p')+'</p>'+
+   '<hr class="hairline" style="margin:14px 0">'+
+   '<p class="muted" style="font-size:12.8px">'+t('osx_root_note')+' <b dir="ltr">'+esc(ROOT_ADMIN_EMAIL)+'</b></p></div>'+
+
+  '<h3 style="font-size:16.5px;margin:18px 0 10px">📊 '+t('osx_status')+'</h3>'+
+  '<div class="stat-grid" style="margin-bottom:8px">'+
+   stat(DB.producers.filter(function(p){return p.status==='approved';}).length,t('osx_producers'))+
+   stat(DB.clients.length,t('osx_clients'))+
+   stat(DB.leads.length,t('osx_leads'))+
+   stat(DB.users.length,t('osx_users'))+
+  '</div>'+
+
+  '<div class="card" style="max-width:640px;margin-bottom:16px">'+
+   '<h3 style="font-size:16px">📇 '+t('osx_contact')+'</h3>'+
+   '<p class="muted" style="font-size:13.2px;margin:4px 0 10px">'+t('osx_contact_p')+'</p>'+
+   osxField('osxWaNum',t('osx_wa_num'),s.wa,true)+
+   osxField('osxCal',t('osx_cal_url'),s.cal,true)+
+   '<h3 style="font-size:16px;margin-top:18px">🔔 '+t('osx_notif')+'</h3>'+
+   '<p class="muted" style="font-size:13.2px;margin:4px 0 10px">'+t('osx_notif_p')+'</p>'+
+   '<div class="row" style="margin-bottom:10px;gap:6px">'+
+    '<span class="badge b-'+(st.mail?'approved':'pending')+'">'+t('diag_mail')+': '+(st.mail?'✓':'—')+'</span>'+
+    '<span class="badge b-'+(st.wa?'approved':'pending')+'">'+t('diag_wa')+': '+(st.wa?'✓':'—')+'</span>'+
+   '</div>'+
+   osxField('osxMail',t('osx_notify_mail'),n.email,true)+
+   osxField('osxW3f',t('osx_key_w3f'),n.w3f,true)+
+   osxField('osxWaAlert',t('osx_wa_alert'),n.wa,true)+
+   osxField('osxWaKey',t('osx_key_wa'),n.waKey,true)+
+   '<div class="row" style="margin-top:12px">'+
+    '<button class="btn btn-gold btn-sm" onclick="osxSave()">'+t('osx_save')+'</button>'+
+    '<button class="btn btn-ghost btn-sm" onclick="runDiag()">'+t('nt_test')+'</button>'+
+   '</div></div>'+
+
+  '<div class="card" style="max-width:640px;margin-bottom:16px">'+
+   '<h3 style="font-size:16px">👥 '+t('osx_team')+'</h3>'+
+   '<p class="muted" style="font-size:13.2px;margin:4px 0 10px">'+t('osx_team_p')+'</p>'+
+   '<div class="row">'+
+    '<button class="btn btn-ghost btn-sm" onclick="ownerTab=\'prod\';renderAll()">'+t('osx_go_prod')+'</button>'+
+    '<button class="btn btn-ghost btn-sm" onclick="ownerTab=\'users\';renderAll()">'+t('osx_go_users')+'</button>'+
+   '</div></div>'+
+
+  cloudPanel()+dataPanel();
+}
+var _renderOwnerV33=renderOwner;
+renderOwner=function(){
+ _renderOwnerV33();
+ if(ownerTab==='set'){
+  var m=$('ownerMain');
+  if(m)m.innerHTML=ownerSet();
+ }
+};
+
+renderAll();
 /* ══ PWA: real manifest.json + sw.js on the server so "Install app" works.
    (Blob/data: URLs cannot be used to register a service worker — that was
    the reason the previous version never satisfied install criteria.) ══ */
