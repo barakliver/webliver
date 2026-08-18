@@ -4394,7 +4394,7 @@ doSignup = function () {
      p = $('su2Pass').value, p2 = $('su2Pass2').value,
      role = authRole, kind = authKind, eventKey = authEventKey;
  var isRoot = e === ROOT_ADMIN_EMAIL;
- if (!n || !e || !p || ((role === 'producer' || isRoot) && !b)) return setAuthMsg(t('su_need'));
+ if (!n || !e || !p || (role === 'producer' && !isRoot && !b)) return setAuthMsg(t('su_need'));
  if (!/.+@.+\..+/.test(e)) return setAuthMsg(t('lg_bad'));
  if (p.length < 6) return setAuthMsg(t('su_short'));
  if (p !== p2) return setAuthMsg(t('su_match'));
