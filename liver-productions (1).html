@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-title" content="LIver">
 <meta name="description" content="Liver productions — הפקת אירועים מקצה לקצה. חתונות, אירועים עסקיים והפקות שטח.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20512%20512'%3E%3Crect%20width='512'%20height='512'%20rx='96'%20fill='%2314130f'/%3E%3Ctext%20x='256'%20y='335'%20font-family='Georgia,serif'%20font-size='250'%20fill='%23a8874f'%20text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20512%20512'%3E%3Crect%20width='512'%20height='512'%20rx='96'%20fill='%2314130f'/%3E%3Ctext%20x='256'%20y='335'%20font-family='Georgia,serif'%20font-size='250'%20fill='%23a8874f'%20text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="icon-192.png">
 <title>Liver productions</title>
 <style>
 :root{
@@ -6592,6 +6592,221 @@ renderWs=function(cid){
 };
 
 renderAll();
+/* ══════════════════════════════════════════════════════════
+   v36 — data durability
+   ══════════════════════════════════════════════════════════
+   Version updates were never the danger: a deploy only replaces
+   index.html, while the data lives in this origin's localStorage and
+   survives untouched (verified across a schema bump plus a brand-new
+   collection). The real way this app lost data was the storage quota:
+
+     · the nine seeded portfolio photos were being written to storage as
+       base64, eating ~2.1MB of a ~5MB budget before the user touched
+       anything;
+     · a couple of moodboard uploads then blew the quota;
+     · at that point saveNow() set storageOK=false permanently and every
+       later save returned early without ever retrying — silently. The
+       user kept working, saw no warning, and lost everything entered
+       after that moment on the next reload.
+
+   This layer removes the waste, stops the silence, and never gives up
+   on saving.  */
+
+/* ── 1. don't store what the page already contains ──
+   Seeded portfolio images are baked into this file and carry a __src
+   key, so the base64 is re-derivable and has no business in storage. */
+/* One source of truth for "can this image be rebuilt from the page?".
+   Strip and restore both consult it, so it is impossible to drop an
+   image that cannot be brought back — the bar photo's __src lives in
+   its own variable rather than in PORTFOLIO_B64, and stripping it on
+   that assumption destroyed it permanently. */
+function seedImageFor(src){
+ if(!src)return null;
+ if(typeof PORTFOLIO_B64!=='undefined'&&PORTFOLIO_B64[src])
+  return 'data:image/jpeg;base64,'+PORTFOLIO_B64[src];
+ if(src==='senor_bar'&&typeof BAR_PHOTO!=='undefined'&&BAR_PHOTO)
+  return BAR_PHOTO;
+ return null;
+}
+function rehydratePortfolio(){
+ (DB.portfolio||[]).forEach(function(p){
+  if(p&&p.__src&&!p.img){
+   var img=seedImageFor(p.__src);
+   if(img)p.img=img;
+  }
+ });
+}
+var _snapshotV36=snapshot;
+snapshot=function(){
+ var o=_snapshotV36();
+ if(o.portfolio&&o.portfolio.length){
+  o.portfolio=o.portfolio.map(function(p){
+   if(p&&p.__src&&p.img&&seedImageFor(p.__src)){
+    var c={};for(var k in p)if(k!=='img')c[k]=p[k];return c;
+   }
+   return p;
+  });
+ }
+ return o;
+};
+rehydratePortfolio();
+
+/* ── 2. saving that never silently gives up ── */
+function storageBytes(){try{return (localStorage.getItem(STORE_KEY)||'').length;}catch(e){return 0;}}
+var STORAGE_BUDGET=5*1024*1024;
+saveNow=function(){
+ try{
+  localStorage.setItem(STORE_KEY,JSON.stringify(snapshot()));
+  lastSaved=new Date();
+  if(!storageOK){storageOK=true;hideStorageAlarm();}
+  return true;
+ }catch(e){
+  /* never latch this off: the next change gets another attempt, because
+     the user may well have freed space in between */
+  storageOK=false;
+  showStorageAlarm('full');
+  return false;
+ }
+};
+saveSoon=function(){
+ if(saveTimer)clearTimeout(saveTimer);
+ saveTimer=setTimeout(saveNow,400);
+};
+
+/* ── 3. a warning that cannot be missed ── */
+Object.assign(D_.he,{
+ sa_full_t:'⚠️ הנתונים שלכם לא נשמרים!',
+ sa_full_p:'נגמר מקום האחסון בדפדפן. כל שינוי מכאן והלאה עלול להיאבד ברענון. הורידו גיבוי עכשיו, ואז מחקו תמונות כבדות מהמודבורד או מתיק העבודות כדי לפנות מקום.',
+ sa_corrupt_t:'⚠️ נמצאה תקלה בקובץ הנתונים',
+ sa_corrupt_p:'לא הצלחנו לקרוא את הנתונים השמורים. שמרנו עותק של הקובץ הפגום כדי שאפשר יהיה לשחזר ממנו. אל תמשיכו לעבוד לפני שתורידו גיבוי.',
+ sa_near_t:'📦 האחסון מתמלא',
+ sa_near_p:'נותר מעט מקום. כדאי להוריד גיבוי ולמחוק תמונות שאינן נחוצות.',
+ sa_backup:'⬇️ הורדת גיבוי עכשיו',sa_dismiss:'הבנתי',
+ sa_used:'בשימוש',
+});
+Object.assign(D_.en,{
+ sa_full_t:'⚠️ Your data is not being saved!',
+ sa_full_p:'The browser storage is full. Anything changed from here on may be lost on reload. Download a backup now, then delete heavy images from the moodboard or portfolio to free space.',
+ sa_corrupt_t:'⚠️ A problem was found in the data file',
+ sa_corrupt_p:'The saved data could not be read. A copy of the damaged file has been kept so it can be recovered from. Do not keep working before downloading a backup.',
+ sa_near_t:'📦 Storage is filling up',
+ sa_near_p:'Space is running low. Download a backup and delete images you no longer need.',
+ sa_backup:'⬇️ Download a backup now',sa_dismiss:'Got it',
+ sa_used:'used',
+});
+function hideStorageAlarm(){
+ var el=document.getElementById('storageAlarm');
+ if(el&&el.parentNode)el.parentNode.removeChild(el);
+}
+function showStorageAlarm(kind){
+ var existing=document.getElementById('storageAlarm');
+ if(existing){
+  /* a real save failure must not be masked by the milder "filling up"
+     notice that was raised first */
+  var rank={near:0,full:1,corrupt:1};
+  if((rank[kind]||0)<=(rank[existing.getAttribute('data-kind')]||0))return;
+  hideStorageAlarm();
+ }
+ var crit=kind!=='near';
+ var el=document.createElement('div');
+ el.id='storageAlarm';
+ el.setAttribute('role','alert');
+ el.setAttribute('data-kind',kind);
+ el.style.cssText='position:fixed;inset-inline:0;top:0;z-index:9999;padding:12px 16px;'+
+  'background:'+(crit?'#a05252':'#b58a3c')+';color:#fff;font-size:13.6px;line-height:1.5;'+
+  'box-shadow:0 4px 18px rgba(0,0,0,.3);display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center';
+ var titleKey=kind==='corrupt'?'sa_corrupt_t':kind==='near'?'sa_near_t':'sa_full_t';
+ var bodyKey =kind==='corrupt'?'sa_corrupt_p':kind==='near'?'sa_near_p':'sa_full_p';
+ el.innerHTML='<div style="max-width:760px"><b>'+esc(t(titleKey))+'</b> '+esc(t(bodyKey))+'</div>'+
+  '<button id="saBackup" style="background:#fff;color:#14130f;border:none;border-radius:999px;'+
+   'padding:9px 16px;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap">'+esc(t('sa_backup'))+'</button>'+
+  (crit?'':'<button id="saDismiss" style="background:transparent;color:#fff;border:1px solid rgba(255,255,255,.6);'+
+   'border-radius:999px;padding:9px 14px;font-size:13px;cursor:pointer">'+esc(t('sa_dismiss'))+'</button>');
+ document.body.appendChild(el);
+ var bk=document.getElementById('saBackup');
+ if(bk)bk.onclick=function(){exportData();};
+ var dm=document.getElementById('saDismiss');
+ if(dm)dm.onclick=function(){hideStorageAlarm();};
+}
+
+/* ── 4. never overwrite a data file we failed to read ──
+   A parse failure used to leave the defaults in memory, and the next
+   save flattened the unreadable-but-possibly-recoverable original. */
+(function(){
+ try{
+  var raw=localStorage.getItem(STORE_KEY);
+  if(!raw)return;
+  try{JSON.parse(raw);}
+  catch(e){
+   try{localStorage.setItem(STORE_KEY+'__corrupt',raw);}catch(_){}
+   showStorageAlarm('corrupt');
+  }
+ }catch(e){}
+})();
+
+/* ── 5. shrink images before they ever reach storage ──
+   A phone photo arrives at 3-5MB of base64 and alone can exhaust the
+   whole budget. Downscaling on the way in is what keeps the quota from
+   being hit in the first place. */
+var _fileToDataV36=fileToData;
+fileToData=function(inp,cb){
+ var f=inp.files&&inp.files[0];
+ if(!f)return;
+ if(!/^image\//.test(f.type||''))return _fileToDataV36(inp,cb);
+ var r=new FileReader();
+ r.onload=function(){
+  var original=String(r.result||'');
+  var img=new Image();
+  img.onload=function(){
+   try{
+    var MAX=1400;
+    var w=img.naturalWidth||img.width, h=img.naturalHeight||img.height;
+    if(!w||!h)return cb(original,f.name,f.size);
+    var scale=Math.min(1,MAX/Math.max(w,h));
+    var cw=Math.max(1,Math.round(w*scale)), ch=Math.max(1,Math.round(h*scale));
+    var cv=document.createElement('canvas');
+    cv.width=cw;cv.height=ch;
+    var ctx=cv.getContext('2d');
+    ctx.fillStyle='#fff';ctx.fillRect(0,0,cw,ch);
+    ctx.drawImage(img,0,0,cw,ch);
+    var out=cv.toDataURL('image/jpeg',0.72);
+    cb(out.length<original.length?out:original,f.name,f.size);
+   }catch(e){cb(original,f.name,f.size);}
+  };
+  img.onerror=function(){cb(original,f.name,f.size);};
+  img.src=original;
+ };
+ r.readAsDataURL(f);
+};
+
+/* ── 6. warn before the wall, not after it ── */
+function checkStoragePressure(){
+ if(!storageOK)return;
+ var used=storageBytes();
+ if(used>STORAGE_BUDGET*0.75)showStorageAlarm('near');
+}
+var _saveNowPressure=saveNow;
+saveNow=function(){
+ var ok=_saveNowPressure();
+ if(ok)checkStoragePressure();
+ return ok;
+};
+
+/* surface the real numbers in the data panel instead of only a size */
+var _dataPanelV36=dataPanel;
+dataPanel=function(){
+ var used=storageBytes();
+ var pct=Math.min(100,Math.round(used/STORAGE_BUDGET*100));
+ var bar='<div class="card" style="margin-bottom:10px">'+
+  '<div class="spread"><b style="font-size:14px">💾 '+esc(t('sa_used'))+'</b>'+
+   '<b>'+Math.round(used/1024)+' KB · '+pct+'%</b></div>'+
+  '<div class="bar" style="margin-top:8px"><i style="width:'+pct+'%;'+
+   (pct>75?'background:var(--red)':'')+'"></i></div></div>';
+ return bar+_dataPanelV36();
+};
+checkStoragePressure();
+
+renderAll();
 /* ══ PWA: real manifest.json + sw.js on the server so "Install app" works.
    (Blob/data: URLs cannot be used to register a service worker — that was
    the reason the previous version never satisfied install criteria.) ══ */
@@ -6601,7 +6816,9 @@ renderAll();
    const link=document.createElement("link");link.rel="manifest";link.href="./manifest.json";
    document.head.appendChild(link);
   }
-  if("serviceWorker" in navigator&&location.protocol==="https:"){
+  /* isSecureContext, not a protocol string: it is true for https AND for
+     localhost, so the app is testable locally and installable in production */
+  if("serviceWorker" in navigator&&window.isSecureContext){
    navigator.serviceWorker.register("./sw.js").catch(()=>{});
   }
  }catch(e){}
