@@ -7355,6 +7355,127 @@ adminCMS = function () { return _adminCMSV39() + hvCmsHtml(); };
 
 renderAll();
 
+/* ══════════════════════════════════════════════════════════
+   v40 — close the self-service password reset
+   ══════════════════════════════════════════════════════════
+   Two separate faults sat in the v11 reset flow, and either one on its
+   own is enough to hand over any account, the master account included.
+
+   1. The code never reached the person who asked for it.
+      sendOtpEmail() posted to Web3Forms, which delivers to the inbox
+      registered against the access key — the producer's. The `email`
+      field in that payload is the sender, used as reply-to, not the
+      recipient. So a couple asking to reset their password sent the
+      code to the producer and received nothing themselves.
+
+   2. When the send failed, the code was printed on screen.
+      issueOtp() fell back to toast('קוד לצורך ההדגמה: ' + code). Anyone
+      who typed a known email address was shown that account's reset
+      code and could set a new password on the spot. The code was also
+      generated in the browser and held in a plain variable, so it was
+      readable from the console whether the mail went out or not.
+
+   A single HTML file with no server of its own cannot deliver a secret
+   to somebody else's inbox, and cannot hold one the browser must not
+   see. So this layer stops pretending: self-service reset is removed,
+   and the screen points to the producer, who already has a safe path in
+   the users panel (resetPass generates a new password and shows it only
+   to an already authenticated admin).
+
+   The rebuilt Next.js app does this properly — a one time code sent by
+   Supabase to the address that asked for it, verified on the server —
+   and that is where the flow returns.  */
+
+Object.assign(D_.he,{
+ fp2_title:'איפוס סיסמה',
+ fp2_body:'מטעמי אבטחה, איפוס סיסמה נעשה דרך מנהל המערכת ולא באתר עצמו. פנו אלינו ונאפס עבורכם, ותקבלו סיסמה חדשה ישירות.',
+ fp2_wa:'פנייה בוואטסאפ',
+ fp2_mail:'שליחת מייל',
+ fp2_back:'חזרה למסך הכניסה',
+});
+Object.assign(D_.en,{
+ fp2_title:'Password reset',
+ fp2_body:'For security, a password is reset by the administrator rather than on the site. Get in touch and we will reset it for you and hand you a new password directly.',
+ fp2_wa:'Message on WhatsApp',
+ fp2_mail:'Send an email',
+ fp2_back:'Back to sign in',
+});
+
+/* ── 1. nothing may issue a browser side reset code any more ── */
+sendOtpEmail = function(){ return Promise.resolve(false); };
+issueOtp = function(){ return null; };
+
+/* ── 2. the screen tells the truth about how a reset happens ── */
+function fpContact(){
+ var wa = (DB.notify && DB.notify.wa) || '';
+ var em = (DB.notify && DB.notify.email) || (producer() && producer().email) || '';
+ var out = '';
+ if (wa) out += '<a class="btn btn-gold" style="width:100%;margin-top:8px;display:block;text-align:center" ' +
+   'href="https://wa.me/' + esc(wa) + '" target="_blank" rel="noopener">' + esc(t('fp2_wa')) + '</a>';
+ if (em) out += '<a class="btn btn-ghost btn-sm" style="width:100%;margin-top:8px;display:block;text-align:center" ' +
+   'href="mailto:' + esc(em) + '">' + esc(t('fp2_mail')) + '</a>';
+ return out;
+}
+forgotCard = function(){
+ return brandTitle() +
+  '<p class="sub">' + esc(t('fp2_title')) + '</p>' +
+  '<div class="advice" style="font-size:13.4px;line-height:1.6">' + esc(t('fp2_body')) + '</div>' +
+  fpContact() +
+  '<button class="btn btn-ghost btn-sm" style="width:100%;margin-top:10px;border:none" ' +
+   'onclick="setAuthMode(\'login\')">' + esc(t('fp2_back')) + '</button>';
+};
+
+/* ── 3. the code entry and new-password screens are unreachable now,
+      but a stale otp object in memory must not open them either ── */
+doForgot = function(){ setAuthMode('login'); };
+doResend = function(){ setAuthMode('login'); };
+doVerify = function(){ setAuthMode('login'); };
+doReset  = function(){ setAuthMode('login'); };
+
+/* ══════════════════════════════════════════════════════════
+   v41 — behave like an app when installed as one
+   ══════════════════════════════════════════════════════════
+   Installed to a home screen there is no browser chrome, so the page
+   starts at the very top of the physical display and the sticky nav
+   rendered underneath the status bar: the sign in button was drawn
+   behind the clock and could not be tapped at all. viewport-fit=cover
+   was already set, but nothing consumed the inset it exposes.
+
+   The second half is what the app is for. Somebody who installed it did
+   not do so to read the marketing page again; they installed it to
+   check on their event. So when it opens standalone it goes straight to
+   sign in, and once signed in it opens where that person works.
+
+   Staying signed in already worked: the session id travels in the saved
+   snapshot and boot restores it. It is covered by a test here so it
+   stays that way.  */
+
+(function(){
+ var isStandalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches)
+                 || window.navigator.standalone === true;
+
+ /* ── 1. keep the chrome clear of the status bar and home indicator ── */
+ var css = document.createElement('style');
+ css.textContent =
+  'html.pwa .screen{padding-top:env(safe-area-inset-top,0px)}' +
+  /* the marketing nav is sticky, so it has to carry the inset itself or
+     it slides back under the clock the moment the page scrolls */
+  'html.pwa #screen-marketing{padding-top:0}' +
+  'html.pwa .mk-nav{padding-top:calc(13px + env(safe-area-inset-top,0px))}' +
+  'html.pwa #storageAlarm{padding-top:calc(12px + env(safe-area-inset-top,0px))}';
+ document.head.appendChild(css);
+
+ if(!isStandalone) return;
+ document.documentElement.classList.add('pwa');
+
+ /* ── 2. open on the thing the app is for ── */
+ if(!session){
+  authMsg = '';
+  _setRoleBase('auth');
+  renderAll();
+ }
+})();
+
 /* ══ PWA: real manifest.json + sw.js on the server so "Install app" works.
    (Blob/data: URLs cannot be used to register a service worker — that was
    the reason the previous version never satisfied install criteria.) ══ */
