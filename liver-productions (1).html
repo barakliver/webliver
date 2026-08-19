@@ -8039,6 +8039,190 @@ prodAI = function(q){
  return _prodAIV45(q);
 };
 
+/* ══════════════════════════════════════════════════════════
+   v46 — closing a client process
+   ══════════════════════════════════════════════════════════
+   Every event stayed active forever. A wedding that happened two years
+   ago, and a couple who walked away after one meeting, both sat in the
+   list next to next month's work, counted in "active productions" and
+   chased on the status board. There was no way to say "this one is
+   finished" short of deleting the client and losing the whole history.
+
+   A closed event keeps everything: files, messages, budget, payments.
+   It simply stops counting as live work and moves to its own list,
+   and it can be reopened if the process starts again. */
+
+Object.assign(D_.he,{
+ cl_close:'סיום התהליך',
+ cl_close_t:'סיום התהליך מול הזוג',
+ cl_close_p:'האירוע יעבור לארכיון ויפסיק להיספר כהפקה פעילה. כל הנתונים נשמרים ואפשר להחזיר אותו בכל רגע.',
+ cl_reason:'סיבה',
+ cl_r_done:'האירוע התקיים',
+ cl_r_cancelled:'האירוע בוטל',
+ cl_r_left:'הזוג בחר להמשיך בלעדינו',
+ cl_r_other:'סיבה אחרת',
+ cl_note:'הערה (רשות)',
+ cl_confirm:'סיום וארכוב',
+ cl_reopen:'החזרה לפעילות',
+ cl_closed_badge:'הסתיים',
+ cl_closed_on:'הסתיים ב',
+ cl_archive:'ארכיון',
+ cl_archive_show:'הצגת הארכיון',
+ cl_archive_hide:'הסתרת הארכיון',
+ cl_archive_none:'אין עדיין אירועים בארכיון.',
+ cl_closed_ok:'האירוע הועבר לארכיון.',
+ cl_reopened_ok:'האירוע חזר לפעילות.',
+ cl_couple_done:'התהליך מול ההפקה הסתיים. האזור נשאר פתוח לצפייה בכל מה שנאסף כאן.',
+ cl_active_none:'אין אירועים פעילים כרגע.',
+ cl_cancel:'ביטול',
+});
+Object.assign(D_.en,{
+ cl_close:'Close the process',
+ cl_close_t:'Close the process with this couple',
+ cl_close_p:'The event moves to the archive and stops counting as live work. Everything is kept and it can be reopened at any time.',
+ cl_reason:'Reason',
+ cl_r_done:'The event took place',
+ cl_r_cancelled:'The event was cancelled',
+ cl_r_left:'The couple chose to continue without us',
+ cl_r_other:'Another reason',
+ cl_note:'Note (optional)',
+ cl_confirm:'Close and archive',
+ cl_reopen:'Reopen',
+ cl_closed_badge:'Closed',
+ cl_closed_on:'Closed on',
+ cl_archive:'Archive',
+ cl_archive_show:'Show the archive',
+ cl_archive_hide:'Hide the archive',
+ cl_archive_none:'Nothing in the archive yet.',
+ cl_closed_ok:'The event was moved to the archive.',
+ cl_reopened_ok:'The event is active again.',
+ cl_couple_done:'The production process has ended. This area stays open so you can still see everything gathered here.',
+ cl_active_none:'No active events right now.',
+ cl_cancel:'Cancel',
+});
+
+/* A client saved before this layer has no status at all, and absence
+   must read as active rather than as closed. */
+function isClosed(c){ return !!(c && c.closed); }
+function activeClients(){ return DB.clients.filter(function(c){ return !isClosed(c); }); }
+function closedClients(){ return DB.clients.filter(isClosed); }
+
+var CL_REASONS = function(){ return [
+ ['done', t('cl_r_done')], ['cancelled', t('cl_r_cancelled')],
+ ['left', t('cl_r_left')], ['other', t('cl_r_other')],
+]; };
+
+var closingId = null;
+function openCloseClient(cid){
+ closingId = cid;
+ var c = DB.clients.find(function(x){ return x.id === cid; });
+ if(!c) return;
+ $('umT').textContent = t('cl_close_t');
+ $('umSub').textContent = c.names;
+ $('umBody').innerHTML =
+  '<p class="muted" style="font-size:13.2px;line-height:1.6;margin-bottom:12px">' + esc(t('cl_close_p')) + '</p>' +
+  '<div class="kv"><label for="clReason">' + esc(t('cl_reason')) + '</label>' +
+   '<select id="clReason">' + CL_REASONS().map(function(r){
+     return '<option value="' + r[0] + '">' + esc(r[1]) + '</option>'; }).join('') + '</select></div>' +
+  '<div class="kv" style="margin-top:8px"><label for="clNote">' + esc(t('cl_note')) + '</label>' +
+   '<textarea id="clNote" rows="2"></textarea></div>' +
+  '<button class="btn btn-red" style="width:100%;margin-top:12px" onclick="doCloseClient()">' + esc(t('cl_confirm')) + '</button>' +
+  '<button class="btn btn-ghost btn-sm" style="width:100%;margin-top:8px" onclick="closeModal(\'userModal\')">' + esc(t('cl_cancel')) + '</button>';
+ openModal('userModal');
+}
+function doCloseClient(){
+ var c = DB.clients.find(function(x){ return x.id === closingId; });
+ if(!c) return;
+ var sel = $('clReason'), note = $('clNote');
+ c.closed  = { reason: sel ? sel.value : 'other', note: note ? note.value.trim() : '', at: iso(TODAY) };
+ closingId = null;
+ closeModal('userModal');
+ saveSoon();
+ toast(t('cl_closed_ok'));
+ renderAll();
+}
+function reopenClient(cid){
+ var c = DB.clients.find(function(x){ return x.id === cid; });
+ if(!c) return;
+ delete c.closed;
+ saveSoon();
+ toast(t('cl_reopened_ok'));
+ renderAll();
+}
+function closedLabel(c){
+ var r = (CL_REASONS().find(function(x){ return x[0] === (c.closed && c.closed.reason); }) || ['', t('cl_r_other')])[1];
+ return r + ' · ' + t('cl_closed_on') + ' ' + fmt(c.closed.at);
+}
+
+/* ── the status board works on live events, with the archive below ── */
+var SHOW_ARCHIVE = false;
+function toggleArchive(){ SHOW_ARCHIVE = !SHOW_ARCHIVE; renderAll(); }
+
+var _clientStatusHtmlV46 = clientStatusHtml;
+clientStatusHtml = function(){
+ var all = DB.clients;
+ var closed = closedClients();
+ /* run the existing board over live events only */
+ DB.clients = activeClients();
+ var h;
+ try { h = _clientStatusHtmlV46(); } finally { DB.clients = all; }
+
+ /* close buttons on each live card, keyed by the name already rendered */
+ activeClients().forEach(function(c){
+  h = h.replace(
+   'onclick="openWs(\'' + c.id + '\')">' + esc(t('st_open')) + '</button>',
+   'onclick="openWs(\'' + c.id + '\')">' + esc(t('st_open')) + '</button>' +
+   '<button class="btn btn-ghost btn-sm" style="width:100%;margin-top:6px" ' +
+    'onclick="openCloseClient(\'' + c.id + '\')">' + esc(t('cl_close')) + '</button>'
+  );
+ });
+
+ h += '<div style="margin-top:22px">' +
+  '<button class="btn btn-ghost btn-sm" onclick="toggleArchive()">' +
+   esc(SHOW_ARCHIVE ? t('cl_archive_hide') : t('cl_archive_show')) +
+   ' (' + closed.length + ')</button>';
+
+ if(SHOW_ARCHIVE){
+  h += '<div style="margin-top:12px">' + (closed.length
+   ? closed.map(function(c){
+      return '<div class="card" style="margin-bottom:8px;opacity:.75">' +
+       '<div class="spread" style="gap:10px;flex-wrap:wrap">' +
+        '<div><b>' + esc(c.names) + '</b> <span class="badge b-pending">' + esc(t('cl_closed_badge')) + '</span>' +
+         '<div class="muted" style="font-size:12.5px;margin-top:3px">' + esc(closedLabel(c)) +
+          (c.closed.note ? ' · ' + esc(c.closed.note) : '') + '</div></div>' +
+        '<div class="row" style="gap:6px">' +
+         '<button class="btn btn-ghost btn-xs" onclick="openWs(\'' + c.id + '\')">' + esc(t('st_open')) + '</button>' +
+         '<button class="btn btn-dark btn-xs" onclick="reopenClient(\'' + c.id + '\')">' + esc(t('cl_reopen')) + '</button>' +
+        '</div></div></div>';
+     }).join('')
+   : '<p class="muted">' + esc(t('cl_archive_none')) + '</p>') + '</div>';
+ }
+ return h + '</div>';
+};
+
+/* ── an archived event is not live work, so it stops being counted ── */
+var _adminOverV46 = adminOver;
+adminOver = function(){
+ var all = DB.clients;
+ DB.clients = activeClients();
+ var h;
+ try { h = _adminOverV46(); } finally { DB.clients = all; }
+ return h;
+};
+
+/* ── the couple keeps their area, and is told plainly it is finished ── */
+var _renderPortalV46 = renderPortal;
+renderPortal = function(){
+ _renderPortalV46();
+ var c = DB.clients.find(function(x){ return x.id === portalClient; });
+ if(!c || !isClosed(c)) return;
+ var m = $('portalMain');
+ if(m && m.innerHTML.indexOf('data-closed-note') < 0){
+  m.innerHTML = '<div class="advice" data-closed-note style="margin-bottom:14px;font-size:13.4px">' +
+   esc(t('cl_couple_done')) + '</div>' + m.innerHTML;
+ }
+};
+
 /* ══ PWA: real manifest.json + sw.js on the server so "Install app" works.
    (Blob/data: URLs cannot be used to register a service worker — that was
    the reason the previous version never satisfied install criteria.) ══ */
