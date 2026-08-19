@@ -6839,6 +6839,220 @@ dataPanel=function(){
 checkStoragePressure();
 
 renderAll();
+/* ══════════════════════════════════════════════════════════
+   v37 — budget simulator rebuilt on a model that matches how a
+   wedding is actually priced
+   ══════════════════════════════════════════════════════════
+   The previous version multiplied one per-guest figure by the headcount
+   and then split the total by fixed percentages. That made every line
+   scale with guests, which is wrong for most of them: a photographer,
+   a DJ and a chuppah cost about the same at 150 guests as at 450. The
+   result overstated large weddings and understated small ones, and the
+   per-guest number it printed was not a number anyone could act on.
+
+   This model separates three kinds of cost:
+     per guest  — catering and bar, the lines that genuinely scale
+     per table  — centrepieces, which scale with tables and not guests
+     fixed      — photography, music, chuppah, production, extras
+
+   It also asks for the two figures a couple can actually answer: how
+   many people they are inviting, and the price per plate they were
+   quoted. Attendance is estimated from invitations rather than assumed,
+   because in practice a meaningful share of invitees do not come, and
+   catering is billed on who shows up. */
+
+Object.assign(D_.he,{
+ bs2_title:'כמה חתונה כזאת עולה',
+ bs2_sub:'שני מספרים שאתם כבר יודעים, ומכאן הערכה שאפשר לעבוד איתה. זו נקודת פתיחה, לא הצעת מחיר.',
+ bs2_invited:'כמה מוזמנים ברשימה',
+ bs2_rate:'שיעור הגעה צפוי',
+ bs2_rate_hint:'מהמוזמנים, בפועל מגיעים בדרך כלל כ85 אחוז',
+ bs2_venue_tier:'רמת המקום',
+ bs2_tier_garden:'גן אירועים',bs2_tier_hall:'אולם',bs2_tier_boutique:'בוטיק',bs2_tier_field:'שטח או מקום פרטי',
+ bs2_plate:'מחיר מנה בשקלים',
+ bs2_plate_hint:'אם כבר קיבלתם הצעה, הזינו את המחיר שלכם. אחרת נשתמש בממוצע לרמת המקום.',
+ bs2_day:'יום בשבוע',bs2_weekday:'אמצע שבוע',bs2_fri:'שישי',bs2_sat:'שבת',
+ bs2_season:'עונה',bs2_summer:'קיץ',bs2_winter:'חורף',bs2_spring:'אביב או סתיו',
+ bs2_style:'סגנון',bs2_classic:'קלאסי',bs2_modern:'מודרני',bs2_rustic:'כפרי',bs2_lux:'יוקרתי',
+ bs2_bar:'אלכוהול',bs2_bar_none:'בלי בר',bs2_bar_venue:'כלול באולם',bs2_bar_ext:'בר חיצוני',
+ bs2_range:'טווח תקציב משוער',
+ bs2_attending:'צפי מגיעים',bs2_tables:'שולחנות',bs2_perguest:'עלות לאורח מגיע',
+ bs2_marginal:'כל 10 אורחים נוספים',
+ bs2_kind_guest:'לפי אורח',bs2_kind_table:'לפי שולחן',bs2_kind_fixed:'קבוע',
+ bs2_l_catering:'מקום וקייטרינג',bs2_l_bar:'בר ואלכוהול',bs2_l_photo:'צילום ווידאו',
+ bs2_l_music:'מוזיקה והגברה',bs2_l_design:'חופה ועיצוב',bs2_l_center:'עיצוב שולחנות',
+ bs2_l_prod:'ניהול והפקה',bs2_l_extra:'הזמנות, איפור ושונות',
+ bs2_note:'הערכה לפי ממוצעי שוק. הקייטרינג מחושב לפי מי שמגיע בפועל, לא לפי המוזמנים. המחיר הסופי נקבע מול הספקים.',
+ bs2_cta_q:'רוצים שברק יעבור איתכם על המספרים?',bs2_cta_btn:'קובעים פגישת היכרות',
+});
+Object.assign(D_.en,{
+ bs2_title:'What a wedding like this costs',
+ bs2_sub:'Two numbers you already know, and an estimate you can work with. A starting point, not a quote.',
+ bs2_invited:'How many people are on the list',
+ bs2_rate:'Expected attendance',
+ bs2_rate_hint:'Of those invited, roughly 85 percent usually attend',
+ bs2_venue_tier:'Venue type',
+ bs2_tier_garden:'Garden venue',bs2_tier_hall:'Banquet hall',bs2_tier_boutique:'Boutique',bs2_tier_field:'Open air or private',
+ bs2_plate:'Price per plate',
+ bs2_plate_hint:'If you already have a quote, enter your own price. Otherwise we use the average for that venue type.',
+ bs2_day:'Day of week',bs2_weekday:'Midweek',bs2_fri:'Friday',bs2_sat:'Saturday',
+ bs2_season:'Season',bs2_summer:'Summer',bs2_winter:'Winter',bs2_spring:'Spring or autumn',
+ bs2_style:'Style',bs2_classic:'Classic',bs2_modern:'Modern',bs2_rustic:'Rustic',bs2_lux:'Luxury',
+ bs2_bar:'Alcohol',bs2_bar_none:'No bar',bs2_bar_venue:'Included by the venue',bs2_bar_ext:'External bar',
+ bs2_range:'Estimated budget range',
+ bs2_attending:'Expected to attend',bs2_tables:'Tables',bs2_perguest:'Cost per attending guest',
+ bs2_marginal:'Every additional 10 guests',
+ bs2_kind_guest:'per guest',bs2_kind_table:'per table',bs2_kind_fixed:'fixed',
+ bs2_l_catering:'Venue and catering',bs2_l_bar:'Bar and alcohol',bs2_l_photo:'Photography and video',
+ bs2_l_music:'Music and sound',bs2_l_design:'Chuppah and design',bs2_l_center:'Table styling',
+ bs2_l_prod:'Planning and production',bs2_l_extra:'Invitations, makeup and misc',
+ bs2_note:'Market average estimate. Catering is counted on who actually attends, not on who is invited. Final pricing is set with the vendors.',
+ bs2_cta_q:'Would you like Barak to go through the numbers with you?',bs2_cta_btn:'Book an intro meeting',
+});
+
+var BS2_TIER_PLATE = { garden:300, hall:255, boutique:365, field:330 };
+var BS2_DAY  = { weekday:0.88, fri:1.04, sat:1.12 };
+var BS2_SEA  = { spring:1.00, summer:1.06, winter:0.94 };
+var BS2_STYLE= { classic:1.00, modern:1.10, rustic:0.94, lux:1.38 };
+var BS2_BAR  = { none:0, venue:38, ext:82 };
+var SEATS_PER_TABLE = 12;
+
+var BS2 = { invited:300, rate:0.85, tier:'garden', plate:BS2_TIER_PLATE.garden, plateTouched:false,
+            day:'sat', season:'spring', style:'classic', bar:'venue' };
+
+function bs2Set(k,v){
+ BS2[k] = v;
+ if (k === 'tier' && !BS2.plateTouched) BS2.plate = BS2_TIER_PLATE[v];
+ renderAll();
+}
+function bs2Plate(v){
+ var n = Math.max(0, Math.min(2000, Number(v) || 0));
+ BS2.plate = n; BS2.plateTouched = true; renderAll();
+}
+function bs2Invited(v){
+ BS2.invited = Math.max(0, Math.min(1500, Number(v) || 0)); renderAll();
+}
+
+function bs2Model(){
+ var invited   = Math.max(0, Math.min(1500, Number(BS2.invited) || 0));
+ var attending = Math.round(invited * BS2.rate);
+ var tables    = Math.ceil(attending / SEATS_PER_TABLE) || 0;
+ var styleF    = BS2_STYLE[BS2.style];
+ var plate     = (Number(BS2.plate) || 0) * BS2_DAY[BS2.day] * BS2_SEA[BS2.season];
+ var barPer    = BS2_BAR[BS2.bar];
+
+ /* Photography scales in steps, not linearly: past roughly 350 attending a
+    second shooter becomes necessary, and that is a step change rather than
+    a per head charge. */
+ var photo = 12000 * styleF + (attending > 350 ? 2600 : 0);
+
+ var rows = [
+  { k:'bs2_l_catering', kind:'guest', amount: attending * plate },
+  { k:'bs2_l_bar',      kind:'guest', amount: attending * barPer },
+  { k:'bs2_l_center',   kind:'table', amount: tables * 320 * styleF },
+  { k:'bs2_l_photo',    kind:'fixed', amount: photo },
+  { k:'bs2_l_music',    kind:'fixed', amount: 8200 * styleF },
+  { k:'bs2_l_design',   kind:'fixed', amount: 4800 * styleF },
+  { k:'bs2_l_prod',     kind:'fixed', amount: 14000 },
+  { k:'bs2_l_extra',    kind:'fixed', amount: 6500 },
+ ].filter(function(r){ return r.amount > 0; });
+
+ var total = rows.reduce(function(a,r){ return a + r.amount; }, 0);
+ /* Ten more guests adds their catering and bar, plus a table once every
+    twelfth guest tips the count over. */
+ var marginal = 10 * (plate + barPer) + (10 / SEATS_PER_TABLE) * 320 * styleF;
+
+ return {
+  invited: invited, attending: attending, tables: tables, rows: rows,
+  total: total, low: total * 0.9, high: total * 1.12,
+  perGuest: attending ? total / attending : 0,
+  marginal: marginal,
+ };
+}
+
+budgetSimHtml = function(){
+ var m = bs2Model();
+ var chip = function(field, val, label){
+  return '<button type="button" class="chip '+(BS2[field]===val?'active':'')+'" '+
+   'aria-pressed="'+(BS2[field]===val)+'" onclick="bs2Set(\''+field+'\',\''+val+'\')">'+esc(label)+'</button>';
+ };
+ var group = function(label, field, opts){
+  return '<div style="margin-bottom:14px"><div class="muted" style="font-size:12.5px;font-weight:700;margin-bottom:6px">'+esc(label)+'</div>'+
+   '<div class="row" style="gap:6px">'+opts.map(function(o){return chip(field,o[0],t(o[1]));}).join('')+'</div></div>';
+ };
+ var kindLabel = { guest:t('bs2_kind_guest'), table:t('bs2_kind_table'), fixed:t('bs2_kind_fixed') };
+
+ var lines = m.rows.map(function(r){
+  var pct = m.total ? (r.amount / m.total) * 100 : 0;
+  return '<div style="margin-bottom:11px">'+
+   '<div class="spread" style="font-size:14px"><span>'+esc(t(r.k))+
+     ' <span class="muted" style="font-size:11.5px">'+esc(kindLabel[r.kind])+'</span></span>'+
+     '<b>'+ils(Math.round(r.amount))+'</b></div>'+
+   '<div class="bar" style="margin-top:4px"><i style="width:'+pct.toFixed(1)+'%"></i></div></div>';
+ }).join('');
+
+ return '<section class="mk" id="sec-bsim"><div class="card" style="max-width:920px;margin:0 auto">'+
+  '<div class="eyebrow">'+esc(t('bsim_eyebrow'))+'</div>'+
+  '<h2 style="margin-top:6px;font-size:26px">'+esc(t('bs2_title'))+'</h2>'+
+  '<p class="muted" style="font-size:14px;margin-top:4px">'+esc(t('bs2_sub'))+'</p>'+
+
+  '<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:22px;margin-top:20px">'+
+
+   '<div>'+
+    '<div style="margin-bottom:14px">'+
+     '<label class="muted" style="font-size:12.5px;font-weight:700;display:block;margin-bottom:6px" for="bs2Invited">'+esc(t('bs2_invited'))+'</label>'+
+     '<input id="bs2Invited" type="number" min="0" max="1500" value="'+m.invited+'" oninput="bs2Invited(this.value)">'+
+    '</div>'+
+    /* attendance chips are rendered explicitly so the label shows a percentage */
+    '<div style="margin-bottom:14px"><div class="muted" style="font-size:12.5px;font-weight:700;margin-bottom:6px">'+esc(t('bs2_rate'))+'</div>'+
+     '<div class="row" style="gap:6px">'+
+      [0.75,0.85,0.95].map(function(p){
+        return '<button type="button" class="chip '+(BS2.rate===p?'active':'')+'" aria-pressed="'+(BS2.rate===p)+'" '+
+               'onclick="bs2Set(\'rate\','+p+')">'+Math.round(p*100)+'%</button>';
+      }).join('')+
+     '</div>'+
+     '<p class="muted" style="font-size:11.5px;margin-top:5px">'+esc(t('bs2_rate_hint'))+'</p></div>'+
+
+    group(t('bs2_venue_tier'),'tier',[['garden','bs2_tier_garden'],['hall','bs2_tier_hall'],['boutique','bs2_tier_boutique'],['field','bs2_tier_field']])+
+
+    '<div style="margin-bottom:14px">'+
+     '<label class="muted" style="font-size:12.5px;font-weight:700;display:block;margin-bottom:6px" for="bs2Plate">'+esc(t('bs2_plate'))+'</label>'+
+     '<input id="bs2Plate" type="number" min="0" max="2000" value="'+Math.round(BS2.plate)+'" oninput="bs2Plate(this.value)">'+
+     '<p class="muted" style="font-size:11.5px;margin-top:5px">'+esc(t('bs2_plate_hint'))+'</p>'+
+    '</div>'+
+
+    group(t('bs2_day'),'day',[['weekday','bs2_weekday'],['fri','bs2_fri'],['sat','bs2_sat']])+
+    group(t('bs2_season'),'season',[['spring','bs2_spring'],['summer','bs2_summer'],['winter','bs2_winter']])+
+    group(t('bs2_style'),'style',[['classic','bs2_classic'],['modern','bs2_modern'],['rustic','bs2_rustic'],['lux','bs2_lux']])+
+    group(t('bs2_bar'),'bar',[['venue','bs2_bar_venue'],['ext','bs2_bar_ext'],['none','bs2_bar_none']])+
+   '</div>'+
+
+   '<div>'+
+    '<div class="muted" style="font-size:12.5px">'+esc(t('bs2_range'))+'</div>'+
+    '<div style="font-size:27px;font-weight:700;letter-spacing:-.01em;margin-top:2px">'+
+      ils(Math.round(m.low/500)*500)+' – '+ils(Math.round(m.high/500)*500)+'</div>'+
+
+    '<div class="row" style="gap:14px;margin:12px 0 16px;flex-wrap:wrap">'+
+     '<span class="muted" style="font-size:12.8px">'+esc(t('bs2_attending'))+': <b>'+m.attending+'</b></span>'+
+     '<span class="muted" style="font-size:12.8px">'+esc(t('bs2_tables'))+': <b>'+m.tables+'</b></span>'+
+     '<span class="muted" style="font-size:12.8px">'+esc(t('bs2_perguest'))+': <b>'+ils(Math.round(m.perGuest))+'</b></span>'+
+    '</div>'+
+
+    lines+
+
+    '<div class="advice" style="margin-top:14px;font-size:13.2px">'+
+      esc(t('bs2_marginal'))+': <b>'+ils(Math.round(m.marginal))+'</b></div>'+
+
+    '<p class="muted" style="font-size:11.8px;margin-top:12px">'+esc(t('bs2_note'))+'</p>'+
+
+    '<hr class="hairline" style="margin:16px 0">'+
+    '<p style="font-size:14px;margin-bottom:10px">'+esc(t('bs2_cta_q'))+'</p>'+
+    '<button class="btn btn-gold" onclick="var _e=document.getElementById(\'sec-ct\');if(_e)_e.scrollIntoView({behavior:\'smooth\'})">'+esc(t('bs2_cta_btn'))+'</button>'+
+   '</div>'+
+  '</div></div></section>';
+};
+
+renderAll();
 /* ══ PWA: real manifest.json + sw.js on the server so "Install app" works.
    (Blob/data: URLs cannot be used to register a service worker — that was
    the reason the previous version never satisfied install criteria.) ══ */
