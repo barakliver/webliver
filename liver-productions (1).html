@@ -3743,12 +3743,13 @@ Object.assign(D_.en,{
 });
 
 const STORE_KEY='liver_db';
-const SCHEMA_VERSION=14;
+const SCHEMA_VERSION=15;
 /* session-only collections are excluded: they hold live Date objects */
 const PERSIST=['producers','activeProducer','portfolio','products','leads','clients','tasks',
  'eventFiles','budgets','alcohol','field','contracts','messages','payRequests','orders','myTasks',
  'meetings','calEvents','staff','crew','crewTasks','perms','masters','users','notify','site',
- 'clientEvents','coupleChat','aiChat','pendingClients','feedback','salesCalls','seating','dayPlan'];
+ 'clientEvents','coupleChat','aiChat','pendingClients','feedback','salesCalls','seating','dayPlan',
+ 'heroVideos'];
 let storageOK=true, lastSaved=null, saveTimer=null;
 
 function storageAvailable(){
@@ -6884,6 +6885,7 @@ Object.assign(D_.he,{
  bs2_l_prod:'ניהול והפקה',bs2_l_extra:'הזמנות, איפור ושונות',
  bs2_note:'הערכה לפי ממוצעי שוק. הקייטרינג מחושב לפי מי שמגיע בפועל, לא לפי המוזמנים. המחיר הסופי נקבע מול הספקים.',
  bs2_cta_q:'רוצים שברק יעבור איתכם על המספרים?',bs2_cta_btn:'קובעים פגישת היכרות',
+ bs2_estimate_notice:'⚠️ כל המספרים כאן הם אומדן בלבד ואינם מדויקים. הם נועדו לתת סדר גודל להתחלה, ומשתנים לפי הספקים, המקום והעונה. המחיר האמיתי נקבע רק מול הצעות מחיר.',
 });
 Object.assign(D_.en,{
  bs2_title:'What a wedding like this costs',
@@ -6908,6 +6910,7 @@ Object.assign(D_.en,{
  bs2_l_prod:'Planning and production',bs2_l_extra:'Invitations, makeup and misc',
  bs2_note:'Market average estimate. Catering is counted on who actually attends, not on who is invited. Final pricing is set with the vendors.',
  bs2_cta_q:'Would you like Barak to go through the numbers with you?',bs2_cta_btn:'Book an intro meeting',
+ bs2_estimate_notice:'⚠️ Every number here is an estimate and is not exact. It is meant to give a starting order of magnitude, and it shifts with vendors, venue and season. Real pricing is set only against actual quotes.',
 });
 
 var BS2_TIER_PLATE = { garden:300, hall:255, boutique:365, field:330 };
@@ -6919,19 +6922,6 @@ var SEATS_PER_TABLE = 12;
 
 var BS2 = { invited:300, rate:0.85, tier:'garden', plate:BS2_TIER_PLATE.garden, plateTouched:false,
             day:'sat', season:'spring', style:'classic', bar:'venue' };
-
-function bs2Set(k,v){
- BS2[k] = v;
- if (k === 'tier' && !BS2.plateTouched) BS2.plate = BS2_TIER_PLATE[v];
- renderAll();
-}
-function bs2Plate(v){
- var n = Math.max(0, Math.min(2000, Number(v) || 0));
- BS2.plate = n; BS2.plateTouched = true; renderAll();
-}
-function bs2Invited(v){
- BS2.invited = Math.max(0, Math.min(1500, Number(v) || 0)); renderAll();
-}
 
 function bs2Model(){
  var invited   = Math.max(0, Math.min(1500, Number(BS2.invited) || 0));
@@ -6970,18 +6960,37 @@ function bs2Model(){
  };
 }
 
-budgetSimHtml = function(){
- var m = bs2Model();
- var chip = function(field, val, label){
-  return '<button type="button" class="chip '+(BS2[field]===val?'active':'')+'" '+
-   'aria-pressed="'+(BS2[field]===val)+'" onclick="bs2Set(\''+field+'\',\''+val+'\')">'+esc(label)+'</button>';
- };
- var group = function(label, field, opts){
-  return '<div style="margin-bottom:14px"><div class="muted" style="font-size:12.5px;font-weight:700;margin-bottom:6px">'+esc(label)+'</div>'+
-   '<div class="row" style="gap:6px">'+opts.map(function(o){return chip(field,o[0],t(o[1]));}).join('')+'</div></div>';
- };
- var kindLabel = { guest:t('bs2_kind_guest'), table:t('bs2_kind_table'), fixed:t('bs2_kind_fixed') };
+/* Typing must not re-render the control that is being typed into: the first
+   version called renderAll() on every keystroke, which rebuilt the DOM,
+   destroyed the focused input and dropped the caret after a single digit.
+   Text entry now repaints only the results column, and chip clicks repaint
+   only this section rather than the whole page. */
+function bs2Refresh(){
+ var el = document.getElementById('bs2Out');
+ if (el) el.innerHTML = bs2OutHtml();
+}
+function bs2RefreshAll(){
+ var el = document.getElementById('sec-bsim');
+ if (el) el.outerHTML = budgetSimHtml(); else renderAll();
+}
+function bs2Set(k,v){
+ BS2[k] = v;
+ if (k === 'tier' && !BS2.plateTouched) BS2.plate = BS2_TIER_PLATE[v];
+ bs2RefreshAll();
+}
+function bs2Plate(v){
+ BS2.plate = Math.max(0, Math.min(2000, Number(v) || 0));
+ BS2.plateTouched = true;
+ bs2Refresh();
+}
+function bs2Invited(v){
+ BS2.invited = Math.max(0, Math.min(1500, Number(v) || 0));
+ bs2Refresh();
+}
 
+function bs2OutHtml(){
+ var m = bs2Model();
+ var kindLabel = { guest:t('bs2_kind_guest'), table:t('bs2_kind_table'), fixed:t('bs2_kind_fixed') };
  var lines = m.rows.map(function(r){
   var pct = m.total ? (r.amount / m.total) * 100 : 0;
   return '<div style="margin-bottom:11px">'+
@@ -6991,24 +7000,52 @@ budgetSimHtml = function(){
    '<div class="bar" style="margin-top:4px"><i style="width:'+pct.toFixed(1)+'%"></i></div></div>';
  }).join('');
 
+ return '<div class="muted" style="font-size:12.5px">'+esc(t('bs2_range'))+'</div>'+
+  '<div style="font-size:27px;font-weight:700;letter-spacing:-.01em;margin-top:2px">'+
+    ils(Math.round(m.low/500)*500)+' – '+ils(Math.round(m.high/500)*500)+'</div>'+
+  '<div class="row" style="gap:14px;margin:12px 0 16px;flex-wrap:wrap">'+
+   '<span class="muted" style="font-size:12.8px">'+esc(t('bs2_attending'))+': <b>'+m.attending+'</b></span>'+
+   '<span class="muted" style="font-size:12.8px">'+esc(t('bs2_tables'))+': <b>'+m.tables+'</b></span>'+
+   '<span class="muted" style="font-size:12.8px">'+esc(t('bs2_perguest'))+': <b>'+ils(Math.round(m.perGuest))+'</b></span>'+
+  '</div>'+
+  lines+
+  '<div class="advice" style="margin-top:14px;font-size:13.2px">'+
+    esc(t('bs2_marginal'))+': <b>'+ils(Math.round(m.marginal))+'</b></div>'+
+  '<p class="muted" style="font-size:11.8px;margin-top:12px">'+esc(t('bs2_note'))+'</p>'+
+  '<hr class="hairline" style="margin:16px 0">'+
+  '<p style="font-size:14px;margin-bottom:10px">'+esc(t('bs2_cta_q'))+'</p>'+
+  '<button class="btn btn-gold" onclick="var _e=document.getElementById(\'sec-ct\');if(_e)_e.scrollIntoView({behavior:\'smooth\'})">'+esc(t('bs2_cta_btn'))+'</button>';
+}
+
+budgetSimHtml = function(){
+ var chip = function(field, val, label){
+  return '<button type="button" class="chip '+(BS2[field]===val?'active':'')+'" '+
+   'aria-pressed="'+(BS2[field]===val)+'" onclick="bs2Set(\''+field+'\',\''+val+'\')">'+esc(label)+'</button>';
+ };
+ var group = function(label, field, opts){
+  return '<div style="margin-bottom:14px"><div class="muted" style="font-size:12.5px;font-weight:700;margin-bottom:6px">'+esc(label)+'</div>'+
+   '<div class="row" style="gap:6px">'+opts.map(function(o){return chip(field,o[0],t(o[1]));}).join('')+'</div></div>';
+ };
+
  return '<section class="mk" id="sec-bsim"><div class="card" style="max-width:920px;margin:0 auto">'+
   '<div class="eyebrow">'+esc(t('bsim_eyebrow'))+'</div>'+
   '<h2 style="margin-top:6px;font-size:26px">'+esc(t('bs2_title'))+'</h2>'+
   '<p class="muted" style="font-size:14px;margin-top:4px">'+esc(t('bs2_sub'))+'</p>'+
+  '<div class="advice" style="margin-top:10px;font-size:13px">'+esc(t('bs2_estimate_notice'))+'</div>'+
 
   '<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:22px;margin-top:20px">'+
 
    '<div>'+
     '<div style="margin-bottom:14px">'+
      '<label class="muted" style="font-size:12.5px;font-weight:700;display:block;margin-bottom:6px" for="bs2Invited">'+esc(t('bs2_invited'))+'</label>'+
-     '<input id="bs2Invited" type="number" min="0" max="1500" value="'+m.invited+'" oninput="bs2Invited(this.value)">'+
+     '<input id="bs2Invited" type="number" inputmode="numeric" min="0" max="1500" value="'+BS2.invited+'" oninput="bs2Invited(this.value)">'+
     '</div>'+
-    /* attendance chips are rendered explicitly so the label shows a percentage */
+
     '<div style="margin-bottom:14px"><div class="muted" style="font-size:12.5px;font-weight:700;margin-bottom:6px">'+esc(t('bs2_rate'))+'</div>'+
      '<div class="row" style="gap:6px">'+
-      [0.75,0.85,0.95].map(function(p){
-        return '<button type="button" class="chip '+(BS2.rate===p?'active':'')+'" aria-pressed="'+(BS2.rate===p)+'" '+
-               'onclick="bs2Set(\'rate\','+p+')">'+Math.round(p*100)+'%</button>';
+      [0.75,0.85,0.95].map(function(pr){
+        return '<button type="button" class="chip '+(BS2.rate===pr?'active':'')+'" aria-pressed="'+(BS2.rate===pr)+'" '+
+               'onclick="bs2Set(\'rate\','+pr+')">'+Math.round(pr*100)+'%</button>';
       }).join('')+
      '</div>'+
      '<p class="muted" style="font-size:11.5px;margin-top:5px">'+esc(t('bs2_rate_hint'))+'</p></div>'+
@@ -7017,7 +7054,7 @@ budgetSimHtml = function(){
 
     '<div style="margin-bottom:14px">'+
      '<label class="muted" style="font-size:12.5px;font-weight:700;display:block;margin-bottom:6px" for="bs2Plate">'+esc(t('bs2_plate'))+'</label>'+
-     '<input id="bs2Plate" type="number" min="0" max="2000" value="'+Math.round(BS2.plate)+'" oninput="bs2Plate(this.value)">'+
+     '<input id="bs2Plate" type="number" inputmode="numeric" min="0" max="2000" value="'+Math.round(BS2.plate)+'" oninput="bs2Plate(this.value)">'+
      '<p class="muted" style="font-size:11.5px;margin-top:5px">'+esc(t('bs2_plate_hint'))+'</p>'+
     '</div>'+
 
@@ -7027,32 +7064,297 @@ budgetSimHtml = function(){
     group(t('bs2_bar'),'bar',[['venue','bs2_bar_venue'],['ext','bs2_bar_ext'],['none','bs2_bar_none']])+
    '</div>'+
 
-   '<div>'+
-    '<div class="muted" style="font-size:12.5px">'+esc(t('bs2_range'))+'</div>'+
-    '<div style="font-size:27px;font-weight:700;letter-spacing:-.01em;margin-top:2px">'+
-      ils(Math.round(m.low/500)*500)+' – '+ils(Math.round(m.high/500)*500)+'</div>'+
-
-    '<div class="row" style="gap:14px;margin:12px 0 16px;flex-wrap:wrap">'+
-     '<span class="muted" style="font-size:12.8px">'+esc(t('bs2_attending'))+': <b>'+m.attending+'</b></span>'+
-     '<span class="muted" style="font-size:12.8px">'+esc(t('bs2_tables'))+': <b>'+m.tables+'</b></span>'+
-     '<span class="muted" style="font-size:12.8px">'+esc(t('bs2_perguest'))+': <b>'+ils(Math.round(m.perGuest))+'</b></span>'+
-    '</div>'+
-
-    lines+
-
-    '<div class="advice" style="margin-top:14px;font-size:13.2px">'+
-      esc(t('bs2_marginal'))+': <b>'+ils(Math.round(m.marginal))+'</b></div>'+
-
-    '<p class="muted" style="font-size:11.8px;margin-top:12px">'+esc(t('bs2_note'))+'</p>'+
-
-    '<hr class="hairline" style="margin:16px 0">'+
-    '<p style="font-size:14px;margin-bottom:10px">'+esc(t('bs2_cta_q'))+'</p>'+
-    '<button class="btn btn-gold" onclick="var _e=document.getElementById(\'sec-ct\');if(_e)_e.scrollIntoView({behavior:\'smooth\'})">'+esc(t('bs2_cta_btn'))+'</button>'+
-   '</div>'+
+   '<div id="bs2Out">'+bs2OutHtml()+'</div>'+
   '</div></div></section>';
 };
 
 renderAll();
+/* ══════════════════════════════════════════════════════════
+   v39 — entrance video gallery
+   ══════════════════════════════════════════════════════════
+   The hero used to be hard-wired to a single base64 clip baked into
+   this file, with no way to change it short of editing the source.
+   It is now a managed list: the producer adds clips (a link, or a
+   small upload), turns them on and off and reorders them, and the
+   visitor moves between them from the hero itself.  */
+
+Object.assign(D_.he,{
+ hv_t:'סרטוני כניסה',
+ hv_p:'הסרטונים שרצים ברקע של ראש הדף. אפשר להוסיף כמה, לכבות ולהדליק, ולסדר.',
+ hv_add_url:'הוספת סרטון מקישור',
+ hv_url_ph:'קישור ל-YouTube, ל-Vimeo או לקובץ mp4',
+ hv_name_ph:'שם לסרטון (לשימוש פנימי)',
+ hv_add:'הוספה',
+ hv_up:'העלאת קובץ וידאו',
+ hv_up_hint:'קבצים נשמרים בדפדפן ולכן מוגבלים ל-1.2MB. לסרטון ארוך או כבד — העלו אותו ל-YouTube או ל-Vimeo והדביקו כאן את הקישור.',
+ hv_too_big:'הקובץ כבד מדי לשמירה בדפדפן. השתמשו בקישור ל-YouTube או ל-Vimeo במקום.',
+ hv_bad_url:'לא זוהה קישור לסרטון. הדביקו קישור ל-YouTube, ל-Vimeo או לקובץ mp4.',
+ hv_none:'אין עדיין סרטונים. ראש הדף יוצג בלי וידאו.',
+ hv_on:'מוצג',hv_off:'כבוי',
+ hv_del:'מחיקה',hv_up_o:'למעלה',hv_dn:'למטה',
+ hv_builtin:'סרטון ברירת המחדל',
+ hv_kind_link:'קישור',hv_kind_file:'קובץ',
+ hv_added:'הסרטון נוסף',hv_removed:'הסרטון נמחק',
+ hv_switch:'מעבר בין סרטונים',
+ hv_all_off:'כל הסרטונים כבויים — ראש הדף יוצג בלי וידאו.',
+});
+Object.assign(D_.en,{
+ hv_t:'Entrance videos',
+ hv_p:'The clips that play behind the top of the page. Add several, switch them on and off, and reorder them.',
+ hv_add_url:'Add a video from a link',
+ hv_url_ph:'A YouTube, Vimeo or direct mp4 link',
+ hv_name_ph:'A name for the clip (internal use)',
+ hv_add:'Add',
+ hv_up:'Upload a video file',
+ hv_up_hint:'Files are kept in the browser and are therefore limited to 1.2MB. For a longer or heavier clip, upload it to YouTube or Vimeo and paste the link here.',
+ hv_too_big:'That file is too heavy to keep in the browser. Use a YouTube or Vimeo link instead.',
+ hv_bad_url:'That does not look like a video link. Paste a YouTube, Vimeo or mp4 link.',
+ hv_none:'No clips yet. The top of the page will show without video.',
+ hv_on:'Showing',hv_off:'Off',
+ hv_del:'Delete',hv_up_o:'Up',hv_dn:'Down',
+ hv_builtin:'The default clip',
+ hv_kind_link:'Link',hv_kind_file:'File',
+ hv_added:'Clip added',hv_removed:'Clip deleted',
+ hv_switch:'Switch between clips',
+ hv_all_off:'Every clip is off — the top of the page will show without video.',
+});
+
+/* The v24 layer concatenated the whole base64 clip into innerHTML on every
+   marketing render, and this layer replaces that node anyway. Hand the clip
+   over to a constant and leave v24 injecting an empty, cheap element. */
+var HERO_VIDEO_SRC = HERO_VIDEO;
+HERO_VIDEO = '';
+
+/* ── the collection ── */
+DB.heroVideos = DB.heroVideos || [];
+DB.site = DB.site || {};
+if (!DB.site.hvSeeded) {
+ DB.site.hvSeeded = true;
+ DB.heroVideos.unshift({ id: uid('hv'), __src: 'builtin', name: '', kind: 'file', src: HERO_VIDEO_SRC, on: true });
+}
+
+/* The default clip is baked into this file, so writing its base64 to
+   localStorage would burn ~350KB of a ~5MB budget for nothing. Strip it
+   on the way out and put it back on the way in — the same contract the
+   seeded portfolio photos use. */
+function heroSeedFor(src){ return src === 'builtin' ? HERO_VIDEO_SRC : ''; }
+function rehydrateHeroVideos(){
+ (DB.heroVideos || []).forEach(function (v) {
+  if (v && v.__src && !v.src) v.src = heroSeedFor(v.__src);
+ });
+}
+var _snapshotV39 = snapshot;
+snapshot = function () {
+ var o = _snapshotV39();
+ if (o.heroVideos && o.heroVideos.length) {
+  o.heroVideos = o.heroVideos.map(function (v) {
+   if (v && v.__src && v.src) { var c = {}; for (var k in v) if (k !== 'src') c[k] = v[k]; return c; }
+   return v;
+  });
+ }
+ return o;
+};
+rehydrateHeroVideos();
+
+function hvName(v){ return v.__src === 'builtin' ? t('hv_builtin') : (v.name || v.url || ''); }
+function hvLive(){ return (DB.heroVideos || []).filter(function (v) { return v.on !== false && (v.src || v.url); }); }
+
+/* ── link parsing ── */
+function hvYouTube(u){
+ var m = String(u || '').match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/);
+ return m ? m[1] : '';
+}
+function hvVimeo(u){
+ var m = String(u || '').match(/vimeo\.com\/(?:video\/)?(\d{6,})/);
+ return m ? m[1] : '';
+}
+function hvIsDirect(u){ return /^https?:\/\/\S+\.(mp4|webm|ogv|ogg|mov|m4v)(\?\S*)?$/i.test(String(u || '')); }
+
+/* ── the hero layer ── */
+var HERO_IDX = 0, HERO_TIMER = null, HERO_AUTO = true;
+
+function hvMediaHtml(v){
+ var common = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.28;z-index:0;border:0;pointer-events:none';
+ if (v.kind === 'link') {
+  var yt = hvYouTube(v.url);
+  if (yt) return '<iframe title="" tabindex="-1" aria-hidden="true" allow="autoplay" style="' + common + '" ' +
+   'src="https://www.youtube-nocookie.com/embed/' + encodeURIComponent(yt) +
+   '?autoplay=1&mute=1&loop=1&controls=0&modestbranding=1&rel=0&playsinline=1&playlist=' + encodeURIComponent(yt) + '"></iframe>';
+  var vm = hvVimeo(v.url);
+  if (vm) return '<iframe title="" tabindex="-1" aria-hidden="true" allow="autoplay" style="' + common + '" ' +
+   'src="https://player.vimeo.com/video/' + encodeURIComponent(vm) + '?autoplay=1&muted=1&loop=1&background=1"></iframe>';
+  return '<video autoplay muted loop playsinline aria-hidden="true" style="' + common + '" src="' + esc(v.url) + '"></video>';
+ }
+ return '<video autoplay muted loop playsinline aria-hidden="true" style="' + common + '" src="' + (v.src || '') + '"></video>';
+}
+
+function hvPaint(){
+ var layer = document.getElementById('heroVidLayer');
+ if (!layer) return;
+ var list = hvLive();
+ if (!list.length) { layer.innerHTML = ''; return; }
+ if (HERO_IDX >= list.length) HERO_IDX = 0;
+ layer.innerHTML = hvMediaHtml(list[HERO_IDX]);
+ var dots = document.getElementById('heroVidDots');
+ if (dots) {
+  [].slice.call(dots.children).forEach(function (b, i) {
+   b.setAttribute('aria-current', i === HERO_IDX ? 'true' : 'false');
+   b.style.background = i === HERO_IDX ? 'rgba(255,255,255,.95)' : 'rgba(255,255,255,.38)';
+   b.style.width = i === HERO_IDX ? '22px' : '8px';
+  });
+ }
+}
+function hvGo(i){
+ HERO_AUTO = false;                       /* the visitor took over */
+ if (HERO_TIMER) { clearInterval(HERO_TIMER); HERO_TIMER = null; }
+ HERO_IDX = i;
+ hvPaint();
+}
+function hvStartAuto(){
+ if (HERO_TIMER) { clearInterval(HERO_TIMER); HERO_TIMER = null; }
+ if (!HERO_AUTO) return;
+ if (hvLive().length < 2) return;
+ HERO_TIMER = setInterval(function () {
+  var n = hvLive().length;
+  if (n < 2) { clearInterval(HERO_TIMER); HERO_TIMER = null; return; }
+  HERO_IDX = (HERO_IDX + 1) % n;
+  hvPaint();
+ }, 9000);
+}
+
+var _renderMarketingV39 = renderMarketing;
+renderMarketing = function () {
+ _renderMarketingV39();
+ if (HERO_TIMER) { clearInterval(HERO_TIMER); HERO_TIMER = null; }
+ var root = $('mkRoot'); if (!root) return;
+ var hero = root.querySelector('header.hero'); if (!hero) return;
+
+ /* v24 injected one hard-wired clip; this layer owns the hero video now */
+ [].slice.call(hero.querySelectorAll(':scope > video')).forEach(function (el) { el.parentNode.removeChild(el); });
+
+ /* the in-app "stop animations" toggle and the OS-level preference both mean
+    "no autoplaying background video" — this layer has to obey them itself */
+ var reduceMotion = (typeof A11Y !== 'undefined' && A11Y.motion) ||
+  (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+ if (reduceMotion) return;
+
+ var list = hvLive();
+ if (!list.length) return;               /* every clip is off */
+ if (HERO_IDX >= list.length) HERO_IDX = 0;
+
+ hero.style.position = 'relative';
+ hero.style.overflow = 'hidden';
+ var layer = document.createElement('div');
+ layer.id = 'heroVidLayer';
+ layer.setAttribute('aria-hidden', 'true');
+ layer.style.cssText = 'position:absolute;inset:0;z-index:0';
+ hero.insertBefore(layer, hero.firstChild);
+
+ if (list.length > 1) {
+  var dots = document.createElement('div');
+  dots.id = 'heroVidDots';
+  dots.setAttribute('role', 'tablist');
+  dots.setAttribute('aria-label', t('hv_switch'));
+  dots.style.cssText = 'position:absolute;inset-inline:0;bottom:14px;z-index:2;display:flex;gap:7px;justify-content:center';
+  list.forEach(function (v, i) {
+   var b = document.createElement('button');
+   b.type = 'button';
+   b.setAttribute('role', 'tab');
+   b.setAttribute('aria-label', hvName(v) || String(i + 1));
+   b.style.cssText = 'height:8px;width:8px;border-radius:999px;border:none;padding:0;cursor:pointer;' +
+    'background:rgba(255,255,255,.38);transition:width .25s ease,background .25s ease';
+   b.onclick = function () { hvGo(i); };
+   dots.appendChild(b);
+  });
+  hero.appendChild(dots);
+ }
+ hvPaint();
+ hvStartAuto();
+};
+
+/* ── producer controls, inside the CMS screen ── */
+function hvAddUrl(){
+ var u = ($('hvUrl') && $('hvUrl').value || '').trim();
+ var n = ($('hvName') && $('hvName').value || '').trim();
+ if (!u) return toast(t('hv_bad_url'));
+ if (!hvYouTube(u) && !hvVimeo(u) && !hvIsDirect(u)) return toast(t('hv_bad_url'));
+ DB.heroVideos.push({ id: uid('hv'), name: n, kind: 'link', url: u, on: true });
+ toast(t('hv_added'));
+ saveSoon(); renderAll();
+}
+function hvAddFile(inp){
+ var f = inp.files && inp.files[0];
+ if (!f) return;
+ if (f.size > 1.2 * 1024 * 1024) { inp.value = ''; return toast(t('hv_too_big')); }
+ fileToData(inp, function (data, name) {
+  DB.heroVideos.push({ id: uid('hv'), name: name || '', kind: 'file', src: data, on: true });
+  toast(t('hv_added'));
+  saveSoon(); renderAll();
+ });
+}
+function hvToggle(id){
+ var v = (DB.heroVideos || []).find(function (x) { return x.id === id; });
+ if (!v) return;
+ v.on = v.on === false;
+ saveSoon(); renderAll();
+}
+function hvMove(id, d){
+ var l = DB.heroVideos || [], i = l.findIndex(function (x) { return x.id === id; });
+ var j = i + d;
+ if (i < 0 || j < 0 || j >= l.length) return;
+ var tmp = l[i]; l[i] = l[j]; l[j] = tmp;
+ saveSoon(); renderAll();
+}
+function hvRemove(id){
+ var l = DB.heroVideos || [], i = l.findIndex(function (x) { return x.id === id; });
+ if (i < 0) return;
+ l.splice(i, 1);
+ toast(t('hv_removed'));
+ saveSoon(); renderAll();
+}
+function hvCmsHtml(){
+ var l = DB.heroVideos || [];
+ var rows = l.length ? l.map(function (v, i) {
+  var badge = v.kind === 'link' ? t('hv_kind_link') : t('hv_kind_file');
+  var where = v.kind === 'link' ? (hvYouTube(v.url) ? 'YouTube' : hvVimeo(v.url) ? 'Vimeo' : 'mp4') : '';
+  return '<div class="card" style="margin-bottom:8px' + (v.on === false ? ';opacity:.55' : '') + '">' +
+   '<div class="spread" style="gap:10px;flex-wrap:wrap">' +
+    '<div style="min-width:0"><b style="font-size:13.6px">' + esc(hvName(v) || ('#' + (i + 1))) + '</b> ' +
+     '<span class="muted" style="font-size:11.5px">' + esc(badge) + (where ? ' · ' + esc(where) : '') + '</span>' +
+     (v.kind === 'link' ? '<div class="muted" style="font-size:11.5px;word-break:break-all">' + esc(v.url) + '</div>' : '') +
+    '</div>' +
+    '<div class="row" style="gap:5px">' +
+     '<button class="btn btn-ghost btn-xs" onclick="hvToggle(\'' + v.id + '\')">' + (v.on === false ? '○ ' + t('hv_off') : '● ' + t('hv_on')) + '</button>' +
+     '<button class="btn btn-ghost btn-xs" title="' + esc(t('hv_up_o')) + '" onclick="hvMove(\'' + v.id + '\',-1)">▲</button>' +
+     '<button class="btn btn-ghost btn-xs" title="' + esc(t('hv_dn')) + '" onclick="hvMove(\'' + v.id + '\',1)">▼</button>' +
+     '<button class="btn btn-red btn-xs" onclick="hvRemove(\'' + v.id + '\')">✕</button>' +
+    '</div>' +
+   '</div></div>';
+ }).join('') : '<p class="muted">' + t('hv_none') + '</p>';
+
+ var allOff = l.length && !hvLive().length;
+
+ return '<details class="sec"><summary>🎬 ' + t('hv_t') + '</summary><div class="sec-body">' +
+  '<p class="muted" style="font-size:13px;margin-bottom:10px">' + t('hv_p') + '</p>' +
+  (allOff ? '<div class="advice" style="margin-bottom:10px;font-size:12.8px">' + t('hv_all_off') + '</div>' : '') +
+  rows +
+  '<hr class="hairline" style="margin:14px 0">' +
+  '<div class="kv"><label for="hvUrl">' + t('hv_add_url') + '</label>' +
+   '<input id="hvUrl" placeholder="' + esc(t('hv_url_ph')) + '"></div>' +
+  '<div class="kv" style="margin-top:8px"><label for="hvName">' + t('hv_name_ph') + '</label>' +
+   '<input id="hvName" placeholder="' + esc(t('hv_name_ph')) + '"></div>' +
+  '<button class="btn btn-dark btn-sm" style="margin-top:8px" onclick="hvAddUrl()">' + t('hv_add') + '</button>' +
+  '<hr class="hairline" style="margin:14px 0">' +
+  '<div class="kv"><label for="hvFile">' + t('hv_up') + '</label>' +
+   '<input id="hvFile" type="file" accept="video/*" onchange="hvAddFile(this)"></div>' +
+  '<p class="muted" style="font-size:11.5px;margin-top:5px">' + t('hv_up_hint') + '</p>' +
+  '</div></details>';
+}
+var _adminCMSV39 = adminCMS;
+adminCMS = function () { return _adminCMSV39() + hvCmsHtml(); };
+
+renderAll();
+
 /* ══ PWA: real manifest.json + sw.js on the server so "Install app" works.
    (Blob/data: URLs cannot be used to register a service worker — that was
    the reason the previous version never satisfied install criteria.) ══ */
