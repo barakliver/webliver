@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --ambient: radial-gradient(1200px 620px at 78% -8%,  #e6f1fd 0%, transparent 62%),
+               radial-gradient(980px 520px at 12% 4%,    #eef5fc 0%, transparent 58%),
+               linear-gradient(180deg, #fbfdff 0%, #f4f8fd 100%);
+  }
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  body {
+    background: var(--ambient);
+    background-attachment: fixed;
+    color: theme('colors.ink.DEFAULT');
+    font-feature-settings: 'kern' 1;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  /* Hebrew sits low in most Latin-first stacks; a touch more leading keeps
+     nikud-free Hebrew from feeling cramped at display sizes. */
+  [dir='rtl'] p, [dir='rtl'] li { line-height: 1.85; }
+  ::selection { background: theme('colors.azure.100'); }
+  :focus-visible { outline: 2px solid theme('colors.azure.500'); outline-offset: 2px; border-radius: 6px; }
+}
+
+@layer components {
+  .glass {
+    @apply bg-white/70 backdrop-blur-xl border border-white/60 shadow-soft;
+  }
+  .glass-strong {
+    @apply bg-white/85 backdrop-blur-xl border border-white/70 shadow-lift;
+  }
+  .hairline { @apply border-line; }
+  .shell { @apply mx-auto w-full max-w-content px-5 sm:px-8; }
+  .section { @apply py-20 sm:py-28; }
+  .measure { @apply max-w-prose2; }
+
+  .btn {
+    @apply inline-flex select-none items-center justify-center gap-2 rounded-full
+           px-6 py-3 text-[15px] font-medium transition
+           active:scale-[.985] disabled:cursor-not-allowed disabled:opacity-60;
+  }
+  .btn-primary { @apply btn bg-ink text-white shadow-soft hover:bg-ink-soft; }
+  .btn-ghost   { @apply btn border border-line-strong bg-white/60 text-ink hover:bg-white; }
+  .btn-quiet   { @apply btn text-azure-600 hover:text-ink; }
+
+  .field {
+    @apply w-full rounded-2xl border border-line bg-white/80 px-4 py-3 text-[15px]
+           text-ink placeholder:text-ink-mute
+           focus:border-azure-300 focus:bg-white focus:outline-none focus:ring-4 focus:ring-azure-100;
+  }
+  .label { @apply mb-1.5 block text-[13px] font-medium text-ink-soft; }
+  .card  { @apply rounded-4xl glass p-7 sm:p-9; }
+  /* No uppercase and no wide tracking: Hebrew has no letter case, and
+     letter-spacing pulls its letterforms apart rather than refining them. */
+  .eyebrow { @apply text-[13px] font-semibold text-azure-600; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  html { scroll-behavior: auto; }
+}
