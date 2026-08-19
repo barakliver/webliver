@@ -15,19 +15,47 @@
 ## 2. הרצת הסכמה
 
 1. בתפריט הצדדי: **SQL Editor** ואז **New query**.
-2. להעתיק את כל התוכן של `supabase/migrations/0001_init.sql` ולהדביק. **Run**.
-3. **New query** שוב, להעתיק את כל `supabase/migrations/0002_auth_bootstrap.sql`. **Run**.
+2. לפתוח את הקובץ `liver-next/supabase/setup.sql` מהמאגר ב-GitHub,
+   ללחוץ על כפתור ההעתקה שבפינה, ולהדביק בחלון.
+3. **Run**.
 
-הסדר חשוב: 0001 קודם, 0002 אחריו.
+זהו. הקובץ הזה הוא שתי המיגרציות אחת אחרי השנייה בסדר הנכון, כך שאין
+מה לבלבל. אפשר להריץ אותו שוב בלי נזק אם משהו נקטע באמצע.
+
+בסוף אמורים להיווצר 13 טבלאות, 20 מדיניות אבטחה ו-6 טריגרים.
+אפשר לוודא ב-**Table Editor** שרואים את `profiles`, `producers`, `clients`.
 
 ## 3. הגדרת הכניסה במייל
 
-1. **Authentication** ואז **Providers** ואז **Email**.
+1. **Authentication** ואז **Sign In / Providers** ואז **Email**.
 2. לוודא ש-**Enable Email provider** דלוק.
-3. לכבות **Confirm email** (הכניסה היא עם קוד חד פעמי, אין סיסמה לאשר).
-4. **Authentication** ואז **URL Configuration**: ב-Site URL לכתוב `https://liverproductions.com`.
-5. **Authentication** ואז **Emails** ואז תבנית **Magic Link**: לוודא שהתבנית מכילה את
-   `{{ .Token }}` ולא רק את הקישור. זה הקוד בן שש הספרות שהמסך מבקש.
+3. לכבות **Confirm email**. הכניסה היא בקוד חד פעמי, והקוד עצמו הוא האימות,
+   אז אין מה לאשר פעמיים.
+4. **Authentication** ואז **URL Configuration**: ב-Site URL לכתוב
+   `https://liverproductions.com`.
+5. **Authentication** ואז **Emails** ואז התבנית **Magic Link**: לוודא
+   שהתבנית מכילה `{{ .Token }}`. זה הקוד בן שש הספרות שהמסך מבקש.
+   אם התבנית מכילה רק קישור, המסך יבקש קוד שלא נשלח.
+
+### חשוב: שרת המייל של Supabase לא מיועד לאמת
+
+שירות המייל המובנה של Supabase מוגבל למספר קטן מאוד של הודעות בשעה,
+והוא נועד לבדיקות בלבד. ברגע שיהיו כמה זוגות שמתחברים, המיילים פשוט
+יפסיקו להישלח בלי הודעה.
+
+מה שצריך זה SMTP משלנו, וזה גם מה שממילא נדרש למיילים של הלידים:
+
+1. להירשם ב-https://resend.com (יש שכבה חינמית).
+2. **Domains** ואז **Add Domain** ולהזין `liverproductions.com`.
+3. Resend נותן כמה רשומות DNS. להוסיף אותן אצל ספק הדומיין ולחכות לאימות.
+4. **API Keys** ואז **Create API Key**. לשמור את המפתח.
+5. ב-Supabase: **Project Settings** ואז **Authentication** ואז
+   **SMTP Settings**, להדליק **Enable Custom SMTP** ולמלא:
+   - Host: `smtp.resend.com`
+   - Port: `587`
+   - Username: `resend`
+   - Password: מפתח ה-API מ-Resend
+   - Sender email: כתובת בדומיין שאומת, למשל `noreply@liverproductions.com`
 
 ## 4. חיבור המפתחות לאתר
 
@@ -39,6 +67,10 @@ NEXT_PUBLIC_SUPABASE_URL=       # Project URL
 NEXT_PUBLIC_SUPABASE_ANON_KEY=  # anon public
 SUPABASE_SERVICE_ROLE_KEY=      # service_role  ← סודי, לא נכנס ל-git לעולם
 NEXT_PUBLIC_SITE_URL=https://liverproductions.com
+
+RESEND_API_KEY=                 # אותו מפתח מסעיף 3
+MAIL_FROM=noreply@liverproductions.com
+ADMIN_ALERT_EMAIL=barakliver@gmail.com   # לאן מגיעה התראה על ליד חדש
 ```
 
 `service_role` עוקף את כל הרשאות האבטחה. הוא נשאר רק בשרת.
