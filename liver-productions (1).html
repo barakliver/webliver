@@ -7476,6 +7476,260 @@ doReset  = function(){ setAuthMode('login'); };
  }
 })();
 
+/* ══════════════════════════════════════════════════════════
+   v42 — a working control centre, a client status board,
+         live ➕ headings, and calendar export
+   ══════════════════════════════════════════════════════════ */
+
+Object.assign(D_.he,{
+ st_t:'מצב לקוחות',
+ st_p:'איפה כל אירוע עומד, מה כבר סגור ומה עוד חסר.',
+ st_none:'עוד לא נפתחו אירועים.',
+ st_open:'פתיחת מרחב העבודה',
+ st_missing:'חסר',
+ st_ready:'הכל מלא ✅',
+ st_days_left:'ימים לאירוע',
+ st_passed:'האירוע עבר',
+ st_no_date:'אין תאריך',
+ st_next:'המשימה הבאה',
+ st_next_none:'אין משימה פתוחה',
+ st_overdue:'באיחור',
+ st_unread:'הודעות',
+ st_paid:'שולם',
+ st_owed:'פתוח לתשלום',
+ st_m_date:'תאריך אירוע',
+ st_m_venue:'מקום',
+ st_m_guests:'מספר אורחים',
+ st_m_budget:'תקציב',
+ st_m_crew:'צוות',
+ st_m_contract:'חוזה חתום',
+ st_sort:'לפי קרבת התאריך',
+ cal_sync:'סנכרון יומן',
+ cal_sync_p:'הורדת כל הפגישות כקובץ יומן. פתיחת הקובץ מוסיפה אותן ליומן Apple, Google או Outlook.',
+ cal_ics_btn:'⬇️ הורדה ליומן',
+ cal_gcal_btn:'הוספה ל-Google Calendar',
+ cal_none:'אין עדיין פגישות ביומן.',
+ hdr_hide:'הסתרה',hdr_show:'הוספה',
+});
+Object.assign(D_.en,{
+ st_t:'Client status',
+ st_p:'Where each event stands, what is settled and what is still missing.',
+ st_none:'No events yet.',
+ st_open:'Open the workspace',
+ st_missing:'Missing',
+ st_ready:'Nothing missing ✅',
+ st_days_left:'days to the event',
+ st_passed:'The event has passed',
+ st_no_date:'No date',
+ st_next:'Next task',
+ st_next_none:'No open task',
+ st_overdue:'overdue',
+ st_unread:'messages',
+ st_paid:'paid',
+ st_owed:'outstanding',
+ st_m_date:'Event date',
+ st_m_venue:'Venue',
+ st_m_guests:'Guest count',
+ st_m_budget:'Budget',
+ st_m_crew:'Crew',
+ st_m_contract:'Signed contract',
+ st_sort:'by how close the date is',
+ cal_sync:'Calendar sync',
+ cal_sync_p:'Download every meeting as a calendar file. Opening it adds them to Apple, Google or Outlook Calendar.',
+ cal_ics_btn:'⬇️ Download to calendar',
+ cal_gcal_btn:'Add to Google Calendar',
+ cal_none:'No meetings in the diary yet.',
+ hdr_hide:'Hide',hdr_show:'Add',
+});
+
+/* ── 1. what a client still owes us, and we them ──────────────────────
+   The producer's real question is never "what percent" but "what is
+   stopping this one moving". So the board answers that literally. */
+function clientGaps(c){
+ var ef  = (DB.eventFiles && DB.eventFiles[c.id]) || {};
+ var det = ef.details || {};
+ var bud = (DB.budgets && DB.budgets[c.id]) || {};
+ var gaps = [];
+ if(!c.date) gaps.push('st_m_date');
+ if(!(c.venue || det.place)) gaps.push('st_m_venue');
+ if(!(c.guests || bud.guests)) gaps.push('st_m_guests');
+ if(!((bud.rows||[]).some(function(r){ return num(r.fin) || num(r.max); }))) gaps.push('st_m_budget');
+ if(!((DB.crew && DB.crew[c.id] || []).length)) gaps.push('st_m_crew');
+ if(!(DB.contracts||[]).some(function(x){ return x.cid===c.id && x.status==='signed'; })) gaps.push('st_m_contract');
+ return gaps;
+}
+function clientMoney(c){
+ var mine = (DB.payRequests||[]).filter(function(p){ return p.cid===c.id; });
+ return {
+  paid: mine.filter(function(p){ return p.paid; }).reduce(function(s,p){ return s+num(p.amount); },0),
+  owed: mine.filter(function(p){ return !p.paid; }).reduce(function(s,p){ return s+num(p.amount); },0),
+ };
+}
+function nextTaskOf(cid){
+ var open = clientTasks(cid).filter(function(i){ return !i.done && i.due; })
+   .sort(function(a,b){ return d(a.due) - d(b.due); });
+ return open[0] || null;
+}
+function clientStatusHtml(){
+ var h = '<div class="page-h"><h2>📋 '+esc(t('st_t'))+'</h2><p class="muted">'+esc(t('st_p'))+'</p></div>';
+ if(!DB.clients.length) return h + empty(t('st_t'), t('st_none'));
+
+ /* the one with the nearest date is the one that needs attention today */
+ var list = DB.clients.slice().sort(function(a,b){
+  if(!a.date) return 1;
+  if(!b.date) return -1;
+  return d(a.date) - d(b.date);
+ });
+
+ h += '<p class="muted" style="font-size:12.5px;margin-bottom:12px">'+esc(t('st_sort'))+'</p>';
+ h += '<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px">';
+
+ list.forEach(function(c){
+  var gaps  = clientGaps(c);
+  var over  = overdueOf(c.id).length;
+  var un    = (DB.messages||[]).filter(function(m){ return m.cid===c.id && m.from==='couple' && !m.read; }).length;
+  var money = clientMoney(c);
+  var pct   = progress(c.id);
+  var nxt   = nextTaskOf(c.id);
+  var left  = c.date ? daysTo(c.date) : null;
+
+  var when = c.date
+    ? (left >= 0 ? '<b>'+left+'</b> '+esc(t('st_days_left')) : esc(t('st_passed')))
+    : esc(t('st_no_date'));
+
+  h += '<article class="card" style="'+(over ? 'border-color:var(--red)' : '')+'">'+
+   '<div class="spread" style="align-items:flex-start;gap:10px">'+
+    '<div><b style="font-size:15.5px">'+esc(c.names)+'</b>'+
+     '<div class="muted" style="font-size:12.5px;margin-top:2px">'+
+       (c.date ? esc(fmt(c.date))+' · ' : '')+when+'</div></div>'+
+    '<span style="font-size:19px;font-weight:700">'+pct+'%</span>'+
+   '</div>'+
+   '<div class="bar" style="margin-top:8px"><i style="width:'+pct+'%"></i></div>'+
+
+   '<div class="row" style="gap:6px;flex-wrap:wrap;margin-top:12px">'+
+    (over ? '<span class="badge" style="background:var(--red);color:#fff;border-color:transparent">'+over+' '+esc(t('st_overdue'))+'</span>' : '')+
+    (un   ? '<span class="badge b-pending">💬 '+un+' '+esc(t('st_unread'))+'</span>' : '')+
+    (money.paid ? '<span class="badge b-approved">'+esc(t('st_paid'))+' '+ils(money.paid)+'</span>' : '')+
+    (money.owed ? '<span class="badge b-pending">'+esc(t('st_owed'))+' '+ils(money.owed)+'</span>' : '')+
+   '</div>'+
+
+   '<div style="margin-top:12px;font-size:13.2px">'+
+    '<span class="muted">'+esc(t('st_next'))+':</span> '+
+    (nxt ? '<b>'+esc(L(nxt.title))+'</b> <span class="muted">· '+esc(fmt(nxt.due))+'</span>'
+         : '<span class="muted">'+esc(t('st_next_none'))+'</span>')+
+   '</div>'+
+
+   '<div style="margin-top:10px;font-size:13.2px">'+
+    (gaps.length
+      ? '<span class="muted">'+esc(t('st_missing'))+':</span> '+
+        gaps.map(function(k){ return '<span class="chip" style="margin-block-start:5px;margin-inline-end:5px">'+esc(t(k))+'</span>'; }).join('')
+      : '<span style="color:var(--green,#2e7d4f)">'+esc(t('st_ready'))+'</span>')+
+   '</div>'+
+
+   '<button class="btn btn-dark btn-sm" style="width:100%;margin-top:14px" '+
+     'onclick="openWs(\''+c.id+'\')">'+esc(t('st_open'))+'</button>'+
+  '</article>';
+ });
+
+ return h + '</div>';
+}
+
+/* ── 2. every number in the control centre goes somewhere ──────────── */
+function ccGo(tab){ adminTab = tab; renderAll(); window.scrollTo(0,0); }
+
+var _adminOverV42 = adminOver;
+adminOver = function(){
+ var h = _adminOverV42();
+ /* The five figures were plain text. A count of overdue tasks that
+    cannot be clicked is a fact; one that can is a place to start. */
+ var targets = ['status','leads','status','clients','orders'];
+ var i = 0;
+ h = h.replace(/<div class="card stat">/g, function(){
+  var tab = targets[i++] || 'over';
+  return '<div class="card stat" role="button" tabindex="0" style="cursor:pointer" ' +
+   'onclick="ccGo(\''+tab+'\')" ' +
+   'onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();ccGo(\''+tab+'\')}">';
+ });
+ return h;
+};
+
+/* ── 3. register the board in the producer's navigation ───────────── */
+var _renderAdminV42 = renderAdmin;
+renderAdmin = function(){
+ _renderAdminV42();
+ if(adminTab === 'status'){
+  var m = $('adminMain');
+  if(m) m.innerHTML = clientStatusHtml();
+ }
+ var nav = $('adminNav');
+ if(nav && nav.innerHTML.indexOf('adminTab=\'status\'') < 0){
+  nav.innerHTML = nav.innerHTML.replace(
+   /(<button class="navlink[^"]*"[^>]*onclick="adminTab='clients'[^>]*>[\s\S]*?<\/button>)/,
+   '$1<button class="navlink '+(adminTab==='status'?'active':'')+'" '+
+    'onclick="adminTab=\'status\';renderAll()">📋 '+esc(t('st_t'))+'</button>'
+  );
+  if(nav.innerHTML.indexOf('adminTab=\'status\'') < 0){
+   nav.innerHTML += '<button class="navlink '+(adminTab==='status'?'active':'')+'" '+
+    'onclick="adminTab=\'status\';renderAll()">📋 '+esc(t('st_t'))+'</button>';
+  }
+ }
+};
+
+/* ── 4. the ➕ headings actually do something ──────────────────────────
+   They looked like buttons and were plain text, so tapping one did
+   nothing and the form below stayed open whether it was wanted or not.
+   Each is now a real control that folds its own card away. */
+function plusToggle(btn){
+ var card = btn.closest('.card');
+ if(!card) return;
+ var open = card.getAttribute('data-open') !== 'no';
+ open = !open;
+ card.setAttribute('data-open', open ? 'yes' : 'no');
+ [].slice.call(card.children).forEach(function(el){
+  if(el !== btn.parentNode && el !== btn) el.style.display = open ? '' : 'none';
+ });
+ btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+ var cap = btn.querySelector('.plus-cap');
+ if(cap) cap.textContent = open ? '−' : '+';
+}
+function wirePlusHeadings(root){
+ [].slice.call((root||document).querySelectorAll('h3')).forEach(function(hd){
+  if(hd.dataset.plus) return;
+  if(String(hd.textContent||'').trim().indexOf('➕') !== 0) return;
+  hd.dataset.plus = '1';
+  hd.style.cursor = 'pointer';
+  hd.setAttribute('role','button');
+  hd.setAttribute('tabindex','0');
+  hd.setAttribute('aria-expanded','true');
+  hd.innerHTML = hd.innerHTML + ' <span class="plus-cap" aria-hidden="true" style="float:left;opacity:.5;font-weight:400">−</span>';
+  hd.onclick = function(){ plusToggle(hd); };
+  hd.onkeydown = function(e){
+   if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); plusToggle(hd); }
+  };
+ });
+}
+
+/* ── 5. calendar export was written and never given a button ───────── */
+function calSyncHtml(){
+ var n = (DB.calEvents || []).length;
+ return '<div class="card" style="margin-bottom:14px">'+
+  '<b style="font-size:15px">🗓 '+esc(t('cal_sync'))+'</b>'+
+  '<p class="muted" style="font-size:12.8px;margin-top:5px">'+esc(t('cal_sync_p'))+'</p>'+
+  (n ? '<button class="btn btn-gold btn-sm" style="margin-top:10px" onclick="downloadICS()">'+
+        esc(t('cal_ics_btn'))+'</button>'
+     : '<p class="muted" style="font-size:12.8px;margin-top:8px">'+esc(t('cal_none'))+'</p>')+
+  '</div>';
+}
+var _adminCalV42 = (typeof adminCal === 'function') ? adminCal : null;
+if(_adminCalV42) adminCal = function(){ return calSyncHtml() + _adminCalV42(); };
+
+var _renderAllV42 = renderAll;
+renderAll = function(){
+ _renderAllV42();
+ wirePlusHeadings(document);
+};
+renderAll();
+
 /* ══ PWA: real manifest.json + sw.js on the server so "Install app" works.
    (Blob/data: URLs cannot be used to register a service worker — that was
    the reason the previous version never satisfied install criteria.) ══ */
