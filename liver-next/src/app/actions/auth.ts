@@ -38,7 +38,11 @@ export async function verifyCode(_prev: AuthResult | null, form: FormData): Prom
   const token = String(form.get('code') ?? '').replace(/\D/g, '');
 
   if (!EMAIL_RE.test(email)) return { ok: false, error: 'כתובת האימייל לא תקינה', email };
-  if (token.length !== 6) return { ok: false, error: 'הקוד הוא שש ספרות', email };
+  /* The code length is a Supabase project setting, not a constant. Hard coding
+     six meant a project issuing eight could never be signed in to, and the
+     screen blamed the person typing. Check that digits arrived, and let the
+     server be the authority on whether they are the right ones. */
+  if (token.length < 4) return { ok: false, error: 'חסרות ספרות בקוד', email };
 
   const sb = await supabaseServer();
   const { error } = await sb.auth.verifyOtp({ email, token, type: 'email' });

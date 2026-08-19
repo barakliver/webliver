@@ -70,10 +70,10 @@
  <div class="card hide" id="codeCard">
   <div class="step">שלב 2</div>
   <h1>הזנת הקוד</h1>
-  <p class="sub">שש הספרות מהמייל.</p>
+  <p class="sub">הספרות מהמייל, בדיוק כפי שהן.</p>
   <div class="field">
    <label for="code">הקוד</label>
-   <input id="code" dir="ltr" inputmode="numeric" maxlength="6" style="text-align:center;font-size:26px;letter-spacing:.4em">
+   <input id="code" dir="ltr" inputmode="numeric" maxlength="12" style="text-align:center;font-size:26px;letter-spacing:.4em">
   </div>
   <button id="verify">כניסה</button>
   <button class="ghost" id="again">לשלוח קוד מחדש</button>
@@ -156,7 +156,9 @@
  $('verify').onclick = function(){
   var email = $('email').value.trim();
   var token = $('code').value.replace(/\D/g,'');
-  if(token.length !== 6){ say('codeMsg','bad','הקוד הוא שש ספרות'); return; }
+  /* Supabase's OTP length is a project setting and is not always six, so
+     accept whatever it issues rather than hard coding one length. */
+  if(token.length < 4){ say('codeMsg','bad','חסרות ספרות בקוד'); return; }
   say('codeMsg','info','בודק…');
   $('verify').disabled = true;
 

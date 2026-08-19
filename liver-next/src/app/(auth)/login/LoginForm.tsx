@@ -60,7 +60,7 @@ export function LoginForm({ next }: { next?: string }) {
             name="code"
             inputMode="numeric"
             autoComplete="one-time-code"
-            maxLength={6}
+            maxLength={12}
             required
             dir="ltr"
             className="field text-center text-[22px] tracking-[0.5em]"
