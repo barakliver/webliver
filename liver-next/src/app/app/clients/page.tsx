@@ -1,7 +1,9 @@
+import Link from 'next/link';
 import { requireLiveProducer } from '@/lib/auth';
 import { supabaseServer } from '@/lib/supabase/server';
 import { appCopy } from '@/content/site';
 import { PageHead, Empty } from '@/components/app/PageHead';
+import { NewClientForm } from '@/components/app/NewClientForm';
 
 export const metadata = { title: appCopy.clients.title };
 
@@ -25,12 +27,13 @@ export default async function ClientsPage() {
   return (
     <>
       <PageHead title={appCopy.clients.title} sub={appCopy.clients.sub} />
+      <div className="mb-8"><NewClientForm /></div>
       {rows.length === 0 ? (
         <Empty text={appCopy.clients.empty} />
       ) : (
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {rows.map((c) => (
-            <article key={c.id} className="card">
+            <Link key={c.id} href={`/app/clients/${c.id}`} className="card block transition-shadow hover:shadow-lift">
               <h2 className="font-display text-[19px] font-semibold text-ink">{c.display_name}</h2>
               <dl className="mt-4 space-y-1.5 text-[14.5px]">
                 <div className="flex justify-between gap-3">
@@ -46,7 +49,7 @@ export default async function ClientsPage() {
                   <dd className="text-ink-soft">{c.guest_estimate ?? '—'}</dd>
                 </div>
               </dl>
-            </article>
+            </Link>
           ))}
         </div>
       )}
