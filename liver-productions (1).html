@@ -7780,6 +7780,265 @@ setAuthMsg = function(m){
  return _setAuthMsgV43(m);
 };
 
+/* ══════════════════════════════════════════════════════════
+   v44 — stop the browser filling the wrong field
+   ══════════════════════════════════════════════════════════
+   lblIn built every form field with no name and no autocomplete hint,
+   so Chrome fell back to guessing from the label and dropped a saved
+   email address into "מיקום" on the new meeting form. Naming each field
+   after its own id and turning autofill off leaves the browser nothing
+   to guess with. Sign in and sign up build their fields through afld(),
+   not this helper, so password managers still work where they should. */
+lblIn = function(id, lbl, type){
+ return '<div><label for="'+id+'" class="muted" style="font-size:12.5px;font-weight:600">'+lbl+'</label>'+
+  '<input id="'+id+'" name="'+id+'" autocomplete="off" '+
+  (type ? 'type="'+type+'"' : '')+' placeholder="'+lbl+'"></div>';
+};
+
+/* ══════════════════════════════════════════════════════════
+   v45 — the assistants stop vanishing, keep focus, and think
+   ══════════════════════════════════════════════════════════
+   The concierge was positioned with `position:fixed` and no vertical
+   offset at all, so the browser fell back to where the element would
+   have sat in normal flow — the very end of a very long page. Closed it
+   happened to land near the bottom of the viewport and looked right.
+   The moment it opened, the extra panel changed that flow position and
+   both the bubble and the panel jumped to roughly y=12,486 on a 892
+   tall screen. Clicking the assistant genuinely threw it twelve
+   thousand pixels off screen. Measured before and after.
+
+   Both assistants also rebuilt their whole screen on every message,
+   which destroyed the input mid-conversation, and the producer one sat
+   through an artificial 520ms delay pretending to think. */
+
+/* ── 1. give the concierge a real place on the screen ───────────────
+   #fabs sits at bottom:14px, so the bubble goes above it and the panel
+   above the bubble. */
+(function(){
+ var css = document.createElement('style');
+ css.textContent =
+  '#concierge-bubble{bottom:calc(68px + env(safe-area-inset-bottom,0px)) !important;top:auto !important}' +
+  '#concierge-panel{bottom:calc(120px + env(safe-area-inset-bottom,0px)) !important;top:auto !important}';
+ document.head.appendChild(css);
+})();
+
+/* ── 2. keep the caret where the person is typing ─────────────────── */
+var _renderConciergeV45 = renderConcierge;
+renderConcierge = function(){
+ var el  = document.getElementById('concierge-input');
+ var had = el && document.activeElement === el;
+ var val = el ? el.value : '';
+ _renderConciergeV45();
+ if(had){
+  var next = document.getElementById('concierge-input');
+  if(next){ next.value = val; next.focus(); }
+ }
+};
+
+/* ── 3. an answer worth reading ──────────────────────────────────────
+   The old engine knew five topics and fell through to "good question"
+   for everything else. It also had a budget model sitting in the same
+   file that it never once consulted, so "how much for 300 guests" got a
+   pamphlet instead of a number. */
+function conNumber(q){
+ var m = String(q).match(/(\d{2,4})/);
+ if(!m) return 0;
+ var n = Number(m[1]);
+ return (n >= 30 && n <= 1500) ? n : 0;
+}
+function conBudgetFor(guests){
+ if(typeof bs2Model !== 'function') return null;
+ var keep = BS2.invited;
+ BS2.invited = guests;
+ var m;
+ try { m = bs2Model(); } finally { BS2.invited = keep; }
+ return m;
+}
+conciergeAnswer = function(q){
+ var s = String(q).toLowerCase();
+ var n = conNumber(q);
+
+ /* a number of guests plus a money word deserves an actual number */
+ if(n && /(תקציב|מחיר|עולה|כמה|budget|cost|price|how much)/.test(s)){
+  var m = conBudgetFor(n);
+  if(m){
+   return B(
+    'ל-' + n + ' מוזמנים, בהנחה שכ-' + m.attending + ' מגיעים בפועל, טווח ההתחלה הוא בערך ' +
+    ils(Math.round(m.low/500)*500) + ' עד ' + ils(Math.round(m.high/500)*500) + '.\n' +
+    'זה יוצא בערך ' + ils(Math.round(m.perGuest)) + ' לאורח, ועל ' + m.tables + ' שולחנות.\n' +
+    'זה אומדן בלבד ומשתנה לפי המקום, העונה והיום בשבוע. במחשבון שלמעלה בדף אפשר לשחק עם הפרמטרים.',
+    'For ' + n + ' invitations, assuming about ' + m.attending + ' actually attend, the starting range is roughly ' +
+    ils(Math.round(m.low/500)*500) + ' to ' + ils(Math.round(m.high/500)*500) + '.\n' +
+    'That is about ' + ils(Math.round(m.perGuest)) + ' per attending guest, over ' + m.tables + ' tables.\n' +
+    'It is an estimate only and moves with venue, season and day of week. The simulator above lets you adjust them.');
+  }
+ }
+
+ if(/(כמה מגיע|אחוז הגעה|כמה יגיעו|attendance|how many will come|show up)/.test(s))
+  return B('כלל אצבע: מגיעים בין 75% ל-90% מהמוזמנים. חתונה באמצע השבוע או בעונה עמוסה נוטה לצד הנמוך, וחתונה קרובה עם הרבה משפחה לצד הגבוה. הקייטרינג משולם על מי שמגיע, לא על מי שהוזמן, ולכן זה המספר שקובע.',
+   'Rule of thumb: between 75% and 90% of invitations turn up. A midweek date or a busy season leans low, a close family wedding leans high. Catering is paid on who attends, not on who was invited, so this is the number that matters.');
+
+ if(/(כמה זמן|מתי להתחיל|כמה חודשים|how long|when should we start|lead time)/.test(s))
+  return B('רוב הזוגות מתחילים 10 עד 14 חודשים לפני. הלוקיישנים המבוקשים נסגרים הכי מוקדם, אחריהם צלם ומוזיקה. אפשר להפיק חתונה גם בארבעה חודשים, זה פשוט מצמצם את הבחירה ולפעמים מייקר.',
+   'Most couples start 10 to 14 months ahead. The sought-after venues go first, then photography and music. A wedding can be produced in four months; it simply narrows the choice and sometimes costs more.');
+
+ if(/(מה זה כולל|מה אתם עושים|מה התפקיד|what do you do|what is included|scope)/.test(s))
+  return B('ברק מחזיק את התכנון, התקציב, הספקים ולוח הזמנים מהפגישה הראשונה ועד סוף הערב. אתם מקבלים החלטות, הוא דואג שהן יקרו בזמן ובמסגרת שסיכמנו, ושביום עצמו לא תצטרכו לנהל אף אחד.',
+   'Barak holds the planning, the budget, the vendors and the schedule from the first meeting to the end of the night. You make the decisions; he makes sure they happen on time and within what was agreed, and that on the day itself you are not managing anyone.');
+
+ if(/(תשלום|לשלם|מקדמה|payment|deposit|installment)/.test(s))
+  return B('התשלומים נפרסים לפי אבני דרך ולא בבת אחת: מקדמה בסגירה, תשלומים בהתאם לסגירת הספקים, והיתרה סמוך לאירוע. כל תשלום מתועד במערכת ואתם רואים בכל רגע מה שולם ומה נשאר.',
+   'Payments are spread across milestones rather than paid at once: a deposit on signing, payments as vendors are booked, and the balance close to the event. Every payment is recorded in the system, so you can always see what is paid and what is left.');
+
+ if(/(אזור|איפה|מרחק|region|where do you work|area|travel)/.test(s))
+  return B('ברק מפיק בכל הארץ, כולל אירועי שטח במקומות בלי תשתית. באירוע רחוק פשוט מתמחרים גם לינה והסעות לצוות, וזה נכנס לתקציב מראש ולא כהפתעה.',
+   'Barak produces across the country, including open-air events at sites with no infrastructure. For a distant event, crew lodging and transport are simply priced in from the start rather than appearing as a surprise.');
+
+ if(/(תקציב|מחיר|עולה|budget|cost|price)/.test(s))
+  return B('התקציב תלוי בעונה, ביום בשבוע, בסגנון ובכמות האורחים. במחשבון שלמעלה בדף אפשר לקבל אומדן תוך שניות. אפשר גם לכתוב לי כאן כמה אורחים אתם מתכננים ואתן טווח מיד.',
+   'Budget depends on season, day of week, style and guest count. The simulator above gives an estimate in seconds. You can also just tell me how many guests you are planning and I will give a range right away.');
+
+ if(/(מקום|לוקיישן|venue|location)/.test(s))
+  return B('בחירת הלוקיישן מתחילה מכם ולא ממה שפופולרי. יוצאים לסבב סיורים רק אחרי שברור התקציב והכיוון, כדי לא לבזבז ערבים על מקומות שממילא לא יתאימו.',
+   'Choosing a venue starts from you, not from what is popular. Tours happen only once budget and direction are clear, so no evenings are wasted on places that were never going to fit.');
+
+ if(/(ספק|צלם|dj|מוזיקה|קייטרינג|vendor|photographer|music|catering)/.test(s))
+  return B('הספקים נבחרים סביב הזוג ולא להפך. ברק מביא אנשים שהוא כבר עבד איתם וסומך עליהם, עם שקיפות מלאה על מחיר והתאמה. אתם תמיד יכולים להביא ספק משלכם.',
+   'Vendors are chosen around the couple, not the other way around. Barak brings people he has already worked with and trusts, with full transparency on price and fit. You can always bring your own vendor.');
+
+ if(/(תאריך|מתי|date|when)/.test(s))
+  return B('אפשר להתחיל לתכנן גם בלי תאריך סגור. ברוב המקרים כדאי לנעול תאריך ולוקיישן יחד, כדי לא לפספס עונה שמתאימה לכם.',
+   'You can start planning without a fixed date. In most cases it is best to lock date and venue together, so you do not miss a season that suits you.');
+
+ if(/(תודה|thanks|thank you)/.test(s))
+  return B('בשמחה! רוצים שאעביר את הפרטים שלכם לברק?', 'Happy to help! Would you like me to pass your details to Barak?');
+
+ return B('אני יכול לענות על תקציב ומחירים, אחוזי הגעה, לוקיישן, ספקים, תשלומים, לוחות זמנים ואזורי עבודה. אפשר גם פשוט לכתוב "כמה עולה חתונה ל-300 איש" ואתן מספר.\nואם נוח לכם, אפשר להשאיר פרטים ולתאם שיחה עם ברק.',
+  'I can answer on budget and pricing, attendance rates, venue, vendors, payments, timing and where we work. You can also just write "how much for a wedding of 300" and I will give a number.\nOr leave your details and set up a call with Barak.');
+};
+
+/* ── 4. the producer's assistant: no fake delay, no lost caret ───────
+   sendProdAI rebuilt the entire admin screen twice per message and
+   waited 520ms in between to look like it was thinking. The wait was
+   invented and the rebuild threw away the input. */
+sendProdAI = function(){
+ var inp = $('aiInput');
+ if(!inp) return;
+ var q = inp.value.trim();
+ if(!q) return;
+ DB.aiChat.push({role:'user', text:B(q,q)});
+ var r = prodAI(q);
+ DB.aiChat.push({role:'ai', text:r});
+ inp.value = '';
+ aiRepaint();
+ saveSoon();
+};
+function aiRepaint(){
+ var log = $('aiLog');
+ if(!log){ renderAdmin(); return; }
+ /* repaint only the transcript, so the field being typed into survives */
+ log.innerHTML = DB.aiChat.map(function(m){
+  return '<div class="msg '+m.role+'">'+esc(L(m.text)).replace(/\n/g,'<br>')+'</div>';
+ }).join('');
+ log.scrollTop = log.scrollHeight;
+ var inp = $('aiInput');
+ if(inp) inp.focus();
+}
+askProdAI = function(q){
+ var inp = $('aiInput');
+ if(inp) inp.value = q;
+ sendProdAI();
+};
+
+/* ── 5. the producer's assistant can read its own workspace ──────────
+   It answered from a fixed script while the answers to half the
+   questions were sitting in DB. */
+var _prodAIV45 = prodAI;
+prodAI = function(q){
+ var s = String(q).toLowerCase();
+
+ /* how many staff for N guests — compute rather than quote a range */
+ var gm = String(q).match(/(\d{2,4})/);
+ var g  = gm ? Number(gm[1]) : 0;
+ if(g >= 30 && g <= 1500 && /(מלצר|waiter|צוות|staff|כמה צריך)/.test(s)){
+  return B(
+   'ל-' + g + ' אורחים:\n' +
+   '• הגשה מלאה: ' + Math.ceil(g/13) + ' מלצרים (אחד לכל 12–15)\n' +
+   '• בופה או עמדות: ' + Math.ceil(g/22) + ' מלצרים (אחד לכל 20–25)\n' +
+   '• ברמנים: ' + Math.max(1, Math.ceil(g/80)) + '\n' +
+   '• שולחנות: ' + Math.ceil(g/12) + ' (12 לשולחן)\n' +
+   'להוסיף אחד לכל תפקיד באירוע שטח, כי המרחקים גדולים יותר.',
+   'For ' + g + ' guests:\n' +
+   '• Plated service: ' + Math.ceil(g/13) + ' waiters (one per 12–15)\n' +
+   '• Buffet or stations: ' + Math.ceil(g/22) + ' waiters (one per 20–25)\n' +
+   '• Bartenders: ' + Math.max(1, Math.ceil(g/80)) + '\n' +
+   '• Tables: ' + Math.ceil(g/12) + ' (12 per table)\n' +
+   'Add one to each role for an open-air event, where distances are longer.');
+ }
+
+ /* questions about this producer's own book of work */
+ if(/(כמה ליד|לידים|how many leads)/.test(s)){
+  var nw = DB.leads.filter(function(l){ return l.status === 'new'; }).length;
+  /* Hebrew does not take a bare numeral for one, so "יש 1 לידים" reads wrong */
+  var tot = DB.leads.length;
+  var he;
+  if(tot === 0) he = 'אין עדיין לידים במערכת.';
+  else if(tot === 1) he = 'יש ליד אחד במערכת' + (nw ? ', והוא עוד לא טופל.' : ', והוא כבר טופל.');
+  else he = 'יש ' + tot + ' לידים במערכת' +
+    (nw === 0 ? ', וכולם כבר טופלו.'
+     : nw === 1 ? ', אחד מהם עוד לא טופל.'
+     : nw === tot ? ', ואף אחד מהם עוד לא טופל.'
+     : ', ' + nw + ' מהם עוד לא טופלו.');
+  return B(he,
+           tot === 0 ? 'No leads yet.'
+             : 'There ' + (tot === 1 ? 'is 1 lead' : 'are ' + tot + ' leads') +
+               (nw === 0 ? ', all already handled.' : ', ' + nw + ' of them new and untouched.'));
+ }
+ if(/(הכנסות|כמה כסף|revenue|income|turnover)/.test(s)){
+  var paid = (DB.payRequests||[]).filter(function(p){ return p.paid; }).reduce(function(a,p){ return a+num(p.amount); },0);
+  var owed = (DB.payRequests||[]).filter(function(p){ return !p.paid; }).reduce(function(a,p){ return a+num(p.amount); },0);
+  var ord  = (DB.orders||[]).reduce(function(a,o){ return a+num(o.total); },0);
+  return B('שולם עד היום: ' + ils(paid + ord) + '\nפתוח לתשלום: ' + ils(owed) + '\nהפירוט המלא נמצא במסך מצב לקוחות.',
+           'Paid to date: ' + ils(paid + ord) + '\nStill outstanding: ' + ils(owed) + '\nThe breakdown is on the client status screen.');
+ }
+ if(/(באיחור|תקוע|מה דחוף|overdue|behind|what.s urgent)/.test(s)){
+  var rows = DB.clients.map(function(c){ return {c:c, n:overdueOf(c.id).length}; }).filter(function(x){ return x.n; });
+  if(!rows.length) return B('אין משימות באיחור באף אירוע. 🎉', 'Nothing is overdue on any event. 🎉');
+  return B('משימות באיחור:\n' + rows.map(function(x){ return '• ' + x.c.names + ': ' + x.n; }).join('\n') +
+           '\nמסך מצב לקוחות מראה בדיוק מה חסר בכל אחד.',
+           'Overdue tasks:\n' + rows.map(function(x){ return '• ' + x.c.names + ': ' + x.n; }).join('\n') +
+           '\nThe client status screen shows exactly what each one is missing.');
+ }
+ if(/(האירוע הקרוב|מה הבא|next event|coming up)/.test(s)){
+  var up = DB.clients.filter(function(c){ return c.date && daysTo(c.date) >= 0; })
+    .sort(function(a,b){ return d(a.date) - d(b.date); })[0];
+  if(!up) return B('אין אירוע עתידי עם תאריך משובץ.', 'No upcoming event has a date set.');
+  return B(up.names + ' — בעוד ' + daysTo(up.date) + ' ימים (' + fmt(up.date) + '). התקדמות: ' + progress(up.id) + '%.',
+           up.names + ' — in ' + daysTo(up.date) + ' days (' + fmt(up.date) + '). Progress: ' + progress(up.id) + '%.');
+ }
+
+ /* alcohol quantities, the other question that always arrives as a number */
+ if(g >= 30 && g <= 1500 && /(אלכוהול|בר|שתייה|alcohol|bar|drink)/.test(s)){
+  return B(
+   'אומדן לאירוע ערב של ' + g + ' אורחים, כ-5 שעות:\n' +
+   '• יין: ' + Math.ceil(g*0.5) + ' בקבוקים (חצי לאורח)\n' +
+   '• בירה: ' + Math.ceil(g*1.5) + ' בקבוקים\n' +
+   '• אלכוהול חריף: ' + Math.ceil(g/25) + ' בקבוקים\n' +
+   '• קל ומים: ' + Math.ceil(g*1.5) + ' ליטר\n' +
+   '• קרח: ' + Math.ceil(g*0.7) + ' ק"ג\n' +
+   'להוריד כ-30% בחתונה דתית, ולהוסיף כ-20% בקיץ.',
+   'Estimate for an evening event of ' + g + ' guests, about 5 hours:\n' +
+   '• Wine: ' + Math.ceil(g*0.5) + ' bottles (half per guest)\n' +
+   '• Beer: ' + Math.ceil(g*1.5) + ' bottles\n' +
+   '• Spirits: ' + Math.ceil(g/25) + ' bottles\n' +
+   '• Soft drinks and water: ' + Math.ceil(g*1.5) + ' litres\n' +
+   '• Ice: ' + Math.ceil(g*0.7) + ' kg\n' +
+   'Take about 30% off for a religious wedding, add about 20% in summer.');
+ }
+
+ return _prodAIV45(q);
+};
+
 /* ══ PWA: real manifest.json + sw.js on the server so "Install app" works.
    (Blob/data: URLs cannot be used to register a service worker — that was
    the reason the previous version never satisfied install criteria.) ══ */

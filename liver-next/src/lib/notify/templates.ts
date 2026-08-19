@@ -52,3 +52,23 @@ export function adminLeadWhatsApp(l: LeadPayload) {
     l.message ? `הודעה: ${l.message}` : '',
   ].filter(Boolean).join('\n');
 }
+
+/** Sent to a couple the moment their address is authorised on a workspace.
+ *  There is no password to deliver: the address itself is the credential,
+ *  and a code arrives per sign in. */
+export function clientInviteEmail(opts: { eventName: string; producerName: string; signInUrl: string }) {
+  return shell(`
+    <h2 style="margin:0 0 10px;font-size:20px;color:#0b1220">האזור האישי שלכם מוכן</h2>
+    <p style="margin:0 0 14px;font-size:15px;line-height:1.8;color:#3c4657">
+      ${opts.producerName} פתח עבורכם מרחב עבודה ל<b>${opts.eventName}</b>.
+      שם תוכלו לעקוב אחרי המשימות, התקציב, לוח הזמנים וכל מה שקשור לאירוע.
+    </p>
+    <p style="margin:0 0 18px;font-size:15px;line-height:1.8;color:#3c4657">
+      הכניסה היא עם כתובת המייל הזאת בלבד. אין סיסמה לזכור: בכל כניסה נשלח אליכם קוד חד פעמי.
+    </p>
+    <a href="${opts.signInUrl}"
+       style="display:inline-block;background:#0b1220;color:#fff;text-decoration:none;
+              border-radius:999px;padding:13px 26px;font-size:15px;font-weight:600">
+      כניסה לאזור האישי
+    </a>`);
+}
