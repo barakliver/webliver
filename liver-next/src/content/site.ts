@@ -147,3 +147,86 @@ export const EVENT_KINDS = [
 
 export const MIN_EVENT_DATE = '2026-01-01';
 export const MAX_GUESTS = 1500;
+
+/** Copy for the signed-in area. Same house rule: no long dashes. */
+export const auth = {
+  title: 'כניסה לאזור האישי',
+  sub: 'נשלח לכם קוד חד פעמי לאימייל. אין סיסמאות לזכור.',
+  emailLabel: 'כתובת אימייל',
+  newHere: 'זו הפעם הראשונה שלי כאן',
+  nameLabel: 'שם מלא',
+  brandLabel: 'שם העסק (למפיקים)',
+  submit: 'שליחת קוד',
+  sending: 'שולח',
+  note: 'זוגות מוזמנים נכנסים עם הכתובת שקיבלה את ההזמנה. מפיק חדש נכנס לאישור לפני שהחשבון נפתח.',
+  codeTitle: 'הקוד בדרך',
+  codeSent: 'שלחנו קוד בן שש ספרות לכתובת',
+  codeLabel: 'הקוד מהמייל',
+  codeSubmit: 'כניסה',
+  codeChecking: 'בודק',
+  codeBack: 'לשנות כתובת',
+} as const;
+
+export const appCopy = {
+  signOut: 'יציאה',
+  nav: {
+    overview: 'סקירה',
+    leads: 'לידים',
+    clients: 'אירועים',
+    admin: 'ניהול מערכת',
+    portal: 'האזור שלנו',
+  },
+  pending: {
+    title: 'החשבון ממתין לאישור',
+    body: [
+      'נרשמתם בהצלחה, והחשבון נפתח אחרי אישור של מנהל המערכת.',
+      'עד אז אין גישה לנתונים ואין מה לעשות כאן.',
+      'ברגע שהחשבון יאושר, הכניסה תעבוד מאותה כתובת בדיוק.',
+    ],
+    statusLabel: 'סטטוס',
+    statuses: {
+      pending: 'ממתין לאישור',
+      approved: 'מאושר',
+      suspended: 'מושהה',
+      rejected: 'נדחה',
+    },
+  },
+  overview: {
+    greeting: 'שלום',
+    leadsTitle: 'לידים חדשים',
+    clientsTitle: 'אירועים פעילים',
+    tasksTitle: 'משימות פתוחות',
+    empty: 'אין עדיין מה להציג כאן.',
+  },
+  leads: {
+    title: 'לידים',
+    sub: 'כל פנייה שהגיעה מהאתר, לפי סדר הגעה.',
+    empty: 'עוד לא הגיעו פניות.',
+    cols: { name: 'שם', contact: 'יצירת קשר', event: 'אירוע', date: 'תאריך', guests: 'אורחים', status: 'סטטוס' },
+    statuses: { new: 'חדש', contacted: 'יצרנו קשר', meeting: 'נקבעה פגישה', won: 'נסגר', lost: 'לא רלוונטי' },
+  },
+  clients: {
+    title: 'אירועים',
+    sub: 'כל זוג או לקוח עם מרחב עבודה משלו.',
+    empty: 'עוד לא נפתחו אירועים.',
+    cols: { name: 'שם', date: 'תאריך', venue: 'מקום', guests: 'אורחים' },
+    noDate: 'טרם נקבע',
+  },
+  admin: {
+    title: 'ניהול מערכת',
+    sub: 'אישור מפיקים חדשים. רק בעל המערכת רואה את המסך הזה.',
+    empty: 'אין בקשות ממתינות.',
+    approve: 'אישור',
+    reject: 'דחייה',
+    suspend: 'השהיה',
+    restore: 'החזרה לפעילות',
+    cols: { brand: 'עסק', contact: 'איש קשר', email: 'אימייל', status: 'סטטוס', since: 'נרשם' },
+  },
+  portal: {
+    title: 'האזור שלנו',
+    sub: 'כל מה שקשור לאירוע שלכם, במקום אחד.',
+    empty: 'עוד לא שויך לכם אירוע. ברק יפתח אותו ותקבלו הודעה.',
+    daysLeft: 'ימים לאירוע',
+    dateTbd: 'התאריך עוד לא נקבע',
+  },
+} as const;
