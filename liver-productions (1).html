@@ -7730,6 +7730,56 @@ renderAll = function(){
 };
 renderAll();
 
+/* ══════════════════════════════════════════════════════════
+   v43 — two honest failures
+   ══════════════════════════════════════════════════════════ */
+
+/* ── 1. resetting a password threw the new one away ──────────────────
+   resetPass generated a password, painted it into the credentials
+   popup, and then called renderAll(), which rebuilt every screen and
+   emptied the popup body while leaving the popup itself open. The
+   producer saw a blank box, never learned the new password, and the old
+   one no longer worked. Render first, then show. */
+resetPass = function(id){
+ var u = DB.users.find(function(x){ return x.id === id; });
+ if(!u) return;
+ u.pass = genPass();
+ saveSoon();
+ renderAll();
+ showCreds(u.name || u.email, u);
+};
+
+/* ── 2. "wrong password" was the wrong thing to say ───────────────────
+   This app keeps its accounts in each browser's own storage. A user
+   created on the office computer does not exist on the phone at all, so
+   signing in there fails — and the screen blamed the password, sending
+   people to reset a password that was never the problem. Name the
+   actual situation instead. */
+Object.assign(D_.he,{
+ lg_other_device:'החשבון הזה נוצר במכשיר אחר. הנתונים באתר הזה עדיין לא עוברים בין מכשירים, ולכן צריך להיכנס מאותו מחשב שבו נפתח החשבון. באפליקציה החדשה הכניסה תעבוד מכל מכשיר.',
+});
+Object.assign(D_.en,{
+ lg_other_device:'This account was created on another device. Data on this site does not travel between devices yet, so sign in from the computer where the account was opened. In the new app, signing in works from anywhere.',
+});
+
+/* The cloud attempt is asynchronous, so anything scheduled alongside the
+   click loses the race and gets overwritten by the message the fallback
+   sets. Correct the wording where it is actually chosen instead. */
+var HV_LAST_EMAIL = '';
+var _doLoginV43 = doLogin;
+doLogin = function(){
+ var em = $('lgEmail');
+ HV_LAST_EMAIL = em ? em.value.trim() : '';
+ return _doLoginV43();
+};
+var _setAuthMsgV43 = setAuthMsg;
+setAuthMsg = function(m){
+ if(m === t('lg_bad') && HV_LAST_EMAIL && !findUser(HV_LAST_EMAIL)){
+  return _setAuthMsgV43(t('lg_other_device'));
+ }
+ return _setAuthMsgV43(m);
+};
+
 /* ══ PWA: real manifest.json + sw.js on the server so "Install app" works.
    (Blob/data: URLs cannot be used to register a service worker — that was
    the reason the previous version never satisfied install criteria.) ══ */
