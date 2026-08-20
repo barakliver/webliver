@@ -463,3 +463,17 @@ export const leadsCopy = {
   open: 'פתיחה',
   close: 'סגירה',
 } as const;
+
+export const noticeCopy = {
+  title: 'עדכונים',
+  none: 'אין עדכונים חדשים.',
+  markAll: 'סימון הכל כנקרא',
+  open: 'פתיחה',
+  kinds: {
+    lead: 'פנייה',
+    rsvp: 'אישור הגעה',
+    task: 'משימה',
+    payment: 'תשלום',
+    invite: 'גישה',
+  },
+} as const;

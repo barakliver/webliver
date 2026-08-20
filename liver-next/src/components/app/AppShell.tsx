@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { signOut } from '@/app/actions/auth';
 import { site, appCopy } from '@/content/site';
 import type { Account } from '@/lib/auth';
+import { NoticeBell, type Notice } from './NoticeBell';
 
 type Item = { href: string; label: string };
 
@@ -16,7 +17,7 @@ function navFor(a: Account): Item[] {
   return items;
 }
 
-export function AppShell({ account, children }: { account: Account; children: React.ReactNode }) {
+export function AppShell({ account, notices, children }: { account: Account; notices: Notice[]; children: React.ReactNode }) {
   const items = navFor(account);
 
   return (
@@ -35,9 +36,12 @@ export function AppShell({ account, children }: { account: Account; children: Re
             ))}
           </nav>
 
-          <form action={signOut}>
-            <button type="submit" className="btn-ghost px-4 py-2 text-[14px]">{appCopy.signOut}</button>
-          </form>
+          <div className="flex items-center gap-2">
+            <NoticeBell notices={notices} />
+            <form action={signOut}>
+              <button type="submit" className="btn-ghost px-4 py-2 text-[14px]">{appCopy.signOut}</button>
+            </form>
+          </div>
         </div>
 
         <nav aria-label="ניווט ראשי" className="shell flex gap-1 overflow-x-auto pb-2 sm:hidden">
