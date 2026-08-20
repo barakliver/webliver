@@ -8499,6 +8499,103 @@ renderAll();
 })();
 renderAll();
 
+/* ══════════════════════════════════════════════════════════
+   v49 — the cloud settings point at the right project, and stick
+   ══════════════════════════════════════════════════════════
+   Why things were reporting failure.
+
+   SB.url was still 'tjdnrktcwzoskvehvslr.supabase.co' — an earlier
+   project. The project that actually has the schema, the auth settings
+   and the SMTP sender is 'nyxmfmvmhfdqjntqlirm.supabase.co'; that is the
+   one the sign-in test returned super_admin against. Every cloud call
+   was therefore aimed at a project that does not have these tables, so:
+
+     · "בדיקת חיבור" reported ❌ החיבור נכשל
+     · sign-in tried the cloud, failed, and fell back to the local
+       account list — which is why a password that works on one device
+       is unknown on another
+     · a submitted lead never reached the cloud
+
+   And SB was never persisted. The two fields in the settings screen
+   looked editable but reset to the hardcoded value on every reload, so
+   correcting it by hand could not survive a refresh.
+
+   Two changes: point at the right project, and persist what is typed.
+   The publishable key is deliberately left empty — it belongs to the new
+   project and is not in this file. While it is empty sbReady() is false,
+   so the app runs entirely locally and reports nothing as failed. */
+(function(){
+
+ var SB_STORE = 'liver_sb';          // its own key: never touches the DB snapshot
+ var SB_PROJECT = 'https://nyxmfmvmhfdqjntqlirm.supabase.co';
+
+ /* The old project's key cannot authenticate the new one, so it is not
+    carried over. An empty key is an honest "not configured yet". */
+ SB.url = SB_PROJECT;
+ SB.key = '';
+
+ try{
+  var saved = JSON.parse(localStorage.getItem(SB_STORE) || 'null');
+  if(saved && saved.url) SB.url = saved.url;
+  /* only reuse a stored key if it was stored against this same project */
+  if(saved && saved.key && saved.url === SB.url) SB.key = saved.key;
+ }catch(e){}
+
+ function sbSave(){
+  try{ localStorage.setItem(SB_STORE, JSON.stringify({url:SB.url, key:SB.key})); }catch(e){}
+ }
+ window.sbSave = sbSave;
+
+ /* Changing the project invalidates the key that belonged to the old one.
+    Keeping it is how this whole failure started, so clear it here. */
+ window.sbSetUrl = function(v){
+  v = String(v||'').trim().replace(/\/+$/,'');
+  if(v !== SB.url){ SB.url = v; SB.key = ''; SB.status = 'idle'; SB.token = null; }
+  sbSave(); renderAll();
+ };
+ window.sbSetKey = function(v){ SB.key = String(v||'').trim(); SB.status = 'idle'; sbSave(); renderAll(); };
+
+ /* ── the panel says what is wrong, and stays on screen ──
+    A toast that disappears is not a diagnosis. */
+ var HE = (typeof lang === 'undefined' || lang === 'he');
+ function line(){
+  if(isLocalFile())
+   return ['warn', HE ? 'הקובץ נפתח מהדיסק ולא מכתובת אינטרנט, ולכן אין גישה לענן.'
+                      : 'Opened from disk rather than a URL, so the cloud is unreachable.'];
+  if(!SB.url)
+   return ['warn', HE ? 'חסרה כתובת פרויקט.' : 'Project URL missing.'];
+  if(!SB.key)
+   return ['warn', HE ? 'חסר מפתח ציבורי (anon / publishable). בלעדיו המערכת עובדת מקומית בלבד: '
+                      + 'הנתונים נשמרים במכשיר הזה ולא עוברים בין מכשירים.'
+                      : 'Publishable key missing. Everything works locally on this device only.'];
+  if(SB.status === 'error')
+   return ['bad', HE ? 'החיבור נבדק ונכשל. הסיבה מופיעה בהודעה שקופצת בלחיצה על "בדיקת חיבור".'
+                     : 'The connection test failed. Press "Test connection" to see why.'];
+  if(SB.status === 'ok')
+   return ['ok', HE ? 'החיבור לענן תקין.' : 'Cloud connection is working.'];
+  return ['warn', HE ? 'החיבור טרם נבדק. לחצו "בדיקת חיבור".' : 'Not tested yet. Press "Test connection".'];
+ }
+
+ var _cloudPanelV49 = cloudPanel;
+ cloudPanel = function(){
+  var st = line();
+  var col = st[0] === 'ok' ? 'var(--green)' : st[0] === 'bad' ? 'var(--red)' : 'var(--amber)';
+  return _cloudPanelV49()
+   + '<div class="card" style="margin:-8px 0 16px;border-color:' + col + '">'
+   + '<div style="font-size:13.3px;line-height:1.6">' + esc(st[1]) + '</div>'
+   + '<div class="muted" style="font-size:12px;margin-top:6px" dir="ltr">' + esc(SB.url) + '</div></div>';
+ };
+
+ /* the two inputs now persist what is typed into them */
+ var _adminSetV49 = adminSet;
+ adminSet = function(){
+  return _adminSetV49()
+   .replace("onchange=\"SB.url=this.value.trim();renderAll()\"", "onchange=\"sbSetUrl(this.value)\"")
+   .replace("onchange=\"SB.key=this.value.trim();renderAll()\"", "onchange=\"sbSetKey(this.value)\"");
+ };
+})();
+renderAll();
+
 /* ══ PWA: real manifest.json + sw.js on the server so "Install app" works.
    (Blob/data: URLs cannot be used to register a service worker — that was
    the reason the previous version never satisfied install criteria.) ══ */
