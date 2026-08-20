@@ -343,3 +343,58 @@ export const appCopy = {
     dateTbd: 'התאריך עוד לא נקבע',
   },
 } as const;
+
+/** The one screen a guest ever sees. They have no account and no context
+ *  beyond the link they were sent, so it says who it is for and what it is
+ *  about before it asks anything. */
+export const rsvpCopy = {
+  eyebrow: 'אישור הגעה',
+  hello: 'שלום',
+  invitedTo: 'הוזמנתם ל',
+  question: 'מגיעים?',
+  yes: 'כן, נגיע',
+  no: 'לא נוכל להגיע',
+  howMany: 'כמה אנשים תהיו',
+  howManyHint: 'כולל אתכם.',
+  diet: 'העדפת אוכל',
+  note: 'משהו שחשוב שנדע',
+  notePh: 'אלרגיה, כיסא לתינוק, כל דבר',
+  submit: 'שליחת התשובה',
+  sending: 'שולח',
+  already: 'כבר עניתם. אפשר לשנות את התשובה כאן.',
+  okComing: 'מעולה, נתראה!',
+  okComingBody: 'רשמנו אתכם. נשמח לראותכם.',
+  okNotComing: 'תודה שעדכנתם',
+  okNotComingBody: 'חבל שלא תוכלו להגיע. תודה שהודעתם.',
+  changeLater: 'אם משהו ישתנה, אפשר לחזור לקישור הזה ולעדכן.',
+  badLink: 'הקישור לא נמצא',
+  badLinkBody: 'יכול להיות שהקישור הועתק חלקית, או שההזמנה כבר לא בתוקף. אפשר לפנות לזוג.',
+} as const;
+
+export const guestsCopy = {
+  title: 'אישורי הגעה',
+  sub: 'רשימת האורחים והתשובות שלהם. כל אורח מקבל קישור אישי.',
+  attending: 'מגיעים',
+  declined: 'לא מגיעים',
+  pending: 'טרם ענו',
+  invited: 'הוזמנו',
+  heads: 'סה״כ נפשות',
+  addTitle: 'הוספת אורחים',
+  addHint: 'שם בכל שורה. אפשר גם "שם, צד, טלפון".',
+  addPh: 'משפחת כהן, כלה, 0501234567\nדוד ורונית\nיעל מהעבודה',
+  side: 'צד (ברירת מחדל)',
+  add: 'הוספה לרשימה',
+  adding: 'מוסיף',
+  none: 'עוד לא נוספו אורחים.',
+  copyLink: 'העתקת הקישור',
+  copied: 'הועתק',
+  remove: 'הסרה',
+  markAttending: 'סמנו מגיעים',
+  markDeclined: 'סמנו לא מגיעים',
+  markPending: 'איפוס',
+  guest: 'אורח',
+  status: 'תשובה',
+  party: 'נפשות',
+  dietCol: 'אוכל',
+  noteCol: 'הערה',
+} as const;

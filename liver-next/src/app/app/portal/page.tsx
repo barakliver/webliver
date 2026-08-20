@@ -6,6 +6,7 @@ import { TaskList, type Task } from '@/components/app/TaskList';
 import { PaymentsPanel, type Payment } from '@/components/app/PaymentsPanel';
 import { BudgetPanel, type BudgetItem } from '@/components/app/BudgetPanel';
 import { WinningBoard } from '@/components/app/WinningBoard';
+import { GuestList, type Guest } from '@/components/app/GuestList';
 import { signBoardImages } from '@/lib/board';
 
 export const metadata = { title: appCopy.portal.title };
@@ -70,6 +71,14 @@ export default async function PortalPage() {
     : { data: [] };
   const board = await signBoardImages(sb, (boardRows ?? []) as never);
   const boardFor = (cid: string) => board.filter((b) => b.client_id === cid);
+
+  const { data: guestRows } = ids.length
+    ? await sb.from('guests_rsvp')
+        .select('id,client_id,full_name,side,phone,status,party_size,diet,note,invite_token')
+        .in('client_id', ids).order('full_name')
+    : { data: [] };
+  const guestsFor = (cid: string) =>
+    ((guestRows ?? []) as (Guest & { client_id: string })[]).filter((g) => g.client_id === cid);
   if (rows.length === 0) {
     return (
       <>
@@ -106,6 +115,7 @@ export default async function PortalPage() {
               {budgetFor(c.id).length > 0 && (
                 <BudgetPanel clientId={c.id} items={budgetFor(c.id)} viewer="client" visible />
               )}
+              <GuestList clientId={c.id} guests={guestsFor(c.id)} />
               <WinningBoard clientId={c.id} images={boardFor(c.id)} viewer="client" />
             </div>
             </div>
