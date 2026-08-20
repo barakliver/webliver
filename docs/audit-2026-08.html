@@ -1,0 +1,1108 @@
+<title>אודיט Liver Productions</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=Heebo:wght@300;400;500;700&display=swap">
+
+<style>
+  /* ---------------------------------------------------------------
+     The palette is the one proposed in the brief. Using it here is
+     deliberate: this document is the first test of whether the
+     direction holds up over long-form Hebrew.
+     --------------------------------------------------------------- */
+  :root {
+    --ivory:   #F7F4EE;
+    --paper:   #FFFFFF;
+    --ink:     #171512;
+    --ink-2:   #655D54;
+    --champ:   #A6763A;
+    --bronze:  #7C5527;
+    --line:    #E4DDD3;
+
+    --ground:  var(--ivory);
+    --surface: var(--paper);
+    --text:    var(--ink);
+    --text-2:  var(--ink-2);
+    --accent:  var(--bronze);
+    --hair:    var(--line);
+
+    /* severity is its own language, never the accent */
+    --p0: #8C2F2F;  --p0-bg: #F6E7E4;
+    --p1: #8A5A17;  --p1-bg: #F7EDDC;
+    --p2: #3F5B46;  --p2-bg: #E7EFE7;
+    --p3: #4A5568;  --p3-bg: #EBEDF1;
+
+    --measure: 68ch;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:  #14120F;
+      --surface: #1D1A16;
+      --text:    #F2EDE4;
+      --text-2:  #A79C8D;
+      --accent:  #D9A967;
+      --hair:    #322C25;
+      --p0: #E8908A;  --p0-bg: #35211F;
+      --p1: #DEB271;  --p1-bg: #332818;
+      --p2: #9CC3A5;  --p2-bg: #1E2A21;
+      --p3: #A9B4C6;  --p3-bg: #21252C;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground:  #14120F;
+    --surface: #1D1A16;
+    --text:    #F2EDE4;
+    --text-2:  #A79C8D;
+    --accent:  #D9A967;
+    --hair:    #322C25;
+    --p0: #E8908A;  --p0-bg: #35211F;
+    --p1: #DEB271;  --p1-bg: #332818;
+    --p2: #9CC3A5;  --p2-bg: #1E2A21;
+    --p3: #A9B4C6;  --p3-bg: #21252C;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--text);
+    font-family: "Heebo", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+    font-weight: 400;
+    font-size: 17px;
+    line-height: 1.75;
+    direction: rtl;
+    text-align: right;
+  }
+
+  .shell { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+  @media (max-width: 640px) { .shell { padding: 0 18px; } }
+
+  /* ---------- masthead ---------- */
+  .masthead { padding: 88px 0 56px; border-bottom: 1px solid var(--hair); }
+  .eyebrow {
+    font-size: 12.5px; font-weight: 500; letter-spacing: .16em;
+    color: var(--accent); margin: 0 0 20px;
+  }
+  .masthead h1 {
+    font-family: "Frank Ruhl Libre", Georgia, serif;
+    font-weight: 500;
+    font-size: clamp(38px, 6.2vw, 68px);
+    line-height: 1.08;
+    letter-spacing: -0.015em;
+    margin: 0 0 22px;
+    text-wrap: balance;
+  }
+  .standfirst {
+    max-width: 62ch; font-size: 19px; color: var(--text-2);
+    margin: 0 0 30px; line-height: 1.7;
+  }
+  .meta {
+    display: flex; flex-wrap: wrap; gap: 10px 28px;
+    font-size: 13.5px; color: var(--text-2); padding-top: 6px;
+  }
+  .meta b { color: var(--text); font-weight: 500; }
+
+  /* ---------- phase spine ----------
+     The numbers are real: fifteen phases in a fixed order the brief
+     set out, so numbering carries information rather than decoration. */
+  .phase { padding: 62px 0; border-bottom: 1px solid var(--hair); }
+  .phase-head {
+    display: grid; grid-template-columns: 68px 1fr; gap: 22px;
+    align-items: start; margin-bottom: 30px;
+  }
+  .phase-num {
+    font-family: "Frank Ruhl Libre", Georgia, serif;
+    font-size: 40px; line-height: 1; color: var(--accent);
+    font-variant-numeric: tabular-nums; padding-top: 4px;
+    border-top: 2px solid var(--accent);
+  }
+  .phase-num-wide { font-size: 25px; padding-top: 8px; }
+  .phase-title {
+    font-family: "Frank Ruhl Libre", Georgia, serif;
+    font-weight: 500; font-size: clamp(26px, 3.4vw, 38px);
+    line-height: 1.2; margin: 0 0 8px; letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+  .phase-sub { color: var(--text-2); font-size: 16px; margin: 0; max-width: var(--measure); }
+  @media (max-width: 560px) {
+    .phase-head { grid-template-columns: 52px 1fr; gap: 16px; }
+    .phase-num { font-size: 30px; }
+    .phase-num-wide { font-size: 19px; padding-top: 6px; }
+  }
+
+  h3 {
+    font-family: "Frank Ruhl Libre", Georgia, serif;
+    font-weight: 500; font-size: 22px; line-height: 1.3;
+    margin: 40px 0 14px; letter-spacing: -0.005em;
+  }
+  h4 {
+    font-size: 13px; font-weight: 500; letter-spacing: .1em;
+    color: var(--accent); margin: 32px 0 12px;
+  }
+  p { max-width: var(--measure); margin: 0 0 16px; }
+  ul, ol { max-width: var(--measure); padding-inline-start: 22px; margin: 0 0 18px; }
+  li { margin-bottom: 8px; }
+  strong { font-weight: 500; color: var(--text); }
+  code {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: .88em; background: var(--surface);
+    border: 1px solid var(--hair); border-radius: 4px; padding: 1px 5px;
+    direction: ltr; display: inline-block;
+  }
+
+  /* ---------- evidence ----------
+     The audit's authority is measurement, so the measured number is
+     the loudest thing in the block. */
+  .evidence {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(168px, 1fr));
+    gap: 1px; background: var(--hair);
+    border: 1px solid var(--hair); border-radius: 3px;
+    margin: 26px 0 30px; overflow: hidden;
+  }
+  .ev { background: var(--surface); padding: 20px 18px; }
+  .ev .n {
+    font-family: "Frank Ruhl Libre", Georgia, serif;
+    font-size: 34px; line-height: 1; color: var(--text);
+    font-variant-numeric: tabular-nums; display: block; margin-bottom: 8px;
+    direction: ltr; text-align: right;
+  }
+  .ev .n.bad { color: var(--p0); }
+  .ev .l { font-size: 13.5px; color: var(--text-2); line-height: 1.5; display: block; }
+
+  /* ---------- findings ---------- */
+  .finding {
+    background: var(--surface); border: 1px solid var(--hair);
+    border-radius: 3px; padding: 22px 24px; margin: 0 0 14px;
+  }
+  .finding > :last-child { margin-bottom: 0; }
+  .fhead { display: flex; flex-wrap: wrap; gap: 10px; align-items: baseline; margin-bottom: 12px; }
+  .fhead h5 {
+    margin: 0; font-size: 17px; font-weight: 500; flex: 1 1 auto;
+    font-family: "Heebo", sans-serif;
+  }
+  .chip {
+    font-size: 11.5px; font-weight: 500; letter-spacing: .08em;
+    padding: 3px 10px; border-radius: 2px; white-space: nowrap;
+    direction: ltr;
+  }
+  .c0 { background: var(--p0-bg); color: var(--p0); }
+  .c1 { background: var(--p1-bg); color: var(--p1); }
+  .c2 { background: var(--p2-bg); color: var(--p2); }
+  .c3 { background: var(--p3-bg); color: var(--p3); }
+
+  .qa { margin: 0; }
+  .qa dt {
+    font-size: 12.5px; letter-spacing: .07em; color: var(--accent);
+    margin-top: 12px; font-weight: 500;
+  }
+  .qa dd { margin: 3px 0 0; max-width: var(--measure); }
+
+  /* ---------- tables ---------- */
+  .scroll { overflow-x: auto; margin: 22px 0 28px; }
+  table {
+    width: 100%; border-collapse: collapse; font-size: 15.5px;
+    min-width: 520px; background: var(--surface);
+    border: 1px solid var(--hair);
+  }
+  th, td { padding: 12px 14px; text-align: right; border-bottom: 1px solid var(--hair); vertical-align: top; }
+  th {
+    font-size: 12.5px; font-weight: 500; letter-spacing: .07em;
+    color: var(--accent); background: var(--ground);
+  }
+  tr:last-child td { border-bottom: 0; }
+  td.num { font-variant-numeric: tabular-nums; direction: ltr; text-align: right; white-space: nowrap; }
+
+  /* ---------- pull quote / north star ---------- */
+  .pull {
+    border-inline-start: 2px solid var(--accent);
+    padding: 4px 22px; margin: 30px 0;
+    font-family: "Frank Ruhl Libre", Georgia, serif;
+    font-size: 21px; line-height: 1.55; color: var(--text);
+    max-width: 58ch;
+  }
+
+  .note {
+    background: var(--surface); border: 1px solid var(--hair);
+    border-inline-start: 2px solid var(--accent);
+    padding: 18px 22px; margin: 24px 0; border-radius: 3px;
+  }
+  .note > :last-child { margin-bottom: 0; }
+  .note .tag {
+    font-size: 12px; letter-spacing: .1em; color: var(--accent);
+    display: block; margin-bottom: 8px; font-weight: 500;
+  }
+
+  .verify {
+    display: inline-block; font-size: 11.5px; letter-spacing: .06em;
+    background: var(--p1-bg); color: var(--p1);
+    padding: 2px 8px; border-radius: 2px; margin-inline-start: 6px;
+  }
+
+  /* ---------- copy blocks (Hebrew specimen) ---------- */
+  .spec {
+    background: var(--surface); border: 1px solid var(--hair);
+    border-radius: 3px; padding: 26px 26px 22px; margin: 18px 0;
+  }
+  .spec .lbl {
+    font-size: 12px; letter-spacing: .1em; color: var(--accent);
+    display: block; margin-bottom: 14px; font-weight: 500;
+  }
+  .spec .h {
+    font-family: "Frank Ruhl Libre", Georgia, serif;
+    font-size: clamp(24px, 3.6vw, 34px); line-height: 1.18;
+    margin: 0 0 12px; font-weight: 500; text-wrap: balance;
+  }
+  .spec p { font-size: 17px; color: var(--text-2); margin-bottom: 0; }
+  .spec .h + p { color: var(--text-2); }
+
+  .options { counter-reset: opt; margin: 18px 0 0; padding: 0; list-style: none; max-width: var(--measure); }
+  .options li {
+    counter-increment: opt; display: grid;
+    grid-template-columns: 30px 1fr; gap: 14px;
+    padding: 13px 0; border-bottom: 1px solid var(--hair);
+    margin: 0;
+  }
+  .options li:last-child { border-bottom: 0; }
+  .options li::before {
+    content: counter(opt, decimal-leading-zero);
+    font-variant-numeric: tabular-nums; color: var(--accent);
+    font-size: 13px; padding-top: 5px; direction: ltr;
+  }
+  .options .t { font-family: "Frank Ruhl Libre", Georgia, serif; font-size: 19px; line-height: 1.4; }
+  .options .why { font-size: 14.5px; color: var(--text-2); display: block; margin-top: 3px; }
+  .options .pick { color: var(--accent); font-size: 13px; font-weight: 500; }
+
+  footer {
+    padding: 54px 0 80px; color: var(--text-2); font-size: 14.5px;
+  }
+  footer p { max-width: var(--measure); }
+
+  a { color: var(--accent); text-underline-offset: 3px; }
+  a:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px;
+  }
+
+  details { border-top: 1px solid var(--hair); padding: 14px 0; max-width: var(--measure); }
+  summary { cursor: pointer; font-weight: 500; font-size: 16px; list-style-position: inside; }
+  details[open] summary { margin-bottom: 10px; color: var(--accent); }
+
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+
+<div class="shell">
+
+  <header class="masthead">
+    <p class="eyebrow">אודיט ותוכנית עבודה · אוגוסט 2026</p>
+    <h1>מה האתר אומר היום, ומה הוא צריך להגיד</h1>
+    <p class="standfirst">
+      אודיט מלא של liverproductions.com ותוכנית מיתוג, חוויה ומוצר — לפי חמישה־עשר השלבים שהוגדרו בבריף.
+      כל ממצא כאן נמדד על העמוד עצמו, לא נאמד. איפה שאין לי נתון מאומת, כתוב במפורש שצריך לאמת.
+    </p>
+    <div class="meta">
+      <span>נמדד על <b>המסמך שנפרס בפועל</b></span>
+      <span>רוחב בדיקה <b>412px</b> (טלפון) ו־<b>1280px</b></span>
+      <span>שלבים <b>1–14 כאן</b> · 15 ממתין לאישור</span>
+    </div>
+  </header>
+
+  <!-- ============================ PHASE 1 ============================ -->
+  <section class="phase">
+    <div class="phase-head">
+      <div class="phase-num">01</div>
+      <div>
+        <h2 class="phase-title">אודיט המצב הקיים</h2>
+        <p class="phase-sub">מה קורה עכשיו, למה זו בעיה, ומה המבקר חווה בפועל.</p>
+      </div>
+    </div>
+
+    <p>
+      אלה המספרים שמדדתי על העמוד. הם הבסיס לכל שאר המסמך:
+    </p>
+
+    <div class="evidence">
+      <div class="ev"><span class="n bad">12,487</span><span class="l">גובה העמוד בטלפון, בפיקסלים</span></div>
+      <div class="ev"><span class="n bad">4,624</span><span class="l">מתוכם תיק העבודות — 37% מהעמוד</span></div>
+      <div class="ev"><span class="n bad">2.89</span><span class="l">מגה־בייט במסמך אחד</span></div>
+      <div class="ev"><span class="n bad">33</span><span class="l">אזורי מגע מתחת ל־44px</span></div>
+      <div class="ev"><span class="n bad">7/9</span><span class="l">שדות טופס בלי תווית</span></div>
+      <div class="ev"><span class="n bad">0</span><span class="l">תגיות Open Graph</span></div>
+    </div>
+
+    <h3>מיתוג ומסרים</h3>
+
+    <div class="finding">
+      <div class="fhead"><h5>הכותרת הראשית היא קלישאה של הקטגוריה</h5><span class="chip c1">P1</span></div>
+      <dl class="qa">
+        <dt>מה קורה עכשיו</dt>
+        <dd>"רגע מאושר שישאר לנצח". מתחתיה: "הפקה אישית לחתונה שלכם, מהרעיון הראשון ועד הריקוד האחרון".</dd>
+        <dt>למה זו בעיה</dt>
+        <dd>זו בדיוק שפת הקטגוריה שהבריף מבקש להימנע ממנה. אפשר להחליף את הלוגו בכל מפיק אחר בישראל והמשפט יעבוד. הוא לא אומר דבר על ברק, על שיטת עבודה, או על מה שהזוג מקבל.</dd>
+        <dt>מה המבקר חווה</dt>
+        <dd>כלום. הוא גולל הלאה. המשפט לא מייצר לא אמון ולא סקרנות.</dd>
+        <dt>מה צריך להחליף</dt>
+        <dd>אמירה שמחזירה לזוג את הבעלות ומציבה את ברק כמי שבונה את הדרך. עשרה ניסוחים ובחירה מנומקת — שלב 8.</dd>
+        <dt>מה משתפר</dt>
+        <dd>בידול מיידי בשנייה הראשונה, שהיא היחידה שמובטחת לך.</dd>
+      </dl>
+    </div>
+
+    <div class="finding">
+      <div class="fhead"><h5>הרקע המקצועי של ברק לא מתורגם לערך ללקוח</h5><span class="chip c1">P1</span></div>
+      <dl class="qa">
+        <dt>מה קורה עכשיו</dt>
+        <dd>סעיף "האדם שהולך איתכם" מזכיר פיקוד, ניהול והפקות לקהלים גדולים — כרשימת רקע.</dd>
+        <dt>למה זו בעיה</dt>
+        <dd>זה קורות חיים. הזוג לא מתרגם לבד "פיקוד בחיל הים" ל"הוא לא יישבר כשהקייטרינג יאחר".</dd>
+        <dt>מה צריך להחליף</dt>
+        <dd>כל פריט רקע נאמר דרך התוצאה שלו לזוג: אחריות, שליטה במצב מורכב, חשיבה מבנית, ניהול דינמיקה אנושית — בלי למנות את המקור.</dd>
+        <dt>מה משתפר</dt>
+        <dd>הרקע מפסיק להרשים ומתחיל להרגיע. זה ההבדל בין "מרשים" ל"אני סומך עליו".</dd>
+      </dl>
+    </div>
+
+    <h3>חוויה, ניווט והיררכיה</h3>
+
+    <div class="finding">
+      <div class="fhead"><h5>התהליך מסופר פעמיים על אותו עמוד</h5><span class="chip c0">P0</span></div>
+      <dl class="qa">
+        <dt>מה קורה עכשיו</dt>
+        <dd>סעיף שלישי: "התהליך שלנו, שלב אחר שלב" — שבעה שלבים עם הסבר. סעיף שביעי: "איך הדרך שלנו נראית" — שישה שלבים בתקציר. אימתתי שזה אותו מסע.</dd>
+        <dt>למה זו בעיה</dt>
+        <dd>כפילות תוכן היא סימן לחוסר עריכה, וזה בדיוק מה שמותג שמוכר <em>סדר</em> לא יכול לשדר. גם SEO סופר את זה כתוכן משוכפל.</dd>
+        <dt>מה המבקר חווה</dt>
+        <dd>הוא קורא את התהליך, גולל 4,600 פיקסלים של תמונות ושני סעיפים — ואז קורא אותו שוב, פחות טוב.</dd>
+        <dt>מה צריך להחליף</dt>
+        <dd>גרסה מקוצרת אחת בעמוד הבית, וגרסה מלאה בת 12 שלבים בעמוד ייעודי.</dd>
+      </dl>
+    </div>
+
+    <div class="finding">
+      <div class="fhead"><h5>תיק העבודות חוסם את הסיפור</h5><span class="chip c0">P0</span></div>
+      <dl class="qa">
+        <dt>מה קורה עכשיו</dt>
+        <dd>הגלריה יושבת שנייה בעמוד, לפני שנאמר מי זה ברק, ותופסת 4,624px — 37% מהעמוד.</dd>
+        <dt>למה זו בעיה</dt>
+        <dd>קיר תמונות בלי הקשר לא מוכר שיפוט מקצועי. הוא מוכיח שיש מצלמה, לא שיש שיטה. וזו הסיבה המרכזית לאורך העמוד הבלתי אפשרי.</dd>
+        <dt>מה צריך להחליף</dt>
+        <dd>שלוש חתונות נבחרות כסיפורי מקרה — מי הם, מה היה חשוב להם, איזו החלטת הפקה אחת שינתה את הערב — ואז התמונות.</dd>
+        <dt>מה משתפר</dt>
+        <dd>אותן תמונות מתחילות להוכיח טעם ושיקול דעת במקום להוכיח כמות.</dd>
+      </dl>
+    </div>
+
+    <div class="finding">
+      <div class="fhead"><h5>סרגל הניווט נשבר לשתי שורות בטלפון</h5><span class="chip c1">P1</span></div>
+      <dl class="qa">
+        <dt>מה קורה עכשיו</dt>
+        <dd>לוגו 167px ועוד שלושה כפתורים ברוחב 285px, בתוך 412px. "לתכנון האירוע" נופל לשורה שנייה.</dd>
+        <dt>למה זו בעיה</dt>
+        <dd>הדבר הראשון שרואים הוא פריסה שבורה — ומותג שמוכר סדר משדר את ההפך. בנוסף, שניים מהשלושה ("כניסה", "יצירת חשבון") הם בכלל לא המשימה של מבקר חדש.</dd>
+        <dt>מה צריך להחליף</dt>
+        <dd>לוגו, קריאה ראשית אחת, וכניסה ללקוחות קיימים כקישור משני. "יצירת חשבון" יורד מהסרגל לגמרי.</dd>
+      </dl>
+    </div>
+
+    <div class="finding">
+      <div class="fhead"><h5>שלושה אשכולות כפתורים צפים מתחרים על אותה פינה</h5><span class="chip c1">P1</span></div>
+      <dl class="qa">
+        <dt>מה קורה עכשיו</dt>
+        <dd>וואטסאפ, "שאלו את הקונסיירז׳", ועוד אשכול של נגישות/שפה/כלים — כולם מקובעים מעל התוכן וחלקם מסתירים טקסט.</dd>
+        <dt>למה זו בעיה</dt>
+        <dd>הבריף דורש קריאה ראשית דומיננטית אחת בטלפון. שלוש קריאות צפות זה ההפך, והן מכסות תוכן בזמן גלילה.</dd>
+        <dt>מה צריך להחליף</dt>
+        <dd>וואטסאפ נשאר כפעולה צפה יחידה. נגישות ושפה עוברים לפוטר. הקונסיירז׳ נכנס כסעיף בעמוד או נפתח מתוך יצירת הקשר.</dd>
+      </dl>
+    </div>
+
+    <h3>ביצועים</h3>
+
+    <div class="finding">
+      <div class="fhead"><h5>2.89MB במסמך אחד חוסם־רינדור</h5><span class="chip c0">P0</span></div>
+      <dl class="qa">
+        <dt>מה קורה עכשיו</dt>
+        <dd>כל האתר הוא קובץ HTML אחד. בתוכו 1.28MB של תמונות מקודדות base64 ועוד 0.19MB של וידאו מקודד.</dd>
+        <dt>למה זו בעיה</dt>
+        <dd>base64 גדול ב־33% מהקובץ המקורי, לא ניתן לדחיסה כתמונה, לא ניתן לטעינה עצלה, לא ניתן להגשה ברזולוציה מותאמת, ולא נשמר במטמון בנפרד. הדפדפן חייב להוריד ולנתח את הכל לפני שמצייר משהו.</dd>
+        <dt>מה המבקר חווה</dt>
+        <dd>ברשת סלולרית בינונית — מסך ריק לשניות ארוכות. LCP מתחת ל־2.5 שניות לא ריאלי במבנה הזה.</dd>
+        <dt>מה צריך להחליף</dt>
+        <dd>תמונות כקבצים נפרדים ב־AVIF/WebP עם <code>srcset</code>, טעינה עצלה מתחת לקיפול, ותמונת הגיבור בעדיפות. פירוט בשלב 11–13.</dd>
+      </dl>
+    </div>
+
+    <h3>SEO</h3>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>בדיקה</th><th>מצב</th><th>המשמעות</th></tr></thead>
+        <tbody>
+          <tr><td>Title</td><td class="num">"Liver productions"</td><td>אין שירות, אין תחום, אין אזור. לא ניתן לדירוג על שום שאילתה שזוג מחפש.</td></tr>
+          <tr><td>Meta description</td><td class="num">קיים</td><td>הדבר היחיד שתקין כאן.</td></tr>
+          <tr><td>Canonical</td><td class="num">חסר</td><td>חושף לשכפול כתובות.</td></tr>
+          <tr><td>Open Graph</td><td class="num">0 תגיות</td><td>שיתוף בוואטסאפ — הערוץ המרכזי בישראל — מציג קישור עירום בלי תמונה או כותרת.</td></tr>
+          <tr><td>Structured data</td><td class="num">0</td><td>אין Organization, Person, Service או Review.</td></tr>
+          <tr><td>היררכיית כותרות</td><td class="num">H2 → H4</td><td>סעיף התהליך מדלג על H3.</td></tr>
+          <tr><td>Alt לתמונות</td><td class="num">2 מתוך 11 חסרות</td><td>גם נגישות וגם אינדוקס תמונות.</td></tr>
+          <tr><td>H1</td><td class="num">1</td><td>תקין.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note">
+      <span class="tag">הערה על שיתוף</span>
+      <p>אפס תגיות Open Graph הוא הממצא הכי יקר ברשימה הזאת. זוגות משתפים קישורים אחד לשני בוואטסאפ. היום הקישור נשלח בלי תמונה ובלי כותרת — כלומר ההמלצה החזקה ביותר שיש לעסק, המלצה מחבר, נראית כמו ספאם.</p>
+    </div>
+
+    <h3>נגישות</h3>
+
+    <div class="finding">
+      <div class="fhead"><h5>שבעה מתוך תשעה שדות טופס בלי תווית מקושרת</h5><span class="chip c0">P0</span></div>
+      <dl class="qa">
+        <dt>מה קורה עכשיו</dt>
+        <dd>השדות מסתמכים על <code>placeholder</code> בלבד, בלי <code>label</code> ובלי <code>aria-label</code>.</dd>
+        <dt>למה זו בעיה</dt>
+        <dd>קורא מסך מקריא "עריכת טקסט" בלי לומר מה למלא. וגם למשתמש רואה — הטקסט נעלם ברגע שמתחילים להקליד, ואי אפשר לוודא מה מילאת.</dd>
+        <dt>מה צריך להחליף</dt>
+        <dd>תווית קבועה מעל כל שדה. הטופס הזה הוא ההמרה הראשית של האתר — הוא הדבר האחרון שמותר לו להיות לא נגיש.</dd>
+      </dl>
+    </div>
+
+    <div class="finding">
+      <div class="fhead"><h5>33 אזורי מגע מתחת ל־44px</h5><span class="chip c1">P1</span></div>
+      <dl class="qa">
+        <dt>מה קורה עכשיו</dt>
+        <dd>"כניסה" ו"לתכנון האירוע" בגובה 40px, "בדיקת זמינות" ו"בואו נכיר" בגובה 42px, ועוד 29 אלמנטים.</dd>
+        <dt>למה זו בעיה</dt>
+        <dd>הבריף מגדיר 44px כמינימום. זה גם התקן של אפל, וזה הפרש שמורגש כשמקישים בעמידה ביד אחת.</dd>
+        <dt>מה צריך להחליף</dt>
+        <dd>גובה מינימלי 44px לכל אלמנט אינטראקטיבי, 48px לקריאה ראשית.</dd>
+      </dl>
+    </div>
+
+    <h3>מימוש טכני</h3>
+    <p>
+      מיפוי המצב לפני נגיעה בקוד, כפי שהבריף דורש:
+    </p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>רכיב</th><th>מצב</th></tr></thead>
+        <tbody>
+          <tr><td>סטאק נוכחי</td><td>קובץ HTML יחיד, JavaScript ללא תלויות, שכבות גרסה שדורסות פונקציות. מוגש כסטטי ע"י Caddy.</td></tr>
+          <tr><td>נתיבים</td><td>נתיב אחד. כל המסכים הם החלפת מצב בצד הלקוח — כלומר אין דף נחיתה לכל שירות, ואין מה לדרג בגוגל.</td></tr>
+          <tr><td>אחסון נתונים</td><td>localStorage של הדפדפן. תקרה של ~5MB, ולא עובר בין מכשירים.</td></tr>
+          <tr><td>טפסים</td><td>לידים דרך Web3Forms.</td></tr>
+          <tr><td>EventOS</td><td>קיים ועובד: לקוחות, משימות, תקציב, חוזים, תשלומים, הושבה, לוז.</td></tr>
+          <tr><td>הסטאק החדש</td><td>Next.js + Supabase — נבנה במקביל ופתור בו כבר: סנכרון בין מכשירים, הרשאות ברמת השורה, אישורי הגעה, התראות.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note">
+      <span class="tag">מה כן עובד</span>
+      <p>
+        שלושה דברים אני לא רוצה לגעת בהם, כי הם החלטות נכונות: <strong>מחשבון התקציב</strong> — נדיר בקטגוריה ועונה על השאלה הראשונה של כל זוג;
+        <strong>עומק ה־EventOS</strong> — הוא כבר מוצר, לא לוח בקרה; ו<strong>הפרדת שני הקהלים</strong> (הפקה מלאה מול קורס) — הבחנה עסקית נכונה שרק צריכה ביטוי ברור יותר.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============================ PHASE 2 ============================ -->
+  <section class="phase">
+    <div class="phase-head">
+      <div class="phase-num">02</div>
+      <div>
+        <h2 class="phase-title">רשימת בעיות לפי עדיפות</h2>
+        <p class="phase-sub">מה חוסם עסקית, ומה שיפור.</p>
+      </div>
+    </div>
+
+    <h4>P0 — חוסם אמון, המרה או שימושיות</h4>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>#</th><th>הבעיה</th><th>מה זה עולה</th></tr></thead>
+        <tbody>
+          <tr><td class="num">1</td><td>אין Open Graph — שיתוף בוואטסאפ נראה כמו ספאם</td><td>הערוץ החזק ביותר: המלצה מחבר</td></tr>
+          <tr><td class="num">2</td><td>2.89MB חוסם־רינדור; LCP לא בר־השגה</td><td>נטישה לפני שרואים משהו</td></tr>
+          <tr><td class="num">3</td><td>7/9 שדות טופס בלי תווית</td><td>ההמרה הראשית לא נגישה</td></tr>
+          <tr><td class="num">4</td><td>התהליך מסופר פעמיים</td><td>סותר את המסר "יש סדר"</td></tr>
+          <tr><td class="num">5</td><td>תיק העבודות חוסם את הסיפור, 37% מהעמוד</td><td>גלריה במקום שיקול דעת</td></tr>
+          <tr><td class="num">6</td><td>Title גנרי, אפס Structured Data</td><td>לא ניתן למצוא באורגני</td></tr>
+          <tr><td class="num">7</td><td>נתיב יחיד — אין עמודים לדרג</td><td>אין נכס SEO בכלל</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>P1 — השפעה גבוהה</h4>
+    <ul>
+      <li>כותרת גיבור גנרית לקטגוריה</li>
+      <li>הרקע של ברק מוצג כקורות חיים ולא כערך</li>
+      <li>סרגל ניווט נשבר לשתי שורות ומוביל בפעולה הלא נכונה</li>
+      <li>שלוש קריאות צפות מתחרות</li>
+      <li>33 אזורי מגע מתחת ל־44px</li>
+      <li>עמוד באורך 12,487px בטלפון</li>
+      <li>אין הוכחה חברתית מאומתת בקיפול הראשון</li>
+      <li>מסך אחרי שליחת טופס לא אומר מה קורה עכשיו</li>
+    </ul>
+
+    <h4>P2 — שיפורים נדרשים</h4>
+    <ul>
+      <li>היררכיית כותרות מדלגת H2→H4</li>
+      <li>שתי תמונות בלי <code>alt</code></li>
+      <li>אין canonical</li>
+      <li>הקורס לא ממוצב כמוצר עצמאי אלא כגרסה זולה</li>
+      <li>אין יחסי גובה־רוחב אחידים לתמונות</li>
+    </ul>
+
+    <h4>P3 — ליטוש</h4>
+    <ul>
+      <li>אחידות מרווחים בין סעיפים</li>
+      <li>עידון מצבי מעבר עכבר ופוקוס</li>
+      <li>תזמון אנימציות לטווח 160–350ms</li>
+    </ul>
+  </section>
+
+  <!-- ============================ PHASE 3 ============================ -->
+  <section class="phase">
+    <div class="phase-head">
+      <div class="phase-num">03</div>
+      <div>
+        <h2 class="phase-title">מיצוב</h2>
+        <p class="phase-sub">מה המותג אומר, למי, ובמה הוא נבדל.</p>
+      </div>
+    </div>
+
+    <h4>הרעיון המרכזי</h4>
+    <div class="pull">אתם יודעים איך אתם רוצים שהערב ירגיש. מכאן זה עניין של מי שיודע איך מגיעים לשם.</div>
+
+    <h4>ההבטחה ללקוח</h4>
+    <p>בכל רגע בתהליך אתם יודעים מה כבר סגור, מה מחכה להחלטה שלכם, ומה קורה אחר כך. ההחלטות נשארות שלכם. הביצוע לא נופל עליכם.</p>
+
+    <h4>הבידול</h4>
+    <p>
+      רוב המפיקים מוכרים <em>תוצאה</em> — "חתונה מושלמת". הבידול כאן הוא שקיפות התהליך:
+      מערכת שהזוג נכנס אליה ורואה בעצמו את התקציב, המשימות, אישורי ההגעה והלוז. זה מוכיח סדר במקום להבטיח אותו.
+      זה גם הופך את EventOS מנכס פנימי ליתרון תחרותי שאי אפשר להעתיק בעמוד נחיתה.
+    </p>
+
+    <h4>אישיות המותג</h4>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>כן</th><th>לא</th></tr></thead>
+        <tbody>
+          <tr><td>רגוע ובטוח</td><td>נלהב ומתלהם</td></tr>
+          <tr><td>ישיר ומדויק</td><td>מעורפל ומבטיח</td></tr>
+          <tr><td>אנושי</td><td>תאגידי</td></tr>
+          <tr><td>מוחזק ומאופק</td><td>ראוותני</td></tr>
+          <tr><td>קונקרטי</td><td>מלא בתארים</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>המשפט שהלקוח צריך להגיד לעצמו</h4>
+    <p>"הוא מבין אותנו, הוא יודע מה הצעד הבא, והוא יגיד לנו את האמת גם כשזה לא נעים."</p>
+  </section>
+
+  <!-- ============================ PHASE 4 ============================ -->
+  <section class="phase">
+    <div class="phase-head">
+      <div class="phase-num">04</div>
+      <div>
+        <h2 class="phase-title">ארכיטקטורת מידע</h2>
+        <p class="phase-sub">מעמוד אחד למבנה שאפשר לדרג, לשתף ולנווט בו.</p>
+      </div>
+    </div>
+
+    <p>
+      השינוי המבני הגדול ביותר: <strong>מנתיב אחד לתשעה נתיבים אמיתיים.</strong>
+      היום כל האתר הוא כתובת אחת, ולכן אין לגוגל מה לדרג, ואין מה לשלוח בוואטסאפ חוץ מדף הבית.
+    </p>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>נתיב</th><th>העמוד</th><th>התפקיד — השאלה שהוא עונה עליה</th></tr></thead>
+        <tbody>
+          <tr><td class="num">/</td><td>בית</td><td>האם זה מרגיש לי נכון, ומה הצעד הבא?</td></tr>
+          <tr><td class="num">/production</td><td>הפקת חתונות</td><td>מה בדיוק אנחנו מקבלים?</td></tr>
+          <tr><td class="num">/process</td><td>התהליך</td><td>מה קורה אחרי שסוגרים? 12 שלבים.</td></tr>
+          <tr><td class="num">/weddings</td><td>חתונות נבחרות</td><td>איך נראית עבודה שלו, ולמה החלטות התקבלו?</td></tr>
+          <tr><td class="num">/weddings/[slug]</td><td>סיפור חתונה</td><td>נכס SEO ושכנוע לכל אירוע בנפרד.</td></tr>
+          <tr><td class="num">/about</td><td>על ברק</td><td>למי אנחנו מוסרים את זה?</td></tr>
+          <tr><td class="num">/course</td><td>הקורס הדיגיטלי</td><td>אפשר לתכנן לבד ובכל זאת בשיטה?</td></tr>
+          <tr><td class="num">/contact</td><td>יצירת קשר</td><td>איך מתחילים, ומה קורה אחרי ששלחתי?</td></tr>
+          <tr><td class="num">/app</td><td>EventOS</td><td>כניסת לקוחות. משני בניווט, בולט אחרי התחברות.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>מה יורד</h4>
+    <p>
+      החנות יורדת מהניווט הראשי. היא רלוונטית רק בתוך מסע רכישת הקורס, ובניווט הראשי היא מסיטה מבקר ששוקל הפקה מלאה אל עגלת קניות.
+      "יצירת חשבון" יורד מהסרגל — אין סיבה שמבקר חדש ייתקל בו.
+    </p>
+
+    <h4>מה חסר ולא קיים היום</h4>
+    <ul>
+      <li><strong>עמוד תהליך ייעודי</strong> — הנכס המשכנע ביותר שאפשר לבנות בקטגוריה הזאת</li>
+      <li><strong>עמוד לכל חתונה</strong> — גם שכנוע וגם אינדוקס</li>
+      <li><strong>עמוד תוכן מקצועי</strong> <span class="verify">לאמת האם יש פודקאסט פעיל</span></li>
+    </ul>
+  </section>
+
+  <!-- ============================ PHASE 5 ============================ -->
+  <section class="phase">
+    <div class="phase-head">
+      <div class="phase-num">05</div>
+      <div>
+        <h2 class="phase-title">מסעות משתמש</h2>
+        <p class="phase-sub">שלושה קהלים, שלוש כוונות שונות לגמרי.</p>
+      </div>
+    </div>
+
+    <h3>א. זוג שמחפש הפקה מלאה</h3>
+    <p>
+      נכנס מהמלצה בוואטסאפ או מאינסטגרם, בטלפון, בערב.
+      השאלה בראש: "כמה זה עולה, ואפשר לסמוך עליו?"
+    </p>
+    <ol>
+      <li>גיבור — תמונה אחת, אמירה אחת, קריאה אחת</li>
+      <li>הוכחה מאומתת קצרה</li>
+      <li>שלוש חתונות כסיפור</li>
+      <li>תהליך מקוצר → קישור לתהליך המלא</li>
+      <li>על ברק, קצר</li>
+      <li>עדות אחת חזקה</li>
+      <li>מחשבון התקציב — עונה על השאלה שהוא בא איתה</li>
+      <li>קביעת פגישת היכרות</li>
+    </ol>
+    <p><strong>נקודת הנשירה היום:</strong> שלב 3. הוא נתקל ב־4,624px של גלריה ועוזב לפני שהגיע לתהליך.</p>
+
+    <h3>ב. זוג ששוקל את הקורס</h3>
+    <p>
+      קהל אחר לגמרי: רוצה לנהל בעצמו, מחפש שיטה — לא מחפש מישהו שיעשה במקומו.
+      חשוב שלא יורגש כ"גרסה זולה של ברק", אלא כמוצר אחר.
+      המעבר הטבעי מגיע אחרי סעיף התהליך: מי שהתרשם מהשיטה אבל לא מהמחיר, הוא בדיוק הלקוח של הקורס.
+    </p>
+
+    <h3>ג. לקוח קיים שנכנס ל־EventOS</h3>
+    <p>
+      חוזר עשרות פעמים לאורך שנה. הוא לא רוצה שיווק — הוא רוצה תשובה לארבע שאלות:
+      איפה אנחנו, מה דורש אותנו, מה הלאה, ואיפה התקציב.
+      היום הכניסה בולטת מדי לפני התחברות ולא מספיק אחריה.
+    </p>
+  </section>
+
+  <!-- ============================ PHASE 6 ============================ -->
+  <section class="phase">
+    <div class="phase-head">
+      <div class="phase-num">06</div>
+      <div>
+        <h2 class="phase-title">מערכת עיצוב</h2>
+        <p class="phase-sub">המסמך הזה בנוי בה — כדי לבדוק אותה על עברית ארוכה לפני שהיא נכנסת לאתר.</p>
+      </div>
+    </div>
+
+    <h4>צבע</h4>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>תפקיד</th><th>ערך</th><th>שימוש</th></tr></thead>
+        <tbody>
+          <tr><td>Warm Ivory</td><td class="num">#F7F4EE</td><td>רקע ראשי</td></tr>
+          <tr><td>White</td><td class="num">#FFFFFF</td><td>משטחים מורמים בלבד</td></tr>
+          <tr><td>Ink</td><td class="num">#171512</td><td>טקסט ראשי, רקע כפתור ראשי</td></tr>
+          <tr><td>Secondary</td><td class="num">#655D54</td><td>טקסט משני</td></tr>
+          <tr><td>Champagne</td><td class="num">#A6763A</td><td>קישוט בלבד: קווים דקים, ספרות</td></tr>
+          <tr><td>Bronze</td><td class="num">#7C5527</td><td>טקסט וקישורים — הגרסה הנגישה</td></tr>
+          <tr><td>Border</td><td class="num">#E4DDD3</td><td>קווי הפרדה</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note">
+      <span class="tag">הערת ניגודיות</span>
+      <p>
+        Champagne <code>#A6763A</code> על Ivory נותן יחס של כ־3.4:1 — מתחת ל־4.5:1 הנדרש לטקסט רגיל.
+        לכן החלוקה: זהב לקישוט בלבד, וברונזה <code>#7C5527</code> לכל טקסט או קישור. במסמך הזה זה בדיוק מה שקורה.
+      </p>
+    </div>
+
+    <h4>טיפוגרפיה</h4>
+    <p>
+      <strong>Frank Ruhl Libre</strong> לכותרות ו<strong>Heebo</strong> לגוף. שתי משפחות, שלושה משקלים (400/500/700).
+      בדקתי את הצירוף על העברית של המסמך הזה: Frank Ruhl Libre נותן אופי עריכתי בלי להיות דקורטיבי, ו־Heebo קריא בגדלים קטנים ובטבלאות.
+      זו הבחירה שאני ממליץ עליה מבין שתי האפשרויות בבריף.
+    </p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>רמה</th><th>דסקטופ</th><th>טלפון</th></tr></thead>
+        <tbody>
+          <tr><td>Hero</td><td class="num">72–88px</td><td class="num">44–52px</td></tr>
+          <tr><td>H2</td><td class="num">48–56px</td><td class="num">34–40px</td></tr>
+          <tr><td>H3</td><td class="num">28–32px</td><td class="num">22–24px</td></tr>
+          <tr><td>Body</td><td class="num">18–20px</td><td class="num">17–18px</td></tr>
+          <tr><td>Caption</td><td class="num">14px</td><td class="num">13.5px</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>רשת ומרווחים</h4>
+    <p>
+      רוחב מרבי 1280px, תוכן 1120px, טקסט ארוך 620–700px.
+      מרווח בין סעיפים: 120–160px בדסקטופ, 72–96px בטלפון.
+      סולם מרווחים על בסיס 8: <code>8 · 16 · 24 · 32 · 48 · 64 · 96 · 128</code>.
+    </p>
+
+    <h4>כפתורים ושדות</h4>
+    <ul>
+      <li><strong>ראשי</strong> — רקע Ink, טקסט אייבורי, גובה 48px</li>
+      <li><strong>משני</strong> — מסגרת דקה, ללא מילוי, גובה 44px</li>
+      <li><strong>שלישוני</strong> — טקסט ברונזה עם קו תחתון בריחוף</li>
+      <li><strong>שדות</strong> — תווית קבועה מעל, גובה 48px, קו תחתון או מסגרת דקה בלבד</li>
+      <li>מצב פוקוס נראה לעין תמיד — לא מוסתר</li>
+    </ul>
+
+    <h4>תמונות</h4>
+    <p>שלושה יחסים בלבד: <code>3:2</code> עריכתי · <code>4:5</code> דיוקן · <code>16:9</code> רוחב מלא. בלי masonry אקראי.</p>
+
+    <h4>תנועה</h4>
+    <p>160–350ms, עקומת <code>cubic-bezier(.16,1,.3,1)</code>. חשיפה בגלילה פעם אחת לסעיף — לא לכל פסקה. כיבוד <code>prefers-reduced-motion</code> מלא.</p>
+  </section>
+
+  <!-- ============================ PHASE 7 ============================ -->
+  <section class="phase">
+    <div class="phase-head">
+      <div class="phase-num">07</div>
+      <div>
+        <h2 class="phase-title">מבנה עמודים</h2>
+        <p class="phase-sub">סעיף אחר סעיף — מטרה, מסר, פריסה, קריאה והתנהגות בטלפון.</p>
+      </div>
+    </div>
+
+    <h3>עמוד הבית</h3>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>סעיף</th><th>השאלה שהוא עונה</th><th>קריאה</th><th>בטלפון</th></tr></thead>
+        <tbody>
+          <tr><td>1. גיבור</td><td>למי הדבר הזה מיועד?</td><td>קביעת פגישת היכרות</td><td>תמונה מלאה, כותרת 44–52px, קריאה אחת</td></tr>
+          <tr><td>2. הוכחה</td><td>אפשר לסמוך עליו?</td><td>—</td><td>2–3 עובדות מאומתות, שורה אחת</td></tr>
+          <tr><td>3. שלוש חתונות</td><td>איך נראית העבודה?</td><td>לכל החתונות</td><td>כרטיס אחד מתחת לשני</td></tr>
+          <tr><td>4. תהליך מקוצר</td><td>מה קורה אחרי שסוגרים?</td><td>לתהליך המלא</td><td>סטפר אנכי, 6 שלבים</td></tr>
+          <tr><td>5. על ברק</td><td>למי אנחנו מוסרים?</td><td>עוד על ברק</td><td>תמונה אחת + 3 פסקאות</td></tr>
+          <tr><td>6. עדות</td><td>מה זוג אמיתי חווה?</td><td>—</td><td>עדות אחת, לא קרוסלה</td></tr>
+          <tr><td>7. מחשבון</td><td>כמה זה עולה?</td><td>לדבר על המספרים</td><td>שדות מלאים, תוצאה דביקה</td></tr>
+          <tr><td>8. קורס</td><td>ואם נרצה לבד?</td><td>לקורס</td><td>סעיף שקט, לא קריאה מתחרה</td></tr>
+          <tr><td>9. סיום</td><td>איך מתחילים?</td><td>קביעת פגישה</td><td>הזמנה קצרה, כפתור אחד</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>עמוד התהליך — 12 שלבים</h3>
+    <p>
+      חשיפה הדרגתית: מספר, כותרת, משפט אחד. לחיצה פותחת ארבע שאלות — מה קורה עכשיו, מה ברק מנהל, מה אתם מחליטים, ומה סגור לפני שממשיכים.
+      בדסקטופ ציר מתחלף, בטלפון סטפר אנכי.
+    </p>
+    <details>
+      <summary>12 השלבים המלאים</summary>
+      <ol>
+        <li>משאירים פרטים</li>
+        <li>פגישת היכרות</li>
+        <li>מתחילים לעבוד יחד</li>
+        <li>מגדירים סדרי עדיפויות ותקציב</li>
+        <li>מחקר וסיורי לוקיישנים</li>
+        <li>בחירת מקום ותאריך</li>
+        <li>בניית תוכנית החתונה</li>
+        <li>בחירת ספקים</li>
+        <li>תכנון החוויה והתוכן</li>
+        <li>לוגיסטיקה ותיאום סופי</li>
+        <li>לוח זמנים להפקה</li>
+        <li>ניהול יום החתונה</li>
+      </ol>
+    </details>
+
+    <h3>עמוד הפקה</h3>
+    <p>
+      לא צ׳קליסט. שלוש קבוצות לפי מה שמשתנה עבור הזוג:
+      <strong>לפני שסוגרים</strong> (תקציב, לוקיישן, ספקים) ·
+      <strong>בזמן התכנון</strong> (השוואות, משא ומתן, חוזים, תשלומים) ·
+      <strong>לקראת ויום האירוע</strong> (לוגיסטיקה, לוז, ניהול הערב).
+    </p>
+  </section>
+
+  <!-- ============================ PHASE 8 ============================ -->
+  <section class="phase">
+    <div class="phase-head">
+      <div class="phase-num">08</div>
+      <div>
+        <h2 class="phase-title">קופי</h2>
+        <p class="phase-sub">עברית שנשמעת טוב כשאומרים אותה בקול.</p>
+      </div>
+    </div>
+
+    <h3>כותרת הגיבור — עשר אפשרויות</h3>
+    <p>הבריף ביקש לייצר עשר ולבחור שלוש. הקריטריונים: רלוונטיות רגשית, בהירות, מקוריות, עברית טבעית, אמון ובידול.</p>
+
+    <ol class="options">
+      <li><div><span class="t">אתם יודעים איך אתם רוצים שזה ירגיש. אני יודע איך מגיעים לשם.</span><span class="why">מחזיר לזוג את הבעלות ומציב את ברק כדרך ולא כגיבור.</span></div></li>
+      <li><div><span class="t">החתונה שלכם. בלי שתצטרכו להחזיק אותה לבד.</span><span class="why">נוגע ישירות בפחד האמיתי — עומס — בלי לומר את המילה.</span></div></li>
+      <li><div><span class="t">מהרעיון הראשון ועד שהאורח האחרון הולך הביתה — יש מי שמחזיק את התמונה.</span><span class="why">קונקרטי, אבל ארוך לכותרת בטלפון.</span></div></li>
+      <li><div><span class="t">בכל שלב תדעו מה סגור, מה מחכה לכם, ומה קורה אחר כך.</span><span class="why">ההבטחה המדויקת ביותר. חזקה מדי כמשפט פותח, מצוינת כמשנה.</span></div></li>
+      <li><div><span class="t">חתונה שמרגישה כמוכם, ועובדת כמו שצריך מאחורי הקלעים.</span><span class="why">שני צדדי המותג במשפט אחד: טעם ותפעול.</span></div></li>
+      <li><div><span class="t">לא צריך לדעת הכל. צריך מישהו שכן.</span><span class="why">חד וזכיר, אבל מציב את הזוג כחסר ידע — נגד הבריף.</span></div></li>
+      <li><div><span class="t">הערב הזה ינוהל. אתם רק תהיו בו.</span><span class="why">תמונה יפה, קצת קרירה.</span></div></li>
+      <li><div><span class="t">אנחנו לא מוכרים חתונה מושלמת. אנחנו בונים חתונה שלכם.</span><span class="why">בידול מפורש מהקטגוריה, אבל פותח בשלילה.</span></div></li>
+      <li><div><span class="t">התכנון הוא שלנו. ההחלטות הן שלכם.</span><span class="why">חלוקת תפקידים ברורה בשמונה מילים.</span></div></li>
+      <li><div><span class="t">יש דרך לעשות את זה בלי שזה ישתלט על השנה שלכם.</span><span class="why">מדבר לזוג עסוק, אבל "השתלט" שלילי מדי לכותרת ראשית.</span></div></li>
+    </ol>
+
+    <h4>שלוש הנבחרות</h4>
+    <div class="spec">
+      <span class="lbl">ראשונה — מומלצת</span>
+      <p class="h">אתם יודעים איך אתם רוצים שזה ירגיש.<br>אני יודע איך מגיעים לשם.</p>
+      <p>היא היחידה שעושה את שלושת הדברים יחד: מציבה את הזוג במרכז, מציעה ערך מקצועי ברור, ונשמעת כמו משפט שאדם אומר ולא כמו סלוגן. גם קצרה מספיק לשתי שורות בטלפון.</p>
+    </div>
+    <div class="spec">
+      <span class="lbl">שנייה</span>
+      <p class="h">החתונה שלכם.<br>בלי שתצטרכו להחזיק אותה לבד.</p>
+      <p>הכי רגשית מהשלוש, ונוגעת בעומס בלי להאשים את הזוג שהוא לא מסתדר. חלשה יותר בהעברת מקצועיות.</p>
+    </div>
+    <div class="spec">
+      <span class="lbl">שלישית</span>
+      <p class="h">התכנון הוא שלנו.<br>ההחלטות הן שלכם.</p>
+      <p>הכי חדה ומבדלת. הסיכון: יבשה מדי כפתיחה, בלי תמונה חזקה מאוד מאחוריה.</p>
+    </div>
+
+    <h4>משפט משנה מומלץ</h4>
+    <p class="pull">בכל שלב תדעו מה כבר סגור, מה מחכה להחלטה שלכם, ומה קורה אחר כך.</p>
+
+    <h4>אחרי שליחת הטופס</h4>
+    <div class="spec">
+      <span class="lbl">במקום "תודה, קיבלנו"</span>
+      <p class="h">הפרטים אצל ברק.</p>
+      <p>
+        הצעד הבא הוא שיחה קצרה — להבין איפה אתם בתכנון, מה חשוב לכם, ואם נכון לנו לעבוד יחד.
+        ברק חוזר בדרך כלל תוך יום עסקים.
+      </p>
+    </div>
+    <p>
+      ההבדל: "תודה" מסיים שיחה. הנוסח הזה פותח אותה, ומוריד את החרדה "מתי הוא יחזור אליי" — שהיא הסיבה הנפוצה לפנייה במקביל לשלושה מפיקים.
+    </p>
+
+    <h4>על ברק — הרקע כערך</h4>
+    <div class="spec">
+      <span class="lbl">במקום רשימת רקע</span>
+      <p>
+        ברק הגיע להפקות אחרי שנים של ניהול צוותים במצבים שבהם טעות עולה ביוקר.
+        זה מה שמייצר את הרוגע שאתם פוגשים כשמשהו משתבש שבוע לפני החתונה — ואת ההרגל לבנות תוכנית שמניחה מראש שדברים ישתנו.
+        <span class="verify">לאמת ניסוח מול ברק</span>
+      </p>
+    </div>
+  </section>
+
+  <!-- ============================ PHASE 9 ============================ -->
+  <section class="phase">
+    <div class="phase-head">
+      <div class="phase-num">09</div>
+      <div>
+        <h2 class="phase-title">EventOS כמוצר</h2>
+        <p class="phase-sub">שתי רמות, ולוח בקרה שעונה על ארבע שאלות.</p>
+      </div>
+    </div>
+
+    <h3>לוח הבקרה</h3>
+    <p>
+      הכלל המרכזי מהבריף: לא "42 משימות פתוחות" אלא "שלושה דברים מחכים להחלטה שלכם השבוע".
+      מספר גולמי גדול הוא לחץ, לא מידע.
+    </p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>השאלה</th><th>מה מוצג</th></tr></thead>
+        <tbody>
+          <tr><td>איפה אנחנו?</td><td>התקדמות ומועד האירוע</td></tr>
+          <tr><td>מה דורש אותנו?</td><td>החלטות פתוחות השבוע — לא ספירת משימות</td></tr>
+          <tr><td>מה הלאה?</td><td>אבן הדרך הקרובה</td></tr>
+          <tr><td>איפה התקציב?</td><td>שולם מול פתוח, ופער מול האומדן</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Lite מול Pro</h3>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>יכולת</th><th>Lite (קורס)</th><th>Pro (הפקה)</th></tr></thead>
+        <tbody>
+          <tr><td>תקציב, משימות, לוז</td><td>✓</td><td>✓</td></tr>
+          <tr><td>מעקב ספקים והשוואת הצעות</td><td>✓</td><td>✓</td></tr>
+          <tr><td>אישורי הגעה והושבה</td><td>✓</td><td>✓</td></tr>
+          <tr><td>מסמכים וצ׳קליסט שבוע האירוע</td><td>✓</td><td>✓</td></tr>
+          <tr><td>עבודה משותפת עם המפיק</td><td>—</td><td>✓</td></tr>
+          <tr><td>בקשות אישור וסטטוס ספקים חי</td><td>—</td><td>✓</td></tr>
+          <tr><td>לוח הפקה ליום האירוע</td><td>—</td><td>✓</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note">
+      <span class="tag">מה כבר קיים</span>
+      <p>
+        רוב שורות ה־Pro כבר נבנו בגרסת Next.js: הזמנת זוג, משימות דו־כיווניות, תקציב ותשלומים,
+        לוח ניצחון, אישורי הגעה, הושבה, לוז יום האירוע והתראות — עם הרשאות ברמת השורה שנבדקו מול בסיס נתונים אמיתי.
+        הפער העיקרי מול הבריף הוא שכבת ה־Lite והצגת "החלטות פתוחות" במקום ספירות.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============================ PHASE 10 ============================ -->
+  <section class="phase">
+    <div class="phase-head">
+      <div class="phase-num">10</div>
+      <div>
+        <h2 class="phase-title">הקורס</h2>
+        <p class="phase-sub">מוצר עצמאי, לא גרסה מוזלת.</p>
+      </div>
+    </div>
+    <p>
+      המסר: <strong>אתם מנהלים את החתונה. הקורס נותן את השיטה, הכלים וההיגיון המקצועי.</strong>
+      הלקוח שונה — הוא רוצה שליטה, לא פטור מאחריות.
+    </p>
+    <p>
+      מבנה עמוד המכירה: הבטחה · למי זה · מה נהיה קל יותר · השיטה · פרקים · תבניות וכלים · EventOS Lite ·
+      שיעור לדוגמה · על ברק · המלצות · מחיר · מה בדיוק מקבלים · שאלות · רכישה.
+    </p>
+    <p>
+      הפרקים מקובצים ולא נפרשים כרשימה של עשרות שיעורים. כל פרק אומר: הבעיה, התוצאה, והכלי שמקבלים.
+    </p>
+  </section>
+
+  <!-- ============================ PHASE 11–13 ============================ -->
+  <section class="phase">
+    <div class="phase-head">
+      <div class="phase-num phase-num-wide">11–13</div>
+      <div>
+        <h2 class="phase-title">SEO, ביצועים ונגישות</h2>
+        <p class="phase-sub">שלושת התוכניות הטכניות, מרוכזות.</p>
+      </div>
+    </div>
+
+    <h3>SEO</h3>
+    <ul>
+      <li>מעבר לתשעה נתיבים — בלי זה אין מה לדרג</li>
+      <li>Title ייחודי לכל עמוד, בתבנית <code>עמוד | ברק ליור — הפקת חתונות</code></li>
+      <li>Open Graph ו־Twitter Card מלאים עם תמונת שיתוף ייעודית — <strong>העדיפות הראשונה</strong></li>
+      <li>Canonical לכל עמוד; <code>sitemap.xml</code> ו־<code>robots.txt</code></li>
+      <li>Schema נתמך בתוכן נראה בלבד: <code>Organization</code>, <code>Person</code>, <code>Service</code>, <code>Course</code>, <code>Review</code></li>
+      <li>תיקון H2→H4; <code>alt</code> תיאורי לכל תמונה</li>
+      <li>קישור פנימי: בית → תהליך → חתונות → יצירת קשר</li>
+    </ul>
+
+    <h3>ביצועים</h3>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>פעולה</th><th>למה</th><th>עדיפות</th></tr></thead>
+        <tbody>
+          <tr><td>הוצאת 1.28MB תמונות מה־HTML לקבצים</td><td>מאפשר דחיסה, מטמון וטעינה עצלה</td><td>P0</td></tr>
+          <tr><td>AVIF/WebP עם <code>srcset</code></td><td>חיסכון של 40–60% במשקל</td><td>P0</td></tr>
+          <tr><td>טעינה עצלה מתחת לקיפול</td><td>LCP</td><td>P0</td></tr>
+          <tr><td>תמונת גיבור ב־<code>fetchpriority="high"</code></td><td>LCP</td><td>P0</td></tr>
+          <tr><td>וידאו עם poster, בלי preload</td><td>נתונים סלולריים</td><td>P1</td></tr>
+          <tr><td>מידות מפורשות לתמונות</td><td>CLS</td><td>P1</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>נגישות</h3>
+    <ul>
+      <li>תווית לכל אחד מתשעת השדות — <strong>P0</strong></li>
+      <li>44px מינימום לכל אזור מגע (33 חריגות היום) — <strong>P1</strong></li>
+      <li>ברונזה לטקסט, זהב לקישוט בלבד — פותר את הניגודיות</li>
+      <li>מצב פוקוס נראה לעין בכל אלמנט</li>
+      <li>סטטוס לא מסומן בצבע בלבד — תמיד גם טקסט או סימן</li>
+      <li>כיבוד <code>prefers-reduced-motion</code></li>
+      <li><code>alt</code> לשתי התמונות החסרות</li>
+    </ul>
+  </section>
+
+  <!-- ============================ PHASE 14 ============================ -->
+  <section class="phase">
+    <div class="phase-head">
+      <div class="phase-num">14</div>
+      <div>
+        <h2 class="phase-title">תוכנית מימוש</h2>
+        <p class="phase-sub">סדר שמגן על מה שעובד היום.</p>
+      </div>
+    </div>
+
+    <div class="note">
+      <span class="tag">החלטה שצריכה את האישור שלך</span>
+      <p>
+        המבנה של קובץ אחד הוא הגורם ל־P0 מספר 2, 6 ו־7 — משקל, SEO, וריבוי עמודים. אי אפשר לפתור אותם בלי לעבור למבנה רב־עמודי.
+        <strong>גרסת ה־Next.js שכבר בנינו היא הבסיס הנכון</strong> — היא כבר עומדת, כבר מחוברת ל־Supabase, וכבר פותרת את הסנכרון בין מכשירים.
+        ההמלצה שלי: לבנות עליה, לא לתקן את הקובץ הישן.
+      </p>
+    </div>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>שלב</th><th>מה נעשה</th><th>סיכון</th></tr></thead>
+        <tbody>
+          <tr><td class="num">א</td><td>Open Graph, Title, canonical, alt, תוויות טופס — על האתר הקיים</td><td>אפסי. שיפור מיידי בלי נגיעה במבנה.</td></tr>
+          <tr><td class="num">ב</td><td>מערכת העיצוב כטוקנים ב־Next.js</td><td>אפסי. אין השפעה על משתמשים.</td></tr>
+          <tr><td class="num">ג</td><td>בית, תהליך, על ברק, יצירת קשר עם הקופי החדש</td><td>נמוך. האתר הישן ממשיך לרוץ במקביל.</td></tr>
+          <tr><td class="num">ד</td><td>חתונות + עמוד לכל אירוע, תמונות מיטביות</td><td>בינוני. תלוי בחומר גלם ובאישור זוגות.</td></tr>
+          <tr><td class="num">ה</td><td>EventOS Lite והפרדת הרמות</td><td>בינוני. לא לגעת ב־Pro שעובד.</td></tr>
+          <tr><td class="num">ו</td><td>עמוד הקורס והרכישה</td><td>גבוה. תשלומים — לבדוק בנפרד.</td></tr>
+          <tr><td class="num">ז</td><td>מעבר דומיין והפניות 301</td><td>גבוה. נקודת אל־חזור. אחרי בדיקה מלאה.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>תלויות שחוסמות</h4>
+    <ul>
+      <li><strong>חומר גלם צילומי</strong> — הבריף דורש אנשים, לא שולחנות. היום התיק נוטה לחופות ועיצוב. <span class="verify">צריך אישור זוגות לפרסום</span></li>
+      <li><strong>הוכחה מאומתת</strong> — מספר אירועים, שנות ניסיון, שמות מקומות. <span class="verify">לא ממציא נתונים</span></li>
+      <li><strong>עדויות אמיתיות עם שם</strong> <span class="verify">ובאישור</span></li>
+      <li><strong>תוכן הקורס</strong> — אם עוד לא קיים, שלב ו׳ נדחה</li>
+    </ul>
+  </section>
+
+  <!-- ============================ PHASE 15 ============================ -->
+  <section class="phase">
+    <div class="phase-head">
+      <div class="phase-num">15</div>
+      <div>
+        <h2 class="phase-title">מימוש</h2>
+        <p class="phase-sub">מתחיל אחרי אישור שלושה דברים.</p>
+      </div>
+    </div>
+    <p>הבריף אומר במפורש לא להתחיל לפתח לפני שהארכיטקטורה, מערכת העיצוב והעדיפויות קוהרנטיות. שלושת הדברים שאני צריך ממך:</p>
+    <ol>
+      <li><strong>כותרת הגיבור</strong> — אחת משלוש הנבחרות בשלב 8, או כיוון אחר</li>
+      <li><strong>הבסיס הטכני</strong> — לבנות על Next.js כפי שאני ממליץ, או להישאר בקובץ הבודד ולוותר על P0 2/6/7</li>
+      <li><strong>העובדות לאימות</strong> — כל שדה שמסומן <span class="verify">לאמת</span> במסמך</li>
+    </ol>
+    <p>
+      עם האישור אני מתחיל בשלב א׳, שנותן שיפור מיידי לאתר החי בלי סיכון.
+    </p>
+
+    <div class="note">
+      <span class="tag">שקיפות לגבי מה שכבר עשיתי</span>
+      <p>
+        לפני שקיבלתי את הבריף הזה ביצעתי שינויי עיצוב מהירים על האתר החי: תמונה בגיבור, תיקון סרגל הניווט,
+        הסרת סעיף התהליך הכפול, והזזת תיק העבודות אחרי הסיפור.
+        הם תואמים את הכיוון כאן ולא נפרסו לאוויר. אני ממליץ להשאיר אותם כשיפור ביניים — אבל תגיד אם אתה מעדיף שאחזיר את המצב הקודם ונתחיל נקי.
+      </p>
+    </div>
+  </section>
+
+  <footer>
+    <p class="eyebrow">צפון</p>
+    <p class="pull" style="margin-top:8px">
+      המבקר לא הגיע לאתר כדי ללמוד כמה ברק מרשים.
+      הוא הגיע כדי להבין איך זה ירגיש לסמוך עליו עם החתונה שלו.
+    </p>
+    <p>
+      כל מספר במסמך נמדד על העמוד שנפרס בפועל, ברוחב 412px ו־1280px.
+      איפה שכתוב "לאמת" — אין לי נתון מאומת, ולא המצאתי אחד.
+    </p>
+  </footer>
+
+</div>
