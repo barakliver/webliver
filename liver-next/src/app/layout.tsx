@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Heebo, Assistant, Inter } from 'next/font/google';
 import { site } from '@/content/site';
+import { ServiceWorker } from '@/components/app/ServiceWorker';
 import './globals.css';
 
 const heebo = Heebo({ subsets: ['hebrew', 'latin'], variable: '--font-heebo', display: 'swap', weight: ['300','400','500','700'] });
@@ -25,6 +26,8 @@ export const viewport: Viewport = {
   themeColor: '#f7fafd',
   width: 'device-width',
   initialScale: 1,
+  /* cover lets env(safe-area-inset-*) report real values; globals.css spends
+     them, otherwise an installed app draws its header under the clock */
   viewportFit: 'cover',
 };
 
@@ -36,6 +39,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           דלג לתוכן הראשי
         </a>
         {children}
+        <ServiceWorker />
       </body>
     </html>
   );
