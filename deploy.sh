@@ -17,6 +17,7 @@ install -d "$WEB" "$WEB/.well-known"
 cp "liver-productions (1).html" "$WEB/index.html"
 cp manifest.json sw.js "$WEB/"
 cp icon-*.png "$WEB/"
+cp og-image.jpg "$WEB/"        # referenced by the og:image tag
 cp screenshot-*.png "$WEB/" 2>/dev/null || true
 
 # Present only once a Play Store listing exists; see PWA-STORES.md.

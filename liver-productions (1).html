@@ -11,7 +11,63 @@
 <meta name="description" content="Liver productions — הפקת אירועים מקצה לקצה. חתונות, אירועים עסקיים והפקות שטח.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20512%20512'%3E%3Crect%20width='512'%20height='512'%20rx='96'%20fill='%2314130f'/%3E%3Ctext%20x='256'%20y='335'%20font-family='Georgia,serif'%20font-size='250'%20fill='%23a8874f'%20text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>Liver productions</title>
+<title>הפקת חתונות ואירועים | Liver Productions</title>
+<link rel="canonical" href="https://liverproductions.com/">
+
+<!-- Sharing. A link sent between two people in WhatsApp is the strongest
+     recommendation this business gets; without these it arrived naked. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Liver Productions">
+<meta property="og:locale" content="he_IL">
+<meta property="og:url" content="https://liverproductions.com/">
+<meta property="og:title" content="הפקת חתונות ואירועים | Liver Productions">
+<meta property="og:description" content="הפקה אישית של חתונות ואירועים, מהרעיון הראשון ועד הריקוד האחרון. בכל שלב יודעים מה סגור, מה מחכה להחלטה שלכם, ומה קורה אחר כך.">
+<meta property="og:image" content="https://liverproductions.com/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="כלה נכנסת לחופה מלווה בהוריה, אורחים משני צדי המעבר">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="הפקת חתונות ואירועים | Liver Productions">
+<meta name="twitter:description" content="הפקה אישית של חתונות ואירועים, מהרעיון הראשון ועד הריקוד האחרון.">
+<meta name="twitter:image" content="https://liverproductions.com/og-image.jpg">
+
+<!-- Structured data. Only facts that appear on the page: no phone number,
+     no address, no rating - none of those are verified, so none are claimed. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://liverproductions.com/#org",
+      "name": "Liver Productions",
+      "alternateName": "ליבר הפקות",
+      "url": "https://liverproductions.com/",
+      "logo": "https://liverproductions.com/icon-512.png",
+      "image": "https://liverproductions.com/og-image.jpg",
+      "description": "הפקת חתונות ואירועים מקצה לקצה — תכנון, ניהול ספקים והפקת יום האירוע.",
+      "areaServed": { "@type": "Country", "name": "IL" },
+      "founder": { "@id": "https://liverproductions.com/#barak" }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://liverproductions.com/#barak",
+      "name": "ברק ליור",
+      "jobTitle": "מפיק אירועים",
+      "url": "https://liverproductions.com/",
+      "worksFor": { "@id": "https://liverproductions.com/#org" }
+    },
+    {
+      "@type": "Service",
+      "name": "הפקת חתונות",
+      "serviceType": "הפקת אירועים",
+      "provider": { "@id": "https://liverproductions.com/#org" },
+      "areaServed": { "@type": "Country", "name": "IL" },
+      "description": "ליווי מלא של זוגות מהפגישה הראשונה ועד סוף ערב החתונה: תקציב, לוקיישן, ספקים, לוגיסטיקה וניהול יום האירוע."
+    }
+  ]
+}
+</script>
 <style>
 :root{
  --ink:#14130f; --ink2:#3a372f; --paper:#f8f5ef; --card:#fffdfa; --deep:#1c1a15;
@@ -8319,6 +8375,128 @@ renderMarketing = function(){
   intro.parentNode.insertBefore(pf, intro.nextSibling);
  }
 };
+renderAll();
+
+/* ══════════════════════════════════════════════════════════
+   v48 — the marketing page becomes usable and findable
+   ══════════════════════════════════════════════════════════
+   Stage A of the audit: the changes that carry no structural risk.
+   Measured on the rendered page at 412px before this layer:
+     · 7 of 9 form fields had no label of any kind
+     · 41 interactive elements were under the 44px touch minimum
+     · the process section jumped from H2 straight to H4
+     · 2 images had no alt text
+
+   Everything here is scoped to #mkRoot. The app's own screens use the
+   same .btn-sm and .chip classes deliberately compact inside tables, and
+   widening those would break dense layouts that are working. */
+(function(){
+
+ /* ── 1. touch targets ──
+    The audit sets 44px as the floor and 48px for a primary call. */
+ var css = document.createElement('style');
+ css.textContent =
+  '#mkRoot .btn,#mkRoot .chip{min-height:44px}' +
+  /* the three text links in the nav carry no class of their own */
+  '#mkRoot .mk-nav button{min-height:44px}' +
+  '#mkRoot .btn-sm{min-height:44px;padding-block:10px}' +
+  '#mkRoot .chip{display:inline-flex;align-items:center}' +
+  '#mkRoot .btn-gold,#mkRoot .lead-form button[type=submit]{min-height:48px}' +
+  '#mkRoot input,#mkRoot select,#mkRoot textarea{min-height:44px}' +
+  '#mkRoot textarea{min-height:88px}' +
+  /* a label above every field, in the site's own quiet register */
+  '#mkRoot .lead-form .fld{display:flex;flex-direction:column;gap:6px}' +
+  '#mkRoot .lead-form .fld.full{grid-column:1/-1}' +
+  /* the lead form sits on a dark panel, so --muted (#6f6a60) would be
+     unreadable there; #c9c3b6 measures 10.1:1 against that ground */
+  '#mkRoot .lead-form label{font-size:12.5px;font-weight:600;color:#c9c3b6;letter-spacing:.01em}';
+ document.head.appendChild(css);
+
+ /* ── 2. labels ──
+    The fields carry name attributes but no ids, so the label is wired to
+    an id generated here. The placeholder stays: it is a hint now rather
+    than the only thing naming the field. */
+ var LABELS = {
+  name:    ['שם מלא',            'Full name'],
+  email:   ['אימייל',            'Email'],
+  phone:   ['טלפון',             'Phone'],
+  type:    ['סוג האירוע',        'Event type'],
+  date:    ['תאריך משוער',       'Approximate date'],
+  guests:  ['כמות אורחים',       'Number of guests'],
+  message: ['ספרו לנו על האירוע','Tell us about the event']
+ };
+
+ function labelForms(root){
+  var forms = root.querySelectorAll('.lead-form');
+  for(var f=0; f<forms.length; f++){
+   var fields = forms[f].querySelectorAll('input,select,textarea');
+   for(var i=0; i<fields.length; i++){
+    var el = fields[i], n = el.getAttribute('name');
+    if(!n || !LABELS[n]) continue;
+    if(el.parentNode && el.parentNode.className.indexOf('fld') >= 0) continue;
+
+    if(!el.id) el.id = 'lead_' + n;
+    var wrap = document.createElement('div');
+    wrap.className = 'fld' + (el.className.indexOf('full') >= 0 ? ' full' : '');
+    var lab = document.createElement('label');
+    lab.setAttribute('for', el.id);
+    lab.textContent = LABELS[n][(typeof lang !== 'undefined' && lang === 'en') ? 1 : 0];
+    if(el.required) lab.textContent += ' *';
+
+    el.parentNode.insertBefore(wrap, el);
+    wrap.appendChild(lab);
+    wrap.appendChild(el);
+   }
+  }
+ }
+
+ /* ── 3. heading order ──
+    The seven process steps were H4 under an H2, so a screen reader
+    reports a level that does not exist and search engines read a broken
+    outline. They are the direct children of that H2, so they are H3. */
+ function fixHeadings(root){
+  var pr = root.querySelector('#sec-pr');
+  if(!pr) return;
+  var h4s = pr.querySelectorAll('h4');
+  for(var i=0; i<h4s.length; i++){
+   var old = h4s[i], h3 = document.createElement('h3');
+   h3.className = old.className;
+   h3.setAttribute('style', old.getAttribute('style') || '');
+   h3.innerHTML = old.innerHTML;
+   old.parentNode.replaceChild(h3, old);
+  }
+ }
+
+ /* ── 4. the two images with no alt ──
+    One is the portrait in the intro, which carries meaning; the other is
+    the bar photograph, which repeats what its caption already says and is
+    therefore correctly announced as decorative. */
+ function fixAlt(root){
+  var imgs = root.querySelectorAll('img:not([alt]),img[alt=""]');
+  for(var i=0; i<imgs.length; i++){
+   var img = imgs[i];
+   if(img.getAttribute('data-alt-done')) continue;
+   img.setAttribute('data-alt-done', '1');
+   if(img.closest('#sec-intro')){
+    img.alt = (typeof lang !== 'undefined' && lang === 'en')
+     ? 'Barak Lior, event producer' : 'ברק ליור, מפיק אירועים';
+   } else {
+    img.alt = '';
+    img.setAttribute('role', 'presentation');
+   }
+  }
+ }
+
+ var _renderMarketingV48 = renderMarketing;
+ renderMarketing = function(){
+  _renderMarketingV48();
+  var root = $('mkRoot');
+  if(!root) return;
+  fixHeadings(root);
+  labelForms(root);
+  fixAlt(root);
+ };
+})();
 renderAll();
 
 /* ══ PWA: real manifest.json + sw.js on the server so "Install app" works.
