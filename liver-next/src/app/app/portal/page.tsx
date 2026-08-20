@@ -8,6 +8,7 @@ import { BudgetPanel, type BudgetItem } from '@/components/app/BudgetPanel';
 import { WinningBoard } from '@/components/app/WinningBoard';
 import { GuestList, type Guest } from '@/components/app/GuestList';
 import { SeatingPlan, type SeatTable } from '@/components/app/SeatingPlan';
+import { DaySchedule, type DayItem } from '@/components/app/DaySchedule';
 import { signBoardImages } from '@/lib/board';
 
 export const metadata = { title: appCopy.portal.title };
@@ -15,6 +16,7 @@ export const metadata = { title: appCopy.portal.title };
 type Workspace = {
   id: string; display_name: string; event_date: string | null;
   venue: string; guest_estimate: number | null; budget_visible: boolean;
+  track_a_label: string; track_b_label: string;
 };
 
 const dateFmt = new Intl.DateTimeFormat('he-IL', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
@@ -34,7 +36,7 @@ export default async function PortalPage() {
   const sb = await supabaseServer();
   const { data } = await sb
     .from('clients')
-    .select('id,display_name,event_date,venue,guest_estimate,budget_visible')
+    .select('id,display_name,event_date,venue,guest_estimate,budget_visible,track_a_label,track_b_label')
     .order('event_date', { ascending: true, nullsFirst: false });
 
   const rows = (data ?? []) as Workspace[];
@@ -86,6 +88,12 @@ export default async function PortalPage() {
     : { data: [] };
   const tablesFor = (cid: string) =>
     ((tableRows ?? []) as (SeatTable & { client_id: string })[]).filter((t) => t.client_id === cid);
+
+  const { data: dayRows } = ids.length
+    ? await sb.from('day_schedule').select('id,client_id,track,at_time,title,note').in('client_id', ids).order('at_time')
+    : { data: [] };
+  const dayFor = (cid: string) =>
+    ((dayRows ?? []) as (DayItem & { client_id: string })[]).filter((d) => d.client_id === cid);
   if (rows.length === 0) {
     return (
       <>
@@ -124,6 +132,7 @@ export default async function PortalPage() {
               )}
               <GuestList clientId={c.id} guests={guestsFor(c.id)} />
               <SeatingPlan clientId={c.id} tables={tablesFor(c.id)} guests={guestsFor(c.id) as never} />
+              <DaySchedule clientId={c.id} items={dayFor(c.id)} labelA={c.track_a_label} labelB={c.track_b_label} />
               <WinningBoard clientId={c.id} images={boardFor(c.id)} viewer="client" />
             </div>
             </div>

@@ -423,3 +423,23 @@ export const seatingCopy = {
   peopleShort: 'נפשות',
   needRsvp: 'אין עדיין מי שאישר הגעה. שבצו אחרי שיתחילו לענות.',
 } as const;
+
+export const dayCopy = {
+  title: 'לוז יום האירוע',
+  sub: 'הבוקר נראה אחרת לכל אחד, אז לכל אחד יש מסלול משלו — ומה שמשותף מופיע באמצע.',
+  shared: 'משותף',
+  addTitle: 'מה קורה',
+  addTitlePh: 'איפור ושיער',
+  time: 'שעה',
+  note: 'הערה',
+  notePh: 'איפה, עם מי',
+  track: 'מסלול',
+  add: 'הוספה ללוז',
+  adding: 'מוסיף',
+  none: 'עוד לא נבנה לוז ליום.',
+  emptyTrack: 'אין עדיין שורות במסלול הזה.',
+  remove: 'מחיקה',
+  rename: 'שינוי שמות המסלולים',
+  renameSave: 'שמירת השמות',
+  renameHint: 'איך תקראו לשני המסלולים. אלה השמות שלכם.',
+} as const;
