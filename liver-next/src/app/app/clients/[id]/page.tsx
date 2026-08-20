@@ -10,6 +10,7 @@ import { PaymentsPanel, type Payment } from '@/components/app/PaymentsPanel';
 import { BudgetPanel, type BudgetItem } from '@/components/app/BudgetPanel';
 import { WinningBoard } from '@/components/app/WinningBoard';
 import { GuestList, type Guest } from '@/components/app/GuestList';
+import { SeatingPlan, type SeatTable } from '@/components/app/SeatingPlan';
 import { signBoardImages } from '@/lib/board';
 
 export const dynamic = 'force-dynamic';
@@ -29,7 +30,7 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
 
   if (!client) notFound();
 
-  const [{ data: invites }, { data: tasks }, { data: payments }, { data: budget }, { data: boardRows }, { data: guests }] = await Promise.all([
+  const [{ data: invites }, { data: tasks }, { data: payments }, { data: budget }, { data: boardRows }, { data: guests }, { data: tables }] = await Promise.all([
     sb.from('client_authorized_emails').select('id,email,profile_id').eq('client_id', id).order('created_at'),
     sb.from('tasks').select('id,title,due_on,done,owner,created_by').eq('client_id', id)
       .order('done').order('due_on', { ascending: true, nullsFirst: false }),
@@ -39,7 +40,10 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
       .order('created_at'),
     sb.from('moodboards').select('id,client_id,category,caption,image_path').eq('client_id', id)
       .order('created_at', { ascending: false }),
-    sb.from('guests_rsvp').select('id,full_name,side,phone,status,party_size,diet,note,invite_token').eq('client_id', id).order('full_name'),
+    sb.from('guests_rsvp')
+      .select('id,full_name,side,phone,status,party_size,diet,note,invite_token,table_id')
+      .eq('client_id', id).order('full_name'),
+    sb.from('tables_seating').select('id,name,seats').eq('client_id', id).order('created_at'),
   ]);
   const board = await signBoardImages(sb, (boardRows ?? []) as never);
   const c = appCopy.clientPage;
@@ -88,6 +92,11 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
           visible={!!client.budget_visible}
         />
         <GuestList clientId={client.id} guests={(guests ?? []) as Guest[]} />
+        <SeatingPlan
+          clientId={client.id}
+          tables={(tables ?? []) as SeatTable[]}
+          guests={(guests ?? []) as never}
+        />
         <WinningBoard clientId={client.id} images={board} viewer="producer" />
       </div>
     </>

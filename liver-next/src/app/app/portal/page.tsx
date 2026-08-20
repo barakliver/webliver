@@ -7,6 +7,7 @@ import { PaymentsPanel, type Payment } from '@/components/app/PaymentsPanel';
 import { BudgetPanel, type BudgetItem } from '@/components/app/BudgetPanel';
 import { WinningBoard } from '@/components/app/WinningBoard';
 import { GuestList, type Guest } from '@/components/app/GuestList';
+import { SeatingPlan, type SeatTable } from '@/components/app/SeatingPlan';
 import { signBoardImages } from '@/lib/board';
 
 export const metadata = { title: appCopy.portal.title };
@@ -74,11 +75,17 @@ export default async function PortalPage() {
 
   const { data: guestRows } = ids.length
     ? await sb.from('guests_rsvp')
-        .select('id,client_id,full_name,side,phone,status,party_size,diet,note,invite_token')
+        .select('id,client_id,full_name,side,phone,status,party_size,diet,note,invite_token,table_id')
         .in('client_id', ids).order('full_name')
     : { data: [] };
   const guestsFor = (cid: string) =>
     ((guestRows ?? []) as (Guest & { client_id: string })[]).filter((g) => g.client_id === cid);
+
+  const { data: tableRows } = ids.length
+    ? await sb.from('tables_seating').select('id,client_id,name,seats').in('client_id', ids).order('created_at')
+    : { data: [] };
+  const tablesFor = (cid: string) =>
+    ((tableRows ?? []) as (SeatTable & { client_id: string })[]).filter((t) => t.client_id === cid);
   if (rows.length === 0) {
     return (
       <>
@@ -116,6 +123,7 @@ export default async function PortalPage() {
                 <BudgetPanel clientId={c.id} items={budgetFor(c.id)} viewer="client" visible />
               )}
               <GuestList clientId={c.id} guests={guestsFor(c.id)} />
+              <SeatingPlan clientId={c.id} tables={tablesFor(c.id)} guests={guestsFor(c.id) as never} />
               <WinningBoard clientId={c.id} images={boardFor(c.id)} viewer="client" />
             </div>
             </div>

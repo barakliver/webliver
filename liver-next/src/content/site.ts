@@ -398,3 +398,28 @@ export const guestsCopy = {
   dietCol: 'אוכל',
   noteCol: 'הערה',
 } as const;
+
+export const seatingCopy = {
+  title: 'סידורי הושבה',
+  sub: 'רק מי שאישר הגעה מקבל מקום. השולחן לא ייתן לשבת יותר אנשים משיש בו כיסאות.',
+  addTable: 'שולחן חדש',
+  tableName: 'שם',
+  tableNamePh: 'שולחן 1',
+  seats: 'מקומות',
+  add: 'הוספה',
+  adding: 'מוסיף',
+  noTables: 'עוד לא נוספו שולחנות.',
+  seated: 'יושבים',
+  free: 'פנוי',
+  full: 'מלא',
+  emptyTable: 'אין עדיין אף אחד בשולחן הזה.',
+  unseated: 'ממתינים לשיבוץ',
+  unseatedNone: 'כל מי שאישר כבר משובץ. 🎉',
+  place: 'לשבץ ב',
+  choose: 'בחרו שולחן',
+  unseat: 'הוצאה מהשולחן',
+  removeTable: 'מחיקת השולחן',
+  removeTableHint: 'האורחים לא נמחקים, הם חוזרים לרשימת הממתינים.',
+  peopleShort: 'נפשות',
+  needRsvp: 'אין עדיין מי שאישר הגעה. שבצו אחרי שיתחילו לענות.',
+} as const;
