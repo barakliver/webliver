@@ -2,6 +2,7 @@ import { requireAccount } from '@/lib/auth';
 import { supabaseServer } from '@/lib/supabase/server';
 import { appCopy } from '@/content/site';
 import { PageHead, Empty } from '@/components/app/PageHead';
+import { TaskList, type Task } from '@/components/app/TaskList';
 
 export const metadata = { title: appCopy.portal.title };
 
@@ -23,7 +24,7 @@ function daysUntil(iso: string): number {
 }
 
 export default async function PortalPage() {
-  await requireAccount();
+  const account = await requireAccount();
   const sb = await supabaseServer();
   const { data } = await sb
     .from('clients')
@@ -31,6 +32,17 @@ export default async function PortalPage() {
     .order('event_date', { ascending: true, nullsFirst: false });
 
   const rows = (data ?? []) as Workspace[];
+
+  /* One query for every workspace this couple is on, rather than one per
+     card, so the page cost does not grow with the number of events. */
+  const { data: allTasks } = rows.length
+    ? await sb.from('tasks')
+        .select('id,client_id,title,due_on,done,owner,created_by')
+        .in('client_id', rows.map((r) => r.id))
+        .order('done').order('due_on', { ascending: true, nullsFirst: false })
+    : { data: [] };
+  const tasksFor = (cid: string) =>
+    ((allTasks ?? []) as (Task & { client_id: string })[]).filter((t) => t.client_id === cid);
   if (rows.length === 0) {
     return (
       <>
@@ -47,7 +59,8 @@ export default async function PortalPage() {
         {rows.map((c) => {
           const left = c.event_date ? daysUntil(c.event_date) : null;
           return (
-            <article key={c.id} className="card">
+            <div key={c.id}>
+            <article className="card">
               <h2 className="font-display text-[26px] font-semibold text-ink">{c.display_name}</h2>
               <p className="mt-2 text-[15.5px] text-ink-soft">
                 {c.event_date ? dateFmt.format(new Date(c.event_date)) : appCopy.portal.dateTbd}
@@ -60,6 +73,10 @@ export default async function PortalPage() {
                 </div>
               )}
             </article>
+            <div className="mt-4">
+              <TaskList clientId={c.id} tasks={tasksFor(c.id)} viewer="client" viewerId={account.id} />
+            </div>
+            </div>
           );
         })}
       </div>

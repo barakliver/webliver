@@ -5,13 +5,14 @@ import { supabaseServer } from '@/lib/supabase/server';
 import { appCopy, EVENT_KINDS } from '@/content/site';
 import { PageHead } from '@/components/app/PageHead';
 import { InviteBox, type Invite } from '@/components/app/InviteBox';
+import { TaskList, type Task } from '@/components/app/TaskList';
 
 export const dynamic = 'force-dynamic';
 
 const dateFmt = new Intl.DateTimeFormat('he-IL', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
 export default async function ClientPage({ params }: { params: Promise<{ id: string }> }) {
-  await requireLiveProducer();
+  const account = await requireLiveProducer();
   const { id } = await params;
 
   const sb = await supabaseServer();
@@ -23,12 +24,11 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
 
   if (!client) notFound();
 
-  const { data: invites } = await sb
-    .from('client_authorized_emails')
-    .select('id,email,profile_id')
-    .eq('client_id', id)
-    .order('created_at');
-
+  const [{ data: invites }, { data: tasks }] = await Promise.all([
+    sb.from('client_authorized_emails').select('id,email,profile_id').eq('client_id', id).order('created_at'),
+    sb.from('tasks').select('id,title,due_on,done,owner,created_by').eq('client_id', id)
+      .order('done').order('due_on', { ascending: true, nullsFirst: false }),
+  ]);
   const c = appCopy.clientPage;
   const kind = EVENT_KINDS.find((k) => k.value === client.kind)?.label ?? client.kind;
 
@@ -63,6 +63,10 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
         </section>
 
         <InviteBox clientId={client.id} invites={(invites ?? []) as Invite[]} />
+      </div>
+
+      <div className="mt-6">
+        <TaskList clientId={client.id} tasks={(tasks ?? []) as Task[]} viewer="producer" viewerId={account.id} />
       </div>
     </>
   );
