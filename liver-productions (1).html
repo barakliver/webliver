@@ -8225,6 +8225,102 @@ renderPortal = function(){
  }
 };
 
+/* ══════════════════════════════════════════════════════════
+   v47 — the front page earns its first screen
+   ══════════════════════════════════════════════════════════
+   Measured before touching anything: the page ran to 12,487px on a
+   phone, the portfolio alone was 4,624px of it, and the process was
+   told twice — in full near the top and again in summary five sections
+   later. The first screen of a wedding producer's site was a text card
+   on a gradient, with no photograph anywhere in it.
+
+   Four changes, in the order they matter:
+     1. a real photograph behind the hero
+     2. a nav that fits on one line and leads with the visitor's job
+     3. the second telling of the process removed
+     4. the wall of photographs moved below the story it illustrates  */
+
+/* ── 1. the hero ────────────────────────────────────────────────────
+   The photograph is already in this file for the portfolio, so using it
+   here costs no extra bytes and nothing new to load. */
+(function(){
+ var css = document.createElement('style');
+ css.textContent =
+  '.hero{padding:0 !important;background:var(--deep) !important;overflow:hidden}' +
+  '.hero .hero-inner{position:relative;z-index:2;padding:96px 22px 84px;text-align:center}' +
+  '@media(max-width:720px){.hero .hero-inner{padding:76px 20px 64px}}' +
+  /* the scrim is what keeps the words readable over a photograph that
+     changes brightness across its width */
+  '.hero .hero-scrim{position:absolute;inset:0;z-index:1;' +
+   'background:linear-gradient(180deg,rgba(12,14,20,.58) 0%,rgba(12,14,20,.72) 42%,rgba(12,14,20,.82) 100%)}' +
+  '.hero .hero-photo{position:absolute;inset:0;z-index:0;background-size:cover;background-position:center 20%}' +
+  '.hero h1,.hero .eyebrow{color:#fff !important}' +
+  '.hero h1 span{color:#e8cfa0 !important}' +
+  '.hero p{color:rgba(255,255,255,.86) !important;max-width:33ch;margin-inline:auto}' +
+  '.hero .btn-ghost{border-color:rgba(255,255,255,.55) !important;color:#fff !important;background:transparent !important}' +
+  '.hero .btn-ghost:hover{background:rgba(255,255,255,.12) !important}' +
+  /* the nav sat on two rows on a phone because three buttons plus a
+     wordmark do not fit; the account links are not a visitor's job */
+  '.mk-nav{flex-wrap:nowrap !important;gap:8px !important}' +
+  '.mk-nav .logo-wrap{flex:0 0 auto}' +
+  '@media(max-width:900px){.mk-nav .mk-links{display:none}}' +
+  '@media(max-width:560px){.mk-nav .nav-signup{display:none}}' +
+  '@media(max-width:380px){.mk-nav .logo-wrap{font-size:15px}}' +
+  '#mkRoot{padding-bottom:96px}';
+ document.head.appendChild(css);
+})();
+
+var _renderMarketingV47 = renderMarketing;
+renderMarketing = function(){
+ _renderMarketingV47();
+ var root = $('mkRoot');
+ if(!root) return;
+
+ /* ── 1. photograph behind the hero ── */
+ var hero = root.querySelector('header.hero');
+ if(hero && !hero.querySelector('.hero-inner')){
+  var photo = (typeof PORTFOLIO_B64 !== 'undefined' && PORTFOLIO_B64['Chuppah_105_.jpg'])
+    ? 'data:image/jpeg;base64,' + PORTFOLIO_B64['Chuppah_105_.jpg'] : '';
+  var inner = document.createElement('div');
+  inner.className = 'hero-inner';
+  while(hero.firstChild) inner.appendChild(hero.firstChild);
+
+  var bg = document.createElement('div');
+  bg.className = 'hero-photo';
+  bg.setAttribute('role','img');
+  bg.setAttribute('aria-label', lang === 'he' ? 'כלה נכנסת לחופה' : 'A bride walking down the aisle');
+  if(photo) bg.style.backgroundImage = 'url("' + photo + '")';
+
+  var scrim = document.createElement('div');
+  scrim.className = 'hero-scrim';
+
+  hero.appendChild(bg);
+  hero.appendChild(scrim);
+  hero.appendChild(inner);
+ }
+
+ /* signing up is not a visitor's job, so it steps aside on a phone
+    rather than pushing the whole bar onto a second line */
+ var signup = root.querySelector('.mk-nav .row .btn-ghost + .btn-ghost');
+ if(signup) signup.classList.add('nav-signup');
+
+ /* ── 2. the process, told once ──
+    sec-pr carries the full seven steps and is what the nav links to;
+    sec-process repeated the same journey in bare summary. */
+ var dupe = root.querySelector('#sec-process');
+ if(dupe && root.querySelector('#sec-pr') && dupe.parentNode) dupe.parentNode.removeChild(dupe);
+
+ /* ── 3. the story before the wall of photographs ──
+    The portfolio was 4,624px of a 12,487px page and sat second, so a
+    visitor scrolled a gallery before learning whose it was. */
+ var pf = root.querySelector('#sec-pf');
+ var intro = root.querySelector('#sec-intro');
+ if(pf && intro && intro.nextSibling !== pf){
+  intro.parentNode.insertBefore(pf, intro.nextSibling);
+ }
+};
+renderAll();
+
 /* ══ PWA: real manifest.json + sw.js on the server so "Install app" works.
    (Blob/data: URLs cannot be used to register a service worker — that was
    the reason the previous version never satisfied install criteria.) ══ */
