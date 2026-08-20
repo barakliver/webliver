@@ -3,12 +3,14 @@ import { supabaseServer } from '@/lib/supabase/server';
 import { appCopy } from '@/content/site';
 import { PageHead, Empty } from '@/components/app/PageHead';
 import { TaskList, type Task } from '@/components/app/TaskList';
+import { PaymentsPanel, type Payment } from '@/components/app/PaymentsPanel';
+import { BudgetPanel, type BudgetItem } from '@/components/app/BudgetPanel';
 
 export const metadata = { title: appCopy.portal.title };
 
 type Workspace = {
   id: string; display_name: string; event_date: string | null;
-  venue: string; guest_estimate: number | null;
+  venue: string; guest_estimate: number | null; budget_visible: boolean;
 };
 
 const dateFmt = new Intl.DateTimeFormat('he-IL', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
@@ -28,7 +30,7 @@ export default async function PortalPage() {
   const sb = await supabaseServer();
   const { data } = await sb
     .from('clients')
-    .select('id,display_name,event_date,venue,guest_estimate')
+    .select('id,display_name,event_date,venue,guest_estimate,budget_visible')
     .order('event_date', { ascending: true, nullsFirst: false });
 
   const rows = (data ?? []) as Workspace[];
@@ -43,6 +45,22 @@ export default async function PortalPage() {
     : { data: [] };
   const tasksFor = (cid: string) =>
     ((allTasks ?? []) as (Task & { client_id: string })[]).filter((t) => t.client_id === cid);
+
+  /* Budget rows simply do not arrive for a workspace the producer has not
+     opened up, so there is nothing to hide in the page itself. */
+  const ids = rows.map((r) => r.id);
+  const [{ data: allPayments }, { data: allBudget }] = ids.length
+    ? await Promise.all([
+        sb.from('payments').select('id,client_id,title,amount,due_on,paid,paid_on').in('client_id', ids)
+          .order('paid').order('due_on', { ascending: true, nullsFirst: false }),
+        sb.from('budget_items').select('id,client_id,category,label,estimate,agreed,vendor').in('client_id', ids)
+          .order('created_at'),
+      ])
+    : [{ data: [] }, { data: [] }];
+  const paymentsFor = (cid: string) =>
+    ((allPayments ?? []) as (Payment & { client_id: string })[]).filter((p) => p.client_id === cid);
+  const budgetFor = (cid: string) =>
+    ((allBudget ?? []) as (BudgetItem & { client_id: string })[]).filter((b) => b.client_id === cid);
   if (rows.length === 0) {
     return (
       <>
@@ -73,8 +91,12 @@ export default async function PortalPage() {
                 </div>
               )}
             </article>
-            <div className="mt-4">
+            <div className="mt-4 space-y-6">
               <TaskList clientId={c.id} tasks={tasksFor(c.id)} viewer="client" viewerId={account.id} />
+              <PaymentsPanel clientId={c.id} payments={paymentsFor(c.id)} viewer="client" />
+              {budgetFor(c.id).length > 0 && (
+                <BudgetPanel clientId={c.id} items={budgetFor(c.id)} viewer="client" visible />
+              )}
             </div>
             </div>
           );

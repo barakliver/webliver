@@ -6,6 +6,8 @@ import { appCopy, EVENT_KINDS } from '@/content/site';
 import { PageHead } from '@/components/app/PageHead';
 import { InviteBox, type Invite } from '@/components/app/InviteBox';
 import { TaskList, type Task } from '@/components/app/TaskList';
+import { PaymentsPanel, type Payment } from '@/components/app/PaymentsPanel';
+import { BudgetPanel, type BudgetItem } from '@/components/app/BudgetPanel';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,16 +20,20 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
   const sb = await supabaseServer();
   const { data: client } = await sb
     .from('clients')
-    .select('id,display_name,kind,event_date,venue,guest_estimate')
+    .select('id,display_name,kind,event_date,venue,guest_estimate,budget_visible')
     .eq('id', id)
     .maybeSingle();
 
   if (!client) notFound();
 
-  const [{ data: invites }, { data: tasks }] = await Promise.all([
+  const [{ data: invites }, { data: tasks }, { data: payments }, { data: budget }] = await Promise.all([
     sb.from('client_authorized_emails').select('id,email,profile_id').eq('client_id', id).order('created_at'),
     sb.from('tasks').select('id,title,due_on,done,owner,created_by').eq('client_id', id)
       .order('done').order('due_on', { ascending: true, nullsFirst: false }),
+    sb.from('payments').select('id,title,amount,due_on,paid,paid_on').eq('client_id', id)
+      .order('paid').order('due_on', { ascending: true, nullsFirst: false }),
+    sb.from('budget_items').select('id,category,label,estimate,agreed,vendor').eq('client_id', id)
+      .order('created_at'),
   ]);
   const c = appCopy.clientPage;
   const kind = EVENT_KINDS.find((k) => k.value === client.kind)?.label ?? client.kind;
@@ -65,8 +71,15 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
         <InviteBox clientId={client.id} invites={(invites ?? []) as Invite[]} />
       </div>
 
-      <div className="mt-6">
+      <div className="mt-6 space-y-6">
         <TaskList clientId={client.id} tasks={(tasks ?? []) as Task[]} viewer="producer" viewerId={account.id} />
+        <PaymentsPanel clientId={client.id} payments={(payments ?? []) as Payment[]} viewer="producer" />
+        <BudgetPanel
+          clientId={client.id}
+          items={(budget ?? []) as BudgetItem[]}
+          viewer="producer"
+          visible={!!client.budget_visible}
+        />
       </div>
     </>
   );
