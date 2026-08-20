@@ -443,3 +443,23 @@ export const dayCopy = {
   renameSave: 'שמירת השמות',
   renameHint: 'איך תקראו לשני המסלולים. אלה השמות שלכם.',
 } as const;
+
+export const leadsCopy = {
+  statuses: { new: 'חדש', contacted: 'יצרנו קשר', meeting: 'נקבעה פגישה', won: 'נסגר', lost: 'לא רלוונטי' },
+  note: 'הערה',
+  notePh: 'מה סוכם',
+  saveNote: 'שמירה',
+  convert: 'פתיחת אירוע מהליד',
+  callTitle: 'שיחת מעקב',
+  callWhen: 'להזכיר בתאריך',
+  callBook: 'קביעת תזכורת',
+  callBooking: 'קובע',
+  callsTitle: 'שיחות מעקב',
+  callsNone: 'אין שיחות מעקב פתוחות.',
+  callDone: 'בוצע',
+  callReopen: 'החזרה',
+  callToday: 'להיום',
+  callLate: 'באיחור',
+  open: 'פתיחה',
+  close: 'סגירה',
+} as const;

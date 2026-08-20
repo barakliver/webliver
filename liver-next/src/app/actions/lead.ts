@@ -54,6 +54,9 @@ export async function submitLead(_prev: LeadResult | null, form: FormData): Prom
       event_date: payload.event_date || null,
       guest_count: guests,
       message: payload.message,
+      /* producer_id is left out on purpose: a database trigger attributes the
+         enquiry to whoever the public site belongs to, so no code path can
+         drop a lead somewhere nobody will ever read it. */
       source: 'site',
     });
     if (error) throw new Error(error.message);
