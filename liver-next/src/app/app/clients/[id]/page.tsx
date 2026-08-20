@@ -8,6 +8,8 @@ import { InviteBox, type Invite } from '@/components/app/InviteBox';
 import { TaskList, type Task } from '@/components/app/TaskList';
 import { PaymentsPanel, type Payment } from '@/components/app/PaymentsPanel';
 import { BudgetPanel, type BudgetItem } from '@/components/app/BudgetPanel';
+import { WinningBoard } from '@/components/app/WinningBoard';
+import { signBoardImages } from '@/lib/board';
 
 export const dynamic = 'force-dynamic';
 
@@ -26,7 +28,7 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
 
   if (!client) notFound();
 
-  const [{ data: invites }, { data: tasks }, { data: payments }, { data: budget }] = await Promise.all([
+  const [{ data: invites }, { data: tasks }, { data: payments }, { data: budget }, { data: boardRows }] = await Promise.all([
     sb.from('client_authorized_emails').select('id,email,profile_id').eq('client_id', id).order('created_at'),
     sb.from('tasks').select('id,title,due_on,done,owner,created_by').eq('client_id', id)
       .order('done').order('due_on', { ascending: true, nullsFirst: false }),
@@ -34,7 +36,10 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
       .order('paid').order('due_on', { ascending: true, nullsFirst: false }),
     sb.from('budget_items').select('id,category,label,estimate,agreed,vendor').eq('client_id', id)
       .order('created_at'),
+    sb.from('moodboards').select('id,client_id,category,caption,image_path').eq('client_id', id)
+      .order('created_at', { ascending: false }),
   ]);
+  const board = await signBoardImages(sb, (boardRows ?? []) as never);
   const c = appCopy.clientPage;
   const kind = EVENT_KINDS.find((k) => k.value === client.kind)?.label ?? client.kind;
 
@@ -80,6 +85,7 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
           viewer="producer"
           visible={!!client.budget_visible}
         />
+        <WinningBoard clientId={client.id} images={board} viewer="producer" />
       </div>
     </>
   );

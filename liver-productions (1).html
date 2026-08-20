@@ -4867,23 +4867,25 @@ var _renderAllV25 = renderAll;
 renderAll = function () { _renderAllV25(); renderConcierge(); };
 renderAll();
 /* ══════════════════════════════════════════════════════════
-   v23 — Moodboard vault (couple uploads + producer read-only view)
+   v23 — Winning board (couple uploads + producer read-only view)
+   The DB key stays `moodboards`: it is what every saved file already
+   uses, and renaming it would orphan every photo people have uploaded.
    ══════════════════════════════════════════════════════════ */
 Object.assign(D_.he,{
- p_mood:'מודבורד',ws_mood:'🖼 מודבורד',
- mood_t:'מודבורד ההשראה',mood_p:'העלו תמונות השראה מסודרות לפי קטגוריה — נוח לעבור עליהן יחד עם הספקים.',
- mood_cat:'קטגוריה',mood_caption:'כיתוב (רשות)',mood_upload:'העלאת תמונה',mood_none:'עדיין אין תמונות במודבורד.',
+ p_mood:'לוח ניצחון',ws_mood:'🏆 לוח ניצחון',
+ mood_t:'לוח הניצחון',mood_p:'העלו תמונות השראה מסודרות לפי קטגוריה — נוח לעבור עליהן יחד עם הספקים.',
+ mood_cat:'קטגוריה',mood_caption:'כיתוב (רשות)',mood_upload:'העלאת תמונה',mood_none:'עדיין אין תמונות בלוח הניצחון.',
  mood_all:'הכל',mood_chuppah:'חופה',mood_floral:'פרחים',mood_table:'הגשה ושולחנות',mood_light:'תאורה',mood_other:'אחר',
- mood_added:'✅ נוסף למודבורד.',mood_removed:'הוסר מהמודבורד.',mood_need:'בחרו תמונה קודם.',
- mood_readonly_note:'תצוגה בלבד — הזוג מנהל את המודבורד מהפורטל שלו.',
+ mood_added:'✅ נוסף ללוח הניצחון.',mood_removed:'הוסר מלוח הניצחון.',mood_need:'בחרו תמונה קודם.',
+ mood_readonly_note:'תצוגה בלבד — הזוג מנהל את לוח הניצחון מהפורטל שלו.',
 });
 Object.assign(D_.en,{
- p_mood:'Moodboard',ws_mood:'🖼 Moodboard',
- mood_t:'Inspiration moodboard',mood_p:'Upload inspiration photos organized by category, easy to review with vendors.',
- mood_cat:'Category',mood_caption:'Caption (optional)',mood_upload:'Upload photo',mood_none:'No moodboard photos yet.',
+ p_mood:'Winning board',ws_mood:'🏆 Winning board',
+ mood_t:'The winning board',mood_p:'Upload inspiration photos organized by category, easy to review with vendors.',
+ mood_cat:'Category',mood_caption:'Caption (optional)',mood_upload:'Upload photo',mood_none:'No photos on the winning board yet.',
  mood_all:'All',mood_chuppah:'Chuppah',mood_floral:'Floral',mood_table:'Table settings',mood_light:'Lighting',mood_other:'Other',
- mood_added:'✅ Added to the moodboard.',mood_removed:'Removed from the moodboard.',mood_need:'Choose a photo first.',
- mood_readonly_note:'Read-only — the couple manages their moodboard from their portal.',
+ mood_added:'✅ Added to the winning board.',mood_removed:'Removed from the winning board.',mood_need:'Choose a photo first.',
+ mood_readonly_note:'Read-only — the couple manages their winning board from their portal.',
 });
 
 if (typeof PERSIST !== 'undefined' && PERSIST.indexOf('moodboards') < 0) PERSIST.push('moodboards');
@@ -4966,7 +4968,7 @@ function injectTab(navId, tabbarId, key, label, icon, setter){
 var _renderPortalV26 = renderPortal;
 renderPortal = function(){
  _renderPortalV26();
- injectTab('portalNav', 'portalTabbar', 'mood', esc(t('p_mood')), '🖼', 'portalTab');
+ injectTab('portalNav', 'portalTabbar', 'mood', esc(t('p_mood')), '🏆', 'portalTab');
  if (portalTab === 'mood') {
   var c = DB.clients.find(function(x){ return x.id === portalClient; });
   if (c) {
@@ -6709,7 +6711,7 @@ saveSoon=function(){
 /* ── 3. a warning that cannot be missed ── */
 Object.assign(D_.he,{
  sa_full_t:'⚠️ הנתונים שלכם לא נשמרים!',
- sa_full_p:'נגמר מקום האחסון בדפדפן. כל שינוי מכאן והלאה עלול להיאבד ברענון. הורידו גיבוי עכשיו, ואז מחקו תמונות כבדות מהמודבורד או מתיק העבודות כדי לפנות מקום.',
+ sa_full_p:'נגמר מקום האחסון בדפדפן. כל שינוי מכאן והלאה עלול להיאבד ברענון. הורידו גיבוי עכשיו, ואז מחקו תמונות כבדות מלוח הניצחון או מתיק העבודות כדי לפנות מקום.',
  sa_corrupt_t:'⚠️ נמצאה תקלה בקובץ הנתונים',
  sa_corrupt_p:'לא הצלחנו לקרוא את הנתונים השמורים. שמרנו עותק של הקובץ הפגום כדי שאפשר יהיה לשחזר ממנו. אל תמשיכו לעבוד לפני שתורידו גיבוי.',
  sa_near_t:'📦 האחסון מתמלא',
@@ -6719,7 +6721,7 @@ Object.assign(D_.he,{
 });
 Object.assign(D_.en,{
  sa_full_t:'⚠️ Your data is not being saved!',
- sa_full_p:'The browser storage is full. Anything changed from here on may be lost on reload. Download a backup now, then delete heavy images from the moodboard or portfolio to free space.',
+ sa_full_p:'The browser storage is full. Anything changed from here on may be lost on reload. Download a backup now, then delete heavy images from the winning board or portfolio to free space.',
  sa_corrupt_t:'⚠️ A problem was found in the data file',
  sa_corrupt_p:'The saved data could not be read. A copy of the damaged file has been kept so it can be recovered from. Do not keep working before downloading a backup.',
  sa_near_t:'📦 Storage is filling up',

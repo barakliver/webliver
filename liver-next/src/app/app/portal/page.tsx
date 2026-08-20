@@ -5,6 +5,8 @@ import { PageHead, Empty } from '@/components/app/PageHead';
 import { TaskList, type Task } from '@/components/app/TaskList';
 import { PaymentsPanel, type Payment } from '@/components/app/PaymentsPanel';
 import { BudgetPanel, type BudgetItem } from '@/components/app/BudgetPanel';
+import { WinningBoard } from '@/components/app/WinningBoard';
+import { signBoardImages } from '@/lib/board';
 
 export const metadata = { title: appCopy.portal.title };
 
@@ -61,6 +63,13 @@ export default async function PortalPage() {
     ((allPayments ?? []) as (Payment & { client_id: string })[]).filter((p) => p.client_id === cid);
   const budgetFor = (cid: string) =>
     ((allBudget ?? []) as (BudgetItem & { client_id: string })[]).filter((b) => b.client_id === cid);
+
+  const { data: boardRows } = ids.length
+    ? await sb.from('moodboards').select('id,client_id,category,caption,image_path')
+        .in('client_id', ids).order('created_at', { ascending: false })
+    : { data: [] };
+  const board = await signBoardImages(sb, (boardRows ?? []) as never);
+  const boardFor = (cid: string) => board.filter((b) => b.client_id === cid);
   if (rows.length === 0) {
     return (
       <>
@@ -97,6 +106,7 @@ export default async function PortalPage() {
               {budgetFor(c.id).length > 0 && (
                 <BudgetPanel clientId={c.id} items={budgetFor(c.id)} viewer="client" visible />
               )}
+              <WinningBoard clientId={c.id} images={boardFor(c.id)} viewer="client" />
             </div>
             </div>
           );
