@@ -1,5 +1,7 @@
 'use client';
 
+import { MAX_CLIENT_EMAILS } from '@/content/lists';
+
 import { useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { inviteToClient, revokeInvite, type ActionResult } from '@/app/actions/clients';
@@ -20,7 +22,7 @@ function Submit({ disabled }: { disabled: boolean }) {
 export function InviteBox({ clientId, invites }: { clientId: string; invites: Invite[] }) {
   const [state, action] = useActionState<ActionResult | null, FormData>(inviteToClient, null);
   const c = appCopy.clientPage;
-  const full = invites.length >= 2;
+  const full = invites.length >= MAX_CLIENT_EMAILS;
 
   return (
     <section className="card">
