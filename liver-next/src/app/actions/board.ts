@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
+import { BOARD_CATEGORIES } from '@/content/lists';
 
 export type BoardResult = { ok: boolean; error?: string };
 
@@ -9,14 +10,6 @@ const BUCKET = 'moodboards';
 const MAX_BYTES = 8 * 1024 * 1024;
 const ALLOWED = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
 
-export const BOARD_CATEGORIES = [
-  { value: 'chuppah', label: 'חופה' },
-  { value: 'floral',  label: 'פרחים' },
-  { value: 'table',   label: 'הגשה ושולחנות' },
-  { value: 'light',   label: 'תאורה' },
-  { value: 'dress',   label: 'לוק ולבוש' },
-  { value: 'other',   label: 'אחר' },
-] as const;
 
 function extensionFor(type: string, name: string): string {
   const fromName = (name.match(/\.([a-zA-Z0-9]{2,5})$/)?.[1] ?? '').toLowerCase();

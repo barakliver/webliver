@@ -2,7 +2,8 @@
 
 import { useActionState, useState } from 'react';
 import { useFormStatus } from 'react-dom';
-import { uploadBoardImage, deleteBoardImage, BOARD_CATEGORIES, type BoardResult } from '@/app/actions/board';
+import { uploadBoardImage, deleteBoardImage, type BoardResult } from '@/app/actions/board';
+import { BOARD_CATEGORIES } from '@/content/lists';
 import { appCopy } from '@/content/site';
 
 export type BoardImage = {

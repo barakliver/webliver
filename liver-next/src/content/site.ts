@@ -124,6 +124,7 @@ export const site = {
   fab: {
     whatsapp: 'וואטסאפ',
     booking: 'פגישת היכרות',
+    bookingNote: 'חצי שעה ביומן של ברק',
     lead: 'השאירו פרטים',
     whatsappMessage: 'היי ברק, הגעתי מהאתר ואשמח לשמוע פרטים על הפקת החתונה שלנו.',
   },
