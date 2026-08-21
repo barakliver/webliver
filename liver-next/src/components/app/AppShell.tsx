@@ -15,6 +15,7 @@ function navFor(a: Account): NavItem[] {
     { href: '/app',         label: appCopy.nav.overview, icon: 'overview' },
     { href: '/app/leads',   label: appCopy.nav.leads,    icon: 'leads' },
     { href: '/app/clients', label: appCopy.nav.clients,  icon: 'clients' },
+    { href: '/app/calendar', label: appCopy.nav.calendar, icon: 'calendar' },
   ];
   if (a.role === 'super_admin') {
     items.push({ href: '/app/admin', label: appCopy.nav.admin, icon: 'admin' });

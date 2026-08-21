@@ -1,4 +1,4 @@
-import { Eye, ListOrdered } from 'lucide-react';
+import { CalendarPlus, Eye, ListOrdered } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { requireLiveProducer } from '@/lib/auth';
@@ -66,6 +66,13 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
         {/* The one honest way to answer "what can they actually see?" — which
             is a question about policy, not about markup, and therefore not one
             to answer from memory. */}
+        <a
+          href={`/app/clients/${client.id}/event.ics`}
+          className="inline-flex min-h-[40px] items-center gap-2 rounded-full border border-line-strong bg-white px-4 text-[14px] font-medium text-ink transition hover:border-bronze/40 hover:text-bronze"
+        >
+          <CalendarPlus size={16} aria-hidden strokeWidth={1.75} />
+          {appCopy.calendar.addEvent}
+        </a>
         <Link
           href={`/app/clients/${client.id}/runsheet`}
           className="inline-flex min-h-[40px] items-center gap-2 rounded-full border border-line-strong bg-white px-4 text-[14px] font-medium text-ink transition hover:border-bronze/40 hover:text-bronze"
