@@ -169,6 +169,22 @@ export const auth = {
 
 export const appCopy = {
   signOut: 'יציאה',
+  overview2: {
+    clear: 'הכל מטופל',
+    clearSub: 'אין כרגע שום דבר שממתין להחלטה שלך.',
+    needsYou: 'מחכה להחלטה שלך',
+    now: 'דחוף',
+    soon: 'השבוע',
+    nextEvent: 'האירוע הקרוב',
+    inDays: (n: number) => (n === 0 ? 'היום' : n === 1 ? 'מחר' : `בעוד ${n} ימים`),
+    money: 'כסף',
+    paid: 'שולם',
+    owed: 'פתוח',
+    overdue: 'באיחור',
+    allClients: 'לכל האירועים',
+    seeAll: 'הצגת הכל',
+  },
+
   profile: {
     title: 'הפרופיל שלי',
     sub: 'השם והתמונה שאתם מופיעים בהם מול כל מי שעובד איתכם על האירוע.',
