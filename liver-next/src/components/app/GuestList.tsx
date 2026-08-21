@@ -4,6 +4,7 @@ import { useActionState, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { addGuests, deleteGuest, setGuestStatus, type GuestResult } from '@/app/actions/guests';
 import { DIETS } from '@/content/lists';
+import { GuestImport } from '@/components/app/GuestImport';
 import { guestsCopy } from '@/content/site';
 
 export type Guest = {
@@ -99,6 +100,8 @@ export function GuestList({ clientId, guests }: { clientId: string; guests: Gues
           {state.error}
         </p>
       )}
+      <GuestImport clientId={clientId} />
+
 
       {guests.length === 0 ? (
         <p className="mt-6 text-[14.5px] text-ink-mute">{c.none}</p>
