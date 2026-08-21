@@ -8504,33 +8504,34 @@ renderAll();
    ══════════════════════════════════════════════════════════
    Why things were reporting failure.
 
-   SB.url was still 'tjdnrktcwzoskvehvslr.supabase.co' — an earlier
-   project. The project that actually has the schema, the auth settings
-   and the SMTP sender is 'nyxmfmvmhfdqjntqlirm.supabase.co'; that is the
-   one the sign-in test returned super_admin against. Every cloud call
-   was therefore aimed at a project that does not have these tables, so:
+   SB was never persisted. The two fields in the settings screen looked
+   editable but reset to the hardcoded value on every reload, so
+   correcting either by hand could not survive a refresh. That is fixed
+   here: what is typed is stored under its own key, separate from the
+   data snapshot, and a stored key is only reused against the project it
+   was stored for.
 
-     · "בדיקת חיבור" reported ❌ החיבור נכשל
-     · sign-in tried the cloud, failed, and fell back to the local
-       account list — which is why a password that works on one device
-       is unknown on another
-     · a submitted lead never reached the cloud
+   A correction to an earlier version of this block. It moved SB.url to
+   'nyxmfmvmhfdqjntqlirm' on the reasoning that the SMTP sender named
+   that project. The dashboard says otherwise: the project holding this
+   schema is 'tjdnrktcwzoskvehvslr', named liver, in Frankfurt. The URL
+   is back to that, which is what it was before I changed it.
 
-   And SB was never persisted. The two fields in the settings screen
-   looked editable but reset to the hardcoded value on every reload, so
-   correcting it by hand could not survive a refresh.
-
-   Two changes: point at the right project, and persist what is typed.
-   The publishable key is deliberately left empty — it belongs to the new
-   project and is not in this file. While it is empty sbReady() is false,
-   so the app runs entirely locally and reports nothing as failed. */
+   The key stays empty on purpose. Checked against the live project from
+   the server: the publishable key that was in this file returns 401
+   Invalid API key on both projects, so it is stale and carrying it over
+   would only reproduce the failure. While the key is empty sbReady() is
+   false, the app runs entirely locally, and nothing reports as failed.
+   Paste a current key in מיתוג ← חיבור לענן and it will persist. */
 (function(){
 
  var SB_STORE = 'liver_sb';          // its own key: never touches the DB snapshot
- var SB_PROJECT = 'https://nyxmfmvmhfdqjntqlirm.supabase.co';
+ var SB_PROJECT = 'https://tjdnrktcwzoskvehvslr.supabase.co';
 
- /* The old project's key cannot authenticate the new one, so it is not
-    carried over. An empty key is an honest "not configured yet". */
+ /* The key that shipped in this file is rejected by the project with 401,
+    so it is not carried over. An empty key is an honest "not configured
+    yet" and keeps every cloud path switched off until a working one is
+    entered. */
  SB.url = SB_PROJECT;
  SB.key = '';
 
