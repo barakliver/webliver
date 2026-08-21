@@ -27,8 +27,25 @@ export async function requestCode(_prev: AuthResult | null, form: FormData): Pro
   });
 
   /* Do not tell an anonymous caller whether the address is known: the same
-     answer is returned either way, and only a genuine send failure surfaces. */
-  if (error) return { ok: false, error: 'לא הצלחנו לשלוח את הקוד כרגע. נסו שוב בעוד רגע.' };
+     answer is returned either way, and only a genuine send failure surfaces.
+     A send failure is not an enumeration signal though — it says nothing
+     about the address — so the reason is logged for the server operator and
+     the two cases a person can actually act on are named on screen. Before
+     this, a project with no SMTP configured and a project that had simply hit
+     its hourly cap produced the same "try again in a moment", which is wrong
+     advice in both cases: one needs configuration, the other needs an hour. */
+  if (error) {
+    const status = (error as { status?: number }).status;
+    console.error('[auth] signInWithOtp failed', { status, message: error.message });
+
+    if (status === 429 || /rate limit|only request this after/i.test(error.message)) {
+      return { ok: false, error: 'נשלחו יותר מדי בקשות. המתינו וננסו שוב בעוד כשעה.' };
+    }
+    if (/smtp|sending|provider|not authorized|signups not allowed/i.test(error.message)) {
+      return { ok: false, error: 'שליחת המייל אינה מוגדרת בשרת. פנו למנהל המערכת.' };
+    }
+    return { ok: false, error: 'לא הצלחנו לשלוח את הקוד כרגע. נסו שוב בעוד רגע.' };
+  }
   return { ok: true, email };
 }
 

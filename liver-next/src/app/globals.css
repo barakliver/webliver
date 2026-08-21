@@ -8,7 +8,16 @@
                radial-gradient(980px 520px at 12% 4%,    #eef5fc 0%, transparent 58%),
                linear-gradient(180deg, #fbfdff 0%, #f4f8fd 100%);
   }
-  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    /* The nav is sticky at the top, so an anchor jump lands the heading
+       underneath it. scroll-padding-top reserves the nav's height for every
+       in-page link at once, rather than each section carrying its own
+       scroll-margin and drifting out of step with the nav. */
+    scroll-padding-top: 5.5rem;
+  }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
   body {
     background: var(--ambient);
     background-attachment: fixed;
