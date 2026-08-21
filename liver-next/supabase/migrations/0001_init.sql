@@ -5,16 +5,33 @@
 create extension if not exists "pgcrypto";
 
 -- ── enums ───────────────────────────────────────────────────────────────────
-do $$ begin
-  create type app_role      as enum ('super_admin','producer','client','staff');
-  create type producer_state as enum ('pending','approved','suspended','rejected');
-  create type event_class   as enum ('wedding','corporate');
-  create type lead_state    as enum ('new','contacted','meeting','won','lost');
-  create type rsvp_state    as enum ('pending','attending','declined');
-  create type diet_pref     as enum ('none','vegan','vegetarian','gluten_free','kosher');
-  create type task_owner    as enum ('producer','client');
-  create type order_state   as enum ('draft','pending','paid','refunded');
-exception when duplicate_object then null; end $$;
+-- One block per type, deliberately.
+--
+-- These were a single do block with one `exception when duplicate_object`
+-- handler at the end. In PL/pgSQL an exception unwinds everything since the
+-- block began, so if any one type already existed — from a partial earlier
+-- run — the handler swallowed the error and every type after it was silently
+-- never created. The script then failed hundreds of lines later with
+-- `type "producer_state" does not exist`, pointing at a table definition
+-- rather than at the cause.
+--
+-- Separate blocks mean an existing type skips only itself.
+do $$ begin create type app_role as enum ('super_admin','producer','client','staff');
+  exception when duplicate_object then null; end $$;
+do $$ begin create type producer_state as enum ('pending','approved','suspended','rejected');
+  exception when duplicate_object then null; end $$;
+do $$ begin create type event_class as enum ('wedding','corporate');
+  exception when duplicate_object then null; end $$;
+do $$ begin create type lead_state as enum ('new','contacted','meeting','won','lost');
+  exception when duplicate_object then null; end $$;
+do $$ begin create type rsvp_state as enum ('pending','attending','declined');
+  exception when duplicate_object then null; end $$;
+do $$ begin create type diet_pref as enum ('none','vegan','vegetarian','gluten_free','kosher');
+  exception when duplicate_object then null; end $$;
+do $$ begin create type task_owner as enum ('producer','client');
+  exception when duplicate_object then null; end $$;
+do $$ begin create type order_state as enum ('draft','pending','paid','refunded');
+  exception when duplicate_object then null; end $$;
 
 -- ── who is root ─────────────────────────────────────────────────────────────
 create or replace function public.root_admin_email() returns text
