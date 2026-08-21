@@ -274,6 +274,23 @@ export const appCopy = {
     offline: 'אין חיבור — המסך עלול לא להיות מעודכן',
   },
 
+  statusBoard: {
+    noDate: 'ללא תאריך',
+    daysLeft: 'ימים',
+    daysAgo: 'ימים',
+    passed: 'עבר',
+    next: 'הבא:',
+    attending: 'מגיעים',
+    owed: 'לתשלום',
+    open: 'פתיחת',
+    close: 'סגירת תיק',
+    reopen: 'החזרה לפעילים',
+    tabLive: 'פעילים',
+    tabDone: 'סגורים',
+    emptyDone: 'עוד לא נסגר אף תיק. אירוע שעבר יופיע כאן אחרי שתסגרו אותו.',
+    allClear: 'הכול מסודר. אין פערים פתוחים באף אירוע.',
+  },
+
   preview: {
     title: 'תצוגת הזוג',
     banner: 'אתם רואים את המסך של הזוג',

@@ -69,13 +69,23 @@ export async function getOverview(): Promise<Overview> {
     sb.from('payments')
       .select('id,client_id,title,amount,due_on,paid')
       .order('due_on', { ascending: true }),
+    /* Live events only. Closing an event is a statement that it has stopped
+       being work, and an overview that kept raising its overdue tasks would
+       make the closing meaningless — the archived tab still carries the row,
+       its balance included, so nothing is lost, only quietened. */
     sb.from('clients')
       .select('id,display_name,event_date,venue,guest_estimate')
+      .is('archived_at', null)
       .order('event_date', { ascending: true }),
   ]);
 
   const clients = clientsQ.data ?? [];
   const nameOf = new Map(clients.map((c) => [c.id, c.display_name]));
+
+  /* Tasks and payments are fetched across every event, so they have to be
+     narrowed to the live ones here — a closed event's rows would otherwise
+     walk straight past the filter above. */
+  const live = new Set(clients.map((c) => c.id));
   const items: AttentionItem[] = [];
 
   /* A new lead is a decision by definition: somebody asked and nobody has
@@ -100,6 +110,7 @@ export async function getOverview(): Promise<Overview> {
      decision, and putting it here would be the "42 open tasks" mistake in a
      nicer font. */
   for (const t of tasksQ.data ?? []) {
+    if (!live.has(t.client_id)) continue;
     const d = daysUntil(t.due_on!, today);
     items.push({
       id: `task-${t.id}`,
@@ -117,6 +128,7 @@ export async function getOverview(): Promise<Overview> {
   const pays = paysQ.data ?? [];
   let paid = 0, owed = 0, overdue = 0;
   for (const p of pays) {
+    if (!live.has(p.client_id)) continue;
     const amt = Number(p.amount) || 0;
     if (p.paid) { paid += amt; continue; }
     owed += amt;
