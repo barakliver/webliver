@@ -5,7 +5,7 @@
  *  that only showed at runtime: a 'use server' module may export async
  *  functions and nothing else. A client component importing a constant from
  *  one gets `undefined` rather than the array, and the first `.filter` or
- *  `.map` on it takes the whole page down — which is exactly what happened to
+ *  `.map` on it takes the whole page down, which is exactly what happened to
  *  the event page, three times over in one render. A plain module has no such
  *  rule, so both sides can read the same list. */
 

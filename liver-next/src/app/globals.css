@@ -3,6 +3,19 @@
 @tailwind utilities;
 
 @layer base {
+  html, body {
+    /* Nothing may push the page sideways.
+       Not 100vw: on iOS the viewport unit includes the scrollbar gutter, so a
+       body set to 100vw is wider than the space it has and wobbles by exactly
+       that much, which is the bug this line is usually written to fix. 100%
+       measures the containing block, which is the honest number. */
+    max-width: 100%;
+    overflow-x: hidden;
+    /* A long unbroken string — a URL in a message, an email address in a
+       table — is the other way a page grows sideways. */
+    overflow-wrap: break-word;
+  }
+
   html {
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;

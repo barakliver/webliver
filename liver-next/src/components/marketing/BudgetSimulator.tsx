@@ -149,8 +149,13 @@ export function BudgetSimulator() {
 
         <div className="card flex flex-col">
           <p className="text-[13px] text-ink-mute">טווח תקציב משוער</p>
-          <p className="font-display text-display font-semibold tabular-nums text-ink">
-            {ilsRounded(r.low)} – {ilsRounded(r.high)}
+          {/* "עד" rather than a dash. A range written with a dash reads
+              ambiguously in a right-to-left line, where the eye cannot tell
+              which end it started from; the word cannot be read backwards. */}
+          <p className="font-display text-display font-semibold text-ink">
+            <span className="tabular-nums">{ilsRounded(r.low)}</span>
+            <span className="mx-2 text-[0.6em] font-normal text-ink-mute">עד</span>
+            <span className="tabular-nums">{ilsRounded(r.high)}</span>
           </p>
 
           <div className="mt-4 flex flex-wrap gap-x-5 gap-y-1.5 text-[13.5px] text-ink-mute">

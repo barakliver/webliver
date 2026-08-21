@@ -64,22 +64,29 @@ function GapChip({ label, level }: { label: string; level: 'now' | 'soon' }) {
   );
 }
 
+/* The card is the link, not the title inside it. A row that only responds to a
+   three-word target is a row people miss on a phone, when every other pixel of
+   it looks equally clickable. The link is an overlay covering the card, the
+   content above it is inert, and the archive control is lifted back out so it
+   stays its own button rather than a hole in the link. */
 function Row({ s }: { s: ClientStatus }) {
   return (
-    <li className="card p-0">
-      <div className="flex items-stretch gap-4 p-4 sm:p-5">
+    <li className="card relative p-0 transition-shadow focus-within:shadow-lift hover:shadow-lift">
+      <Link
+        href={`/app/clients/${s.id}`}
+        className="absolute inset-0 z-0 rounded-[inherit]"
+        aria-label={`${c.open} ${s.name}`}
+      >
+        <span className="sr-only">{s.name}</span>
+      </Link>
+      <div className="pointer-events-none relative flex items-stretch gap-4 p-4 sm:p-5">
         <div className="w-[74px] shrink-0">
           <Countdown days={s.daysLeft} />
         </div>
 
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-            <Link
-              href={`/app/clients/${s.id}`}
-              className="font-display text-[18.5px] font-semibold text-ink transition hover:text-bronze"
-            >
-              {s.name}
-            </Link>
+            <h3 className="font-display text-[18.5px] font-semibold text-ink">{s.name}</h3>
             <p className="text-[13.5px] text-ink-mute">
               {s.eventDate ? dateFmt.format(new Date(s.eventDate)) : c.noDate}
               {s.venue ? ` · ${s.venue}` : ''}
@@ -121,14 +128,10 @@ function Row({ s }: { s: ClientStatus }) {
         </div>
 
         <div className="flex shrink-0 flex-col items-end justify-between gap-2">
-          <Link
-            href={`/app/clients/${s.id}`}
-            className="rounded-full p-1.5 text-ink-mute transition hover:bg-ivory-200 hover:text-ink"
-            aria-label={`${c.open} ${s.name}`}
-          >
-            <ChevronLeft size={18} aria-hidden strokeWidth={2} />
-          </Link>
-          <ArchiveButton clientId={s.id} archived={!!s.archivedAt} highlight={s.needsClosing} />
+          <ChevronLeft size={18} aria-hidden strokeWidth={2} className="mt-1.5 text-ink-mute" />
+          <div className="pointer-events-auto relative z-10">
+            <ArchiveButton clientId={s.id} archived={!!s.archivedAt} highlight={s.needsClosing} />
+          </div>
         </div>
       </div>
     </li>
