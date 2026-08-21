@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
-import { TRACKS, type Track } from '@/content/lists';
+import { TRACKS, AUDIENCES, type Track } from '@/content/lists';
 
 export type DayResult = { ok: boolean; error?: string };
 
@@ -23,9 +23,15 @@ export async function addDayItem(_prev: DayResult | null, form: FormData): Promi
   if (title.length < 2) return { ok: false, error: 'נא לכתוב מה קורה' };
   if (!/^\d{2}:\d{2}$/.test(time)) return { ok: false, error: 'נא לבחור שעה' };
 
+  /* Only roles the database will accept. Anything else is dropped rather than
+     rejected: a line whose audience got mangled should still reach the sheet,
+     addressed to everyone, instead of being lost over a checkbox. */
+  const known = new Set(AUDIENCES.map((a) => a.value as string));
+  const audience = form.getAll('audience').map(String).filter((a) => known.has(a));
+
   const sb = await supabaseServer();
   const { error } = await sb.from('day_schedule').insert({
-    client_id: clientId, track, at_time: time, title,
+    client_id: clientId, track, at_time: time, title, audience,
     note: String(form.get('note') ?? '').trim(),
   });
   if (error) return { ok: false, error: 'לא הצלחנו לשמור את השורה' };

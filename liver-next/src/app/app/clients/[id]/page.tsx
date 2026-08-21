@@ -1,4 +1,4 @@
-import { Eye } from 'lucide-react';
+import { Eye, ListOrdered } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { requireLiveProducer } from '@/lib/auth';
@@ -58,9 +58,17 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
     <>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <Link href="/app/clients" className="btn-quiet inline-block px-0 text-[14px]">← {c.back}</Link>
+        <div className="flex flex-wrap items-center gap-2">
         {/* The one honest way to answer "what can they actually see?" — which
             is a question about policy, not about markup, and therefore not one
             to answer from memory. */}
+        <Link
+          href={`/app/clients/${client.id}/runsheet`}
+          className="inline-flex min-h-[40px] items-center gap-2 rounded-full border border-line-strong bg-white px-4 text-[14px] font-medium text-ink transition hover:border-bronze/40 hover:text-bronze"
+        >
+          <ListOrdered size={16} aria-hidden strokeWidth={1.75} />
+          {appCopy.runsheet.open}
+        </Link>
         <Link
           href={`/app/clients/${client.id}/preview`}
           className="inline-flex min-h-[40px] items-center gap-2 rounded-full border border-line-strong bg-white px-4 text-[14px] font-medium text-ink transition hover:border-bronze/40 hover:text-bronze"
@@ -68,6 +76,7 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
           <Eye size={16} aria-hidden strokeWidth={1.75} />
           {appCopy.preview.open}
         </Link>
+        </div>
       </div>
       <PageHead title={client.display_name} />
 
