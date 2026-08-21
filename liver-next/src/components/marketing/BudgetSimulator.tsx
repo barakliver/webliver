@@ -170,15 +170,15 @@ export function BudgetSimulator() {
                     </span>
                     <span className="tabular-nums text-ink">{ils(l.amount)}</span>
                   </div>
-                  <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-haze-200">
-                    <div className="h-full rounded-full bg-azure-300 transition-[width] duration-500" style={{ width: `${pct}%` }} />
+                  <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-ivory-200">
+                    <div className="h-full rounded-full bg-bronze transition-[width] duration-500" style={{ width: `${pct}%` }} />
                   </div>
                 </li>
               );
             })}
           </ul>
 
-          <p className="mt-6 rounded-2xl bg-azure-50 px-4 py-3 text-[14px] text-ink-soft">
+          <p className="mt-6 rounded-2xl bg-bronze-wash px-4 py-3 text-[14px] text-ink-soft">
             כל עשרה אורחים נוספים: <b className="tabular-nums text-ink">{ils(r.marginalTen)}</b>
           </p>
 

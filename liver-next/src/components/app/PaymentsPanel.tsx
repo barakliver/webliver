@@ -55,7 +55,7 @@ export function PaymentsPanel({ clientId, payments, viewer }: {
           <div className="text-[12.5px] text-amber-800">{c.totalOwed}</div>
           <div className="font-display text-[22px] font-semibold tabular-nums text-amber-900">{ils(owed)}</div>
         </div>
-        <div className="rounded-2xl bg-haze-100 px-4 py-3">
+        <div className="rounded-2xl bg-ivory-200 px-4 py-3">
           <div className="text-[12.5px] text-ink-mute">{c.totalAll}</div>
           <div className="font-display text-[22px] font-semibold tabular-nums text-ink">{ils(paid + owed)}</div>
         </div>

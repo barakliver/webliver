@@ -169,6 +169,23 @@ export const auth = {
 
 export const appCopy = {
   signOut: 'יציאה',
+  profile: {
+    title: 'הפרופיל שלי',
+    sub: 'השם והתמונה שאתם מופיעים בהם מול כל מי שעובד איתכם על האירוע.',
+    name: 'שם מלא',
+    picture: 'תמונת פרופיל',
+    choose: 'בחירת תמונה',
+    replace: 'החלפת תמונה',
+    remove: 'הסרת התמונה',
+    hint: 'JPG, PNG או WEBP · עד 5MB',
+    saving: 'שומר…',
+    save: 'שמירה',
+    saved: 'נשמר',
+    tooBig: 'הקובץ גדול מ-5MB. בחרו תמונה קטנה יותר.',
+    notImage: 'אפשר להעלות רק תמונה.',
+    uploadFailed: 'ההעלאה נכשלה. נסו שוב.',
+  },
+
   nav: {
     overview: 'סקירה',
     leads: 'לידים',

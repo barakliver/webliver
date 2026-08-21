@@ -24,9 +24,9 @@ export function DaySchedule({ clientId, items, labelA, labelB }: {
   const c = dayCopy;
 
   const tracks: { key: Track; label: string; tone: string }[] = [
-    { key: 'partner_a', label: labelA, tone: 'bg-azure-50' },
+    { key: 'partner_a', label: labelA, tone: 'bg-bronze-wash' },
     { key: 'shared',    label: c.shared, tone: 'bg-emerald-50' },
-    { key: 'partner_b', label: labelB, tone: 'bg-haze-100' },
+    { key: 'partner_b', label: labelB, tone: 'bg-ivory-200' },
   ];
 
   const of = (t: Track) =>
@@ -45,7 +45,7 @@ export function DaySchedule({ clientId, items, labelA, labelB }: {
       </div>
 
       {renaming && (
-        <form action={nameAction} className="mt-4 grid gap-3 rounded-2xl bg-haze-50 p-4 sm:grid-cols-[1fr_1fr_auto]">
+        <form action={nameAction} className="mt-4 grid gap-3 rounded-2xl bg-ivory-100 p-4 sm:grid-cols-[1fr_1fr_auto]">
           <input type="hidden" name="client_id" value={clientId} />
           <input name="track_a_label" defaultValue={labelA} maxLength={40} className="field" aria-label={labelA} />
           <input name="track_b_label" defaultValue={labelB} maxLength={40} className="field" aria-label={labelB} />

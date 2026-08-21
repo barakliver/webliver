@@ -12,6 +12,7 @@ export type Account = {
   id: string;
   email: string;
   fullName: string;
+  avatarUrl: string | null;
   role: Role;
   producer: { id: string; brandName: string; status: ProducerStatus } | null;
   /** workspaces this account may open: owned ones for a producer, invited ones
@@ -28,7 +29,7 @@ export async function currentAccount(): Promise<Account | null> {
 
   const { data: profile } = await sb
     .from('profiles')
-    .select('id,email,full_name,role')
+    .select('id,email,full_name,role,avatar_url')
     .eq('id', user.id)
     .maybeSingle();
 
@@ -55,6 +56,7 @@ export async function currentAccount(): Promise<Account | null> {
     id: user.id,
     email: profile?.email ?? user.email ?? '',
     fullName: profile?.full_name ?? '',
+    avatarUrl: profile?.avatar_url ?? null,
     role,
     producer: producer
       ? { id: producer.id, brandName: producer.brand_name, status: producer.status as ProducerStatus }

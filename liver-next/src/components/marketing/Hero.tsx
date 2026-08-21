@@ -29,7 +29,7 @@ export function Hero() {
             colour. A flat 70% wash turned a warm golden-hour frame grey. */}
         <div className="absolute inset-0 bg-[linear-gradient(105deg,rgba(9,13,20,.74)_0%,rgba(9,13,20,.55)_42%,rgba(9,13,20,.30)_100%)]" />
         <div className="absolute inset-x-0 bottom-0 h-1/3 bg-[linear-gradient(180deg,transparent_0%,rgba(9,13,20,.55)_100%)]" />
-        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-haze-50" />
+        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-ivory-200" />
       </div>
 
       <div className="shell flex min-h-[86svh] flex-col justify-center py-24 sm:py-32">

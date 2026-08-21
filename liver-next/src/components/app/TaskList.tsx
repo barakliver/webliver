@@ -127,7 +127,7 @@ export function TaskList({ clientId, tasks, viewer, viewerId }: {
         <p className="mt-6 text-[14.5px] text-ink-mute">{c.none}</p>
       ) : (
         <>
-          <h3 className="mt-7 text-[13px] font-semibold text-azure-600">{c.open} · {open.length}</h3>
+          <h3 className="mt-7 text-[13px] font-semibold text-bronze">{c.open} · {open.length}</h3>
           <ul className="mt-3 space-y-2">
             {open.map((t) => <Row key={t.id} task={t} clientId={clientId} viewer={viewer} canDelete={mayDelete(t)} />)}
           </ul>

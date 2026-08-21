@@ -64,7 +64,7 @@ export function NoticeBell({ notices }: { notices: Notice[] }) {
             ) : (
               <ul className="max-h-[60vh] overflow-y-auto">
                 {notices.map((n) => (
-                  <li key={n.id} className={`border-b border-line last:border-0 ${n.read_at ? '' : 'bg-azure-50/60'}`}>
+                  <li key={n.id} className={`border-b border-line last:border-0 ${n.read_at ? '' : 'bg-bronze-wash/60'}`}>
                     <div className="flex gap-3 px-4 py-3">
                       <span aria-hidden className="text-[15px]">{ICONS[n.kind] ?? '•'}</span>
                       <div className="min-w-0 flex-1">
@@ -72,7 +72,7 @@ export function NoticeBell({ notices }: { notices: Notice[] }) {
                         {n.body && <p className="truncate text-[13px] text-ink-soft">{n.body}</p>}
                         <p className="mt-0.5 text-[12px] text-ink-mute">{rel(n.created_at)}</p>
                         {n.href && (
-                          <Link href={n.href} onClick={() => setOpen(false)} className="mt-1 inline-block text-[12.5px] text-azure-600">
+                          <Link href={n.href} onClick={() => setOpen(false)} className="mt-1 inline-block text-[12.5px] text-bronze">
                             {c.open} ←
                           </Link>
                         )}

@@ -8,7 +8,7 @@ export function Journey() {
       <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {site.journey.steps.map((step, i) => (
           <li key={i} className="group rounded-4xl glass p-6 transition hover:shadow-lift">
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-azure-50 font-display text-[15px] font-semibold text-azure-600">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-bronze-wash font-display text-[15px] font-semibold text-bronze">
               {i + 1}
             </span>
             <p className="mt-4 text-[16.5px] font-medium text-ink">{step}</p>

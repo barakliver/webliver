@@ -60,10 +60,10 @@ export function GuestList({ clientId, guests }: { clientId: string; guests: Gues
   const shown = filter === 'all' ? guests : guests.filter((g) => g.status === filter);
 
   const tiles: [string, number, string][] = [
-    [c.invited, guests.length, 'bg-haze-100 text-ink'],
+    [c.invited, guests.length, 'bg-ivory-200 text-ink'],
     [c.attending, attending.length, 'bg-emerald-50 text-emerald-800'],
     [c.pending, pending.length, 'bg-amber-50 text-amber-900'],
-    [c.heads, heads, 'bg-azure-50 text-ink'],
+    [c.heads, heads, 'bg-bronze-wash text-ink'],
   ];
 
   return (
@@ -141,7 +141,7 @@ export function GuestList({ clientId, guests }: { clientId: string; guests: Gues
                       <span className={`rounded-full px-3 py-1 text-[12.5px] ${
                         g.status === 'attending' ? 'bg-emerald-50 text-emerald-700'
                         : g.status === 'declined' ? 'bg-rose-50 text-rose-700'
-                        : 'bg-haze-100 text-ink-mute'
+                        : 'bg-ivory-200 text-ink-mute'
                       }`}>
                         {g.status === 'attending' ? c.attending : g.status === 'declined' ? c.declined : c.pending}
                       </span>
