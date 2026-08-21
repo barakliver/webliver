@@ -270,6 +270,10 @@ export const appCopy = {
     saving: 'פותח',
     cancel: 'ביטול',
   },
+  live: {
+    offline: 'אין חיבור — המסך עלול לא להיות מעודכן',
+  },
+
   clientPage: {
     back: 'חזרה לאירועים',
     details: 'פרטי האירוע',

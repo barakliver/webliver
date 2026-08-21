@@ -1,5 +1,6 @@
 import { requireAccount } from '@/lib/auth';
 import { supabaseServer } from '@/lib/supabase/server';
+import { Live } from '@/components/app/Live';
 import { AppShell } from '@/components/app/AppShell';
 import type { Notice } from '@/components/app/NoticeBell';
 
@@ -20,6 +21,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   return (
     <AppShell account={account} notices={(data ?? []) as Notice[]}>
       {children}
+      <Live sources={[{ table: 'notifications' }]} />
     </AppShell>
   );
 }

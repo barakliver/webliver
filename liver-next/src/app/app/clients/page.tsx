@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { requireLiveProducer } from '@/lib/auth';
 import { supabaseServer } from '@/lib/supabase/server';
+import { Live } from '@/components/app/Live';
 import { appCopy } from '@/content/site';
 import { PageHead, Empty } from '@/components/app/PageHead';
 import { NewClientForm } from '@/components/app/NewClientForm';
@@ -53,6 +54,7 @@ export default async function ClientsPage() {
           ))}
         </div>
       )}
+      <Live sources={[{ table: 'clients' }]} />
     </>
   );
 }

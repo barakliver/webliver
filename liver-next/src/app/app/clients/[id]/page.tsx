@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation';
 import { requireLiveProducer } from '@/lib/auth';
 import { supabaseServer } from '@/lib/supabase/server';
 import { appCopy, EVENT_KINDS } from '@/content/site';
+import { Live } from '@/components/app/Live';
+import { workspaceSources } from '@/lib/realtime';
 import { PageHead } from '@/components/app/PageHead';
 import { InviteBox, type Invite } from '@/components/app/InviteBox';
 import { TaskList, type Task } from '@/components/app/TaskList';
@@ -107,6 +109,7 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
         />
         <WinningBoard clientId={client.id} images={board} viewer="producer" />
       </div>
+      <Live sources={workspaceSources(client.id)} />
     </>
   );
 }

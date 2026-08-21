@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { CalendarHeart, Wallet, ChevronLeft } from 'lucide-react';
 import { requireAccount, isLive } from '@/lib/auth';
 import { getOverview } from '@/lib/attention';
+import { Live } from '@/components/app/Live';
 import { appCopy } from '@/content/site';
 import { PageHead } from '@/components/app/PageHead';
 import { AttentionList } from '@/components/app/Attention';
@@ -92,6 +93,7 @@ export default async function OverviewPage() {
           </section>
         </div>
       </div>
+      <Live sources={[{ table: 'leads' }, { table: 'tasks' }, { table: 'payments' }, { table: 'clients' }]} />
     </>
   );
 }

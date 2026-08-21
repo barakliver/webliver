@@ -1,3 +1,4 @@
+import { Live } from '@/components/app/Live';
 import { requireLiveProducer } from '@/lib/auth';
 import { supabaseServer } from '@/lib/supabase/server';
 import { appCopy, leadsCopy } from '@/content/site';
@@ -58,6 +59,7 @@ export default async function LeadsPage() {
           )}
         </div>
       )}
+      <Live sources={[{ table: 'leads' }, { table: 'sales_calls' }]} />
     </>
   );
 }
