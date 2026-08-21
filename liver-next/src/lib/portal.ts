@@ -8,6 +8,7 @@ import type { SeatTable } from '@/components/app/SeatingPlan';
 import type { DayItem } from '@/components/app/DaySchedule';
 import type { BoardImage } from '@/components/app/WinningBoard';
 import { signBoardImages } from '@/lib/board';
+import type { Message as ThreadMessage } from '@/components/app/Thread';
 
 export type Workspace = {
   id: string; display_name: string; event_date: string | null;
@@ -101,4 +102,57 @@ export async function loadPortal(
     dayFor: (id) => by(day.data as WithClient<DayItem>[], id),
     boardFor: (id) => by(board as WithClient<BoardImage>[], id),
   };
+}
+
+/** The thread for one or more workspaces, with each author's name and face.
+ *
+ *  Authors are joined in the query rather than fetched per message: a thread
+ *  of two hundred lines between three people is three profiles, and asking for
+ *  them one at a time is two hundred round trips to learn the same fact. */
+export async function loadThread(
+  sb: SupabaseClient,
+  clientIds: string[]
+): Promise<Map<string, ThreadMessage[]>> {
+  const byClient = new Map<string, ThreadMessage[]>();
+  if (clientIds.length === 0) return byClient;
+
+  const { data } = await sb
+    .from('messages')
+    .select('id,client_id,author_id,body,created_at')
+    .in('client_id', clientIds)
+    .order('created_at', { ascending: true })
+    .limit(500);
+
+  const rows = data ?? [];
+
+  /* Names and faces come from thread_people(), not from profiles. profiles is
+     self-read only — correctly, since it carries the email address and the
+     role — so reading it here would sign every one of the producer's messages
+     "—" on the couple's screen. The function returns a display name and a
+     picture for the people on a workspace you can already read, and nothing
+     else about them. */
+  const who = new Map<string, { name: string; avatar: string | null }>();
+  await Promise.all(
+    clientIds.map(async (cid) => {
+      const { data: people } = await sb.rpc('thread_people', { p_client: cid });
+      (people ?? []).forEach((p: { id: string; display_name: string; avatar_url: string | null }) => {
+        if (!who.has(p.id)) who.set(p.id, { name: p.display_name || '—', avatar: p.avatar_url });
+      });
+    })
+  );
+
+  for (const m of rows) {
+    const person = who.get(m.author_id);
+    const list = byClient.get(m.client_id) ?? [];
+    list.push({
+      id: m.id,
+      author_id: m.author_id,
+      body: m.body,
+      created_at: m.created_at,
+      author_name: person?.name ?? '—',
+      author_avatar: person?.avatar ?? null,
+    });
+    byClient.set(m.client_id, list);
+  }
+  return byClient;
 }
