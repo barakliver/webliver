@@ -98,19 +98,38 @@ systemctl daemon-reload
 systemctl enable liver-next >/dev/null 2>&1 || true
 systemctl restart liver-next
 
-# ── Caddy: a new hostname, leaving the existing site alone ─────────────────
-SNIPPET=/etc/caddy/liver-next.caddy
-cat > "$SNIPPET" <<EOF
+# ── Caddy: only once the hostname actually points here ─────────────────────
+# Caddy asks Let's Encrypt for a certificate the moment a hostname appears in
+# the Caddyfile. If that name does not resolve to this droplet the request
+# fails, and a failing block can hold up the reload for the site already
+# serving. So check DNS first; until it is set, serve on the port.
+MYIP="$(curl -fsS --max-time 10 https://api.ipify.org 2>/dev/null || true)"
+HOSTIP="$(getent hosts "$HOST" 2>/dev/null | awk '{print $1; exit}' || true)"
+PROXIED=0
+
+if [ -n "$HOSTIP" ] && [ "$HOSTIP" = "$MYIP" ]; then
+  SNIPPET=/etc/caddy/liver-next.caddy
+  cat > "$SNIPPET" <<EOF
 $HOST {
 	encode zstd gzip
 	reverse_proxy 127.0.0.1:$PORT
 }
 EOF
-if ! grep -q "liver-next.caddy" /etc/caddy/Caddyfile; then
-  printf '\nimport %s\n' "$SNIPPET" >> /etc/caddy/Caddyfile
+  if ! grep -q "liver-next.caddy" /etc/caddy/Caddyfile; then
+    printf '\nimport %s\n' "$SNIPPET" >> /etc/caddy/Caddyfile
+  fi
+  if caddy validate --config /etc/caddy/Caddyfile >/dev/null 2>&1; then
+    systemctl reload caddy
+    PROXIED=1
+  else
+    echo "! Caddyfile did not validate - leaving the running site alone"
+  fi
+else
+  echo "-> $HOST does not point at this droplet yet"
+  echo "   (this droplet: ${MYIP:-unknown}, $HOST: ${HOSTIP:-not set})"
+  echo "   serving on the port directly until the DNS record exists"
+  ufw allow "$PORT"/tcp >/dev/null 2>&1 || true
 fi
-caddy validate --config /etc/caddy/Caddyfile >/dev/null
-systemctl reload caddy
 
 # ── did it actually come up ────────────────────────────────────────────────
 echo "→ waiting for the app to answer"
@@ -123,7 +142,15 @@ done
 echo
 echo "commit:  $(cd "$REPO" && git rev-parse --short HEAD)"
 if [ "$ok" -eq 1 ]; then
-  echo "running: http://127.0.0.1:$PORT  →  https://$HOST"
+  if [ "$PROXIED" -eq 1 ]; then
+    echo "open:    https://$HOST"
+  else
+    echo "open:    http://${MYIP:-164.92.132.64}:$PORT"
+    echo
+    echo "to move it onto $HOST, add this DNS record at your registrar:"
+    echo "    type A    name app    value ${MYIP:-164.92.132.64}"
+    echo "then run this script again."
+  fi
   echo "OK"
 else
   echo "the app did not answer on port $PORT"
