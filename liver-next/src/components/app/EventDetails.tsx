@@ -23,7 +23,7 @@ export type EventCore = {
 
 /** Whole days from today to the event, counted on calendar dates so a late
  *  evening visit does not shave a day off the countdown. */
-export function daysUntil(iso: string): number {
+function daysUntil(iso: string): number {
   const now = new Date();
   const a = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
   const d = new Date(iso);
