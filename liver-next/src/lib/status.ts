@@ -1,5 +1,8 @@
 import 'server-only';
 import { supabaseServer } from '@/lib/supabase/server';
+import { assess, type Gap } from '@/lib/gaps';
+
+export type { Gap, GapLevel } from '@/lib/gaps';
 
 /* ── The state of every event, in one place ────────────────────────────────
    The clients list showed a name, a date, a venue and a guest count. All true,
@@ -11,14 +14,6 @@ import { supabaseServer } from '@/lib/supabase/server';
    nothing at ten months out and a problem at six weeks. Every gap names one
    specific missing thing, because "incomplete" is a feeling and "no run sheet,
    three weeks out" is a job.                                                  */
-
-export type GapLevel = 'now' | 'soon';
-
-export type Gap = {
-  code: string;
-  label: string;
-  level: GapLevel;
-};
 
 export type ClientStatus = {
   id: string;
@@ -45,71 +40,6 @@ function daysUntil(iso: string, today: number): number {
   return Math.round((new Date(iso + 'T00:00:00').getTime() - today) / DAY);
 }
 
-/* Thresholds, named rather than sprinkled through the checks. These are the
-   points at which a missing thing stops being early and starts being late. */
-const NEEDS_TASKS_WITHIN = 120;
-const NEEDS_GUESTS_WITHIN = 90;
-const NEEDS_SCHEDULE_WITHIN = 30;
-
-/** What one event is missing, given plain facts about it.
- *
- *  Pure on purpose. These rules are the judgement the board exists to make —
- *  when an empty guest list stops being early and starts being late — and
- *  judgement that can only be exercised by standing up a database, a producer
- *  and six tables is judgement nobody checks. Everything here is arithmetic on
- *  numbers, so it can be. */
-export function assess(f: {
-  hasDate: boolean;
-  daysLeft: number | null;
-  archived: boolean;
-  tasks: number;
-  overdueTasks: number;
-  guests: number;
-  scheduleItems: number;
-  invites: number;
-  joinedInvites: number;
-  overdueMoney: number;
-}): { gaps: Gap[]; needsClosing: boolean } {
-  const passed = f.daysLeft !== null && f.daysLeft < 0;
-  const needsClosing = passed && !f.archived;
-  const within = (d: number) => f.daysLeft !== null && f.daysLeft >= 0 && f.daysLeft <= d;
-
-  const gaps: Gap[] = [];
-
-  /* Ordered by what it costs to ignore, because the first chip is the one that
-     gets read. */
-  if (needsClosing) gaps.push({ code: 'closing', label: 'האירוע עבר — לסגור תיק', level: 'now' });
-  if (f.overdueTasks > 0) {
-    gaps.push({
-      code: 'task_overdue',
-      label: f.overdueTasks === 1 ? 'משימה באיחור' : `${f.overdueTasks} משימות באיחור`,
-      level: 'now',
-    });
-  }
-  if (f.overdueMoney > 0) gaps.push({ code: 'pay_overdue', label: 'תשלום באיחור', level: 'now' });
-  if (!f.hasDate) gaps.push({ code: 'no_date', label: 'אין תאריך', level: 'soon' });
-
-  if (f.invites === 0) {
-    /* Before the event this is the thing blocking everything else — the couple
-       cannot do their half of the work. Afterwards it is only untidy. */
-    gaps.push({ code: 'no_couple', label: 'הזוג עוד לא צורף', level: passed ? 'soon' : 'now' });
-  } else if (f.joinedInvites === 0) {
-    gaps.push({ code: 'not_joined', label: 'הזוג עוד לא נכנס', level: 'soon' });
-  }
-
-  if (!passed && f.tasks === 0 && (within(NEEDS_TASKS_WITHIN) || !f.hasDate)) {
-    gaps.push({ code: 'no_tasks', label: 'אין משימות', level: 'soon' });
-  }
-  if (!passed && f.guests === 0 && within(NEEDS_GUESTS_WITHIN)) {
-    gaps.push({ code: 'no_guests', label: 'אין רשימת אורחים', level: within(45) ? 'now' : 'soon' });
-  }
-  if (!passed && f.scheduleItems === 0 && within(NEEDS_SCHEDULE_WITHIN)) {
-    gaps.push({ code: 'no_schedule', label: 'אין לוז ליום האירוע', level: 'now' });
-  }
-
-  return { gaps, needsClosing };
-}
-
 export async function getBoard(opts: { archived?: boolean } = {}): Promise<ClientStatus[]> {
   const sb = await supabaseServer();
   const todayIso = new Date().toISOString().slice(0, 10);
@@ -129,14 +59,15 @@ export async function getBoard(opts: { archived?: boolean } = {}): Promise<Clien
 
   const ids = rows.map((r) => r.id);
 
-  /* Five queries for the whole board rather than five per event. Row level
+  /* Six queries for the whole board rather than six per event. Row level
      security scopes each one to this producer already. */
-  const [tasksQ, guestsQ, paysQ, dayQ, inviteQ] = await Promise.all([
+  const [tasksQ, guestsQ, paysQ, dayQ, inviteQ, contractQ] = await Promise.all([
     sb.from('tasks').select('id,client_id,title,due_on,done,owner').in('client_id', ids),
     sb.from('guests_rsvp').select('id,client_id,status').in('client_id', ids),
     sb.from('payments').select('id,client_id,amount,due_on,paid').in('client_id', ids),
     sb.from('day_schedule').select('id,client_id').in('client_id', ids),
     sb.from('client_authorized_emails').select('id,client_id,profile_id').in('client_id', ids),
+    sb.from('contracts').select('id,client_id,signed_at').in('client_id', ids),
   ]);
 
   const tasks = tasksQ.data ?? [];
@@ -144,6 +75,7 @@ export async function getBoard(opts: { archived?: boolean } = {}): Promise<Clien
   const pays = paysQ.data ?? [];
   const day = dayQ.data ?? [];
   const invites = inviteQ.data ?? [];
+  const contracts = contractQ.data ?? [];
   const mine = <T extends { client_id: string }>(rs: T[], id: string) => rs.filter((r) => r.client_id === id);
 
   return rows.map((r) => {
@@ -167,6 +99,7 @@ export async function getBoard(opts: { archived?: boolean } = {}): Promise<Clien
 
     const mySchedule = mine(day as { client_id: string }[], r.id);
     const myInvites = mine(invites as { client_id: string; profile_id: string | null }[], r.id);
+    const myContracts = mine(contracts as { client_id: string; signed_at: string | null }[], r.id);
 
     const { gaps } = assess({
       hasDate: !!r.event_date,
@@ -179,6 +112,8 @@ export async function getBoard(opts: { archived?: boolean } = {}): Promise<Clien
       invites: myInvites.length,
       joinedInvites: myInvites.filter((i) => i.profile_id).length,
       overdueMoney: overdue,
+      contracts: myContracts.length,
+      signedContracts: myContracts.filter((x) => x.signed_at).length,
     });
 
     /* The nearest thing with a date wins; a task with no date is a someday, and

@@ -72,8 +72,9 @@ export function AppShell({
         </div>
       </header>
 
-      {/* pb leaves room for the bottom bar plus the home indicator. */}
-      <main id="main" className="shell py-8 pb-32 sm:py-12 sm:pb-14">{children}</main>
+      {/* pb leaves room for the bottom bar plus the home indicator, and stops
+          doing so at the width where the bottom bar goes away. */}
+      <main id="main" className="shell py-8 pb-32 sm:py-12 lg:pb-14">{children}</main>
 
       <MobileTabBar items={items} />
     </div>

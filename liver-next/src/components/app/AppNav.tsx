@@ -31,7 +31,12 @@ function isCurrent(pathname: string, href: string) {
 export function DesktopNav({ items }: { items: NavItem[] }) {
   const pathname = usePathname();
   return (
-    <nav aria-label="ניווט ראשי" className="hidden items-center gap-1 sm:flex">
+    /* lg rather than sm. Six pills, a brand name, a bell, an avatar and a
+       sign-out button do not fit on a 700px window, and what happens there is
+       not a graceful squeeze: the nav wins the space and the sign-out button
+       leaves the screen. Below this width the bottom bar is the navigation,
+       which is the better shape for that size anyway. */
+    <nav aria-label="ניווט ראשי" className="hidden items-center gap-1 lg:flex">
       {items.map((i) => {
         const Icon = ICONS[i.icon];
         const current = isCurrent(pathname, i.href);
@@ -63,7 +68,7 @@ export function MobileTabBar({ items }: { items: NavItem[] }) {
   return (
     <nav
       aria-label="ניווט ראשי"
-      className="glass fixed inset-x-0 bottom-0 z-40 border-t border-line shadow-dock sm:hidden"
+      className="glass fixed inset-x-0 bottom-0 z-40 border-t border-line shadow-dock lg:hidden"
       style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
     >
       <ul className="mx-auto flex max-w-lg list-none items-stretch justify-around p-0">
