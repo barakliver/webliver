@@ -3,6 +3,7 @@ import { ChevronLeft, CalendarX2, Users, Wallet } from 'lucide-react';
 import { appCopy } from '@/content/site';
 import type { ClientStatus } from '@/lib/status';
 import { ArchiveButton } from '@/components/app/ArchiveButton';
+import { formatDate } from '@/lib/dates';
 
 const dateFmt = new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'short', year: 'numeric' });
 const ils = (n: number) => '₪' + Math.round(n).toLocaleString('he-IL');
@@ -88,7 +89,7 @@ function Row({ s }: { s: ClientStatus }) {
           <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
             <h3 className="font-display text-[18.5px] font-semibold text-ink">{s.name}</h3>
             <p className="text-[13.5px] text-ink-mute">
-              {s.eventDate ? dateFmt.format(new Date(s.eventDate)) : c.noDate}
+              {formatDate(dateFmt, s.eventDate, c.noDate)}
               {s.venue ? ` · ${s.venue}` : ''}
             </p>
           </div>

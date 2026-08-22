@@ -1,6 +1,7 @@
 'use client';
 
 import { useActionState, useState } from 'react';
+import { formatDate } from '@/lib/dates';
 import { useFormStatus } from 'react-dom';
 import { FileSignature, Send, Check, Ban, Trash2, Paperclip, ShieldAlert } from 'lucide-react';
 import {
@@ -156,7 +157,7 @@ function Row({ contract: k, clientId, viewer }: {
         <p className="mt-3 flex flex-wrap items-center gap-2 rounded-xl bg-ok-wash px-3 py-2 text-[14px] text-ok">
           <Check size={15} aria-hidden strokeWidth={2} />
           {c.signedBy} <strong className="font-semibold">{k.signed_name}</strong>
-          {k.signed_at && <span className="text-ink-mute">· {dateFmt.format(new Date(k.signed_at))}</span>}
+          {k.signed_at && <span className="text-ink-mute">· {formatDate(dateFmt, k.signed_at, '')}</span>}
         </p>
       )}
 

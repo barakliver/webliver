@@ -81,6 +81,10 @@ export function CodeInput({ name, label, length }: {
             <input
               key={i}
               ref={(el) => { refs.current[i] = el; }}
+              /* The first box takes focus so the code can be typed the moment
+                 the screen arrives. Only the first: autoFocus on every box
+                 would fight the caret across all six. */
+              autoFocus={i === 0}
               value={d}
               inputMode="numeric"
               autoComplete={i === 0 ? 'one-time-code' : 'off'}

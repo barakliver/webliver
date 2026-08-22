@@ -1,6 +1,7 @@
 'use client';
 
 import { useActionState } from 'react';
+import { formatDate } from '@/lib/dates';
 import { useFormStatus } from 'react-dom';
 import { addPayment, togglePaid, deletePayment, type MoneyResult } from '@/app/actions/money';
 import { appCopy } from '@/content/site';
@@ -91,10 +92,10 @@ export function PaymentsPanel({ clientId, payments, viewer }: {
                   <p className="text-[15px] text-ink">{p.title}</p>
                   <p className="mt-0.5 text-[12.5px] text-ink-mute">
                     {p.paid
-                      ? `${c.paid}${p.paid_on ? ' · ' + dateFmt.format(new Date(p.paid_on)) : ''}`
+                      ? `${c.paid}${p.paid_on ? ' · ' + formatDate(dateFmt, p.paid_on, '') : ''}`
                       : (
                         <span className={late ? 'font-semibold text-bad' : ''}>
-                          {p.due_on ? dateFmt.format(new Date(p.due_on)) : c.noDue}
+                          {formatDate(dateFmt, p.due_on, c.noDue)}
                           {late ? ` · ${c.overdue}` : ''}
                         </span>
                       )}

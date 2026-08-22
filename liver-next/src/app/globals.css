@@ -35,6 +35,11 @@
 
   body {
     background: theme('colors.surface.DEFAULT');
+    /* Installed, this is an app rather than a page: a tap should not flash a
+       grey rectangle, and a scroll that reaches the end should not rubber band
+       the whole shell. Neither is possible to fix from inside a component. */
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior-y: contain;
     color: theme('colors.ink.DEFAULT');
     font-feature-settings: 'kern' 1;
     -webkit-font-smoothing: antialiased;

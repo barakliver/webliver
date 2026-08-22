@@ -2,20 +2,12 @@ import Link from 'next/link';
 import { CheckSquare, Coins, CircleAlert } from 'lucide-react';
 import { appCopy } from '@/content/site';
 import type { EventSummary as Summary } from '@/lib/eventSummary';
+import { formatDate, isOverdue } from '@/lib/dates';
 
 const c = appCopy.clientPage;
 
 const shekels = (n: number) => `₪${Math.round(n).toLocaleString('he-IL')}`;
 const dateFmt = new Intl.DateTimeFormat('he-IL', { day: '2-digit', month: '2-digit' });
-
-/** Compared on calendar dates so something due today never reads as late. */
-function overdue(due: string | null): boolean {
-  if (!due) return false;
-  const now = new Date();
-  const today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
-  const d = new Date(due);
-  return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) < today;
-}
 
 function Tile({ label, value, tone = 'plain', sub }: {
   label: string; value: string; sub?: string; tone?: 'plain' | 'warn' | 'good';
@@ -89,7 +81,7 @@ export function EventSummary({ clientId, summary }: { clientId: string; summary:
         ) : (
           <ul className="mt-4 space-y-2">
             {next.map((item) => {
-              const late = overdue(item.due);
+              const late = isOverdue(item.due);
               return (
                 <li
                   key={`${item.kind}-${item.id}`}
@@ -107,7 +99,7 @@ export function EventSummary({ clientId, summary }: { clientId: string; summary:
                     <span className="text-[13.5px] tabular-nums text-ink-soft">{shekels(item.amount)}</span>
                   )}
                   <span className={`text-[13px] tabular-nums ${late ? 'text-bad' : 'text-ink-mute'}`}>
-                    {item.due ? dateFmt.format(new Date(item.due)) : t.none}
+                    {formatDate(dateFmt, item.due, t.none)}
                   </span>
                   <Link
                     href={`/app/clients/${clientId}?tab=${item.kind === 'task' ? 'tasks' : 'money'}`}

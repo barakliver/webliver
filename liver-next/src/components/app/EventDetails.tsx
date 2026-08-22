@@ -5,6 +5,7 @@ import { useFormStatus } from 'react-dom';
 import { CalendarPlus, Pencil } from 'lucide-react';
 import { updateClientDetails, type ActionResult } from '@/app/actions/clients';
 import { appCopy, EVENT_KINDS, MIN_EVENT_DATE, MAX_GUESTS } from '@/content/site';
+import { formatDate, daysUntil } from '@/lib/dates';
 
 const c = appCopy.clientPage;
 
@@ -20,16 +21,6 @@ export type EventCore = {
   venue: string | null;
   guest_estimate: number | null;
 };
-
-/** Whole days from today to the event, counted on calendar dates so a late
- *  evening visit does not shave a day off the countdown. */
-function daysUntil(iso: string): number {
-  const now = new Date();
-  const a = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
-  const d = new Date(iso);
-  const b = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
-  return Math.round((b - a) / 86_400_000);
-}
 
 function Save() {
   const { pending } = useFormStatus();
@@ -69,7 +60,9 @@ export function EventDetails({ event }: { event: EventCore }) {
   );
 
   const kind = EVENT_KINDS.find((k) => k.value === event.kind)?.label ?? event.kind;
-  const left = event.event_date ? daysUntil(event.event_date) : null;
+  /* Null covers both "no date yet" and "a date nothing can parse", and the
+     screen treats them the same: offer the date picker rather than throw. */
+  const left = daysUntil(event.event_date);
 
   if (editing) {
     return (
@@ -172,7 +165,7 @@ export function EventDetails({ event }: { event: EventCore }) {
       <dl className="mt-6 space-y-3 text-[14.5px]">
         <Line label={appCopy.newClient.kind}>{kind}</Line>
         <Line label={appCopy.newClient.date}>
-          {event.event_date ? dateFmt.format(new Date(event.event_date)) : c.noDateYet}
+          {formatDate(dateFmt, event.event_date, c.noDateYet)}
         </Line>
         <Line label={appCopy.newClient.venue}>{event.venue || c.at.none}</Line>
         <Line label={appCopy.newClient.guests}>{event.guest_estimate ?? c.at.none}</Line>
