@@ -1,6 +1,7 @@
 'use client';
 
 import { CodeInput } from '@/components/app/CodeInput';
+import { publicEnv } from '@/lib/env';
 
 import { useActionState, useState } from 'react';
 import { useFormStatus } from 'react-dom';
@@ -55,7 +56,7 @@ export function LoginForm({ next }: { next?: string }) {
 
         <input type="hidden" name="email" value={sent} />
         {next && <input type="hidden" name="next" value={next} />}
-        <CodeInput name="code" label={copy.codeLabel} />
+        <CodeInput name="code" label={copy.codeLabel} length={publicEnv.otpLength} />
 
         <Submit label={copy.codeSubmit} busy={copy.codeChecking} />
 
