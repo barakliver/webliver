@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { site } from '@/content/site';
+import type { SiteCopy } from '@/content/site';
 import { Prose } from './Prose';
 
 /** The first screen of a wedding producer's site was a text card on a tinted
@@ -12,7 +12,7 @@ import { Prose } from './Prose';
  *
  *  This one is fetched at high priority: it is the largest thing above the
  *  fold, which makes it the LCP element. */
-export function Hero() {
+export function Hero({ site }: { site: SiteCopy }) {
   return (
     <header className="relative isolate overflow-hidden">
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">

@@ -20,6 +20,10 @@ function navFor(a: Account): NavItem[] {
     { href: '/app/sop',     label: appCopy.nav.sop,      icon: 'sop' },
   ];
   if (a.role === 'super_admin') {
+    /* The public site is one site and it belongs to the account the enquiry
+       form files leads under. Offering the editor to every producer would be
+       offering most of them a screen that edits somebody else's homepage. */
+    items.push({ href: '/app/site', label: appCopy.nav.site, icon: 'site' });
     items.push({ href: '/app/admin', label: appCopy.nav.admin, icon: 'admin' });
   }
   return items;

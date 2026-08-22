@@ -2,11 +2,11 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BookOpen, CalendarDays, HeartHandshake, LayoutGrid, ShieldCheck, Sparkles, Target, Truck, type LucideIcon } from 'lucide-react';
+import { BookOpen, CalendarDays, Globe, HeartHandshake, LayoutGrid, ShieldCheck, Sparkles, Target, Truck, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export type NavItem = { href: string; label: string; icon: IconName };
-export type IconName = 'overview' | 'leads' | 'clients' | 'calendar' | 'vendors' | 'sop' | 'admin' | 'portal';
+export type IconName = 'overview' | 'leads' | 'clients' | 'calendar' | 'vendors' | 'sop' | 'site' | 'admin' | 'portal';
 
 /* Real icons rather than emoji. The old app labelled every tab with one, and
    emoji cannot inherit colour or weight, render differently on every platform,
@@ -18,6 +18,7 @@ const ICONS: Record<IconName, LucideIcon> = {
   calendar: CalendarDays,
   vendors:  Truck,
   sop:      BookOpen,
+  site:     Globe,
   admin:    ShieldCheck,
   portal:   Sparkles,
 };

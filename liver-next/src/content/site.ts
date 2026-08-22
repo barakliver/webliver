@@ -1,6 +1,41 @@
-/** Every line of public copy lives here so wording is reviewed in one place.
- *  House rule: no long dashes anywhere in headings or body. */
-export const site = {
+/**
+ * Every line of public copy lives here so wording is reviewed in one place.
+ * House rule: no long dashes anywhere in headings or body.
+ *
+ * This is the default and the fallback, not the only source. 0026 adds an
+ * override layer so a sentence can be changed on a Tuesday without a deploy;
+ * what is written here is what renders when nothing has been overridden, and
+ * what renders if the database cannot be reached at all. A missing override is
+ * never a missing sentence.
+ *
+ * Typed rather than `as const`, so an override of a string is a string and an
+ * override of a list is a list. The literal types bought nothing: nobody
+ * branches on the exact wording of a headline.
+ */
+export type SiteCopy = {
+  brand: string;
+  tagline: string;
+  hero: { eyebrow: string; headline: string; name: string; body: string[]; cta: string };
+  philosophy: { title: string; body: string[] };
+  value: { title: string; body: string[] };
+  journey: { title: string; steps: string[]; link: string };
+  about: { title: string; body: string[] };
+  dayOf: { title: string; body: string[] };
+  work: { title: string; sub: string };
+  academy: { title: string; body: string[]; cta: string };
+  closing: { title: string; body: string[]; cta: string };
+  budget: { title: string; sub: string; closing: string };
+  lead: {
+    title: string; sub: string;
+    fields: { name: string; phone: string; email: string; kind: string; date: string; guests: string; message: string };
+    submit: string; sending: string; okTitle: string; okBody: string;
+  };
+  fab: { whatsapp: string; booking: string; bookingNote: string; lead: string; whatsappMessage: string };
+  nav: { philosophy: string; journey: string; about: string; budget: string; contact: string; login: string };
+  footer: string;
+};
+
+export const site: SiteCopy = {
   brand: 'ברק ליור',
   tagline: 'הפקת חתונות ואירועים',
 
@@ -62,6 +97,11 @@ export const site = {
       'מישהו שיידע מתי להקשיב לכם, מתי לבדוק שוב את המספרים ומתי להגיד שמשהו פחות נכון עבורכם.',
       'כי בסוף אתם צריכים להרגיש שיש לידכם אדם שאתם סומכים עליו.',
     ],
+  },
+
+  work: {
+    title: 'עבודות אחרונות',
+    sub: 'שמונה רגעים מאירועים שהופקו בשנה האחרונה.',
   },
 
   dayOf: {
@@ -139,7 +179,7 @@ export const site = {
   },
 
   footer: 'הפקת אירועים. כל הזכויות שמורות.',
-} as const;
+};
 
 export const EVENT_KINDS = [
   { value: 'wedding',   label: 'חתונה' },
@@ -225,6 +265,7 @@ export const appCopy = {
     calendar: 'יומן',
     vendors: 'ספקים',
     sop: 'מדריכים',
+    site: 'האתר',
     admin: 'ניהול מערכת',
     portal: 'האזור שלנו',
   },
@@ -780,6 +821,20 @@ export const vendorCopy = {
   count: (n: number) => `${n} ספקים`,
   noResults: 'לא נמצא ספק מתאים.',
   allCategories: 'כל התחומים',
+} as const;
+
+export const siteEditorCopy = {
+  title: 'עריכת האתר',
+  sub: 'הטקסטים באתר הציבורי. שינוי נשמר ומתפרסם מיד, בלי פריסה.',
+  sections: 'פרקים',
+  save: 'שמירה',
+  saving: 'שומר',
+  saved: 'נשמר',
+  wasReset: 'הוחזר למקור',
+  unsaved: 'יש שינוי שלא נשמר',
+  reset: 'החזרה לנוסח המקורי',
+  edited: 'נערך',
+  note: 'מה שלא מופיע כאן נשאר קבוע בקוד. שדה שנמחק חוזר לנוסח שנכתב במקור.',
 } as const;
 
 export const noticeCopy = {

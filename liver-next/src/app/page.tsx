@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { site } from '@/content/site';
+import { getSiteCopy } from '@/lib/siteCopy';
+import { supabasePublic } from '@/lib/supabase/public';
 import { Nav } from '@/components/marketing/Nav';
 import { Hero } from '@/components/marketing/Hero';
 import { Section } from '@/components/marketing/Section';
@@ -12,12 +13,21 @@ import { Portrait } from '@/components/marketing/Portrait';
 import { FabDock } from '@/components/marketing/FabDock';
 import { BookMeeting } from '@/components/marketing/BookMeeting';
 
-export default function HomePage() {
+/* Rebuilt on a timer rather than on every visit. The copy is read from the
+   database so it can be edited without a deploy, and a marketing page that
+   pays for a round trip per visitor would be a worse page than the static one
+   it replaced. An edit calls revalidatePath('/'), so the wait is only ever the
+   fallback for a change made some other way. */
+export const revalidate = 300;
+
+export default async function HomePage() {
+  const site = await getSiteCopy(supabasePublic());
+
   return (
     <>
       <Nav />
       <main id="main">
-        <Hero />
+        <Hero site={site} />
 
         <Section id="philosophy" title={site.philosophy.title}>
           <Prose lines={site.philosophy.body} />
@@ -27,7 +37,7 @@ export default function HomePage() {
           <Prose lines={site.value.body} />
         </Section>
 
-        <Journey />
+        <Journey site={site} />
 
         <Section id="about" title={site.about.title}>
           <div className="grid items-start gap-8 sm:grid-cols-[minmax(0,260px)_1fr] sm:gap-10">
@@ -40,11 +50,7 @@ export default function HomePage() {
           <Prose lines={site.dayOf.body} />
         </Section>
 
-        <Section
-          id="work"
-          title="עבודות אחרונות"
-          sub="שמונה רגעים מאירועים שהופקו בשנה האחרונה."
-        >
+        <Section id="work" title={site.work.title} sub={site.work.sub}>
           <Portfolio />
         </Section>
 
