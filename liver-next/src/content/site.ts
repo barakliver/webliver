@@ -597,7 +597,53 @@ export const leadsCopy = {
   callLate: 'באיחור',
   open: 'פתיחה',
   close: 'סגירה',
+
+  add: 'פנייה שקיבלתי',
+  addTitle: 'רישום פנייה',
+  addSub: 'שיחה, הודעה או המלצה שהגיעה אליכם ישירות. נכנסת לאותה רשימה כמו פנייה מהאתר, כדי שלא תישאר בפנקס.',
+  addName: 'שם',
+  addPhone: 'טלפון',
+  addEmail: 'אימייל',
+  addKind: 'סוג האירוע',
+  addDate: 'תאריך משוער',
+  addGuests: 'כמות אורחים',
+  addMessage: 'מה נאמר',
+  addMessagePh: 'חתונה באוגוסט, שמעו עלינו מחברים',
+  addHow: 'איך הגיעו אלינו',
+  addSave: 'שמירה',
+  addSaving: 'שומר',
+  addCancel: 'ביטול',
+  addNeedContact: 'צריך טלפון או אימייל',
+  addNeedName: 'נא למלא שם',
+  addFailed: 'לא הצלחנו לשמור את הפנייה',
+
+  /* Where a lead came from, in the words a producer would use. Anything that
+     arrives from a source nobody named yet is shown as it was stored rather
+     than hidden, so a new channel is visible the day it starts working. */
+  sources: {
+    site: 'מהאתר',
+    phone: 'שיחת טלפון',
+    whatsapp: 'וואטסאפ',
+    instagram: 'אינסטגרם',
+    facebook: 'פייסבוק',
+    meta: 'מטא',
+    google_ads: 'גוגל',
+    referral: 'המלצה',
+    walk_in: 'הגיעו אלינו',
+    webhook: 'מערכת מחוברת',
+  } as Record<string, string>,
 } as const;
+
+/** The ways a producer would say a lead reached them, for the manual form.
+ *  Stored as the same slugs the webhook stores, so one report counts both. */
+export const LEAD_SOURCES = [
+  { value: 'phone', label: 'שיחת טלפון' },
+  { value: 'whatsapp', label: 'וואטסאפ' },
+  { value: 'instagram', label: 'אינסטגרם' },
+  { value: 'facebook', label: 'פייסבוק' },
+  { value: 'referral', label: 'המלצה' },
+  { value: 'walk_in', label: 'הגיעו אלינו' },
+] as const;
 
 export const noticeCopy = {
   title: 'עדכונים',

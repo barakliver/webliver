@@ -10,11 +10,17 @@ export type Lead = {
   kind: 'wedding' | 'corporate'; event_date: string | null;
   guest_count: number | null; message: string; note: string;
   status: keyof typeof leadsCopy.statuses; created_at: string;
+  source: string;
 };
 export type Call = { id: string; lead_id: string | null; title: string; remind_on: string | null; done: boolean };
 
 const dateFmt = new Intl.DateTimeFormat('he-IL', { day: '2-digit', month: '2-digit', year: '2-digit' });
 const show = (d: string | null) => (d ? dateFmt.format(new Date(d)) : '—');
+
+/** A channel nobody has named yet is shown as it was stored rather than
+ *  hidden. A new source that starts working is then visible on day one,
+ *  instead of on the day somebody remembers to add a label for it. */
+const sourceLabel = (s: string) => leadsCopy.sources[s] ?? s.replace(/_/g, ' ');
 
 function Book() {
   const { pending } = useFormStatus();
@@ -44,6 +50,7 @@ export function LeadRow({ lead, calls }: { lead: Lead; calls: Call[] }) {
             {kind}
             {lead.event_date ? ` · ${show(lead.event_date)}` : ''}
             {lead.guest_count ? ` · ${lead.guest_count}` : ''}
+            {lead.source ? ` · ${sourceLabel(lead.source)}` : ''}
           </p>
         </div>
 

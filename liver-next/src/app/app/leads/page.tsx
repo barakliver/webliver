@@ -5,6 +5,7 @@ import { appCopy, leadsCopy } from '@/content/site';
 import { PageHead, Empty } from '@/components/app/PageHead';
 import { LeadRow, type Lead, type Call } from '@/components/app/LeadRow';
 import { CallsPanel } from '@/components/app/CallsPanel';
+import { NewLeadForm } from '@/components/app/NewLeadForm';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: appCopy.leads.title };
@@ -15,7 +16,7 @@ export default async function LeadsPage() {
 
   const [{ data: leads }, { data: calls }] = await Promise.all([
     sb.from('leads')
-      .select('id,full_name,email,phone,kind,event_date,guest_count,message,note,status,created_at')
+      .select('id,full_name,email,phone,kind,event_date,guest_count,message,note,status,source,created_at')
       .order('created_at', { ascending: false }).limit(200),
     sb.from('sales_calls').select('id,lead_id,title,remind_on,done')
       .order('remind_on', { ascending: true, nullsFirst: false }),
@@ -32,6 +33,11 @@ export default async function LeadsPage() {
   return (
     <>
       <PageHead title={appCopy.leads.title} sub={appCopy.leads.sub} />
+
+      {/* Ahead of the list on purpose. The enquiry a producer is holding in
+          their head, still on the phone, is the one at risk of never being
+          written down at all. */}
+      <NewLeadForm />
 
       <CallsPanel calls={allCalls} leads={rows.map((l) => ({ id: l.id, name: l.full_name }))} />
 

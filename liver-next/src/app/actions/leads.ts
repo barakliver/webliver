@@ -14,6 +14,51 @@ function touch() {
   revalidatePath('/app');
 }
 
+/** A lead somebody took down on the phone.
+ *
+ *  The write goes through record_lead(), which attributes the enquiry to the
+ *  producer who is signed in rather than to whoever the public site belongs
+ *  to. That distinction is the whole reason this is not a plain insert: the
+ *  attribution trigger fills producer_id from the site's owner when it is
+ *  left null, so a second producer typing a lead here would have watched it
+ *  land in the root account's list and vanish from their own.
+ *
+ *  Everything a producer would have on a phone call is optional except a name
+ *  and one way to answer. Asking for more than that, from somebody who is
+ *  holding a phone, means the lead gets written on paper instead. */
+export async function recordLead(_prev: LeadActionResult | null, form: FormData): Promise<LeadActionResult> {
+  const v = (k: string) => String(form.get(k) ?? '').trim();
+
+  const name = v('full_name');
+  const phone = v('phone');
+  const email = v('email').toLowerCase();
+
+  if (name.length < 2) return { ok: false, error: 'נא למלא שם' };
+  if (!phone && !email) return { ok: false, error: 'צריך טלפון או אימייל' };
+
+  const guests = Number(v('guest_count'));
+
+  const sb = await supabaseServer();
+  const { error } = await sb.rpc('record_lead', {
+    p_full_name: name,
+    p_phone: phone,
+    p_email: email,
+    p_kind: v('kind') === 'corporate' ? 'corporate' : 'wedding',
+    p_event_date: v('event_date') || null,
+    p_guest_count: Number.isFinite(guests) && guests > 0 ? Math.min(guests, 1500) : null,
+    p_message: v('message'),
+    p_source: v('source') || 'phone',
+  });
+
+  if (error) {
+    console.error('[leads] record failed', { code: error.code, message: error.message });
+    return { ok: false, error: 'לא הצלחנו לשמור את הפנייה' };
+  }
+
+  touch();
+  return { ok: true };
+}
+
 export async function setLeadStatus(form: FormData): Promise<void> {
   const id = String(form.get('lead_id') ?? '');
   const status = String(form.get('status') ?? '');
