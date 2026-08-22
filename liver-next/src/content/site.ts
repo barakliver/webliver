@@ -341,6 +341,8 @@ export const appCopy = {
     emptyForRole: 'אין שורות המסומנות לתפקיד הזה. שורה בלי סימון מופיעה אצל כולם.',
     printedOn: 'הופק ב-',
     open: 'לוז ליום האירוע',
+    owner: 'אחראי',
+    pastMidnight: '(אחרי חצות)',
   },
 
   statusBoard: {
@@ -372,6 +374,52 @@ export const appCopy = {
   clientPage: {
     back: 'חזרה לאירועים',
     details: 'פרטי האירוע',
+
+    /* The event file, in sections. One page holding nine panels is not a file,
+       it is a scroll, and the thing somebody came for is always below the
+       fold. */
+    tabs: {
+      overview: 'סקירה',
+      tasks: 'משימות',
+      day: 'לוז',
+      guests: 'אורחים',
+      money: 'כסף',
+      docs: 'מסמכים',
+      messages: 'הודעות',
+      board: 'השראה',
+    },
+
+    edit: 'עריכת פרטים',
+    editSave: 'שמירה',
+    editSaving: 'שומר',
+    editCancel: 'ביטול',
+    noDateYet: 'עוד לא נקבע תאריך',
+    setDate: 'קביעת תאריך',
+    daysLeft: 'ימים לאירוע',
+    today: 'האירוע היום',
+    tomorrow: 'האירוע מחר',
+    passed: 'האירוע היה',
+    daysAgo: (n: number) => `לפני ${n} ימים`,
+
+    at: {
+      guests: 'אורחים',
+      confirmed: 'אישרו',
+      pending: 'טרם ענו',
+      declined: 'לא מגיעים',
+      seats: 'נפשות',
+      paid: 'שולם',
+      owed: 'נותר לגבות',
+      overdue: 'באיחור',
+      tasksOpen: 'משימות פתוחות',
+      dayLines: 'שורות בלוז',
+      contracts: 'מסמכים חתומים',
+      none: '—',
+    },
+
+    nextUp: 'הדבר הבא',
+    nextUpNone: 'אין כרגע משימה פתוחה או תשלום שממתין.',
+    openTab: 'פתיחה',
+
     access: 'מי נכנס לאזור הזוג',
     accessSub: 'עד שלוש כתובות, לכל אחד מהן כניסה משלה לאותו אירוע. הכניסה היא עם הכתובת עצמה, בקוד חד פעמי, בלי סיסמה.',
     accessNone: 'עוד לא צורפה אף כתובת. עד שתצרפו, לזוג אין דרך להיכנס.',
@@ -577,6 +625,27 @@ export const dayCopy = {
   rename: 'שינוי שמות המסלולים',
   renameSave: 'שמירת השמות',
   renameHint: 'איך תקראו לשני המסלולים. אלה השמות שלכם.',
+
+  owner: 'מי אחראי',
+  ownerPh: 'שם',
+  duration: 'כמה זמן',
+  durationPh: 'דק׳',
+  untilNext: 'עד הבא',
+  edit: 'עריכה',
+  save: 'שמירה',
+  cancel: 'ביטול',
+  addOpen: 'הוספת שורה',
+  addClose: 'סגירה',
+  overlap: (title: string) => `חופף ל"${title}" באותו מסלול`,
+  crossesMidnight: 'הלוז ממשיך אחרי חצות, והשורות מסודרות לפי סדר הערב.',
+  totalLines: (n: number) => `${n} שורות`,
+  span: (from: string, to: string) => `${from} עד ${to}`,
+
+  templateTitle: 'להתחיל מלוז מוכן',
+  templateSub: 'בחרו נקודת פתיחה, ואז תמחקו ותשנו מה שלא מתאים. אפשר רק כשהלוז ריק.',
+  templateApply: 'פתיחת הלוז',
+  templateApplying: 'פותח',
+  templateOr: 'או להתחיל משורה ריקה',
 } as const;
 
 export const leadsCopy = {

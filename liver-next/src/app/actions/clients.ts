@@ -69,6 +69,64 @@ export async function createClient(_prev: ActionResult | null, form: FormData): 
   redirect(`/app/clients/${data.id}`);
 }
 
+/**
+ * Correcting the details of an event.
+ *
+ * The event page could show a date and could not set one, which is a strange
+ * thing to discover on a workspace opened from a lead that had no date: the
+ * countdown, the calendar entry, the run sheet header and every "how long
+ * left" on the platform were all waiting on a field with no way in.
+ *
+ * Every field is optional and blank means cleared, except the name, which
+ * something has to be called. An out of range date is refused rather than
+ * silently dropped, because unlike a webhook this is somebody typing while
+ * looking at the screen, and they can fix it.
+ */
+export async function updateClientDetails(_prev: ActionResult | null, form: FormData): Promise<ActionResult> {
+  const id = String(form.get('client_id') ?? '');
+  const name = String(form.get('display_name') ?? '').trim();
+  const date = String(form.get('event_date') ?? '').trim();
+  const guestsRaw = String(form.get('guest_estimate') ?? '').trim();
+
+  if (!id) return { ok: false, error: 'חסר מזהה אירוע' };
+  if (name.length < 2) return { ok: false, error: 'נא למלא שם לאירוע' };
+  if (date && date < MIN_EVENT_DATE) return { ok: false, error: 'התאריך צריך להיות משנת 2026 ואילך' };
+
+  let guests: number | null = null;
+  if (guestsRaw) {
+    const n = Number(guestsRaw);
+    if (!Number.isFinite(n) || n <= 0) return { ok: false, error: 'כמות אורחים לא תקינה' };
+    if (n > MAX_GUESTS) return { ok: false, error: `כמות האורחים המרבית היא ${MAX_GUESTS}` };
+    guests = Math.round(n);
+  }
+
+  const sb = await supabaseServer();
+  const { error } = await sb
+    .from('clients')
+    .update({
+      display_name: name.slice(0, 120),
+      kind: String(form.get('kind') ?? '') === 'corporate' ? 'corporate' : 'wedding',
+      /* Blank clears rather than being ignored. A venue that fell through is
+         information, and a screen that refuses to forget one is a screen
+         somebody stops trusting. */
+      event_date: date || null,
+      venue: String(form.get('venue') ?? '').trim().slice(0, 160),
+      guest_estimate: guests,
+    })
+    .eq('id', id);
+
+  if (error) {
+    console.error('[clients] update failed', error);
+    return { ok: false, error: readable(error.message) };
+  }
+
+  revalidatePath(`/app/clients/${id}`);
+  revalidatePath('/app/clients');
+  revalidatePath('/app/calendar');
+  revalidatePath('/app');
+  return { ok: true, id };
+}
+
 /** Authorises an address on a workspace and tells that person it is there.
  *  The cap of two and the role rebinding are both enforced in the database;
  *  a failed email must never undo an invitation that was already recorded. */

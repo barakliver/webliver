@@ -81,7 +81,7 @@ export async function loadPortal(
       .select('id,client_id,full_name,side,phone,status,party_size,diet,note,invite_token,table_id')
       .in('client_id', ids).order('full_name'),
     sb.from('tables_seating').select('id,client_id,name,seats').in('client_id', ids).order('created_at'),
-    sb.from('day_schedule').select('id,client_id,track,at_time,title,note').in('client_id', ids).order('at_time'),
+    sb.from('day_schedule').select('id,client_id,track,at_time,title,note,owner,audience,duration_min').in('client_id', ids).order('at_time'),
     sb.from('moodboards').select('id,client_id,category,caption,image_path')
       .in('client_id', ids).order('created_at', { ascending: false }),
   ]);
