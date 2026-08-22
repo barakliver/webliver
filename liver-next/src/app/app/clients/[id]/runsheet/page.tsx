@@ -109,7 +109,7 @@ export default async function RunsheetPage({
               href={a.value ? `/app/clients/${id}/runsheet?for=${a.value}` : `/app/clients/${id}/runsheet`}
               aria-current={on ? 'page' : undefined}
               className={`min-h-[38px] rounded-full border px-4 text-[14px] leading-[36px] transition ${
-                on ? 'border-ink bg-ink font-medium text-white' : 'border-line-strong text-ink-soft hover:border-bronze/40 hover:text-bronze'
+                on ? 'border-ink bg-ink font-medium text-white' : 'border-line-strong text-ink-soft hover:border-accent/40 hover:text-accent'
               }`}
             >
               {a.label}
@@ -125,7 +125,7 @@ export default async function RunsheetPage({
             {client.event_date ? dateFmt.format(new Date(client.event_date)) : c.noDate}
             {client.venue ? ` · ${client.venue}` : ''}
           </p>
-          <p className="mt-1 text-[14px] font-medium text-bronze">
+          <p className="mt-1 text-[14px] font-medium text-accent">
             {c.sheetFor} {roleLabel ?? c.everyone}
             {items.length > 0 && (
               <span className="text-ink-mute">

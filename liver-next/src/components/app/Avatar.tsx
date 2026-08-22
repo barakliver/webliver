@@ -11,10 +11,10 @@ function initials(name: string) {
 /** A name always produces the same tint, so a face you know keeps the same
  *  colour every time you see it and the grid stays recognisable at a glance. */
 const TINTS = [
-  'bg-bronze-wash text-bronze',
+  'bg-accent-wash text-accent',
   'bg-ok-wash text-ok',
   'bg-warn-wash text-warn',
-  'bg-ivory-200 text-ink-soft',
+  'bg-surface-200 text-ink-soft',
 ] as const;
 
 function tintFor(name: string) {

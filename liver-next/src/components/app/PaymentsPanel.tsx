@@ -47,15 +47,15 @@ export function PaymentsPanel({ clientId, payments, viewer }: {
       </p>
 
       <div className="mt-5 grid gap-3 sm:grid-cols-3">
-        <div className="rounded-2xl bg-emerald-50 px-4 py-3">
-          <div className="text-[12.5px] text-emerald-700">{c.totalPaid}</div>
-          <div className="font-display text-[22px] font-semibold tabular-nums text-emerald-800">{ils(paid)}</div>
+        <div className="rounded-2xl bg-ok-wash px-4 py-3">
+          <div className="text-[12.5px] text-ok">{c.totalPaid}</div>
+          <div className="font-display text-[22px] font-semibold tabular-nums text-ok">{ils(paid)}</div>
         </div>
-        <div className="rounded-2xl bg-amber-50 px-4 py-3">
-          <div className="text-[12.5px] text-amber-800">{c.totalOwed}</div>
-          <div className="font-display text-[22px] font-semibold tabular-nums text-amber-900">{ils(owed)}</div>
+        <div className="rounded-2xl bg-warn-wash px-4 py-3">
+          <div className="text-[12.5px] text-warn">{c.totalOwed}</div>
+          <div className="font-display text-[22px] font-semibold tabular-nums text-warn">{ils(owed)}</div>
         </div>
-        <div className="rounded-2xl bg-ivory-200 px-4 py-3">
+        <div className="rounded-2xl bg-surface-200 px-4 py-3">
           <div className="text-[12.5px] text-ink-mute">{c.totalAll}</div>
           <div className="font-display text-[22px] font-semibold tabular-nums text-ink">{ils(paid + owed)}</div>
         </div>
@@ -72,7 +72,7 @@ export function PaymentsPanel({ clientId, payments, viewer }: {
       )}
 
       {state && !state.ok && state.error && (
-        <p role="alert" className="mt-3 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-[14px] text-rose-800">
+        <p role="alert" className="mt-3 rounded-2xl border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
           {state.error}
         </p>
       )}
@@ -85,7 +85,7 @@ export function PaymentsPanel({ clientId, payments, viewer }: {
             const late = !p.paid && isOverdue(p.due_on);
             return (
               <li key={p.id} className={`flex flex-wrap items-center gap-3 rounded-2xl border px-4 py-3 ${
-                late ? 'border-rose-200 bg-rose-50/40' : 'border-line'
+                late ? 'border-bad/25 bg-bad-wash/60' : 'border-line'
               }`}>
                 <div className="min-w-0 flex-1">
                   <p className="text-[15px] text-ink">{p.title}</p>
@@ -93,7 +93,7 @@ export function PaymentsPanel({ clientId, payments, viewer }: {
                     {p.paid
                       ? `${c.paid}${p.paid_on ? ' · ' + dateFmt.format(new Date(p.paid_on)) : ''}`
                       : (
-                        <span className={late ? 'font-semibold text-rose-700' : ''}>
+                        <span className={late ? 'font-semibold text-bad' : ''}>
                           {p.due_on ? dateFmt.format(new Date(p.due_on)) : c.noDue}
                           {late ? ` · ${c.overdue}` : ''}
                         </span>
@@ -101,7 +101,7 @@ export function PaymentsPanel({ clientId, payments, viewer }: {
                   </p>
                 </div>
 
-                <span className={`tabular-nums text-[15px] font-semibold ${p.paid ? 'text-emerald-700' : 'text-ink'}`}>
+                <span className={`tabular-nums text-[15px] font-semibold ${p.paid ? 'text-ok' : 'text-ink'}`}>
                   {ils(Number(p.amount))}
                 </span>
 
@@ -123,7 +123,7 @@ export function PaymentsPanel({ clientId, payments, viewer }: {
                   </div>
                 ) : (
                   <span className={`rounded-full px-3 py-1 text-[12.5px] ${
-                    p.paid ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-800'
+                    p.paid ? 'bg-ok-wash text-ok' : 'bg-warn-wash text-warn'
                   }`}>
                     {p.paid ? c.paid : c.unpaid}
                   </span>

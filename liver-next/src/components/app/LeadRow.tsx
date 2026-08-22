@@ -55,7 +55,7 @@ export function LeadRow({ lead, calls }: { lead: Lead; calls: Call[] }) {
         </div>
 
         {openCalls.length > 0 && (
-          <span className="rounded-full bg-amber-50 px-3 py-1 text-[12.5px] text-amber-900">
+          <span className="rounded-full bg-warn-wash px-3 py-1 text-[12.5px] text-warn">
             {c.callTitle} · {show(openCalls[0].remind_on)}
           </span>
         )}
@@ -78,7 +78,7 @@ export function LeadRow({ lead, calls }: { lead: Lead; calls: Call[] }) {
       </div>
 
       {open && (
-        <div className="space-y-4 border-t border-line bg-ivory-100 p-4">
+        <div className="space-y-4 border-t border-line bg-surface-100 p-4">
           {lead.message && (
             <p className="rounded-2xl bg-white px-4 py-3 text-[14px] leading-relaxed text-ink-soft">“{lead.message}”</p>
           )}
@@ -98,7 +98,7 @@ export function LeadRow({ lead, calls }: { lead: Lead; calls: Call[] }) {
             <Book />
           </form>
           {state && !state.ok && state.error && (
-            <p role="alert" className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-[14px] text-rose-800">{state.error}</p>
+            <p role="alert" className="rounded-2xl border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">{state.error}</p>
           )}
 
           <form action={convertLead}>

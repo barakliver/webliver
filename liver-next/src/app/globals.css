@@ -34,7 +34,7 @@
   }
 
   body {
-    background: theme('colors.ivory.DEFAULT');
+    background: theme('colors.surface.DEFAULT');
     color: theme('colors.ink.DEFAULT');
     font-feature-settings: 'kern' 1;
     -webkit-font-smoothing: antialiased;
@@ -45,9 +45,9 @@
      than Latin at the same leading and read as cramped. A little more air. */
   [dir='rtl'] p, [dir='rtl'] li { line-height: 1.8; }
 
-  ::selection { background: theme('colors.bronze.wash'); }
+  ::selection { background: theme('colors.accent.wash'); }
   :focus-visible {
-    outline: 2px solid theme('colors.bronze.DEFAULT');
+    outline: 2px solid theme('colors.accent.DEFAULT');
     outline-offset: 2px;
     border-radius: 8px;
   }
@@ -59,7 +59,7 @@
      content. Never on a card. Translucency over text costs contrast, and the
      blur costs GPU on exactly the phones that can least afford it. */
   .glass {
-    background: color-mix(in srgb, theme('colors.ivory.100') 72%, transparent);
+    background: color-mix(in srgb, theme('colors.surface.100') 72%, transparent);
     -webkit-backdrop-filter: saturate(180%) blur(22px);
     backdrop-filter: saturate(180%) blur(22px);
     border-color: color-mix(in srgb, #fff 55%, transparent);
@@ -67,7 +67,7 @@
   /* Where blur is unsupported the same surface has to stay readable, so it
      falls back to opaque rather than to a wash of half-legible text. */
   @supports not (backdrop-filter: blur(1px)) {
-    .glass { background: theme('colors.ivory.100'); }
+    .glass { background: theme('colors.surface.100'); }
   }
 
   .shell { @apply mx-auto w-full max-w-content px-5 sm:px-8; }
@@ -84,15 +84,15 @@
            px-6 text-[15px] font-medium transition duration-200 ease-out
            disabled:pointer-events-none disabled:opacity-50;
   }
-  .btn-primary { @apply btn bg-ink text-ivory shadow-soft hover:bg-ink-soft; }
+  .btn-primary { @apply btn bg-ink text-surface shadow-soft hover:bg-ink-soft; }
   .btn-ghost   { @apply btn border border-line-strong bg-card/70 text-ink hover:bg-card; }
-  .btn-quiet   { @apply btn px-3 text-bronze hover:text-ink; }
+  .btn-quiet   { @apply btn px-3 text-accent hover:text-ink; }
 
   .field {
     @apply min-h-[44px] w-full rounded-xl2 border border-line bg-card px-4 py-3
            text-[15px] text-ink placeholder:text-ink-mute
-           focus:border-bronze-soft focus:outline-none
-           focus:ring-4 focus:ring-bronze-wash;
+           focus:border-accent-soft focus:outline-none
+           focus:ring-4 focus:ring-accent-wash;
   }
   .label { @apply mb-1.5 block text-[13.5px] font-medium text-ink-soft; }
 
@@ -104,10 +104,10 @@
   .chip-ok   { @apply chip bg-ok-wash   text-ok; }
   .chip-warn { @apply chip bg-warn-wash text-warn; }
   .chip-bad  { @apply chip bg-bad-wash  text-bad; }
-  .chip-mute { @apply chip bg-ivory-200 text-ink-soft; }
+  .chip-mute { @apply chip bg-surface-200 text-ink-soft; }
 
   .eyebrow {
-    @apply text-[11.5px] font-semibold uppercase tracking-[0.18em] text-bronze;
+    @apply text-[11.5px] font-semibold uppercase tracking-[0.18em] text-accent;
   }
 
   /* A hairline that reads as a rule rather than a border. */

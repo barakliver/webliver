@@ -31,10 +31,10 @@ const dateFmt = new Intl.DateTimeFormat('he-IL', {
 });
 
 const TONE: Record<Contract['status'], string> = {
-  draft:  'bg-ivory-200 text-ink-mute',
+  draft:  'bg-surface-200 text-ink-mute',
   sent:   'bg-warn-wash text-warn',
   signed: 'bg-ok-wash text-ok',
-  void:   'bg-ivory-200 text-ink-mute line-through',
+  void:   'bg-surface-200 text-ink-mute line-through',
 };
 
 function Busy({ label, busy }: { label: string; busy: string }) {
@@ -68,7 +68,7 @@ function Draft({ clientId }: { clientId: string }) {
   };
 
   return (
-    <form action={action} className="mt-5 space-y-3 rounded-2xl bg-ivory-100 p-4">
+    <form action={action} className="mt-5 space-y-3 rounded-2xl bg-surface-100 p-4">
       <input type="hidden" name="client_id" value={clientId} />
       <input type="hidden" name="file_path" value={path} />
 
@@ -80,7 +80,7 @@ function Draft({ clientId }: { clientId: string }) {
       <textarea name="body" rows={6} maxLength={60000} placeholder={c.bodyPh} className="field w-full resize-y" aria-label={c.bodyLabel} />
 
       <div className="flex flex-wrap items-center gap-3">
-        <label className="inline-flex min-h-[38px] cursor-pointer items-center gap-2 rounded-full border border-line-strong bg-white px-4 text-[14px] text-ink transition hover:border-bronze/40">
+        <label className="inline-flex min-h-[38px] cursor-pointer items-center gap-2 rounded-full border border-line-strong bg-white px-4 text-[14px] text-ink transition hover:border-accent/40">
           <Paperclip size={15} aria-hidden strokeWidth={1.75} />
           {uploading ? c.uploading : path ? c.attached : c.attach}
           <input
@@ -105,7 +105,7 @@ function Draft({ clientId }: { clientId: string }) {
 function Sign({ contract, clientId }: { contract: Contract; clientId: string }) {
   const [state, action] = useActionState<ContractResult | null, FormData>(signContract, null);
   return (
-    <form action={action} className="mt-4 rounded-2xl border border-bronze/30 bg-bronze-wash p-4">
+    <form action={action} className="mt-4 rounded-2xl border border-accent/30 bg-accent-wash p-4">
       <input type="hidden" name="contract_id" value={contract.id} />
       <input type="hidden" name="client_id" value={clientId} />
       <p className="text-[14.5px] text-ink">{c.signIntro}</p>
@@ -146,7 +146,7 @@ function Row({ contract: k, clientId, viewer }: {
 
       {k.file_url && (
         <a href={k.file_url} target="_blank" rel="noopener noreferrer"
-           className="mt-3 inline-flex items-center gap-1.5 text-[14px] text-bronze underline-offset-2 hover:underline">
+           className="mt-3 inline-flex items-center gap-1.5 text-[14px] text-accent underline-offset-2 hover:underline">
           <Paperclip size={15} aria-hidden strokeWidth={1.75} />
           {c.openDoc}
         </a>
@@ -232,7 +232,7 @@ export function Contracts({ clientId, contracts, viewer }: {
       {viewer === 'producer' && drafting && <Draft clientId={clientId} />}
 
       {contracts.length === 0 ? (
-        <p className="mt-5 rounded-2xl bg-ivory-100 px-4 py-3 text-[14.5px] text-ink-mute">
+        <p className="mt-5 rounded-2xl bg-surface-100 px-4 py-3 text-[14.5px] text-ink-mute">
           {viewer === 'client' ? c.emptyClient : c.emptyProducer}
         </p>
       ) : (

@@ -55,7 +55,7 @@ export function WinningBoard({ clientId, images, viewer }: {
       )}
 
       {state && !state.ok && state.error && (
-        <p role="alert" className="mt-3 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-[14px] text-rose-800">
+        <p role="alert" className="mt-3 rounded-2xl border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
           {state.error}
         </p>
       )}

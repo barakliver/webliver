@@ -32,7 +32,7 @@ export function AppShell({
   const items = navFor(account);
 
   return (
-    <div className="min-h-dvh bg-ivory">
+    <div className="min-h-dvh bg-surface">
       {/* Glass belongs on chrome. The header floats over content and the blur
           is what tells you so; the cards underneath stay opaque. */}
       <header className="glass sticky top-0 z-40 border-b border-line">
@@ -62,7 +62,7 @@ export function AppShell({
                 title={appCopy.signOut}
                 className="inline-flex min-h-[40px] min-w-[40px] items-center justify-center gap-2
                            rounded-full px-3 text-[14px] text-ink-soft transition
-                           hover:bg-ivory-200 hover:text-ink"
+                           hover:bg-surface-200 hover:text-ink"
               >
                 <LogOut size={16} strokeWidth={1.9} aria-hidden />
                 <span className="hidden sm:inline">{appCopy.signOut}</span>

@@ -19,7 +19,7 @@ function Busy({ label, busy }: { label: string; busy: string }) {
 function Err({ state }: { state: SeatResult | null }) {
   if (!state || state.ok || !state.error) return null;
   return (
-    <p role="alert" className="mt-3 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-[14px] text-rose-800">
+    <p role="alert" className="mt-3 rounded-2xl border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
       {state.error}
     </p>
   );
@@ -106,15 +106,15 @@ export function SeatingPlan({ clientId, tables, guests }: {
       <Err state={seatState} />
       <Err state={sizeState} />
 
-      {attending.length === 0 && <p className="mt-5 rounded-2xl bg-amber-50 px-4 py-3 text-[14px] text-amber-900">{c.needRsvp}</p>}
+      {attending.length === 0 && <p className="mt-5 rounded-2xl bg-warn-wash px-4 py-3 text-[14px] text-warn">{c.needRsvp}</p>}
 
       <div
         {...dropProps(null, !!dragging && !!dragging.table_id)}
         className={`mt-6 rounded-2xl border p-4 transition-colors ${
-          over === 'unseated' ? 'border-bronze bg-bronze-wash' : 'border-line'
+          over === 'unseated' ? 'border-accent bg-accent-wash' : 'border-line'
         }`}
       >
-        <h3 className="text-[13px] font-semibold text-bronze">
+        <h3 className="text-[13px] font-semibold text-accent">
           {c.unseated} · {waiting.reduce((a, g) => a + Number(g.party_size || 0), 0)} {c.peopleShort}
         </h3>
         {waiting.length === 0 ? (
@@ -125,7 +125,7 @@ export function SeatingPlan({ clientId, tables, guests }: {
               <li
                 key={g.id}
                 {...dragProps(g)}
-                className="flex flex-wrap items-center gap-3 rounded-xl bg-ivory-100 px-3 py-2 sm:cursor-grab sm:active:cursor-grabbing"
+                className="flex flex-wrap items-center gap-3 rounded-xl bg-surface-100 px-3 py-2 sm:cursor-grab sm:active:cursor-grabbing"
               >
                 <span className="flex-1 text-[14.5px] text-ink">
                   {g.full_name} <span className="text-ink-mute">· {g.party_size}</span>
@@ -161,23 +161,23 @@ export function SeatingPlan({ clientId, tables, guests }: {
                 key={t.id}
                 {...dropProps(t.id, !!dragging && fits(dragging, t))}
                 className={`rounded-2xl border p-4 transition-colors ${
-                  over === t.id ? 'border-bronze bg-bronze-wash'
+                  over === t.id ? 'border-accent bg-accent-wash'
                   : dragging && !fits(dragging, t) ? 'border-line opacity-50'
-                  : free === 0 ? 'border-emerald-300 bg-emerald-50/40'
+                  : free === 0 ? 'border-ok/30 bg-ok-wash/60'
                   : 'border-line'
                 }`}
               >
                 <div className="flex items-start justify-between gap-2">
                   <h3 className="font-display text-[16px] font-semibold text-ink">{t.name}</h3>
                   <span className={`rounded-full px-2.5 py-0.5 text-[12px] ${
-                    free === 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-ivory-200 text-ink-mute'
+                    free === 0 ? 'bg-ok-wash text-ok' : 'bg-surface-200 text-ink-mute'
                   }`}>
                     {taken}/{t.seats} {free === 0 ? c.full : ''}
                   </span>
                 </div>
 
-                <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-ivory-200">
-                  <div className="h-full rounded-full bg-bronze transition-[width]" style={{ width: `${Math.min(100, (taken / t.seats) * 100)}%` }} />
+                <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-surface-200">
+                  <div className="h-full rounded-full bg-accent transition-[width]" style={{ width: `${Math.min(100, (taken / t.seats) * 100)}%` }} />
                 </div>
 
                 {atTable(t.id).length === 0 ? (

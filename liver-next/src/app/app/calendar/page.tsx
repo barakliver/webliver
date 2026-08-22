@@ -17,8 +17,8 @@ const dayFmt = new Intl.DateTimeFormat('he-IL', { weekday: 'long', day: 'numeric
 
 const ICON = { event: CalendarHeart, task: CheckCircle2, payment: Wallet };
 const TONE: Record<CalItem['kind'], string> = {
-  event: 'bg-bronze-wash text-bronze',
-  task: 'bg-ivory-200 text-ink-soft',
+  event: 'bg-accent-wash text-accent',
+  task: 'bg-surface-200 text-ink-soft',
   payment: 'bg-warn-wash text-warn',
 };
 

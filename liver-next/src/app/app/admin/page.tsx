@@ -16,7 +16,7 @@ const STATUS_TONE: Record<ProducerRow['status'], string> = {
   approved:  'bg-ok-wash text-ok',
   pending:   'bg-warn-wash text-warn',
   suspended: 'bg-bad-wash text-bad',
-  rejected:  'bg-ivory-200 text-ink-mute',
+  rejected:  'bg-surface-200 text-ink-mute',
 };
 
 function StatusButton({ id, status, label, tone }: {
@@ -46,7 +46,7 @@ function Producer({ p }: { p: ProducerRow }) {
           <h3 className="flex flex-wrap items-center gap-2 font-display text-[17.5px] font-semibold text-ink">
             {p.brandName || p.contactName || p.email}
             {p.isRoot && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-bronze-wash px-2.5 py-0.5 text-[12px] font-medium text-bronze">
+              <span className="inline-flex items-center gap-1 rounded-full bg-accent-wash px-2.5 py-0.5 text-[12px] font-medium text-accent">
                 <ShieldCheck size={13} aria-hidden strokeWidth={2} />
                 {c.rootBadge}
               </span>
@@ -90,16 +90,16 @@ function Client({ k, producers }: { k: ClientRow; producers: ProducerRow[] }) {
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
           <h3 className="flex flex-wrap items-center gap-2 font-display text-[17.5px] font-semibold text-ink">
-            <Link href={`/app/clients/${k.id}`} className="transition hover:text-bronze">{k.name}</Link>
-            <span className="rounded-full bg-ivory-200 px-2.5 py-0.5 text-[12px] text-ink-soft">{kind}</span>
+            <Link href={`/app/clients/${k.id}`} className="transition hover:text-accent">{k.name}</Link>
+            <span className="rounded-full bg-surface-200 px-2.5 py-0.5 text-[12px] text-ink-soft">{kind}</span>
             {k.archived && (
-              <span className="rounded-full bg-ivory-200 px-2.5 py-0.5 text-[12px] text-ink-mute">{c.archived}</span>
+              <span className="rounded-full bg-surface-200 px-2.5 py-0.5 text-[12px] text-ink-mute">{c.archived}</span>
             )}
           </h3>
 
           {/* The relationship, stated rather than implied by which list the row
               is in. This is the question the screen exists to answer. */}
-          <p className="mt-1.5 text-[14px] text-bronze">
+          <p className="mt-1.5 text-[14px] text-accent">
             {k.producerName ? `${c.assignedTo} ${k.producerName}` : c.unassigned}
           </p>
 
@@ -116,7 +116,7 @@ function Client({ k, producers }: { k: ClientRow; producers: ProducerRow[] }) {
                   key={e.address}
                   dir="ltr"
                   className={`rounded-full px-2.5 py-1 text-[12.5px] ${
-                    e.joined ? 'bg-ok-wash text-ok' : 'bg-ivory-200 text-ink-mute'
+                    e.joined ? 'bg-ok-wash text-ok' : 'bg-surface-200 text-ink-mute'
                   }`}
                   title={e.joined ? c.joined : c.notJoined}
                 >

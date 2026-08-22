@@ -42,9 +42,9 @@ export default async function PreviewPage({ params }: { params: Promise<{ id: st
     <>
       {/* Fixed rather than scrolled away, because the entire risk of this
           screen is forgetting whose screen it is. */}
-      <div className="sticky top-0 z-20 -mx-4 mb-6 border-b border-bronze/25 bg-bronze-wash/95 px-4 py-3 backdrop-blur-sm sm:-mx-6 sm:px-6">
+      <div className="sticky top-0 z-20 -mx-4 mb-6 border-b border-accent/25 bg-accent-wash/95 px-4 py-3 backdrop-blur-sm sm:-mx-6 sm:px-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <p className="flex items-center gap-2.5 text-[14.5px] text-bronze">
+          <p className="flex items-center gap-2.5 text-[14.5px] text-accent">
             <Eye size={17} aria-hidden strokeWidth={1.75} />
             <span>
               <strong className="font-semibold">{c.banner}</strong>
@@ -53,7 +53,7 @@ export default async function PreviewPage({ params }: { params: Promise<{ id: st
           </p>
           <Link
             href={`/app/clients/${id}`}
-            className="inline-flex items-center gap-1.5 rounded-full border border-bronze/30 bg-white/70 px-3.5 py-1.5 text-[13.5px] font-medium text-bronze transition hover:bg-white"
+            className="inline-flex items-center gap-1.5 rounded-full border border-accent/30 bg-white/70 px-3.5 py-1.5 text-[13.5px] font-medium text-accent transition hover:bg-white"
           >
             <ArrowRight size={15} aria-hidden strokeWidth={2} />
             {c.exit}

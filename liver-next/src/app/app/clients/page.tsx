@@ -36,7 +36,7 @@ export default async function ClientsPage({
 
       {/* Two lists, not a filter menu: live work and closed files are different
           questions, and one of them is asked far more often than the other. */}
-      <nav className="mb-6 inline-flex rounded-full border border-line bg-ivory-100 p-1 text-[14px]" aria-label={appCopy.clients.title}>
+      <nav className="mb-6 inline-flex rounded-full border border-line bg-surface-100 p-1 text-[14px]" aria-label={appCopy.clients.title}>
         {[
           { key: 'live', href: '/app/clients', label: c.tabLive, on: !archived },
           { key: 'done', href: '/app/clients?show=done', label: c.tabDone, on: archived },

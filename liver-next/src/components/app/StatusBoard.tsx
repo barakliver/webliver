@@ -17,7 +17,7 @@ const c = appCopy.statusBoard;
 function Countdown({ days }: { days: number | null }) {
   if (days === null) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-2xl bg-ivory-200 px-3 py-2 text-center">
+      <div className="flex flex-col items-center justify-center rounded-2xl bg-surface-200 px-3 py-2 text-center">
         <CalendarX2 size={18} className="text-ink-mute" aria-hidden strokeWidth={1.75} />
         <span className="mt-1 text-[11.5px] leading-tight text-ink-mute">{c.noDate}</span>
       </div>
@@ -25,7 +25,7 @@ function Countdown({ days }: { days: number | null }) {
   }
   if (days < 0) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-2xl bg-ivory-200 px-3 py-2 text-center">
+      <div className="flex flex-col items-center justify-center rounded-2xl bg-surface-200 px-3 py-2 text-center">
         <span className="font-display text-[15px] font-semibold leading-none text-ink-soft">{c.passed}</span>
         <span className="mt-1 text-[11.5px] leading-tight text-ink-mute">
           {Math.abs(days)} {c.daysAgo}
@@ -41,7 +41,7 @@ function Countdown({ days }: { days: number | null }) {
   return (
     <div
       className={`flex flex-col items-center justify-center rounded-2xl px-3 py-2 text-center ${
-        soon ? 'bg-bronze-wash text-bronze' : 'bg-ivory-200 text-ink'
+        soon ? 'bg-accent-wash text-accent' : 'bg-surface-200 text-ink'
       }`}
     >
       <span className="font-display text-[24px] font-semibold leading-none tabular-nums">{days}</span>

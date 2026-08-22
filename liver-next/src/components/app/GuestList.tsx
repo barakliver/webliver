@@ -62,10 +62,10 @@ export function GuestList({ clientId, guests }: { clientId: string; guests: Gues
   const shown = filter === 'all' ? guests : guests.filter((g) => g.status === filter);
 
   const tiles: [string, number, string][] = [
-    [c.invited, guests.length, 'bg-ivory-200 text-ink'],
-    [c.attending, attending.length, 'bg-emerald-50 text-emerald-800'],
-    [c.pending, pending.length, 'bg-amber-50 text-amber-900'],
-    [c.heads, heads, 'bg-bronze-wash text-ink'],
+    [c.invited, guests.length, 'bg-surface-200 text-ink'],
+    [c.attending, attending.length, 'bg-ok-wash text-ok'],
+    [c.pending, pending.length, 'bg-warn-wash text-warn'],
+    [c.heads, heads, 'bg-accent-wash text-ink'],
   ];
 
   return (
@@ -96,7 +96,7 @@ export function GuestList({ clientId, guests }: { clientId: string; guests: Gues
       </form>
 
       {state && !state.ok && state.error && (
-        <p role="alert" className="mt-3 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-[14px] text-rose-800">
+        <p role="alert" className="mt-3 rounded-2xl border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
           {state.error}
         </p>
       )}
@@ -143,9 +143,9 @@ export function GuestList({ clientId, guests }: { clientId: string; guests: Gues
                     </td>
                     <td className="py-3">
                       <span className={`rounded-full px-3 py-1 text-[12.5px] ${
-                        g.status === 'attending' ? 'bg-emerald-50 text-emerald-700'
-                        : g.status === 'declined' ? 'bg-rose-50 text-rose-700'
-                        : 'bg-ivory-200 text-ink-mute'
+                        g.status === 'attending' ? 'bg-ok-wash text-ok'
+                        : g.status === 'declined' ? 'bg-bad-wash text-bad'
+                        : 'bg-surface-200 text-ink-mute'
                       }`}>
                         {g.status === 'attending' ? c.attending : g.status === 'declined' ? c.declined : c.pending}
                       </span>

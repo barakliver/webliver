@@ -21,7 +21,7 @@ function Tile({ label, value, tone = 'plain', sub }: {
   label: string; value: string; sub?: string; tone?: 'plain' | 'warn' | 'good';
 }) {
   const colour =
-    tone === 'warn' ? 'text-rose-700' : tone === 'good' ? 'text-emerald-700' : 'text-ink';
+    tone === 'warn' ? 'text-bad' : tone === 'good' ? 'text-ok' : 'text-ink';
   return (
     <div className="rounded-2xl border border-line px-4 py-3.5">
       <div className="text-[12.5px] text-ink-mute">{label}</div>
@@ -76,7 +76,7 @@ export function EventSummary({ clientId, summary }: { clientId: string; summary:
       </div>
 
       {money.overdue > 0 && (
-        <p className="inline-flex items-center gap-2 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-[14px] text-rose-800">
+        <p className="inline-flex items-center gap-2 rounded-2xl border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
           <CircleAlert size={16} aria-hidden strokeWidth={1.75} />
           {t.overdue} {shekels(money.overdue)}
         </p>
@@ -94,10 +94,10 @@ export function EventSummary({ clientId, summary }: { clientId: string; summary:
                 <li
                   key={`${item.kind}-${item.id}`}
                   className={`flex flex-wrap items-center gap-3 rounded-2xl border px-4 py-3 ${
-                    late ? 'border-rose-200 bg-rose-50/40' : 'border-line'
+                    late ? 'border-bad/25 bg-bad-wash/60' : 'border-line'
                   }`}
                 >
-                  <span className={late ? 'text-rose-700' : 'text-ink-mute'} aria-hidden>
+                  <span className={late ? 'text-bad' : 'text-ink-mute'} aria-hidden>
                     {item.kind === 'task'
                       ? <CheckSquare size={16} strokeWidth={1.75} />
                       : <Coins size={16} strokeWidth={1.75} />}
@@ -106,7 +106,7 @@ export function EventSummary({ clientId, summary }: { clientId: string; summary:
                   {item.amount !== undefined && item.amount > 0 && (
                     <span className="text-[13.5px] tabular-nums text-ink-soft">{shekels(item.amount)}</span>
                   )}
-                  <span className={`text-[13px] tabular-nums ${late ? 'text-rose-700' : 'text-ink-mute'}`}>
+                  <span className={`text-[13px] tabular-nums ${late ? 'text-bad' : 'text-ink-mute'}`}>
                     {item.due ? dateFmt.format(new Date(item.due)) : t.none}
                   </span>
                   <Link

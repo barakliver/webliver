@@ -71,7 +71,7 @@ export function Thread({ clientId, messages, viewerId }: {
       <p className="mt-1 text-[14px] text-ink-soft">{c.sub}</p>
 
       {messages.length === 0 ? (
-        <p className="mt-5 rounded-2xl bg-ivory-100 px-4 py-3 text-[14.5px] text-ink-mute">{c.empty}</p>
+        <p className="mt-5 rounded-2xl bg-surface-100 px-4 py-3 text-[14.5px] text-ink-mute">{c.empty}</p>
       ) : (
         <ol className="mt-5 space-y-3">
           {messages.map((m) => {
@@ -90,10 +90,10 @@ export function Thread({ clientId, messages, viewerId }: {
                   <div className={`min-w-0 max-w-[80%] ${mine ? 'text-left' : ''}`}>
                     <div
                       className={`rounded-2xl px-3.5 py-2.5 text-[14.5px] leading-[1.65] ${
-                        mine ? 'bg-ink text-white' : 'bg-ivory-200 text-ink'
+                        mine ? 'bg-ink text-white' : 'bg-surface-200 text-ink'
                       }`}
                     >
-                      {!mine && <p className="mb-0.5 text-[12.5px] font-medium text-bronze">{m.author_name}</p>}
+                      {!mine && <p className="mb-0.5 text-[12.5px] font-medium text-accent">{m.author_name}</p>}
                       <p className="whitespace-pre-wrap break-words">{m.body}</p>
                     </div>
                     <div className={`mt-1 flex items-center gap-2 text-[12px] text-ink-mute ${mine ? 'justify-end' : ''}`}>

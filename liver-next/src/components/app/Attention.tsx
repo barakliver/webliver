@@ -53,7 +53,7 @@ export function AttentionList({ items }: { items: AttentionItem[] }) {
                 aria-hidden
                 className={cn(
                   'grid h-10 w-10 shrink-0 place-items-center rounded-full',
-                  urgent ? 'bg-bad-wash text-bad' : 'bg-bronze-wash text-bronze',
+                  urgent ? 'bg-bad-wash text-bad' : 'bg-accent-wash text-accent',
                 )}
               >
                 <Icon size={19} strokeWidth={1.9} />
