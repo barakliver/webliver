@@ -1,7 +1,8 @@
 'use client';
 
 import { CloudOff } from 'lucide-react';
-import { useLive, type LiveSource } from '@/lib/realtime';
+import { useLive } from '@/lib/realtime';
+import type { LiveSource } from '@/lib/liveSources';
 import { appCopy } from '@/content/site';
 
 /** Drops into any server-rendered page to make it live. Renders nothing while
