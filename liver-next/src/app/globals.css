@@ -69,10 +69,28 @@
     backdrop-filter: saturate(180%) blur(22px);
     border-color: color-mix(in srgb, #fff 55%, transparent);
   }
+  /* The same idea, more opaque, for chrome that floats over arbitrary content
+     rather than over the page's own ground: the dock, a sheet, the concierge.
+     72% is enough to read a headline through; it is not enough to read a
+     photograph through, and both of those sit under this.
+
+     It was being used before it existed. `glass-strong` appeared in the
+     floating dock and was defined nowhere, so Tailwind emitted nothing and
+     three buttons floated over the page with no surface behind them at all.
+     An unknown utility class is silent in every tool in the stack, which is
+     why it survived. */
+  .glass-strong {
+    background: color-mix(in srgb, theme('colors.card') 88%, transparent);
+    -webkit-backdrop-filter: saturate(180%) blur(34px);
+    backdrop-filter: saturate(180%) blur(34px);
+    border: 1px solid color-mix(in srgb, theme('colors.accent.soft') 22%, transparent);
+  }
+
   /* Where blur is unsupported the same surface has to stay readable, so it
      falls back to opaque rather than to a wash of half-legible text. */
   @supports not (backdrop-filter: blur(1px)) {
     .glass { background: theme('colors.surface.100'); }
+    .glass-strong { background: theme('colors.card'); }
   }
 
   .shell { @apply mx-auto w-full max-w-content px-5 sm:px-8; }
