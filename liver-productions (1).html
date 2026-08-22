@@ -241,6 +241,79 @@ html[dir="rtl"] .sw[aria-checked="true"]::after{transform:translateX(-23px)}
 @media(max-width:400px){.otp-box{width:42px;height:52px;font-size:21px}}
 .pw-row input{flex:1}
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+/* ══ v27 · Phase 1 — viewport containment, safe areas, new components ══ */
+/* No horizontal wobble on any device: the viewport is the only x-scroller.
+   Inner wrappers use overflow-x:clip so they cannot create a nested scroll
+   container (which would break the sticky marketing nav) — browsers without
+   `clip` fall back to the html/body containment above. */
+/* Containment must load only ONE scroll axis: overflow-x:hidden on BOTH html
+   and body turns body into a scrollport and detaches position:sticky (the
+   marketing nav). html carries the hidden (universally supported); body uses
+   clip, which contains without ever creating a scroll container. */
+html{overflow-x:hidden}
+html,body{width:100%;max-width:100vw}
+body{overflow-x:clip}
+body{overscroll-behavior-x:none;-webkit-text-size-adjust:100%}
+/* #mkRoot / .screen hold the sticky marketing nav — an overflow value here
+   (clip included) would detach it from the viewport, so they get containment
+   without one; html/body above already stop any horizontal scroll. */
+.screen,#mkRoot{width:100%;max-width:100%;min-width:0}
+.app-shell,.auth-wrap{width:100%;max-width:100%;overflow-x:clip}
+.main{width:100%;min-width:0;overflow-x:clip}
+img,video,canvas,svg,iframe{max-width:100%}
+table{max-width:100%}
+
+/* iOS/Android safe-area insets */
+.auth-wrap{padding-top:calc(28px + env(safe-area-inset-top));padding-bottom:calc(28px + env(safe-area-inset-bottom))}
+.tabbar{padding-bottom:env(safe-area-inset-bottom)}
+@media(max-width:899px){
+ .main{max-width:100%;padding-bottom:calc(190px + env(safe-area-inset-bottom))}
+ #topCtl{bottom:calc(70px + env(safe-area-inset-bottom))}
+}
+@media(min-width:900px){.main{padding-bottom:calc(90px + env(safe-area-inset-bottom))}}
+@media(display-mode:standalone){
+ .side{padding-top:calc(16px + env(safe-area-inset-top))}
+ .mk-nav{padding-top:calc(13px + env(safe-area-inset-top))}
+}
+
+/* Auth screen: never a circular portrait above the card */
+#screen-auth .userchip,#screen-auth .auth-avatar,#screen-auth [data-auth-avatar],
+.auth-wrap>img,.auth-card>img:first-child{display:none!important}
+
+/* "No date yet" badge + inline selector */
+.badge.b-nodate{background:rgba(181,138,60,.13);color:#8a6c30;border:1px solid rgba(181,138,60,.28)}
+.nodate-card{margin-bottom:14px;border-inline-start:3px solid var(--amber)}
+.nodate-head{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.nodate-p{font-size:13.2px;margin:0;flex:1 1 220px;min-width:0}
+.nodate-pick{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.nodate-pick input{flex:1 1 170px;min-width:0;width:auto}
+.nodate-pick .btn{flex:0 0 auto}
+
+/* Workspace access — authorized emails */
+.acc-card{margin-bottom:14px}
+.acc-row{display:flex;align-items:center;gap:10px;justify-content:space-between;
+ padding:9px 0;border-top:1px solid var(--line)}
+.acc-row:first-of-type{border-top:none}
+.acc-mail{font-size:13.4px;font-weight:600;overflow-wrap:anywhere;min-width:0}
+.acc-add{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.acc-add input{flex:1 1 180px;min-width:0;width:auto}
+.acc-chip{padding:2px 8px;font-size:10px}
+
+/* Client list — the whole card is the link into the workspace */
+.client-grid{display:grid;gap:12px;margin-bottom:18px;
+ grid-template-columns:repeat(auto-fill,minmax(270px,1fr))}
+.client-card{cursor:pointer;transition:transform .15s,box-shadow .2s,border-color .2s;
+ border:1px solid var(--line);min-width:0}
+.client-card:hover{transform:translateY(-2px);box-shadow:0 14px 34px -14px rgba(20,18,14,.28);border-color:var(--gold2)}
+.client-card:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.client-card:active{transform:translateY(0)}
+.client-card-h{align-items:flex-start;gap:10px}
+.client-name{font-size:15.5px;overflow-wrap:anywhere}
+.client-mail{font-size:12px;overflow-wrap:anywhere;margin-top:2px}
+.client-card-meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:11px;font-size:12.8px}
+.client-card-evs{font-size:12px;margin-top:8px;overflow-wrap:anywhere}
+.client-card-bar{margin-top:12px}
+@media (prefers-reduced-motion: reduce){.client-card{transition:none}.client-card:hover{transform:none}}
 </style>
 </head>
 <body>
@@ -5116,6 +5189,746 @@ self.addEventListener('fetch',e=>{if(e.request.mode==='navigate'){
   }
  }catch(e){}
 })();
+
+/* ══════════════════════════════════════════════════════════
+   v27 — Phase 1 · Core stability · Auth & email hardening ·
+         Multi-email client access · True mobile PWA fit
+   ══════════════════════════════════════════════════════════ */
+Object.assign(D_.he,{
+ cl_missing:'הלקוח לא נמצא — ייתכן שהרשומה הוסרה.',
+ cl_back:'חזרה לרשימת הלקוחות',
+ nodate_badge:'טרם נקבע תאריך',
+ nodate_p:'קבעו תאריך כדי להפעיל ספירה לאחור, לוח זמנים ומשימות.',
+ nodate_save:'קביעת תאריך',
+ date_saved:'✅ תאריך האירוע נשמר.',
+ date_need:'בחרו תאריך תקין.',
+ open_ws:'פתיחת מרחב העבודה',
+ acc_t:'גישה למרחב הלקוח',
+ acc_p:'עד 3 כתובות מייל מורשות — לכולן בדיוק אותה גישה לאותו מרחב עבודה.',
+ acc_primary:'ראשי',
+ acc_add:'הוספת מייל מורשה',
+ acc_added:'✅ הגישה נוספה.',
+ acc_removed:'ההרשאה הוסרה.',
+ acc_max:'אפשר עד 3 כתובות מייל מורשות.',
+ acc_bad:'כתובת מייל לא תקינה.',
+ acc_dup:'הכתובת כבר מורשית למרחב הזה.',
+ acc_taken:'הכתובת כבר משויכת לחשבון אחר.',
+ acc_primary_lock:'לא ניתן להסיר את הכתובת הראשית.',
+ acc_pass:'סיסמה זמנית:',
+ ml_dev:'📧 מצב פיתוח — המייל לא נשלח בפועל. הקוד:',
+ ml_sent:'✅ המייל נשלח',
+ ml_fail:'❌ שליחת המייל נכשלה',
+ ml_noconf:'⚪ שירות המייל אינו מוגדר (חסר RESEND_API_KEY)',
+ ml_via:'דרך',
+ ot_format:'הקוד חייב להיות 6 ספרות.',
+});
+Object.assign(D_.en,{
+ cl_missing:'Client not found — the record may have been removed.',
+ cl_back:'Back to clients',
+ nodate_badge:'No date set yet',
+ nodate_p:'Set a date to unlock the countdown, timeline and tasks.',
+ nodate_save:'Set date',
+ date_saved:'✅ Event date saved.',
+ date_need:'Pick a valid date.',
+ open_ws:'Open workspace',
+ acc_t:'Workspace access',
+ acc_p:'Up to 3 authorized emails — all with exactly the same access to this workspace.',
+ acc_primary:'Primary',
+ acc_add:'Add authorized email',
+ acc_added:'✅ Access granted.',
+ acc_removed:'Access revoked.',
+ acc_max:'Up to 3 authorized emails.',
+ acc_bad:'Invalid email address.',
+ acc_dup:'That address is already authorized here.',
+ acc_taken:'That address already belongs to another account.',
+ acc_primary_lock:'The primary address cannot be removed.',
+ acc_pass:'Temporary password:',
+ ml_dev:'📧 Dev mode — no email sent. Code:',
+ ml_sent:'✅ Email sent',
+ ml_fail:'❌ Email delivery failed',
+ ml_noconf:'⚪ Email service not configured (RESEND_API_KEY missing)',
+ ml_via:'via',
+ ot_format:'The code must be exactly 6 digits.',
+});
+
+/* ══════════════════════════════════════════════════════════
+   1 · DEFENSIVE CLIENT LAYER
+   Every client-scoped screen used to assume the record and all
+   of its side tables exist. Records restored from storage or the
+   cloud predate later features, so those assumptions threw.
+   ══════════════════════════════════════════════════════════ */
+var MAX_CLIENT_EMAILS = 3;
+var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+/* Normalize a client record in place — never throws, never drops data. */
+function normalizeClient(c){
+ if(!c || typeof c!=='object') return c;
+ if(c.names==null)  c.names='';
+ if(c.email==null)  c.email='';
+ if(c.date==null)   c.date='';
+ if(c.venue==null)  c.venue='';
+ if(c.guests==null) c.guests='';
+ if(c.ctype==null)  c.ctype='couple';
+ c.field=!!c.field;
+ if(!Array.isArray(c.emails)) c.emails = c.email ? [c.email] : [];
+ c.emails = c.emails
+   .map(function(e){ return String(e||'').trim(); })
+   .filter(function(e,i,a){ return e && a.indexOf(e)===i; })
+   .slice(0, MAX_CLIENT_EMAILS);
+ if(c.email && c.emails.indexOf(c.email)<0) c.emails.unshift(c.email);
+ if(!c.email && c.emails.length) c.email=c.emails[0];
+ c.emails = c.emails.slice(0, MAX_CLIENT_EMAILS);
+ return c;
+}
+
+/* The client record, normalized — or null when it genuinely does not exist. */
+function safeClient(cid){
+ var c=(DB.clients||[]).find(function(x){ return x && x.id===cid; });
+ return c ? normalizeClient(c) : null;
+}
+
+/* A never-null stand-in, so a render path can degrade instead of throwing. */
+function clientOrBlank(cid){
+ return safeClient(cid) || normalizeClient({ id:cid||'', names:t('cl_missing'), __missing:true });
+}
+
+/* Lazily create every side table a client screen dereferences. */
+function ensureClientRecords(cid){
+ if(!cid) return;
+ var c=safeClient(cid);
+ var guests=c?c.guests:'';
+ if(!DB.tasks)DB.tasks={};             if(!Array.isArray(DB.tasks[cid]))       DB.tasks[cid]=[];
+ if(!DB.eventFiles)DB.eventFiles={};   if(!DB.eventFiles[cid])                 DB.eventFiles[cid]=newEF(c?c.date:'', c?c.venue:'');
+ if(!DB.budgets)DB.budgets={};         if(!DB.budgets[cid])                    DB.budgets[cid]=newBudget(guests);
+ if(!DB.alcohol)DB.alcohol={};         if(!DB.alcohol[cid])                    DB.alcohol[cid]=newAlc(guests);
+ if(!DB.field)DB.field={};             if(!DB.field[cid])                      DB.field[cid]=newField();
+ if(!DB.perms)DB.perms={};             if(!DB.perms[cid])                      DB.perms[cid]=defaultPerms();
+ if(!DB.crew)DB.crew={};               if(!Array.isArray(DB.crew[cid]))        DB.crew[cid]=[];
+ if(!DB.crewTasks)DB.crewTasks={};     if(!Array.isArray(DB.crewTasks[cid]))   DB.crewTasks[cid]=baseCrewChecklist();
+ if(!DB.clientEvents)DB.clientEvents={};if(!Array.isArray(DB.clientEvents[cid]))DB.clientEvents[cid]=[];
+ if(!DB.moodboards)DB.moodboards={};   if(!Array.isArray(DB.moodboards[cid]))  DB.moodboards[cid]=[];
+ /* the field simulator reads .site unconditionally */
+ if(DB.field[cid] && typeof DB.field[cid].site!=='object') DB.field[cid].site={};
+ if(DB.eventFiles[cid] && !Array.isArray(DB.eventFiles[cid].docs)) DB.eventFiles[cid].docs=[];
+}
+
+/* Data-level normalization — kills the classes of crash that come from
+   records written by an older version of the app. */
+var LEAD_STATUSES = LEAD_ST.map(function(s){ return s[0]; });
+function normalizeState(){
+ (DB.clients||[]).forEach(normalizeClient);
+ (DB.leads||[]).forEach(function(l){
+  if(!l) return;
+  if(LEAD_STATUSES.indexOf(l.status)<0) l.status='new';   /* LEAD_ST.find(...)[1] used to throw */
+  if(l.note==null) l.note='';
+  if(l.name==null) l.name='';
+  if(l.email==null) l.email='';
+ });
+}
+
+/* ── patched crash sites ── */
+
+/* renderAlc dereferenced DB.clients.find(...).guests with no guard. */
+var _p1_renderAlc=renderAlc;
+renderAlc=function(cid){ ensureClientRecords(cid); return _p1_renderAlc(cid); };
+
+/* runSim read DB.field[cid].site and DB.clients.find(...).guests unguarded. */
+var _p1_runSim=runSim;
+runSim=function(cid){
+ ensureClientRecords(cid);
+ if(!safeClient(cid)) return toast(t('cl_missing'));
+ return _p1_runSim(cid);
+};
+
+/* enableField assigned onto an undefined record. */
+enableField=function(cid){
+ var c=safeClient(cid);
+ if(!c) return toast(t('cl_missing'));
+ c.field=true; ensureClientRecords(cid);
+ wsTab='field'; toast(t('fld_enabled')); renderAll();
+};
+
+/* coupleUpload stamped the doc with DB.clients.find(...).names. */
+coupleUpload=function(cid){
+ var inp=$('cuFile');
+ if(!inp||!inp.files||!inp.files[0]) return toast(t('up_pick'));
+ ensureClientRecords(cid);
+ fileToData(inp,function(data,name,size){
+  var ef=DB.eventFiles[cid]||(DB.eventFiles[cid]=newEF());
+  if(!Array.isArray(ef.docs)) ef.docs=[];
+  var kindEl=$('cuKind');
+  ef.docs.push({
+   id:uid('d'), kind:(kindEl&&kindEl.value)||'other', title:name||'',
+   size:((size||0)/1024).toFixed(0)+' KB', date:iso(TODAY),
+   by:(safeClient(cid)||{}).names||'', data:data
+  });
+  toast('📁 <b>'+esc(name||'')+'</b> '+t('uploaded'));
+  renderAll();
+ });
+};
+
+/* renderThread / sendMsg printed c.names with no guard. */
+renderThread=function(cid,side){
+ var msgs=(DB.messages||[]).filter(function(m){ return m && m.cid===cid; });
+ var c=clientOrBlank(cid);
+ return '<div class="page-h"><h2>'+(side==='couple'?t('msg_t'):'💬 '+esc(c.names))+'</h2>'+
+  '<p class="muted">'+t('msg_p')+'</p></div>'+
+  '<div class="card chat"><div class="chat-log" id="msgLog">'+
+  (msgs.map(function(m){
+    return '<div class="msg '+((m.from===side)?'me':'them')+'">'+esc(m.text)+
+     '<span class="stamp">'+esc(m.time||'')+'</span></div>';
+   }).join('') || '<p class="muted" style="margin:auto">'+t('msg_ph')+'</p>')+'</div>'+
+  '<div class="chat-in"><input id="msgInput" placeholder="'+t('msg_ph')+'" '+
+  'onkeydown="if(event.key===\'Enter\')sendMsg(\''+cid+'\',\''+side+'\')">'+
+  '<button class="btn btn-gold btn-sm" onclick="sendMsg(\''+cid+'\',\''+side+'\')">'+t('send')+'</button></div></div>';
+};
+sendMsg=function(cid,side){
+ var inp=$('msgInput'); if(!inp) return;
+ var v=String(inp.value||'').trim(); if(!v) return;
+ if(!Array.isArray(DB.messages)) DB.messages=[];
+ DB.messages.push({ id:uid('m'), cid:cid, from:side, text:v, read:false,
+  time:new Date().toLocaleTimeString(lang==='he'?'he-IL':'en-GB',{hour:'2-digit',minute:'2-digit'}) });
+ inp.value='';
+ var c=clientOrBlank(cid);
+ toast(side==='couple'?t('msg_sent_p'):t('msg_sent_a'));
+ if(side==='couple') setTimeout(function(){
+   toast(t('new_msg_alert')+' <b>'+esc(c.names)+'</b>: "'+esc(v.slice(0,40))+'"');
+  },900);
+ renderAll();
+ var lg=$('msgLog'); if(lg) lg.scrollTop=lg.scrollHeight;
+};
+
+/* ══════════════════════════════════════════════════════════
+   2 · CLIENT DETAILS — "no date yet" badge + inline selector
+   ══════════════════════════════════════════════════════════ */
+function noDateBanner(cid){
+ return '<div class="card nodate-card" data-nodate>'+
+  '<div class="nodate-head">'+
+   '<span class="badge b-nodate">◷ '+esc(t('nodate_badge'))+'</span>'+
+   '<p class="muted nodate-p">'+esc(t('nodate_p'))+'</p>'+
+  '</div>'+
+  '<div class="nodate-pick">'+
+   '<label class="sr-only" for="wsDatePick">'+esc(t('ef_date'))+'</label>'+
+   '<input type="date" id="wsDatePick" min="'+iso(TODAY)+'" '+
+    'onkeydown="if(event.key===\'Enter\')setClientDate(\''+cid+'\')">'+
+   '<button class="btn btn-gold btn-sm" onclick="setClientDate(\''+cid+'\')">'+esc(t('nodate_save'))+'</button>'+
+  '</div></div>';
+}
+function setClientDate(cid){
+ var c=safeClient(cid);
+ if(!c) return toast(t('cl_missing'));
+ var el=$('wsDatePick');
+ var v=el&&el.value ? String(el.value).trim() : '';
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(v) || isNaN(new Date(v+'T00:00:00').getTime())) return toast(t('date_need'));
+ c.date=v;
+ ensureClientRecords(cid);
+ if(DB.eventFiles[cid] && DB.eventFiles[cid].details) DB.eventFiles[cid].details.date=v;
+ toast(t('date_saved'));
+ renderAll();
+}
+
+/* ══════════════════════════════════════════════════════════
+   3 · MULTI-EMAIL CLIENT AUTHORIZATION (up to 3, synchronized)
+   Every authorized address gets its own user row bound to the
+   same client id, so all of them land in the same workspace.
+   ══════════════════════════════════════════════════════════ */
+function clientEmails(c){
+ if(!c) return [];
+ normalizeClient(c);
+ return c.emails.slice();
+}
+/* Which client workspace does this address open? */
+function clientByEmail(email){
+ var e=String(email||'').trim().toLowerCase();
+ if(!e) return null;
+ return (DB.clients||[]).find(function(c){
+  normalizeClient(c);
+  return c.emails.some(function(x){ return String(x).toLowerCase()===e; });
+ }) || null;
+}
+/* Keep DB.users in step with the authorized list. */
+function syncClientAccess(cid){
+ var c=safeClient(cid); if(!c) return;
+ c.emails.forEach(function(em){
+  var u=findUser(em);
+  if(u){ u.role='client'; u.refId=cid; if(!u.name) u.name=c.names; }
+  else addUser(em,null,'client',cid,c.names);
+ });
+}
+function addClientEmail(cid){
+ var c=safeClient(cid); if(!c) return toast(t('cl_missing'));
+ var el=$('accEmail');
+ var em=el ? String(el.value||'').trim() : '';
+ if(!EMAIL_RE.test(em)) return toast(t('acc_bad'));
+ if(c.emails.some(function(x){ return String(x).toLowerCase()===em.toLowerCase(); })) return toast(t('acc_dup'));
+ if(c.emails.length>=MAX_CLIENT_EMAILS) return toast(t('acc_max'));
+ var existing=findUser(em);
+ if(existing && !(existing.role==='client' && existing.refId===cid)) return toast(t('acc_taken'));
+ c.emails.push(em);
+ var pass=genPass();
+ var u=findUser(em);
+ if(u){ u.role='client'; u.refId=cid; }
+ else { u=addUser(em,pass,'client',cid,c.names); }
+ syncClientAccess(cid);
+ if(el) el.value='';
+ toast(t('acc_added')+' <b dir="ltr">'+esc(em)+'</b>');
+ sendAccessEmail(c,em,u&&u.pass===pass?pass:'');
+ renderAll();
+}
+function removeClientEmail(cid,em){
+ var c=safeClient(cid); if(!c) return toast(t('cl_missing'));
+ var target=String(em||'').toLowerCase();
+ if(c.emails.length && String(c.emails[0]).toLowerCase()===target) return toast(t('acc_primary_lock'));
+ c.emails=c.emails.filter(function(x){ return String(x).toLowerCase()!==target; });
+ DB.users=(DB.users||[]).filter(function(u){
+  return !(u && u.role==='client' && u.refId===cid && String(u.email).toLowerCase()===target);
+ });
+ toast(t('acc_removed'));
+ renderAll();
+}
+function accessCard(cid){
+ var c=safeClient(cid); if(!c) return '';
+ var emails=clientEmails(c);
+ var rows=emails.map(function(em,i){
+  return '<div class="acc-row">'+
+   '<span class="acc-mail" dir="ltr">'+esc(em)+'</span>'+
+   (i===0
+     ? '<span class="badge b-approved">'+esc(t('acc_primary'))+'</span>'
+     : '<button class="btn btn-red btn-xs" onclick="removeClientEmail(\''+cid+'\',\''+esc(em)+'\')" '+
+       'aria-label="'+esc(t('acc_removed'))+' '+esc(em)+'">✕</button>')+
+  '</div>';
+ }).join('');
+ var full=emails.length>=MAX_CLIENT_EMAILS;
+ return '<div class="card acc-card">'+
+  '<div class="spread"><h3 style="font-size:16px">🔑 '+esc(t('acc_t'))+'</h3>'+
+   '<span class="chip">'+emails.length+' / '+MAX_CLIENT_EMAILS+'</span></div>'+
+  '<p class="muted" style="font-size:13.2px;margin:4px 0 12px">'+esc(t('acc_p'))+'</p>'+
+  rows+
+  (full ? '<p class="muted" style="font-size:12.5px;margin-top:10px">'+esc(t('acc_max'))+'</p>'
+   : '<div class="acc-add">'+
+     '<label class="sr-only" for="accEmail">'+esc(t('acc_add'))+'</label>'+
+     '<input id="accEmail" type="email" inputmode="email" dir="ltr" placeholder="name@example.com" '+
+      'onkeydown="if(event.key===\'Enter\')addClientEmail(\''+cid+'\')">'+
+     '<button class="btn btn-dark btn-sm" onclick="addClientEmail(\''+cid+'\')">'+esc(t('acc_add'))+'</button>'+
+    '</div>')+
+ '</div>';
+}
+
+/* ── client details: inject the date banner + access card ── */
+var _p1_renderWs=renderWs;
+renderWs=function(cid){
+ ensureClientRecords(cid);
+ var c=safeClient(cid);
+ if(!c){
+  return '<button class="btn btn-ghost btn-sm" style="margin-bottom:14px" '+
+   'onclick="adminTab=\'clients\';renderAll()">'+esc(t('cl_back'))+'</button>'+
+   empty(t('cl_missing'), t('no_clients_p'));
+ }
+ var base=_p1_renderWs(cid);
+ if(typeof base!=='string' || !base) return base;
+
+ var inject='';
+ if(!c.date) inject+=noDateBanner(cid);
+ if(wsTab==='file') inject+=accessCard(cid);
+ if(!inject) return base;
+
+ /* sit directly under the sub-tabs, above the tab body */
+ var marker=base.match(/<div class="sub-tabs">[\s\S]*?<\/div>/);
+ if(marker) return base.replace(marker[0], marker[0]+inject);
+ return base+inject;
+};
+
+/* ══════════════════════════════════════════════════════════
+   4 · CLIENT LIST — the whole card is the link into the workspace
+   ══════════════════════════════════════════════════════════ */
+function clientCardsMarkup(list){
+ if(!list.length) return '';
+ return '<div class="client-grid" data-client-cards>'+list.map(function(c){
+  normalizeClient(c);
+  ensureClientRecords(c.id);
+  var pct=progress(c.id);
+  var evs=DB.clientEvents[c.id]||[];
+  var label=(c.names||'')+' — '+t('open_ws');
+  var open="openWs('"+c.id+"')";
+  return '<div class="card client-card" role="link" tabindex="0" '+
+    'aria-label="'+esc(label)+'" onclick="'+open+'" '+
+    'onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();'+open+'}">'+
+   '<div class="spread client-card-h">'+
+    '<div><b class="client-name">'+esc(c.names)+'</b>'+(c.field?' <span class="badge b-pending">⛺</span>':'')+
+     '<div class="muted client-mail" dir="ltr">'+esc(c.emails[0]||'')+
+      (c.emails.length>1?' <span class="chip acc-chip">+'+(c.emails.length-1)+'</span>':'')+'</div></div>'+
+    '<span class="chip">'+esc(t(c.ctype==='business'?'ct_business':'ct_couple'))+'</span>'+
+   '</div>'+
+   '<div class="client-card-meta">'+
+    (c.date
+      ? '<span>📅 '+esc(fmt(c.date))+'</span><span class="muted">'+daysTo(c.date)+' '+esc(t('days'))+'</span>'
+      : '<span class="badge b-nodate">◷ '+esc(t('nodate_badge'))+'</span>')+
+   '</div>'+
+   (evs.length
+     ? '<div class="client-card-evs muted">'+evs.map(function(k){
+         var dd=evDef(c.ctype,k); return dd?esc(dd.icon+' '+t(dd.lbl)):'';
+       }).filter(Boolean).join(' · ')+'</div>'
+     : '')+
+   '<div class="client-card-bar">'+
+    '<div class="spread" style="font-size:12px"><span class="muted">'+esc(t('progress'))+'</span><span>'+pct+'%</span></div>'+
+    '<div class="bar" style="margin-top:4px"><i style="width:'+pct+'%"></i></div>'+
+   '</div>'+
+  '</div>';
+ }).join('')+'</div>';
+}
+var _p1_adminClients=adminClients;
+adminClients=function(){
+ var h=_p1_adminClients();
+ if(typeof h!=='string') return h;
+ var scoped=(typeof myClients==='function') ? myClients() : (DB.clients||[]);
+ var cards=clientCardsMarkup(scoped);
+ if(!cards) return h;                       /* no clients — keep the empty state */
+ var start=h.indexOf('<div class="card tbl-wrap"');
+ var END='</table></div>';
+ var end=start>=0 ? h.indexOf(END,start) : -1;
+ if(start>=0 && end>start) return h.slice(0,start)+cards+h.slice(end+END.length);
+ if(h.indexOf('data-client-cards')<0){
+  var head=h.match(/<div class="page-h">[\s\S]*?<\/div>\s*<\/div>|<div class="page-h">[\s\S]*?<\/div>/);
+  if(head) return h.replace(head[0], head[0]+cards);
+ }
+ return h;
+};
+
+/* ══════════════════════════════════════════════════════════
+   5 · AUTH SCREEN — no circular portrait above the card
+   The login card itself is type-only (brandTitle()); what could
+   float over it were the fixed round chips. They are suppressed
+   on the auth screen, and any avatar injected into #authMain by
+   branding is stripped before paint.
+   ══════════════════════════════════════════════════════════ */
+function stripAuthAvatar(){
+ var root=$('authMain'); if(!root) return;
+ var kill=root.querySelectorAll(
+  '.auth-avatar,[data-auth-avatar],img.avatar,.userchip,'+
+  'img[style*="border-radius:50%"],img[style*="border-radius: 50%"]'
+ );
+ Array.prototype.forEach.call(kill,function(n){ if(n&&n.parentNode) n.parentNode.removeChild(n); });
+ var chip=$('userChip'); if(chip){ chip.hidden=true; chip.style.display='none'; }
+}
+var _p1_renderAuth=renderAuth;
+renderAuth=function(){
+ var r=_p1_renderAuth.apply(this,arguments);
+ stripAuthAvatar();
+ return r;
+};
+
+/* ══════════════════════════════════════════════════════════
+   6 · EMAIL SERVICE — Resend, with validation and a dev fallback
+   Resolution order for every key, first hit wins:
+     1. window.__ENV__[KEY]            (server/build injected)
+     2. <meta name="env:KEY" content>  (static hosting)
+     3. DB.notify[KEY]                 (operator settings screen)
+     4. localStorage[KEY]              (local development)
+   Delivery order: RESEND_PROXY_URL → Resend REST → Web3Forms →
+   development logging. Nothing throws; every caller gets a
+   structured result and the UI reports what actually happened.
+
+   NOTE: api.resend.com sends no CORS headers, so a browser-direct
+   call only succeeds behind a same-origin proxy. Set
+   RESEND_PROXY_URL to a small serverless function that holds the
+   API key — that is the supported production path, and it keeps
+   the key off the client.
+   ══════════════════════════════════════════════════════════ */
+function readEnv(key){
+ try{ if(typeof window!=='undefined' && window.__ENV__ && window.__ENV__[key]) return String(window.__ENV__[key]).trim(); }catch(e){}
+ try{ var m=document.querySelector('meta[name="env:'+key+'"]'); if(m && m.content) return String(m.content).trim(); }catch(e){}
+ try{ if(DB.notify && DB.notify[key]) return String(DB.notify[key]).trim(); }catch(e){}
+ try{ var v=localStorage.getItem(key); if(v) return String(v).trim(); }catch(e){}
+ return '';
+}
+function emailConfig(){
+ return {
+  apiKey: readEnv('RESEND_API_KEY'),
+  from:   readEnv('RESEND_FROM'),
+  proxy:  readEnv('RESEND_PROXY_URL'),
+  w3f:    (DB.notify && DB.notify.w3f) || ''
+ };
+}
+/* Validation is explicit so misconfiguration is reported, not guessed at. */
+function emailStatus(){
+ var c=emailConfig();
+ if(c.proxy)  return { ok:true,  provider:'resend-proxy', detail:c.proxy };
+ if(c.apiKey){
+  if(!/^re_/.test(c.apiKey)) return { ok:false, provider:'resend', detail:'RESEND_API_KEY malformed (expected re_…)' };
+  if(!c.from)                return { ok:false, provider:'resend', detail:'RESEND_FROM missing' };
+  return { ok:true, provider:'resend', detail:c.from };
+ }
+ if(c.w3f) return { ok:true, provider:'web3forms', detail:'fallback' };
+ return { ok:false, provider:'none', detail:'RESEND_API_KEY missing' };
+}
+function emailConfigured(){ return emailStatus().ok; }
+
+async function sendEmail(msg){
+ msg=msg||{};
+ var to=String(msg.to||'').trim();
+ var subject=String(msg.subject||'').trim();
+ var text=String(msg.text||'');
+ if(!EMAIL_RE.test(to))  return { ok:false, provider:'none', dev:false, error:'invalid recipient' };
+ if(!subject)            return { ok:false, provider:'none', dev:false, error:'missing subject' };
+
+ var cfg=emailConfig();
+ var st=emailStatus();
+ var attempts=[];
+
+ /* 1 — serverless proxy that owns the API key (recommended) */
+ if(cfg.proxy){
+  try{
+   var rp=await fetch(cfg.proxy,{ method:'POST', headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({ to:to, subject:subject, text:text, html:msg.html||null, from:cfg.from||undefined }) });
+   if(rp.ok) return { ok:true, provider:'resend-proxy', dev:false, error:'' };
+   attempts.push('proxy '+rp.status);
+  }catch(e){ attempts.push('proxy '+(e&&e.message||'error')); }
+ }
+
+ /* 2 — Resend REST directly (same-origin proxy / permissive gateway only) */
+ if(cfg.apiKey && cfg.from && /^re_/.test(cfg.apiKey)){
+  try{
+   var rr=await fetch('https://api.resend.com/emails',{ method:'POST',
+    headers:{ 'Content-Type':'application/json', Authorization:'Bearer '+cfg.apiKey },
+    body:JSON.stringify({ from:cfg.from, to:[to], subject:subject, text:text, html:msg.html||undefined }) });
+   if(rr.ok) return { ok:true, provider:'resend', dev:false, error:'' };
+   var body=''; try{ body=(await rr.text()).slice(0,160); }catch(e){}
+   attempts.push('resend '+rr.status+(body?' '+body:''));
+  }catch(e){ attempts.push('resend '+(e&&e.message||'network error')); }
+ }
+
+ /* 3 — Web3Forms, the pre-existing transport, kept as a fallback */
+ if(cfg.w3f){
+  try{
+   var rw=await fetch('https://api.web3forms.com/submit',{ method:'POST',
+    headers:{'Content-Type':'application/json',Accept:'application/json'},
+    body:JSON.stringify({ access_key:cfg.w3f, subject:subject, from_name:brandName(),
+     name:msg.toName||to, email:to, message:text }) });
+   var jw=await rw.json();
+   if(jw && jw.success) return { ok:true, provider:'web3forms', dev:false, error:'' };
+   attempts.push('web3forms '+((jw&&jw.message)||'rejected'));
+  }catch(e){ attempts.push('web3forms '+(e&&e.message||'error')); }
+ }
+
+ /* 4 — development fallback: log rather than fail silently */
+ var reason = attempts.length ? attempts.join('; ') : (st.ok?'no transport':st.detail);
+ try{
+  console.info('[email] not delivered — '+reason+'\n'+
+   'to: '+to+'\nsubject: '+subject+'\n\n'+text);
+ }catch(e){}
+ return { ok:false, provider:st.provider, dev:true, error:reason };
+}
+
+/* ── OTP mail, now on the shared service ── */
+sendOtpEmail=async function(user,code){
+ var name=(user&&user.name)||'';
+ var text=[
+  'שלום '+name,'',
+  'קוד האימות שלך הוא: '+code,
+  'הקוד תקף ל-'+Math.round(OTP_TTL_MS/60000)+' דקות.','',
+  'אם לא ביקשת לאפס סיסמה, אפשר להתעלם מההודעה.',
+  '— '+brandName()
+ ].join('\n');
+ var html='<div dir="rtl" style="font-family:system-ui,Segoe UI,Arial,sans-serif;line-height:1.6">'+
+  '<p>שלום '+esc(name)+'</p>'+
+  '<p>קוד האימות שלך הוא:</p>'+
+  '<p style="font-size:28px;font-weight:700;letter-spacing:.3em">'+esc(code)+'</p>'+
+  '<p>הקוד תקף ל-'+Math.round(OTP_TTL_MS/60000)+' דקות.</p>'+
+  '<p style="color:#6f6a60;font-size:13px">אם לא ביקשת לאפס סיסמה, אפשר להתעלם מההודעה.</p>'+
+  '<p>— '+esc(brandName())+'</p></div>';
+ return sendEmail({ to:(user&&user.email)||'', toName:name, subject:'קוד אימות — '+brandName(), text:text, html:html });
+};
+
+/* Honest reporting: say what happened instead of a generic server error. */
+issueOtp=function(email){
+ var u=findUser(email); if(!u) return null;
+ var code=genOtp();
+ otp={ email:u.email, code:code, expires:Date.now()+OTP_TTL_MS, tries:0, lastSent:Date.now(), verified:false };
+ sendOtpEmail(u,code).then(function(res){
+  if(res && res.ok) toast(t('fp_sent')+' <span class="muted">('+t('ml_via')+' '+esc(res.provider)+')</span>');
+  else if(res && res.dev) toast(t('ml_dev')+' <b style="letter-spacing:.2em">'+esc(code)+'</b>');
+  else toast(t('ml_fail')+' — '+esc((res&&res.error)||''));
+ }).catch(function(){
+  toast(t('ml_dev')+' <b style="letter-spacing:.2em">'+esc(code)+'</b>');
+ });
+ return otp;
+};
+
+/* Credentials mail for a newly authorized workspace address. */
+function sendAccessEmail(c,em,pass){
+ var lines=[
+  'שלום,','',
+  'ניתנה לך גישה למרחב האירוע של '+((c&&c.names)||'')+' אצל '+brandName()+'.',
+  'כתובת הכניסה: '+em
+ ];
+ if(pass) lines.push('סיסמה זמנית: '+pass, '', 'מומלץ להחליף סיסמה בכניסה הראשונה.');
+ lines.push('', '— '+brandName());
+ sendEmail({ to:em, subject:'גישה למרחב האירוע — '+brandName(), text:lines.join('\n') })
+  .then(function(res){
+   if(res && res.dev && pass) toast(t('acc_pass')+' <b dir="ltr">'+esc(pass)+'</b>');
+  }).catch(function(){});
+}
+
+/* ══════════════════════════════════════════════════════════
+   7 · STRICT 6-DIGIT OTP
+   Exactly six digits, numeric only, 15-minute window. Anything
+   else — including legacy 8-character codes — is rejected.
+   ══════════════════════════════════════════════════════════ */
+var OTP_LEN=6;
+var OTP_RE=/^\d{6}$/;
+genOtp=function(){
+ var n=Math.floor(Math.random()*1000000);
+ return String(n).padStart(OTP_LEN,'0');
+};
+function otpDigits(s){ return String(s==null?'':s).replace(/\D+/g,''); }
+otpValue=function(){
+ var v='';
+ for(var i=0;i<OTP_LEN;i++){ var b=$('otp'+i); v+=otpDigits(b?b.value:'').slice(0,1); }
+ return v;
+};
+otpInput=function(i,el){
+ if(!el) return;
+ var d=otpDigits(el.value);
+ el.value=d.slice(-1);                       /* numeric only, one digit per box */
+ if(el.value && i<OTP_LEN-1){ var n=$('otp'+(i+1)); if(n && n.focus) n.focus(); }
+ if(otpValue().length===OTP_LEN && OTP_RE.test(otpValue())) doVerify();
+};
+otpKey=function(e,i){
+ if(!e) return;
+ if(e.key==='Backspace' && !e.target.value && i>0){ var p=$('otp'+(i-1)); if(p){ p.focus(); p.value=''; } }
+ if(e.key==='ArrowLeft'  && i>0){ var l=$('otp'+(i-1)); if(l) l.focus(); }
+ if(e.key==='ArrowRight' && i<OTP_LEN-1){ var r=$('otp'+(i+1)); if(r) r.focus(); }
+ if(e.key==='Enter') doVerify();
+};
+otpPaste=function(e){
+ if(!e) return;
+ e.preventDefault();
+ var raw=(e.clipboardData||window.clipboardData);
+ var txt=otpDigits(raw?raw.getData('text'):'').slice(0,OTP_LEN);
+ for(var i=0;i<OTP_LEN;i++){ var b=$('otp'+i); if(b) b.value=txt[i]||''; }
+ var next=$('otp'+Math.min(txt.length,OTP_LEN-1)); if(next && next.focus) next.focus();
+ if(txt.length===OTP_LEN) doVerify();
+};
+doVerify=function(){
+ if(!otp) return setAuthMode('forgot');
+ if(otpLeft()<=0) return setAuthMsg(t('ot_expired'));
+ var v=otpValue();
+ if(!OTP_RE.test(v)) return setAuthMsg(t('ot_format'));       /* rejects 8-digit / partial codes */
+ if(!OTP_RE.test(String(otp.code)) || v!==String(otp.code)){
+  otp.tries++;
+  if(otp.tries>=OTP_MAX_TRIES){ otp=null; stopTimer(); authMode='forgot'; return setAuthMsg(t('ot_locked')); }
+  authMsg=t('ot_bad')+' ('+t('ot_attempts')+' '+(OTP_MAX_TRIES-otp.tries)+' '+t('ot_tries')+')';
+  renderAuth(); startTimer();
+  setTimeout(function(){ var f=$('otp0'); if(f) f.focus(); },60);
+  return;
+ }
+ otp.verified=true; stopTimer(); authMode='reset'; authMsg=t('ot_ok'); renderAuth();
+ setTimeout(function(){ var f=$('npPass'); if(f && f.focus) f.focus(); },60);
+};
+
+/* ══════════════════════════════════════════════════════════
+   8 · LOGIN — any authorized address opens the same workspace
+   ══════════════════════════════════════════════════════════ */
+function reconcileClientSession(){
+ if(!session || session.role!=='client') return;
+ var byRef=session.refId ? safeClient(session.refId) : null;
+ var c=byRef || clientByEmail(session.email);
+ if(c){ session.refId=c.id; portalClient=c.id; }
+}
+var _p1_doLogin=doLogin;
+doLogin=function(){
+ var r=_p1_doLogin.apply(this,arguments);
+ setTimeout(reconcileClientSession,0);   /* the cloud path resolves asynchronously */
+ reconcileClientSession();
+ return r;
+};
+
+/* New clients start with their primary address on the authorized list. */
+var _p1_makeClient=makeClient;
+makeClient=function(names,email,date,venue,guests,field){
+ var c=_p1_makeClient.apply(this,arguments);
+ if(c){ normalizeClient(c); ensureClientRecords(c.id); syncClientAccess(c.id); }
+ return c;
+};
+
+/* ══════════════════════════════════════════════════════════
+   9 · STATE NORMALIZATION ON EVERY PAINT
+   Cheap (clients + leads only) and it keeps records written by
+   older versions from reaching a render path that assumed them.
+   ══════════════════════════════════════════════════════════ */
+var _p1_renderAll=renderAll;
+renderAll=function(){
+ try{ normalizeState(); }catch(e){ try{ console.warn('[v27] normalize:',e&&e.message); }catch(_){} }
+ return _p1_renderAll.apply(this,arguments);
+};
+
+/* ══════════════════════════════════════════════════════════
+   10 · PWA — real manifest file when hosted, blob when single-file
+   ══════════════════════════════════════════════════════════ */
+function pwaIcon(){
+ return 'data:image/svg+xml,'+encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">'+
+  '<rect width="512" height="512" rx="96" fill="#14130f"/>'+
+  '<text x="256" y="335" font-family="Georgia,serif" font-size="250" fill="#a8874f" text-anchor="middle">L</text></svg>');
+}
+function pwaManifest(){
+ var icon=pwaIcon();
+ return {
+  id:'/', name:'LIver Productions', short_name:'LIver',
+  start_url:'.', scope:'.', display:'standalone',
+  display_override:['standalone','minimal-ui'],
+  orientation:'portrait', background_color:'#f8f5ef', theme_color:'#14130f',
+  lang:'he', dir:'rtl', description:'הפקת אירועים מקצה לקצה',
+  icons:[
+   { src:icon, sizes:'192x192', type:'image/svg+xml', purpose:'any' },
+   { src:icon, sizes:'512x512', type:'image/svg+xml', purpose:'any' },
+   { src:icon, sizes:'512x512', type:'image/svg+xml', purpose:'maskable' }
+  ]
+ };
+}
+/* Prefer public/manifest.json when the app is actually served; fall back to
+   an object URL so the single file keeps working from file://. */
+function installManifest(){
+ var existing=document.querySelector('link[rel="manifest"]');
+ if(existing && existing.dataset && existing.dataset.v27) return;
+ var link=existing||document.createElement('link');
+ link.rel='manifest';
+ if(link.dataset) link.dataset.v27='1';
+ var useBlob=function(){
+  try{
+   var url=URL.createObjectURL(new Blob([JSON.stringify(pwaManifest())],{type:'application/manifest+json'}));
+   link.href=url;
+  }catch(e){}
+ };
+ if(location.protocol==='http:'||location.protocol==='https:'){
+  fetch('public/manifest.json',{method:'GET'})
+   .then(function(r){ if(r.ok) link.href='public/manifest.json'; else useBlob(); })
+   .catch(useBlob);
+ } else useBlob();
+ if(!existing) document.head.appendChild(link);
+}
+/* iOS/Android chrome: make sure the standalone meta tags are present. */
+function ensureAppMeta(){
+ [['apple-mobile-web-app-capable','yes'],
+  ['mobile-web-app-capable','yes'],
+  ['apple-mobile-web-app-status-bar-style','black-translucent'],
+  ['apple-mobile-web-app-title','LIver'],
+  ['theme-color','#14130f']].forEach(function(p){
+   var m=document.querySelector('meta[name="'+p[0]+'"]');
+   if(!m){ m=document.createElement('meta'); m.name=p[0]; document.head.appendChild(m); }
+   if(!m.content) m.content=p[1];
+  });
+ var vp=document.querySelector('meta[name="viewport"]');
+ if(vp && vp.content.indexOf('viewport-fit=cover')<0) vp.content=vp.content+', viewport-fit=cover';
+}
+
+/* ── boot ── */
+try{ normalizeState(); }catch(e){}
+(DB.clients||[]).forEach(function(c){ if(c && c.id) ensureClientRecords(c.id); });
+reconcileClientSession();
+ensureAppMeta();
+installManifest();
+renderAll();
 
 </script>
 </body>
