@@ -90,3 +90,55 @@ test('a missing price is zero rather than NaN across the whole total', () => {
   assert.equal(Number.isFinite(total), true);
   assert.ok(total > 0);
 });
+
+test('his own rule: a litre for every nine people', () => {
+  /* From his spreadsheet: 300 guests, no children, comes to 33.3 litres. That
+     number is the one he has bought against, so it is the one to match. */
+  const p = planBar({ guests: 300, childrenPct: 0, drinkersPct: 70 },
+    { hours: 5, style: 'barak', season: 'summer' });
+  assert.equal(p.litres, 33.3);
+});
+
+test('his split is his, in litres', () => {
+  const p = planBar({ guests: 270, childrenPct: 0, drinkersPct: 70 },
+    { hours: 5, style: 'barak', season: 'summer' });
+  /* 30 litres: beer and wine 9 each, vodka/campari/tequila 3 each,
+     whiskey and rum 1.5 each. Beer at a third of a litre a bottle. */
+  assert.equal(p.litres, 30);
+  assert.equal(p.bottles.beer, Math.ceil(9 / 0.33));
+  assert.equal(p.bottles.wine, Math.ceil(9 / 0.75));
+  assert.equal(p.bottles.vodka, Math.ceil(3 / 0.75));
+  assert.equal(p.bottles.whiskey, Math.ceil(1.5 / 0.75));
+  /* Three bottles the serving model never knew about. */
+  assert.ok(p.bottles.campari > 0 && p.bottles.tequila > 0 && p.bottles.rum > 0);
+});
+
+test('his rule does not care how long the bar is open', () => {
+  /* Which is the point of it: the hours are already inside the number he
+     buys against. The serving model is the one that answers that question. */
+  const crowd = { guests: 200, childrenPct: 5, drinkersPct: 70 };
+  const short = planBar(crowd, { hours: 3, style: 'barak', season: 'mild' });
+  const long = planBar(crowd, { hours: 9, style: 'barak', season: 'mild' });
+  assert.equal(short.litres, long.litres);
+  /* Soft drinks still do, because thirst is not the same thing as drink. */
+  assert.ok(long.softLitres > short.softLitres);
+});
+
+test('children are outside his litres', () => {
+  const none = planBar({ guests: 300, childrenPct: 0, drinkersPct: 70 },
+    { hours: 5, style: 'barak', season: 'mild' });
+  const some = planBar({ guests: 300, childrenPct: 20, drinkersPct: 70 },
+    { hours: 5, style: 'barak', season: 'mild' });
+  assert.ok(some.litres < none.litres);
+  /* And still drink: soft is per guest. */
+  assert.equal(some.softLitres, none.softLitres);
+});
+
+test('the serving model leaves his three bottles at zero rather than guessing', () => {
+  const p = planBar({ guests: 200, childrenPct: 10, drinkersPct: 70 },
+    { hours: 5, style: 'classic', season: 'mild' });
+  assert.equal(p.bottles.campari, 0);
+  assert.equal(p.bottles.tequila, 0);
+  assert.equal(p.bottles.rum, 0);
+  assert.ok(p.litres > 0);
+});

@@ -10,6 +10,7 @@ import { PageHead } from '@/components/app/PageHead';
 import { EventTabs, readTab, type EventTab } from '@/components/app/EventTabs';
 import { EventDetails } from '@/components/app/EventDetails';
 import { EventSummary } from '@/components/app/EventSummary';
+import { EventTemplate } from '@/components/app/EventTemplate';
 import { InviteBox, type Invite } from '@/components/app/InviteBox';
 import { TaskList, type Task } from '@/components/app/TaskList';
 import { PaymentsPanel, type Payment } from '@/components/app/PaymentsPanel';
@@ -122,6 +123,9 @@ async function Section({ tab, client, viewerId }: { tab: EventTab; client: Clien
     return (
       <div className="space-y-6">
         <EventSummary clientId={id} summary={summary} />
+        {/* On the overview because this is where an event gets set up, and it
+            collapses to a single button once there is nothing left to add. */}
+        <EventTemplate clientId={id} />
         <div className="grid gap-6 lg:grid-cols-2">
           <EventDetails event={client} />
           <InviteBox clientId={id} invites={invites} />
@@ -132,7 +136,7 @@ async function Section({ tab, client, viewerId }: { tab: EventTab; client: Clien
 
   if (tab === 'tasks') {
     const tasks = await safeRows<Task>('tasks', sb.from('tasks')
-      .select('id,title,due_on,done,owner,created_by').eq('client_id', id)
+      .select('id,title,due_on,done,owner,created_by,visible_to_client').eq('client_id', id)
       .order('done').order('due_on', { ascending: true, nullsFirst: false }));
     return <TaskList clientId={id} tasks={tasks} viewer="producer" viewerId={viewerId} />;
   }

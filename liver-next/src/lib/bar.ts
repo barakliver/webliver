@@ -33,7 +33,34 @@ export type Party = {
   season: Season;
 };
 
-export type BarStyle = 'classic' | 'spirits' | 'wine' | 'beer' | 'light';
+export type BarStyle = 'barak' | 'classic' | 'spirits' | 'wine' | 'beer' | 'light';
+
+/**
+ * The producer's own rule, from his spreadsheet, kept exactly as he uses it.
+ *
+ * One litre of drink per nine people, split by category in fixed litres. It is
+ * a different shape of calculation from the serving count below: it does not
+ * care how long the bar is open or how many of the crowd drink, because it was
+ * built from what he actually buys for a wedding of a given size and those
+ * things are already inside the number.
+ *
+ * Both live here on purpose. His is the one he trusts and it goes first; the
+ * serving model is the one that answers "and if the bar is open two hours
+ * longer". A tool that quietly replaced his arithmetic with mine would be
+ * answering a question he did not ask.
+ */
+const LITRES_PER_PERSON = 1 / 9;
+
+/** His split, as fractions of the total litres. Campari, tequila and rum are
+ *  in his sheet and were missing from the model below, which is the sort of
+ *  thing only somebody who has stocked the bar would notice. */
+const BARAK_SPLIT = {
+  beer: 0.30, wine: 0.30, vodka: 0.10, campari: 0.10,
+  tequila: 0.10, whiskey: 0.05, rum: 0.05,
+};
+
+/** Litres per bottle, for turning his litres into something to buy. */
+const BOTTLE_LITRES = { spirit: 0.75, wine: 0.75, beer: 0.33 };
 export type Season = 'summer' | 'winter' | 'mild';
 
 /** How the first hour differs from the rest. People arrive thirsty, take a
@@ -45,7 +72,7 @@ const LATER_HOUR_DRINKS = 1;
 
 /** What the crowd reaches for, as a share of all alcoholic drinks. These are
  *  starting points to be argued with, not measurements. */
-const MIX: Record<BarStyle, { spirits: number; wine: number; beer: number }> = {
+const MIX: Record<Exclude<BarStyle, 'barak'>, { spirits: number; wine: number; beer: number }> = {
   classic: { spirits: 0.40, wine: 0.30, beer: 0.30 },
   spirits: { spirits: 0.65, wine: 0.15, beer: 0.20 },
   wine:    { spirits: 0.15, wine: 0.60, beer: 0.25 },
@@ -79,7 +106,11 @@ export type BarPlan = {
   bottles: {
     vodka: number; whiskey: number; gin: number; other: number;
     wine: number; beer: number;
+    /* Only his rule produces these; the serving model leaves them at zero. */
+    campari: number; tequila: number; rum: number;
   };
+  /** Total litres of alcohol, which is the number his sheet works in. */
+  litres: number;
   softLitres: number;
   iceKg: number;
   /** Whole limes and lemons, which is the thing every bar runs out of. */
@@ -96,6 +127,8 @@ export function planBar(crowd: Crowd, party: Party): BarPlan {
   const drinkers = Math.round(adults * clamp01(crowd.drinkersPct / 100));
 
   const hours = Math.max(0, party.hours);
+
+  if (party.style === 'barak') return byLitres(guests, children, drinkers, hours, party.season);
   /* The first hour is charged at the higher rate and only once, which is why
      this is not hours × a single number. */
   const perDrinker = hours <= 0 ? 0
@@ -121,7 +154,11 @@ export function planBar(crowd: Crowd, party: Party): BarPlan {
       other:   spiritBottles(SPIRIT_SPLIT.other),
       wine:    up(wineServings / SERVINGS.wine),
       beer:    up(beerServings / SERVINGS.beer),
+      campari: 0, tequila: 0, rum: 0,
     },
+    litres: Math.round(
+      ((spiritServings * 0.045) + (wineServings * 0.15) + (beerServings * 0.33)) * 10
+    ) / 10,
     softLitres: up(guests * hours * SOFT_PER_PERSON_HOUR[party.season]),
     iceKg: up(guests * ICE_PER_GUEST[party.season]),
     /* One fruit per fifteen drinkers, floor of two. It is the cheapest thing
@@ -129,6 +166,44 @@ export function planBar(crowd: Crowd, party: Party): BarPlan {
     citrus: Math.max(2, up(drinkers / 15)),
     /* Nobody keeps the same cup all night. Two and a half each is what a bar
        actually goes through. */
+    cups: up(guests * 2.5),
+  };
+}
+
+/** His rule: total litres from headcount, then split by category. The crowd
+ *  numbers still come back so the screen can show who was counted, but they do
+ *  not change the answer, and the screen says so. */
+function byLitres(
+  guests: number, children: number, drinkers: number, hours: number, season: Season
+): BarPlan {
+  /* Adults only. His sheet is written for a wedding, where a headcount means
+     the people at the tables, and children were never in the litres. */
+  const adults = Math.max(0, guests - children);
+  const litres = adults * LITRES_PER_PERSON;
+  const spiritBottles = (share: number) => up((litres * share) / BOTTLE_LITRES.spirit);
+
+  return {
+    drinkers,
+    children,
+    /* A serving is 45ml of spirit or a third of a litre of beer. Mixed, the
+       honest single number is litres, so the serving count here is derived
+       for display rather than driving anything. */
+    servings: Math.round((litres * 1000) / 90),
+    bottles: {
+      vodka:   spiritBottles(BARAK_SPLIT.vodka),
+      whiskey: spiritBottles(BARAK_SPLIT.whiskey),
+      gin:     0,
+      other:   0,
+      campari: spiritBottles(BARAK_SPLIT.campari),
+      tequila: spiritBottles(BARAK_SPLIT.tequila),
+      rum:     spiritBottles(BARAK_SPLIT.rum),
+      wine:    up((litres * BARAK_SPLIT.wine) / BOTTLE_LITRES.wine),
+      beer:    up((litres * BARAK_SPLIT.beer) / BOTTLE_LITRES.beer),
+    },
+    litres: Math.round(litres * 10) / 10,
+    softLitres: up(guests * Math.max(1, hours) * SOFT_PER_PERSON_HOUR[season]),
+    iceKg: up(guests * ICE_PER_GUEST[season]),
+    citrus: Math.max(2, up(adults / 15)),
     cups: up(guests * 2.5),
   };
 }
@@ -145,11 +220,13 @@ function clamp01(n: number): number {
  *  both of them within a year. */
 export type Prices = {
   vodka: number; whiskey: number; gin: number; other: number;
+  campari: number; tequila: number; rum: number;
   wine: number; beer: number; soft: number; ice: number; citrus: number; cups: number;
 };
 
 export const DEFAULT_PRICES: Prices = {
   vodka: 70, whiskey: 110, gin: 90, other: 80,
+  campari: 85, tequila: 120, rum: 90,
   wine: 45, beer: 8, soft: 7, ice: 12, citrus: 3, cups: 0.4,
 };
 
@@ -161,6 +238,9 @@ export function shoppingList(plan: BarPlan, prices: Prices): { lines: LineItem[]
     whiskey: plan.bottles.whiskey,
     gin: plan.bottles.gin,
     other: plan.bottles.other,
+    campari: plan.bottles.campari,
+    tequila: plan.bottles.tequila,
+    rum: plan.bottles.rum,
     wine: plan.bottles.wine,
     beer: plan.bottles.beer,
     soft: plan.softLitres,
