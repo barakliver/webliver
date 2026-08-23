@@ -349,3 +349,52 @@ test('blank lines are ignored', () => {
   const { rows } = parseGuestCsv('name\nDana\n\n\nYossi\n');
   assert.equal(rows.length, 2);
 });
+
+// ---------------------------------------------------------------------------
+// Multi-tenant host routing (Phase 4)
+// ---------------------------------------------------------------------------
+
+import {
+  isRootHost,
+  normalizeHost,
+  parseRootHosts,
+  subdomainLabel,
+} from '../lib/domain/hosts.ts';
+
+const ROOTS = parseRootHosts('localhost,liver.app,www.liver.app');
+
+test('host normalization strips port and case', () => {
+  assert.equal(normalizeHost('Events.Keren-Weddings.COM:3000'), 'events.keren-weddings.com');
+  assert.equal(normalizeHost('localhost:3000'), 'localhost');
+  assert.equal(normalizeHost(null), '');
+});
+
+test('platform hosts are not tenants', () => {
+  assert.ok(isRootHost('localhost', ROOTS));
+  assert.ok(isRootHost('liver.app', ROOTS));
+  assert.ok(isRootHost('www.liver.app', ROOTS));
+  assert.ok(isRootHost('my-branch-abc.vercel.app', ROOTS), 'previews serve the platform');
+  assert.ok(isRootHost('', ROOTS), 'a missing host must not resolve to a tenant');
+});
+
+test('producer domains and subdomains are tenants', () => {
+  assert.equal(isRootHost('events.keren-weddings.com', ROOTS), false);
+  assert.equal(isRootHost('keren.liver.app', ROOTS), false);
+});
+
+test('a lookalike host does not match the platform', () => {
+  // Guards against a naive endsWith check treating this as the platform.
+  assert.equal(isRootHost('notliver.app', ROOTS), false);
+  assert.equal(isRootHost('liver.app.evil.com', ROOTS), false);
+});
+
+test('subdomain label feeds slug matching', () => {
+  assert.equal(subdomainLabel('keren.liver.app'), 'keren');
+  assert.equal(subdomainLabel('events.keren-weddings.com'), 'events');
+});
+
+test('root host list falls back to a safe default', () => {
+  const fallback = parseRootHosts(undefined);
+  assert.ok(fallback.has('localhost'));
+  assert.ok(fallback.has('liver.app'));
+});

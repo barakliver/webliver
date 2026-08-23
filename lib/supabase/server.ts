@@ -52,8 +52,15 @@ export function getSupabaseAnonClient() {
 }
 
 /**
- * Service-role client — bypasses RLS. Only for server work that has already
- * authorized the caller itself. Never import this into a Client Component.
+ * Service-role client — bypasses RLS entirely, including every tenant boundary
+ * and the platform-admin restrictions in the Phase 4 migration.
+ *
+ * Nothing in the application uses this, and that is deliberate: a single call
+ * from an admin-facing route would silently undo the isolation guarantees. If a
+ * future job genuinely needs it (a webhook, a migration script), keep it out of
+ * any request path a user can reach, and never pass user input to it.
+ *
+ * @deprecated Prefer getSupabaseServerClient(), which runs under RLS.
  */
 export function getSupabaseAdminClient() {
   return createClient<Database>(

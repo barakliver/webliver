@@ -6,6 +6,7 @@ import type {
   MoodboardRow,
   ReceiptRow,
   SeatingTableRow,
+  VendorCheckinRow,
 } from '@/lib/supabase/database.types';
 import type { TimelineEntry } from '@/lib/domain/timeline';
 import BrideMode from '@/components/BrideMode';
@@ -13,6 +14,7 @@ import RsvpSeatingEngine from '@/components/RsvpSeatingEngine';
 import AlcoholEstimator from '@/components/AlcoholEstimator';
 import ReceiptScanner from '@/components/ReceiptScanner';
 import TimelinePdfExporter from '@/components/TimelinePdfExporter';
+import LiveEventCockpit from '@/components/LiveEventCockpit';
 
 export const dynamic = 'force-dynamic';
 
@@ -34,7 +36,7 @@ export default async function WorkspacePage({
 
   // RLS scopes every one of these to workspaces the caller may see, so a
   // missing client row means "no access" and "not found" alike.
-  const [client, moodboards, guests, tables, budget, receipts, settings] = await Promise.all([
+  const [client, moodboards, guests, tables, budget, receipts, settings, vendors] = await Promise.all([
     supabase.from('clients').select('*').eq('id', clientId).maybeSingle(),
     supabase.from('moodboards').select('*').eq('client_id', clientId).order('position', { ascending: false }),
     supabase.from('guests_rsvp').select('*').eq('client_id', clientId),
@@ -42,6 +44,7 @@ export default async function WorkspacePage({
     supabase.from('budget_items').select('*').eq('client_id', clientId).order('created_at', { ascending: false }),
     supabase.from('receipts').select('*').eq('client_id', clientId).order('created_at', { ascending: false }),
     supabase.from('event_settings').select('*').eq('client_id', clientId).maybeSingle(),
+    supabase.from('vendor_checkins').select('*').eq('client_id', clientId),
   ]);
 
   if (!client.data) notFound();
@@ -86,6 +89,13 @@ export default async function WorkspacePage({
           clientId={clientId}
           initialBudget={(budget.data ?? []) as BudgetItemRow[]}
           initialReceipts={(receipts.data ?? []) as ReceiptRow[]}
+        />
+
+        <LiveEventCockpit
+          clientId={clientId}
+          eventName={client.data.display_name}
+          entries={DEFAULT_TIMELINE}
+          initialVendors={(vendors.data ?? []) as VendorCheckinRow[]}
         />
 
         <TimelinePdfExporter

@@ -1,35 +1,25 @@
 {
   "id": "/",
-  "name": "LIver Productions",
+  "name": "LIver Productions — הפקת אירועים",
   "short_name": "LIver",
-  "description": "הפקת אירועים מקצה לקצה — חתונות, אירועים עסקיים והפקות שטח.",
+  "description": "ניהול הפקת אירועים מקצה לקצה — מודבורד, אישורי הגעה, תקציב וחמ״ל יום האירוע.",
   "lang": "he",
   "dir": "rtl",
-  "start_url": ".",
-  "scope": ".",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "display_override": ["standalone", "minimal-ui"],
   "orientation": "portrait",
   "background_color": "#f8f5ef",
   "theme_color": "#14130f",
+  "categories": ["business", "productivity", "lifestyle"],
   "icons": [
-    {
-      "src": "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20512%20512'%3E%3Crect%20width='512'%20height='512'%20rx='96'%20fill='%2314130f'/%3E%3Ctext%20x='256'%20y='335'%20font-family='Georgia,serif'%20font-size='250'%20fill='%23a8874f'%20text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E",
-      "sizes": "192x192",
-      "type": "image/svg+xml",
-      "purpose": "any"
-    },
-    {
-      "src": "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20512%20512'%3E%3Crect%20width='512'%20height='512'%20rx='96'%20fill='%2314130f'/%3E%3Ctext%20x='256'%20y='335'%20font-family='Georgia,serif'%20font-size='250'%20fill='%23a8874f'%20text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E",
-      "sizes": "512x512",
-      "type": "image/svg+xml",
-      "purpose": "any"
-    },
-    {
-      "src": "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20512%20512'%3E%3Crect%20width='512'%20height='512'%20rx='96'%20fill='%2314130f'/%3E%3Ctext%20x='256'%20y='335'%20font-family='Georgia,serif'%20font-size='250'%20fill='%23a8874f'%20text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E",
-      "sizes": "512x512",
-      "type": "image/svg+xml",
-      "purpose": "maskable"
-    }
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "חמ״ל יום האירוע", "short_name": "חמ״ל", "url": "/dashboard" },
+    { "name": "דוחות עסקיים", "short_name": "דוחות", "url": "/dashboard/analytics" }
   ]
 }
