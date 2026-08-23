@@ -106,6 +106,7 @@ async function main() {
     ['/app/clients', 'the event list'],
     ['/app/leads', 'leads'],
     ['/app/calendar', 'the calendar'],
+    ['/app/insights', 'the numbers'],
     ['/app/vendors', 'the vendor book'],
     ['/app/sop', 'the playbook'],
     ['/app/site', 'the site editor'],
