@@ -10,6 +10,7 @@ export type DayResult = { ok: boolean; error?: string };
 function touch(clientId: string) {
   revalidatePath(`/app/clients/${clientId}`);
   revalidatePath(`/app/clients/${clientId}/runsheet`);
+  revalidatePath(`/app/clients/${clientId}/live`);
   revalidatePath('/app/portal');
 }
 
@@ -172,4 +173,33 @@ export async function renameTracks(_prev: DayResult | null, form: FormData): Pro
 
   touch(clientId);
   return { ok: true };
+}
+
+
+/**
+ * Ticking a line off on the evening.
+ *
+ * The time is written by the server rather than sent from the browser, for the
+ * same reason it is everywhere else here: a phone with the wrong clock would
+ * otherwise record a chuppah at four in the afternoon, and this timestamp is
+ * the one the next wedding gets planned from.
+ *
+ * Untick is a real operation and not an oversight. A tick during a wedding is
+ * made one-handed while walking, and the first thing anybody does after
+ * hitting the wrong row is look for the way back.
+ */
+export async function markDayItem(form: FormData): Promise<void> {
+  const id = String(form.get('item_id') ?? '');
+  const clientId = String(form.get('client_id') ?? '');
+  const undo = String(form.get('undo') ?? '') === '1';
+  if (!id || !clientId) return;
+
+  const sb = await supabaseServer();
+  const { error } = await sb
+    .from('day_schedule')
+    .update({ done_at: undo ? null : new Date().toISOString() })
+    .eq('id', id);
+
+  if (error) console.error('[day] tick failed', error);
+  touch(clientId);
 }
