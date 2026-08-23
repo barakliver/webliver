@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "sql": "node scripts/build-setup-sql.mjs",
     "test": "node --test --experimental-strip-types \"src/**/__tests__/*.test.ts\"",
-    "contrast": "node scripts/check-contrast.mjs"
+    "contrast": "node scripts/check-contrast.mjs",
+    "verify": "node scripts/verify.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.120.0",
