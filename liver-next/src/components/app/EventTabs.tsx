@@ -34,7 +34,13 @@ export function EventTabs({
   return (
     <nav
       aria-label={appCopy.clientPage.details}
-      className="-mx-1 mb-6 flex flex-wrap gap-1.5 border-b border-line pb-3"
+      /* One row that scrolls, rather than nine pills wrapping onto three. Three
+         rows of chrome above the content is most of a phone screen spent on
+         navigation, and the section somebody came for starts below the fold on
+         every single visit. `-mx-5` lets the strip run to both edges of the
+         shell so the last tab is visibly cut off, which is what tells a thumb
+         there is more to the right. */
+      className="-mx-5 mb-6 flex gap-1.5 overflow-x-auto border-b border-line px-5 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:flex-wrap sm:px-0"
     >
       {EVENT_TABS.map((tab) => {
         const on = tab === active;
@@ -45,7 +51,7 @@ export function EventTabs({
             href={tab === 'overview' ? `/app/clients/${clientId}` : `/app/clients/${clientId}?tab=${tab}`}
             aria-current={on ? 'page' : undefined}
             scroll={false}
-            className={`inline-flex min-h-[38px] items-center gap-1.5 rounded-full px-4 text-[14px] transition ${
+            className={`inline-flex min-h-[44px] sm:min-h-[38px] shrink-0 items-center gap-1.5 rounded-full px-4 text-[14px] transition ${
               on
                 ? 'bg-ink font-medium text-white'
                 : 'text-ink-soft hover:bg-surface-200 hover:text-ink'

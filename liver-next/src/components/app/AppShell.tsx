@@ -39,9 +39,20 @@ export function AppShell({
   return (
     <div className="min-h-dvh bg-surface">
       {/* Glass belongs on chrome. The header floats over content and the blur
-          is what tells you so; the cards underneath stay opaque. */}
-      <header className="glass sticky top-0 z-40 border-b border-line">
-        <div className="shell flex h-16 items-center justify-between gap-4">
+          is what tells you so; the cards underneath stay opaque.
+
+          The top inset is the whole reason this looks wrong installed. The
+          viewport is set to `cover` so the page can reach the edges, and in a
+          browser Safari's own chrome happens to sit between the page and the
+          clock. Installed there is no chrome, the page starts at y=0, and the
+          brand name renders underneath the status bar and behind the notch.
+          Reserving the inset here fixes it everywhere at once, and costs
+          nothing on a device that reports zero. */}
+      <header
+        className="glass sticky top-0 z-40 border-b border-line"
+        style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
+      >
+        <div className="shell flex h-14 items-center justify-between gap-4 sm:h-16">
           <Link
             href="/"
             className="font-display text-[17px] font-semibold text-ink transition-opacity hover:opacity-70"

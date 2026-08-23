@@ -12,7 +12,7 @@ export function Nav() {
   return (
     <nav className="sticky top-0 z-30 border-b border-white/50 bg-white/60 backdrop-blur-xl">
       <div className="shell flex h-16 items-center justify-between gap-4">
-        <Link href="/" className="font-display text-[17px] font-semibold tracking-tight text-ink">
+        <Link href="/" className="inline-flex min-h-[44px] items-center font-display text-[17px] font-semibold tracking-tight text-ink">
           {site.brand}
         </Link>
         <div className="hidden items-center gap-1 md:flex">
