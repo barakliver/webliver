@@ -94,7 +94,11 @@ async function main() {
     record(html.includes('/manifest.json'), 'the manifest is linked');
   }
   await page('/login', 'sign in answers');
+  await page('/install', 'the install guide answers');
   await page('/offline', 'the offline page answers');
+  /* Linked from every invitation, so it has to work for somebody who has
+     never signed in and may never sign in on the device they are holding. */
+  await page('/auth/callback?email=a%40b.co', 'a spent link lands somewhere useful', { expect: [307, 308] });
 
   // behind the sign in: a redirect is the correct answer to a stranger
   for (const [path, label] of [
