@@ -19,6 +19,7 @@ import { GuestList, type Guest } from '@/components/app/GuestList';
 import { SeatingPlan, type SeatTable } from '@/components/app/SeatingPlan';
 import { DaySchedule, type DayItem } from '@/components/app/DaySchedule';
 import { CrewPanel, type CrewMember } from '@/components/app/CrewPanel';
+import { BarCalculator } from '@/components/app/BarCalculator';
 import { EventVendors, type EventVendor, type DirectoryEntry } from '@/components/app/EventVendors';
 import { signBoardImages } from '@/lib/board';
 import { safeRows, safeValue } from '@/lib/safe';
@@ -187,6 +188,19 @@ async function Section({ tab, client, viewerId }: { tab: EventTab; client: Clien
         <CrewPanel clientId={id} crew={crew} />
       </div>
     );
+  }
+
+  if (tab === 'bar') {
+    /* Seats rather than invitations, and only the ones who said yes: twelve
+       invitations can be thirty people, and thirty is the number a bar is
+       stocked for. The estimate is the fallback until anybody has replied. */
+    const guests = await safeRows<{ status: string; party_size: number | null }>('bar guests',
+      sb.from('guests_rsvp').select('status,party_size').eq('client_id', id));
+    const confirmed = guests
+      .filter((g) => g.status === 'attending')
+      .reduce((sum, g) => sum + (g.party_size ?? 1), 0);
+
+    return <BarCalculator guestEstimate={client.guest_estimate} confirmedGuests={confirmed} />;
   }
 
   if (tab === 'money') {
