@@ -91,11 +91,27 @@ async function main() {
     const html = await home.text();
     record(html.includes('רגע מאושר שישאר לנצח'), 'the headline is on the page');
     record(html.includes('apple-mobile-web-app-capable'), 'the tag an installed app needs');
-    record(html.includes('/manifest.json'), 'the manifest is linked');
+    record(html.includes('/manifest.webmanifest'), 'the manifest is linked');
   }
   await page('/login', 'sign in answers');
   await page('/install', 'the install guide answers');
   await page('/offline', 'the offline page answers');
+
+  /* Installed, this is what names the icon on somebody's home screen. It is
+     served rather than static now, so it can carry a producer's own name, and
+     a route that 404s is an install that half works. */
+  const mani = await page('/manifest.webmanifest', 'the manifest is served', { expect: [200] });
+  if (mani) {
+    const j = await mani.json().catch(() => null);
+    record(j?.display === 'standalone', 'it installs as an app, not a tab', String(j?.display));
+    record(j?.dir === 'rtl' && j?.lang === 'he', 'it is Hebrew and right to left', `${j?.lang}/${j?.dir}`);
+    const sizes = (j?.icons ?? []).map((i) => i.sizes);
+    record(
+      sizes.includes('192x192') && sizes.includes('512x512'),
+      'both icon sizes are declared',
+      sizes.join(' '),
+    );
+  }
   /* Linked from every invitation, so it has to work for somebody who has
      never signed in and may never sign in on the device they are holding. */
   await page('/auth/callback?email=a%40b.co', 'a spent link lands somewhere useful', { expect: [307, 308] });
@@ -125,6 +141,7 @@ async function main() {
     ['/app/leads', 'leads'],
     ['/app/calendar', 'the calendar'],
     ['/app/insights', 'the numbers'],
+    ['/app/brand', 'the branding editor'],
     ['/app/vendors', 'the vendor book'],
     ['/app/sop', 'the playbook'],
     ['/app/site', 'the site editor'],

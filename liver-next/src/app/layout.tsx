@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://liverproductions.com'),
   title: { default: `${site.brand} | ${site.tagline}`, template: `%s | ${site.brand}` },
   description: 'הפקת חתונות ואירועים מקצה לקצה. תכנון, תקציב, ספקים וניהול יום האירוע.',
-  manifest: '/manifest.json',
+  manifest: '/manifest.webmanifest',
   appleWebApp: { capable: true, title: 'Liver', statusBarStyle: 'black-translucent' },
   /* `appleWebApp.capable` emits the standard `mobile-web-app-capable` and, in
      this version, not the legacy Apple one. Older iOS reads only the legacy

@@ -149,7 +149,7 @@ async function Section({ tab, client, viewerId }: { tab: EventTab; client: Clien
 
   if (tab === 'day') {
     const day = await safeRows<DayItem>('schedule', sb.from('day_schedule')
-      .select('id,track,at_time,title,note,owner,audience,duration_min')
+      .select('id,track,at_time,title,note,owner,audience,duration_min,key_moment')
       .eq('client_id', id).order('at_time'));
     return (
       <DaySchedule

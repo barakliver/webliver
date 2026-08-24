@@ -14,6 +14,7 @@ import { hhmm, inDayOrder, spanOf, humanSpan, findOverlaps, crossesMidnight } fr
 export type DayItem = {
   id: string; track: Track; at_time: string; title: string; note: string;
   owner: string; audience: string[]; duration_min: number | null;
+  key_moment?: boolean | null;
 };
 
 const c = dayCopy;
@@ -65,6 +66,20 @@ function LineFields({ item, labels, showOwner }: {
           />
         </div>
       </div>
+
+      {/* Producer only, and only a handful per evening. The evening screen
+          counts down to these and to nothing else: a warning before all forty
+          lines is a warning before none. */}
+      {showOwner && (
+        <label className="mt-3 flex min-h-[44px] cursor-pointer items-center gap-2 text-[14px] text-ink-soft">
+          <input
+            type="checkbox" name="key_moment" defaultChecked={!!item?.key_moment}
+            className="h-4 w-4 accent-[var(--accent)]"
+          />
+          {c.keyMoment}
+          <span className="text-[12.5px] text-ink-mute">{c.keyMomentHint}</span>
+        </label>
+      )}
 
       <div className={`mt-3 grid gap-3 ${showOwner ? 'sm:grid-cols-[1fr_1fr_150px]' : 'sm:grid-cols-[1fr_150px]'}`}>
         <div>
