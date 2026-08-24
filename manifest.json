@@ -1,0 +1,79 @@
+{
+  "name": "Liver Productions — הפקת חתונות ואירועים",
+  "short_name": "Liver",
+  "start_url": "./",
+  "scope": "./",
+  "id": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f8f5ef",
+  "theme_color": "#14130f",
+  "lang": "he",
+  "dir": "rtl",
+  "categories": [
+    "business",
+    "productivity",
+    "lifestyle"
+  ],
+  "description": "הפקת אירועים מקצה לקצה: תכנון, תקציב, ספקים, סידורי הושבה וניהול יום האירוע.",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshot-narrow.png",
+      "sizes": "824x1784",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "מסך הבית"
+    },
+    {
+      "src": "screenshot-wide.png",
+      "sizes": "1280x800",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "מסך הבית"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "כניסה לחשבון",
+      "short_name": "כניסה",
+      "url": "./#sec-ct",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "מחשבון תקציב",
+      "short_name": "תקציב",
+      "url": "./#sec-bsim",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}

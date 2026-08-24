@@ -1,0 +1,152 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* The accent, as properties the producer's own brand can replace. Defined
+     here rather than only in the config so a page that sets nothing still has
+     a complete palette, and so the override is one style attribute on the
+     shell instead of a second stylesheet. */
+  :root {
+    --accent: #2E5F8C;
+    --accent-soft: #4A80B0;
+    --accent-bright: #4C8BC4;
+    --accent-wash: #E9F0F8;
+  }
+
+  html, body {
+    /* Nothing may push the page sideways.
+       Not 100vw: on iOS the viewport unit includes the scrollbar gutter, so a
+       body set to 100vw is wider than the space it has and wobbles by exactly
+       that much, which is the bug this line is usually written to fix. 100%
+       measures the containing block, which is the honest number. */
+    max-width: 100%;
+    overflow-x: hidden;
+    /* A long unbroken string — a URL in a message, an email address in a
+       table — is the other way a page grows sideways. */
+    overflow-wrap: break-word;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    /* The nav is sticky, so an anchor jump would land its heading underneath.
+       Reserving the height once here keeps every in-page link in step with the
+       nav, instead of each section carrying its own margin. */
+    scroll-padding-top: 5.5rem;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: .01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: .01ms !important;
+    }
+  }
+
+  body {
+    background: theme('colors.surface.DEFAULT');
+    /* Installed, this is an app rather than a page: a tap should not flash a
+       grey rectangle, and a scroll that reaches the end should not rubber band
+       the whole shell. Neither is possible to fix from inside a component. */
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior-y: contain;
+    color: theme('colors.ink.DEFAULT');
+    font-feature-settings: 'kern' 1;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Hebrew has no ascenders or descenders to speak of, so lines pack tighter
+     than Latin at the same leading and read as cramped. A little more air. */
+  [dir='rtl'] p, [dir='rtl'] li { line-height: 1.8; }
+
+  ::selection { background: theme('colors.accent.wash'); }
+  :focus-visible {
+    outline: 2px solid theme('colors.accent.DEFAULT');
+    outline-offset: 2px;
+    border-radius: 8px;
+  }
+}
+
+@layer components {
+  /* ── Liquid glass ────────────────────────────────────────────────────────
+     Chrome only: the nav, the tab bar, sheets, anything that floats above
+     content. Never on a card. Translucency over text costs contrast, and the
+     blur costs GPU on exactly the phones that can least afford it. */
+  .glass {
+    background: color-mix(in srgb, theme('colors.surface.100') 72%, transparent);
+    -webkit-backdrop-filter: saturate(180%) blur(22px);
+    backdrop-filter: saturate(180%) blur(22px);
+    border-color: color-mix(in srgb, #fff 55%, transparent);
+  }
+  /* The same idea, more opaque, for chrome that floats over arbitrary content
+     rather than over the page's own ground: the dock, a sheet, the concierge.
+     72% is enough to read a headline through; it is not enough to read a
+     photograph through, and both of those sit under this.
+
+     It was being used before it existed. `glass-strong` appeared in the
+     floating dock and was defined nowhere, so Tailwind emitted nothing and
+     three buttons floated over the page with no surface behind them at all.
+     An unknown utility class is silent in every tool in the stack, which is
+     why it survived. */
+  .glass-strong {
+    background: color-mix(in srgb, theme('colors.card') 88%, transparent);
+    -webkit-backdrop-filter: saturate(180%) blur(34px);
+    backdrop-filter: saturate(180%) blur(34px);
+    border: 1px solid color-mix(in srgb, theme('colors.accent.soft') 22%, transparent);
+  }
+
+  /* Where blur is unsupported the same surface has to stay readable, so it
+     falls back to opaque rather than to a wash of half-legible text. */
+  @supports not (backdrop-filter: blur(1px)) {
+    .glass { background: theme('colors.surface.100'); }
+    .glass-strong { background: theme('colors.card'); }
+  }
+
+  .shell { @apply mx-auto w-full max-w-content px-4 sm:px-8; }
+  .measure { max-width: 62ch; }
+
+  .card {
+    /* Tighter on a phone. At 20px a side, plus the shell's own 20px, a 390px
+       screen was spending 80px of its width on padding before a word was
+       drawn. Unchanged from the small breakpoint up, where there is room. */
+    @apply rounded-xl2 border border-line bg-card p-4 shadow-soft sm:p-5;
+  }
+
+  /* 44px minimum on every control, per the brief and the accessibility rule
+     that outranks everything else in the design system. */
+  .btn {
+    @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full
+           px-6 text-[15px] font-medium transition duration-200 ease-out
+           disabled:pointer-events-none disabled:opacity-50;
+  }
+  .btn-primary { @apply btn bg-ink text-surface shadow-soft hover:bg-ink-soft; }
+  .btn-ghost   { @apply btn border border-line-strong bg-card/70 text-ink hover:bg-card; }
+  .btn-quiet   { @apply btn px-3 text-accent hover:text-ink; }
+
+  .field {
+    @apply min-h-[44px] w-full rounded-xl2 border border-line bg-card px-4 py-3
+           text-[15px] text-ink placeholder:text-ink-mute
+           focus:border-accent-soft focus:outline-none
+           focus:ring-4 focus:ring-accent-wash;
+  }
+  .label { @apply mb-1.5 block text-[13.5px] font-medium text-ink-soft; }
+
+  /* Status reads without colour too: every chip carries a word. */
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1
+           text-[12.5px] font-medium;
+  }
+  .chip-ok   { @apply chip bg-ok-wash   text-ok; }
+  .chip-warn { @apply chip bg-warn-wash text-warn; }
+  .chip-bad  { @apply chip bg-bad-wash  text-bad; }
+  .chip-mute { @apply chip bg-surface-200 text-ink-soft; }
+
+  .eyebrow {
+    @apply text-[11.5px] font-semibold uppercase tracking-[0.18em] text-accent;
+  }
+
+  /* A hairline that reads as a rule rather than a border. */
+  .hairline { @apply h-px w-full border-0 bg-line; }
+}
