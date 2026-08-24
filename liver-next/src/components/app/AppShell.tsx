@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import { LogOut } from 'lucide-react';
 import { signOut } from '@/app/actions/auth';
-import { site, appCopy } from '@/content/site';
+import { appCopy } from '@/content/site';
+import { brandStyle, type Brand } from '@/lib/branding';
 import type { Account } from '@/lib/auth';
 import { NoticeBell, type Notice } from './NoticeBell';
 import { DesktopNav, MobileTabBar, type NavItem } from './AppNav';
@@ -19,6 +20,7 @@ function navFor(a: Account): NavItem[] {
     { href: '/app/insights', label: appCopy.nav.insights, icon: 'insights' },
     { href: '/app/vendors', label: appCopy.nav.vendors,  icon: 'vendors' },
     { href: '/app/sop',     label: appCopy.nav.sop,      icon: 'sop' },
+    { href: '/app/brand',   label: appCopy.nav.brand,    icon: 'brand' },
   ];
   if (a.role === 'super_admin') {
     /* The public site is one site and it belongs to the account the enquiry
@@ -31,14 +33,18 @@ function navFor(a: Account): NavItem[] {
 }
 
 export function AppShell({
-  account, notices, children,
+  account, notices, brand, children,
 }: {
-  account: Account; notices: Notice[]; children: React.ReactNode;
+  account: Account; notices: Notice[]; brand: Brand; children: React.ReactNode;
 }) {
   const items = navFor(account);
 
   return (
-    <div className="min-h-dvh bg-surface">
+    /* The accent is repainted here rather than in a stylesheet: one style
+       attribute on the outermost element, so it cannot arrive after the first
+       paint and costs no extra request. Everything inside reads the accent
+       through these properties, which is why the tokens are variables. */
+    <div className="min-h-dvh bg-surface" style={brandStyle(brand)}>
       {/* Glass belongs on chrome. The header floats over content and the blur
           is what tells you so; the cards underneath stay opaque.
 
@@ -54,11 +60,29 @@ export function AppShell({
         style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
       >
         <div className="shell flex h-14 items-center justify-between gap-4 sm:h-16">
+          {/* A producer's own mark, or their name. Never both theirs and the
+              platform's: a white-labelled workspace that also carries the
+              platform's name is not white-labelled, it is co-branded, which is
+              the opposite of what was asked for. */}
           <Link
-            href="/"
-            className="font-display text-[17px] font-semibold text-ink transition-opacity hover:opacity-70"
+            href="/app"
+            className="flex min-w-0 items-center gap-2 transition-opacity hover:opacity-70"
           >
-            {account.producer?.brandName || site.brand}
+            {brand.logoUrl ? (
+              <>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={brand.logoUrl}
+                  alt={brand.name}
+                  className="h-7 w-auto max-w-[140px] object-contain sm:h-8"
+                />
+                <span className="sr-only">{brand.name}</span>
+              </>
+            ) : (
+              <span className="truncate font-display text-[17px] font-semibold text-ink">
+                {brand.name}
+              </span>
+            )}
           </Link>
 
           <DesktopNav items={items} />

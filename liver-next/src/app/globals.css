@@ -3,6 +3,17 @@
 @tailwind utilities;
 
 @layer base {
+  /* The accent, as properties the producer's own brand can replace. Defined
+     here rather than only in the config so a page that sets nothing still has
+     a complete palette, and so the override is one style attribute on the
+     shell instead of a second stylesheet. */
+  :root {
+    --accent: #2E5F8C;
+    --accent-soft: #4A80B0;
+    --accent-bright: #4C8BC4;
+    --accent-wash: #E9F0F8;
+  }
+
   html, body {
     /* Nothing may push the page sideways.
        Not 100vw: on iOS the viewport unit includes the scrollbar gutter, so a

@@ -43,11 +43,16 @@ const config: Config = {
            so it decorates and never speaks. `soft` is for borders and rings,
            where 3:1 is the bar. `wash` is a background and is only ever sat on
            by `accent` itself. */
+        /* Custom properties rather than literals, because a producer's own
+           accent replaces these at runtime. The defaults live on :root in
+           globals.css, so a page that never sets them renders the base slate
+           exactly as before. The choice is a shortlist rather than a picker:
+           see src/content/brand.ts. */
         accent: {
-          DEFAULT: '#2E5F8C',
-          soft:    '#4A80B0',
-          bright:  '#4C8BC4',
-          wash:    '#E9F0F8',
+          DEFAULT: 'var(--accent, #2E5F8C)',
+          soft:    'var(--accent-soft, #4A80B0)',
+          bright:  'var(--accent-bright, #4C8BC4)',
+          wash:    'var(--accent-wash, #E9F0F8)',
         },
 
         /* State, deliberately nowhere near the accent. On a blue system a

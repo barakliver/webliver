@@ -3,12 +3,12 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BookOpen, CalendarDays, Ellipsis, Globe, HeartHandshake, LayoutGrid, ShieldCheck, Sparkles, Target, TrendingUp, Truck, X, type LucideIcon } from 'lucide-react';
+import { BookOpen, CalendarDays, Ellipsis, Globe, HeartHandshake, LayoutGrid, Palette, ShieldCheck, Sparkles, Target, TrendingUp, Truck, X, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { appCopy } from '@/content/site';
 
 export type NavItem = { href: string; label: string; icon: IconName };
-export type IconName = 'overview' | 'leads' | 'clients' | 'calendar' | 'insights' | 'vendors' | 'sop' | 'site' | 'admin' | 'portal';
+export type IconName = 'overview' | 'leads' | 'clients' | 'calendar' | 'insights' | 'brand' | 'vendors' | 'sop' | 'site' | 'admin' | 'portal';
 
 /* Real icons rather than emoji. The old app labelled every tab with one, and
    emoji cannot inherit colour or weight, render differently on every platform,
@@ -19,6 +19,7 @@ const ICONS: Record<IconName, LucideIcon> = {
   clients:  HeartHandshake,
   calendar: CalendarDays,
   insights: TrendingUp,
+  brand:    Palette,
   vendors:  Truck,
   sop:      BookOpen,
   site:     Globe,

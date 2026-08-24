@@ -36,7 +36,9 @@ with checks as (
     from unnest(array[
       'ingest_lead','record_lead','book_vendor','set_site_content',
       'day_schedule_is_empty','normalize_phone','normalize_source',
-      'submit_lead','public_site_producer'
+      'submit_lead','public_site_producer','calendar_by_token',
+      'platform_stats','producer_leaderboard','feature_on','transfer_client',
+      'touch_seen'
     ]) as f
 
   union all
@@ -71,6 +73,57 @@ with checks as (
   -- ── a workspace holds three people, not more ─────────────────────────────
   select 'the cap is three authorized people',
          coalesce(public.max_authorized_emails() = 3, false)
+
+  union all
+  -- ── the tenant boundary, read out of the catalog ─────────────────────────
+  --  The whole of the old administrator override was one branch at the top of
+  --  can_read_client. If it comes back, every check below it is decoration
+  --  again, so the function's own body is the thing asserted.
+  select 'the master key is gone from can_read_client', not exists (
+    select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+     where n.nspname = 'public' and p.proname = 'can_read_client'
+       and pg_get_functiondef(p.oid) like '%is_super_admin%'
+  )
+
+  union all
+  --  And the doors that were cut around it. Any policy on a workspace table
+  --  that still names is_super_admin is a way back in.
+  select 'no workspace table admits the platform owner', not exists (
+    select 1 from pg_policies
+     where schemaname = 'public'
+       and tablename in (
+         'clients','client_authorized_emails','tasks','budget_items','payments',
+         'contracts','messages','guests_rsvp','day_schedule','moodboards',
+         'tables_seating','crew','event_vendors','vendors','leads','sales_calls',
+         'orders','site_settings'
+       )
+       and (coalesce(qual,'') || coalesce(with_check,'')) like '%is_super_admin%'
+  )
+
+  union all
+  --  Governance is the exception, and it is meant to be there. If this one
+  --  fails, root cannot approve anybody and the platform has no owner.
+  select 'the platform owner still governs producers', exists (
+    select 1 from pg_policies
+     where schemaname = 'public' and tablename = 'producers'
+       and (coalesce(qual,'') || coalesce(with_check,'')) like '%is_super_admin%'
+  )
+
+  union all
+  --  A security definer function without a caller check is the master key
+  --  wearing a different hat.
+  select 'the console functions check who is asking', (
+    select bool_and(pg_get_functiondef(p.oid) like '%is_super_admin%')
+      from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+     where n.nspname = 'public'
+       and p.proname in ('platform_stats','producer_leaderboard','set_feature_flag')
+  )
+
+  union all
+  select 'feature gating exists', exists (
+    select 1 from pg_class c join pg_namespace n on n.oid = c.relnamespace
+     where n.nspname = 'public' and c.relname = 'feature_flags'
+  )
 )
 
 select case when ok then 'ok' else 'MISSING' end as status, what

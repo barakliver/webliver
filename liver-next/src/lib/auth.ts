@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 import { supabaseServer } from '@/lib/supabase/server';
 
 /** Mirrors public.root_admin_email() in the database. Both must agree. */
-const ROOT_ADMIN_EMAIL = 'barakliver@gmail.com';
+export const ROOT_ADMIN_EMAIL = 'barakliver@gmail.com';
 
 export type Role = 'super_admin' | 'producer' | 'client' | 'staff';
 export type ProducerStatus = 'pending' | 'approved' | 'suspended' | 'rejected';
@@ -14,7 +14,13 @@ export type Account = {
   fullName: string;
   avatarUrl: string | null;
   role: Role;
-  producer: { id: string; brandName: string; status: ProducerStatus } | null;
+  producer: {
+    id: string; brandName: string; status: ProducerStatus;
+    /* Branding travels with the account rather than being fetched again by
+       every screen that draws a header. */
+    accent: string; logoUrl: string | null; tagline: string;
+    whatsapp: string; slug: string | null; domain: string | null;
+  } | null;
   /** workspaces this account may open: owned ones for a producer, invited ones
    *  for a couple. The root admin sees every workspace. */
   clientIds: string[];
@@ -44,7 +50,7 @@ export async function currentAccount(): Promise<Account | null> {
 
   const { data: producer } = await sb
     .from('producers')
-    .select('id,brand_name,status')
+    .select('id,brand_name,status,accent,logo_url,tagline,whatsapp,slug,domain')
     .eq('owner_id', user.id)
     .order('created_at')
     .limit(1)
@@ -59,7 +65,17 @@ export async function currentAccount(): Promise<Account | null> {
     avatarUrl: profile?.avatar_url ?? null,
     role,
     producer: producer
-      ? { id: producer.id, brandName: producer.brand_name, status: producer.status as ProducerStatus }
+      ? {
+          id: producer.id,
+          brandName: producer.brand_name,
+          status: producer.status as ProducerStatus,
+          accent: producer.accent ?? 'slate',
+          logoUrl: producer.logo_url ?? null,
+          tagline: producer.tagline ?? '',
+          whatsapp: producer.whatsapp ?? '',
+          slug: producer.slug ?? null,
+          domain: producer.domain ?? null,
+        }
       : null,
     clientIds: (clients ?? []).map((c) => c.id),
   };
