@@ -1,0 +1,112 @@
+@import url("https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap");
+/* In production, self-host Heebo instead of importing from Google Fonts. */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* White-label: overwrite --accent per producer record. */
+  --accent: #b08d57;
+  --accent-light: #d8bc8a;
+  --accent-tint: rgba(176, 141, 87, 0.14);
+
+  --ink: #0f172a;
+  --ink-muted: #475569;
+  --ink-faint: #64748b;
+  --ink-placeholder: #94a3b8;
+
+  --line: #e2e8f0;
+  --line-soft: rgba(226, 232, 240, 0.6);
+  --line-strong: rgba(226, 232, 240, 0.95);
+
+  --canvas: #f1f5f9;
+  --surface-glass: rgba(255, 255, 255, 0.78);
+}
+
+@layer base {
+  html {
+    /* Hebrew is the primary locale; set dir="ltr" on <html> for the EN locale. */
+    direction: rtl;
+    overflow-x: hidden;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    background: var(--canvas);
+    background-image: radial-gradient(
+      120% 80% at 80% 0%,
+      #ffffff 0%,
+      #f8fafc 45%,
+      #eef2f7 100%
+    );
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Heebo", "Assistant",
+      sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Optimised for Hebrew readability on OLED mobile screens. */
+    line-height: 1.6;
+    text-wrap: pretty;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+    letter-spacing: -0.03em;
+  }
+
+  a {
+    color: var(--ink);
+    text-decoration: none;
+  }
+  a:hover {
+    color: var(--accent);
+  }
+
+  input,
+  textarea,
+  button,
+  select {
+    font-family: inherit;
+  }
+
+  input:focus,
+  textarea:focus {
+    outline: none;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: var(--accent-tint);
+  }
+
+  ::placeholder {
+    color: var(--ink-placeholder);
+  }
+
+  /* Native range input tuned to the design. */
+  input[type="range"] {
+    accent-color: var(--ink);
+    width: 100%;
+  }
+}
+
+@layer utilities {
+  /* Hide scrollbars inside app shells and sheets. */
+  .noscroll {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .noscroll::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+}
