@@ -65,7 +65,23 @@ export async function createClient(_prev: ActionResult | null, form: FormData): 
     .select('id')
     .single();
 
-  if (error) return { ok: false, error: readable(error.message) };
+  if (error) {
+    /* The wording a producer sees is deliberately short, and short is useless
+       to whoever has to fix it: "אין לך הרשאה" is the same sentence whether a
+       policy refused the row, the account is attached to the wrong producer,
+       or the schema on this database is older than this build. The database's
+       own words go to the log, where they name which. */
+    console.error('[clients] create refused', {
+      code: (error as { code?: string }).code,
+      message: error.message,
+      details: (error as { details?: string }).details,
+      hint: (error as { hint?: string }).hint,
+      producerId: account.producer.id,
+      producerStatus: account.producer.status,
+      role: account.role,
+    });
+    return { ok: false, error: readable(error.message) };
+  }
 
   /* The standing checklist, without being asked for.
    *
