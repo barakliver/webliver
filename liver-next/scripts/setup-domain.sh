@@ -160,7 +160,11 @@ say "6. בדיקה מבחוץ"
 sleep 3
 code="$(curl -fsS -o /dev/null -w '%{http_code}' --max-time 20 "https://${domain}/" || echo 000)"
 [ "$code" = "200" ] && ok "https://${domain} → 200" || bad "https://${domain} → $code"
-feed="$(curl -fsS --max-time 20 "https://${domain}/feed/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.ics" 2>/dev/null | head -1 || echo '')"
+# The trailing \r is stripped because it is supposed to be there: RFC 5545
+# requires CRLF, so a feed whose first line is exactly "BEGIN:VCALENDAR" with
+# no carriage return would be the broken one. This check failed on a correct
+# implementation, which is the most annoying kind of false alarm.
+feed="$(curl -fsS --max-time 20 "https://${domain}/feed/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.ics" 2>/dev/null | head -1 | tr -d '\r' || echo '')"
 [ "$feed" = "BEGIN:VCALENDAR" ] && ok "המנוי ליומן עונה כיומן" || bad "המנוי ליומן: ${feed:-אין תשובה}"
 
 echo

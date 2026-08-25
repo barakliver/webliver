@@ -146,9 +146,9 @@ async function main() {
   if (feed) {
     const body = await feed.text();
     record(
-      feed.headers.get('content-type')?.includes('text/calendar') && body.startsWith('BEGIN:VCALENDAR'),
+      feed.headers.get('content-type')?.includes('text/calendar') && body.replace(/\r/g, '').startsWith('BEGIN:VCALENDAR'),
       'an unknown feed token is empty rather than a redirect',
-      body.slice(0, 15).replace(/\n/g, ' '),
+      body.slice(0, 15).replace(/[\r\n]/g, ' '),
     );
   }
 
