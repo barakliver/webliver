@@ -158,8 +158,22 @@ ok "השירות הופעל מחדש"
 # ── 6. check from outside ───────────────────────────────────────────────────
 say "6. בדיקה מבחוץ"
 sleep 3
+# A 200 proves something answered, not that the right thing answered: the site
+# this replaces also returned 200, from a directory of static files, and the
+# check passed while the browser showed the old page. So the body is asked for
+# a marker only this build produces.
+page="$(curl -fsS --max-time 20 "https://${domain}/" 2>/dev/null || echo '')"
 code="$(curl -fsS -o /dev/null -w '%{http_code}' --max-time 20 "https://${domain}/" || echo 000)"
-[ "$code" = "200" ] && ok "https://${domain} → 200" || bad "https://${domain} → $code"
+
+if [ "$code" != "200" ]; then
+  bad "https://${domain} → $code"
+elif echo "$page" | grep -q 'font-display'; then
+  ok "https://${domain} → 200, והתוכן הוא האפליקציה"
+else
+  bad "https://${domain} → 200, אבל זה לא נראה כמו האפליקציה."
+  echo "        ייתכן ש-Caddy עדיין מגיש קבצים סטטיים. מה שחזר:"
+  echo "$page" | head -c 200 | sed 's/^/        /'
+fi
 # The trailing \r is stripped because it is supposed to be there: RFC 5545
 # requires CRLF, so a feed whose first line is exactly "BEGIN:VCALENDAR" with
 # no carriage return would be the broken one. This check failed on a correct
