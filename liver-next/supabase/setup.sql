@@ -2023,10 +2023,18 @@ alter table public.contracts enable row level security;
 --  Title, terms, attached file and amount: everything a person would read
 --  before agreeing. Status and timestamps are deliberately outside it, since
 --  they change as a consequence of signing rather than being part of the deal.
+/* search_path names `extensions` as well as `public`, and that is not
+   decoration. pgcrypto lives in `extensions` on Supabase and in `public` on a
+   plain PostgreSQL install, so a function pinned to one of them works on
+   exactly one of the two. This one is `language sql`, whose body is parsed
+   when the function is created rather than when it runs, so the mismatch is
+   not a latent runtime bug — it fails the whole setup script on the spot.
+   Naming both schemas resolves it either way, and a schema that is absent is
+   simply skipped. */
 create or replace function public.contract_digest(
   p_title text, p_body text, p_file text, p_amount numeric
 ) returns text
-language sql immutable set search_path = public as $$
+language sql immutable set search_path = public, extensions as $$
   select encode(
     digest(
       coalesce(p_title,'') || E'\n\x1e' ||
