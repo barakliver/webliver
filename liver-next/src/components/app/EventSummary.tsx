@@ -5,6 +5,7 @@ import { Money, Ratio } from '@/components/Ltr';
 import { appCopy } from '@/content/site';
 import type { EventSummary as Summary } from '@/lib/eventSummary';
 import { formatDate, isOverdue } from '@/lib/dates';
+import { Metric } from '@/components/app/Metric';
 
 const c = appCopy.clientPage;
 
@@ -13,16 +14,13 @@ const dateFmt = new Intl.DateTimeFormat('he-IL', { day: '2-digit', month: '2-dig
 function Tile({ label, value, tone = 'plain', sub }: {
   label: string; value: ReactNode; sub?: ReactNode; tone?: 'plain' | 'warn' | 'good';
 }) {
-  const colour =
-    tone === 'warn' ? 'text-bad' : tone === 'good' ? 'text-ok' : 'text-ink';
   return (
-    <div className="rounded-none border border-line px-4 py-3.5">
-      <div className="text-[12.5px] text-ink-mute">{label}</div>
-      <div className={`mt-1 font-display text-[22px] font-light tabular-nums leading-none ${colour}`}>
-        {value}
-      </div>
-      {sub && <div className="mt-1.5 text-[12px] text-ink-mute">{sub}</div>}
-    </div>
+    <Metric
+      kicker={label}
+      value={value}
+      sub={sub}
+      tone={tone === 'warn' ? 'bad' : tone === 'good' ? 'ok' : 'ink'}
+    />
   );
 }
 
@@ -41,7 +39,7 @@ export function EventSummary({ clientId, summary }: { clientId: string; summary:
 
   return (
     <section className="space-y-6">
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-x-8 gap-y-8 lg:grid-cols-4">
         <Tile
           label={t.guests}
           value={guests.total === 0 ? t.none : String(guests.confirmed)}

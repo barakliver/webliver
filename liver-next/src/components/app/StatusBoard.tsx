@@ -40,13 +40,15 @@ function Countdown({ days }: { days: number | null }) {
      stands out. */
   const soon = days <= 14;
   return (
-    <div
-      className={`flex flex-col items-center justify-center rounded-none px-3 py-2 text-center ${
-        soon ? 'bg-accent-wash text-accent' : 'bg-surface-200 text-ink'
-      }`}
-    >
-      <span className="font-display text-[24px] font-light leading-none tabular-nums">{days}</span>
-      <span className="mt-1 text-[11.5px] leading-tight opacity-80">{c.daysLeft}</span>
+    /* The number of days is the first thing read on a row, so it is the
+       thing that is large. The filled tile it sat in was carrying the
+       urgency; the tone on the numeral carries it now, and the row keeps its
+       hairline instead of growing a box. */
+    <div className="text-center">
+      <span className={`block font-display text-metric-sm font-light tabular-nums ${
+        soon ? 'text-accent-bright' : 'text-ink'
+      }`}>{days}</span>
+      <span className="mt-0.5 block text-[11.5px] leading-tight text-ink-mute">{c.daysLeft}</span>
     </div>
   );
 }

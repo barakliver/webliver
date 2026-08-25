@@ -6,6 +6,7 @@ import { useFormStatus } from 'react-dom';
 import { addPayment, togglePaid, deletePayment, type MoneyResult } from '@/app/actions/money';
 import { appCopy } from '@/content/site';
 import { Money, ils } from '@/components/Ltr';
+import { Metric } from '@/components/app/Metric';
 
 export type Payment = {
   id: string; title: string; amount: number;
@@ -47,19 +48,10 @@ export function PaymentsPanel({ clientId, payments, viewer }: {
         {viewer === 'producer' ? c.paySubProducer : c.paySubClient}
       </p>
 
-      <div className="mt-5 grid gap-3 sm:grid-cols-3">
-        <div className="rounded-none bg-ok-wash px-4 py-3">
-          <div className="text-[12.5px] text-ok">{c.totalPaid}</div>
-          <div className="font-display text-[22px] font-light tabular-nums text-ok"><Money value={paid} /></div>
-        </div>
-        <div className="rounded-none bg-warn-wash px-4 py-3">
-          <div className="text-[12.5px] text-warn">{c.totalOwed}</div>
-          <div className="font-display text-[22px] font-light tabular-nums text-warn"><Money value={owed} /></div>
-        </div>
-        <div className="rounded-none bg-surface-200 px-4 py-3">
-          <div className="text-[12.5px] text-ink-mute">{c.totalAll}</div>
-          <div className="font-display text-[22px] font-light tabular-nums text-ink"><Money value={paid + owed} /></div>
-        </div>
+      <div className="mt-6 grid gap-x-8 gap-y-8 sm:grid-cols-3">
+        <Metric kicker={c.totalPaid} value={<Money value={paid} />} tone="ok" />
+        <Metric kicker={c.totalOwed} value={<Money value={owed} />} tone="warn" />
+        <Metric kicker={c.totalAll} value={<Money value={paid + owed} />} />
       </div>
 
       {viewer === 'producer' && (

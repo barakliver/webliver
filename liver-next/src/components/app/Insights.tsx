@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { appCopy } from '@/content/site';
 import type { Funnel, SourceRow, Response, Cash } from '@/lib/analytics';
 import { Money, Ratio, ils } from '@/components/Ltr';
+import { Metric } from '@/components/app/Metric';
 
 const c = appCopy.insights;
 
@@ -108,14 +109,11 @@ function Figure({ label, value, tone = 'ink', note }: {
      the sign on the wrong side. */
   label: string; value: React.ReactNode; tone?: 'ink' | 'ok' | 'warn' | 'bad'; note?: string;
 }) {
-  const colour = tone === 'ok' ? 'text-ok' : tone === 'warn' ? 'text-warn' : tone === 'bad' ? 'text-bad' : 'text-ink';
-  return (
-    <div className="rounded-none bg-surface-100 p-4">
-      <div className="text-[12.5px] font-medium text-ink-mute">{label}</div>
-      <div className={`mt-1 font-display text-[24px] font-light tabular-nums ${colour}`}>{value}</div>
-      {note && <div className="mt-0.5 text-[12.5px] text-ink-soft">{note}</div>}
-    </div>
-  );
+  /* No box. On this palette a figure is a figure and a hairline separates
+     it from the next one; the filled tile it used to sit in belonged to the
+     version with cards. The tone stays on the numeral, where it is measured
+     against the ivory rather than against a wash. */
+  return <Metric kicker={label} value={value} sub={note} tone={tone} />;
 }
 
 export function CashPanel({ cash }: { cash: Cash }) {

@@ -5,6 +5,7 @@ import { useFormStatus } from 'react-dom';
 import { addBudgetItem, deleteBudgetItem, toggleBudgetVisible, type MoneyResult } from '@/app/actions/money';
 import { appCopy } from '@/content/site';
 import { Money, ils } from '@/components/Ltr';
+import { Metric } from '@/components/app/Metric';
 
 export type BudgetItem = {
   id: string; category: string; label: string;
@@ -61,23 +62,14 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
         <p className="mt-4 rounded-none bg-surface-200 px-4 py-3 text-[13.5px] text-ink-soft">{c.budHiddenNote}</p>
       )}
 
-      <div className="mt-5 grid gap-3 sm:grid-cols-3">
-        <div className="rounded-none bg-surface-200 px-4 py-3">
-          <div className="text-[12.5px] text-ink-mute">{c.budTotalEst}</div>
-          <div className="font-display text-[22px] font-light tabular-nums text-ink"><Money value={totalEst} /></div>
-        </div>
-        <div className="rounded-none bg-accent-wash px-4 py-3">
-          <div className="text-[12.5px] text-accent">{c.budTotalAgreed}</div>
-          <div className="font-display text-[22px] font-light tabular-nums text-ink"><Money value={totalAgreed} /></div>
-        </div>
-        <div className={`rounded-none px-4 py-3 ${diff >= 0 ? 'bg-ok-wash' : 'bg-bad-wash'}`}>
-          <div className={`text-[12.5px] ${diff >= 0 ? 'text-ok' : 'text-bad'}`}>
-            {diff >= 0 ? c.budUnder : c.budOver}
-          </div>
-          <div className={`font-display text-[22px] font-light tabular-nums ${diff >= 0 ? 'text-ok' : 'text-bad'}`}>
-            <Money value={Math.abs(diff)} />
-          </div>
-        </div>
+      <div className="mt-6 grid gap-x-8 gap-y-8 sm:grid-cols-3">
+        <Metric kicker={c.budTotalEst} value={<Money value={totalEst} />} />
+        <Metric kicker={c.budTotalAgreed} value={<Money value={totalAgreed} />} tone="accent" />
+        <Metric
+          kicker={diff >= 0 ? c.budUnder : c.budOver}
+          value={<Money value={Math.abs(diff)} />}
+          tone={diff >= 0 ? 'ok' : 'bad'}
+        />
       </div>
 
       {viewer === 'producer' && (

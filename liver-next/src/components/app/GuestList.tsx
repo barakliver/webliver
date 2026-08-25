@@ -6,6 +6,7 @@ import { addGuests, deleteGuest, setGuestStatus, type GuestResult } from '@/app/
 import { DIETS } from '@/content/lists';
 import { GuestImport } from '@/components/app/GuestImport';
 import { guestsCopy } from '@/content/site';
+import { Metric } from '@/components/app/Metric';
 
 export type Guest = {
   id: string; full_name: string; side: string; phone: string;
@@ -98,11 +99,11 @@ export function GuestList({ clientId, guests }: { clientId: string; guests: Gues
 
   const shown = filter === 'all' ? guests : guests.filter((g) => g.status === filter);
 
-  const tiles: [string, number, string][] = [
-    [c.invited, guests.length, 'bg-surface-200 text-ink'],
-    [c.attending, attending.length, 'bg-ok-wash text-ok'],
-    [c.pending, pending.length, 'bg-warn-wash text-warn'],
-    [c.heads, heads, 'bg-accent-wash text-ink'],
+  const tiles: [string, number, 'ink' | 'ok' | 'warn' | 'accent'][] = [
+    [c.invited, guests.length, 'ink'],
+    [c.attending, attending.length, 'ok'],
+    [c.pending, pending.length, 'warn'],
+    [c.heads, heads, 'accent'],
   ];
 
   return (
@@ -110,12 +111,9 @@ export function GuestList({ clientId, guests }: { clientId: string; guests: Gues
       <h2 className="font-display text-[18px] font-light text-ink">{c.title}</h2>
       <p className="mt-1 text-[14px] text-ink-soft">{c.sub}</p>
 
-      <div className="mt-5 grid gap-3 sm:grid-cols-4">
+      <div className="mt-6 grid gap-x-8 gap-y-8 grid-cols-2 sm:grid-cols-4">
         {tiles.map(([label, value, tone]) => (
-          <div key={label} className={`rounded-none px-4 py-3 ${tone}`}>
-            <div className="text-[12.5px] opacity-80">{label}</div>
-            <div className="font-display text-[24px] font-light tabular-nums">{value}</div>
-          </div>
+          <Metric key={label} kicker={label} value={value.toLocaleString('en-US')} tone={tone} />
         ))}
       </div>
 
