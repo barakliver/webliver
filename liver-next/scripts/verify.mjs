@@ -43,7 +43,7 @@ async function page(path, label, { expect = [200, 307, 308] } = {}) {
 }
 
 // ── the build on disk is the one we think it is ─────────────────────────────
-// The palette lives in the compiled CSS. If the old ivory is still in there,
+// The palette lives in the compiled CSS. If the previous one is still in there,
 // the running build predates the palette change, whatever the page looks like
 // through a phone on a slow connection.
 function checkBuiltCss() {
@@ -68,9 +68,27 @@ function checkBuiltCss() {
 
   const css = found.map((f) => readFileSync(f, 'utf8')).join('');
 
-  record(css.includes('#f3f6fa') || css.includes('#F3F6FA'), 'slate palette is in the build');
-  record(!css.includes('#f7f4ee') && !css.includes('#F7F4EE'), 'the old ivory is gone');
-  record(css.includes('backdrop-filter'), 'frosted surfaces compiled');
+  const has = (hex) => css.includes(hex.toLowerCase()) || css.includes(hex.toUpperCase());
+
+  /* The Lux ground and the warm ink. Checked in the compiled stylesheet rather
+     than in the config, because the question is what the browser received. */
+  record(has('#faf7f2'), 'the warm ground is in the build');
+  record(has('#1a1613'), 'the warm ink is in the build');
+
+  /* And the two palettes it replaced. A build that still carries the slate is
+     a build that predates the design work, whatever the page looks like on a
+     phone over a slow connection. */
+  record(!has('#f3f6fa'), 'the slate ground is gone');
+  record(!has('#2e5f8c'), 'the slate accent is gone');
+
+  /* The gold the handoff shipped reads 2.89:1 against ivory, under the 3:1 a
+     large numeral needs. If it is back in the stylesheet as a text colour,
+     somebody has reverted the measured value. */
+  record(!/color:\s*#b08d57/i.test(css), 'the unmeasured gold is not used as text');
+
+  /* Structure is hairlines now, not glass. A backdrop-filter left on content
+     means a card survived the sweep. */
+  record(has('--line-control'), 'control edges have their own token');
 }
 
 // ── the dependency added this release is actually installed ─────────────────
