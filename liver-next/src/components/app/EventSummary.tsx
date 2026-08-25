@@ -1,16 +1,17 @@
 import Link from 'next/link';
+import type { ReactNode } from 'react';
 import { CheckSquare, Coins, CircleAlert } from 'lucide-react';
+import { Money, Ratio } from '@/components/Ltr';
 import { appCopy } from '@/content/site';
 import type { EventSummary as Summary } from '@/lib/eventSummary';
 import { formatDate, isOverdue } from '@/lib/dates';
 
 const c = appCopy.clientPage;
 
-const shekels = (n: number) => `₪${Math.round(n).toLocaleString('he-IL')}`;
 const dateFmt = new Intl.DateTimeFormat('he-IL', { day: '2-digit', month: '2-digit' });
 
 function Tile({ label, value, tone = 'plain', sub }: {
-  label: string; value: string; sub?: string; tone?: 'plain' | 'warn' | 'good';
+  label: string; value: ReactNode; sub?: ReactNode; tone?: 'plain' | 'warn' | 'good';
 }) {
   const colour =
     tone === 'warn' ? 'text-bad' : tone === 'good' ? 'text-ok' : 'text-ink';
@@ -50,8 +51,8 @@ export function EventSummary({ clientId, summary }: { clientId: string; summary:
         />
         <Tile
           label={t.owed}
-          value={money.owed === 0 ? t.none : shekels(money.owed)}
-          sub={money.paid > 0 ? `${t.paid} ${shekels(money.paid)}` : undefined}
+          value={money.owed === 0 ? t.none : <Money value={money.owed} />}
+          sub={money.paid > 0 ? <>{t.paid} <Money value={money.paid} /></> : undefined}
           tone={money.overdue > 0 ? 'warn' : 'plain'}
         />
         <Tile
@@ -62,7 +63,7 @@ export function EventSummary({ clientId, summary }: { clientId: string; summary:
           label={t.dayLines}
           value={summary.dayLines === 0 ? t.none : String(summary.dayLines)}
           sub={summary.contracts.total > 0
-            ? `${t.contracts} ${summary.contracts.signed}/${summary.contracts.total}`
+            ? <>{t.contracts} <Ratio of={summary.contracts.signed} total={summary.contracts.total} /></>
             : undefined}
         />
       </div>
@@ -70,7 +71,7 @@ export function EventSummary({ clientId, summary }: { clientId: string; summary:
       {money.overdue > 0 && (
         <p className="inline-flex items-center gap-2 rounded-none border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
           <CircleAlert size={16} aria-hidden strokeWidth={1.5} />
-          {t.overdue} {shekels(money.overdue)}
+          {t.overdue} <Money value={money.overdue} />
         </p>
       )}
 
@@ -96,7 +97,7 @@ export function EventSummary({ clientId, summary }: { clientId: string; summary:
                   </span>
                   <span className="min-w-0 flex-1 text-[14.5px] text-ink">{item.title}</span>
                   {item.amount !== undefined && item.amount > 0 && (
-                    <span className="text-[13.5px] tabular-nums text-ink-soft">{shekels(item.amount)}</span>
+                    <Money value={item.amount} className="text-[13.5px] tabular-nums text-ink-soft" />
                   )}
                   <span className={`text-[13px] tabular-nums ${late ? 'text-bad' : 'text-ink-mute'}`}>
                     {formatDate(dateFmt, item.due, t.none)}

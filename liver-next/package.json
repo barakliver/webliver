@@ -12,6 +12,7 @@
     "test": "node --test --experimental-strip-types \"src/**/__tests__/*.test.ts\"",
     "contrast": "node --experimental-strip-types scripts/check-contrast.mjs",
     "classes": "node --experimental-strip-types scripts/check-classes.mjs",
+    "bidi": "node scripts/check-bidi.mjs",
     "verify": "node scripts/verify.mjs",
     "db": "bash scripts/db-test.sh"
   },

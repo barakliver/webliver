@@ -7,13 +7,13 @@ import { addCrew, updateCrew, removeCrew, type CrewResult } from '@/app/actions/
 import { CREW_ROLES } from '@/content/production';
 import { crewCopy as c } from '@/content/site';
 import { hhmm, inDayOrder } from '@/lib/runsheet';
+import { Money } from '@/components/Ltr';
 
 export type CrewMember = {
   id: string; name: string; role: string; phone: string;
   call_time: string | null; fee: number | null; notes: string;
 };
 
-const shekels = (n: number) => `₪${Math.round(n).toLocaleString('he-IL')}`;
 
 function Save() {
   const { pending } = useFormStatus();
@@ -123,7 +123,7 @@ function Row({ member, clientId }: { member: CrewMember; clientId: string }) {
         </p>
         <div className="mt-0.5 flex flex-wrap items-center gap-x-3 text-[13px] text-ink-mute">
           {member.phone && <a href={`tel:${member.phone}`} dir="ltr" className="hover:text-accent">{member.phone}</a>}
-          {member.fee !== null && <span className="tabular-nums">{shekels(member.fee)}</span>}
+          {member.fee !== null && <Money value={member.fee} className="tabular-nums" />}
         </div>
         {member.notes && <p className="mt-0.5 text-[13px] text-ink-soft">{member.notes}</p>}
       </div>
@@ -220,7 +220,7 @@ export function CrewPanel({ clientId, crew }: { clientId: string; crew: CrewMemb
           </ul>
           {total > 0 && (
             <p className="mt-4 text-left text-[14px] text-ink-soft">
-              {c.totalFee} <b className="tabular-nums text-ink">{shekels(total)}</b>
+              {c.totalFee} <b className="tabular-nums text-ink"><Money value={total} /></b>
             </p>
           )}
         </>

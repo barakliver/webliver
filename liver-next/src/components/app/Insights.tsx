@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { appCopy } from '@/content/site';
 import type { Funnel, SourceRow, Response, Cash } from '@/lib/analytics';
-import { Money, ils } from '@/components/Ltr';
+import { Money, Ratio, ils } from '@/components/Ltr';
 
 const c = appCopy.insights;
 
@@ -89,7 +89,7 @@ export function Sources({ rows }: { rows: SourceRow[] }) {
                 <td className="py-2.5 tabular-nums text-ink-soft">{r.won}</td>
                 <td className="py-2.5">
                   {r.rate === null
-                    ? <span className="text-[12.5px] text-ink-mute">{r.won}/{r.leads}</span>
+                    ? <Ratio of={r.won} total={r.leads} className="text-[12.5px] text-ink-mute" />
                     : <span className="font-semibold tabular-nums text-accent">{r.rate}%</span>}
                 </td>
               </tr>
@@ -167,7 +167,7 @@ export function Health({ signed, overdue, waiting }: {
     <section className="card">
       <h2 className="font-display text-[19px] font-light text-ink">{c.health.title}</h2>
       <div className="mt-4 grid gap-3 sm:grid-cols-3">
-        <Figure label={c.health.signed} value={`${signed.signed}/${signed.of}`} />
+        <Figure label={c.health.signed} value={<Ratio of={signed.signed} total={signed.of} />} />
         <Figure label={c.health.overdueTasks} value={String(overdue)} tone={overdue > 0 ? 'bad' : 'ok'} />
         <Figure label={c.health.waiting} value={String(waiting)} tone={waiting > 0 ? 'warn' : 'ok'} />
       </div>

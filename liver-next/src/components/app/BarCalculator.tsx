@@ -6,7 +6,6 @@ import { planBar, shoppingList, DEFAULT_PRICES, type BarStyle, type Season, type
 import { barCopy as c } from '@/content/site';
 import { Money } from '@/components/Ltr';
 
-const ils = (n: number) => `₪${Math.round(n).toLocaleString('he-IL')}`;
 
 const STYLES: BarStyle[] = ['barak', 'classic', 'spirits', 'wine', 'beer', 'light'];
 const SEASONS: Season[] = ['summer', 'mild', 'winter'];

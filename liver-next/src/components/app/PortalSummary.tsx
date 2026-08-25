@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
-import { Ltr, Money } from '@/components/Ltr';
+import { Ltr, Money, Ratio } from '@/components/Ltr';
 import { appCopy } from '@/content/site';
 
 /**
@@ -79,7 +79,7 @@ export function summaryRows(opts: {
     {
       key: 'rsvp',
       label: c.rowRsvp,
-      value: <Ltr>{opts.attending.toLocaleString('en-US')} / {opts.invited.toLocaleString('en-US')}</Ltr>,
+      value: <Ratio of={opts.attending} total={opts.invited} />,
       href: '#guests',
       shown: opts.can('guests'),
     },

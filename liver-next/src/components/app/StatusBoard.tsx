@@ -4,7 +4,7 @@ import { appCopy } from '@/content/site';
 import type { ClientStatus } from '@/lib/status';
 import { ArchiveButton } from '@/components/app/ArchiveButton';
 import { formatDate } from '@/lib/dates';
-import { Money, ils } from '@/components/Ltr';
+import { Money, Ratio, ils } from '@/components/Ltr';
 
 const dateFmt = new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'short', year: 'numeric' });
 
@@ -113,7 +113,7 @@ function Row({ s }: { s: ClientStatus }) {
               <div className="flex items-center gap-1.5">
                 <Users size={14} className="text-ink-mute" aria-hidden strokeWidth={1.5} />
                 <dd className="tabular-nums">
-                  {s.guests.attending}/{s.guests.invited} {c.attending}
+                  <Ratio of={s.guests.attending} total={s.guests.invited} /> {c.attending}
                 </dd>
               </div>
             )}

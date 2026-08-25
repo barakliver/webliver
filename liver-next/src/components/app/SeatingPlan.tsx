@@ -4,6 +4,7 @@ import { useActionState, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { addTable, setTableSeats, deleteTable, seatGuest, type SeatResult } from '@/app/actions/seating';
 import { seatingCopy } from '@/content/site';
+import { Ratio } from '@/components/Ltr';
 
 export type SeatTable = { id: string; name: string; seats: number };
 export type SeatGuest = {
@@ -172,7 +173,7 @@ export function SeatingPlan({ clientId, tables, guests }: {
                   <span className={`rounded-none px-2.5 py-0.5 text-[12px] ${
                     free === 0 ? 'bg-ok-wash text-ok' : 'bg-surface-200 text-ink-mute'
                   }`}>
-                    {taken}/{t.seats} {free === 0 ? c.full : ''}
+                    <Ratio of={taken} total={t.seats} /> {free === 0 ? c.full : ''}
                   </span>
                 </div>
 
