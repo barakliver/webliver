@@ -39,9 +39,9 @@ async function offlineFallback() {
   return new Response(
     '<!doctype html><html lang="he" dir="rtl"><meta charset="utf-8">' +
     '<title>אין חיבור</title>' +
-    '<body style="font-family:system-ui,Arial;padding:40px;text-align:center;background:#f7fafd;color:#0b1220">' +
+    '<body style="font-family:Heebo,system-ui,Arial;padding:40px;text-align:center;background:#FAF7F2;color:#1A1613">' +
     '<h1 style="font-size:20px">אין חיבור לאינטרנט</h1>' +
-    '<p style="color:#3c4657">ברגע שהחיבור יחזור, רעננו את הדף.</p>',
+    '<p style="color:#6B6259">ברגע שהחיבור יחזור, רעננו את הדף.</p>',
     { headers: { 'Content-Type': 'text/html; charset=utf-8' }, status: 503 }
   );
 }
