@@ -45,14 +45,17 @@ function StatusButton({ id, status, label, tone }: {
  *  This used to set the headline at `text-[22px]`, which is why the console
  *  carried the right palette and still did not look like the design: the
  *  numbers were the smallest thing on a screen that is entirely numbers. */
-function Band({ title, rows }: { title: string; rows: { label: string; value: number }[] }) {
+function Band({ title, rows, href }: {
+  title: string; rows: { label: string; value: number }[]; href?: string;
+}) {
   const [lead, ...rest] = rows;
   return (
     <MetricBlock
       kicker={title}
       value={lead.value.toLocaleString('en-US')}
       sub={lead.label}
-      rows={rest.map((r) => ({ label: r.label, value: r.value.toLocaleString('en-US') }))}
+      href={href}
+      rows={rest.map((r) => ({ label: r.label, value: r.value.toLocaleString('en-US'), href }))}
     />
   );
 }
@@ -67,7 +70,12 @@ function Telemetry({ s }: { s: Stats }) {
           { label: c.stats.active30, value: s.usersActive30d },
           { label: c.stats.neverSeen, value: s.usersNeverSeen },
         ]} />
-        <Band title={c.stats.producers} rows={[
+        {/* The only figure on this screen with a list behind it, and the list
+            is further down the same page. The rest are counts of things this
+            console deliberately cannot open: 0030 took root's master key away,
+            so there is no couple to click through to and saying otherwise
+            with an arrow would be a promise the database refuses to keep. */}
+        <Band href="#producers" title={c.stats.producers} rows={[
           { label: c.stats.approved, value: s.producersApproved },
           { label: c.stats.pending, value: s.producersPending },
           { label: c.stats.blocked, value: s.producersBlocked },
@@ -160,7 +168,7 @@ export default async function AdminPage() {
           </section>
         )}
 
-        <section>
+        <section id="producers" className="scroll-mt-8">
           <h2 className="eyebrow mb-1">{c.board.title}</h2>
           <p className="mb-3 text-[13.5px] text-ink-soft">{c.board.sub}</p>
           {rest.length === 0 ? (

@@ -99,11 +99,19 @@ export function GuestList({ clientId, guests }: { clientId: string; guests: Gues
 
   const shown = filter === 'all' ? guests : guests.filter((g) => g.status === filter);
 
-  const tiles: [string, number, 'ink' | 'ok' | 'warn' | 'accent'][] = [
-    [c.invited, guests.length, 'ink'],
-    [c.attending, attending.length, 'ok'],
-    [c.pending, pending.length, 'warn'],
-    [c.heads, heads, 'accent'],
+  /* Each tile is the way into the part of the list it counts. The detail
+     behind "24 מגיעים" is those twenty four names, and they are already on
+     this screen: tapping the figure filters the list under it rather than
+     opening another one. The head count filters to the same people, because
+     the number is those guests plus their partners. */
+  const tiles: {
+    label: string; value: number; tone: 'ink' | 'ok' | 'warn' | 'accent';
+    to: 'all' | Guest['status'];
+  }[] = [
+    { label: c.invited,   value: guests.length,    tone: 'ink',    to: 'all' },
+    { label: c.attending, value: attending.length, tone: 'ok',     to: 'attending' },
+    { label: c.pending,   value: pending.length,   tone: 'warn',   to: 'pending' },
+    { label: c.heads,     value: heads,            tone: 'accent', to: 'attending' },
   ];
 
   return (
@@ -112,8 +120,15 @@ export function GuestList({ clientId, guests }: { clientId: string; guests: Gues
       <p className="mt-1 text-[14px] text-ink-soft">{c.sub}</p>
 
       <div className="mt-6 grid gap-x-8 gap-y-8 grid-cols-2 sm:grid-cols-4">
-        {tiles.map(([label, value, tone]) => (
-          <Metric key={label} kicker={label} value={value.toLocaleString('en-US')} tone={tone} />
+        {tiles.map((t) => (
+          <Metric
+            key={t.label}
+            kicker={t.label}
+            value={t.value.toLocaleString('en-US')}
+            tone={t.tone}
+            label={`${t.label} · ${c.showOnly}`}
+            onClick={guests.length === 0 ? undefined : () => setFilter(t.to)}
+          />
         ))}
       </div>
 

@@ -43,13 +43,30 @@ export function FunnelChart({ funnel }: { funnel: Funnel }) {
       <ul className="mt-5 list-none space-y-3 p-0">
         {funnel.steps.map((s, i) => (
           <li key={s.key}>
-            <div className="flex items-baseline justify-between gap-3">
-              <span className="text-[14px] font-medium text-ink">{LABELS[s.key] ?? s.key}</span>
+            {/* The whole step is the way into the enquiries it counts. It goes
+                to the list unfiltered, on purpose: these counts are cumulative
+                and a logged call counts as contact whether or not anybody
+                moved the status afterwards, so a filter by status would land
+                on a shorter list than the number that was tapped. A link that
+                disagrees with the figure above it is worse than no link. */}
+            <Link
+              href="/app/leads"
+              className="group/metric flex items-baseline justify-between gap-3 rounded-xl2
+                         focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
+                         focus-visible:outline-accent"
+            >
+              <span className="text-[14px] font-medium text-ink transition-colors
+                               group-hover/metric:text-accent">
+                {LABELS[s.key] ?? s.key}
+              </span>
               <span className="flex items-baseline gap-2">
-                <span className="text-[17px] font-semibold tabular-nums text-ink">{s.count}</span>
+                <span className="text-[17px] font-semibold tabular-nums text-ink transition-colors
+                                 group-hover/metric:text-accent">
+                  {s.count}
+                </span>
                 {i > 0 && <Rate value={s.rate} />}
               </span>
-            </div>
+            </Link>
             <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-surface-200">
               <div
                 className="h-full rounded-xl2 bg-accent transition-[width] duration-500"
@@ -102,18 +119,25 @@ export function Sources({ rows }: { rows: SourceRow[] }) {
   );
 }
 
-/** One figure, big, with the thing it is a figure about under it. */
-function Figure({ label, value, tone = 'ink', note }: {
+/** One figure, big, with the thing it is a figure about under it.
+ *
+ *  `href` where there is somewhere real to go, and left off where there is
+ *  not. Money already collected has no screen behind it and gets no arrow;
+ *  money that is late is a list of events, and enquiries still waiting are a
+ *  list of people. Sending all of them to the same page so that everything
+ *  looks clickable teaches the opposite of what it is meant to. */
+function Figure({ label, value, tone = 'ink', note, href }: {
   /* ReactNode rather than string: an amount arrives as <Money>, which is an
      element, because a bare shekel string inside a Hebrew page renders with
      the sign on the wrong side. */
-  label: string; value: React.ReactNode; tone?: 'ink' | 'ok' | 'warn' | 'bad'; note?: string;
+  label: string; value: React.ReactNode; tone?: 'ink' | 'ok' | 'warn' | 'bad';
+  note?: string; href?: string;
 }) {
   /* No box. On this palette a figure is a figure and a hairline separates
      it from the next one; the filled tile it used to sit in belonged to the
      version with cards. The tone stays on the numeral, where it is measured
      against the ivory rather than against a wash. */
-  return <Metric kicker={label} value={value} sub={note} tone={tone} />;
+  return <Metric kicker={label} value={value} sub={note} tone={tone} href={href} />;
 }
 
 export function CashPanel({ cash }: { cash: Cash }) {
@@ -123,12 +147,13 @@ export function CashPanel({ cash }: { cash: Cash }) {
       <p className="mt-1 text-[13.5px] text-ink-soft">{c.cash.sub}</p>
       <div className="mt-4 grid gap-3 sm:grid-cols-3">
         <Figure label={c.cash.collected} value=<Money value={cash.collected} /> tone="ok" />
-        <Figure label={c.cash.due} value=<Money value={cash.due} /> />
+        <Figure label={c.cash.due} value=<Money value={cash.due} /> href="/app/clients" />
         <Figure
           label={c.cash.overdue}
           value=<Money value={cash.overdue} />
           tone={cash.overdue > 0 ? 'bad' : 'ink'}
           note={cash.overdueCount > 0 ? c.cash.overdueCount(cash.overdueCount) : undefined}
+          href={cash.overdue > 0 ? '/app/clients' : undefined}
         />
       </div>
     </section>
@@ -146,11 +171,12 @@ export function ResponsePanel({ r }: { r: Response }) {
           value={r.medianHours === null ? '·' : c.response.hours(r.medianHours)}
           note={r.medianHours === null ? c.response.none : undefined}
         />
-        <Figure label={c.response.answered} value={String(r.answered)} />
+        <Figure label={c.response.answered} value={String(r.answered)} href="/app/leads" />
         <Figure
           label={c.response.waiting}
           value={String(r.waiting)}
           tone={r.waiting > 0 ? 'warn' : 'ok'}
+          href={r.waiting > 0 ? '/app/leads' : undefined}
         />
       </div>
     </section>
@@ -165,9 +191,23 @@ export function Health({ signed, overdue, waiting }: {
     <section className="card">
       <h2 className="font-display text-[19px] font-light text-ink">{c.health.title}</h2>
       <div className="mt-4 grid gap-3 sm:grid-cols-3">
-        <Figure label={c.health.signed} value={<Ratio of={signed.signed} total={signed.of} />} />
-        <Figure label={c.health.overdueTasks} value={String(overdue)} tone={overdue > 0 ? 'bad' : 'ok'} />
-        <Figure label={c.health.waiting} value={String(waiting)} tone={waiting > 0 ? 'warn' : 'ok'} />
+        <Figure
+          label={c.health.signed}
+          value={<Ratio of={signed.signed} total={signed.of} />}
+          href="/app/clients"
+        />
+        <Figure
+          label={c.health.overdueTasks}
+          value={String(overdue)}
+          tone={overdue > 0 ? 'bad' : 'ok'}
+          href={overdue > 0 ? '/app/clients' : undefined}
+        />
+        <Figure
+          label={c.health.waiting}
+          value={String(waiting)}
+          tone={waiting > 0 ? 'warn' : 'ok'}
+          href={waiting > 0 ? '/app/leads' : undefined}
+        />
       </div>
 
       {clear ? (

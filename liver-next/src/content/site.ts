@@ -902,6 +902,9 @@ export const guestsCopy = {
   pending: 'טרם ענו',
   invited: 'הוזמנו',
   heads: 'סה״כ נפשות',
+  /* The accessible name of a figure that filters the list under it. A screen
+     reader reaching a link called "24" has been told nothing. */
+  showOnly: 'הצגה ברשימה',
   addTitle: 'הוספת אורחים',
   addHint: 'שם בכל שורה. אפשר גם "שם, צד, טלפון".',
   addPh: 'משפחת כהן, כלה, 0501234567\nדוד ורונית\nיעל מהעבודה',

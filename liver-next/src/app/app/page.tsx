@@ -8,6 +8,7 @@ import { appCopy } from '@/content/site';
 import { PageHead } from '@/components/app/PageHead';
 import { AttentionList } from '@/components/app/Attention';
 import { Money, ils } from '@/components/Ltr';
+import { MetricRows } from '@/components/app/Metric';
 
 export const metadata = { title: appCopy.nav.overview };
 
@@ -66,24 +67,27 @@ export default async function OverviewPage() {
               <span className="eyebrow">{c.money}</span>
             </div>
 
-            {/* tabular-nums so the shekel figures line up down the column
-                instead of shifting with every digit. */}
-            <dl className="mt-4 grid gap-3 text-[15px] tabular-nums">
-              <div className="flex items-baseline justify-between gap-4">
-                <dt className="text-ink-soft">{c.paid}</dt>
-                <dd className="font-medium text-ink"><Money value={money.paid} /></dd>
-              </div>
-              <div className="flex items-baseline justify-between gap-4">
-                <dt className="text-ink-soft">{c.owed}</dt>
-                <dd className="font-medium text-ink"><Money value={money.owed} /></dd>
-              </div>
-              {money.overdue > 0 && (
-                <div className="flex items-baseline justify-between gap-4">
-                  <dt className="text-bad">{c.overdue}</dt>
-                  <dd className="font-medium text-bad"><Money value={money.overdue} /></dd>
-                </div>
-              )}
-            </dl>
+            {/* Every one of these is a way in rather than a read-out. An
+                amount owed is a question, and the answer is on another screen;
+                until now the only way to get there was to remember where it
+                was. The three do not go to the same place, which is the point:
+                collected and owed are explained on the numbers screen, and
+                money that is late is explained by the events carrying it. */}
+            <MetricRows
+              className="mt-4"
+              rows={[
+                { label: c.paid, value: <Money value={money.paid} />, href: '/app/insights' },
+                { label: c.owed, value: <Money value={money.owed} />, href: '/app/insights' },
+                ...(money.overdue > 0
+                  ? [{
+                      label: c.overdue,
+                      value: <Money value={money.overdue} />,
+                      tone: 'bad' as const,
+                      href: '/app/clients',
+                    }]
+                  : []),
+              ]}
+            />
 
             <hr className="hairline my-4" />
             <Link href="/app/clients" className="btn-quiet px-0 text-[14px]">
