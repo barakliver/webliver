@@ -2,35 +2,50 @@
 
 import { useRef, useState } from 'react';
 
-const LENGTH = 6;
-
 /**
- * Six boxes for a six digit code.
+ * One box per digit of the sign-in code, with a way out.
  *
- * One field per digit rather than one long field, because a code arriving by
- * mail is read in glances — look, type two, look again — and boxes hold your
- * place while a single field does not. Everything a person might do with it is
- * handled: typing forwards, backspacing through, pasting the whole code from
- * the mail, and the browser's own one-time-code autofill, which delivers all
- * six characters into the first box at once.
+ * The count comes from configuration rather than from this file. The length is
+ * a Supabase project setting, and when the two disagree the screen fails in the
+ * worst possible way: an eight digit code arrives, six boxes take six of them,
+ * and the person typing is told their code is wrong. That happened, and boxes
+ * alone cannot prevent it happening again — whoever changes that setting will
+ * not be reading this component.
  *
- * The real value is submitted in a hidden field, so the server sees one string
- * and never has to know the input was split up.
+ * So there is a plain field underneath, one link away, and it accepts a code of
+ * any length. It also appears on its own the moment somebody pastes more digits
+ * than there are boxes, which is exactly the situation a mismatch produces. The
+ * server has never cared how long the code is; only the markup did.
+ *
+ * The real value is submitted in a hidden field either way, so nothing
+ * downstream knows or cares which of the two was used.
  */
-export function CodeInput({ name, label }: { name: string; label: string }) {
-  const [digits, setDigits] = useState<string[]>(Array(LENGTH).fill(''));
+export function CodeInput({ name, label, length }: {
+  name: string; label: string; length: number;
+}) {
+  const [digits, setDigits] = useState<string[]>(Array(length).fill(''));
+  const [plain, setPlain] = useState<string | null>(null);
   const refs = useRef<(HTMLInputElement | null)[]>([]);
 
-  const focus = (i: number) => refs.current[Math.max(0, Math.min(LENGTH - 1, i))]?.focus();
+  const value = plain !== null ? plain : digits.join('');
+  const focus = (i: number) => refs.current[Math.max(0, Math.min(length - 1, i))]?.focus();
 
   const write = (start: number, text: string) => {
     const chars = text.replace(/\D/g, '').split('');
     if (chars.length === 0) return;
 
+    /* More digits than boxes means the boxes are the wrong shape for this
+       code. Rather than silently dropping the tail, hand over to the field
+       that can hold all of it. */
+    if (start === 0 && chars.length > length) {
+      setPlain(chars.join(''));
+      return;
+    }
+
     const next = [...digits];
     let i = start;
     for (const ch of chars) {
-      if (i >= LENGTH) break;
+      if (i >= length) break;
       next[i] = ch;
       i += 1;
     }
@@ -38,41 +53,66 @@ export function CodeInput({ name, label }: { name: string; label: string }) {
     focus(i);
   };
 
+  const boxSize = length > 6
+    ? 'size-10 text-[19px] sm:size-12 sm:text-[21px]'
+    : 'size-12 text-[22px] sm:size-14';
+
   return (
     <div>
       <span className="label">{label}</span>
-      <input type="hidden" name={name} value={digits.join('')} />
-      {/* dir=ltr because a numeric code reads left to right even on a
-          right-to-left page, and flex-row-reverse would put the first digit
-          under the last box. */}
-      <div dir="ltr" className="mt-1.5 flex justify-center gap-2">
-        {digits.map((d, i) => (
-          <input
-            key={i}
-            ref={(el) => { refs.current[i] = el; }}
-            value={d}
-            inputMode="numeric"
-            autoComplete={i === 0 ? 'one-time-code' : 'off'}
-            aria-label={`${label} ${i + 1}`}
-            className="field size-12 p-0 text-center text-[22px] font-semibold tabular-nums sm:size-14"
-            onChange={(e) => write(i, e.target.value)}
-            onFocus={(e) => e.target.select()}
-            onKeyDown={(e) => {
-              if (e.key === 'Backspace') {
-                e.preventDefault();
-                const next = [...digits];
-                /* Backspace on an empty box steps back and clears that one,
-                   which is what everybody expects and almost nothing does. */
-                if (next[i]) next[i] = '';
-                else if (i > 0) { next[i - 1] = ''; focus(i - 1); }
-                setDigits(next);
-              } else if (e.key === 'ArrowLeft') { e.preventDefault(); focus(i - 1); }
-              else if (e.key === 'ArrowRight') { e.preventDefault(); focus(i + 1); }
-            }}
-            onPaste={(e) => { e.preventDefault(); write(i, e.clipboardData.getData('text')); }}
-          />
-        ))}
-      </div>
+      <input type="hidden" name={name} value={value} />
+
+      {plain !== null ? (
+        <input
+          autoFocus
+          dir="ltr"
+          inputMode="numeric"
+          autoComplete="one-time-code"
+          aria-label={label}
+          value={plain}
+          onChange={(e) => setPlain(e.target.value.replace(/\D/g, '').slice(0, 12))}
+          className="field mt-1.5 w-full text-center text-[22px] font-semibold tracking-[0.4em] tabular-nums"
+        />
+      ) : (
+        /* Left to right inside a right-to-left page, because a number reads
+           that way regardless of the language around it. */
+        <div dir="ltr" className="mt-1.5 flex justify-center gap-2">
+          {digits.map((d, i) => (
+            <input
+              key={i}
+              ref={(el) => { refs.current[i] = el; }}
+              value={d}
+              inputMode="numeric"
+              autoComplete={i === 0 ? 'one-time-code' : 'off'}
+              aria-label={`${label} ${i + 1}`}
+              className={`field p-0 text-center font-semibold tabular-nums ${boxSize}`}
+              onChange={(e) => write(i, e.target.value)}
+              onFocus={(e) => e.target.select()}
+              onKeyDown={(e) => {
+                if (e.key === 'Backspace') {
+                  e.preventDefault();
+                  const next = [...digits];
+                  /* Backspace on an empty box steps back and clears that one,
+                     which is what everybody expects and almost nothing does. */
+                  if (next[i]) next[i] = '';
+                  else if (i > 0) { next[i - 1] = ''; focus(i - 1); }
+                  setDigits(next);
+                } else if (e.key === 'ArrowLeft') { e.preventDefault(); focus(i - 1); }
+                else if (e.key === 'ArrowRight') { e.preventDefault(); focus(i + 1); }
+              }}
+              onPaste={(e) => { e.preventDefault(); write(i, e.clipboardData.getData('text')); }}
+            />
+          ))}
+        </div>
+      )}
+
+      <button
+        type="button"
+        onClick={() => setPlain(plain === null ? digits.join('') : null)}
+        className="mt-2.5 block w-full text-center text-[13px] text-ink-mute underline-offset-2 hover:text-ink hover:underline"
+      >
+        {plain === null ? 'הקוד שקיבלתי באורך אחר' : 'חזרה לריבועים'}
+      </button>
     </div>
   );
 }
