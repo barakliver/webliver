@@ -20,7 +20,7 @@ export function Live({ sources }: { sources: LiveSource[] }) {
   return (
     <div
       role="status"
-      className="pointer-events-none fixed inset-x-0 bottom-[calc(env(safe-area-inset-bottom)+5.5rem)] z-30 flex justify-center px-4 sm:bottom-6"
+      className="pointer-events-none fixed inset-x-0 bottom-[calc(env(safe-area-inset-bottom)+5.5rem)] z-30 flex justify-center px-4 lg:bottom-6"
     >
       <span className="inline-flex items-center gap-2 rounded-full border border-line-strong bg-ivory-100 px-3.5 py-2 text-[13px] text-ink-soft shadow-soft">
         <CloudOff size={15} aria-hidden strokeWidth={1.75} />

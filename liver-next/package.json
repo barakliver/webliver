@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "sql": "node scripts/build-setup-sql.mjs"
+    "sql": "node scripts/build-setup-sql.mjs",
+    "test": "node --test --experimental-strip-types \"src/**/__tests__/*.test.ts\""
   },
   "dependencies": {
     "@supabase/ssr": "^0.5.2",
