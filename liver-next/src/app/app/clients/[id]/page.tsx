@@ -18,6 +18,8 @@ import { WinningBoard } from '@/components/app/WinningBoard';
 import { GuestList, type Guest } from '@/components/app/GuestList';
 import { SeatingPlan, type SeatTable } from '@/components/app/SeatingPlan';
 import { DaySchedule, type DayItem } from '@/components/app/DaySchedule';
+import { CrewPanel, type CrewMember } from '@/components/app/CrewPanel';
+import { EventVendors, type EventVendor, type DirectoryEntry } from '@/components/app/EventVendors';
 import { signBoardImages } from '@/lib/board';
 import { safeRows, safeValue } from '@/lib/safe';
 import { loadThread, loadContracts } from '@/lib/portal';
@@ -160,6 +162,29 @@ async function Section({ tab, client, viewerId }: { tab: EventTab; client: Clien
       <div className="space-y-6">
         <GuestList clientId={id} guests={guests} />
         <SeatingPlan clientId={id} tables={tables} guests={guests as never} />
+      </div>
+    );
+  }
+
+  if (tab === 'crew') {
+    /* The directory comes along so a supplier can be booked without leaving
+       the event. It is the producer's own book and row level security already
+       scopes it to them; the archived ones are left out because booking a
+       retired supplier is not a thing anybody means to do. */
+    const [crew, eventVendors, directory] = await Promise.all([
+      safeRows<CrewMember>('crew', sb.from('crew')
+        .select('id,name,role,phone,call_time,fee,notes')
+        .eq('client_id', id).order('call_time', { ascending: true, nullsFirst: false })),
+      safeRows<EventVendor>('event vendors', sb.from('event_vendors')
+        .select('id,vendor_id,name,category,phone,status,call_time,notes')
+        .eq('client_id', id).order('category')),
+      safeRows<DirectoryEntry>('vendor directory', sb.from('vendors')
+        .select('id,name,category,phone').is('archived_at', null).order('name')),
+    ]);
+    return (
+      <div className="space-y-6">
+        <EventVendors clientId={id} vendors={eventVendors} directory={directory} />
+        <CrewPanel clientId={id} crew={crew} />
       </div>
     );
   }
