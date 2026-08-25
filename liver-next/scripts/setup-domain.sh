@@ -119,43 +119,10 @@ echo "        חזרה בפקודה אחת:  bash $backup/restore.sh"
 www_line=""
 [ "$alias_www" -eq 1 ] && www_line=", www.${domain}"
 
-python3 - "$cf" "$domain" "$www_line" "$app_port" <<'PYEOF'
-import re, sys
-path, domain, www, port = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
-# Only directives that are certainly valid at site level. `header_up` is a
-# reverse_proxy subdirective, not a site one, and putting it here fails
-# validation; Caddy passes the original Host upstream by default anyway, which
-# is what the app needs to tell one producer from another.
-block = f"""# >>> liver-next managed
-{domain}{www} {{
-\treverse_proxy 127.0.0.1:{port}
-\trequest_body {{
-\t\tmax_size 12MB
-\t}}
-}}
-# <<< liver-next managed"""
-src = open(path, encoding='utf-8').read()
-if '# >>> liver-next managed' in src:
-    src = re.sub(r'# >>> liver-next managed.*?# <<< liver-next managed', block, src, flags=re.S)
-else:
-    # Comment out any existing block for this host, rather than deleting it:
-    # the file is the only record of how the old site was served.
-    lines, out, depth, hit = src.split('
-'), [], 0, False
-    pat = re.compile(r'(^|[\s,]){}([\s,{{]|$)'.format(re.escape(domain)))
-    for ln in lines:
-        if depth == 0 and pat.search(ln) and not ln.strip().startswith('#'):
-            hit, depth = True, ln.count('{') - ln.count('}')
-            out.append('# ' + ln); continue
-        if hit and depth > 0:
-            depth += ln.count('{') - ln.count('}')
-            out.append('# ' + ln)
-            if depth <= 0: hit = False
-            continue
-        out.append(ln)
-    src = '\n'.join(out).rstrip() + '\n\n' + block + '\n'
-open(path, 'w', encoding='utf-8').write(src)
-PYEOF
+www_flag=""
+[ "$alias_www" -eq 1 ] && www_flag="--www"
+python3 "$(dirname "$0")/caddy-site.py" "$cf" "$domain" "$app_port" $www_flag
+
 ok "התצורה נכתבה"
 
 if caddy validate --config "$cf" >/dev/null 2>&1; then
