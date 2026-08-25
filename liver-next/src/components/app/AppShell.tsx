@@ -77,7 +77,7 @@ export function AppShell({
             A hairline is the whole separation. It does not scroll with the
             content, so a screen of forty rows never puts the navigation out
             of reach, which is most of what made the long screens tiring. */}
-        <aside className="sticky top-0 hidden h-dvh w-[15.5rem] shrink-0 flex-col justify-between border-s border-line px-7 pb-24 pt-8 lg:flex">
+        <aside className="sticky top-0 hidden h-dvh w-[15.5rem] shrink-0 flex-col justify-between border-s border-line px-7 py-8 lg:flex">
           <div className="min-w-0">
             <Brand brand={brand} />
             <hr className="rule-gold mt-6" />

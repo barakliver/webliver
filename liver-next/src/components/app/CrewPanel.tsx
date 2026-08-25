@@ -26,7 +26,7 @@ function Save() {
 
 function Alert({ text }: { text: string }) {
   return (
-    <p role="alert" className="mt-3 rounded-none border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+    <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
       {text}
     </p>
   );
@@ -93,7 +93,7 @@ function Row({ member, clientId }: { member: CrewMember; clientId: string }) {
 
   if (editing) {
     return (
-      <li className="rounded-none border border-accent/40 bg-surface-100 p-4">
+      <li className="rounded-xl2 border border-accent/40 bg-surface-100 p-4">
         <form action={action} noValidate>
           <input type="hidden" name="crew_id" value={member.id} />
           <input type="hidden" name="client_id" value={clientId} />
@@ -109,7 +109,7 @@ function Row({ member, clientId }: { member: CrewMember; clientId: string }) {
   }
 
   return (
-    <li className="flex gap-4 rounded-none border border-line px-4 py-3.5 transition hover:border-line-strong">
+    <li className="flex gap-4 rounded-xl2 border border-line px-4 py-3.5 transition hover:border-line-strong">
       <div className="w-[58px] shrink-0 text-center" dir="ltr">
         <span className={`font-display text-[16px] font-light tabular-nums ${member.call_time ? 'text-ink' : 'text-ink-mute'}`}>
           {member.call_time ? hhmm(member.call_time) : '·'}
@@ -132,7 +132,7 @@ function Row({ member, clientId }: { member: CrewMember; clientId: string }) {
         <button
           type="button" onClick={() => setEditing(true)} title={c.edit}
           aria-label={`${c.edit} ${member.name}`}
-          className="rounded-none p-1.5 text-ink-mute transition hover:bg-surface-200 hover:text-ink"
+          className="rounded-xl2 p-1.5 text-ink-mute transition hover:bg-surface-200 hover:text-ink"
         >
           <Pencil size={15} aria-hidden strokeWidth={1.5} />
         </button>
@@ -141,7 +141,7 @@ function Row({ member, clientId }: { member: CrewMember; clientId: string }) {
           <input type="hidden" name="client_id" value={clientId} />
           <button
             type="submit" title={c.remove} aria-label={`${c.remove} ${member.name}`}
-            className="rounded-none p-1.5 text-ink-mute transition hover:bg-bad-wash hover:text-bad"
+            className="rounded-xl2 p-1.5 text-ink-mute transition hover:bg-bad-wash hover:text-bad"
           >
             <Trash2 size={15} aria-hidden strokeWidth={1.5} />
           </button>
@@ -195,7 +195,7 @@ export function CrewPanel({ clientId, crew }: { clientId: string; crew: CrewMemb
         <button
           type="button"
           onClick={() => setAdding((v) => !v)}
-          className="inline-flex items-center gap-1.5 rounded-none border border-line-strong bg-card px-4 py-2 text-[13.5px] font-medium text-ink transition hover:border-accent/40 hover:text-accent"
+          className="inline-flex items-center gap-1.5 rounded-xl2 border border-line-strong bg-card px-4 py-2 text-[13.5px] font-medium text-ink transition hover:border-accent/40 hover:text-accent"
         >
           <Plus size={15} aria-hidden strokeWidth={1.5} />
           {adding ? c.close : c.add}
@@ -203,7 +203,7 @@ export function CrewPanel({ clientId, crew }: { clientId: string; crew: CrewMemb
       </div>
 
       {adding && (
-        <form action={action} className="mt-4 rounded-none border border-line bg-surface-100 p-4" noValidate>
+        <form action={action} className="mt-4 rounded-xl2 border border-line bg-surface-100 p-4" noValidate>
           <input type="hidden" name="client_id" value={clientId} />
           <Fields />
           {state && !state.ok && state.error && <Alert text={state.error} />}

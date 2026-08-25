@@ -72,7 +72,7 @@ export function EventDetails({ event }: { event: EventCore }) {
           <input type="hidden" name="client_id" value={event.id} />
 
           {state && !state.ok && state.error && (
-            <p role="alert" className="mt-4 rounded-none border border-bad/25 bg-bad-wash px-4 py-3 text-[14.5px] text-bad">
+            <p role="alert" className="mt-4 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-3 text-[14.5px] text-bad">
               {state.error}
             </p>
           )}
@@ -142,7 +142,7 @@ export function EventDetails({ event }: { event: EventCore }) {
         <button
           type="button"
           onClick={() => setEditing(true)}
-          className="mt-5 inline-flex items-center gap-2 rounded-none border border-dashed border-line-strong px-4 py-3 text-[14.5px] text-ink-soft transition hover:border-accent/50 hover:text-accent"
+          className="mt-5 inline-flex items-center gap-2 rounded-xl2 border border-dashed border-line-strong px-4 py-3 text-[14.5px] text-ink-soft transition hover:border-accent/50 hover:text-accent"
         >
           <CalendarPlus size={16} aria-hidden strokeWidth={1.5} />
           {c.setDate}

@@ -49,7 +49,7 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
           <form action={toggleBudgetVisible}>
             <input type="hidden" name="client_id" value={clientId} />
             <input type="hidden" name="visible" value={String(visible)} />
-            <button type="submit" className={`rounded-none px-4 py-2 text-[13px] font-medium transition ${
+            <button type="submit" className={`rounded-xl2 px-4 py-2 text-[13px] font-medium transition ${
               visible ? 'bg-ok-wash text-ok' : 'bg-surface-200 text-ink-mute'
             }`}>
               {visible ? c.budVisible : c.budHidden}
@@ -59,7 +59,7 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
       </div>
 
       {viewer === 'producer' && !visible && (
-        <p className="mt-4 rounded-none bg-surface-200 px-4 py-3 text-[13.5px] text-ink-soft">{c.budHiddenNote}</p>
+        <p className="mt-4 rounded-xl2 bg-surface-200 px-4 py-3 text-[13.5px] text-ink-soft">{c.budHiddenNote}</p>
       )}
 
       <div className="mt-6 grid gap-x-8 gap-y-8 sm:grid-cols-3">
@@ -84,7 +84,7 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
       )}
 
       {state && !state.ok && state.error && (
-        <p role="alert" className="mt-3 rounded-none border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+        <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
           {state.error}
         </p>
       )}
@@ -99,7 +99,7 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
             to read their budget on. */}
         <ul className="mt-5 space-y-2.5 sm:hidden">
           {items.map((i) => (
-            <li key={i.id} className="rounded-none border border-line px-4 py-3.5">
+            <li key={i.id} className="rounded-xl2 border border-line px-4 py-3.5">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <p className="font-medium text-ink">{i.label}</p>

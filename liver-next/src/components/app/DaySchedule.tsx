@@ -30,7 +30,7 @@ function Busy({ label, busy }: { label: string; busy: string }) {
 
 function Alert({ text }: { text: string }) {
   return (
-    <p role="alert" className="mt-3 rounded-none border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+    <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
       {text}
     </p>
   );
@@ -157,7 +157,7 @@ function Row({
 
   if (editing) {
     return (
-      <li className="rounded-none border border-accent/40 bg-surface-100 p-4">
+      <li className="rounded-xl2 border border-accent/40 bg-surface-100 p-4">
         <form action={action} noValidate>
           <input type="hidden" name="item_id" value={item.id} />
           <input type="hidden" name="client_id" value={clientId} />
@@ -173,7 +173,7 @@ function Row({
   }
 
   return (
-    <li className={`group flex gap-4 rounded-none border px-4 py-3.5 transition ${
+    <li className={`group flex gap-4 rounded-xl2 border px-4 py-3.5 transition ${
       clash ? 'border-warn/30 bg-warn-wash/70' : 'border-line hover:border-line-strong'
     }`}>
       {/* Left to right inside a right-to-left page, because a clock reads that
@@ -192,7 +192,7 @@ function Row({
         {item.note && <p className="mt-0.5 text-[13px] text-ink-soft">{item.note}</p>}
 
         <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px]">
-          <span className={`rounded-none px-2 py-0.5 ${trackTone[item.track]}`}>{labels[item.track]}</span>
+          <span className={`rounded-xl2 px-2 py-0.5 ${trackTone[item.track]}`}>{labels[item.track]}</span>
           {showOwner && item.owner && <span className="text-ink-mute">{item.owner}</span>}
           {item.audience.length > 0 && (
             <span className="text-ink-mute">
@@ -220,7 +220,7 @@ function Row({
         <Move item={item} clientId={clientId} direction="down" disabled={isLast} />
         <button
           type="button" onClick={() => setEditing(true)}
-          className="rounded-none p-1.5 text-ink-mute transition hover:bg-surface-200 hover:text-ink"
+          className="rounded-xl2 p-1.5 text-ink-mute transition hover:bg-surface-200 hover:text-ink"
           title={c.edit} aria-label={`${c.edit} ${item.title}`}
         >
           <Pencil size={15} aria-hidden strokeWidth={1.5} />
@@ -230,7 +230,7 @@ function Row({
           <input type="hidden" name="client_id" value={clientId} />
           <button
             type="submit"
-            className="rounded-none p-1.5 text-ink-mute transition hover:bg-bad-wash hover:text-bad"
+            className="rounded-xl2 p-1.5 text-ink-mute transition hover:bg-bad-wash hover:text-bad"
             title={c.remove} aria-label={`${c.remove} ${item.title}`}
           >
             <Trash2 size={15} aria-hidden strokeWidth={1.5} />
@@ -256,7 +256,7 @@ function Move({ item, clientId, direction, disabled }: {
       <button
         type="submit"
         disabled={disabled}
-        className="rounded-none p-1.5 text-ink-mute transition hover:bg-surface-200 hover:text-ink
+        className="rounded-xl2 p-1.5 text-ink-mute transition hover:bg-surface-200 hover:text-ink
                    disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-ink-mute"
         title={label} aria-label={`${label} · ${item.title}`}
       >
@@ -277,7 +277,7 @@ function Templates({ clientId }: { clientId: string }) {
   const [chosen, setChosen] = useState<string | null>(null);
 
   return (
-    <div className="mt-5 rounded-none border border-dashed border-line-strong bg-surface-100 p-5">
+    <div className="mt-5 rounded-xl2 border border-dashed border-line-strong bg-surface-100 p-5">
       <h3 className="inline-flex items-center gap-2 font-display text-[16px] font-light text-ink">
         <Wand2 size={16} aria-hidden strokeWidth={1.5} />
         {c.templateTitle}
@@ -291,7 +291,7 @@ function Templates({ clientId }: { clientId: string }) {
             type="button"
             aria-pressed={chosen === t.id}
             onClick={() => setChosen(t.id)}
-            className={`rounded-none border p-4 text-right transition ${
+            className={`rounded-xl2 border p-4 text-right transition ${
               chosen === t.id
                 ? 'border-accent bg-card'
                 : 'border-line bg-card/60 hover:border-accent/40'
@@ -379,7 +379,7 @@ export function DaySchedule({ clientId, items, labelA, labelB, viewer = 'produce
           </button>
           <button
             type="button"
-            className="inline-flex items-center gap-1.5 rounded-none border border-line-strong bg-card px-4 py-2 text-[13.5px] font-medium text-ink transition hover:border-accent/40 hover:text-accent"
+            className="inline-flex items-center gap-1.5 rounded-xl2 border border-line-strong bg-card px-4 py-2 text-[13.5px] font-medium text-ink transition hover:border-accent/40 hover:text-accent"
             onClick={() => setAdding((v) => !v)}
           >
             <Plus size={15} aria-hidden strokeWidth={1.5} />
@@ -389,7 +389,7 @@ export function DaySchedule({ clientId, items, labelA, labelB, viewer = 'produce
       </div>
 
       {renaming && (
-        <form action={nameAction} className="mt-4 grid gap-3 rounded-none bg-surface-100 p-4 sm:grid-cols-[1fr_1fr_auto]">
+        <form action={nameAction} className="mt-4 grid gap-3 rounded-xl2 bg-surface-100 p-4 sm:grid-cols-[1fr_1fr_auto]">
           <input type="hidden" name="client_id" value={clientId} />
           <input name="track_a_label" defaultValue={labelA} maxLength={40} className="field" aria-label={labelA} />
           <input name="track_b_label" defaultValue={labelB} maxLength={40} className="field" aria-label={labelB} />
@@ -400,7 +400,7 @@ export function DaySchedule({ clientId, items, labelA, labelB, viewer = 'produce
       {nameState && !nameState.ok && nameState.error && <Alert text={nameState.error} />}
 
       {adding && (
-        <form action={addAction} className="mt-4 rounded-none border border-line bg-surface-100 p-4" noValidate>
+        <form action={addAction} className="mt-4 rounded-xl2 border border-line bg-surface-100 p-4" noValidate>
           <input type="hidden" name="client_id" value={clientId} />
           <LineFields labels={labels} showOwner={showOwner} />
           {addState && !addState.ok && addState.error && <Alert text={addState.error} />}
@@ -418,7 +418,7 @@ export function DaySchedule({ clientId, items, labelA, labelB, viewer = 'produce
       ) : (
         <>
           {wraps && (
-            <p className="mt-5 rounded-none bg-surface-100 px-4 py-2.5 text-[13px] text-ink-soft">
+            <p className="mt-5 rounded-xl2 bg-surface-100 px-4 py-2.5 text-[13px] text-ink-soft">
               {c.crossesMidnight}
             </p>
           )}

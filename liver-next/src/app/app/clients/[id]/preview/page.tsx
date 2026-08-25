@@ -53,7 +53,7 @@ export default async function PreviewPage({ params }: { params: Promise<{ id: st
           </p>
           <Link
             href={`/app/clients/${id}`}
-            className="inline-flex items-center gap-1.5 rounded-none border border-accent/30 bg-card/70 px-3.5 py-1.5 text-[13.5px] font-medium text-accent transition hover:bg-card"
+            className="inline-flex items-center gap-1.5 rounded-xl2 border border-accent/30 bg-card/70 px-3.5 py-1.5 text-[13.5px] font-medium text-accent transition hover:bg-card"
           >
             <ArrowRight size={15} aria-hidden strokeWidth={1.5} />
             {c.exit}

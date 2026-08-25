@@ -24,7 +24,7 @@ function Choice<T extends string>({ label, hint, value, options, labels, onChang
             type="button"
             aria-pressed={o === value}
             onClick={() => onChange(o)}
-            className={`inline-flex min-h-[44px] items-center rounded-none border px-4 text-[14px] transition sm:min-h-[38px] ${
+            className={`inline-flex min-h-[44px] items-center rounded-xl2 border px-4 text-[14px] transition sm:min-h-[38px] ${
               o === value
                 ? 'border-ink bg-ink font-medium text-surface'
                 : 'border-line-strong text-ink-soft hover:border-accent/40 hover:text-accent'
@@ -213,7 +213,7 @@ export function BarCalculator({ guestEstimate, confirmedGuests }: {
       </div>
 
       {showPrices && (
-        <div className="no-print mt-4 rounded-none border border-line bg-surface-100 p-4">
+        <div className="no-print mt-4 rounded-xl2 border border-line bg-surface-100 p-4">
           <p className="text-[13px] text-ink-mute">{c.pricesHint}</p>
           <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {(Object.keys(prices) as (keyof Prices)[]).map((k) => (

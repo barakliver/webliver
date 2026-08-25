@@ -33,7 +33,7 @@ export function LeadForm({ compact = false }: { compact?: boolean }) {
   return (
     <form action={action} className={compact ? 'space-y-4' : 'card space-y-5'} noValidate>
       {err && (
-        <p role="alert" className="rounded-none border border-bad/25 bg-bad-wash px-4 py-3 text-[14.5px] text-bad">
+        <p role="alert" className="rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-3 text-[14.5px] text-bad">
           {err.error}
         </p>
       )}

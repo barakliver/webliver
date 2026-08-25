@@ -96,7 +96,7 @@ function Toggle({ label, on, onClick }: { label: string; on: boolean; onClick: (
       onClick={onClick}
       aria-pressed={on}
       className={cn(
-        'inline-flex min-h-[44px] items-center gap-1.5 rounded-none border px-4 text-[13.5px] font-medium transition-colors',
+        'inline-flex min-h-[44px] items-center gap-1.5 rounded-xl2 border px-4 text-[13.5px] font-medium transition-colors',
         on
           ? 'border-ok bg-ok-wash text-ok'
           : 'border-line-strong bg-surface-100 text-ink-mute',

@@ -95,12 +95,12 @@ function Producer({ p }: { p: ProducerRow }) {
           <h3 className="flex flex-wrap items-center gap-2 font-display text-[17.5px] font-light text-ink">
             {p.brand}
             {p.isRoot && (
-              <span className="inline-flex items-center gap-1 rounded-none bg-accent-wash px-2.5 py-0.5 text-[12px] font-medium text-accent">
+              <span className="inline-flex items-center gap-1 rounded-xl2 bg-accent-wash px-2.5 py-0.5 text-[12px] font-medium text-accent">
                 <ShieldCheck size={13} aria-hidden strokeWidth={1.5} />
                 {c.rootBadge}
               </span>
             )}
-            <span className={`rounded-none px-2.5 py-0.5 text-[12px] font-medium ${STATUS_TONE[p.status]}`}>
+            <span className={`rounded-xl2 px-2.5 py-0.5 text-[12px] font-medium ${STATUS_TONE[p.status]}`}>
               {appCopy.pending.statuses[p.status]}
             </span>
           </h3>

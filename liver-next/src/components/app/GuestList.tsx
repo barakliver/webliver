@@ -53,7 +53,7 @@ const dietLabel = (v: string) => DIETS.find((d) => d.value === v)?.label ?? v;
  *  and the desktop can never end up calling the same status different things. */
 function StatusChip({ status }: { status: Guest['status'] }) {
   return (
-    <span className={`shrink-0 rounded-none px-3 py-1 text-[12.5px] ${
+    <span className={`shrink-0 rounded-xl2 px-3 py-1 text-[12.5px] ${
       status === 'attending' ? 'bg-ok-wash text-ok'
       : status === 'declined' ? 'bg-bad-wash text-bad'
       : 'bg-surface-200 text-ink-mute'
@@ -131,7 +131,7 @@ export function GuestList({ clientId, guests }: { clientId: string; guests: Gues
       </form>
 
       {state && !state.ok && state.error && (
-        <p role="alert" className="mt-3 rounded-none border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+        <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
           {state.error}
         </p>
       )}
@@ -147,7 +147,7 @@ export function GuestList({ clientId, guests }: { clientId: string; guests: Gues
               ([v, label]) => (
                 <button
                   key={v} type="button" onClick={() => setFilter(v)} aria-pressed={filter === v}
-                  className={`rounded-none px-4 py-1.5 text-[13.5px] transition ${
+                  className={`rounded-xl2 px-4 py-1.5 text-[13.5px] transition ${
                     filter === v ? 'bg-ink text-surface' : 'border border-line bg-card/70 text-ink-soft hover:bg-card'
                   }`}
                 >{label}</button>
@@ -166,7 +166,7 @@ export function GuestList({ clientId, guests }: { clientId: string; guests: Gues
               drift into showing different things. */}
           <ul className="mt-4 space-y-2.5 sm:hidden">
             {shown.map((g) => (
-              <li key={g.id} className="rounded-none border border-line px-4 py-3.5">
+              <li key={g.id} className="rounded-xl2 border border-line px-4 py-3.5">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="font-medium text-ink">{g.full_name}</p>

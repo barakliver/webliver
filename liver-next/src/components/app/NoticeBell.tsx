@@ -40,11 +40,11 @@ export function NoticeBell({ notices }: { notices: Notice[] }) {
       <button
         type="button" onClick={() => setOpen((v) => !v)}
         aria-expanded={open} aria-label={c.title}
-        className="relative rounded-none border border-line-strong bg-card/60 px-3 py-2 text-[15px] hover:bg-card"
+        className="relative grid h-10 w-10 place-items-center rounded-full border border-line-strong text-[15px] transition-colors hover:border-accent"
       >
         🔔
         {unread > 0 && (
-          <span className="absolute -top-1 -left-1 flex h-5 min-w-5 items-center justify-center rounded-none bg-bad px-1 text-[11px] font-semibold text-surface">
+          <span className="absolute -top-1 -left-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-bad px-1.5 text-[11px] font-semibold leading-none text-surface">
             {unread > 9 ? '9+' : unread}
           </span>
         )}
@@ -54,7 +54,7 @@ export function NoticeBell({ notices }: { notices: Notice[] }) {
         <>
           {/* a click anywhere else closes it, without trapping focus */}
           <button type="button" aria-hidden tabIndex={-1} className="fixed inset-0 z-40 cursor-default" onClick={() => setOpen(false)} />
-          <div className="absolute top-12 z-50 w-[330px] max-w-[86vw] overflow-hidden rounded-none border border-line bg-card shadow-pop"
+          <div className="absolute top-12 z-50 w-[330px] max-w-[86vw] overflow-hidden rounded-xl2 border border-line bg-card shadow-pop"
                style={{ insetInlineStart: 0 }}>
             <div className="flex items-center justify-between gap-2 border-b border-line px-4 py-3">
               <b className="text-[14px] text-ink">{c.title}</b>

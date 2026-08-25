@@ -70,9 +70,9 @@ export function CalendarFeed({ clientId }: { clientId?: string }) {
         </>
       ) : (
         <div className="mt-3 space-y-3">
-          <p className="rounded-none bg-warn-wash p-3 text-[13.5px] text-warn">{c.warning}</p>
+          <p className="rounded-xl2 bg-warn-wash p-3 text-[13.5px] text-warn">{c.warning}</p>
 
-          <code className="block overflow-x-auto rounded-none bg-surface-100 p-3 text-[12.5px] text-ink-soft" dir="ltr">
+          <code className="block overflow-x-auto rounded-xl2 bg-surface-100 p-3 text-[12.5px] text-ink-soft" dir="ltr">
             {url}
           </code>
 

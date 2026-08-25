@@ -98,7 +98,7 @@ export function CodeInput({ name, label, length }: {
                  cell holds a digit, which is the only feedback there is now
                  that the fill and the focus ring are gone. */
               className={[
-                'rounded-none border-0 border-b bg-transparent p-0 text-center tabular-nums',
+                'rounded-xl2 border-0 border-b bg-transparent p-0 text-center tabular-nums',
                 'font-display font-light text-ink outline-none',
                 'transition-colors duration-300 ease-out',
                 d ? 'border-b-2 border-accent-line' : 'border-b border-line-strong',

@@ -65,12 +65,17 @@ export function A11yPanel() {
         aria-label={c.open}
         aria-expanded={open}
         title={c.open}
-        /* Clear of whatever else lives on the bottom edge. Below lg that is
-           the phone's tab bar on an app screen and the contact dock on the
-           site; at lg it is the foot of the rail, which reserves room of its
-           own. Sitting at 1rem put it on top of the sign-out row. */
+        /* Clear of the bottom edge, and clear of the rail.
+           Below lg that is the phone's tab bar on an app screen and the
+           contact dock on the site. At lg the rail is 15.5rem of fixed column
+           on the start side, and sitting inside it put this circle directly
+           on top of the notification bell: the badge was there, unreadable,
+           under another control. Offset past the rail rather than reserving
+           room inside it, so the button cannot land on whatever the rail's
+           foot happens to hold. */
         className="fixed bottom-[calc(env(safe-area-inset-bottom)+5.5rem)] start-4 z-[60]
                    lg:bottom-[calc(env(safe-area-inset-bottom)+1.25rem)]
+                   lg:start-[calc(15.5rem+1rem)]
                    grid h-12 w-12 place-items-center rounded-full border border-line-control
                    bg-surface-100 text-ink shadow-fab transition-colors
                    hover:border-accent hover:text-accent
@@ -88,7 +93,7 @@ export function A11yPanel() {
           className="fixed inset-0 z-[70] flex items-end justify-center bg-ink/40 p-0 sm:items-center sm:p-6"
           onClick={(e) => { if (e.target === e.currentTarget) setOpen(false); }}
         >
-          <div className="max-h-[86svh] w-full overflow-y-auto border border-line-strong bg-surface-100 p-6 shadow-pop sm:max-w-[28rem]">
+          <div className="max-h-[86svh] w-full overflow-y-auto rounded-t-4xl border border-line-strong bg-surface-100 p-6 shadow-pop sm:max-w-[28rem] sm:rounded-4xl">
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0">
                 <h2 className="font-display text-[22px] font-light text-ink">{c.title}</h2>

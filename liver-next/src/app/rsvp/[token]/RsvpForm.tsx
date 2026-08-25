@@ -45,10 +45,10 @@ export function RsvpForm({ token, initial }: {
       <input type="hidden" name="token" value={token} />
 
       {initial.responded && (
-        <p className="rounded-none bg-surface-200 px-4 py-3 text-[14px] text-ink-soft">{c.already}</p>
+        <p className="rounded-xl2 bg-surface-200 px-4 py-3 text-[14px] text-ink-soft">{c.already}</p>
       )}
       {state && !state.ok && state.error && (
-        <p role="alert" className="rounded-none border border-bad/25 bg-bad-wash px-4 py-3 text-[14.5px] text-bad">
+        <p role="alert" className="rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-3 text-[14.5px] text-bad">
           {state.error}
         </p>
       )}
@@ -59,7 +59,7 @@ export function RsvpForm({ token, initial }: {
           {(['attending', 'declined'] as const).map((v) => (
             <label
               key={v}
-              className={`cursor-pointer rounded-none border px-5 py-4 text-center text-[15.5px] transition ${
+              className={`cursor-pointer rounded-xl2 border px-5 py-4 text-center text-[15.5px] transition ${
                 coming === v ? 'border-ink bg-ink text-surface' : 'border-line bg-card/70 text-ink hover:bg-card'
               }`}
             >

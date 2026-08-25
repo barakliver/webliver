@@ -20,7 +20,7 @@ function Busy({ label, busy }: { label: string; busy: string }) {
 function Err({ state }: { state: SeatResult | null }) {
   if (!state || state.ok || !state.error) return null;
   return (
-    <p role="alert" className="mt-3 rounded-none border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+    <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
       {state.error}
     </p>
   );
@@ -107,11 +107,11 @@ export function SeatingPlan({ clientId, tables, guests }: {
       <Err state={seatState} />
       <Err state={sizeState} />
 
-      {attending.length === 0 && <p className="mt-5 rounded-none bg-warn-wash px-4 py-3 text-[14px] text-warn">{c.needRsvp}</p>}
+      {attending.length === 0 && <p className="mt-5 rounded-xl2 bg-warn-wash px-4 py-3 text-[14px] text-warn">{c.needRsvp}</p>}
 
       <div
         {...dropProps(null, !!dragging && !!dragging.table_id)}
-        className={`mt-6 rounded-none border p-4 transition-colors ${
+        className={`mt-6 rounded-xl2 border p-4 transition-colors ${
           over === 'unseated' ? 'border-accent bg-accent-wash' : 'border-line'
         }`}
       >
@@ -126,7 +126,7 @@ export function SeatingPlan({ clientId, tables, guests }: {
               <li
                 key={g.id}
                 {...dragProps(g)}
-                className="flex flex-wrap items-center gap-3 rounded-none bg-surface-100 px-3 py-2 sm:cursor-grab sm:active:cursor-grabbing"
+                className="flex flex-wrap items-center gap-3 rounded-xl2 bg-surface-100 px-3 py-2 sm:cursor-grab sm:active:cursor-grabbing"
               >
                 <span className="flex-1 text-[14.5px] text-ink">
                   {g.full_name} <span className="text-ink-mute">· {g.party_size}</span>
@@ -161,7 +161,7 @@ export function SeatingPlan({ clientId, tables, guests }: {
               <li
                 key={t.id}
                 {...dropProps(t.id, !!dragging && fits(dragging, t))}
-                className={`rounded-none border p-4 transition-colors ${
+                className={`rounded-xl2 border p-4 transition-colors ${
                   over === t.id ? 'border-accent bg-accent-wash'
                   : dragging && !fits(dragging, t) ? 'border-line opacity-50'
                   : free === 0 ? 'border-ok/30 bg-ok-wash/60'
@@ -170,7 +170,7 @@ export function SeatingPlan({ clientId, tables, guests }: {
               >
                 <div className="flex items-start justify-between gap-2">
                   <h3 className="font-display text-[16px] font-light text-ink">{t.name}</h3>
-                  <span className={`rounded-none px-2.5 py-0.5 text-[12px] ${
+                  <span className={`rounded-xl2 px-2.5 py-0.5 text-[12px] ${
                     free === 0 ? 'bg-ok-wash text-ok' : 'bg-surface-200 text-ink-mute'
                   }`}>
                     <Ratio of={taken} total={t.seats} /> {free === 0 ? c.full : ''}
@@ -178,7 +178,7 @@ export function SeatingPlan({ clientId, tables, guests }: {
                 </div>
 
                 <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-surface-200">
-                  <div className="h-full rounded-none bg-accent transition-[width]" style={{ width: `${Math.min(100, (taken / t.seats) * 100)}%` }} />
+                  <div className="h-full rounded-xl2 bg-accent transition-[width]" style={{ width: `${Math.min(100, (taken / t.seats) * 100)}%` }} />
                 </div>
 
                 {atTable(t.id).length === 0 ? (
@@ -189,7 +189,7 @@ export function SeatingPlan({ clientId, tables, guests }: {
                       <li
                         key={g.id}
                         {...dragProps(g)}
-                        className="flex items-center justify-between gap-2 rounded-none text-[14px] sm:cursor-grab sm:active:cursor-grabbing"
+                        className="flex items-center justify-between gap-2 rounded-xl2 text-[14px] sm:cursor-grab sm:active:cursor-grabbing"
                       >
                         <span className="text-ink">{g.full_name} <span className="text-ink-mute">· {g.party_size}</span></span>
                         <form action={seatAction}>

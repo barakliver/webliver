@@ -31,7 +31,7 @@ export function CallsPanel({ calls, leads }: { calls: Call[]; leads: { id: strin
         {open.map((call) => {
           const st = dueState(call.remind_on);
           return (
-            <li key={call.id} className={`flex flex-wrap items-center gap-3 rounded-none border px-4 py-3 ${
+            <li key={call.id} className={`flex flex-wrap items-center gap-3 rounded-xl2 border px-4 py-3 ${
               st === 'late' ? 'border-bad/25 bg-bad-wash/60' : st === 'today' ? 'border-warn/30 bg-warn-wash/70' : 'border-line'
             }`}>
               <div className="min-w-0 flex-1">

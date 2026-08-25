@@ -69,7 +69,7 @@ function Draft({ clientId }: { clientId: string }) {
   };
 
   return (
-    <form action={action} className="mt-5 space-y-3 rounded-none bg-surface-100 p-4">
+    <form action={action} className="mt-5 space-y-3 rounded-xl2 bg-surface-100 p-4">
       <input type="hidden" name="client_id" value={clientId} />
       <input type="hidden" name="file_path" value={path} />
 
@@ -81,7 +81,7 @@ function Draft({ clientId }: { clientId: string }) {
       <textarea name="body" rows={6} maxLength={60000} placeholder={c.bodyPh} className="field w-full resize-y" aria-label={c.bodyLabel} />
 
       <div className="flex flex-wrap items-center gap-3">
-        <label className="inline-flex min-h-[44px] cursor-pointer sm:min-h-[38px] items-center gap-2 rounded-none border border-line-strong bg-card px-4 text-[14px] text-ink transition hover:border-accent/40">
+        <label className="inline-flex min-h-[44px] cursor-pointer sm:min-h-[38px] items-center gap-2 rounded-xl2 border border-line-strong bg-card px-4 text-[14px] text-ink transition hover:border-accent/40">
           <Paperclip size={15} aria-hidden strokeWidth={1.5} />
           {uploading ? c.uploading : path ? c.attached : c.attach}
           <input
@@ -94,7 +94,7 @@ function Draft({ clientId }: { clientId: string }) {
 
       {uploadError && <p role="alert" className="text-[14px] text-bad">{uploadError}</p>}
       {state && !state.ok && state.error && (
-        <p role="alert" className="rounded-none bg-bad-wash px-4 py-2.5 text-[14px] text-bad">{state.error}</p>
+        <p role="alert" className="rounded-xl2 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">{state.error}</p>
       )}
       <p className="text-[13px] text-ink-mute">{c.draftHint}</p>
     </form>
@@ -106,7 +106,7 @@ function Draft({ clientId }: { clientId: string }) {
 function Sign({ contract, clientId }: { contract: Contract; clientId: string }) {
   const [state, action] = useActionState<ContractResult | null, FormData>(signContract, null);
   return (
-    <form action={action} className="mt-4 rounded-none border border-accent/30 bg-accent-wash p-4">
+    <form action={action} className="mt-4 rounded-xl2 border border-accent/30 bg-accent-wash p-4">
       <input type="hidden" name="contract_id" value={contract.id} />
       <input type="hidden" name="client_id" value={clientId} />
       <p className="text-[14.5px] text-ink">{c.signIntro}</p>
@@ -120,7 +120,7 @@ function Sign({ contract, clientId }: { contract: Contract; clientId: string }) 
       </div>
       <p className="mt-2 text-[12.5px] text-ink-mute">{c.signLegal}</p>
       {state && !state.ok && state.error && (
-        <p role="alert" className="mt-3 rounded-none bg-bad-wash px-4 py-2.5 text-[14px] text-bad">{state.error}</p>
+        <p role="alert" className="mt-3 rounded-xl2 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">{state.error}</p>
       )}
     </form>
   );
@@ -130,13 +130,13 @@ function Row({ contract: k, clientId, viewer }: {
   contract: Contract; clientId: string; viewer: 'producer' | 'client';
 }) {
   return (
-    <li className="rounded-none border border-line p-4">
+    <li className="rounded-xl2 border border-line p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <h3 className="font-display text-[17px] font-light text-ink">{k.title || c.untitled}</h3>
           {k.amount !== null && <p className="mt-0.5 text-[14px] text-ink-soft tabular-nums"><Money value={k.amount} /></p>}
         </div>
-        <span className={`rounded-none px-2.5 py-1 text-[12.5px] font-medium ${TONE[k.status]}`}>
+        <span className={`rounded-xl2 px-2.5 py-1 text-[12.5px] font-medium ${TONE[k.status]}`}>
           {c.status[k.status]}
         </span>
       </div>
@@ -154,7 +154,7 @@ function Row({ contract: k, clientId, viewer }: {
       )}
 
       {k.status === 'signed' && (
-        <p className="mt-3 flex flex-wrap items-center gap-2 rounded-none bg-ok-wash px-3 py-2 text-[14px] text-ok">
+        <p className="mt-3 flex flex-wrap items-center gap-2 rounded-xl2 bg-ok-wash px-3 py-2 text-[14px] text-ok">
           <Check size={15} aria-hidden strokeWidth={1.5} />
           {c.signedBy} <strong className="font-semibold">{k.signed_name}</strong>
           {k.signed_at && <span className="text-ink-mute">· {formatDate(dateFmt, k.signed_at, '')}</span>}
@@ -165,7 +165,7 @@ function Row({ contract: k, clientId, viewer }: {
           true on a real screen, that is the one thing on this page worth
           interrupting somebody about. */}
       {!k.intact && (
-        <p role="alert" className="mt-3 flex items-center gap-2 rounded-none bg-bad-wash px-3 py-2 text-[14px] text-bad">
+        <p role="alert" className="mt-3 flex items-center gap-2 rounded-xl2 bg-bad-wash px-3 py-2 text-[14px] text-bad">
           <ShieldAlert size={15} aria-hidden strokeWidth={1.5} />
           {c.tampered}
         </p>
@@ -233,7 +233,7 @@ export function Contracts({ clientId, contracts, viewer }: {
       {viewer === 'producer' && drafting && <Draft clientId={clientId} />}
 
       {contracts.length === 0 ? (
-        <p className="mt-5 rounded-none bg-surface-100 px-4 py-3 text-[14.5px] text-ink-mute">
+        <p className="mt-5 rounded-xl2 bg-surface-100 px-4 py-3 text-[14.5px] text-ink-mute">
           {viewer === 'client' ? c.emptyClient : c.emptyProducer}
         </p>
       ) : (

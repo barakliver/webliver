@@ -67,7 +67,7 @@ export function EventSummary({ clientId, summary }: { clientId: string; summary:
       </div>
 
       {money.overdue > 0 && (
-        <p className="inline-flex items-center gap-2 rounded-none border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+        <p className="inline-flex items-center gap-2 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
           <CircleAlert size={16} aria-hidden strokeWidth={1.5} />
           {t.overdue} <Money value={money.overdue} />
         </p>
@@ -84,7 +84,7 @@ export function EventSummary({ clientId, summary }: { clientId: string; summary:
               return (
                 <li
                   key={`${item.kind}-${item.id}`}
-                  className={`flex flex-wrap items-center gap-3 rounded-none border px-4 py-3 ${
+                  className={`flex flex-wrap items-center gap-3 rounded-xl2 border px-4 py-3 ${
                     late ? 'border-bad/25 bg-bad-wash/60' : 'border-line'
                   }`}
                 >

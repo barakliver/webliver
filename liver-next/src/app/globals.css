@@ -240,7 +240,7 @@
      the size rule outranks it, so the mark keeps the drawn size and the target
      grows around it. */
   .btn {
-    @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-none
+    @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full
            px-6 text-[15px] font-medium tracking-[.02em]
            transition duration-300 ease-out
            disabled:pointer-events-none disabled:opacity-50;
@@ -253,6 +253,9 @@
      the rule to gold and thickens it, which is visible without a ring and
      without a fill. */
   .field {
+    /* No radius. This control is a rule under the value, not a box, and a
+       corner radius on a bottom border curls the ends of the underline up
+       into little hooks. */
     @apply min-h-[44px] w-full rounded-none border-0 border-b border-line-control bg-transparent
            px-0 py-3 text-[15px] text-ink placeholder:text-ink-mute
            focus:border-accent focus:outline-none;
@@ -266,7 +269,7 @@
   /* Rectangles with a 1px border, not pills with a fill. Status still reads
      without colour, because every chip carries a word. */
   .chip {
-    @apply inline-flex items-center gap-1.5 rounded-none border px-2.5 py-1
+    @apply inline-flex items-center gap-1.5 rounded-full border px-3 py-1
            text-[11.5px] font-medium tracking-[.04em];
   }
   .chip-ok   { @apply chip border-ok/40   text-ok; }

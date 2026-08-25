@@ -137,9 +137,12 @@ const config: Config = {
         fab:  '0 18px 36px -18px rgba(15,23,42,.55)',
       },
       backdropBlur: { xl: '22px', '2xl': '34px' },
-      /* Square. The two names survive because they are used in a hundred
-         places, and both now resolve to nothing. */
-      borderRadius: { xl2: '0px', '4xl': '0px' },
+      /* Rounded, and rounded through these two names rather than at a
+         hundred call sites. The Lux direction called for square; the design
+         this palette comes from is pills and rounded cards, and that is the
+         one being built. Changing the token changes every surface at once,
+         which is the point of having had one. */
+      borderRadius: { xl2: '14px', '4xl': '24px' },
       maxWidth: { content: '70rem', prose2: '44rem' },
       spacing: { safe: 'env(safe-area-inset-bottom, 0px)' },
       transitionTimingFunction: { out: 'cubic-bezier(.16,1,.3,1)' },

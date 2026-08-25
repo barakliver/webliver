@@ -80,7 +80,7 @@ export default async function CalendarPage() {
                             <li key={i.id}>
                               <Link
                                 href={i.href}
-                                className={`flex items-center gap-3 rounded-none px-3 py-2.5 transition hover:brightness-[0.98] ${TONE[i.kind]}`}
+                                className={`flex items-center gap-3 rounded-xl2 px-3 py-2.5 transition hover:brightness-[0.98] ${TONE[i.kind]}`}
                               >
                                 <Icon size={16} aria-hidden strokeWidth={1.5} className="shrink-0" />
                                 <span className="min-w-0 flex-1">

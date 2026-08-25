@@ -18,7 +18,7 @@ const c = appCopy.statusBoard;
 function Countdown({ days }: { days: number | null }) {
   if (days === null) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-none bg-surface-200 px-3 py-2 text-center">
+      <div className="flex flex-col items-center justify-center rounded-xl2 bg-surface-200 px-3 py-2 text-center">
         <CalendarX2 size={18} className="text-ink-mute" aria-hidden strokeWidth={1.5} />
         <span className="mt-1 text-[11.5px] leading-tight text-ink-mute">{c.noDate}</span>
       </div>
@@ -26,7 +26,7 @@ function Countdown({ days }: { days: number | null }) {
   }
   if (days < 0) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-none bg-surface-200 px-3 py-2 text-center">
+      <div className="flex flex-col items-center justify-center rounded-xl2 bg-surface-200 px-3 py-2 text-center">
         <span className="font-display text-[15px] font-light leading-none text-ink-soft">{c.passed}</span>
         <span className="mt-1 text-[11.5px] leading-tight text-ink-mute">
           {Math.abs(days)} {c.daysAgo}
@@ -56,7 +56,7 @@ function Countdown({ days }: { days: number | null }) {
 function GapChip({ label, level }: { label: string; level: 'now' | 'soon' }) {
   return (
     <span
-      className={`inline-flex items-center rounded-none px-2.5 py-1 text-[12.5px] font-medium ${
+      className={`inline-flex items-center rounded-xl2 px-2.5 py-1 text-[12.5px] font-medium ${
         level === 'now'
           ? 'bg-bad-wash text-bad'
           : 'bg-warn-wash text-warn'

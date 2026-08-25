@@ -46,7 +46,7 @@ export function AttentionList({ items }: { items: AttentionItem[] }) {
           <li key={it.id} className="min-w-0">
             <Link
               href={it.href}
-              className="group flex items-center gap-3.5 rounded-none border border-line bg-card
+              className="group flex items-center gap-3.5 rounded-xl2 border border-line bg-card
                          p-4 transition-colors duration-200 ease-out hover:border-accent"
             >
               <span

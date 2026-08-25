@@ -94,7 +94,7 @@ export function AiConcierge() {
           role="dialog"
           aria-modal="false"
           aria-label={c.title}
-          className="fixed inset-x-3 bottom-[calc(env(safe-area-inset-bottom)+10.5rem)] z-40 flex max-h-[58svh] flex-col overflow-hidden rounded-none glass-strong shadow-pop sm:inset-x-auto sm:left-6 sm:w-[24rem]"
+          className="fixed inset-x-3 bottom-[calc(env(safe-area-inset-bottom)+10.5rem)] z-40 flex max-h-[58svh] flex-col overflow-hidden rounded-xl2 glass-strong shadow-pop sm:inset-x-auto sm:left-6 sm:w-[24rem]"
         >
           <header className="flex items-start justify-between gap-3 border-b border-line px-5 py-4">
             <div>
@@ -103,7 +103,7 @@ export function AiConcierge() {
             </div>
             <button
               type="button" onClick={() => setOpen(false)} aria-label={c.close}
-              className="rounded-none p-1.5 text-ink-mute transition hover:bg-surface-200 hover:text-ink"
+              className="rounded-xl2 p-1.5 text-ink-mute transition hover:bg-surface-200 hover:text-ink"
             >
               <X size={16} strokeWidth={1.5} aria-hidden />
             </button>
@@ -122,7 +122,7 @@ export function AiConcierge() {
                       key={s}
                       type="button"
                       onClick={() => { setDraft(s); inputRef.current?.focus(); }}
-                      className="rounded-none border border-line px-3 py-1.5 text-[12.5px] text-ink-soft transition hover:border-accent/40 hover:text-accent"
+                      className="rounded-xl2 border border-line px-3 py-1.5 text-[12.5px] text-ink-soft transition hover:border-accent/40 hover:text-accent"
                     >
                       {s}
                     </button>
@@ -136,7 +136,7 @@ export function AiConcierge() {
                 key={i}
                 className={
                   t.role === 'user'
-                    ? 'ms-8 rounded-none rounded-se-md bg-ink px-3.5 py-2.5 text-[14px] leading-relaxed text-surface'
+                    ? 'ms-8 rounded-xl2 rounded-se-md bg-ink px-3.5 py-2.5 text-[14px] leading-relaxed text-surface'
                     : 'me-4 whitespace-pre-line text-[14px] leading-relaxed text-ink'
                 }
               >

@@ -25,13 +25,13 @@ function Result({ state }: { state: TemplateResult | null }) {
   if (!state) return null;
   if (!state.ok) {
     return (
-      <p role="alert" className="mt-3 rounded-none border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+      <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
         {state.error}
       </p>
     );
   }
   return (
-    <p role="status" className="mt-3 inline-flex items-center gap-2 rounded-none border border-ok/30 bg-ok-wash px-4 py-2.5 text-[14px] text-ok">
+    <p role="status" className="mt-3 inline-flex items-center gap-2 rounded-xl2 border border-ok/30 bg-ok-wash px-4 py-2.5 text-[14px] text-ok">
       <Check size={15} aria-hidden strokeWidth={1.5} />
       {c.added(state.added ?? 0)}
     </p>
@@ -82,7 +82,7 @@ export function EventTemplate({ clientId }: { clientId: string }) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-2 rounded-none border border-line-strong bg-card px-4 py-2.5 text-[14px] font-medium text-ink transition hover:border-accent/40 hover:text-accent"
+        className="inline-flex items-center gap-2 rounded-xl2 border border-line-strong bg-card px-4 py-2.5 text-[14px] font-medium text-ink transition hover:border-accent/40 hover:text-accent"
       >
         <ClipboardList size={16} aria-hidden strokeWidth={1.5} />
         {c.open}
@@ -107,7 +107,7 @@ export function EventTemplate({ clientId }: { clientId: string }) {
             type="button"
             aria-current={tab === id ? 'true' : undefined}
             onClick={() => setTab(id)}
-            className={`inline-flex min-h-[44px] items-center rounded-none px-4 text-[14px] transition sm:min-h-[38px] ${
+            className={`inline-flex min-h-[44px] items-center rounded-xl2 px-4 text-[14px] transition sm:min-h-[38px] ${
               tab === id ? 'bg-ink font-medium text-surface' : 'text-ink-soft hover:bg-surface-200 hover:text-ink'
             }`}
           >
@@ -143,7 +143,7 @@ export function EventTemplate({ clientId }: { clientId: string }) {
                     return (
                       <li
                         key={t.title}
-                        className={`flex flex-wrap items-center gap-3 rounded-none border px-3.5 py-2.5 transition ${
+                        className={`flex flex-wrap items-center gap-3 rounded-xl2 border px-3.5 py-2.5 transition ${
                           on ? 'border-line bg-card' : 'border-line bg-surface-100 opacity-60'
                         }`}
                       >
@@ -168,7 +168,7 @@ export function EventTemplate({ clientId }: { clientId: string }) {
                           disabled={!on}
                           aria-pressed={isShared}
                           onClick={() => toggle(shared, t.title, setShared)}
-                          className={`inline-flex min-h-[36px] shrink-0 items-center gap-1.5 rounded-none px-3 text-[12.5px] transition disabled:opacity-40 ${
+                          className={`inline-flex min-h-[36px] shrink-0 items-center gap-1.5 rounded-xl2 px-3 text-[12.5px] transition disabled:opacity-40 ${
                             isShared ? 'bg-ok-wash text-ok' : 'bg-surface-200 text-ink-mute'
                           }`}
                         >
@@ -204,7 +204,7 @@ export function EventTemplate({ clientId }: { clientId: string }) {
           <ul className="grid gap-1.5 sm:grid-cols-2">
             {BUDGET_LINES.map((b) => (
               <li key={b.label}>
-                <label className={`flex min-h-[44px] items-center gap-2.5 rounded-none border px-3.5 py-2 transition ${
+                <label className={`flex min-h-[44px] items-center gap-2.5 rounded-xl2 border px-3.5 py-2 transition ${
                   budget.has(b.label) ? 'border-line bg-card' : 'border-line bg-surface-100 opacity-60'
                 }`}>
                   <input
@@ -233,7 +233,7 @@ export function EventTemplate({ clientId }: { clientId: string }) {
           <ul className="grid gap-1.5 sm:grid-cols-2">
             {SUPPLIER_ROLES.map((r) => (
               <li key={r.name}>
-                <label className={`flex min-h-[44px] items-center gap-2.5 rounded-none border px-3.5 py-2 transition ${
+                <label className={`flex min-h-[44px] items-center gap-2.5 rounded-xl2 border px-3.5 py-2 transition ${
                   roles.has(r.name) ? 'border-line bg-card' : 'border-line bg-surface-100 opacity-60'
                 }`}>
                   <input

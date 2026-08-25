@@ -17,7 +17,7 @@ export function Nav() {
         </Link>
         <div className="hidden items-center gap-1 md:flex">
           {links.map(([href, label]) => (
-            <Link key={href} href={href} className="rounded-none px-3.5 py-2 text-[14.5px] text-ink-soft transition hover:bg-card/70 hover:text-ink">
+            <Link key={href} href={href} className="rounded-xl2 px-3.5 py-2 text-[14.5px] text-ink-soft transition hover:bg-card/70 hover:text-ink">
               {label}
             </Link>
           ))}

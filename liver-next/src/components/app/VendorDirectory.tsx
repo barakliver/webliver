@@ -19,7 +19,7 @@ function Save() {
 
 function Alert({ text }: { text: string }) {
   return (
-    <p role="alert" className="mt-3 rounded-none border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+    <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
       {text}
     </p>
   );
@@ -79,7 +79,7 @@ function Row({ vendor }: { vendor: Vendor }) {
 
   if (editing) {
     return (
-      <li className="rounded-none border border-accent/40 bg-surface-100 p-4">
+      <li className="rounded-xl2 border border-accent/40 bg-surface-100 p-4">
         <form action={action} noValidate>
           <input type="hidden" name="vendor_id" value={vendor.id} />
           <Fields vendor={vendor} />
@@ -96,7 +96,7 @@ function Row({ vendor }: { vendor: Vendor }) {
   const archived = !!vendor.archived_at;
 
   return (
-    <li className={`flex flex-wrap items-center gap-3 rounded-none border px-4 py-3.5 ${
+    <li className={`flex flex-wrap items-center gap-3 rounded-xl2 border px-4 py-3.5 ${
       archived ? 'border-line bg-surface-100' : 'border-line'
     }`}>
       <div className="min-w-0 flex-1">
@@ -113,7 +113,7 @@ function Row({ vendor }: { vendor: Vendor }) {
       <button
         type="button" onClick={() => setEditing(true)} title={c.edit}
         aria-label={`${c.edit} ${vendor.name}`}
-        className="rounded-none p-1.5 text-ink-mute transition hover:bg-surface-200 hover:text-ink"
+        className="rounded-xl2 p-1.5 text-ink-mute transition hover:bg-surface-200 hover:text-ink"
       >
         <Pencil size={15} aria-hidden strokeWidth={1.5} />
       </button>
@@ -127,7 +127,7 @@ function Row({ vendor }: { vendor: Vendor }) {
         <button
           type="submit" title={archived ? c.unarchive : c.archive}
           aria-label={`${archived ? c.unarchive : c.archive} ${vendor.name}`}
-          className="rounded-none p-1.5 text-ink-mute transition hover:bg-surface-200 hover:text-ink"
+          className="rounded-xl2 p-1.5 text-ink-mute transition hover:bg-surface-200 hover:text-ink"
         >
           {archived
             ? <ArchiveRestore size={15} aria-hidden strokeWidth={1.5} />
@@ -193,7 +193,7 @@ export function VendorDirectory({ vendors }: { vendors: Vendor[] }) {
           {query && (
             <button
               type="button" onClick={() => setQuery('')} aria-label={c.cancel}
-              className="absolute top-1/2 left-3 -translate-y-1/2 rounded-none p-1.5 text-ink-mute transition hover:bg-surface-200 hover:text-ink"
+              className="absolute top-1/2 left-3 -translate-y-1/2 rounded-xl2 p-1.5 text-ink-mute transition hover:bg-surface-200 hover:text-ink"
             >
               <X size={15} strokeWidth={1.5} aria-hidden />
             </button>
@@ -218,7 +218,7 @@ export function VendorDirectory({ vendors }: { vendors: Vendor[] }) {
       </div>
 
       {archivedCount > 0 && (
-        <nav className="mb-5 inline-flex rounded-none border border-line bg-surface-100 p-1 text-[14px]">
+        <nav className="mb-5 inline-flex rounded-xl2 border border-line bg-surface-100 p-1 text-[14px]">
           {[
             { on: !showArchived, label: `${c.dirActive} · ${activeCount}`, go: false },
             { on: showArchived, label: `${c.dirArchived} · ${archivedCount}`, go: true },
@@ -228,7 +228,7 @@ export function VendorDirectory({ vendors }: { vendors: Vendor[] }) {
               type="button"
               aria-pressed={t.on}
               onClick={() => setShowArchived(t.go)}
-              className={`min-h-[44px] rounded-none px-4 leading-[44px] sm:min-h-[36px] sm:leading-[36px] transition ${
+              className={`min-h-[44px] rounded-xl2 px-4 leading-[44px] sm:min-h-[36px] sm:leading-[36px] transition ${
                 t.on ? 'bg-card font-medium text-ink' : 'text-ink-mute hover:text-ink'
               }`}
             >

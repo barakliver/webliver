@@ -50,7 +50,7 @@ export function SopBook() {
             type="button"
             onClick={() => setQuery('')}
             aria-label={c.clear}
-            className="absolute top-1/2 left-3 -translate-y-1/2 rounded-none p-1.5 text-ink-mute transition hover:bg-surface-200 hover:text-ink"
+            className="absolute top-1/2 left-3 -translate-y-1/2 rounded-xl2 p-1.5 text-ink-mute transition hover:bg-surface-200 hover:text-ink"
           >
             <X size={15} strokeWidth={1.5} aria-hidden />
           </button>
@@ -65,7 +65,7 @@ export function SopBook() {
           ) : (
             <ul className="mt-4 space-y-2.5">
               {hits.map((h) => (
-                <li key={h.key} className="rounded-none border border-line px-4 py-3.5">
+                <li key={h.key} className="rounded-xl2 border border-line px-4 py-3.5">
                   <p className="text-[12px] text-accent">{h.chapterTitle} · {h.sectionTitle}</p>
                   <p className="mt-1 text-[15px] text-ink">{h.item.text}</p>
                   {h.item.why && <p className="mt-1 text-[13.5px] text-ink-soft">{h.item.why}</p>}
@@ -95,7 +95,7 @@ export function SopBook() {
 
                     <ul className="mt-4 space-y-2.5">
                       {section.items.map((item, i) => (
-                        <li key={i} className="sop-item flex gap-3.5 rounded-none border border-line px-4 py-3.5">
+                        <li key={i} className="sop-item flex gap-3.5 rounded-xl2 border border-line px-4 py-3.5">
                           {/* A rule of thumb reads as a rule when it is
                               numbered. These are ordered by how a day runs, so
                               the number carries something true. */}

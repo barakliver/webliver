@@ -161,7 +161,7 @@ function Row({ p, clientId }: { p: Placed; clientId: string }) {
   return (
     <li
       className={cn(
-        'flex items-start gap-3 rounded-none border p-3 transition-colors',
+        'flex items-start gap-3 rounded-xl2 border p-3 transition-colors',
         isNow ? 'border-accent bg-accent-wash'
           : late ? 'border-bad/30 bg-bad-wash'
           : done ? 'border-line bg-surface-100'
@@ -225,7 +225,7 @@ function People({ sheet, clientId }: { sheet: Caller[]; clientId: string }) {
             <li
               key={`${person.kind}-${person.id}`}
               className={cn(
-                'rounded-none border p-3 transition-colors',
+                'rounded-xl2 border p-3 transition-colors',
                 here ? 'border-ok/30 bg-ok-wash' : 'border-line',
               )}
             >
@@ -374,7 +374,7 @@ function Broadcast({ sheet, late }: { sheet: Caller[]; late: Caller[] }) {
             role="dialog"
             aria-modal="true"
             aria-label={c.broadcast.title}
-            className="glass-strong relative w-full max-w-lg rounded-t-3xl border border-line p-4 shadow-dock sm:rounded-none"
+            className="glass-strong relative w-full max-w-lg rounded-t-3xl border border-line p-4 shadow-dock sm:rounded-xl2"
             style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 1rem)' }}
           >
             <div className="flex items-start justify-between gap-3">
@@ -406,7 +406,7 @@ function Broadcast({ sheet, late }: { sheet: Caller[]; late: Caller[] }) {
                     onClick={() => setWho(key)}
                     aria-pressed={who === key}
                     className={cn(
-                      'min-h-[44px] rounded-none border px-4 text-[13.5px] font-medium transition-colors',
+                      'min-h-[44px] rounded-xl2 border px-4 text-[13.5px] font-medium transition-colors',
                       who === key ? 'border-ink text-ink' : 'border-line text-ink-soft',
                     )}
                   >
@@ -434,7 +434,7 @@ function Broadcast({ sheet, late }: { sheet: Caller[]; late: Caller[] }) {
                     key={preset}
                     type="button"
                     onClick={() => setText(preset)}
-                    className="rounded-none border border-line px-3 py-2 text-[12.5px] text-ink-soft hover:border-line-strong"
+                    className="rounded-xl2 border border-line px-3 py-2 text-[12.5px] text-ink-soft hover:border-line-strong"
                   >
                     {preset}
                   </button>
@@ -452,7 +452,7 @@ function Broadcast({ sheet, late }: { sheet: Caller[]; late: Caller[] }) {
                       target="_blank"
                       rel="noopener noreferrer"
                       className={cn(
-                        'flex min-h-[48px] items-center justify-between gap-3 rounded-none px-3',
+                        'flex min-h-[48px] items-center justify-between gap-3 rounded-xl2 px-3',
                         'text-[15px] transition-colors hover:bg-surface-100',
                         text ? 'text-ink' : 'pointer-events-none text-ink-mute opacity-60',
                       )}

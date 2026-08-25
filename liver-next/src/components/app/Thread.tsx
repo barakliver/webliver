@@ -71,7 +71,7 @@ export function Thread({ clientId, messages, viewerId }: {
       <p className="mt-1 text-[14px] text-ink-soft">{c.sub}</p>
 
       {messages.length === 0 ? (
-        <p className="mt-5 rounded-none bg-surface-100 px-4 py-3 text-[14.5px] text-ink-mute">{c.empty}</p>
+        <p className="mt-5 rounded-xl2 bg-surface-100 px-4 py-3 text-[14.5px] text-ink-mute">{c.empty}</p>
       ) : (
         <ol className="mt-5 space-y-3">
           {messages.map((m) => {
@@ -89,7 +89,7 @@ export function Thread({ clientId, messages, viewerId }: {
                   <Avatar name={m.author_name} src={m.author_avatar} size={32} />
                   <div className={`min-w-0 max-w-[80%] ${mine ? 'text-left' : ''}`}>
                     <div
-                      className={`rounded-none px-3.5 py-2.5 text-[14.5px] leading-[1.65] ${
+                      className={`rounded-xl2 px-3.5 py-2.5 text-[14.5px] leading-[1.65] ${
                         mine ? 'bg-ink text-surface' : 'bg-surface-200 text-ink'
                       }`}
                     >
@@ -130,7 +130,7 @@ export function Thread({ clientId, messages, viewerId }: {
         <Send_ />
       </form>
       {state && !state.ok && state.error && (
-        <p role="alert" className="mt-3 rounded-none bg-bad-wash px-4 py-2.5 text-[14px] text-bad">{state.error}</p>
+        <p role="alert" className="mt-3 rounded-xl2 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">{state.error}</p>
       )}
     </section>
   );

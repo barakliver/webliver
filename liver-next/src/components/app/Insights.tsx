@@ -52,7 +52,7 @@ export function FunnelChart({ funnel }: { funnel: Funnel }) {
             </div>
             <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-surface-200">
               <div
-                className="h-full rounded-none bg-accent transition-[width] duration-500"
+                className="h-full rounded-xl2 bg-accent transition-[width] duration-500"
                 style={{ width: `${Math.round((s.count / top) * 100)}%` }}
               />
             </div>

@@ -81,7 +81,7 @@ export function WinningBoard({ clientId, images, viewer }: {
           <input type="hidden" name="client_id" value={clientId} />
           <input
             name="image" type="file" required accept="image/*"
-            className="text-[14px] file:mr-0 file:ml-3 file:rounded-none file:border-0 file:bg-ink file:px-4 file:py-2 file:text-surface"
+            className="text-[14px] file:mr-0 file:ml-3 file:rounded-xl2 file:border-0 file:bg-ink file:px-4 file:py-2 file:text-surface"
             aria-label={c.upload}
           />
           <input name="caption" placeholder={c.captionPh} autoComplete="off" className="field" aria-label={c.caption} />
@@ -93,7 +93,7 @@ export function WinningBoard({ clientId, images, viewer }: {
       )}
 
       {state && !state.ok && state.error && (
-        <p role="alert" className="mt-3 rounded-none border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+        <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
           {state.error}
         </p>
       )}
@@ -108,7 +108,7 @@ export function WinningBoard({ clientId, images, viewer }: {
                 <button
                   key={cat.value} type="button" onClick={() => setFilter(cat.value)}
                   aria-pressed={filter === cat.value}
-                  className={`rounded-none px-4 py-1.5 text-[13.5px] transition ${
+                  className={`rounded-xl2 px-4 py-1.5 text-[13.5px] transition ${
                     filter === cat.value ? 'bg-ink text-surface' : 'border border-line bg-surface-100 text-ink-soft hover:bg-surface-200'
                   }`}
                 >{cat.label}</button>
@@ -118,7 +118,7 @@ export function WinningBoard({ clientId, images, viewer }: {
 
           <ul className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {shown.map((img) => (
-              <li key={img.id} className="overflow-hidden rounded-none border border-line bg-surface-100">
+              <li key={img.id} className="overflow-hidden rounded-xl2 border border-line bg-surface-100">
                 {/* a plain img: these are signed one-off URLs, not a fixed asset path */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={img.url} alt={img.caption || labelOf(img.category)} className="h-52 w-full object-cover" loading="lazy" />

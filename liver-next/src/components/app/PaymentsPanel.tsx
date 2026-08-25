@@ -65,7 +65,7 @@ export function PaymentsPanel({ clientId, payments, viewer }: {
       )}
 
       {state && !state.ok && state.error && (
-        <p role="alert" className="mt-3 rounded-none border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+        <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
           {state.error}
         </p>
       )}
@@ -77,7 +77,7 @@ export function PaymentsPanel({ clientId, payments, viewer }: {
           {payments.map((p) => {
             const late = !p.paid && isOverdue(p.due_on);
             return (
-              <li key={p.id} className={`flex flex-wrap items-center gap-3 rounded-none border px-4 py-3 ${
+              <li key={p.id} className={`flex flex-wrap items-center gap-3 rounded-xl2 border px-4 py-3 ${
                 late ? 'border-bad/25 bg-bad-wash/60' : 'border-line'
               }`}>
                 <div className="min-w-0 flex-1">
@@ -115,7 +115,7 @@ export function PaymentsPanel({ clientId, payments, viewer }: {
                     </form>
                   </div>
                 ) : (
-                  <span className={`rounded-none px-3 py-1 text-[12.5px] ${
+                  <span className={`rounded-xl2 px-3 py-1 text-[12.5px] ${
                     p.paid ? 'bg-ok-wash text-ok' : 'bg-warn-wash text-warn'
                   }`}>
                     {p.paid ? c.paid : c.unpaid}

@@ -35,7 +35,7 @@ export function NewClientForm() {
       </div>
 
       {state && !state.ok && state.error && (
-        <p role="alert" className="rounded-none border border-bad/25 bg-bad-wash px-4 py-3 text-[14.5px] text-bad">
+        <p role="alert" className="rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-3 text-[14.5px] text-bad">
           {state.error}
         </p>
       )}

@@ -31,13 +31,13 @@ export function InviteBox({ clientId, invites }: { clientId: string; invites: In
 
       <ul className="mt-5 space-y-2">
         {invites.length === 0 && (
-          <li className="rounded-none bg-warn-wash px-4 py-3 text-[14px] text-warn">{c.accessNone}</li>
+          <li className="rounded-xl2 bg-warn-wash px-4 py-3 text-[14px] text-warn">{c.accessNone}</li>
         )}
         {invites.map((i) => (
-          <li key={i.id} className="flex flex-wrap items-center justify-between gap-3 rounded-none border border-line px-4 py-3">
+          <li key={i.id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl2 border border-line px-4 py-3">
             <div>
               <span dir="ltr" className="text-[14.5px] font-medium text-ink">{i.email}</span>
-              <span className={`mr-2 rounded-none px-2.5 py-0.5 text-[12px] ${
+              <span className={`mr-2 rounded-xl2 px-2.5 py-0.5 text-[12px] ${
                 i.profile_id ? 'bg-ok-wash text-ok' : 'bg-surface-200 text-ink-mute'
               }`}>
                 {i.profile_id ? c.joined : c.pendingJoin}
@@ -53,10 +53,10 @@ export function InviteBox({ clientId, invites }: { clientId: string; invites: In
       </ul>
 
       {state?.ok && (
-        <p role="status" className="mt-4 rounded-none bg-ok-wash px-4 py-3 text-[14px] text-ok">{c.invited}</p>
+        <p role="status" className="mt-4 rounded-xl2 bg-ok-wash px-4 py-3 text-[14px] text-ok">{c.invited}</p>
       )}
       {state && !state.ok && state.error && (
-        <p role="alert" className="mt-4 rounded-none border border-bad/25 bg-bad-wash px-4 py-3 text-[14px] text-bad">
+        <p role="alert" className="mt-4 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-3 text-[14px] text-bad">
           {state.error}
         </p>
       )}

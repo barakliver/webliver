@@ -37,7 +37,7 @@ function Field({ field, current, isOverridden }: {
   const saved = state?.ok && !dirty;
 
   return (
-    <form action={action} className="rounded-none border border-line p-4">
+    <form action={action} className="rounded-xl2 border border-line p-4">
       <input type="hidden" name="key" value={field.key} />
 
       <div className="flex flex-wrap items-baseline justify-between gap-2">
@@ -67,7 +67,7 @@ function Field({ field, current, isOverridden }: {
       {field.hint && <p className="mt-1.5 text-[12.5px] text-ink-mute">{field.hint}</p>}
 
       {state && !state.ok && state.error && (
-        <p role="alert" className="mt-3 rounded-none border border-bad/25 bg-bad-wash px-4 py-2.5 text-[13.5px] text-bad">
+        <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-[13.5px] text-bad">
           {state.error}
         </p>
       )}
@@ -124,13 +124,13 @@ export function SiteEditor({ values, overridden }: {
               type="button"
               aria-current={on ? 'true' : undefined}
               onClick={() => setOpen(g.id)}
-              className={`inline-flex min-h-[44px] items-center justify-between sm:min-h-[38px] gap-2 rounded-none px-4 text-right text-[14px] transition lg:w-full ${
+              className={`inline-flex min-h-[44px] items-center justify-between sm:min-h-[38px] gap-2 rounded-xl2 px-4 text-right text-[14px] transition lg:w-full ${
                 on ? 'bg-ink font-medium text-surface' : 'text-ink-soft hover:bg-surface-200 hover:text-ink'
               }`}
             >
               {g.title}
               {count > 0 && (
-                <span className={`rounded-none px-1.5 text-[11.5px] tabular-nums ${
+                <span className={`rounded-xl2 px-1.5 text-[11.5px] tabular-nums ${
                   on ? 'bg-card/20 text-surface' : 'bg-accent-wash text-accent'
                 }`}>
                   {count}

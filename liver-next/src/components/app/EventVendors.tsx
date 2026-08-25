@@ -85,7 +85,7 @@ export function EventVendors({ clientId, vendors, directory }: {
             <button
               type="button"
               onClick={() => { setPicking((v) => !v); setAdding(false); }}
-              className="inline-flex items-center gap-1.5 rounded-none border border-line-strong bg-card px-4 py-2 text-[13.5px] font-medium text-ink transition hover:border-accent/40 hover:text-accent"
+              className="inline-flex items-center gap-1.5 rounded-xl2 border border-line-strong bg-card px-4 py-2 text-[13.5px] font-medium text-ink transition hover:border-accent/40 hover:text-accent"
             >
               {picking ? c.close : c.fromDirectory}
             </button>
@@ -93,7 +93,7 @@ export function EventVendors({ clientId, vendors, directory }: {
           <button
             type="button"
             onClick={() => { setAdding((v) => !v); setPicking(false); }}
-            className="inline-flex items-center gap-1.5 rounded-none border border-line-strong bg-card px-4 py-2 text-[13.5px] font-medium text-ink transition hover:border-accent/40 hover:text-accent"
+            className="inline-flex items-center gap-1.5 rounded-xl2 border border-line-strong bg-card px-4 py-2 text-[13.5px] font-medium text-ink transition hover:border-accent/40 hover:text-accent"
           >
             <Plus size={15} aria-hidden strokeWidth={1.5} />
             {adding ? c.close : c.add}
@@ -102,10 +102,10 @@ export function EventVendors({ clientId, vendors, directory }: {
       </div>
 
       {picking && (
-        <ul className="mt-4 grid gap-2 rounded-none border border-line bg-surface-100 p-3 sm:grid-cols-2">
+        <ul className="mt-4 grid gap-2 rounded-xl2 border border-line bg-surface-100 p-3 sm:grid-cols-2">
           {available.map((d) => (
             <li key={d.id}>
-              <form action={bookVendor} className="flex items-center gap-3 rounded-none bg-card px-3.5 py-2.5">
+              <form action={bookVendor} className="flex items-center gap-3 rounded-xl2 bg-card px-3.5 py-2.5">
                 <input type="hidden" name="client_id" value={clientId} />
                 <input type="hidden" name="vendor_id" value={d.id} />
                 <span className="min-w-0 flex-1">
@@ -120,7 +120,7 @@ export function EventVendors({ clientId, vendors, directory }: {
       )}
 
       {adding && (
-        <form action={action} className="mt-4 rounded-none border border-line bg-surface-100 p-4" noValidate>
+        <form action={action} className="mt-4 rounded-xl2 border border-line bg-surface-100 p-4" noValidate>
           <input type="hidden" name="client_id" value={clientId} />
           <div className="grid gap-3 sm:grid-cols-[1fr_160px_1fr]">
             <div>
@@ -155,7 +155,7 @@ export function EventVendors({ clientId, vendors, directory }: {
             </div>
           </div>
           {state && !state.ok && state.error && (
-            <p role="alert" className="mt-3 rounded-none border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+            <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
               {state.error}
             </p>
           )}
@@ -172,7 +172,7 @@ export function EventVendors({ clientId, vendors, directory }: {
               <h3 className="mb-2 text-[12.5px] font-semibold text-accent">{categoryLabel(category)}</h3>
               <ul className="space-y-2.5">
                 {list.map((v) => (
-                  <li key={v.id} className="flex flex-wrap items-center gap-3 rounded-none border border-line px-4 py-3.5">
+                  <li key={v.id} className="flex flex-wrap items-center gap-3 rounded-xl2 border border-line px-4 py-3.5">
                     <div className="min-w-0 flex-1">
                       <p className="text-[15.5px] text-ink">{v.name}</p>
                       <div className="mt-0.5 flex flex-wrap items-center gap-x-3 text-[13px] text-ink-mute">
@@ -191,7 +191,7 @@ export function EventVendors({ clientId, vendors, directory }: {
                         defaultValue={v.status}
                         onChange={(e) => e.currentTarget.form?.requestSubmit()}
                         aria-label={`${c.status} ${v.name}`}
-                        className={`rounded-none border-0 px-3 py-1.5 text-[12.5px] font-medium ${statusTone[v.status] ?? ''}`}
+                        className={`rounded-xl2 border-0 px-3 py-1.5 text-[12.5px] font-medium ${statusTone[v.status] ?? ''}`}
                       >
                         {VENDOR_STATES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
                       </select>
@@ -203,7 +203,7 @@ export function EventVendors({ clientId, vendors, directory }: {
                         <input type="hidden" name="client_id" value={clientId} />
                         <button
                           type="submit" title={c.saveToDirectory} aria-label={`${c.saveToDirectory}: ${v.name}`}
-                          className="rounded-none p-1.5 text-ink-mute transition hover:bg-surface-200 hover:text-accent"
+                          className="rounded-xl2 p-1.5 text-ink-mute transition hover:bg-surface-200 hover:text-accent"
                         >
                           <BookmarkPlus size={15} aria-hidden strokeWidth={1.5} />
                         </button>
@@ -215,7 +215,7 @@ export function EventVendors({ clientId, vendors, directory }: {
                       <input type="hidden" name="client_id" value={clientId} />
                       <button
                         type="submit" title={c.remove} aria-label={`${c.remove} ${v.name}`}
-                        className="rounded-none p-1.5 text-ink-mute transition hover:bg-bad-wash hover:text-bad"
+                        className="rounded-xl2 p-1.5 text-ink-mute transition hover:bg-bad-wash hover:text-bad"
                       >
                         <Trash2 size={15} aria-hidden strokeWidth={1.5} />
                       </button>
