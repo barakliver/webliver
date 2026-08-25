@@ -46,7 +46,7 @@ export default async function OverviewPage() {
               href={next.href}
               className="card group block transition-shadow duration-200 hover:shadow-lift"
             >
-              <div className="flex items-center gap-2 text-bronze">
+              <div className="flex items-center gap-2 text-accent">
                 <CalendarHeart size={16} strokeWidth={1.9} aria-hidden />
                 <span className="eyebrow">{c.nextEvent}</span>
               </div>
@@ -61,7 +61,7 @@ export default async function OverviewPage() {
           )}
 
           <section className="card">
-            <div className="flex items-center gap-2 text-bronze">
+            <div className="flex items-center gap-2 text-accent">
               <Wallet size={16} strokeWidth={1.9} aria-hidden />
               <span className="eyebrow">{c.money}</span>
             </div>

@@ -44,7 +44,7 @@ export function NoticeBell({ notices }: { notices: Notice[] }) {
       >
         🔔
         {unread > 0 && (
-          <span className="absolute -top-1 -left-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-rose-600 px-1 text-[11px] font-semibold text-white">
+          <span className="absolute -top-1 -left-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-bad px-1 text-[11px] font-semibold text-white">
             {unread > 9 ? '9+' : unread}
           </span>
         )}
@@ -70,15 +70,15 @@ export function NoticeBell({ notices }: { notices: Notice[] }) {
             ) : (
               <ul className="max-h-[60vh] overflow-y-auto">
                 {notices.map((n) => (
-                  <li key={n.id} className={`border-b border-line last:border-0 ${n.read_at ? '' : 'bg-bronze-wash/60'}`}>
+                  <li key={n.id} className={`border-b border-line last:border-0 ${n.read_at ? '' : 'bg-accent-wash/60'}`}>
                     <div className="flex gap-3 px-4 py-3">
-                      {(() => { const I = ICONS[n.kind] ?? Bell; return <I size={16} aria-hidden strokeWidth={1.75} className="mt-0.5 shrink-0 text-bronze" />; })()}
+                      {(() => { const I = ICONS[n.kind] ?? Bell; return <I size={16} aria-hidden strokeWidth={1.75} className="mt-0.5 shrink-0 text-accent" />; })()}
                       <div className="min-w-0 flex-1">
                         <p className="text-[14px] font-medium text-ink">{n.title}</p>
                         {n.body && <p className="truncate text-[13px] text-ink-soft">{n.body}</p>}
                         <p className="mt-0.5 text-[12px] text-ink-mute">{rel(n.created_at)}</p>
                         {n.href && (
-                          <Link href={n.href} onClick={() => setOpen(false)} className="mt-1 inline-block text-[12.5px] text-bronze">
+                          <Link href={n.href} onClick={() => setOpen(false)} className="mt-1 inline-block text-[12.5px] text-accent">
                             {c.open} ←
                           </Link>
                         )}

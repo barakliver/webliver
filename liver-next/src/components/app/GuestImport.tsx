@@ -40,7 +40,7 @@ export function GuestImport({ clientId }: { clientId: string }) {
       </div>
 
       {open && (
-        <form action={action} className="mt-4 rounded-2xl bg-ivory-100 p-4">
+        <form action={action} className="mt-4 rounded-2xl bg-surface-100 p-4">
           <input type="hidden" name="client_id" value={clientId} />
           <p className="text-[14px] text-ink-soft">{c.hint}</p>
 

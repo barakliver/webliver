@@ -46,7 +46,7 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
             <input type="hidden" name="client_id" value={clientId} />
             <input type="hidden" name="visible" value={String(visible)} />
             <button type="submit" className={`rounded-full px-4 py-2 text-[13px] font-medium transition ${
-              visible ? 'bg-emerald-50 text-emerald-700' : 'bg-ivory-200 text-ink-mute'
+              visible ? 'bg-ok-wash text-ok' : 'bg-surface-200 text-ink-mute'
             }`}>
               {visible ? c.budVisible : c.budHidden}
             </button>
@@ -55,23 +55,23 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
       </div>
 
       {viewer === 'producer' && !visible && (
-        <p className="mt-4 rounded-2xl bg-ivory-200 px-4 py-3 text-[13.5px] text-ink-soft">{c.budHiddenNote}</p>
+        <p className="mt-4 rounded-2xl bg-surface-200 px-4 py-3 text-[13.5px] text-ink-soft">{c.budHiddenNote}</p>
       )}
 
       <div className="mt-5 grid gap-3 sm:grid-cols-3">
-        <div className="rounded-2xl bg-ivory-200 px-4 py-3">
+        <div className="rounded-2xl bg-surface-200 px-4 py-3">
           <div className="text-[12.5px] text-ink-mute">{c.budTotalEst}</div>
           <div className="font-display text-[22px] font-semibold tabular-nums text-ink">{ils(totalEst)}</div>
         </div>
-        <div className="rounded-2xl bg-bronze-wash px-4 py-3">
-          <div className="text-[12.5px] text-bronze">{c.budTotalAgreed}</div>
+        <div className="rounded-2xl bg-accent-wash px-4 py-3">
+          <div className="text-[12.5px] text-accent">{c.budTotalAgreed}</div>
           <div className="font-display text-[22px] font-semibold tabular-nums text-ink">{ils(totalAgreed)}</div>
         </div>
-        <div className={`rounded-2xl px-4 py-3 ${diff >= 0 ? 'bg-emerald-50' : 'bg-rose-50'}`}>
-          <div className={`text-[12.5px] ${diff >= 0 ? 'text-emerald-700' : 'text-rose-700'}`}>
+        <div className={`rounded-2xl px-4 py-3 ${diff >= 0 ? 'bg-ok-wash' : 'bg-bad-wash'}`}>
+          <div className={`text-[12.5px] ${diff >= 0 ? 'text-ok' : 'text-bad'}`}>
             {diff >= 0 ? c.budUnder : c.budOver}
           </div>
-          <div className={`font-display text-[22px] font-semibold tabular-nums ${diff >= 0 ? 'text-emerald-800' : 'text-rose-800'}`}>
+          <div className={`font-display text-[22px] font-semibold tabular-nums ${diff >= 0 ? 'text-ok' : 'text-bad'}`}>
             {ils(Math.abs(diff))}
           </div>
         </div>
@@ -89,7 +89,7 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
       )}
 
       {state && !state.ok && state.error && (
-        <p role="alert" className="mt-3 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-[14px] text-rose-800">
+        <p role="alert" className="mt-3 rounded-2xl border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
           {state.error}
         </p>
       )}

@@ -48,7 +48,7 @@ export function DesktopNav({ items }: { items: NavItem[] }) {
             className={cn(
               'inline-flex min-h-[40px] items-center gap-2 rounded-full px-3.5 text-[14.5px]',
               'transition duration-200 ease-out',
-              current ? 'bg-ink text-ivory' : 'text-ink-soft hover:bg-ivory-200 hover:text-ink',
+              current ? 'bg-ink text-surface' : 'text-ink-soft hover:bg-surface-200 hover:text-ink',
             )}
           >
             <Icon size={16} strokeWidth={1.9} aria-hidden />
@@ -94,7 +94,7 @@ export function MobileTabBar({ items }: { items: NavItem[] }) {
                   aria-hidden
                   className={cn(
                     'h-[3px] w-6 rounded-full transition-opacity duration-200',
-                    current ? 'bg-champagne opacity-100' : 'opacity-0',
+                    current ? 'bg-accent-bright opacity-100' : 'opacity-0',
                   )}
                 />
               </Link>

@@ -51,7 +51,7 @@ export function NewLeadForm() {
       </div>
 
       {state && !state.ok && state.error && (
-        <p role="alert" className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-[14.5px] text-rose-800">
+        <p role="alert" className="rounded-2xl border border-bad/25 bg-bad-wash px-4 py-3 text-[14.5px] text-bad">
           {state.error}
         </p>
       )}

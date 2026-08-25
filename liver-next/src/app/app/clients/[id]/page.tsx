@@ -28,7 +28,7 @@ import { Thread } from '@/components/app/Thread';
 export const dynamic = 'force-dynamic';
 
 const link =
-  'inline-flex min-h-[40px] items-center gap-2 rounded-full border border-line-strong bg-white px-4 text-[14px] font-medium text-ink transition hover:border-bronze/40 hover:text-bronze';
+  'inline-flex min-h-[40px] items-center gap-2 rounded-full border border-line-strong bg-white px-4 text-[14px] font-medium text-ink transition hover:border-accent/40 hover:text-accent';
 
 /**
  * One event, as its producer works on it.

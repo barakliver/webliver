@@ -93,7 +93,7 @@ export function BudgetSimulator() {
 
   return (
     <div>
-      <p className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-[14px] leading-relaxed text-amber-900">
+      <p className="mb-6 rounded-2xl border border-warn/30 bg-warn-wash px-4 py-3 text-[14px] leading-relaxed text-warn">
         כל המספרים כאן הם אומדן בלבד ואינם מדויקים. הם נועדו לתת סדר גודל להתחלה, ומשתנים לפי הספקים, המקום והעונה.
         המחיר האמיתי נקבע רק מול הצעות מחיר.
       </p>
@@ -175,15 +175,15 @@ export function BudgetSimulator() {
                     </span>
                     <span className="tabular-nums text-ink">{ils(l.amount)}</span>
                   </div>
-                  <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-ivory-200">
-                    <div className="h-full rounded-full bg-bronze transition-[width] duration-500" style={{ width: `${pct}%` }} />
+                  <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-surface-200">
+                    <div className="h-full rounded-full bg-accent transition-[width] duration-500" style={{ width: `${pct}%` }} />
                   </div>
                 </li>
               );
             })}
           </ul>
 
-          <p className="mt-6 rounded-2xl bg-bronze-wash px-4 py-3 text-[14px] text-ink-soft">
+          <p className="mt-6 rounded-2xl bg-accent-wash px-4 py-3 text-[14px] text-ink-soft">
             כל עשרה אורחים נוספים: <b className="tabular-nums text-ink">{ils(r.marginalTen)}</b>
           </p>
 

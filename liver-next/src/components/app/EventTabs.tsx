@@ -48,13 +48,13 @@ export function EventTabs({
             className={`inline-flex min-h-[38px] items-center gap-1.5 rounded-full px-4 text-[14px] transition ${
               on
                 ? 'bg-ink font-medium text-white'
-                : 'text-ink-soft hover:bg-ivory-200 hover:text-ink'
+                : 'text-ink-soft hover:bg-surface-200 hover:text-ink'
             }`}
           >
             {labels[tab]}
             {count !== undefined && count > 0 && (
               <span className={`rounded-full px-1.5 text-[11.5px] tabular-nums ${
-                on ? 'bg-white/20 text-white' : 'bg-ivory-200 text-ink-mute'
+                on ? 'bg-white/20 text-white' : 'bg-surface-200 text-ink-mute'
               }`}>
                 {count}
               </span>

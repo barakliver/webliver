@@ -47,7 +47,7 @@ function Row({ task, clientId, viewer, canDelete }: {
 
   return (
     <li className={`flex flex-wrap items-center gap-3 rounded-2xl border px-4 py-3 ${
-      late ? 'border-rose-200 bg-rose-50/40' : 'border-line'
+      late ? 'border-bad/25 bg-bad-wash/60' : 'border-line'
     }`}>
       <form action={toggleTask} className="flex items-center">
         <input type="hidden" name="task_id" value={task.id} />
@@ -58,7 +58,7 @@ function Row({ task, clientId, viewer, canDelete }: {
           aria-label={task.title}
           aria-pressed={task.done}
           className={`flex h-6 w-6 items-center justify-center rounded-full border text-[13px] transition ${
-            task.done ? 'border-emerald-500 bg-emerald-500 text-white' : 'border-line-strong bg-white hover:border-ink'
+            task.done ? 'border-ok/30 bg-ok text-white' : 'border-line-strong bg-white hover:border-ink'
           }`}
         >
           {task.done ? '✓' : ''}
@@ -68,7 +68,7 @@ function Row({ task, clientId, viewer, canDelete }: {
       <div className="min-w-0 flex-1">
         <p className={`text-[15px] ${task.done ? 'text-ink-mute line-through' : 'text-ink'}`}>{task.title}</p>
         <p className="mt-0.5 text-[12.5px] text-ink-mute">
-          <span className={late ? 'font-semibold text-rose-700' : ''}>
+          <span className={late ? 'font-semibold text-bad' : ''}>
             {task.due_on ? dateFmt.format(new Date(task.due_on)) : c.noDue}
             {late ? ` · ${c.overdue}` : ''}
           </span>
@@ -118,7 +118,7 @@ export function TaskList({ clientId, tasks, viewer, viewerId }: {
       </form>
 
       {state && !state.ok && state.error && (
-        <p role="alert" className="mt-3 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-[14px] text-rose-800">
+        <p role="alert" className="mt-3 rounded-2xl border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
           {state.error}
         </p>
       )}
@@ -127,7 +127,7 @@ export function TaskList({ clientId, tasks, viewer, viewerId }: {
         <p className="mt-6 text-[14.5px] text-ink-mute">{c.none}</p>
       ) : (
         <>
-          <h3 className="mt-7 text-[13px] font-semibold text-bronze">{c.open} · {open.length}</h3>
+          <h3 className="mt-7 text-[13px] font-semibold text-accent">{c.open} · {open.length}</h3>
           <ul className="mt-3 space-y-2">
             {open.map((t) => <Row key={t.id} task={t} clientId={clientId} viewer={viewer} canDelete={mayDelete(t)} />)}
           </ul>

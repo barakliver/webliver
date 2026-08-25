@@ -19,7 +19,7 @@ function Submit({ label, busy }: { label: string; busy: string }) {
 
 function Alert({ text }: { text: string }) {
   return (
-    <p role="alert" className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-[14.5px] text-rose-800">
+    <p role="alert" className="rounded-2xl border border-bad/25 bg-bad-wash px-4 py-3 text-[14.5px] text-bad">
       {text}
     </p>
   );
@@ -27,7 +27,7 @@ function Alert({ text }: { text: string }) {
 
 function Note({ text }: { text: string }) {
   return (
-    <p role="status" className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-[14.5px] text-emerald-900">
+    <p role="status" className="rounded-2xl border border-ok/30 bg-ok-wash px-4 py-3 text-[14.5px] text-ok">
       {text}
     </p>
   );
@@ -98,15 +98,18 @@ export function LoginForm({ next }: { next?: string }) {
       {/* Two doors, named. A single field could sniff which one was meant, and
           does on the server, but a couple who were told "we texted you" need
           to see that texting is a thing this screen does before they type. */}
-      <div role="group" className="grid grid-cols-2 gap-1 rounded-2xl border border-line bg-ivory-100 p-1">
+      <div role="group" className="grid grid-cols-2 gap-1 rounded-2xl border border-line bg-surface-100 p-1">
         {(['email', 'phone'] as const).map((c) => (
           <button
             key={c}
             type="button"
             aria-pressed={channel === c}
             onClick={() => setChannel(c)}
+            /* The chosen channel carries the accent. It is the first blue
+               anybody sees in the product, and it is on the one control this
+               screen is actually asking somebody to think about. */
             className={`flex items-center justify-center gap-2 rounded-xl px-3 py-2 text-[14.5px] transition ${
-              channel === c ? 'bg-white font-semibold text-ink shadow-soft' : 'text-ink-mute hover:text-ink'
+              channel === c ? 'bg-card font-semibold text-accent shadow-soft' : 'text-ink-mute hover:text-ink'
             }`}
           >
             {c === 'email' ? <Mail size={16} aria-hidden strokeWidth={1.75} /> : <MessageSquare size={16} aria-hidden strokeWidth={1.75} />}
@@ -242,7 +245,7 @@ function CodeStep({
 
       <CodeInput key={at} name="code" label={copy.codeLabel} length={publicEnv.otpLength} />
 
-      <p className={`text-center text-[13px] ${validLeft === 0 ? 'text-rose-700' : 'text-ink-mute'}`}>
+      <p className={`text-center text-[13px] ${validLeft === 0 ? 'text-bad' : 'text-ink-mute'}`}>
         {validLeft > 0 ? copy.validFor(mmss(validLeft)) : copy.expired}
       </p>
 

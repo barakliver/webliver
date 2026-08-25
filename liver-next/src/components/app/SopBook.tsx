@@ -50,7 +50,7 @@ export function SopBook() {
             type="button"
             onClick={() => setQuery('')}
             aria-label={c.clear}
-            className="absolute top-1/2 left-3 -translate-y-1/2 rounded-full p-1.5 text-ink-mute transition hover:bg-ivory-200 hover:text-ink"
+            className="absolute top-1/2 left-3 -translate-y-1/2 rounded-full p-1.5 text-ink-mute transition hover:bg-surface-200 hover:text-ink"
           >
             <X size={15} strokeWidth={2} aria-hidden />
           </button>
@@ -66,7 +66,7 @@ export function SopBook() {
             <ul className="mt-4 space-y-2.5">
               {hits.map((h) => (
                 <li key={h.key} className="rounded-2xl border border-line px-4 py-3.5">
-                  <p className="text-[12px] text-bronze">{h.chapterTitle} · {h.sectionTitle}</p>
+                  <p className="text-[12px] text-accent">{h.chapterTitle} · {h.sectionTitle}</p>
                   <p className="mt-1 text-[15px] text-ink">{h.item.text}</p>
                   {h.item.why && <p className="mt-1 text-[13.5px] text-ink-soft">{h.item.why}</p>}
                   {h.item.when && <p className="mt-1 text-[12.5px] text-ink-mute">{c.when}: {h.item.when}</p>}
@@ -108,7 +108,7 @@ export function SopBook() {
                               <p className="mt-1 text-[13.5px] leading-relaxed text-ink-soft">{item.why}</p>
                             )}
                             {item.when && (
-                              <p className="mt-1 text-[12.5px] text-bronze">{c.when}: {item.when}</p>
+                              <p className="mt-1 text-[12.5px] text-accent">{c.when}: {item.when}</p>
                             )}
                           </div>
                         </li>

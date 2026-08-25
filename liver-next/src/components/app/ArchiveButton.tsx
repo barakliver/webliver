@@ -19,8 +19,8 @@ function Button({ archived, highlight }: { archived: boolean; highlight: boolean
       title={label}
       className={`inline-flex min-h-[34px] items-center gap-1.5 rounded-full px-3 text-[13px] font-medium transition disabled:opacity-50 ${
         highlight
-          ? 'bg-bronze text-white hover:bg-bronze-soft'
-          : 'text-ink-mute hover:bg-ivory-200 hover:text-ink'
+          ? 'bg-accent text-white hover:bg-accent-soft'
+          : 'text-ink-mute hover:bg-surface-200 hover:text-ink'
       }`}
     >
       <Icon size={15} aria-hidden strokeWidth={1.75} />

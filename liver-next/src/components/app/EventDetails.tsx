@@ -79,7 +79,7 @@ export function EventDetails({ event }: { event: EventCore }) {
           <input type="hidden" name="client_id" value={event.id} />
 
           {state && !state.ok && state.error && (
-            <p role="alert" className="mt-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-[14.5px] text-rose-800">
+            <p role="alert" className="mt-4 rounded-2xl border border-bad/25 bg-bad-wash px-4 py-3 text-[14.5px] text-bad">
               {state.error}
             </p>
           )}
@@ -134,7 +134,7 @@ export function EventDetails({ event }: { event: EventCore }) {
         <button
           type="button"
           onClick={() => setEditing(true)}
-          className="inline-flex items-center gap-1.5 text-[13.5px] text-ink-mute transition hover:text-bronze"
+          className="inline-flex items-center gap-1.5 text-[13.5px] text-ink-mute transition hover:text-accent"
         >
           <Pencil size={14} aria-hidden strokeWidth={1.75} />
           {c.edit}
@@ -149,7 +149,7 @@ export function EventDetails({ event }: { event: EventCore }) {
         <button
           type="button"
           onClick={() => setEditing(true)}
-          className="mt-5 inline-flex items-center gap-2 rounded-2xl border border-dashed border-line-strong px-4 py-3 text-[14.5px] text-ink-soft transition hover:border-bronze/50 hover:text-bronze"
+          className="mt-5 inline-flex items-center gap-2 rounded-2xl border border-dashed border-line-strong px-4 py-3 text-[14.5px] text-ink-soft transition hover:border-accent/50 hover:text-accent"
         >
           <CalendarPlus size={16} aria-hidden strokeWidth={1.75} />
           {c.setDate}
