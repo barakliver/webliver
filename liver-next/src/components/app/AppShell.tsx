@@ -16,6 +16,7 @@ function navFor(a: Account): NavItem[] {
     { href: '/app/leads',   label: appCopy.nav.leads,    icon: 'leads' },
     { href: '/app/clients', label: appCopy.nav.clients,  icon: 'clients' },
     { href: '/app/calendar', label: appCopy.nav.calendar, icon: 'calendar' },
+    { href: '/app/insights', label: appCopy.nav.insights, icon: 'insights' },
     { href: '/app/vendors', label: appCopy.nav.vendors,  icon: 'vendors' },
     { href: '/app/sop',     label: appCopy.nav.sop,      icon: 'sop' },
   ];
