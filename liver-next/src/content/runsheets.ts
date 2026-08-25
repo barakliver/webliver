@@ -118,7 +118,54 @@ const DAYTIME_SHORT: TemplateLine[] = [
   { at: '13:00', title: 'פירוק ופינוי', track: 'shared', minutes: 90, audience: ['crew', 'vendors'] },
 ];
 
+
+/**
+ * The evening as this producer actually runs it.
+ *
+ * Taken from the event file he has been filling in by hand, times and wording
+ * included, rather than invented. That matters more than it sounds: the
+ * template that gets used is the one that already reads like the person's own
+ * notes, and the small things in here are the ones a generic schedule leaves
+ * out. Hair and makeup finishing at 13:15 and the photographer arriving at
+ * 13:00. A break to eat at 17:15, before the reception. A second entrance
+ * after the change of clothes. An after-party course at half past midnight.
+ *
+ * The two personal tracks are the bride's morning and the groom's, which is
+ * how his sheet is laid out: three columns, and most of the day is not shared.
+ */
+const BARAK_WEDDING: TemplateLine[] = [
+  { at: '08:00', title: 'קימה וארוחת בוקר', track: 'partner_a', minutes: 60 },
+  { at: '09:00', title: 'נסיעה לאולם', track: 'partner_a', minutes: 30 },
+  { at: '09:30', title: 'הגעה לאולם', track: 'partner_a', minutes: 15 },
+  { at: '09:45', title: 'תחילת שיער ואיפור', track: 'partner_a', minutes: 210 },
+  { at: '13:00', title: 'הגעת הצלם', note: 'לפני שהאיפור נגמר, לא אחרי', track: 'shared', minutes: 15, audience: ['photo'] },
+  { at: '13:00', title: 'צילומי הכלה', track: 'partner_a', minutes: 60, audience: ['photo'] },
+  { at: '13:15', title: 'סיום שיער ואיפור', track: 'partner_a', minutes: 15 },
+  { at: '14:00', title: 'מפגש הזוג וצילומים באולם', track: 'shared', minutes: 60, audience: ['couple', 'photo'] },
+  { at: '15:00', title: 'נסיעה לצילומי חוץ', track: 'shared', minutes: 30, audience: ['couple', 'photo'] },
+  { at: '15:30', title: 'צילומי חוץ', note: 'השעה שלפני השקיעה', track: 'shared', minutes: 75, audience: ['couple', 'photo'] },
+  { at: '16:45', title: 'נסיעה חזרה לאולם', track: 'shared', minutes: 30, audience: ['couple', 'photo'] },
+  { at: '17:15', title: 'הפסקה ואוכל', note: 'הזוג אוכל. הכי נשכח, והכי מורגש בשעה השלישית', track: 'shared', minutes: 45, audience: ['couple'] },
+  { at: '18:00', title: 'צילומי משפחות ועמדת שמפניה', note: 'רשימה כתובה מראש, אחרת זה לוקח שעה', track: 'shared', minutes: 60, audience: ['couple', 'photo'] },
+  { at: '19:30', title: 'קבלת פנים', track: 'shared', minutes: 60 },
+  { at: '20:45', title: 'חופה', track: 'shared', minutes: 20, audience: ['couple', 'photo', 'crew'] },
+  { at: '21:20', title: 'מנה ראשונה', track: 'shared', minutes: 30, audience: ['vendors'] },
+  { at: '21:50', title: 'סלואו וריקודים', track: 'shared', minutes: 40 },
+  { at: '22:00', title: 'סיבוב שולחנות', note: 'הזוג עובר בין השולחנות', track: 'shared', minutes: 30, audience: ['couple'] },
+  { at: '22:30', title: 'מנה עיקרית', track: 'shared', minutes: 45, audience: ['vendors'] },
+  { at: '23:15', title: 'ריקודים', track: 'shared', minutes: 45 },
+  { at: '23:30', title: 'קינוח', track: 'shared', minutes: 30, audience: ['vendors'] },
+  { at: '00:30', title: 'מנת אפטר', track: 'shared', minutes: 30, audience: ['vendors'] },
+  { at: '03:00', title: 'סיום ופינוי', track: 'shared', minutes: 120, audience: ['crew', 'vendors'] },
+];
+
 export const RUNSHEET_TEMPLATES: RunsheetTemplate[] = [
+  {
+    id: 'barak_wedding',
+    label: 'הלוז שלי',
+    sub: 'הערב כפי שאתה מפיק אותו, מתוך תיק האירוע שלך. משמונה בבוקר ועד הפינוי בשלוש.',
+    lines: BARAK_WEDDING,
+  },
   {
     id: 'evening_wedding',
     label: 'חתונה בערב',

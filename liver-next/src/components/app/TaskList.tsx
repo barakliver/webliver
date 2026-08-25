@@ -4,9 +4,13 @@ import { useActionState } from 'react';
 import { formatDate } from '@/lib/dates';
 import { useFormStatus } from 'react-dom';
 import { addTask, toggleTask, deleteTask, type TaskResult } from '@/app/actions/tasks';
-import { appCopy } from '@/content/site';
+import { appCopy, templateCopy } from '@/content/site';
+import { EyeOff } from 'lucide-react';
 
 export type Task = {
+  /** False keeps it on the producer's side. The couple never receives these
+   *  rows at all, so the flag is only ever read on the producer's screen. */
+  visible_to_client?: boolean;
   id: string;
   title: string;
   due_on: string | null;
@@ -67,7 +71,21 @@ function Row({ task, clientId, viewer, canDelete }: {
       </form>
 
       <div className="min-w-0 flex-1">
-        <p className={`text-[15px] ${task.done ? 'text-ink-mute line-through' : 'text-ink'}`}>{task.title}</p>
+        <p className={`text-[15px] ${task.done ? 'text-ink-mute line-through' : 'text-ink'}`}>
+          {task.title}
+          {/* Only ever rendered on the producer's screen: a couple is never
+              sent these rows in the first place, so the absence of a badge on
+              their list is the policy and not a styling choice. */}
+          {task.visible_to_client === false && (
+            <span
+              className="ms-2 inline-flex items-center gap-1 align-middle rounded-full bg-surface-200 px-2 py-0.5 text-[11.5px] text-ink-mute"
+              title={templateCopy.privateNote}
+            >
+              <EyeOff size={11} aria-hidden strokeWidth={2} />
+              {templateCopy.sharedOff}
+            </span>
+          )}
+        </p>
         <p className="mt-0.5 text-[12.5px] text-ink-mute">
           <span className={late ? 'font-semibold text-bad' : ''}>
             {formatDate(dateFmt, task.due_on, c.noDue)}
