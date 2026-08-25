@@ -44,23 +44,23 @@ const config: Config = {
            and `bg-ink/25` compile to no declaration at all, which is how a
            modal backdrop can stop dimming without anybody noticing. */
         ink: {
-          DEFAULT: 'rgb(var(--ink-rgb, 26 22 19) / <alpha-value>)',
+          DEFAULT: 'rgb(var(--ink-rgb, 15 23 42) / <alpha-value>)',
           /* body copy, 5.59:1 */
-          soft:    'rgb(var(--ink-soft-rgb, 107 98 89) / <alpha-value>)',
+          soft:    'rgb(var(--ink-soft-rgb, 71 85 105) / <alpha-value>)',
           /* large text and UI marks only, 3.89:1 — never small copy */
-          mid:     'rgb(var(--ink-mid-rgb, 138 122 102) / <alpha-value>)',
+          mid:     'rgb(var(--ink-mid-rgb, 100 116 139) / <alpha-value>)',
           /* kickers, meta, inactive nav. The handoff's #A79881 reads 2.64:1
              at the 11px it is used at; this is the same hue at 4.53:1. */
-          mute:    'rgb(var(--ink-mute-rgb, 114 104 88) / <alpha-value>)',
+          mute:    'rgb(var(--ink-mute-rgb, 90 104 125) / <alpha-value>)',
         },
 
         /* The ground and the two steps around it. No white anywhere. */
         surface: {
-          DEFAULT: 'rgb(var(--surface-rgb, 250 247 242) / <alpha-value>)',
+          DEFAULT: 'rgb(var(--surface-rgb, 241 245 249) / <alpha-value>)',
           /* the producer dashboard sits a shade brighter */
-          100:     'rgb(var(--surface-100-rgb, 255 253 249) / <alpha-value>)',
+          100:     'rgb(var(--surface-100-rgb, 248 250 252) / <alpha-value>)',
           /* the page behind the artboards */
-          200:     'rgb(var(--surface-200-rgb, 237 234 228) / <alpha-value>)',
+          200:     'rgb(var(--surface-200-rgb, 226 232 240) / <alpha-value>)',
         },
         /* Kept as a name because a hundred components ask for it. On this
            palette a "card" is the ground with a line above it, not a box. */
@@ -68,14 +68,14 @@ const config: Config = {
 
         /* The one dark ground: Bride Mode, the bar result panel, the site CTA
            band. Gold reads 6.32:1 on it, so gold is a text colour there. */
-        dark: 'rgb(var(--dark-rgb, 14 12 10) / <alpha-value>)',
+        dark: 'rgb(var(--dark-rgb, 15 23 42) / <alpha-value>)',
 
         /* Hairlines. These are the structure, so they have real names. */
         line: {
-          DEFAULT: 'var(--line, rgba(26,22,19,.09))',
-          strong:  'var(--line-strong, rgba(26,22,19,.16))',
+          DEFAULT: 'var(--line, rgba(15,23,42,.10))',
+          strong:  'var(--line-strong, rgba(15,23,42,.18))',
           /* The edge of a control, not the gap between two rows. 3:1. */
-          control: 'var(--line-control, rgba(26,22,19,.48))',
+          control: 'var(--line-control, rgba(15,23,42,.60))',
         },
 
         /* The accent, split by job, and every one of them a producer's own.
@@ -84,8 +84,8 @@ const config: Config = {
            and never carries meaning on its own. `wash` is a background only
            ever sat on by `accent`. */
         accent: {
-          DEFAULT: 'rgb(var(--accent-rgb, 132 105 65) / <alpha-value>)',
-          bright:  'rgb(var(--accent-bright-rgb, 161 129 80) / <alpha-value>)',
+          DEFAULT: 'rgb(var(--accent-rgb, 130 104 64) / <alpha-value>)',
+          bright:  'rgb(var(--accent-bright-rgb, 158 127 78) / <alpha-value>)',
           line:    'rgb(var(--accent-line-rgb, 176 141 87) / <alpha-value>)',
           /* Translucent by definition, so it stays whole and takes no
              opacity modifier. `bg-accent-wash/60` would compile to nothing. */
@@ -132,9 +132,9 @@ const config: Config = {
         /* Chrome that floats over arbitrary content rather than over the
            page's own ground: a dropdown, the concierge panel. A hairline
            alone cannot say "above" on a ground this light. */
-        pop:  '0 12px 28px -12px rgba(26,22,19,.45)',
-        dock: '0 -1px 0 var(--line, rgba(26,22,19,.09))',
-        fab:  '0 18px 36px -18px rgba(26,22,19,.55)',
+        pop:  '0 12px 28px -12px rgba(15,23,42,.45)',
+        dock: '0 -1px 0 var(--line, rgba(15,23,42,.10))',
+        fab:  '0 18px 36px -18px rgba(15,23,42,.55)',
       },
       backdropBlur: { xl: '22px', '2xl': '34px' },
       /* Square. The two names survive because they are used in a hundred

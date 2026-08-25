@@ -27,25 +27,25 @@ const ratio = (a, b) => {
   return (hi + 0.05) / (lo + 0.05);
 };
 
-/* The Lux palette. Warm throughout: no white, no slate, no blue. The three
-   marked values are darker than the design handoff's, because the handoff's
-   fail the text they are used for on this ground. */
+/* The palette. Cool: navy-black over slate greys, with the gold on top. The
+   marked values are darker than the design's own, because the design's fail
+   the text they are used for on this ground. */
 const c = {
-  ink: '#1A1613', inkSoft: '#6B6259', inkMid: '#8A7A66',
-  inkMute: '#726858',              /* handoff #A79881 → 2.64:1 at 11px */
-  surface: '#FAF7F2', surface100: '#FFFDF9', surface200: '#EDEAE4',
-  card: '#FFFDF9',
-  dark: '#0E0C0A',
-  line: 'rgba(26,22,19,.09)', lineStrong: 'rgba(26,22,19,.16)',
-  lineControl: 'rgba(26,22,19,.48)',
-  accent: '#846941',               /* handoff #B08D57 → 2.89:1 as words */
-  accentBright: '#A18150',         /* large numerals only, 3:1 bar      */
-  accentLine: '#B08D57',           /* decoration, no bar                */
+  ink: '#0F172A', inkSoft: '#475569', inkMid: '#64748B',
+  inkMute: '#5A687D',              /* #64748B reads 4.34:1 at 11px */
+  surface: '#F1F5F9', surface100: '#F8FAFC', surface200: '#E2E8F0',
+  card: '#F8FAFC',
+  dark: '#0F172A',
+  line: 'rgba(15,23,42,.10)', lineStrong: 'rgba(15,23,42,.18)',
+  lineControl: 'rgba(15,23,42,.60)',
+  accent: '#826840',               /* #B08D57 → 2.78:1 as words here */
+  accentBright: '#9E7F4E',         /* large numerals only, 3:1 bar   */
+  accentLine: '#B08D57',           /* decoration, no bar             */
   accentLight: '#D8BC8A',
-  accentWash: '#F5F0E8',
-  ok: '#3D6B4A', okWash: '#E8EFE7',
-  warn: '#8A5A17', warnWash: '#F5EEDF',
-  bad: '#96322A', badWash: '#F5E7E3',
+  accentWash: '#ECEEEE',
+  ok: '#3D6B4A', okWash: '#E6EFE8',
+  warn: '#8A5A17', warnWash: '#F3EEE2',
+  bad: '#96322A', badWash: '#F4E8E5',
 };
 
 /* The hairlines are rgba over the ground; flatten them so the ratio is real. */

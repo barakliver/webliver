@@ -79,15 +79,16 @@ function checkBuiltCss() {
      with its alpha folded in — so the check reported the ink present in a
      build that no longer contained it anywhere as a colour. A check that
      passes for the wrong reason is worse than one that fails. */
-  record(/--surface-rgb:\s*250 247 242/.test(css), 'the warm ground is in the build');
-  record(/--ink-rgb:\s*26 22 19/.test(css), 'the warm ink is in the build');
-  record(/--accent-rgb:\s*132 105 65/.test(css), 'the measured gold is in the build');
+  record(/--surface-rgb:\s*241 245 249/.test(css), 'the ground is in the build');
+  record(/--ink-rgb:\s*15 23 42/.test(css), 'the ink is in the build');
+  record(/--accent-rgb:\s*130 104 64/.test(css), 'the measured gold is in the build');
 
-  /* And the two palettes it replaced. A build that still carries the slate is
-     a build that predates the design work, whatever the page looks like on a
-     phone over a slow connection. */
-  record(!has('#f3f6fa'), 'the slate ground is gone');
-  record(!has('#2e5f8c'), 'the slate accent is gone');
+  /* And the two palettes it replaced. The ground is slate again, deliberately,
+     but these are the *first* app's values and neither belongs in a build of
+     this one: a blue-grey page ground and a blue accent. The accent here is
+     gold on every palette this product has ever shipped. */
+  record(!has('#f3f6fa'), 'the old page ground is gone');
+  record(!has('#2e5f8c'), 'the blue accent is gone');
 
   /* The gold the handoff shipped reads 2.89:1 against ivory, under the 3:1 a
      large numeral needs. If it is back in the stylesheet as a text colour,

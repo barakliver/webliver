@@ -47,9 +47,22 @@ test('the whole colour is derived from the same channels, so the two cannot drif
 });
 
 test('the channels are the preset\'s own hex, converted rather than retyped', () => {
-  const gold = accentVars(DEFAULT_ACCENT);
-  assert.equal(DEFAULT_ACCENT.base, '#846941');
-  assert.equal(gold['--accent-rgb'], '132 105 65');
+  /* Asserted as arithmetic on whatever the preset holds, not against a
+     literal. The first version pinned gold to #846941 and failed the day the
+     palette moved to a cooler ground and every tone was re-solved against it,
+     which is a test reporting a deliberate change as a defect. What is worth
+     holding here is that the conversion is real. */
+  for (const accent of ACCENTS) {
+    const vars = accentVars(accent);
+    for (const [role, key] of [
+      ['base', '--accent-rgb'], ['bright', '--accent-bright-rgb'],
+      ['line', '--accent-line-rgb'], ['light', '--accent-light-rgb'],
+    ] as const) {
+      const n = parseInt(accent[role].slice(1), 16);
+      const expected = `${(n >> 16) & 255} ${(n >> 8) & 255} ${n & 255}`;
+      assert.equal(vars[key], expected, `${accent.key}.${role}`);
+    }
+  }
 });
 
 test('the wash stays a whole colour, because it carries its own alpha', () => {

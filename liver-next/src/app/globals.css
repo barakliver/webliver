@@ -29,15 +29,27 @@
 
        Tones that are translucent by definition stay whole further down. An
        opacity modifier on a hairline is a mistake either way. */
-    --ink-rgb: 26 22 19;
-    --ink-soft-rgb: 107 98 89;
-    --ink-mid-rgb: 138 122 102;
-    --ink-mute-rgb: 114 104 88;      /* handoff #A79881 → 2.64:1 */
+    /* Cool, not warm. This is the palette of `Event Platform.dc.html`, the
+       first of the two designs in this repo: navy-black over slate greys with
+       the same gold on top. `Event Platform Lux.dc.html` is the warm one and
+       LUX_DIRECTION.md declares it the successor, so the two documents
+       disagree; the instruction that settles it is the later one, and it asks
+       for the cooler of the two.
 
-    --surface-rgb: 250 247 242;
-    --surface-100-rgb: 255 253 249;
-    --surface-200-rgb: 237 234 228;
-    --dark-rgb: 14 12 10;
+       Structure is unchanged. Hairlines instead of cards, square buttons, the
+       serif on every figure: that is the Lux direction and it stands. Only
+       the temperature moves. */
+    --ink-rgb: 15 23 42;             /* #0F172A, 16.30:1 on the ground */
+    --ink-soft-rgb: 71 85 105;       /* #475569,  6.92:1 */
+    --ink-mid-rgb: 100 116 139;      /* #64748B,  4.34:1, large text only */
+    --ink-mute-rgb: 90 104 125;      /* #5A687D. Solved against #E2E8F0, the
+                                        darkest ground a kicker sits on: 4.59:1
+                                        there and 5.17:1 on the page itself. */
+
+    --surface-rgb: 241 245 249;      /* #F1F5F9 */
+    --surface-100-rgb: 248 250 252;  /* #F8FAFC */
+    --surface-200-rgb: 226 232 240;  /* #E2E8F0 */
+    --dark-rgb: 15 23 42;            /* #0F172A */
 
     /* The whole-colour forms, derived. Anything that needs a colour rather
        than a Tailwind class reads these: a gradient stop, `accent-color`, an
@@ -52,18 +64,24 @@
     --surface-200: rgb(var(--surface-200-rgb));
     --dark: rgb(var(--dark-rgb));
 
-    --line: rgba(26, 22, 19, .09);
-    --line-strong: rgba(26, 22, 19, .16);
+    --line: rgba(15, 23, 42, .10);
+    --line-strong: rgba(15, 23, 42, .18);
     /* The visible edge of a control, which is a different job from separating
        two rows. The handoff's hairlines read 1.2:1 and 1.4:1 against ivory,
        which is right for a separator and wrong for the only thing telling
        somebody where to type: on the login screen the email field simply was
        not there. A boundary that identifies a control needs 3:1, and this is
        the lightest value that clears it. */
-    --line-control: rgba(26, 22, 19, .48);
+    /* .46 reads 2.97:1 on this ground, just under the 3 a control edge needs.
+       The warm palette cleared it at .48; a cooler, lighter ground does not. */
+    --line-control: rgba(15, 23, 42, .60);
 
-    --accent-rgb: 132 105 65;        /* safe for words at any size, 4.54:1 */
-    --accent-bright-rgb: 161 129 80; /* large serif numerals only, 3.03:1  */
+    /* The gold is the one thing both designs share, and it moves only as far
+       as the cooler ground makes it. Re-solved against #F1F5F9 rather than
+       carried over: the handoff's #B08D57 reads 2.78:1 there. */
+    --accent-rgb: 130 104 64;        /* #826840, 4.50:1 on its own wash,
+                                        which is the darkest ground it sits on */
+    --accent-bright-rgb: 158 127 78; /* #9E7F4E, 3.04:1 for large numerals */
     --accent-line-rgb: 176 141 87;   /* the handoff's gold, decoration     */
     --accent-light-rgb: 216 188 138; /* on the dark ground only            */
 

@@ -40,8 +40,8 @@ export const ACCENTS: Accent[] = [
   {
     key: 'gold',
     label: 'זהב',
-    base:   '#846941',
-    bright: '#A18150',
+    base:   '#816740',
+    bright: '#9E7F4E',
     line:   '#B08D57',
     light:  '#B08D57',
     wash:   'rgba(176, 141, 87, .07)',
@@ -49,7 +49,7 @@ export const ACCENTS: Accent[] = [
   {
     key: 'olive',
     label: 'זית',
-    base:   '#647340',
+    base:   '#62713F',
     bright: '#7B8E4F',
     line:   '#7A8C4E',
     light:  '#7A8C4E',
@@ -58,7 +58,7 @@ export const ACCENTS: Accent[] = [
   {
     key: 'clay',
     label: 'טרקוטה',
-    base:   '#9D5C3E',
+    base:   '#9B5B3D',
     bright: '#C2724D',
     line:   '#C0714C',
     light:  '#C0714C',
@@ -67,16 +67,16 @@ export const ACCENTS: Accent[] = [
   {
     key: 'plum',
     label: 'שזיף',
-    base:   '#935888',
+    base:   '#905685',
     bright: '#B76DA9',
     line:   '#9A5C8E',
-    light:  '#A66399',
+    light:  '#AA6B9E',
     wash:   'rgba(154, 92, 142, .07)',
   },
   {
     key: 'teal',
     label: 'טורקיז עמוק',
-    base:   '#327772',
+    base:   '#317570',
     bright: '#3E938D',
     line:   '#3C8F89',
     light:  '#3C8F89',
@@ -85,10 +85,10 @@ export const ACCENTS: Accent[] = [
   {
     key: 'graphite',
     label: 'גרפיט',
-    base:   '#686C75',
+    base:   '#63676F',
     bright: '#828792',
     line:   '#6B6F78',
-    light:  '#767A84',
+    light:  '#7D818A',
     wash:   'rgba(107, 111, 120, .07)',
   },
 ];
