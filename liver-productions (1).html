@@ -8596,6 +8596,88 @@ renderAll();
 })();
 renderAll();
 
+/* ══════════════════════════════════════════════════════════
+   v50 — the concierge input empties when the message is sent
+   ══════════════════════════════════════════════════════════
+   v45 restores the input's value across the re-render so the caret is
+   not lost mid-sentence. That is right while typing and wrong on send:
+   the inline handler clears the field with `this.value=''` *after*
+   conciergeSend has already re-rendered, so it clears an element that is
+   no longer in the document, and v45 faithfully restores the message
+   that was just sent. The next message is then appended to the previous
+   one — measured: "כמה עולה חתונה" + "ומה עם בר" arrived as one string.
+
+   Clearing before the re-render fixes it at the source, and leaves the
+   caret behaviour v45 added intact. */
+(function(){
+ var _conciergeSendV50 = conciergeSend;
+ conciergeSend = function(text){
+  /* the caller has already read the value it is sending */
+  var el = document.getElementById('concierge-input');
+  if(el) el.value = '';
+  return _conciergeSendV50(text);
+ };
+})();
+
+/* ══════════════════════════════════════════════════════════
+   v51 — the root account can reach its own producer dashboard
+   ══════════════════════════════════════════════════════════
+   barakliver@gmail.com signs in as master and lands on the owner
+   console, whose four tabs manage *other* producers: מפיקים, זוגות
+   ולקוחות, תוכן האתר, משתמשים והרשאות. There was no control anywhere
+   that led to the producer dashboard — so the leads, the clients, the
+   tasks, the calendar, the store, the assistant and the site editor
+   were all rendering correctly and were all unreachable. "צפייה כמותג"
+   only sets DB.activeProducer and shows a toast; it does not switch
+   screens.
+
+   The role bar that used to allow this was hidden on purpose, because
+   it let any signed-in person jump into any role. The permission itself
+   is already correct — setRole() lets a master through and bounces
+   everyone else to their own home — so what was missing was a control,
+   not a permission. This adds exactly two, both master-only, and leaves
+   the old free-for-all bar hidden.
+
+   Verified before writing this: setRole('admin') as master renders all
+   nine producer tabs with no errors. */
+(function(){
+
+ function isMaster(){
+  return !!(typeof session !== 'undefined' && session && session.role === 'master');
+ }
+
+ function addSwitch(navId, tabbarId, icon, label, target){
+  var nav = document.getElementById(navId);
+  var bar = document.getElementById(tabbarId);
+  var call = "setRole('" + target + "')";
+  if(nav && nav.innerHTML.indexOf(call) < 0){
+   nav.innerHTML += '<button class="navlink" onclick="' + call + '">' + icon + ' ' + label + '</button>';
+  }
+  if(bar && bar.innerHTML.indexOf(call) < 0){
+   bar.innerHTML += '<button onclick="' + call + '">' +
+    '<span class="ico" aria-hidden="true">' + icon + '</span>' + label + '</button>';
+   var n = (bar.innerHTML.match(/<button/g) || []).length;
+   if(bar.style) bar.style.gridTemplateColumns = 'repeat(' + n + ',1fr)';
+  }
+ }
+
+ var HE = function(){ return (typeof lang === 'undefined' || lang === 'he'); };
+
+ var _renderAllV51 = renderAll;
+ renderAll = function(){
+  _renderAllV51();
+  if(!isMaster()) return;
+  if(activeRole === 'owner'){
+   addSwitch('ownerNav', 'ownerTabbar', '🎛',
+    HE() ? 'לוח המפיק' : 'Producer', 'admin');
+  } else if(activeRole === 'admin'){
+   addSwitch('adminNav', 'adminTabbar', '👑',
+    HE() ? 'ניהול ראשי' : 'Master', 'owner');
+  }
+ };
+})();
+renderAll();
+
 /* ══ PWA: real manifest.json + sw.js on the server so "Install app" works.
    (Blob/data: URLs cannot be used to register a service worker — that was
    the reason the previous version never satisfied install criteria.) ══ */
