@@ -65,7 +65,12 @@ export function A11yPanel() {
         aria-label={c.open}
         aria-expanded={open}
         title={c.open}
-        className="fixed bottom-[calc(env(safe-area-inset-bottom)+1rem)] start-4 z-[60]
+        /* Clear of whatever else lives on the bottom edge. Below lg that is
+           the phone's tab bar on an app screen and the contact dock on the
+           site; at lg it is the foot of the rail, which reserves room of its
+           own. Sitting at 1rem put it on top of the sign-out row. */
+        className="fixed bottom-[calc(env(safe-area-inset-bottom)+5.5rem)] start-4 z-[60]
+                   lg:bottom-[calc(env(safe-area-inset-bottom)+1.25rem)]
                    grid h-12 w-12 place-items-center rounded-full border border-line-control
                    bg-surface-100 text-ink shadow-fab transition-colors
                    hover:border-accent hover:text-accent

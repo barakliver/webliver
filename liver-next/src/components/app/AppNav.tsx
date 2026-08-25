@@ -34,42 +34,55 @@ function isCurrent(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(href + '/');
 }
 
-export function DesktopNav({ items }: { items: NavItem[] }) {
+/**
+ * The producer's navigation, down the side.
+ *
+ * `LUX_DIRECTION.md`: "Producer dashboard — ivory-bright ground, sidebar
+ * separated by a hairline with a gold right-edge mark on the active item."
+ * It was a row across the top, which is a different shape, and the difference
+ * is not decorative: eleven destinations across a header leaves each of them a
+ * word and no room for the account controls, and it spends the vertical space
+ * a working screen wants on chrome.
+ *
+ * Down the side it is one column of full words, it does not move while the
+ * content scrolls, and the mark that says where you are is the same gold rule
+ * the bottom bar and the segmented controls use.
+ */
+export function SidebarNav({ items }: { items: NavItem[] }) {
   const pathname = usePathname();
   return (
-    /* lg rather than sm. Seven labels, a brand name, a bell, an avatar and a
-       sign-out button do not fit on a 700px window, and what happens there is
-       not a graceful squeeze: the nav wins the space and the sign-out button
-       leaves the screen. Below this width the bottom bar is the navigation,
-       which is the better shape for that size anyway. */
-    <nav aria-label="ניווט ראשי" className="hidden items-center gap-6 lg:flex">
-      {items.map((i) => {
-        const current = isCurrent(pathname, i.href);
-        return (
-          <Link
-            key={i.href}
-            href={i.href}
-            aria-current={current ? 'page' : undefined}
-            className={cn(
-              'relative py-1 text-[13.5px] tracking-[.06em] transition-colors duration-300',
-              current ? 'text-ink' : 'text-ink-mute hover:text-ink',
-            )}
-          >
-            {i.label}
-            {/* The active mark is a gold rule under the word rather than a
-                pill around it. It is the same mark the sidebar and the
-                segmented control use, which is what makes the three read as
-                one system instead of three components. */}
-            <span
-              aria-hidden
-              className={cn(
-                'absolute inset-x-0 -bottom-0.5 h-px transition-opacity duration-300',
-                current ? 'bg-accent-line opacity-100' : 'opacity-0',
-              )}
-            />
-          </Link>
-        );
-      })}
+    <nav aria-label="ניווט ראשי" className="min-w-0">
+      <ul className="list-none space-y-0 p-0">
+        {items.map((i) => {
+          const Icon = ICONS[i.icon];
+          const current = isCurrent(pathname, i.href);
+          return (
+            <li key={i.href}>
+              <Link
+                href={i.href}
+                aria-current={current ? 'page' : undefined}
+                className={cn(
+                  'relative flex items-center gap-3 py-2.5 pe-4 text-[14px] tracking-[.02em]',
+                  'transition-colors duration-300',
+                  current ? 'text-ink' : 'text-ink-mute hover:text-ink',
+                )}
+              >
+                <Icon size={17} strokeWidth={1.5} aria-hidden className="shrink-0" />
+                <span className="truncate">{i.label}</span>
+                {/* On the edge that faces the content, which under rtl is the
+                    start of the row and the inner side of the rail. */}
+                <span
+                  aria-hidden
+                  className={cn(
+                    'absolute inset-y-1 start-[-1.5rem] w-px transition-opacity duration-300',
+                    current ? 'bg-accent-line opacity-100' : 'opacity-0',
+                  )}
+                />
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
     </nav>
   );
 }
