@@ -5,7 +5,7 @@ import { requireLiveProducer } from '@/lib/auth';
 import { supabaseServer } from '@/lib/supabase/server';
 import { appCopy, EVENT_KINDS } from '@/content/site';
 import { Live } from '@/components/app/Live';
-import { workspaceSources } from '@/lib/realtime';
+import { workspaceSources } from '@/lib/liveSources';
 import { PageHead } from '@/components/app/PageHead';
 import { InviteBox, type Invite } from '@/components/app/InviteBox';
 import { TaskList, type Task } from '@/components/app/TaskList';
@@ -162,7 +162,7 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
         <Thread clientId={client.id} messages={threads.get(client.id) ?? []} viewerId={account.id} />
         <WinningBoard clientId={client.id} images={board} viewer="producer" />
       </div>
-      <Live sources={[...workspaceSources(client.id), { table: 'messages', filter: `client_id=eq.${client.id}` }, { table: 'contracts', filter: `client_id=eq.${client.id}` }]} />
+      <Live sources={workspaceSources(client.id)} />
     </>
   );
 }

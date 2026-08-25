@@ -69,10 +69,3 @@ export function PortalWorkspace({
     </div>
   );
 }
-
-/** The tables a couple's screen is built from. */
-export const PORTAL_LIVE_SOURCES = [
-  { table: 'clients' }, { table: 'tasks' }, { table: 'guests_rsvp' },
-  { table: 'tables_seating' }, { table: 'moodboards' }, { table: 'day_schedule' },
-  { table: 'budget_items' }, { table: 'payments' },
-];

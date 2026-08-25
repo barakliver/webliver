@@ -5,7 +5,8 @@ import { requireLiveProducer } from '@/lib/auth';
 import { supabaseServer } from '@/lib/supabase/server';
 import { Live } from '@/components/app/Live';
 import { appCopy } from '@/content/site';
-import { PortalWorkspace, PORTAL_LIVE_SOURCES } from '@/components/app/PortalWorkspace';
+import { PortalWorkspace } from '@/components/app/PortalWorkspace';
+import { PORTAL_LIVE_SOURCES } from '@/lib/liveSources';
 import { loadPortal } from '@/lib/portal';
 
 export const metadata = { title: appCopy.preview.title };

@@ -3,7 +3,8 @@ import { supabaseServer } from '@/lib/supabase/server';
 import { Live } from '@/components/app/Live';
 import { appCopy } from '@/content/site';
 import { PageHead, Empty } from '@/components/app/PageHead';
-import { PortalWorkspace, PORTAL_LIVE_SOURCES } from '@/components/app/PortalWorkspace';
+import { PortalWorkspace } from '@/components/app/PortalWorkspace';
+import { PORTAL_LIVE_SOURCES } from '@/lib/liveSources';
 import { loadPortal, loadThread, loadContracts } from '@/lib/portal';
 import { Contracts } from '@/components/app/Contracts';
 import { Thread } from '@/components/app/Thread';
@@ -42,7 +43,7 @@ export default async function PortalPage() {
           </div>
         ))}
       </div>
-      <Live sources={[...PORTAL_LIVE_SOURCES, { table: 'messages' }, { table: 'contracts' }]} />
+      <Live sources={PORTAL_LIVE_SOURCES} />
     </>
   );
 }

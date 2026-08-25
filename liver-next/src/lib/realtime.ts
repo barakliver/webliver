@@ -4,14 +4,9 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { RealtimeChannel } from '@supabase/supabase-js';
 import { supabaseBrowser } from '@/lib/supabase/client';
+import type { LiveSource } from '@/lib/liveSources';
 
-/** A table to listen to, optionally narrowed to one workspace. */
-export type LiveSource = {
-  table: string;
-  /** Postgres-filter syntax, e.g. `client_id=eq.<uuid>`. Narrowing at the
-   *  server means the socket never carries rows this screen would discard. */
-  filter?: string;
-};
+export type { LiveSource };
 
 export type LiveStatus = 'connecting' | 'live' | 'offline';
 
@@ -136,22 +131,4 @@ export function useLive(sources: LiveSource[], enabled = true): LiveStatus {
   }, [key, enabled, router]);
 
   return status;
-}
-
-/** Everything one event workspace is made of. Filtering server-side means a
- *  producer with forty events open on a laptop is not carrying forty events'
- *  worth of traffic for the one screen they are looking at. */
-export function workspaceSources(clientId: string): LiveSource[] {
-  const of = (table: string): LiveSource => ({ table, filter: `client_id=eq.${clientId}` });
-  return [
-    { table: 'clients', filter: `id=eq.${clientId}` },
-    of('tasks'),
-    of('guests_rsvp'),
-    of('tables_seating'),
-    of('moodboards'),
-    of('day_schedule'),
-    of('budget_items'),
-    of('payments'),
-    of('client_authorized_emails'),
-  ];
 }
