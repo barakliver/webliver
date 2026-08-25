@@ -11,7 +11,8 @@
     "sql": "node scripts/build-setup-sql.mjs",
     "test": "node --test --experimental-strip-types \"src/**/__tests__/*.test.ts\"",
     "contrast": "node --experimental-strip-types scripts/check-contrast.mjs",
-    "verify": "node scripts/verify.mjs"
+    "verify": "node scripts/verify.mjs",
+    "db": "bash scripts/db-test.sh"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.120.0",
