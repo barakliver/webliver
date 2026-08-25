@@ -103,7 +103,16 @@ export async function createClient(_prev: ActionResult | null, form: FormData): 
       producerId: account.producer.id,
       producerStatus: account.producer.status,
       role: account.role,
-      seenByDatabase: await sb.rpc('whoami').then((r) => r.data ?? null, () => 'unknown'),
+      /* Three answers, not two. A uid means the session arrived and the
+         refusal is real; null means it did not; "no whoami()" means this
+         database predates the function and the line says nothing either way.
+         Collapsing the last two would print `null` for a missing function and
+         read as a lost session, which is the wrong diagnosis dressed as a
+         finding. */
+      seenByDatabase: await sb.rpc('whoami').then(
+        (r) => (r.error ? 'no whoami() on this database' : r.data ?? null),
+        () => 'whoami() threw',
+      ),
     });
     if (await staleSession(sb)) return { ok: false, error: SESSION_LOST };
     return { ok: false, error: readable(error.message) };
