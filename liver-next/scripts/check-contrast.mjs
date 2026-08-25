@@ -60,10 +60,38 @@ const checks = [
 ];
 
 let failed = 0;
-for (const [name, fg, bg, min] of checks) {
+const line = (name, fg, bg, min) => {
   const r = ratio(fg, bg);
   if (r < min) failed += 1;
   console.log(`${r >= min ? 'ok  ' : 'FAIL'}  ${r.toFixed(2).padStart(5)}:1  (needs ${min})  ${name}`);
+};
+
+for (const [name, fg, bg, min] of checks) line(name, fg, bg, min);
+
+/* ── every accent a producer may pick ──────────────────────────────────────
+   The accent is no longer one colour. A producer chooses from a shortlist,
+   and the reason it is a shortlist rather than a colour picker is this block:
+   a preset cannot ship without clearing the same four bars the base one does.
+   Read from the source of truth rather than duplicated, because here the
+   question really is whether every entry in that file passes.              */
+const brand = await import('../src/content/brand.ts')
+  .catch(() => null);
+
+if (!brand) {
+  console.log('\nFAIL  could not read src/content/brand.ts');
+  failed += 1;
+} else {
+  for (const a of brand.ACCENTS) {
+    console.log(`\n  ${a.key} — ${a.label}`);
+    line(`${a.key}: as a link, on a card`,  a.base,   c.card,     4.5);
+    line(`${a.key}: as a link, on ground`,  a.base,   c.surface,  4.5);
+    line(`${a.key}: on its own wash`,       a.base,   a.wash,     4.5);
+    line(`${a.key}: soft, as a border`,     a.soft,   c.card,     3.0);
+    line(`${a.key}: bright, never words`,   a.bright, c.surface,  3.0);
+    /* A wash is a background. If it is dark enough that ink struggles on it,
+       it is not a wash. */
+    line(`${a.key}: ink on its wash`,       c.ink,    a.wash,     4.5);
+  }
 }
 
 console.log(failed === 0 ? '\nall pairings pass' : `\n${failed} below target`);

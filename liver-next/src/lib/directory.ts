@@ -1,108 +1,113 @@
 import 'server-only';
 import { supabaseServer } from '@/lib/supabase/server';
 
-/* ── Who is on this platform, and who they belong to ───────────────────────
-   The admin screen approved producers and showed nothing else, which answers
-   one question out of the three the root account actually has: who is waiting,
-   who is working, and whose event is whose.
+/* ── What the platform owner may know ──────────────────────────────────────
+   This file used to select from clients and client_authorized_emails and hand
+   the console every couple on the platform by name, because the policies let
+   root read them. They no longer do.
 
-   Every read here goes through the same policies as everywhere else. The root
-   account sees all of it because is_super_admin() is written into those
-   policies, not because this file asks for anything special.               */
+   So nothing here reads a workspace. Two functions run as the definer, count
+   what they were asked to count, and return numbers plus the one identity that
+   governance actually needs: the producer's own. No couple, no event name, no
+   money and no guest crosses this file.
+
+   The cost is real and worth stating: there is no longer a screen on which
+   root can look at somebody else's event to work out why it is behaving
+   oddly. Support is a screen share now.                                    */
+
+export type Stats = {
+  usersTotal: number;
+  usersActive30d: number;
+  usersNeverSeen: number;
+  producersTotal: number;
+  producersApproved: number;
+  producersPending: number;
+  producersBlocked: number;
+  couplesTotal: number;
+  couplesManaged: number;
+  couplesDiy: number;
+  eventsTotal: number;
+  eventsLive: number;
+  leadsTotal: number;
+  leads30d: number;
+};
 
 export type ProducerRow = {
   id: string;
-  profileId: string | null;
-  brandName: string;
-  contactName: string;
+  brand: string;
   email: string;
   status: 'pending' | 'approved' | 'suspended' | 'rejected';
-  createdAt: string;
-  /** Events they are working on now, archived ones excluded. */
-  liveClients: number;
-  totalClients: number;
+  lastSeen: string | null;
+  eventsLive: number;
+  eventsTotal: number;
+  leadsTotal: number;
+  leads30d: number;
+  signedTotal: number;
   isRoot: boolean;
 };
 
-export type ClientRow = {
-  id: string;
-  name: string;
-  kind: string;
-  eventDate: string | null;
-  archived: boolean;
-  producerId: string | null;
-  producerName: string;
-  /** Up to three, each its own login to this workspace. */
-  emails: { address: string; joined: boolean }[];
+export type Flag = { key: string; label: string; diy: boolean; managed: boolean };
+
+export type Console = { stats: Stats | null; producers: ProducerRow[]; flags: Flag[] };
+
+const ZERO: Stats = {
+  usersTotal: 0, usersActive30d: 0, usersNeverSeen: 0,
+  producersTotal: 0, producersApproved: 0, producersPending: 0, producersBlocked: 0,
+  couplesTotal: 0, couplesManaged: 0, couplesDiy: 0,
+  eventsTotal: 0, eventsLive: 0, leadsTotal: 0, leads30d: 0,
 };
 
-export type Directory = { producers: ProducerRow[]; clients: ClientRow[] };
-
-export async function getDirectory(rootEmail: string): Promise<Directory> {
+export async function getConsole(rootEmail: string): Promise<Console> {
   const sb = await supabaseServer();
 
-  const [producersQ, clientsQ, emailsQ] = await Promise.all([
-    sb.from('producers')
-      .select('id,owner_id,brand_name,contact_name,contact_email,status,created_at')
-      .order('created_at', { ascending: false }),
-    sb.from('clients')
-      .select('id,display_name,kind,event_date,archived_at,producer_id')
-      .order('event_date', { ascending: true, nullsFirst: false }),
-    sb.from('client_authorized_emails').select('client_id,email,profile_id'),
+  const [statsQ, boardQ, flagsQ] = await Promise.all([
+    sb.rpc('platform_stats'),
+    sb.rpc('producer_leaderboard'),
+    sb.from('feature_flags').select('key,label,diy,managed').order('key'),
   ]);
 
-  const clients = clientsQ.data ?? [];
-  const emails = emailsQ.data ?? [];
+  if (statsQ.error) console.error('[console] stats failed', statsQ.error);
+  if (boardQ.error) console.error('[console] leaderboard failed', boardQ.error);
 
-  /* Counted here rather than asked of the database per row: the whole list is
-     already in memory, and a count query per producer is how an admin screen
-     becomes slow the month somebody signs up ten of them. */
-  const live = new Map<string, number>();
-  const total = new Map<string, number>();
-  for (const c of clients) {
-    if (!c.producer_id) continue;
-    total.set(c.producer_id, (total.get(c.producer_id) ?? 0) + 1);
-    if (!c.archived_at) live.set(c.producer_id, (live.get(c.producer_id) ?? 0) + 1);
-  }
+  /* The function returns a single row. A failed call leaves the band showing
+     zeroes with an explanation rather than crashing the console the one time
+     somebody needs it. */
+  const raw = Array.isArray(statsQ.data) ? statsQ.data[0] : statsQ.data;
+  const stats: Stats | null = raw
+    ? {
+        usersTotal: raw.users_total ?? 0,
+        usersActive30d: raw.users_active_30d ?? 0,
+        usersNeverSeen: raw.users_never_seen ?? 0,
+        producersTotal: raw.producers_total ?? 0,
+        producersApproved: raw.producers_approved ?? 0,
+        producersPending: raw.producers_pending ?? 0,
+        producersBlocked: raw.producers_blocked ?? 0,
+        couplesTotal: raw.couples_total ?? 0,
+        couplesManaged: raw.couples_managed ?? 0,
+        couplesDiy: raw.couples_diy ?? 0,
+        eventsTotal: raw.events_total ?? 0,
+        eventsLive: raw.events_live ?? 0,
+        leadsTotal: raw.leads_total ?? 0,
+        leads30d: raw.leads_30d ?? 0,
+      }
+    : statsQ.error ? null : ZERO;
 
-  const producers: ProducerRow[] = (producersQ.data ?? []).map((p) => ({
-    id: p.id,
-    profileId: p.owner_id,
-    brandName: p.brand_name || '',
-    contactName: p.contact_name || '',
-    email: p.contact_email || '',
-    status: p.status,
-    createdAt: p.created_at,
-    liveClients: live.get(p.id) ?? 0,
-    totalClients: total.get(p.id) ?? 0,
+  const producers: ProducerRow[] = (boardQ.data ?? []).map((p: Record<string, unknown>) => ({
+    id: String(p.producer_id),
+    brand: String(p.brand ?? ''),
+    email: String(p.contact_email ?? ''),
+    status: (p.status ?? 'pending') as ProducerRow['status'],
+    lastSeen: (p.last_seen_at as string | null) ?? null,
+    eventsLive: Number(p.events_live ?? 0),
+    eventsTotal: Number(p.events_total ?? 0),
+    leadsTotal: Number(p.leads_total ?? 0),
+    leads30d: Number(p.leads_30d ?? 0),
+    signedTotal: Number(p.signed_total ?? 0),
     /* The root account is not something to approve, suspend or reject. It is
        the thing doing the approving, and offering those buttons against it is
        an invitation to lock yourself out of your own platform. */
-    isRoot: (p.contact_email || '').toLowerCase() === rootEmail.toLowerCase(),
+    isRoot: String(p.contact_email ?? '').toLowerCase() === rootEmail.toLowerCase(),
   }));
 
-  const nameOf = new Map(producers.map((p) => [p.id, p.brandName || p.contactName || p.email]));
-
-  const byClient = new Map<string, { address: string; joined: boolean }[]>();
-  for (const e of emails) {
-    const list = byClient.get(e.client_id) ?? [];
-    /* joined is the difference between "we sent an invitation" and "they are
-       using it", which is the only part of an invitation worth reporting. */
-    list.push({ address: e.email, joined: !!e.profile_id });
-    byClient.set(e.client_id, list);
-  }
-
-  return {
-    producers,
-    clients: clients.map((c) => ({
-      id: c.id,
-      name: c.display_name,
-      kind: c.kind,
-      eventDate: c.event_date,
-      archived: !!c.archived_at,
-      producerId: c.producer_id,
-      producerName: c.producer_id ? (nameOf.get(c.producer_id) ?? '') : '',
-      emails: byClient.get(c.id) ?? [],
-    })),
-  };
+  return { stats, producers, flags: (flagsQ.data ?? []) as Flag[] };
 }

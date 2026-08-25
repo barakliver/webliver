@@ -25,26 +25,60 @@ export async function setProducerStatus(formData: FormData): Promise<void> {
   revalidatePath('/app/admin');
 }
 
-/** Moves an event to another producer.
+/**
+ * Hands one of your own events to another producer.
  *
- *  Root only, and enforced by the policy rather than by this function:
- *  clients_write already restricts every write to the owning producer or the
- *  super admin, so a producer calling this against somebody else's event
- *  changes nothing.
+ * This used to move any event between any two producers, because root could
+ * read every workspace. Root cannot now, and pushing a workspace into a tenant
+ * from outside it is not an operation a platform with a real boundary should
+ * have.
  *
- *  Everything on the event moves with it, because everything on the event is
- *  keyed to the event and not to whoever was producing it. The couple keeps
- *  their logins, their tasks and their guest list; the person answering
- *  changes. */
-export async function reassignClient(formData: FormData): Promise<void> {
+ * What survives is the honest version, enforced in the database: the event
+ * must be one the caller owns, and the destination must be an approved
+ * producer. Handing over data you already hold is a real thing a production
+ * business does; reaching into somebody else's books is not.
+ *
+ * Everything on the event moves with it, because everything on the event is
+ * keyed to the event and not to whoever was producing it. The couple keeps
+ * their logins, their tasks and their guest list; the person answering
+ * changes.
+ */
+export async function transferClient(formData: FormData): Promise<void> {
   const clientId = String(formData.get('client_id') ?? '');
   const producerId = String(formData.get('producer_id') ?? '');
   if (!clientId || !producerId) return;
 
   const sb = await supabaseServer();
-  await sb.from('clients').update({ producer_id: producerId }).eq('id', clientId);
+  const { error } = await sb.rpc('transfer_client', {
+    p_client: clientId,
+    p_to_producer: producerId,
+  });
+  if (error) console.error('[admin] transfer failed', error);
 
   revalidatePath('/app/admin');
   revalidatePath('/app/clients');
   revalidatePath(`/app/clients/${clientId}`);
+}
+
+/** Which modules each kind of couple may open. */
+export async function setFeatureFlag(formData: FormData): Promise<void> {
+  const key = String(formData.get('key') ?? '');
+  const label = String(formData.get('label') ?? '');
+  if (!key) return;
+
+  const account = await currentAccount();
+  if (!account || account.role !== 'super_admin') return;
+
+  const sb = await supabaseServer();
+  const { error } = await sb.rpc('set_feature_flag', {
+    p_key: key,
+    p_label: label,
+    /* An unchecked checkbox sends nothing at all, which is the whole reason
+       this reads presence rather than a value. */
+    p_diy: formData.get('diy') === 'on',
+    p_managed: formData.get('managed') === 'on',
+  });
+  if (error) console.error('[admin] flag failed', error);
+
+  revalidatePath('/app/admin');
 }
