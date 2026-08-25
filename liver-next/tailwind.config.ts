@@ -83,6 +83,10 @@ const config: Config = {
       keyframes: {
         rise:  { '0%': { opacity: '0', transform: 'translateY(12px)' }, '100%': { opacity: '1', transform: 'none' } },
         sheet: { '0%': { opacity: '0', transform: 'translateY(16px) scale(.99)' }, '100%': { opacity: '1', transform: 'none' } },
+        /* The ambient backdrop arrives over its own still rather than cutting
+           to it, so the swap is not a flash on a page whose first impression
+           is the point. */
+        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
       },
       animation: {
         /* 160-350ms, per the brief; only the page-load rise runs longer */

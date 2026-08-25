@@ -22,6 +22,10 @@ export const publicEnv = {
      cannot be filled in at all, and the person typing gets blamed for it. Six
      is the intended value and the default; the variable exists so a project
      configured differently can be matched without a deploy. */
+  /* A file in /public, or a URL. Empty means the hero is the photograph, which
+     is what it is today: there is no footage yet, and a hero that waits for a
+     file nobody has shot is a hero that is broken until then. */
+  heroVideo: process.env.NEXT_PUBLIC_HERO_VIDEO ?? '',
   otpLength: Math.min(12, Math.max(4, Number(process.env.NEXT_PUBLIC_OTP_LENGTH) || 6)),
   /* How long a code stays good for, in seconds, and how long before another
      one may be asked for. Both are Supabase project settings and neither is

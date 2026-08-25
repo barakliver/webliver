@@ -1,7 +1,9 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import type { SiteCopy } from '@/content/site';
+import { publicEnv } from '@/lib/env';
 import { Prose } from './Prose';
+import { AmbientBackdrop } from './AmbientBackdrop';
 
 /** The first screen of a wedding producer's site was a text card on a tinted
  *  gradient, with no photograph anywhere in it. The gradient stays as the
@@ -12,18 +14,25 @@ import { Prose } from './Prose';
  *
  *  This one is fetched at high priority: it is the largest thing above the
  *  fold, which makes it the LCP element. */
+const HERO_STILL = '/portfolio/chuppah-105-w1400.webp';
+
 export function Hero({ site }: { site: SiteCopy }) {
   return (
     <header className="relative isolate overflow-hidden">
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
         <Image
-          src="/portfolio/chuppah-105-w1400.webp"
+          src={HERO_STILL}
           alt=""
           fill
           priority
           sizes="100vw"
           className="object-cover object-[center_28%]"
         />
+        {/* Layered over the still rather than replacing it, so the page has a
+            hero before any footage exists and still has one while it loads. */}
+        {publicEnv.heroVideo && (
+          <AmbientBackdrop src={publicEnv.heroVideo} poster={HERO_STILL} />
+        )}
         {/* Weighted toward the side the words sit on rather than flat across
             the frame: enough contrast to read, while the photograph keeps its
             colour. A flat 70% wash turned a warm golden-hour frame grey. */}

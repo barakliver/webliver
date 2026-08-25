@@ -12,6 +12,7 @@ import { Portfolio } from '@/components/marketing/Portfolio';
 import { Portrait } from '@/components/marketing/Portrait';
 import { FabDock } from '@/components/marketing/FabDock';
 import { BookMeeting } from '@/components/marketing/BookMeeting';
+import { AiConcierge } from '@/components/marketing/AiConcierge';
 
 /* Rebuilt on a timer rather than on every visit. The copy is read from the
    database so it can be edited without a deploy, and a marketing page that
@@ -88,6 +89,7 @@ export default async function HomePage() {
       </main>
       <div className="h-24 sm:h-0" aria-hidden />
       <FabDock />
+      <AiConcierge />
     </>
   );
 }
