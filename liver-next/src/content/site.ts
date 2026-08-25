@@ -274,6 +274,20 @@ export const appCopy = {
     offline: 'אין חיבור — המסך עלול לא להיות מעודכן',
   },
 
+  runsheet: {
+    title: 'לוז יום האירוע',
+    back: 'חזרה לאירוע',
+    print: 'הדפסה / שמירה כ-PDF',
+    audience: 'למי הלוז',
+    everyone: 'הכול',
+    sheetFor: 'לוז עבור:',
+    noDate: 'טרם נקבע תאריך',
+    empty: 'עוד לא נבנה לוז ליום האירוע.',
+    emptyForRole: 'אין שורות המסומנות לתפקיד הזה. שורה בלי סימון מופיעה אצל כולם.',
+    printedOn: 'הופק ב-',
+    open: 'לוז ליום האירוע',
+  },
+
   statusBoard: {
     noDate: 'ללא תאריך',
     daysLeft: 'ימים',
@@ -489,6 +503,7 @@ export const seatingCopy = {
 } as const;
 
 export const dayCopy = {
+  audience: 'למי הלוז הזה (ריק = לכולם):',
   title: 'לוז יום האירוע',
   sub: 'הבוקר נראה אחרת לכל אחד, אז לכל אחד יש מסלול משלו — ומה שמשותף מופיע באמצע.',
   shared: 'משותף',

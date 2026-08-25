@@ -34,3 +34,14 @@ export const RSVP_LABELS: Record<string, string> = {
 
 export const TRACKS = ['shared', 'partner_a', 'partner_b'] as const;
 export type Track = (typeof TRACKS)[number];
+
+/** Who a run-sheet line is for. Empty on a line means everyone.
+ *  Mirrors the day_audience_known check constraint; the database is the
+ *  authority and this list must not drift from it. */
+export const AUDIENCES = [
+  { value: 'couple',  label: 'הזוג' },
+  { value: 'photo',   label: 'צילום' },
+  { value: 'vendors', label: 'ספקים' },
+  { value: 'crew',    label: 'צוות' },
+] as const;
+export type Audience = (typeof AUDIENCES)[number]['value'];

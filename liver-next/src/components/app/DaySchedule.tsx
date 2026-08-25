@@ -3,7 +3,7 @@
 import { useActionState, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { addDayItem, deleteDayItem, renameTracks, type DayResult } from '@/app/actions/day';
-import type { Track } from '@/content/lists';
+import { AUDIENCES, type Track } from '@/content/lists';
 import { dayCopy } from '@/content/site';
 
 export type DayItem = { id: string; track: Track; at_time: string; title: string; note: string };
@@ -69,6 +69,23 @@ export function DaySchedule({ clientId, items, labelA, labelB }: {
           <option value="partner_b">{labelB}</option>
         </select>
         <Busy label={c.add} busy={c.adding} />
+
+        {/* Unticked means everyone, which is what most lines are. Tick a role
+            and the line moves onto that person's printed sheet only — so this
+            is opt-in narrowing rather than a field to fill in before the
+            schedule works at all. */}
+        <fieldset className="sm:col-span-5">
+          <legend className="sr-only">{c.audience}</legend>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <span className="text-[13px] text-ink-mute">{c.audience}</span>
+            {AUDIENCES.map((a) => (
+              <label key={a.value} className="inline-flex items-center gap-1.5 text-[13.5px] text-ink-soft">
+                <input type="checkbox" name="audience" value={a.value} className="size-4 accent-bronze" />
+                {a.label}
+              </label>
+            ))}
+          </div>
+        </fieldset>
       </form>
       {addState && !addState.ok && addState.error && (
         <p role="alert" className="mt-3 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-[14px] text-rose-800">{addState.error}</p>
