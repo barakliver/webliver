@@ -2,6 +2,9 @@ import 'server-only';
 import { redirect } from 'next/navigation';
 import { supabaseServer } from '@/lib/supabase/server';
 
+/** Mirrors public.root_admin_email() in the database. Both must agree. */
+const ROOT_ADMIN_EMAIL = 'barakliver@gmail.com';
+
 export type Role = 'super_admin' | 'producer' | 'client' | 'staff';
 export type ProducerStatus = 'pending' | 'approved' | 'suspended' | 'rejected';
 
@@ -29,9 +32,14 @@ export async function currentAccount(): Promise<Account | null> {
     .eq('id', user.id)
     .maybeSingle();
 
-  /* the profile trigger runs on signup; if it has not landed yet, fall back to
-     the auth record rather than rendering a broken shell */
-  const role = (profile?.role ?? 'client') as Role;
+  /* handle_new_user() writes the profile on signup, so a missing one means the
+     account predates the schema. Defaulting that to 'client' was wrong twice
+     over: it is the least likely case, and it fails silently — the root address
+     was shown the couple's portal and looked like a working screen rather than
+     a broken one. Fall back on the same rule the database uses, so the answer
+     is at worst consistent with what the backfill will write. */
+  const role = (profile?.role
+    ?? (user.email?.toLowerCase() === ROOT_ADMIN_EMAIL ? 'super_admin' : 'producer')) as Role;
 
   const { data: producer } = await sb
     .from('producers')
