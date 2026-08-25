@@ -17,8 +17,16 @@ export type Workspace = {
   track_a_label: string; track_b_label: string;
 };
 
+/** Which modules this workspace may open. Asked of the database rather than
+ *  worked out here: the answer depends on the plan the workspace is on and on
+ *  flags the platform owner controls, and neither belongs in a component. */
+export type Gate = (clientId: string, key: string) => boolean;
+
 export type PortalData = {
   workspaces: Workspace[];
+  /** Never a reason to hide anything from the producer's own screens: the
+   *  gate is about what a couple is sold, not about what a producer may use. */
+  can: Gate;
   tasksFor: (id: string) => Task[];
   paymentsFor: (id: string) => Payment[];
   budgetFor: (id: string) => BudgetItem[];
@@ -65,6 +73,7 @@ export async function loadPortal(
 
   const empty: PortalData = {
     workspaces,
+    can: () => true,
     tasksFor: () => [], paymentsFor: () => [], budgetFor: () => [],
     guestsFor: () => [], tablesFor: () => [], dayFor: () => [], boardFor: () => [],
   };
@@ -86,6 +95,29 @@ export async function loadPortal(
       .in('client_id', ids).order('created_at', { ascending: false }),
   ]);
 
+  /* One row per workspace and module rather than a call per panel. A gate that
+     costs a round trip is a gate somebody removes the first time a screen
+     feels slow.
+
+     Every module is open by default and stays open if the read fails. A
+     platform outage must not silently take features away from a couple three
+     days before their wedding: closing a door is a decision somebody made, and
+     a failed query is not one. */
+  const modules = ['budget', 'guests', 'seating', 'moodboard', 'runsheet', 'messages', 'files'];
+  const closed = new Set<string>();
+  await Promise.all(
+    ids.flatMap((cid) =>
+      modules.map(async (key) => {
+        const { data, error } = await sb.rpc('feature_on', { p_client: cid, p_key: key });
+        if (error) {
+          console.error('[portal] gate failed', key, error);
+          return;
+        }
+        if (data === false) closed.add(`${cid}:${key}`);
+      }),
+    ),
+  );
+
   const board = await signBoardImages(sb, (boardRows.data ?? []) as never);
 
   /* The couple's view of money, applied here rather than in the markup, so no
@@ -97,6 +129,7 @@ export async function loadPortal(
     workspaces,
     tasksFor: (id) => by(tasks.data as WithClient<Task>[], id),
     paymentsFor: (id) => (moneyVisible(id) ? by(payments.data as WithClient<Payment>[], id) : []),
+    can: (id, key) => !closed.has(`${id}:${key}`),
     budgetFor: (id) => (moneyVisible(id) ? by(budget.data as WithClient<BudgetItem>[], id) : []),
     guestsFor: (id) => by(guests.data as WithClient<Guest>[], id),
     tablesFor: (id) => by(tables.data as WithClient<SeatTable>[], id),

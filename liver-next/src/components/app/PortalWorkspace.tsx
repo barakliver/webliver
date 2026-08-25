@@ -46,17 +46,28 @@ export function PortalWorkspace({
       <div className="mt-4 space-y-6">
         <TaskList clientId={c.id} tasks={data.tasksFor(c.id)} viewer="client" viewerId={viewerId} />
         <PaymentsPanel clientId={c.id} payments={data.paymentsFor(c.id)} viewer="client" />
-        {budget.length > 0 && <BudgetPanel clientId={c.id} items={budget} viewer="client" visible />}
-        <GuestList clientId={c.id} guests={data.guestsFor(c.id)} />
-        <SeatingPlan clientId={c.id} tables={data.tablesFor(c.id)} guests={data.guestsFor(c.id) as never} />
-        <DaySchedule
-          clientId={c.id}
-          items={data.dayFor(c.id)}
-          labelA={c.track_a_label}
-          labelB={c.track_b_label}
-          viewer="client"
-        />
-        <WinningBoard clientId={c.id} images={data.boardFor(c.id)} viewer="client" />
+        {/* Gated modules. A closed one is absent rather than greyed out: a
+            locked panel advertising something the couple was not sold is a
+            sales screen wearing the clothes of a tool. */}
+        {data.can(c.id, 'budget') && budget.length > 0 && (
+          <BudgetPanel clientId={c.id} items={budget} viewer="client" visible />
+        )}
+        {data.can(c.id, 'guests') && <GuestList clientId={c.id} guests={data.guestsFor(c.id)} />}
+        {data.can(c.id, 'seating') && (
+          <SeatingPlan clientId={c.id} tables={data.tablesFor(c.id)} guests={data.guestsFor(c.id) as never} />
+        )}
+        {data.can(c.id, 'runsheet') && (
+          <DaySchedule
+            clientId={c.id}
+            items={data.dayFor(c.id)}
+            labelA={c.track_a_label}
+            labelB={c.track_b_label}
+            viewer="client"
+          />
+        )}
+        {data.can(c.id, 'moodboard') && (
+          <WinningBoard clientId={c.id} images={data.boardFor(c.id)} viewer="client" />
+        )}
       </div>
     </div>
   );
