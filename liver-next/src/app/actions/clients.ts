@@ -134,3 +134,29 @@ export async function revokeInvite(form: FormData): Promise<void> {
   await sb.from('client_authorized_emails').delete().eq('id', id);
   revalidatePath(`/app/clients/${clientId}`);
 }
+
+/** Closes a finished event, or reopens one closed too early.
+ *
+ *  Nothing is deleted: the guests, the payments and the run sheet are the
+ *  record of what happened, and they are wanted long after the evening is
+ *  over. This only decides whether the event still counts as live work.
+ *
+ *  Deliberately never automatic. A date passing is a prompt to close a file,
+ *  not the closing of it — there is usually a last payment to chase or a
+ *  supplier to settle, and an event that tidied itself away on the morning
+ *  after would take those with it. */
+export async function setArchived(form: FormData): Promise<void> {
+  const id = String(form.get('client_id') ?? '');
+  const archived = String(form.get('archived') ?? '') === '1';
+  if (!id) return;
+
+  const sb = await supabaseServer();
+  await sb
+    .from('clients')
+    .update({ archived_at: archived ? new Date().toISOString() : null })
+    .eq('id', id);
+
+  revalidatePath('/app/clients');
+  revalidatePath(`/app/clients/${id}`);
+  revalidatePath('/app');
+}

@@ -1,60 +1,77 @@
 import Link from 'next/link';
 import { requireLiveProducer } from '@/lib/auth';
-import { supabaseServer } from '@/lib/supabase/server';
-import { Live } from '@/components/app/Live';
 import { appCopy } from '@/content/site';
 import { PageHead, Empty } from '@/components/app/PageHead';
 import { NewClientForm } from '@/components/app/NewClientForm';
+import { StatusBoard } from '@/components/app/StatusBoard';
+import { Live } from '@/components/app/Live';
+import { getBoard } from '@/lib/status';
 
 export const metadata = { title: appCopy.clients.title };
 
-type ClientRow = {
-  id: string; display_name: string; event_date: string | null;
-  venue: string; guest_estimate: number | null;
-};
+const c = appCopy.statusBoard;
 
-const dateFmt = new Intl.DateTimeFormat('he-IL', { day: '2-digit', month: '2-digit', year: 'numeric' });
-
-export default async function ClientsPage() {
+export default async function ClientsPage({
+  searchParams,
+}: { searchParams: Promise<{ show?: string }> }) {
   await requireLiveProducer();
-  const sb = await supabaseServer();
-  const { data } = await sb
-    .from('clients')
-    .select('id,display_name,event_date,venue,guest_estimate')
-    .order('event_date', { ascending: true, nullsFirst: false });
+  const { show } = await searchParams;
+  const archived = show === 'done';
 
-  const rows = (data ?? []) as ClientRow[];
+  const items = await getBoard({ archived });
+  const openGaps = items.reduce((n, s) => n + s.gaps.length, 0);
 
   return (
     <>
-      <PageHead title={appCopy.clients.title} sub={appCopy.clients.sub} />
-      <div className="mb-8"><NewClientForm /></div>
-      {rows.length === 0 ? (
-        <Empty text={appCopy.clients.empty} />
+      <PageHead
+        title={appCopy.clients.title}
+        sub={
+          archived
+            ? undefined
+            : openGaps > 0
+              ? `${openGaps} ${openGaps === 1 ? 'פער פתוח' : 'פערים פתוחים'} על פני ${items.length} ${items.length === 1 ? 'אירוע' : 'אירועים'}`
+              : appCopy.clients.sub
+        }
+      />
+
+      {/* Two lists, not a filter menu: live work and closed files are different
+          questions, and one of them is asked far more often than the other. */}
+      <nav className="mb-6 inline-flex rounded-full border border-line bg-ivory-100 p-1 text-[14px]" aria-label={appCopy.clients.title}>
+        {[
+          { key: 'live', href: '/app/clients', label: c.tabLive, on: !archived },
+          { key: 'done', href: '/app/clients?show=done', label: c.tabDone, on: archived },
+        ].map((t) => (
+          <Link
+            key={t.key}
+            href={t.href}
+            aria-current={t.on ? 'page' : undefined}
+            className={`min-h-[36px] rounded-full px-4 leading-[36px] transition ${
+              t.on ? 'bg-white font-medium text-ink shadow-soft' : 'text-ink-mute hover:text-ink'
+            }`}
+          >
+            {t.label}
+          </Link>
+        ))}
+      </nav>
+
+      {!archived && <div className="mb-8"><NewClientForm /></div>}
+
+      {items.length === 0 ? (
+        <Empty text={archived ? c.emptyDone : appCopy.clients.empty} />
       ) : (
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {rows.map((c) => (
-            <Link key={c.id} href={`/app/clients/${c.id}`} className="card block transition-shadow hover:shadow-lift">
-              <h2 className="font-display text-[19px] font-semibold text-ink">{c.display_name}</h2>
-              <dl className="mt-4 space-y-1.5 text-[14.5px]">
-                <div className="flex justify-between gap-3">
-                  <dt className="text-ink-mute">{appCopy.clients.cols.date}</dt>
-                  <dd className="text-ink-soft">{c.event_date ? dateFmt.format(new Date(c.event_date)) : appCopy.clients.noDate}</dd>
-                </div>
-                <div className="flex justify-between gap-3">
-                  <dt className="text-ink-mute">{appCopy.clients.cols.venue}</dt>
-                  <dd className="text-ink-soft">{c.venue || '—'}</dd>
-                </div>
-                <div className="flex justify-between gap-3">
-                  <dt className="text-ink-mute">{appCopy.clients.cols.guests}</dt>
-                  <dd className="text-ink-soft">{c.guest_estimate ?? '—'}</dd>
-                </div>
-              </dl>
-            </Link>
-          ))}
-        </div>
+        <>
+          {!archived && openGaps === 0 && (
+            <p className="mb-4 rounded-2xl bg-ok-wash px-4 py-3 text-[14.5px] text-ok">{c.allClear}</p>
+          )}
+          <StatusBoard items={items} />
+        </>
       )}
-      <Live sources={[{ table: 'clients' }]} />
+
+      <Live sources={[
+        { table: 'clients' }, { table: 'tasks' }, { table: 'payments' },
+        { table: 'guests_rsvp' }, { table: 'day_schedule' },
+        { table: 'client_authorized_emails' },
+      ]} />
     </>
   );
 }
