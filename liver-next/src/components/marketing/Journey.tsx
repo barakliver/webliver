@@ -7,7 +7,7 @@ export function Journey({ site }: { site: SiteCopy }) {
     <Section id="journey" title={site.journey.title}>
       <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {site.journey.steps.map((step, i) => (
-          <li key={i} className="group rounded-none glass p-6 transition hover:shadow-lift">
+          <li key={i} className="group rounded-none border glass p-6 transition-colors hover:border-accent">
             <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent-wash font-display text-[15px] font-light text-accent">
               {i + 1}
             </span>

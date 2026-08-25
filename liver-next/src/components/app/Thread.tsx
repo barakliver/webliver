@@ -90,7 +90,7 @@ export function Thread({ clientId, messages, viewerId }: {
                   <div className={`min-w-0 max-w-[80%] ${mine ? 'text-left' : ''}`}>
                     <div
                       className={`rounded-none px-3.5 py-2.5 text-[14.5px] leading-[1.65] ${
-                        mine ? 'bg-ink text-white' : 'bg-surface-200 text-ink'
+                        mine ? 'bg-ink text-surface' : 'bg-surface-200 text-ink'
                       }`}
                     >
                       {!mine && <p className="mb-0.5 text-[12.5px] font-medium text-accent">{m.author_name}</p>}

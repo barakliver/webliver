@@ -79,11 +79,11 @@ export function CalendarFeed({ clientId }: { clientId?: string }) {
           <div className="flex flex-wrap gap-2">
             <a href={webcal} className="btn-primary text-[14px]">{c.open}</a>
             <button type="button" onClick={copy} className="btn-ghost text-[14px]">
-              {copied ? <Check size={16} aria-hidden /> : <Copy size={16} aria-hidden />}
+              {copied ? <Check size={16} strokeWidth={1.5} aria-hidden /> : <Copy size={16} strokeWidth={1.5} aria-hidden />}
               {copied ? c.copied : c.copy}
             </button>
             <button type="button" onClick={drop} disabled={pending} className="btn-ghost text-[14px] text-bad">
-              <Trash2 size={16} aria-hidden /> {c.revoke}
+              <Trash2 size={16} strokeWidth={1.5} aria-hidden /> {c.revoke}
             </button>
           </div>
 

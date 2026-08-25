@@ -110,7 +110,7 @@ export default async function RunsheetPage({
               href={a.value ? `/app/clients/${id}/runsheet?for=${a.value}` : `/app/clients/${id}/runsheet`}
               aria-current={on ? 'page' : undefined}
               className={`min-h-[44px] rounded-none border px-4 text-[14px] leading-[42px] sm:min-h-[38px] sm:leading-[36px] transition ${
-                on ? 'border-ink bg-ink font-medium text-white' : 'border-line-strong text-ink-soft hover:border-accent/40 hover:text-accent'
+                on ? 'border-ink bg-ink font-medium text-surface' : 'border-line-strong text-ink-soft hover:border-accent/40 hover:text-accent'
               }`}
             >
               {a.label}

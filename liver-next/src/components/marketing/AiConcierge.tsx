@@ -94,7 +94,7 @@ export function AiConcierge() {
           role="dialog"
           aria-modal="false"
           aria-label={c.title}
-          className="fixed inset-x-3 bottom-[calc(env(safe-area-inset-bottom)+10.5rem)] z-40 flex max-h-[58svh] flex-col overflow-hidden rounded-none glass-strong shadow-lift sm:inset-x-auto sm:left-6 sm:w-[24rem]"
+          className="fixed inset-x-3 bottom-[calc(env(safe-area-inset-bottom)+10.5rem)] z-40 flex max-h-[58svh] flex-col overflow-hidden rounded-none glass-strong shadow-pop sm:inset-x-auto sm:left-6 sm:w-[24rem]"
         >
           <header className="flex items-start justify-between gap-3 border-b border-line px-5 py-4">
             <div>

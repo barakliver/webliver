@@ -60,7 +60,7 @@ export function RsvpForm({ token, initial }: {
             <label
               key={v}
               className={`cursor-pointer rounded-none border px-5 py-4 text-center text-[15.5px] transition ${
-                coming === v ? 'border-ink bg-ink text-white' : 'border-line bg-white/70 text-ink hover:bg-white'
+                coming === v ? 'border-ink bg-ink text-surface' : 'border-line bg-card/70 text-ink hover:bg-card'
               }`}
             >
               <input

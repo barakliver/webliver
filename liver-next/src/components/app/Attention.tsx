@@ -47,7 +47,7 @@ export function AttentionList({ items }: { items: AttentionItem[] }) {
             <Link
               href={it.href}
               className="group flex items-center gap-3.5 rounded-none border border-line bg-card
-                         p-4 shadow-soft transition duration-200 ease-out hover:shadow-lift"
+                         p-4 transition-colors duration-200 ease-out hover:border-accent"
             >
               <span
                 aria-hidden

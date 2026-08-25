@@ -51,7 +51,7 @@ function Chips<T extends string>({ items, value, onChange, label }: {
           <button
             key={i.v} type="button" onClick={() => onChange(i.v)} aria-pressed={value === i.v}
             className={`inline-flex min-h-[44px] items-center rounded-none px-4 text-[14px] transition sm:min-h-0 sm:py-2 ${
-              value === i.v ? 'bg-ink text-white shadow-soft' : 'border border-line bg-white/70 text-ink-soft hover:bg-white'
+              value === i.v ? 'bg-ink text-surface' : 'border border-line bg-card/70 text-ink-soft hover:bg-card'
             }`}
           >{i.label}</button>
         ))}
@@ -117,7 +117,7 @@ export function BudgetSimulator() {
                 <button
                   key={v} type="button" onClick={() => setAttendance(v)} aria-pressed={attendance === v}
                   className={`inline-flex min-h-[44px] items-center rounded-none px-4 text-[14px] transition sm:min-h-0 sm:py-2 ${
-                    attendance === v ? 'bg-ink text-white shadow-soft' : 'border border-line bg-white/70 text-ink-soft hover:bg-white'
+                    attendance === v ? 'bg-ink text-surface' : 'border border-line bg-card/70 text-ink-soft hover:bg-card'
                   }`}
                 >{Math.round(v * 100)}%</button>
               ))}

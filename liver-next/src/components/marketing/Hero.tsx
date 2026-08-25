@@ -54,20 +54,20 @@ export function Hero({ site }: { site: SiteCopy }) {
       </Layer>
 
       <Layer depth={14} className="shell flex min-h-[86svh] flex-col justify-center py-24 sm:py-32">
-        <p className="eyebrow animate-veil !text-white/80">{site.hero.eyebrow}</p>
+        <p className="eyebrow animate-veil !text-surface/80">{site.hero.eyebrow}</p>
 
-        <h1 className="mt-4 max-w-[16ch] animate-veil font-display text-display-xl font-light text-white [animation-delay:60ms]">
+        <h1 className="mt-4 max-w-[16ch] animate-veil font-display text-display-xl font-light text-surface [animation-delay:60ms]">
           {site.hero.headline}
         </h1>
 
-        <p className="mt-6 animate-veil font-display text-title font-light text-white/95 [animation-delay:120ms]">
+        <p className="mt-6 animate-veil font-display text-title font-light text-surface/95 [animation-delay:120ms]">
           {site.hero.name}
         </p>
 
         <div className="mt-4 animate-veil [animation-delay:180ms]">
           {/* Prose sets text-ink-soft itself, which is a dark grey and would
               vanish against the photograph, so the override goes on Prose. */}
-          <Prose lines={site.hero.body} className="!text-white/85" />
+          <Prose lines={site.hero.body} className="!text-surface/85" />
         </div>
 
         <div className="mt-9 animate-veil [animation-delay:240ms]">

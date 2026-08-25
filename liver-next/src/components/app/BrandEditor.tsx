@@ -58,7 +58,7 @@ export function BrandEditor({ fields, rootDomain }: { fields: BrandFields; rootD
           <p className="mt-3 text-[14px] text-ink-soft">{tagline || c.taglinePh}</p>
           <div className="mt-3 flex flex-wrap gap-2">
             <span
-              className="inline-flex min-h-[36px] items-center rounded-none px-4 text-[13.5px] font-medium text-white"
+              className="inline-flex min-h-[36px] items-center rounded-none px-4 text-[13.5px] font-medium text-surface"
               style={{ background: chosen.base }}
             >
               {appCopy.brand.save}

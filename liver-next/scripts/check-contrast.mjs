@@ -76,7 +76,14 @@ const checks = [
   ['good, on its wash',            c.ok,         c.okWash,      4.5],
   ['waiting, on its wash',         c.warn,       c.warnWash,    4.5],
   ['wrong, on its wash',           c.bad,        c.badWash,     4.5],
+  /* A label on a filled control. There is no white in this palette, so the
+     ivory is the label everywhere a fill carries one, and every fill the
+     product actually uses is checked rather than assumed. */
   ['a button label on ink',        c.surface,    c.ink,         4.5],
+  ['a label on good',              c.surface,    c.ok,          4.5],
+  ['a label on waiting',           c.surface,    c.warn,        4.5],
+  ['a label on wrong',             c.surface,    c.bad,         4.5],
+  ['a label on the accent',        c.surface,    c.accent,      4.5],
   /* The dark ground: Bride Mode, the bar result panel, the site CTA band.
      Gold becomes a text colour here, which is why it is checked at 4.5. */
   ['body on the dark ground',      c.surface,    c.dark,        4.5],
@@ -123,6 +130,10 @@ if (!brand) {
        it is not a wash. */
     line(`${a.key}: ink on its wash`,       c.ink,    over(a.wash, c.surface), 4.5);
     line(`${a.key}: its own words on it`,   a.base,   over(a.wash, c.surface), 4.5);
+    /* A producer's accent is also a button fill, and the label on it is the
+       ivory. A preset that reads beautifully as words can still be too light
+       to carry one. */
+    line(`${a.key}: a label on it`,         c.surface, a.base,  4.5);
   }
 }
 

@@ -72,7 +72,7 @@ function GapChip({ label, level }: { label: string; level: 'now' | 'soon' }) {
    stays its own button rather than a hole in the link. */
 function Row({ s }: { s: ClientStatus }) {
   return (
-    <li className="card relative p-0 transition-shadow focus-within:shadow-lift hover:shadow-lift">
+    <li className="card relative p-0 transition-colors focus-within:border-accent hover:border-accent">
       <Link
         href={`/app/clients/${s.id}`}
         className="absolute inset-0 z-0 rounded-[inherit]"

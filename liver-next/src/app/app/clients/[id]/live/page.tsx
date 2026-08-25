@@ -63,7 +63,7 @@ export default async function DayOfPage({ params }: { params: Promise<{ id: stri
   return (
     <>
       <Link href={`/app/clients/${id}`} className="btn-quiet mb-2 -ms-3">
-        <ArrowRight size={16} aria-hidden /> {appCopy.dayOf.toEvent}
+        <ArrowRight size={16} strokeWidth={1.5} aria-hidden /> {appCopy.dayOf.toEvent}
       </Link>
 
       <PageHead

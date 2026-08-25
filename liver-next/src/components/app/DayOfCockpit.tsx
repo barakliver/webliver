@@ -180,7 +180,7 @@ function Row({ p, clientId }: { p: Placed; clientId: string }) {
             done ? 'border-ok bg-ok text-surface' : 'border-line-strong text-ink-mute hover:text-ink',
           )}
         >
-          {done ? <Undo2 size={18} aria-hidden /> : <Check size={18} aria-hidden />}
+          {done ? <Undo2 size={18} strokeWidth={1.5} aria-hidden /> : <Check size={18} strokeWidth={1.5} aria-hidden />}
         </button>
       </form>
 
@@ -245,7 +245,7 @@ function People({ sheet, clientId }: { sheet: Caller[]; clientId: string }) {
                       here ? 'border-ok bg-ok text-surface' : 'border-line-strong text-ink-mute hover:text-ink',
                     )}
                   >
-                    {here ? <Undo2 size={18} aria-hidden /> : <UserCheck size={18} aria-hidden />}
+                    {here ? <Undo2 size={18} strokeWidth={1.5} aria-hidden /> : <UserCheck size={18} strokeWidth={1.5} aria-hidden />}
                   </button>
                 </form>
 
@@ -272,7 +272,7 @@ function People({ sheet, clientId }: { sheet: Caller[]; clientId: string }) {
                        not pick up, and a driver on the road does not read. */
                     <div className="mt-2 flex flex-wrap gap-2">
                       <a href={`tel:${e164}`} className="btn-ghost px-4 text-[14px]">
-                        <Phone size={16} aria-hidden /> {c.people.call}
+                        <Phone size={16} strokeWidth={1.5} aria-hidden /> {c.people.call}
                         <span className="text-ink-mute tabular-nums">{displayPhone(e164)}</span>
                       </a>
                       <a
@@ -281,7 +281,7 @@ function People({ sheet, clientId }: { sheet: Caller[]; clientId: string }) {
                         rel="noopener noreferrer"
                         className="btn-ghost px-4 text-[14px]"
                       >
-                        <MessageCircle size={16} aria-hidden /> {c.people.whatsapp}
+                        <MessageCircle size={16} strokeWidth={1.5} aria-hidden /> {c.people.whatsapp}
                       </a>
                     </div>
                   )}
@@ -359,7 +359,7 @@ function Broadcast({ sheet, late }: { sheet: Caller[]; late: Caller[] }) {
   return (
     <>
       <button type="button" onClick={() => setOpen(true)} className="btn-ghost text-[14px] text-bad">
-        <Megaphone size={16} aria-hidden /> {c.broadcast.open}
+        <Megaphone size={16} strokeWidth={1.5} aria-hidden /> {c.broadcast.open}
       </button>
 
       {open && (
@@ -388,7 +388,7 @@ function Broadcast({ sheet, late }: { sheet: Caller[]; late: Caller[] }) {
                 aria-label={c.broadcast.cancel}
                 className="grid h-11 w-11 shrink-0 place-items-center rounded-full text-ink-mute hover:text-ink"
               >
-                <X size={20} aria-hidden />
+                <X size={20} strokeWidth={1.5} aria-hidden />
               </button>
             </div>
 

@@ -121,10 +121,18 @@ const config: Config = {
         /* Content carries no shadow at all on this palette. What is left is
            the two places the handoff keeps one: under a device shell and under
            the contact button, both of which are objects rather than surfaces.
-           `soft` and `lift` stay defined and stay none, so the hundred
-           components that ask for them go flat instead of failing. */
+           `soft` and `lift` stay defined and stay none. Nothing asks for
+           them any more, and that is the point: while they were scattered
+           over the content they read as elevation in the source and rendered
+           as nothing, so four cards lost their hover state without anybody
+           writing a line that said so. They stay here as a landing place, in
+           case one comes back. */
         soft: 'none',
         lift: 'none',
+        /* Chrome that floats over arbitrary content rather than over the
+           page's own ground: a dropdown, the concierge panel. A hairline
+           alone cannot say "above" on a ground this light. */
+        pop:  '0 12px 28px -12px rgba(26,22,19,.45)',
         dock: '0 -1px 0 var(--line, rgba(26,22,19,.09))',
         fab:  '0 18px 36px -18px rgba(26,22,19,.55)',
       },

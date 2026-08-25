@@ -54,12 +54,12 @@ export function FabDock() {
           {publicEnv.bookingUrl ? (
             <a href={publicEnv.bookingUrl} target="_blank" rel="noopener noreferrer"
                title={site.fab.bookingNote}
-               className="flex flex-1 items-center justify-center gap-2 rounded-none bg-ink px-4 py-2.5 text-[14px] font-medium text-white transition hover:bg-ink-soft sm:flex-none">
+               className="flex flex-1 items-center justify-center gap-2 rounded-none bg-ink px-4 py-2.5 text-[14px] font-medium text-surface transition hover:bg-ink-soft sm:flex-none">
               <CalendarDays size={17} aria-hidden strokeWidth={1.5} /><span>{site.fab.booking}</span>
             </a>
           ) : null}
           <button type="button" onClick={() => setSheet('lead')}
-                  className="flex flex-1 items-center justify-center gap-2 rounded-none border border-line-strong bg-white/80 px-4 py-2.5 text-[14px] font-medium text-ink transition hover:bg-white sm:flex-none">
+                  className="flex flex-1 items-center justify-center gap-2 rounded-none border border-line-strong bg-card/80 px-4 py-2.5 text-[14px] font-medium text-ink transition hover:bg-card sm:flex-none">
             <PenLine size={17} aria-hidden strokeWidth={1.5} /><span>{site.fab.lead}</span>
           </button>
         </div>
@@ -73,7 +73,7 @@ export function FabDock() {
             <div className="mb-5 flex items-start justify-between gap-4">
               <h2 className="font-display text-title font-light text-ink">{site.lead.title}</h2>
               <button type="button" onClick={() => setSheet(null)} aria-label="סגירה"
-                      className="rounded-none p-2 text-ink-mute transition hover:bg-white hover:text-ink">✕</button>
+                      className="rounded-none p-2 text-ink-mute transition hover:bg-card hover:text-ink">✕</button>
             </div>
             <LeadForm compact />
           </div>

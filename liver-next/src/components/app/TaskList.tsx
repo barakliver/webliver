@@ -63,7 +63,7 @@ function Row({ task, clientId, viewer, canDelete }: {
           aria-label={task.title}
           aria-pressed={task.done}
           className={`flex h-6 w-6 items-center justify-center rounded-full border text-[13px] transition ${
-            task.done ? 'border-ok/30 bg-ok text-white' : 'border-line-strong bg-white hover:border-ink'
+            task.done ? 'border-ok/30 bg-ok text-surface' : 'border-line-strong bg-card hover:border-ink'
           }`}
         >
           {task.done ? '✓' : ''}

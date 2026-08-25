@@ -130,7 +130,7 @@ export function MobileTabBar({ items }: { items: NavItem[] }) {
                 aria-label={appCopy.nav.close}
                 className="grid h-11 w-11 place-items-center rounded-full text-ink-mute transition-colors hover:text-ink"
               >
-                <X size={20} aria-hidden />
+                <X size={20} strokeWidth={1.5} aria-hidden />
               </button>
             </div>
             <ul className="list-none space-y-1 p-0">

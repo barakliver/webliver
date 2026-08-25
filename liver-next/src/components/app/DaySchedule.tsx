@@ -256,8 +256,8 @@ function Templates({ clientId }: { clientId: string }) {
             onClick={() => setChosen(t.id)}
             className={`rounded-none border p-4 text-right transition ${
               chosen === t.id
-                ? 'border-accent bg-white shadow-soft'
-                : 'border-line bg-white/60 hover:border-accent/40'
+                ? 'border-accent bg-card'
+                : 'border-line bg-card/60 hover:border-accent/40'
             }`}
           >
             <span className="block text-[14.5px] font-semibold text-ink">{t.label}</span>
@@ -342,7 +342,7 @@ export function DaySchedule({ clientId, items, labelA, labelB, viewer = 'produce
           </button>
           <button
             type="button"
-            className="inline-flex items-center gap-1.5 rounded-none border border-line-strong bg-white px-4 py-2 text-[13.5px] font-medium text-ink transition hover:border-accent/40 hover:text-accent"
+            className="inline-flex items-center gap-1.5 rounded-none border border-line-strong bg-card px-4 py-2 text-[13.5px] font-medium text-ink transition hover:border-accent/40 hover:text-accent"
             onClick={() => setAdding((v) => !v)}
           >
             <Plus size={15} aria-hidden strokeWidth={1.5} />

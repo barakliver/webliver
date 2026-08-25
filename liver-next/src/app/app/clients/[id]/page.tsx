@@ -32,7 +32,7 @@ import { Thread } from '@/components/app/Thread';
 export const dynamic = 'force-dynamic';
 
 const link =
-  'inline-flex min-h-[40px] items-center gap-2 rounded-none border border-line-strong bg-white px-4 text-[14px] font-medium text-ink transition hover:border-accent/40 hover:text-accent';
+  'inline-flex min-h-[40px] items-center gap-2 rounded-none border border-line-strong bg-card px-4 text-[14px] font-medium text-ink transition hover:border-accent/40 hover:text-accent';
 
 /**
  * One event, as its producer works on it.

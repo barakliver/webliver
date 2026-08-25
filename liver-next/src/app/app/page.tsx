@@ -44,7 +44,7 @@ export default async function OverviewPage() {
           {next && (
             <Link
               href={next.href}
-              className="card group block transition-shadow duration-200 hover:shadow-lift"
+              className="card group block transition-colors duration-200 hover:border-accent"
             >
               <div className="flex items-center gap-2 text-accent">
                 <CalendarHeart size={16} strokeWidth={1.5} aria-hidden />

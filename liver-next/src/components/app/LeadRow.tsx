@@ -81,7 +81,7 @@ export function LeadRow({ lead, calls }: { lead: Lead; calls: Call[] }) {
       {open && (
         <div className="space-y-4 border-t border-line bg-surface-100 p-4">
           {lead.message && (
-            <p className="rounded-none bg-white px-4 py-3 text-[14px] leading-relaxed text-ink-soft">“{lead.message}”</p>
+            <p className="rounded-none bg-card px-4 py-3 text-[14px] leading-relaxed text-ink-soft">“{lead.message}”</p>
           )}
 
           <form action={setLeadNote} className="flex flex-wrap gap-2">
