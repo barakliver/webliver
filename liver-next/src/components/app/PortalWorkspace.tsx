@@ -63,6 +63,7 @@ export function PortalWorkspace({
           items={data.dayFor(c.id)}
           labelA={c.track_a_label}
           labelB={c.track_b_label}
+          viewer="client"
         />
         <WinningBoard clientId={c.id} images={data.boardFor(c.id)} viewer="client" />
       </div>

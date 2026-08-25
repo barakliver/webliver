@@ -6,17 +6,18 @@ import { supabaseServer } from '@/lib/supabase/server';
 import { appCopy } from '@/content/site';
 import { AUDIENCES } from '@/content/lists';
 import { PrintButton } from '@/components/app/PrintButton';
+import { hhmm, inDayOrder, spanOf, humanSpan, crossesMidnight } from '@/lib/runsheet';
 
 export const metadata = { title: appCopy.runsheet.title };
 
-type Item = { id: string; track: string; at_time: string; title: string; note: string; audience: string[] };
+type Item = {
+  id: string; track: string; at_time: string; title: string; note: string;
+  audience: string[]; owner: string; duration_min: number | null;
+};
 
 const dateFmt = new Intl.DateTimeFormat('he-IL', {
   weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
 });
-
-/** Postgres hands back "09:00:00"; nobody writes the seconds on a run sheet. */
-const hhmm = (t: string) => t.slice(0, 5);
 
 /**
  * The run sheet for the day, filtered to one role and built to be printed.
@@ -40,7 +41,11 @@ export default async function RunsheetPage({
   params: Promise<{ id: string }>;
   searchParams: Promise<{ for?: string }>;
 }) {
-  await requireAccount();
+  const account = await requireAccount();
+  /* The sheet is shared with the couple on purpose, and who is doing each line
+     is not. A name against a line is a staffing note, and staffing stays on
+     the producer's side of the wall. */
+  const staffVisible = account.role !== 'client';
   const { id } = await params;
   const { for: forRaw } = await searchParams;
 
@@ -50,7 +55,7 @@ export default async function RunsheetPage({
   const sb = await supabaseServer();
   const [{ data: client }, { data: rows }] = await Promise.all([
     sb.from('clients').select('id,display_name,event_date,venue').eq('id', id).maybeSingle(),
-    sb.from('day_schedule').select('id,track,at_time,title,note,audience')
+    sb.from('day_schedule').select('id,track,at_time,title,note,audience,owner,duration_min')
       .eq('client_id', id).order('at_time'),
   ]);
   if (!client) notFound();
@@ -59,8 +64,15 @@ export default async function RunsheetPage({
      filter. That is the default, and it is why filtering never silently
      empties a sheet somebody spent an evening writing. */
   const all = (rows ?? []) as Item[];
-  const items = role ? all.filter((i) => i.audience.length === 0 || i.audience.includes(role)) : all;
+  const filtered = role ? all.filter((i) => i.audience.length === 0 || i.audience.includes(role)) : all;
+
+  /* Sorted here rather than by the query. `order by at_time` is alphabetical
+     on the clock, so an evening that ends at 01:00 prints the pack-down as its
+     first line — which is not a bug anybody reports, they simply stop trusting
+     the sheet. */
+  const items = inDayOrder(filtered);
   const roleLabel = AUDIENCES.find((a) => a.value === role)?.label;
+  const wraps = crossesMidnight(items.map((i) => i.at_time));
 
   return (
     <>
@@ -115,6 +127,13 @@ export default async function RunsheetPage({
           </p>
           <p className="mt-1 text-[14px] font-medium text-bronze">
             {c.sheetFor} {roleLabel ?? c.everyone}
+            {items.length > 0 && (
+              <span className="text-ink-mute">
+                {' · '}
+                <span dir="ltr">{hhmm(items[0].at_time)}–{hhmm(items[items.length - 1].at_time)}</span>
+                {wraps ? ` ${c.pastMidnight}` : ''}
+              </span>
+            )}
           </p>
         </header>
 
@@ -122,22 +141,37 @@ export default async function RunsheetPage({
           <p className="mt-8 text-[15px] text-ink-mute">{all.length === 0 ? c.empty : c.emptyForRole}</p>
         ) : (
           <ol className="mt-6">
-            {items.map((i) => (
-              <li key={i.id} className="runsheet-row flex gap-5 border-b border-line py-3.5 last:border-0">
-                <span className="w-[58px] shrink-0 font-display text-[17px] font-semibold tabular-nums text-ink">
-                  {hhmm(i.at_time)}
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="text-[16px] text-ink">{i.title}</p>
-                  {i.note && <p className="mt-0.5 text-[14px] text-ink-soft">{i.note}</p>}
-                </div>
-                {i.audience.length > 0 && (
-                  <span className="shrink-0 self-start text-[12.5px] text-ink-mute">
-                    {i.audience.map((a) => AUDIENCES.find((x) => x.value === a)?.label ?? a).join(' · ')}
+            {items.map((i, index) => {
+              const span = spanOf(items, index);
+              return (
+                <li key={i.id} className="runsheet-row flex gap-5 border-b border-line py-3.5 last:border-0">
+                  {/* Left to right inside a right-to-left page, because a clock
+                      reads that way in every language. */}
+                  <span className="w-[62px] shrink-0 text-center" dir="ltr">
+                    <span className="block font-display text-[17px] font-semibold tabular-nums text-ink">
+                      {hhmm(i.at_time)}
+                    </span>
+                    {span.minutes !== null && (
+                      <span className="mt-0.5 block text-[11.5px] tabular-nums text-ink-mute">
+                        {span.stated ? humanSpan(span.minutes) : `↓ ${humanSpan(span.minutes)}`}
+                      </span>
+                    )}
                   </span>
-                )}
-              </li>
-            ))}
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[16px] text-ink">{i.title}</p>
+                    {i.note && <p className="mt-0.5 text-[14px] text-ink-soft">{i.note}</p>}
+                    {staffVisible && i.owner && (
+                      <p className="mt-0.5 text-[13px] text-ink-mute">{c.owner}: {i.owner}</p>
+                    )}
+                  </div>
+                  {i.audience.length > 0 && (
+                    <span className="shrink-0 self-start text-[12.5px] text-ink-mute">
+                      {i.audience.map((a) => AUDIENCES.find((x) => x.value === a)?.label ?? a).join(' · ')}
+                    </span>
+                  )}
+                </li>
+              );
+            })}
           </ol>
         )}
 
