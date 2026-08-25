@@ -83,7 +83,20 @@
        that much, which is the bug this line is usually written to fix. 100%
        measures the containing block, which is the honest number. */
     max-width: 100%;
+    /* `clip`, not `hidden`. They look identical and are not: `hidden` makes
+       the element a scroll container, so the root ends up with a horizontal
+       scroll port that is clamped at zero. A trackpad sends a two dimensional
+       delta, and a browser locks each gesture to one axis; a mostly vertical
+       swipe with any sideways component gets locked to the axis that cannot
+       move, and the page sits still. Dragging the scrollbar is purely vertical
+       and never hits it, which is exactly the shape of the report: "only the
+       bar at the side works".
+
+       `clip` clips without creating a scroll container at all, which is what
+       was wanted here in the first place. `hidden` is left in front of it for
+       an engine too old to know the newer keyword. */
     overflow-x: hidden;
+    overflow-x: clip;
     /* A long unbroken string — a URL in a message, an email address in a
        table — is the other way a page grows sideways. */
     overflow-wrap: break-word;
@@ -111,13 +124,20 @@
     .parallax-layer { transform: none !important; }
   }
 
+  /* Rubber banding is a thing an installed app should not do, and a thing a
+     browser tab should. `contain` also stops a nested scroll container from
+     chaining its leftover delta up to the page, which is one more way for a
+     gesture to land on nothing, so it is spent only where it was aimed. */
+  @media (display-mode: standalone) {
+    body { overscroll-behavior-y: contain; }
+  }
+
   body {
     background: theme('colors.surface.DEFAULT');
     /* Installed, this is an app rather than a page: a tap should not flash a
        grey rectangle, and a scroll that reaches the end should not rubber band
        the whole shell. Neither is possible to fix from inside a component. */
     -webkit-tap-highlight-color: transparent;
-    overscroll-behavior-y: contain;
     color: theme('colors.ink.DEFAULT');
     font-feature-settings: 'kern' 1;
     -webkit-font-smoothing: antialiased;
