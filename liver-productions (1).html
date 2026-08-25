@@ -8661,6 +8661,35 @@ renderAll();
   }
  }
 
+ /* ── the bottom bar stops squeezing ──
+    .tabbar is a grid of repeat(N,1fr), so on a 412px phone eight tabs got
+    51px each and nine get 45px — narrow enough that "צוות ועובדים" and
+    "ניהול ראשי" wrap and clip. 94px is the width the longest label in the
+    app, "משתמשים והרשאות", actually needs. Give every tab that floor and
+    let the bar scroll past it: four or fewer still stretch to fill the
+    width, and beyond that every label stays readable. */
+ (function(){
+  var css = document.createElement('style');
+  css.textContent =
+   '@media(max-width:640px){' +
+    '.tabbar{grid-template-columns:none !important;grid-auto-flow:column;' +
+     'grid-auto-columns:minmax(94px,1fr);overflow-x:auto;overscroll-behavior-x:contain;' +
+     'scrollbar-width:none}' +
+    '.tabbar::-webkit-scrollbar{display:none}' +
+    '.tabbar button{white-space:nowrap}' +
+   '}';
+  document.head.appendChild(css);
+ })();
+
+ /* keep the tab you are on visible when the bar scrolls */
+ function revealActiveTab(){
+  var bar = document.querySelector('.screen.active .tabbar') ||
+            document.querySelector('.tabbar');
+  if(!bar || bar.scrollWidth <= bar.clientWidth) return;
+  var on = bar.querySelector('button.active');
+  if(on && on.scrollIntoView) on.scrollIntoView({block:'nearest', inline:'center'});
+ }
+
  var HE = function(){ return (typeof lang === 'undefined' || lang === 'he'); };
 
  var _renderAllV51 = renderAll;
@@ -8674,7 +8703,106 @@ renderAll();
    addSwitch('adminNav', 'adminTabbar', '👑',
     HE() ? 'ניהול ראשי' : 'Master', 'owner');
   }
+  revealActiveTab();
  };
+})();
+renderAll();
+
+/* ══════════════════════════════════════════════════════════
+   v52 — the utility cluster stops covering the buttons underneath
+   ══════════════════════════════════════════════════════════
+   #topCtl floats three pills — 🛠 report, ♿ accessibility, language —
+   at 179×40 with z-index 260, above everything. Measured with
+   elementFromPoint at the overlap: on the settings screen it sits on top
+   of "הרצת בדיקה מלאה" and "להגדרות ההתראות", and on the marketing page
+   over a portfolio card. Those controls cannot be tapped at that scroll
+   position; the cluster receives the tap instead.
+
+   It also made three floating clusters compete for one corner, against
+   the brief's rule of a single dominant call on a phone.
+
+   One 44px button now opens the three as a sheet. Blocked area drops
+   from 7,160px² to 1,936px² — 73% less — and the actions are unchanged:
+   the same openFeedback(), the same a11yModal, the same toggleLang(). */
+(function(){
+
+ var SHEET = 'toolsSheet';
+
+ /* the sheet reuses the modal machinery already in the page */
+ function ensureSheet(){
+  if(document.getElementById(SHEET)) return;
+  var m = document.createElement('div');
+  m.className = 'modal';
+  m.id = SHEET;
+  m.setAttribute('role', 'dialog');
+  m.setAttribute('aria-modal', 'true');
+  m.setAttribute('aria-labelledby', 'toolsSheetTitle');
+  m.setAttribute('onclick', "if(event.target===this)closeModal('" + SHEET + "')");
+  document.body.appendChild(m);
+ }
+
+ function paintSheet(){
+  var m = document.getElementById(SHEET);
+  if(!m) return;
+  var he = (typeof lang === 'undefined' || lang === 'he');
+  var row = function(icon, label, call){
+   return '<button class="btn btn-ghost" style="width:100%;justify-content:flex-start;gap:12px;min-height:52px" ' +
+    'onclick="closeModal(\'' + SHEET + '\');' + call + '">' +
+    '<span aria-hidden="true" style="font-size:19px">' + icon + '</span>' + esc(label) + '</button>';
+  };
+  m.innerHTML =
+   '<div class="modal-card card" style="max-width:340px;display:flex;flex-direction:column;gap:9px">' +
+    '<div class="spread" style="margin-bottom:2px">' +
+     '<b id="toolsSheetTitle" style="font-size:15px">' + esc(he ? 'כלים' : 'Tools') + '</b>' +
+     '<button onclick="closeModal(\'' + SHEET + '\')" aria-label="' + esc(t('close')) + '" ' +
+      'style="background:none;border:none;font-size:19px;line-height:1;cursor:pointer;min-width:44px;min-height:44px">✕</button>' +
+    '</div>' +
+    row('♿', he ? 'נגישות' : 'Accessibility', "openModal('a11yModal')") +
+    row('🌐', he ? 'English' : 'עברית',        'toggleLang()') +
+    row('🛠', he ? 'דיווח על תקלה' : 'Report a problem', 'openFeedback()') +
+   '</div>';
+ }
+
+ window.openTools = function(){ ensureSheet(); paintSheet(); openModal(SHEET); };
+
+ /* collapse the cluster itself */
+ var css = document.createElement('style');
+ css.textContent =
+  '#topCtl{gap:8px}' +
+  '#topCtl > button:not(#toolsBtn):not(#userChip){display:none !important}' +
+  /* #topCtl button already sets min-height:40px and outranks a bare
+     #toolsBtn, so the selector has to carry the same weight to win */
+  '#topCtl #toolsBtn{min-width:44px;min-height:44px;padding:0 !important;font-size:17px;' +
+   'display:grid;place-items:center;line-height:1}';
+ document.head.appendChild(css);
+
+ function ensureButton(){
+  var host = document.getElementById('topCtl');
+  if(!host || document.getElementById('toolsBtn')) return;
+  var b = document.createElement('button');
+  b.id = 'toolsBtn';
+  b.type = 'button';
+  b.setAttribute('onclick', 'openTools()');
+  b.textContent = '⚙';
+  host.appendChild(b);
+ }
+
+ function label(){
+  var b = document.getElementById('toolsBtn');
+  if(!b) return;
+  var he = (typeof lang === 'undefined' || lang === 'he');
+  b.setAttribute('aria-label', he ? 'כלים: נגישות, שפה ודיווח תקלה' : 'Tools: accessibility, language, report a problem');
+  b.setAttribute('title', he ? 'כלים' : 'Tools');
+ }
+
+ var _renderChromeV52 = renderChrome;
+ renderChrome = function(){
+  _renderChromeV52();
+  ensureButton();
+  label();
+  if(document.getElementById(SHEET)) paintSheet();
+ };
+ ensureButton(); label();
 })();
 renderAll();
 
