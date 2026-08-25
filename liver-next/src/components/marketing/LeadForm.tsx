@@ -20,7 +20,7 @@ export function LeadForm({ compact = false }: { compact?: boolean }) {
   if (state?.ok) {
     return (
       <div className="card text-center" role="status">
-        <div aria-hidden className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-azure-50 text-[22px]">✓</div>
+        <div aria-hidden className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-bronze-wash text-[22px]">✓</div>
         <h3 className="mt-4 font-display text-title font-semibold text-ink">{site.lead.okTitle}</h3>
         <p className="mt-2 text-[16px] text-ink-soft">{site.lead.okBody}</p>
       </div>

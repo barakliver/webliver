@@ -71,7 +71,7 @@ export function LeadRow({ lead, calls }: { lead: Lead; calls: Call[] }) {
       </div>
 
       {open && (
-        <div className="space-y-4 border-t border-line bg-haze-50 p-4">
+        <div className="space-y-4 border-t border-line bg-ivory-100 p-4">
           {lead.message && (
             <p className="rounded-2xl bg-white px-4 py-3 text-[14px] leading-relaxed text-ink-soft">“{lead.message}”</p>
           )}

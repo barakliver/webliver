@@ -28,7 +28,7 @@ export function RsvpForm({ token, initial }: {
   if (state?.ok) {
     return (
       <div className="card text-center" role="status">
-        <div aria-hidden className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-azure-50 text-[22px]">✓</div>
+        <div aria-hidden className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-bronze-wash text-[22px]">✓</div>
         <h2 className="mt-4 font-display text-title font-semibold text-ink">
           {state.status === 'attending' ? c.okComing : c.okNotComing}
         </h2>
@@ -45,7 +45,7 @@ export function RsvpForm({ token, initial }: {
       <input type="hidden" name="token" value={token} />
 
       {initial.responded && (
-        <p className="rounded-2xl bg-haze-100 px-4 py-3 text-[14px] text-ink-soft">{c.already}</p>
+        <p className="rounded-2xl bg-ivory-200 px-4 py-3 text-[14px] text-ink-soft">{c.already}</p>
       )}
       {state && !state.ok && state.error && (
         <p role="alert" className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-[14.5px] text-rose-800">

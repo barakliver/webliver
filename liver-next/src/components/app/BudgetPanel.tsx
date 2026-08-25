@@ -46,7 +46,7 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
             <input type="hidden" name="client_id" value={clientId} />
             <input type="hidden" name="visible" value={String(visible)} />
             <button type="submit" className={`rounded-full px-4 py-2 text-[13px] font-medium transition ${
-              visible ? 'bg-emerald-50 text-emerald-700' : 'bg-haze-100 text-ink-mute'
+              visible ? 'bg-emerald-50 text-emerald-700' : 'bg-ivory-200 text-ink-mute'
             }`}>
               {visible ? c.budVisible : c.budHidden}
             </button>
@@ -55,16 +55,16 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
       </div>
 
       {viewer === 'producer' && !visible && (
-        <p className="mt-4 rounded-2xl bg-haze-100 px-4 py-3 text-[13.5px] text-ink-soft">{c.budHiddenNote}</p>
+        <p className="mt-4 rounded-2xl bg-ivory-200 px-4 py-3 text-[13.5px] text-ink-soft">{c.budHiddenNote}</p>
       )}
 
       <div className="mt-5 grid gap-3 sm:grid-cols-3">
-        <div className="rounded-2xl bg-haze-100 px-4 py-3">
+        <div className="rounded-2xl bg-ivory-200 px-4 py-3">
           <div className="text-[12.5px] text-ink-mute">{c.budTotalEst}</div>
           <div className="font-display text-[22px] font-semibold tabular-nums text-ink">{ils(totalEst)}</div>
         </div>
-        <div className="rounded-2xl bg-azure-50 px-4 py-3">
-          <div className="text-[12.5px] text-azure-600">{c.budTotalAgreed}</div>
+        <div className="rounded-2xl bg-bronze-wash px-4 py-3">
+          <div className="text-[12.5px] text-bronze">{c.budTotalAgreed}</div>
           <div className="font-display text-[22px] font-semibold tabular-nums text-ink">{ils(totalAgreed)}</div>
         </div>
         <div className={`rounded-2xl px-4 py-3 ${diff >= 0 ? 'bg-emerald-50' : 'bg-rose-50'}`}>

@@ -40,7 +40,7 @@ export default async function LeadsPage() {
         <div className="mt-6 space-y-6">
           {fresh.length > 0 && (
             <div>
-              <h2 className="mb-3 text-[13px] font-semibold text-azure-600">
+              <h2 className="mb-3 text-[13px] font-semibold text-bronze">
                 {leadsCopy.statuses.new} · {fresh.length}
               </h2>
               <ul className="space-y-3">

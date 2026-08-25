@@ -36,7 +36,7 @@ export function InviteBox({ clientId, invites }: { clientId: string; invites: In
             <div>
               <span dir="ltr" className="text-[14.5px] font-medium text-ink">{i.email}</span>
               <span className={`mr-2 rounded-full px-2.5 py-0.5 text-[12px] ${
-                i.profile_id ? 'bg-emerald-50 text-emerald-700' : 'bg-haze-100 text-ink-mute'
+                i.profile_id ? 'bg-emerald-50 text-emerald-700' : 'bg-ivory-200 text-ink-mute'
               }`}>
                 {i.profile_id ? c.joined : c.pendingJoin}
               </span>

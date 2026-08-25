@@ -3,88 +3,100 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --ambient: radial-gradient(1200px 620px at 78% -8%,  #e6f1fd 0%, transparent 62%),
-               radial-gradient(980px 520px at 12% 4%,    #eef5fc 0%, transparent 58%),
-               linear-gradient(180deg, #fbfdff 0%, #f4f8fd 100%);
-  }
   html {
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
-    /* The nav is sticky at the top, so an anchor jump lands the heading
-       underneath it. scroll-padding-top reserves the nav's height for every
-       in-page link at once, rather than each section carrying its own
-       scroll-margin and drifting out of step with the nav. */
+    /* The nav is sticky, so an anchor jump would land its heading underneath.
+       Reserving the height once here keeps every in-page link in step with the
+       nav, instead of each section carrying its own margin. */
     scroll-padding-top: 5.5rem;
   }
-  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: .01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: .01ms !important;
+    }
+  }
+
   body {
-    background: var(--ambient);
-    background-attachment: fixed;
+    background: theme('colors.ivory.DEFAULT');
     color: theme('colors.ink.DEFAULT');
     font-feature-settings: 'kern' 1;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
-  /* Hebrew sits low in most Latin-first stacks; a touch more leading keeps
-     nikud-free Hebrew from feeling cramped at display sizes. */
-  [dir='rtl'] p, [dir='rtl'] li { line-height: 1.85; }
-  ::selection { background: theme('colors.azure.100'); }
-  :focus-visible { outline: 2px solid theme('colors.azure.500'); outline-offset: 2px; border-radius: 6px; }
+
+  /* Hebrew has no ascenders or descenders to speak of, so lines pack tighter
+     than Latin at the same leading and read as cramped. A little more air. */
+  [dir='rtl'] p, [dir='rtl'] li { line-height: 1.8; }
+
+  ::selection { background: theme('colors.bronze.wash'); }
+  :focus-visible {
+    outline: 2px solid theme('colors.bronze.DEFAULT');
+    outline-offset: 2px;
+    border-radius: 8px;
+  }
 }
 
 @layer components {
+  /* ── Liquid glass ────────────────────────────────────────────────────────
+     Chrome only: the nav, the tab bar, sheets, anything that floats above
+     content. Never on a card. Translucency over text costs contrast, and the
+     blur costs GPU on exactly the phones that can least afford it. */
   .glass {
-    @apply bg-white/70 backdrop-blur-xl border border-white/60 shadow-soft;
+    background: color-mix(in srgb, theme('colors.ivory.100') 72%, transparent);
+    -webkit-backdrop-filter: saturate(180%) blur(22px);
+    backdrop-filter: saturate(180%) blur(22px);
+    border-color: color-mix(in srgb, #fff 55%, transparent);
   }
-  .glass-strong {
-    @apply bg-white/85 backdrop-blur-xl border border-white/70 shadow-lift;
+  /* Where blur is unsupported the same surface has to stay readable, so it
+     falls back to opaque rather than to a wash of half-legible text. */
+  @supports not (backdrop-filter: blur(1px)) {
+    .glass { background: theme('colors.ivory.100'); }
   }
-  .hairline { @apply border-line; }
-  .shell { @apply mx-auto w-full max-w-content px-5 sm:px-8; }
-  .section { @apply py-20 sm:py-28; }
-  .measure { @apply max-w-prose2; }
 
-  .btn {
-    @apply inline-flex select-none items-center justify-center gap-2 rounded-full
-           px-6 py-3 text-[15px] font-medium transition
-           active:scale-[.985] disabled:cursor-not-allowed disabled:opacity-60;
+  .shell { @apply mx-auto w-full max-w-content px-5 sm:px-8; }
+  .measure { max-width: 62ch; }
+
+  .card {
+    @apply rounded-xl2 border border-line bg-card p-5 shadow-soft;
   }
-  .btn-primary { @apply btn bg-ink text-white shadow-soft hover:bg-ink-soft; }
-  .btn-ghost   { @apply btn border border-line-strong bg-white/60 text-ink hover:bg-white; }
-  .btn-quiet   { @apply btn text-azure-600 hover:text-ink; }
+
+  /* 44px minimum on every control, per the brief and the accessibility rule
+     that outranks everything else in the design system. */
+  .btn {
+    @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full
+           px-6 text-[15px] font-medium transition duration-200 ease-out
+           disabled:pointer-events-none disabled:opacity-50;
+  }
+  .btn-primary { @apply btn bg-ink text-ivory shadow-soft hover:bg-ink-soft; }
+  .btn-ghost   { @apply btn border border-line-strong bg-card/70 text-ink hover:bg-card; }
+  .btn-quiet   { @apply btn px-3 text-bronze hover:text-ink; }
 
   .field {
-    @apply w-full rounded-2xl border border-line bg-white/80 px-4 py-3 text-[15px]
-           text-ink placeholder:text-ink-mute
-           focus:border-azure-300 focus:bg-white focus:outline-none focus:ring-4 focus:ring-azure-100;
+    @apply min-h-[44px] w-full rounded-xl2 border border-line bg-card px-4 py-3
+           text-[15px] text-ink placeholder:text-ink-mute
+           focus:border-bronze-soft focus:outline-none
+           focus:ring-4 focus:ring-bronze-wash;
   }
-  .label { @apply mb-1.5 block text-[13px] font-medium text-ink-soft; }
-  .card  { @apply rounded-4xl glass p-7 sm:p-9; }
-  /* No uppercase and no wide tracking: Hebrew has no letter case, and
-     letter-spacing pulls its letterforms apart rather than refining them. */
-  .eyebrow { @apply text-[13px] font-semibold text-azure-600; }
-}
+  .label { @apply mb-1.5 block text-[13.5px] font-medium text-ink-soft; }
 
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation: none !important; transition: none !important; }
-  html { scroll-behavior: auto; }
-}
+  /* Status reads without colour too: every chip carries a word. */
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1
+           text-[12.5px] font-medium;
+  }
+  .chip-ok   { @apply chip bg-ok-wash   text-ok; }
+  .chip-warn { @apply chip bg-warn-wash text-warn; }
+  .chip-bad  { @apply chip bg-bad-wash  text-bad; }
+  .chip-mute { @apply chip bg-ivory-200 text-ink-soft; }
 
-/* --------------------------------------------------------------------------
-   Installed to a home screen there is no browser chrome, so the page begins
-   at the physical top of the display and a sticky header lands underneath the
-   status bar — where it cannot be tapped at all. viewport-fit=cover exposes
-   the inset; these rules are what actually spend it.
-   -------------------------------------------------------------------------- */
-@media (display-mode: standalone) {
-  body {
-    padding-top: env(safe-area-inset-top, 0px);
-    padding-bottom: env(safe-area-inset-bottom, 0px);
+  .eyebrow {
+    @apply text-[11.5px] font-semibold uppercase tracking-[0.18em] text-bronze;
   }
-  /* the app header is sticky, so it has to carry the inset itself or it
-     slides back under the clock as soon as the page scrolls */
-  header.sticky {
-    top: env(safe-area-inset-top, 0px);
-  }
+
+  /* A hairline that reads as a rule rather than a border. */
+  .hairline { @apply h-px w-full border-0 bg-line; }
 }

@@ -58,7 +58,7 @@ export function SeatingPlan({ clientId, tables, guests }: {
       {attending.length === 0 && <p className="mt-5 rounded-2xl bg-amber-50 px-4 py-3 text-[14px] text-amber-900">{c.needRsvp}</p>}
 
       <div className="mt-6 rounded-2xl border border-line p-4">
-        <h3 className="text-[13px] font-semibold text-azure-600">
+        <h3 className="text-[13px] font-semibold text-bronze">
           {c.unseated} · {waiting.reduce((a, g) => a + Number(g.party_size || 0), 0)} {c.peopleShort}
         </h3>
         {waiting.length === 0 ? (
@@ -66,7 +66,7 @@ export function SeatingPlan({ clientId, tables, guests }: {
         ) : (
           <ul className="mt-3 space-y-2">
             {waiting.map((g) => (
-              <li key={g.id} className="flex flex-wrap items-center gap-3 rounded-xl bg-haze-50 px-3 py-2">
+              <li key={g.id} className="flex flex-wrap items-center gap-3 rounded-xl bg-ivory-100 px-3 py-2">
                 <span className="flex-1 text-[14.5px] text-ink">
                   {g.full_name} <span className="text-ink-mute">· {g.party_size}</span>
                 </span>
@@ -101,14 +101,14 @@ export function SeatingPlan({ clientId, tables, guests }: {
                 <div className="flex items-start justify-between gap-2">
                   <h3 className="font-display text-[16px] font-semibold text-ink">{t.name}</h3>
                   <span className={`rounded-full px-2.5 py-0.5 text-[12px] ${
-                    free === 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-haze-100 text-ink-mute'
+                    free === 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-ivory-200 text-ink-mute'
                   }`}>
                     {taken}/{t.seats} {free === 0 ? c.full : ''}
                   </span>
                 </div>
 
-                <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-haze-200">
-                  <div className="h-full rounded-full bg-azure-300 transition-[width]" style={{ width: `${Math.min(100, (taken / t.seats) * 100)}%` }} />
+                <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-ivory-200">
+                  <div className="h-full rounded-full bg-bronze transition-[width]" style={{ width: `${Math.min(100, (taken / t.seats) * 100)}%` }} />
                 </div>
 
                 {atTable(t.id).length === 0 ? (
