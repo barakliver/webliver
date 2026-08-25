@@ -4,6 +4,7 @@
 --  Paste this whole file into the Supabase SQL Editor and press Run. It is
 --  every migration in order, so there is nothing to get wrong about which
 --  runs first, and it is safe to run again when new migrations are added.
+--  It is also safe to run over a database left half-built by a failed run.
 -- ============================================================================
 
 -- ============================================================================
@@ -13,16 +14,33 @@
 create extension if not exists "pgcrypto";
 
 -- ── enums ───────────────────────────────────────────────────────────────────
-do $$ begin
-  create type app_role      as enum ('super_admin','producer','client','staff');
-  create type producer_state as enum ('pending','approved','suspended','rejected');
-  create type event_class   as enum ('wedding','corporate');
-  create type lead_state    as enum ('new','contacted','meeting','won','lost');
-  create type rsvp_state    as enum ('pending','attending','declined');
-  create type diet_pref     as enum ('none','vegan','vegetarian','gluten_free','kosher');
-  create type task_owner    as enum ('producer','client');
-  create type order_state   as enum ('draft','pending','paid','refunded');
-exception when duplicate_object then null; end $$;
+-- One block per type, deliberately.
+--
+-- These were a single do block with one `exception when duplicate_object`
+-- handler at the end. In PL/pgSQL an exception unwinds everything since the
+-- block began, so if any one type already existed — from a partial earlier
+-- run — the handler swallowed the error and every type after it was silently
+-- never created. The script then failed hundreds of lines later with
+-- `type "producer_state" does not exist`, pointing at a table definition
+-- rather than at the cause.
+--
+-- Separate blocks mean an existing type skips only itself.
+do $$ begin create type app_role as enum ('super_admin','producer','client','staff');
+  exception when duplicate_object then null; end $$;
+do $$ begin create type producer_state as enum ('pending','approved','suspended','rejected');
+  exception when duplicate_object then null; end $$;
+do $$ begin create type event_class as enum ('wedding','corporate');
+  exception when duplicate_object then null; end $$;
+do $$ begin create type lead_state as enum ('new','contacted','meeting','won','lost');
+  exception when duplicate_object then null; end $$;
+do $$ begin create type rsvp_state as enum ('pending','attending','declined');
+  exception when duplicate_object then null; end $$;
+do $$ begin create type diet_pref as enum ('none','vegan','vegetarian','gluten_free','kosher');
+  exception when duplicate_object then null; end $$;
+do $$ begin create type task_owner as enum ('producer','client');
+  exception when duplicate_object then null; end $$;
+do $$ begin create type order_state as enum ('draft','pending','paid','refunded');
+  exception when duplicate_object then null; end $$;
 
 -- ── who is root ─────────────────────────────────────────────────────────────
 create or replace function public.root_admin_email() returns text
@@ -406,7 +424,6 @@ drop policy if exists moodboard_objects_delete on storage.objects;
 create policy moodboard_objects_delete on storage.objects for delete
   using (bucket_id = 'moodboards' and auth.uid() is not null);
 
-
 -- ============================================================================
 --  0002 — who a new account becomes, and what it may do before approval
 -- ============================================================================
@@ -556,7 +573,6 @@ drop trigger if exists profiles_guard_role on public.profiles;
 create trigger profiles_guard_role before update on public.profiles
   for each row execute function public.guard_role_change();
 
-
 -- ============================================================================
 --  0003 — a shared checklist that neither side can quietly rewrite
 -- ============================================================================
@@ -620,7 +636,6 @@ create policy tasks_delete on public.tasks for delete
   );
 
 create index if not exists tasks_client_owner_idx on public.tasks(client_id, done, due_on);
-
 
 -- ============================================================================
 --  0004 — budget lines and payments
@@ -713,7 +728,6 @@ drop trigger if exists payments_stamp_date on public.payments;
 create trigger payments_stamp_date before insert or update on public.payments
   for each row execute function public.stamp_payment_date();
 
-
 -- ============================================================================
 --  0005 — the winning board, and locking down the files behind it
 -- ============================================================================
@@ -782,7 +796,6 @@ create policy moodboard_objects_delete on storage.objects for delete
 -- can_read_client answers false rather than raising for a null id, so a file
 -- dropped at the root of the bucket belongs to nobody and is reachable by
 -- nobody, which is the safe way for a malformed path to fail.
-
 
 -- ============================================================================
 --  0006 — guests answering their own invitation
@@ -883,7 +896,6 @@ create trigger guests_guard_token before insert or update on public.guests_rsvp
 
 create index if not exists guests_token_lookup on public.guests_rsvp(invite_token);
 
-
 -- ============================================================================
 --  0007 — seating that cannot quietly overfill a table
 -- ============================================================================
@@ -968,7 +980,6 @@ create trigger tables_guard_seats before update on public.tables_seating
 
 create index if not exists guests_table_idx on public.guests_rsvp(table_id);
 
-
 -- ============================================================================
 --  0008 — the running order for the day itself
 -- ============================================================================
@@ -1038,7 +1049,6 @@ end $$;
 
 revoke all on function public.set_day_track_labels(uuid, text, text) from public;
 grant execute on function public.set_day_track_labels(uuid, text, text) to authenticated;
-
 
 -- ============================================================================
 --  0009 — leads that actually reach somebody, and the follow up after
@@ -1111,7 +1121,6 @@ create trigger sales_calls_attribute before insert on public.sales_calls
   for each row execute function public.attribute_sales_call();
 
 create index if not exists sales_calls_lead_idx on public.sales_calls(lead_id);
-
 
 -- ============================================================================
 --  0010 — knowing something happened without opening every screen
@@ -1284,5 +1293,4 @@ end $$;
 drop trigger if exists cae_notify on public.client_authorized_emails;
 create trigger cae_notify after insert or update on public.client_authorized_emails
   for each row execute function public.notify_invite();
-
 
