@@ -949,6 +949,10 @@ export const seatingCopy = {
   removeTableHint: 'האורחים לא נמחקים, הם חוזרים לרשימת הממתינים.',
   peopleShort: 'נפשות',
   needRsvp: 'אין עדיין מי שאישר הגעה. שבצו אחרי שיתחילו לענות.',
+  floor: 'מפת האולם',
+  floorSub: 'כל עיגול הוא שולחן, וכל נקודה סביבו היא כיסא. כיסא מלא מסומן בזהב.',
+  openTable: 'לפתוח את השולחן',
+  seatFree: 'כיסא פנוי',
 } as const;
 
 export const dayCopy = {

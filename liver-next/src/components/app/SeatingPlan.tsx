@@ -26,6 +26,111 @@ function Err({ state }: { state: SeatResult | null }) {
   );
 }
 
+/**
+ * The room, drawn.
+ *
+ * A seating plan that is a list of boxes answers "how many are at table four".
+ * The question a producer actually has, standing in a venue with a diagram in
+ * their hand, is "does this look right" — which tables are heavy, which are
+ * nearly empty, whether the room balances. That is a shape question, and a
+ * list cannot answer a shape question however accurate it is.
+ *
+ * So each table is a table: a circle sized by how many it seats, with one
+ * chair drawn per seat around its rim. A taken chair is filled, a free one is
+ * an outline, and a full table closes its ring. Nothing here is a new source
+ * of truth — every chair is read from the same seating the list below shows —
+ * and nothing here is the only way to do anything, because a circle of dots is
+ * not operable by a keyboard or announced usefully by a screen reader. The
+ * chairs are `aria-hidden` for exactly that reason: the authoritative version
+ * of who sits where is the text underneath, and reading the room twice is
+ * worse than reading it once.
+ */
+function Chair({ i, of, taken, name }: { i: number; of: number; taken: boolean; name?: string }) {
+  /* Seat one at the top, then clockwise. -90° because CSS angles start east
+     and a table whose first chair is on the right reads as rotated. */
+  const angle = (i / of) * 2 * Math.PI - Math.PI / 2;
+  const r = 44;  /* percent of the circle's own box, so it scales with it */
+  return (
+    <span
+      aria-hidden
+      title={name}
+      className={`absolute h-[9px] w-[9px] -translate-x-1/2 -translate-y-1/2 rounded-full border transition-colors ${
+        taken ? 'border-accent bg-accent' : 'border-line-control bg-transparent'
+      }`}
+      style={{
+        left: `${50 + r * Math.cos(angle)}%`,
+        top: `${50 + r * Math.sin(angle)}%`,
+      }}
+    />
+  );
+}
+
+function Table({ table, seated, taken, dim, active, onOpen, drop }: {
+  table: SeatTable;
+  seated: SeatGuest[];
+  taken: number;
+  /** a drag is in flight that this table cannot hold */
+  dim: boolean;
+  /** the drag is currently over this table */
+  active: boolean;
+  onOpen: () => void;
+  drop: Record<string, unknown>;
+}) {
+  const c = seatingCopy;
+  const full = taken >= table.seats;
+
+  /* One chair per seat, and a party of four fills four of them. Which chair a
+     particular guest is in is not recorded anywhere and is not invented here:
+     the chairs are filled in the order the guests were seated. */
+  const occupant: (string | undefined)[] = [];
+  for (const g of seated) {
+    for (let n = 0; n < Math.max(1, Number(g.party_size || 1)); n += 1) {
+      if (occupant.length < table.seats) occupant.push(g.full_name);
+    }
+  }
+
+  /* 8 seats is a small round table and 12 a large one; the drawing keeps that
+     difference rather than making every table the same size, because the
+     relative weight of the tables is half of what this view is for. */
+  const size = Math.round(Math.min(200, Math.max(128, 104 + table.seats * 7)));
+
+  return (
+    <div
+      {...drop}
+      className={`flex flex-col items-center gap-2 transition-opacity ${dim ? 'opacity-40' : ''}`}
+    >
+      <button
+        type="button"
+        onClick={onOpen}
+        /* Spoken, not shown, so it says the numbers in words rather than as
+           a ratio: "8/12" through a screen reader in a Hebrew page is read in
+           pieces and in the wrong order. The ratio stays on screen, isolated,
+           where <Ratio> handles it. */
+        aria-label={`${table.name} · ${taken} ${c.peopleShort} · ${c.openTable}`}
+        className={`relative grid shrink-0 place-items-center rounded-full border transition-colors
+                    focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4
+                    focus-visible:outline-accent ${
+          active ? 'border-accent bg-accent-wash'
+          : full ? 'border-ok/50 bg-ok-wash/50'
+          : 'border-line-strong bg-surface-100 hover:border-accent'
+        }`}
+        style={{ width: size, height: size }}
+      >
+        {Array.from({ length: table.seats }, (_, i) => (
+          <Chair key={i} i={i} of={table.seats} taken={i < taken} name={occupant[i] ?? c.seatFree} />
+        ))}
+        <span className="pointer-events-none flex flex-col items-center gap-0.5 px-4 text-center">
+          <span className="font-display text-[15px] font-light leading-tight text-ink">{table.name}</span>
+          <span className="text-[12.5px] tabular-nums text-ink-mute">
+            <Ratio of={taken} total={table.seats} />
+          </span>
+          {full && <span className="text-[11.5px] text-ok">{c.full}</span>}
+        </span>
+      </button>
+    </div>
+  );
+}
+
 export function SeatingPlan({ clientId, tables, guests }: {
   clientId: string; tables: SeatTable[]; guests: SeatGuest[];
 }) {
@@ -150,18 +255,47 @@ export function SeatingPlan({ clientId, tables, guests }: {
         )}
       </div>
 
+      {tables.length > 0 && (
+        <div className="mt-8">
+          <h3 className="eyebrow">{c.floor}</h3>
+          <p className="mt-1.5 text-[13px] text-ink-mute">{c.floorSub}</p>
+          {/* Wrapped rather than laid out on a grid: a room is not a table of
+              cells, and letting the circles find their own rows is closer to
+              how they sit in one. Horizontal overflow is impossible here, so
+              nothing scrolls sideways on a phone. */}
+          <div className="mt-5 flex flex-wrap items-start justify-center gap-x-8 gap-y-7">
+            {tables.map((t) => (
+              <Table
+                key={t.id}
+                table={t}
+                seated={atTable(t.id)}
+                taken={takenAt(t.id)}
+                dim={!!dragging && !fits(dragging, t)}
+                active={over === t.id}
+                onOpen={() => {
+                  document.getElementById(`table-${t.id}`)
+                    ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }}
+                drop={dropProps(t.id, !!dragging && fits(dragging, t))}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
       {tables.length === 0 ? (
         <p className="mt-6 text-[14.5px] text-ink-mute">{c.noTables}</p>
       ) : (
-        <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {tables.map((t) => {
             const taken = takenAt(t.id);
             const free = t.seats - taken;
             return (
               <li
                 key={t.id}
+                id={`table-${t.id}`}
                 {...dropProps(t.id, !!dragging && fits(dragging, t))}
-                className={`rounded-xl2 border p-4 transition-colors ${
+                className={`scroll-mt-24 rounded-4xl border p-4 transition-colors ${
                   over === t.id ? 'border-accent bg-accent-wash'
                   : dragging && !fits(dragging, t) ? 'border-line opacity-50'
                   : free === 0 ? 'border-ok/30 bg-ok-wash/60'
