@@ -345,3 +345,31 @@
      dock and the sticky nav keep their edges. */
   .a11y-zoom { zoom: var(--a11y-zoom, 1); }
 }
+
+/* ══ סמן ═══════════════════════════════════════════════════════════════════
+   A browser shows an I-beam over anything that is text, because the web
+   started as documents. In an application it reads as an invitation to type:
+   you move the mouse across a dashboard and every label looks like a field
+   you could edit. Nothing here is editable except the fields that are.
+
+   Selection stays on. Somebody copying a phone number or an amount out of a
+   row is doing something reasonable, and `user-select: none` would take that
+   away to fix a cursor. */
+@layer base {
+  body { cursor: default; }
+
+  /* The places where an I-beam is the truth. */
+  input:not([type='checkbox']):not([type='radio']):not([type='file']):not([type='range']),
+  textarea,
+  [contenteditable='true'] {
+    cursor: text;
+  }
+
+  /* And the places where a hand is. */
+  a[href], button, summary, label[for],
+  [role='button'], [role='switch'], [role='tab'], select,
+  input[type='checkbox'], input[type='radio'], input[type='file'], input[type='range'] {
+    cursor: pointer;
+  }
+  button:disabled, [role='button'][aria-disabled='true'] { cursor: not-allowed; }
+}
