@@ -4,6 +4,7 @@ import { site } from '@/content/site';
 import { PLATFORM_HOST } from '@/lib/env';
 import { ServiceWorker } from '@/components/app/ServiceWorker';
 import './globals.css';
+import { A11yPanel } from '@/components/a11y/A11yPanel';
 
 /* Two families. Both carry Hebrew, which is the whole reason they were chosen
    over the pairings the design tooling suggested; most celebrated display
@@ -61,11 +62,14 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="he" dir="rtl" className={`${heebo.variable} ${frank.variable}`}>
-      <body className="font-sans antialiased">
+      <body className="font-sans antialiased a11y-zoom">
         <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:right-3 focus:z-[100] focus:rounded-none focus:bg-ink focus:px-5 focus:py-2 focus:text-surface">
           דלג לתוכן הראשי
         </a>
         {children}
+        {/* Required on every screen, not only the marketing pages: the menu
+            has to reach the app and the couple's portal too. */}
+        <A11yPanel />
         <ServiceWorker />
       </body>
     </html>

@@ -161,5 +161,30 @@ line('gold as words there',              c.accentLight,                   c.dark
 line('an inverted hairline',             over2(c.surface, 0.12, c.dark),  c.dark, 1.15);
 line('an inverted control edge',         over2(c.surface, 0.45, c.dark),  c.dark, 3.0);
 
+/* ── high contrast ─────────────────────────────────────────────────────────
+   The accessibility menu's contrast mode is a second palette, and somebody
+   switches it on precisely because the first one is not working for them. It
+   is checked at AAA rather than AA: at AA it would only have to match what
+   the mode is meant to improve on. */
+const hc = {
+  ink: '#000000', inkSoft: '#1A1A1A', inkMute: '#2D2D2D',
+  surface: '#FFFFFF', surface200: '#F0F0F0',
+  accent: '#6A4F1C', accentLine: '#4A3714',
+  line: '#767676', lineStrong: '#4A4A4A', lineControl: '#000000',
+};
+
+console.log('\n  ניגודיות גבוהה');
+line('body text',                 hc.ink,      hc.surface,    7);
+line('secondary text',            hc.inkSoft,  hc.surface,    7);
+line('kickers and meta',          hc.inkMute,  hc.surface,    7);
+line('the accent as words',       hc.accent,   hc.surface,    4.5);
+line('the accent on the step up', hc.accent,   hc.surface200, 4.5);
+line('a label on the accent',     hc.surface,  hc.accent,     4.5);
+/* Here a hairline is a border somebody has to be able to find, so it is held
+   to the 3:1 a control boundary needs rather than the 1.15 a hint does. */
+line('a separator',               hc.line,     hc.surface,    3);
+line('a group edge',              hc.lineStrong, hc.surface,  3);
+line('the edge of a field',       hc.lineControl, hc.surface, 3);
+
 console.log(failed === 0 ? '\nall pairings pass' : `\n${failed} below target`);
 process.exit(failed === 0 ? 0 : 1);

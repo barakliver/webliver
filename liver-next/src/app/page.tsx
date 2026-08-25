@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { a11yCopy } from '@/content/site';
 import { getSiteCopy } from '@/lib/siteCopy';
 import { supabasePublic } from '@/lib/supabase/public';
 import { Nav } from '@/components/marketing/Nav';
@@ -98,8 +99,14 @@ export default async function HomePage() {
         </Section>
 
         <footer className="border-t border-line py-10">
-          <div className="shell text-[13.5px] text-ink-mute">
-            {site.brand} · {site.footer}
+          <div className="shell flex flex-wrap items-center gap-x-3 gap-y-2 text-[13.5px] text-ink-mute">
+            <span>{site.brand} · {site.footer}</span>
+            <span aria-hidden>·</span>
+            {/* Reachable from every page, which is the half of the
+                requirement a menu button alone does not meet. */}
+            <Link href="/accessibility" className="underline underline-offset-4 transition-colors hover:text-accent">
+              {a11yCopy.statement}
+            </Link>
           </div>
         </footer>
       </main>

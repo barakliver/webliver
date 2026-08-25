@@ -266,3 +266,82 @@
     letter-spacing: .015em;
   }
 }
+
+/* ══ נגישות ═══════════════════════════════════════════════════════════════
+   Each of these costs nothing until somebody switches it on, and each is a
+   class on <html> so it reaches every screen including the ones inside a
+   portal or a sheet.
+
+   The tokens are overridden in channel form, the same way Bride Mode does it,
+   because that is what the Tailwind classes resolve through. Setting `--ink`
+   here would be read by nothing. */
+@layer base {
+  :root.a11y-contrast {
+    /* Pure black on pure white. This mode is the one place the palette's
+       "no white anywhere" rule gives way: warmth is a taste decision and
+       legibility is not, and somebody who turned this on asked for the
+       maximum, not for a slightly firmer ivory. 21:1. */
+    --ink-rgb: 0 0 0;
+    --ink-soft-rgb: 26 26 26;
+    --ink-mid-rgb: 45 45 45;
+    --ink-mute-rgb: 45 45 45;
+    --surface-rgb: 255 255 255;
+    --surface-100-rgb: 255 255 255;
+    --surface-200-rgb: 240 240 240;
+    --dark-rgb: 0 0 0;
+    /* Hairlines stop being hints and become borders. */
+    --line: #767676;
+    --line-strong: #4a4a4a;
+    --line-control: #000000;
+    /* The gold drops to one that carries text on white at 4.5:1, because in
+       this mode it is being read rather than admired. */
+    --accent-rgb: 106 79 28;
+    --accent-bright-rgb: 106 79 28;
+    --accent-line-rgb: 74 55 20;
+    --accent-light-rgb: 255 255 255;
+    --accent-wash: #f4efe4;
+  }
+  :root.a11y-contrast body { background: #fff; }
+  /* A fading rule is decoration, and decoration is the first thing to go. */
+  :root.a11y-contrast .rule-gold {
+    background: #4a4a4a;
+    height: 2px;
+  }
+
+  /* Underlined, not merely coloured. Colour alone is not a link. */
+  :root.a11y-links a,
+  :root.a11y-links button:not([role='switch']) {
+    text-decoration: underline !important;
+    text-underline-offset: 3px;
+  }
+
+  /* The serif is the house face and it is also the harder one to read. This
+     hands the whole page to Heebo and opens it up. */
+  :root.a11y-readable {
+    --font-frank: var(--font-heebo);
+  }
+  :root.a11y-readable * {
+    letter-spacing: .02em !important;
+    word-spacing: .08em !important;
+    line-height: 1.8 !important;
+  }
+
+  :root.a11y-stop *,
+  :root.a11y-stop *::before,
+  :root.a11y-stop *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+
+  :root.a11y-big-cursor,
+  :root.a11y-big-cursor * {
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Cpath d='M6 2l30 18-13 3 7 14-6 3-7-14-11 8z' fill='%23000' stroke='%23fff' stroke-width='2'/%3E%3C/svg%3E") 4 2, auto !important;
+  }
+
+  /* Text size. `zoom` rather than a root font-size, because this app's type
+     scale is 564 pixel values and no rem, so moving the root value would
+     change nothing at all. On the wrapper rather than on body, so the fixed
+     dock and the sticky nav keep their edges. */
+  .a11y-zoom { zoom: var(--a11y-zoom, 1); }
+}

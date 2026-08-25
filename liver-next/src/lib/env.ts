@@ -19,6 +19,9 @@ export function optional(name: string, fallback = ''): string {
 export const publicEnv = {
   siteUrl:   process.env.NEXT_PUBLIC_SITE_URL   ?? `https://${PLATFORM_HOST}`,
   whatsapp:  process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? '',
+  /* Where an accessibility problem is reported. A statement that names no
+     way to reach anybody does not meet the requirement it is written for. */
+  contactEmail: process.env.NEXT_PUBLIC_CONTACT_EMAIL || 'barakliver@gmail.com',
   /* The booking page is a fixed property of the business, not of a
      deployment, so it has a real default rather than an empty string that
      silently turns the "book a meeting" button into a contact form. The
