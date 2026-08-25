@@ -4,6 +4,7 @@ import {
   funnelOf, bySource, responseTime, cashOf, overdueTasks, signedShare,
   type LeadRow, type CallRow,
 } from '../analytics.ts';
+import { appCopy } from '../../content/site.ts';
 
 const lead = (id: string, status: string, source = 'instagram', created_at = '2026-01-01T09:00:00Z'): LeadRow =>
   ({ id, status, source, created_at });
@@ -198,4 +199,27 @@ test('two contracts on one event are one signed event', () => {
     { client_id: 'y', signed_at: null },
   ], 3);
   assert.deepEqual(s, { signed: 1, of: 3 });
+});
+
+/* ── every step the funnel emits has a Hebrew word for it ─────────────────
+   The chart falls back to the raw key when a label is missing, which is the
+   right thing for it to do and the wrong thing to ship: `meeting` renders as
+   English text in the middle of a Hebrew column, and it looks like a design
+   choice rather than a missing string. Renaming a step is a two file change
+   and this is the half that gets forgotten. */
+test('every funnel step has a label in the Hebrew copy', () => {
+  const funnel = funnelOf(
+    [lead('a', 'new'), lead('b', 'meeting'), lead('c', 'won')],
+    [],
+  );
+  for (const step of funnel.steps) {
+    const label = (appCopy.insights.funnel as Record<string, string>)[step.key];
+    assert.equal(
+      typeof label, 'string',
+      `funnel step "${step.key}" has no entry in appCopy.insights.funnel, `
+      + 'so the chart would print the key itself onto a Hebrew screen',
+    );
+    assert.ok(label.length > 0, `funnel step "${step.key}" has an empty label`);
+    assert.match(label, /[֐-׿]/, `funnel step "${step.key}" is not Hebrew`);
+  }
 });
