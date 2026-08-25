@@ -48,7 +48,7 @@ export function GuestImport({ clientId }: { clientId: string }) {
             type="file"
             name="file"
             accept=".csv,text/csv,text/plain"
-            className="mt-3 block w-full text-[14px] file:mr-3 file:min-h-[38px] file:rounded-full file:border-0 file:bg-ink file:px-4 file:text-[14px] file:text-white"
+            className="mt-3 block w-full text-[14px] file:mr-3 file:min-h-[44px] file:rounded-full sm:min-h-[38px] file:border-0 file:bg-ink file:px-4 file:text-[14px] file:text-white"
           />
 
           <p className="mt-3 text-[13px] text-ink-mute">{c.orPaste}</p>

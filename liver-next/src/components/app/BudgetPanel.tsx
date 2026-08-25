@@ -100,8 +100,46 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
       {items.length === 0 ? (
         <p className="mt-6 text-[14.5px] text-ink-mute">{c.budNone}</p>
       ) : (
-        <div className="mt-5 overflow-x-auto">
-          <table className="w-full min-w-[520px] text-right text-[14.5px]">
+        <>
+        {/* Cards on a phone, the table from the small breakpoint up. Four money
+            columns with a 520px minimum meant a thumb dragging sideways inside
+            a page that also scrolls down, on the screen a couple is most likely
+            to read their budget on. */}
+        <ul className="mt-5 space-y-2.5 sm:hidden">
+          {items.map((i) => (
+            <li key={i.id} className="rounded-2xl border border-line px-4 py-3.5">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="font-medium text-ink">{i.label}</p>
+                  {i.vendor && <p className="text-[12.5px] text-ink-mute">{i.vendor}</p>}
+                </div>
+                {/* The agreed figure is the one that matters once it exists, so
+                    it is the one that gets the size; the estimate sits under it
+                    as what it was before somebody negotiated. */}
+                <div className="shrink-0 text-left">
+                  <p className="font-display text-[16px] font-semibold tabular-nums text-ink">
+                    {i.agreed === null ? ils(Number(i.estimate)) : ils(Number(i.agreed))}
+                  </p>
+                  {i.agreed !== null && Number(i.agreed) !== Number(i.estimate) && (
+                    <p className="text-[12px] tabular-nums text-ink-mute">
+                      {c.budEstimate} {ils(Number(i.estimate))}
+                    </p>
+                  )}
+                </div>
+              </div>
+              {viewer === 'producer' && (
+                <form action={deleteBudgetItem} className="mt-2">
+                  <input type="hidden" name="item_id" value={i.id} />
+                  <input type="hidden" name="client_id" value={clientId} />
+                  <button type="submit" className="btn-quiet px-2 py-1 text-[13px]">{c.remove}</button>
+                </form>
+              )}
+            </li>
+          ))}
+        </ul>
+
+        <div className="mt-5 hidden overflow-x-auto sm:block">
+          <table className="w-full text-right text-[14.5px]">
             <thead>
               <tr className="border-b border-line text-[12.5px] text-ink-mute">
                 <th scope="col" className="py-2 font-medium">{c.budLabel}</th>
@@ -132,6 +170,7 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
             </tbody>
           </table>
         </div>
+        </>
       )}
     </section>
   );

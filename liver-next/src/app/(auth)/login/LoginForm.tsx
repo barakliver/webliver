@@ -108,7 +108,7 @@ export function LoginForm({ next }: { next?: string }) {
             /* The chosen channel carries the accent. It is the first blue
                anybody sees in the product, and it is on the one control this
                screen is actually asking somebody to think about. */
-            className={`flex items-center justify-center gap-2 rounded-xl px-3 py-2 text-[14.5px] transition ${
+            className={`flex min-h-[44px] items-center justify-center gap-2 rounded-xl px-3 text-[14.5px] transition ${
               channel === c ? 'bg-card font-semibold text-accent shadow-soft' : 'text-ink-mute hover:text-ink'
             }`}
           >
@@ -139,10 +139,13 @@ export function LoginForm({ next }: { next?: string }) {
         {phone && <p className="mt-1.5 text-[13px] text-ink-mute">{copy.phoneHint}</p>}
       </div>
 
-      <label className="flex items-center gap-2.5 text-[14.5px] text-ink-soft">
+      {/* The whole row is the target, not the 16px box. A checkbox is the
+          smallest thing on any form and the one most often missed by a
+          thumb. */}
+      <label className="flex min-h-[44px] items-center gap-2.5 text-[14.5px] text-ink-soft">
         <input
           type="checkbox"
-          className="h-4 w-4 rounded border-line-strong"
+          className="size-5 rounded border-line-strong accent-accent"
           checked={isNew}
           onChange={(e) => setIsNew(e.target.checked)}
         />

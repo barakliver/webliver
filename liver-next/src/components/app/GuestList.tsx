@@ -48,6 +48,43 @@ function CopyLink({ token }: { token: string }) {
 
 const dietLabel = (v: string) => DIETS.find((d) => d.value === v)?.label ?? v;
 
+/** The one piece of colour on a guest row, shared by both layouts so the phone
+ *  and the desktop can never end up calling the same status different things. */
+function StatusChip({ status }: { status: Guest['status'] }) {
+  return (
+    <span className={`shrink-0 rounded-full px-3 py-1 text-[12.5px] ${
+      status === 'attending' ? 'bg-ok-wash text-ok'
+      : status === 'declined' ? 'bg-bad-wash text-bad'
+      : 'bg-surface-200 text-ink-mute'
+    }`}>
+      {status === 'attending' ? guestsCopy.attending : status === 'declined' ? guestsCopy.declined : guestsCopy.pending}
+    </span>
+  );
+}
+
+/** Copy the invitation, mark them as coming, remove them. Same three actions
+ *  wherever the row is drawn. */
+function RowActions({ guest, clientId }: { guest: Guest; clientId: string }) {
+  return (
+    <>
+      <CopyLink token={guest.invite_token} />
+      {guest.status !== 'attending' && (
+        <form action={setGuestStatus}>
+          <input type="hidden" name="guest_id" value={guest.id} />
+          <input type="hidden" name="client_id" value={clientId} />
+          <input type="hidden" name="status" value="attending" />
+          <button type="submit" className="btn-quiet px-2 py-1 text-[13px]">✓</button>
+        </form>
+      )}
+      <form action={deleteGuest}>
+        <input type="hidden" name="guest_id" value={guest.id} />
+        <input type="hidden" name="client_id" value={clientId} />
+        <button type="submit" className="btn-quiet px-2 py-1 text-[13px]">{guestsCopy.remove}</button>
+      </form>
+    </>
+  );
+}
+
 export function GuestList({ clientId, guests }: { clientId: string; guests: Guest[] }) {
   const [state, action] = useActionState<GuestResult | null, FormData>(addGuests, null);
   const [filter, setFilter] = useState<'all' | Guest['status']>('all');
@@ -120,8 +157,44 @@ export function GuestList({ clientId, guests }: { clientId: string; guests: Gues
             )}
           </div>
 
-          <div className="mt-4 overflow-x-auto">
-            <table className="w-full min-w-[680px] text-right text-[14.5px]">
+          {/* Cards on a phone, a table from the small breakpoint up.
+
+              It was one table with a 680px minimum inside a horizontal
+              scroller, which on a 390px screen shows a little over half of it
+              and asks a thumb to drag sideways inside a page that also scrolls
+              down. Six columns is a desktop shape. The pieces that carry
+              meaning, the status chip and the row's actions, are shared
+              components rather than written twice, so the two layouts cannot
+              drift into showing different things. */}
+          <ul className="mt-4 space-y-2.5 sm:hidden">
+            {shown.map((g) => (
+              <li key={g.id} className="rounded-2xl border border-line px-4 py-3.5">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="font-medium text-ink">{g.full_name}</p>
+                    <p className="text-[12.5px] text-ink-mute">
+                      {[g.side, g.phone].filter(Boolean).join(' · ') || '—'}
+                    </p>
+                  </div>
+                  <StatusChip status={g.status} />
+                </div>
+
+                {g.status === 'attending' && (
+                  <p className="mt-2 text-[13px] text-ink-soft">
+                    {g.party_size} {c.party} · {dietLabel(g.diet)}
+                  </p>
+                )}
+                {g.note && <p className="mt-1 text-[13px] text-ink-soft">{g.note}</p>}
+
+                <div className="mt-3 flex flex-wrap items-center gap-1">
+                  <RowActions guest={g} clientId={clientId} />
+                </div>
+              </li>
+            ))}
+          </ul>
+
+          <div className="mt-4 hidden overflow-x-auto sm:block">
+            <table className="w-full text-right text-[14.5px]">
               <thead>
                 <tr className="border-b border-line text-[12.5px] text-ink-mute">
                   <th scope="col" className="py-2 font-medium">{c.guest}</th>
@@ -141,34 +214,13 @@ export function GuestList({ clientId, guests }: { clientId: string; guests: Gues
                         {[g.side, g.phone].filter(Boolean).join(' · ') || '—'}
                       </div>
                     </td>
-                    <td className="py-3">
-                      <span className={`rounded-full px-3 py-1 text-[12.5px] ${
-                        g.status === 'attending' ? 'bg-ok-wash text-ok'
-                        : g.status === 'declined' ? 'bg-bad-wash text-bad'
-                        : 'bg-surface-200 text-ink-mute'
-                      }`}>
-                        {g.status === 'attending' ? c.attending : g.status === 'declined' ? c.declined : c.pending}
-                      </span>
-                    </td>
+                    <td className="py-3"><StatusChip status={g.status} /></td>
                     <td className="py-3 tabular-nums text-ink-soft">{g.status === 'attending' ? g.party_size : '—'}</td>
                     <td className="py-3 text-ink-soft">{g.status === 'attending' ? dietLabel(g.diet) : '—'}</td>
                     <td className="py-3 text-ink-soft">{g.note || '—'}</td>
                     <td className="py-3">
                       <div className="flex flex-wrap justify-end gap-1">
-                        <CopyLink token={g.invite_token} />
-                        {g.status !== 'attending' && (
-                          <form action={setGuestStatus}>
-                            <input type="hidden" name="guest_id" value={g.id} />
-                            <input type="hidden" name="client_id" value={clientId} />
-                            <input type="hidden" name="status" value="attending" />
-                            <button type="submit" className="btn-quiet px-2 py-1 text-[13px]">✓</button>
-                          </form>
-                        )}
-                        <form action={deleteGuest}>
-                          <input type="hidden" name="guest_id" value={g.id} />
-                          <input type="hidden" name="client_id" value={clientId} />
-                          <button type="submit" className="btn-quiet px-2 py-1 text-[13px]">{c.remove}</button>
-                        </form>
+                        <RowActions guest={g} clientId={clientId} />
                       </div>
                     </td>
                   </tr>

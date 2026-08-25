@@ -45,7 +45,7 @@ export default async function ClientsPage({
             key={t.key}
             href={t.href}
             aria-current={t.on ? 'page' : undefined}
-            className={`min-h-[36px] rounded-full px-4 leading-[36px] transition ${
+            className={`min-h-[44px] rounded-full px-4 leading-[44px] sm:min-h-[36px] sm:leading-[36px] transition ${
               t.on ? 'bg-white font-medium text-ink shadow-soft' : 'text-ink-mute hover:text-ink'
             }`}
           >

@@ -81,7 +81,7 @@ function Draft({ clientId }: { clientId: string }) {
       <textarea name="body" rows={6} maxLength={60000} placeholder={c.bodyPh} className="field w-full resize-y" aria-label={c.bodyLabel} />
 
       <div className="flex flex-wrap items-center gap-3">
-        <label className="inline-flex min-h-[38px] cursor-pointer items-center gap-2 rounded-full border border-line-strong bg-white px-4 text-[14px] text-ink transition hover:border-accent/40">
+        <label className="inline-flex min-h-[44px] cursor-pointer sm:min-h-[38px] items-center gap-2 rounded-full border border-line-strong bg-white px-4 text-[14px] text-ink transition hover:border-accent/40">
           <Paperclip size={15} aria-hidden strokeWidth={1.75} />
           {uploading ? c.uploading : path ? c.attached : c.attach}
           <input

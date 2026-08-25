@@ -93,11 +93,14 @@
     .glass-strong { background: theme('colors.card'); }
   }
 
-  .shell { @apply mx-auto w-full max-w-content px-5 sm:px-8; }
+  .shell { @apply mx-auto w-full max-w-content px-4 sm:px-8; }
   .measure { max-width: 62ch; }
 
   .card {
-    @apply rounded-xl2 border border-line bg-card p-5 shadow-soft;
+    /* Tighter on a phone. At 20px a side, plus the shell's own 20px, a 390px
+       screen was spending 80px of its width on padding before a word was
+       drawn. Unchanged from the small breakpoint up, where there is room. */
+    @apply rounded-xl2 border border-line bg-card p-4 shadow-soft sm:p-5;
   }
 
   /* 44px minimum on every control, per the brief and the accessibility rule

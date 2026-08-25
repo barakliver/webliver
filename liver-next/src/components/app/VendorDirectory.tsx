@@ -228,7 +228,7 @@ export function VendorDirectory({ vendors }: { vendors: Vendor[] }) {
               type="button"
               aria-pressed={t.on}
               onClick={() => setShowArchived(t.go)}
-              className={`min-h-[36px] rounded-full px-4 leading-[36px] transition ${
+              className={`min-h-[44px] rounded-full px-4 leading-[44px] sm:min-h-[36px] sm:leading-[36px] transition ${
                 t.on ? 'bg-card font-medium text-ink shadow-soft' : 'text-ink-mute hover:text-ink'
               }`}
             >

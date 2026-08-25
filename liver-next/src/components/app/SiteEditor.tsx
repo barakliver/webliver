@@ -124,7 +124,7 @@ export function SiteEditor({ values, overridden }: {
               type="button"
               aria-current={on ? 'true' : undefined}
               onClick={() => setOpen(g.id)}
-              className={`inline-flex min-h-[38px] items-center justify-between gap-2 rounded-full px-4 text-right text-[14px] transition lg:w-full ${
+              className={`inline-flex min-h-[44px] items-center justify-between sm:min-h-[38px] gap-2 rounded-full px-4 text-right text-[14px] transition lg:w-full ${
                 on ? 'bg-ink font-medium text-surface' : 'text-ink-soft hover:bg-surface-200 hover:text-ink'
               }`}
             >
