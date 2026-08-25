@@ -1,6 +1,6 @@
 'use server';
 
-import { supabaseAdmin } from '@/lib/supabase/admin';
+import { supabaseServer } from '@/lib/supabase/server';
 import { sendMail } from '@/lib/notify/mail';
 import { sendWhatsApp } from '@/lib/notify/whatsapp';
 import { adminLeadEmail, clientConfirmEmail, adminLeadWhatsApp, type LeadPayload } from '@/lib/notify/templates';
@@ -44,22 +44,26 @@ export async function submitLead(_prev: LeadResult | null, form: FormData): Prom
     if (guests > MAX_GUESTS) return { ok: false, error: `כמות האורחים המרבית היא ${MAX_GUESTS}`, field: 'guest_count' };
   }
 
-  // The lead is stored first. Notifications are best effort after it is safe.
+  /* The lead is stored first; notifications are best effort once it is safe.
+     The write goes through submit_lead(), a security definer function the
+     public may execute. Inserting straight into `leads` needed the service
+     role — a key that bypasses every policy in the database, asked for by
+     nothing in the deploy, and therefore missing on the live server, which is
+     why every enquiry was being lost. One narrow door beats one broad key.
+     producer_id is not passed: a trigger attributes the enquiry to whoever the
+     public site belongs to, so no code path can drop it somewhere unread. */
   try {
-    const { error } = await supabaseAdmin().from('leads').insert({
-      full_name: payload.full_name,
-      email: payload.email,
-      phone: payload.phone,
-      kind: payload.kind,
-      event_date: payload.event_date || null,
-      guest_count: guests,
-      message: payload.message,
-      /* producer_id is left out on purpose: a database trigger attributes the
-         enquiry to whoever the public site belongs to, so no code path can
-         drop a lead somewhere nobody will ever read it. */
-      source: 'site',
+    const sb = await supabaseServer();
+    const { error } = await sb.rpc('submit_lead', {
+      p_full_name: payload.full_name,
+      p_phone: payload.phone,
+      p_email: payload.email,
+      p_kind: payload.kind,
+      p_event_date: payload.event_date || null,
+      p_guest_count: guests,
+      p_message: payload.message,
     });
-    if (error) throw new Error(error.message);
+    if (error) throw new Error(`${error.code ?? ''} ${error.message}`.trim());
   } catch (e) {
     console.error('[lead] save failed', e);
     return { ok: false, error: 'לא הצלחנו לשמור את הפנייה. נסו שוב או שלחו הודעה בוואטסאפ.' };

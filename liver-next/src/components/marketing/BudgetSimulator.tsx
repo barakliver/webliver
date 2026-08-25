@@ -1,8 +1,8 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import Link from 'next/link';
 import { site, MAX_GUESTS } from '@/content/site';
+import { BookMeeting } from './BookMeeting';
 import {
   computeBudget, TIER_PLATE, ils, ilsRounded,
   type Tier, type Day, type Season, type Style, type Bar, type Scale,
@@ -184,7 +184,7 @@ export function BudgetSimulator() {
 
           <div className="mt-6 border-t border-line pt-6">
             <p className="text-[15px] text-ink-soft">{site.budget.closing}</p>
-            <Link href="#contact" className="btn-primary mt-4">{site.closing.cta}</Link>
+            <BookMeeting className="btn-primary mt-4 inline-flex items-center gap-2" />
           </div>
         </div>
       </div>

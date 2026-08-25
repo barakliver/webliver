@@ -10,6 +10,7 @@ import { LeadForm } from '@/components/marketing/LeadForm';
 import { Portfolio } from '@/components/marketing/Portfolio';
 import { Portrait } from '@/components/marketing/Portrait';
 import { FabDock } from '@/components/marketing/FabDock';
+import { BookMeeting } from '@/components/marketing/BookMeeting';
 
 export default function HomePage() {
   return (
@@ -62,6 +63,12 @@ export default function HomePage() {
           <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
             <div>
               <Prose lines={site.closing.body} />
+              {/* Two ways in, side by side and honestly labelled: pick a slot
+                  now, or leave details and be called back. */}
+              <div className="mt-7">
+                <BookMeeting className="btn-primary inline-flex items-center gap-2" />
+                <p className="mt-2.5 text-[13.5px] text-ink-mute">{site.fab.bookingNote}</p>
+              </div>
             </div>
             <LeadForm />
           </div>

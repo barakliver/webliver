@@ -3,7 +3,7 @@
 import { useActionState, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { submitRsvp, type RsvpResult } from '@/app/actions/rsvp';
-import { DIETS } from '@/app/actions/guests';
+import { DIETS } from '@/content/lists';
 import { rsvpCopy } from '@/content/site';
 
 function Submit({ label }: { label: string }) {

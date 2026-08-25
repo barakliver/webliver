@@ -2,11 +2,10 @@
 
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
+import { TRACKS, type Track } from '@/content/lists';
 
 export type DayResult = { ok: boolean; error?: string };
 
-export const TRACKS = ['shared', 'partner_a', 'partner_b'] as const;
-export type Track = (typeof TRACKS)[number];
 
 function touch(clientId: string) {
   revalidatePath(`/app/clients/${clientId}`);

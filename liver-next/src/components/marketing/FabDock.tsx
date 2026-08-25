@@ -1,11 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { CalendarDays, MessageCircle, PenLine } from 'lucide-react';
 import { site } from '@/content/site';
 import { publicEnv } from '@/lib/env';
 import { LeadForm } from './LeadForm';
 
-type Sheet = null | 'booking' | 'lead';
+type Sheet = null | 'lead';
 
 /** A single fixed dock owns every floating action, so nothing can drift on top
  *  of anything else: the three actions are laid out by one flex container
@@ -38,16 +39,23 @@ export function FabDock() {
           {wa && (
             <a href={wa} target="_blank" rel="noopener noreferrer"
                className="flex flex-1 items-center justify-center gap-2 rounded-full bg-[#25D366] px-4 py-2.5 text-[14px] font-medium text-white transition hover:brightness-105 sm:flex-none">
-              <span aria-hidden>💬</span><span>{site.fab.whatsapp}</span>
+              <MessageCircle size={17} aria-hidden strokeWidth={1.75} /><span>{site.fab.whatsapp}</span>
             </a>
           )}
-          <button type="button" onClick={() => setSheet('booking')}
-                  className="flex flex-1 items-center justify-center gap-2 rounded-full bg-ink px-4 py-2.5 text-[14px] font-medium text-white transition hover:bg-ink-soft sm:flex-none">
-            <span aria-hidden>📅</span><span>{site.fab.booking}</span>
-          </button>
+          {/* Booking is a link, not a sheet. It used to open the calendar in an
+              iframe, which can never work: Google serves the booking page with
+              frame-ancestors set, so the panel would have come up empty. It
+              also puts the couple one tap from a slot instead of three. */}
+          {publicEnv.bookingUrl ? (
+            <a href={publicEnv.bookingUrl} target="_blank" rel="noopener noreferrer"
+               title={site.fab.bookingNote}
+               className="flex flex-1 items-center justify-center gap-2 rounded-full bg-ink px-4 py-2.5 text-[14px] font-medium text-white transition hover:bg-ink-soft sm:flex-none">
+              <CalendarDays size={17} aria-hidden strokeWidth={1.75} /><span>{site.fab.booking}</span>
+            </a>
+          ) : null}
           <button type="button" onClick={() => setSheet('lead')}
                   className="flex flex-1 items-center justify-center gap-2 rounded-full border border-line-strong bg-white/80 px-4 py-2.5 text-[14px] font-medium text-ink transition hover:bg-white sm:flex-none">
-            <span aria-hidden>✍️</span><span>{site.fab.lead}</span>
+            <PenLine size={17} aria-hidden strokeWidth={1.75} /><span>{site.fab.lead}</span>
           </button>
         </div>
       </div>
@@ -55,31 +63,14 @@ export function FabDock() {
       {sheet && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-ink/25 backdrop-blur-sm sm:items-center"
              onMouseDown={e => { if (e.target === e.currentTarget) setSheet(null); }}>
-          <div role="dialog" aria-modal="true" aria-label={sheet === 'booking' ? site.fab.booking : site.fab.lead}
+          <div role="dialog" aria-modal="true" aria-label={site.fab.lead}
                className="max-h-[88svh] w-full max-w-lg animate-sheet overflow-y-auto rounded-t-4xl glass-strong p-6 sm:rounded-4xl sm:p-8">
             <div className="mb-5 flex items-start justify-between gap-4">
-              <h2 className="font-display text-title font-semibold text-ink">
-                {sheet === 'booking' ? site.fab.booking : site.lead.title}
-              </h2>
+              <h2 className="font-display text-title font-semibold text-ink">{site.lead.title}</h2>
               <button type="button" onClick={() => setSheet(null)} aria-label="סגירה"
                       className="rounded-full p-2 text-ink-mute transition hover:bg-white hover:text-ink">✕</button>
             </div>
-
-            {sheet === 'booking' ? (
-              publicEnv.bookingUrl ? (
-                <iframe src={publicEnv.bookingUrl} title={site.fab.booking}
-                        className="h-[62svh] w-full rounded-2xl border border-line bg-white" />
-              ) : (
-                <div className="space-y-4">
-                  <p className="text-[15.5px] text-ink-soft">
-                    יומן התיאומים עדיין לא חובר. אפשר להשאיר פרטים וברק יחזור אליכם לתיאום.
-                  </p>
-                  <LeadForm compact />
-                </div>
-              )
-            ) : (
-              <LeadForm compact />
-            )}
+            <LeadForm compact />
           </div>
         </div>
       )}

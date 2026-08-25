@@ -2,7 +2,8 @@
 
 import { useActionState, useState } from 'react';
 import { useFormStatus } from 'react-dom';
-import { addGuests, deleteGuest, setGuestStatus, DIETS, type GuestResult } from '@/app/actions/guests';
+import { addGuests, deleteGuest, setGuestStatus, type GuestResult } from '@/app/actions/guests';
+import { DIETS } from '@/content/lists';
 import { guestsCopy } from '@/content/site';
 
 export type Guest = {

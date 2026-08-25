@@ -2,22 +2,9 @@
 
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
+import { DIETS } from '@/content/lists';
 
 export type GuestResult = { ok: boolean; error?: string; added?: number };
-
-export const DIETS = [
-  { value: 'none',        label: 'רגיל' },
-  { value: 'vegetarian',  label: 'צמחוני' },
-  { value: 'vegan',       label: 'טבעוני' },
-  { value: 'gluten_free', label: 'ללא גלוטן' },
-  { value: 'kosher',      label: 'כשר' },
-] as const;
-
-export const RSVP_LABELS: Record<string, string> = {
-  pending: 'טרם ענו',
-  attending: 'מגיעים',
-  declined: 'לא מגיעים',
-};
 
 function touch(clientId: string) {
   revalidatePath(`/app/clients/${clientId}`);

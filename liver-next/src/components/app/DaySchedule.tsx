@@ -2,7 +2,8 @@
 
 import { useActionState, useState } from 'react';
 import { useFormStatus } from 'react-dom';
-import { addDayItem, deleteDayItem, renameTracks, type DayResult, type Track } from '@/app/actions/day';
+import { addDayItem, deleteDayItem, renameTracks, type DayResult } from '@/app/actions/day';
+import type { Track } from '@/content/lists';
 import { dayCopy } from '@/content/site';
 
 export type DayItem = { id: string; track: Track; at_time: string; title: string; note: string };
