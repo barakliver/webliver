@@ -34,9 +34,37 @@ export function WinningBoard({ clientId, images, viewer }: {
   const shown = filter === 'all' ? images : images.filter((i) => i.category === filter);
 
   return (
-    <section className="card">
-      <h2 className="font-display text-[18px] font-light text-ink">🏆 {c.title}</h2>
-      <p className="mt-1 text-[14px] text-ink-soft">{viewer === 'client' ? c.subClient : c.subProducer}</p>
+    /* The one dark screen in the product.
+     *
+     * Everything else sits on ivory. This inverts, and the inversion is the
+     * point: a moodboard is the only screen here where the pictures are the
+     * content and the interface is meant to disappear behind them. A warm
+     * near-black does that; a light ground competes with every tile on it.
+     *
+     * The whole block carries its own token overrides rather than a second
+     * palette, so a producer's accent still reaches it and the gold that reads
+     * 2.89:1 on ivory reads 6.32:1 here, which is why gold may carry words on
+     * this screen and nowhere else. */
+    <section
+      className="border-t border-white/10 bg-dark p-5 text-surface sm:p-8"
+      style={{
+        '--ink': '#FAF7F2',
+        '--ink-soft': 'rgba(250,247,242,.78)',
+        '--ink-mute': 'rgba(250,247,242,.6)',
+        '--line': 'rgba(250,247,242,.12)',
+        '--line-strong': 'rgba(250,247,242,.22)',
+        '--line-control': 'rgba(250,247,242,.45)',
+        '--surface': '#0E0C0A',
+        '--surface-100': '#15110E',
+        '--surface-200': '#2A241D',
+        '--accent': 'var(--accent-light, #D8BC8A)',
+        '--accent-bright': 'var(--accent-light, #D8BC8A)',
+      } as React.CSSProperties}
+    >
+      <p className="text-[11.5px] tracking-[.14em] text-accent-light">BRIDE MODE</p>
+      <h2 className="mt-2 font-display text-[30px] font-light text-surface">{c.title}</h2>
+      <p className="mt-2 text-[14.5px] text-surface/70">{viewer === 'client' ? c.subClient : c.subProducer}</p>
+      <hr className="rule-gold mt-6" />
 
       {viewer === 'client' && (
         <form action={action} className="mt-5 grid gap-3 sm:grid-cols-[auto_1fr_150px_auto]">

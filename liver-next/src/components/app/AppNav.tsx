@@ -143,9 +143,14 @@ export function MobileTabBar({ items }: { items: NavItem[] }) {
                       href={i.href}
                       aria-current={current ? 'page' : undefined}
                       className={cn(
-                        'flex min-h-[52px] items-center gap-3 border-b border-line px-1 text-[15px]',
+                        'relative flex min-h-[52px] items-center gap-3 border-b border-line px-1 text-[15px]',
                         'transition-colors duration-300',
-                        current ? 'text-ink' : 'text-ink-soft hover:text-ink',
+                        /* A gold mark on the trailing edge rather than a fill.
+                           The same mark the desktop nav and the segmented
+                           controls use, so the three read as one system. */
+                        current
+                          ? 'text-ink before:absolute before:inset-y-2 before:end-0 before:w-px before:bg-accent-line'
+                          : 'text-ink-soft hover:text-ink',
                       )}
                     >
                       <Icon size={20} strokeWidth={1.5} aria-hidden />

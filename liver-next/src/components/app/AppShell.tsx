@@ -7,6 +7,7 @@ import type { Account } from '@/lib/auth';
 import { NoticeBell, type Notice } from './NoticeBell';
 import { DesktopNav, MobileTabBar, type NavItem } from './AppNav';
 import { Avatar } from './Avatar';
+import { cn } from '@/lib/utils';
 
 function navFor(a: Account): NavItem[] {
   if (a.role === 'client') {
@@ -44,7 +45,13 @@ export function AppShell({
        attribute on the outermost element, so it cannot arrive after the first
        paint and costs no extra request. Everything inside reads the accent
        through these properties, which is why the tokens are variables. */
-    <div className="min-h-dvh bg-surface" style={brandStyle(brand)}>
+    /* The producer's ground is a shade brighter than the couple's. It is a
+       working screen rather than a keepsake, and the extra light is what keeps
+       a table of forty rows from reading as heavy. */
+    <div
+      className={cn('min-h-dvh', account.role === 'client' ? 'bg-surface' : 'bg-surface-100')}
+      style={brandStyle(brand)}
+    >
       {/* Glass belongs on chrome. The header floats over content and the blur
           is what tells you so; the cards underneath stay opaque.
 

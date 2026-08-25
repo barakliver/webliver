@@ -8,6 +8,9 @@ import { PORTAL_LIVE_SOURCES } from '@/lib/liveSources';
 import { loadPortal, loadThread, loadContracts } from '@/lib/portal';
 import { Contracts } from '@/components/app/Contracts';
 import { Thread } from '@/components/app/Thread';
+import { PortalActions } from '@/components/app/PortalActions';
+import { fileReport } from '@/app/actions/report';
+import { brandFor } from '@/lib/branding';
 
 export const metadata = { title: appCopy.portal.title };
 
@@ -19,6 +22,9 @@ export default async function PortalPage() {
      here, and it means the gate is exercised on the path people actually use
      rather than only on the preview. */
   const data = await loadPortal(sb, { asClient: true });
+  /* Whose business this couple is inside. The two floating actions reach a
+     person, so they have to reach the right one. */
+  const brand = await brandFor(account);
   const ids = data.workspaces.map((w) => w.id);
   const [threads, contracts] = await Promise.all([loadThread(sb, ids), loadContracts(sb, ids)]);
 
@@ -43,6 +49,20 @@ export default async function PortalPage() {
           </div>
         ))}
       </div>
+
+      {/* The two things wanted at a moment nobody plans for: reaching the
+          producer, and saying something is wrong. Bound to the first
+          workspace, which is the one the couple is looking at. */}
+      <PortalActions
+        producerName={brand.name}
+        phone={brand.whatsapp}
+        whatsapp={brand.whatsapp}
+        bookingUrl={brand.bookingUrl}
+        onReport={async (topic, body) => {
+          'use server';
+          return fileReport(data.workspaces[0].id, topic, body);
+        }}
+      />
       <Live sources={PORTAL_LIVE_SOURCES} />
     </>
   );

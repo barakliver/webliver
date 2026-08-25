@@ -126,5 +126,29 @@ if (!brand) {
   }
 }
 
+/* ── Bride Mode ────────────────────────────────────────────────────────────
+   The one screen that inverts. It overrides the tokens on its own block
+   rather than carrying a second palette, and those overrides are exactly as
+   able to be unreadable as the light ones. Checked here or checked nowhere. */
+const over2 = (fg, a, ground) => {
+  const g = parseInt(ground.slice(1), 16);
+  const f = parseInt(fg.slice(1), 16);
+  const mix = (x, y) => Math.round(x * a + y * (1 - a));
+  return '#' + [
+    mix((f >> 16) & 255, (g >> 16) & 255),
+    mix((f >> 8) & 255, (g >> 8) & 255),
+    mix(f & 255, g & 255),
+  ].map((v) => v.toString(16).padStart(2, '0')).join('');
+};
+
+console.log('\n  Bride Mode');
+line('inverted ink on the dark ground',  c.surface,                       c.dark, 4.5);
+line('inverted soft ink',                over2(c.surface, 0.78, c.dark),  c.dark, 4.5);
+line('inverted muted ink',               over2(c.surface, 0.60, c.dark),  c.dark, 4.5);
+line('gold as words there',              c.accentLight,                   c.dark, 4.5);
+/* The rules that carry the structure once the fills are gone. */
+line('an inverted hairline',             over2(c.surface, 0.12, c.dark),  c.dark, 1.15);
+line('an inverted control edge',         over2(c.surface, 0.45, c.dark),  c.dark, 3.0);
+
 console.log(failed === 0 ? '\nall pairings pass' : `\n${failed} below target`);
 process.exit(failed === 0 ? 0 : 1);
