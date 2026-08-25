@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { Parallax, Layer } from './Parallax';
 import Link from 'next/link';
 import type { SiteCopy } from '@/content/site';
 import { publicEnv } from '@/lib/env';
@@ -19,7 +20,12 @@ const HERO_STILL = '/portfolio/chuppah-105-w1400.webp';
 export function Hero({ site }: { site: SiteCopy }) {
   return (
     <header className="relative isolate overflow-hidden">
-      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+      {/* Two planes at different distances. The image leans against the
+          cursor and the words lean with it, by a smaller amount; the
+          difference between the two is the whole effect. Inset and scaled
+          slightly so the lean never uncovers an edge. */}
+      <Parallax>
+      <Layer depth={-26} className="pointer-events-none absolute -inset-[4%] -z-10 scale-[1.05]">
         <Image
           src={HERO_STILL}
           alt=""
@@ -45,36 +51,37 @@ export function Hero({ site }: { site: SiteCopy }) {
         <div className="absolute inset-0 bg-[linear-gradient(105deg,rgba(14,12,10,.82)_0%,rgba(14,12,10,.68)_46%,rgba(14,12,10,.62)_100%)]" />
         <div className="absolute inset-x-0 bottom-0 h-1/3 bg-[linear-gradient(180deg,transparent_0%,rgba(14,12,10,.6)_100%)]" />
         <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-surface" />
-      </div>
+      </Layer>
 
-      <div className="shell flex min-h-[86svh] flex-col justify-center py-24 sm:py-32">
-        <p className="eyebrow animate-rise !text-white/80">{site.hero.eyebrow}</p>
+      <Layer depth={14} className="shell flex min-h-[86svh] flex-col justify-center py-24 sm:py-32">
+        <p className="eyebrow animate-veil !text-white/80">{site.hero.eyebrow}</p>
 
-        <h1 className="mt-4 max-w-[16ch] animate-rise font-display text-display-xl font-light text-white [animation-delay:60ms]">
+        <h1 className="mt-4 max-w-[16ch] animate-veil font-display text-display-xl font-light text-white [animation-delay:60ms]">
           {site.hero.headline}
         </h1>
 
-        <p className="mt-6 animate-rise font-display text-title font-light text-white/95 [animation-delay:120ms]">
+        <p className="mt-6 animate-veil font-display text-title font-light text-white/95 [animation-delay:120ms]">
           {site.hero.name}
         </p>
 
-        <div className="mt-4 animate-rise [animation-delay:180ms]">
+        <div className="mt-4 animate-veil [animation-delay:180ms]">
           {/* Prose sets text-ink-soft itself, which is a dark grey and would
               vanish against the photograph, so the override goes on Prose. */}
           <Prose lines={site.hero.body} className="!text-white/85" />
         </div>
 
-        <div className="mt-9 animate-rise [animation-delay:240ms]">
+        <div className="mt-9 animate-veil [animation-delay:240ms]">
           {/* btn-primary is ink on white ground. Over the photograph it was
               dark on dark, so the hero's call inverts to white on ink. */}
           <Link
             href="#contact"
-            className="btn bg-white text-ink shadow-soft transition hover:bg-white/90"
+            className="btn bg-surface text-ink transition-colors duration-300 hover:bg-surface-200"
           >
             {site.hero.cta}
           </Link>
         </div>
-      </div>
+      </Layer>
+      </Parallax>
     </header>
   );
 }

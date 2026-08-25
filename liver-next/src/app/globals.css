@@ -72,6 +72,11 @@
       animation-iteration-count: 1 !important;
       transition-duration: .01ms !important;
     }
+    /* The parallax and the float loops are driven from JavaScript, which this
+       query cannot reach. They read the same preference themselves; this is
+       the belt to that pair of braces, so a transform already applied when the
+       preference changes is dropped rather than frozen in place. */
+    .parallax-layer { transform: none !important; }
   }
 
   body {
