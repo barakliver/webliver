@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { addTable, setTableSeats, deleteTable, seatGuest, type SeatResult } from '@/app/actions/seating';
 import { seatingCopy } from '@/content/site';
@@ -40,10 +40,61 @@ export function SeatingPlan({ clientId, tables, guests }: {
   const atTable = (id: string) => attending.filter((g) => g.table_id === id);
   const takenAt = (id: string) => atTable(id).reduce((a, g) => a + Number(g.party_size || 0), 0);
 
+  /* Dragging is an addition, never the only way. It does not exist for a
+     keyboard, a screen reader, or most touch browsers — HTML5 drag events
+     simply do not fire there — so every seat and unseat below still has its
+     own control. What follows makes the mouse path quicker, and nothing
+     depends on it. */
+  const [dragging, setDragging] = useState<SeatGuest | null>(null);
+  const [over, setOver] = useState<string | null>(null);
+
+  const move = (guest: SeatGuest, tableId: string | null) => {
+    if ((guest.table_id ?? '') === (tableId ?? '')) return;
+    const fd = new FormData();
+    fd.set('guest_id', guest.id);
+    fd.set('client_id', clientId);
+    fd.set('table_id', tableId ?? '');
+    seatAction(fd);
+  };
+
+  /* A table that cannot hold the party refuses the drop rather than accepting
+     it and letting the database bounce it back — the answer is the same, but
+     the cursor says so before the release instead of an error afterwards. */
+  const fits = (guest: SeatGuest, table: SeatTable) =>
+    takenAt(table.id) + Number(guest.party_size || 0) <= table.seats;
+
+  const dragProps = (g: SeatGuest) => ({
+    draggable: true,
+    onDragStart: (e: React.DragEvent) => {
+      setDragging(g);
+      e.dataTransfer.effectAllowed = 'move';
+      /* Some browsers cancel a drag that carries no data at all. */
+      e.dataTransfer.setData('text/plain', g.id);
+    },
+    onDragEnd: () => { setDragging(null); setOver(null); },
+  });
+
+  const dropProps = (tableId: string | null, allowed: boolean) => ({
+    onDragOver: (e: React.DragEvent) => {
+      if (!dragging || !allowed) return;
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      setOver(tableId ?? 'unseated');
+    },
+    onDragLeave: () => setOver((v) => (v === (tableId ?? 'unseated') ? null : v)),
+    onDrop: (e: React.DragEvent) => {
+      e.preventDefault();
+      if (dragging && allowed) move(dragging, tableId);
+      setDragging(null);
+      setOver(null);
+    },
+  });
+
   return (
     <section className="card">
       <h2 className="font-display text-[18px] font-semibold text-ink">🪑 {c.title}</h2>
       <p className="mt-1 text-[14px] text-ink-soft">{c.sub}</p>
+      <p className="mt-1 hidden text-[13px] text-ink-mute sm:block">{c.dragHint}</p>
 
       <form action={addAction} className="mt-5 grid gap-3 sm:grid-cols-[1fr_120px_auto]">
         <input type="hidden" name="client_id" value={clientId} />
@@ -57,7 +108,12 @@ export function SeatingPlan({ clientId, tables, guests }: {
 
       {attending.length === 0 && <p className="mt-5 rounded-2xl bg-amber-50 px-4 py-3 text-[14px] text-amber-900">{c.needRsvp}</p>}
 
-      <div className="mt-6 rounded-2xl border border-line p-4">
+      <div
+        {...dropProps(null, !!dragging && !!dragging.table_id)}
+        className={`mt-6 rounded-2xl border p-4 transition-colors ${
+          over === 'unseated' ? 'border-bronze bg-bronze-wash' : 'border-line'
+        }`}
+      >
         <h3 className="text-[13px] font-semibold text-bronze">
           {c.unseated} · {waiting.reduce((a, g) => a + Number(g.party_size || 0), 0)} {c.peopleShort}
         </h3>
@@ -66,7 +122,11 @@ export function SeatingPlan({ clientId, tables, guests }: {
         ) : (
           <ul className="mt-3 space-y-2">
             {waiting.map((g) => (
-              <li key={g.id} className="flex flex-wrap items-center gap-3 rounded-xl bg-ivory-100 px-3 py-2">
+              <li
+                key={g.id}
+                {...dragProps(g)}
+                className="flex flex-wrap items-center gap-3 rounded-xl bg-ivory-100 px-3 py-2 sm:cursor-grab sm:active:cursor-grabbing"
+              >
                 <span className="flex-1 text-[14.5px] text-ink">
                   {g.full_name} <span className="text-ink-mute">· {g.party_size}</span>
                 </span>
@@ -97,7 +157,16 @@ export function SeatingPlan({ clientId, tables, guests }: {
             const taken = takenAt(t.id);
             const free = t.seats - taken;
             return (
-              <li key={t.id} className={`rounded-2xl border p-4 ${free === 0 ? 'border-emerald-300 bg-emerald-50/40' : 'border-line'}`}>
+              <li
+                key={t.id}
+                {...dropProps(t.id, !!dragging && fits(dragging, t))}
+                className={`rounded-2xl border p-4 transition-colors ${
+                  over === t.id ? 'border-bronze bg-bronze-wash'
+                  : dragging && !fits(dragging, t) ? 'border-line opacity-50'
+                  : free === 0 ? 'border-emerald-300 bg-emerald-50/40'
+                  : 'border-line'
+                }`}
+              >
                 <div className="flex items-start justify-between gap-2">
                   <h3 className="font-display text-[16px] font-semibold text-ink">{t.name}</h3>
                   <span className={`rounded-full px-2.5 py-0.5 text-[12px] ${
@@ -116,7 +185,11 @@ export function SeatingPlan({ clientId, tables, guests }: {
                 ) : (
                   <ul className="mt-3 space-y-1.5">
                     {atTable(t.id).map((g) => (
-                      <li key={g.id} className="flex items-center justify-between gap-2 text-[14px]">
+                      <li
+                        key={g.id}
+                        {...dragProps(g)}
+                        className="flex items-center justify-between gap-2 rounded-lg text-[14px] sm:cursor-grab sm:active:cursor-grabbing"
+                      >
                         <span className="text-ink">{g.full_name} <span className="text-ink-mute">· {g.party_size}</span></span>
                         <form action={seatAction}>
                           <input type="hidden" name="guest_id" value={g.id} />
