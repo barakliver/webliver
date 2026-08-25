@@ -1,11 +1,15 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Check, Phone, MessageCircle, Undo2 } from 'lucide-react';
+import { Check, Phone, MessageCircle, Undo2, Megaphone, UserCheck, X } from 'lucide-react';
 import { appCopy } from '@/content/site';
 import { markDayItem } from '@/app/actions/day';
+import { markArrival } from '@/app/actions/arrivals';
 import { hhmm, humanSpan } from '@/lib/runsheet';
-import { placeLines, focus, relative, callSheet, dueSoon, isToday, type Line, type Caller, type Placed } from '@/lib/dayof';
+import {
+  placeLines, focus, relative, callSheet, dueSoon, isToday, pendingAlert, missing, headcount,
+  type Line, type Caller, type Placed,
+} from '@/lib/dayof';
 import { normalizePhone, displayPhone } from '@/lib/phone';
 import { cn } from '@/lib/utils';
 
@@ -53,12 +57,36 @@ export function DayOfCockpit({
   const { now: current, next } = focus(placed);
   const sheet = callSheet(crew, vendors);
   const arriving = dueSoon(sheet, now ?? new Date(0), live);
+  const late = missing(sheet, now ?? new Date(0), live);
+  const heads = headcount(sheet, now ?? new Date(0), live);
   const open = placed.filter((p) => p.state !== 'done').length;
+
+  const alert = pendingAlert(placed);
+  /* Dismissed per line rather than globally. Waving away the countdown to the
+     chuppah must not also wave away the one to the first dance an hour later. */
+  const [hushed, setHushed] = useState<string[]>([]);
+  const shouting = alert && !hushed.includes(alert.line.id) ? alert : null;
 
   return (
     <div className="space-y-5">
+      {shouting && (
+        <Countdown placed={shouting} onDismiss={() => setHushed((h) => [...h, shouting.line.id])} />
+      )}
+
       {now !== null && !live && (
         <p className="card text-[14px] text-ink-soft">{c.notToday}</p>
+      )}
+
+      {live && sheet.length > 0 && (
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <span className="text-[14px] text-ink-soft">
+            {c.people.headcount(heads.here, heads.of)}
+            {heads.late > 0 && (
+              <span className="ms-2 chip-bad">{c.people.missing} · {heads.late}</span>
+            )}
+          </span>
+          <Broadcast sheet={sheet} late={late} />
+        </div>
       )}
 
       {live && (
@@ -94,7 +122,7 @@ export function DayOfCockpit({
         </ul>
       </section>
 
-      <People sheet={sheet} />
+      <People sheet={sheet} clientId={clientId} />
     </div>
   );
 }
@@ -164,6 +192,7 @@ function Row({ p, clientId }: { p: Placed; clientId: string }) {
           </span>
           {late && <span className="chip-bad">{c.late}</span>}
           {isNow && <span className="chip-ok">{c.now}</span>}
+          {p.line.key_moment && <span className="chip-mute">{c.keyMoment}</span>}
         </div>
         {done && p.line.done_at && (
           <div className="mt-0.5 text-[12.5px] text-ink-mute">{c.doneAt(timeOf(p.line.done_at))}</div>
@@ -173,7 +202,7 @@ function Row({ p, clientId }: { p: Placed; clientId: string }) {
   );
 }
 
-function People({ sheet }: { sheet: Caller[] }) {
+function People({ sheet, clientId }: { sheet: Caller[]; clientId: string }) {
   if (sheet.length === 0) {
     return (
       <section className="card">
@@ -191,40 +220,253 @@ function People({ sheet }: { sheet: Caller[] }) {
       <ul className="mt-4 list-none space-y-2 p-0">
         {sheet.map((person) => {
           const e164 = normalizePhone(person.phone);
+          const here = !!person.arrived_at;
           return (
-            <li key={`${person.kind}-${person.id}`} className="rounded-2xl border border-line p-3">
-              <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-                <span className="text-[15px] font-semibold tabular-nums text-ink">
-                  {person.call_time ? hhmm(person.call_time) : c.people.noTime}
-                </span>
-                <span className="text-[15px] text-ink">{person.name}</span>
-                <span className="chip-mute">{person.kind === 'crew' ? c.people.crew : c.people.vendor}</span>
-                {person.role && <span className="text-[13.5px] text-ink-soft">{person.role}</span>}
-              </div>
-
-              {e164 && (
-                /* Two ways to reach one person, because on the evening one of
-                   them is always the wrong one: a supplier mid-set does not
-                   pick up, and a driver on the road does not read. */
-                <div className="mt-2 flex flex-wrap gap-2">
-                  <a href={`tel:${e164}`} className="btn-ghost px-4 text-[14px]">
-                    <Phone size={16} aria-hidden /> {c.people.call}
-                    <span className="text-ink-mute tabular-nums">{displayPhone(e164)}</span>
-                  </a>
-                  <a
-                    href={`https://wa.me/${e164.replace('+', '')}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn-ghost px-4 text-[14px]"
-                  >
-                    <MessageCircle size={16} aria-hidden /> {c.people.whatsapp}
-                  </a>
-                </div>
+            <li
+              key={`${person.kind}-${person.id}`}
+              className={cn(
+                'rounded-2xl border p-3 transition-colors',
+                here ? 'border-ok/30 bg-ok-wash' : 'border-line',
               )}
+            >
+              <div className="flex items-start gap-3">
+                {/* The check-in, first and thumb-sized. Between four and six
+                    this is the only control on the screen anybody touches. */}
+                <form action={markArrival}>
+                  <input type="hidden" name="kind" value={person.kind} />
+                  <input type="hidden" name="id" value={person.id} />
+                  <input type="hidden" name="client_id" value={clientId} />
+                  <input type="hidden" name="undo" value={here ? '1' : '0'} />
+                  <button
+                    type="submit"
+                    aria-label={here ? c.people.undo : c.people.here}
+                    className={cn(
+                      'grid h-11 w-11 place-items-center rounded-full border transition-colors',
+                      here ? 'border-ok bg-ok text-surface' : 'border-line-strong text-ink-mute hover:text-ink',
+                    )}
+                  >
+                    {here ? <Undo2 size={18} aria-hidden /> : <UserCheck size={18} aria-hidden />}
+                  </button>
+                </form>
+
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                    <span className="text-[15px] font-semibold tabular-nums text-ink">
+                      {person.call_time ? hhmm(person.call_time) : c.people.noTime}
+                    </span>
+                    <span className="text-[15px] text-ink">{person.name}</span>
+                    <span className="chip-mute">{person.kind === 'crew' ? c.people.crew : c.people.vendor}</span>
+                    {person.role && <span className="text-[13.5px] text-ink-soft">{person.role}</span>}
+                    {here && <span className="chip-ok">{c.people.arrived}</span>}
+                  </div>
+
+                  {here && person.arrived_at && (
+                    <div className="mt-0.5 text-[12.5px] text-ink-mute">
+                      {c.people.arrivedAt(timeOf(person.arrived_at))}
+                    </div>
+                  )}
+
+                  {e164 && (
+                    /* Two ways to reach one person, because on the evening one
+                       of them is always the wrong one: a supplier mid-set does
+                       not pick up, and a driver on the road does not read. */
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      <a href={`tel:${e164}`} className="btn-ghost px-4 text-[14px]">
+                        <Phone size={16} aria-hidden /> {c.people.call}
+                        <span className="text-ink-mute tabular-nums">{displayPhone(e164)}</span>
+                      </a>
+                      <a
+                        href={`https://wa.me/${e164.replace('+', '')}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn-ghost px-4 text-[14px]"
+                      >
+                        <MessageCircle size={16} aria-hidden /> {c.people.whatsapp}
+                      </a>
+                    </div>
+                  )}
+                </div>
+              </div>
             </li>
           );
         })}
       </ul>
     </section>
+  );
+}
+
+/**
+ * The ten minute warning.
+ *
+ * Loud on purpose and dismissible on purpose. A banner that cannot be got rid
+ * of is one that gets scrolled past, and a producer who has already handled
+ * the chuppah does not need to be told about it for the next nine minutes.
+ *
+ * Only lines the producer marked as key moments reach here. A run sheet has
+ * forty lines and an alert before each one is an alert before none.
+ */
+function Countdown({ placed, onDismiss }: { placed: Placed; onDismiss: () => void }) {
+  const mins = placed.inMinutes ?? 0;
+  return (
+    <div
+      role="status"
+      aria-live="polite"
+      className="card border-warn/50 bg-warn-wash"
+    >
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="min-w-0">
+          <div className="text-[12.5px] font-semibold text-warn">{c.alert.inMinutes(mins)}</div>
+          <div className="mt-0.5 font-display text-[22px] font-semibold leading-tight text-ink">
+            {placed.line.title}
+          </div>
+          <div className="mt-0.5 text-[13.5px] text-ink-soft tabular-nums">{hhmm(placed.line.at_time)}</div>
+        </div>
+        <button type="button" onClick={onDismiss} className="btn-ghost text-[14px]">
+          {c.alert.dismiss}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * One message to everybody who needs it.
+ *
+ * Not an automated send, and the screen says so. A true broadcast needs a
+ * WhatsApp Business number and an approved template, which is a commercial
+ * setup rather than a checkbox — and the failure mode of pretending otherwise
+ * is the worst available: the producer taps send, believes fifteen suppliers
+ * were told, and nobody was.
+ *
+ * So this composes once and opens the conversation per person, which is what
+ * a producer does today by hand with the message retyped fifteen times and a
+ * different typo in each.
+ */
+function Broadcast({ sheet, late }: { sheet: Caller[]; late: Caller[] }) {
+  const [open, setOpen] = useState(false);
+  const [text, setText] = useState('');
+  const [who, setWho] = useState<'everyone' | 'here' | 'missing'>('everyone');
+
+  const withPhone = (list: Caller[]) => list.filter((p) => normalizePhone(p.phone));
+  const target = withPhone(
+    who === 'here' ? sheet.filter((p) => p.arrived_at)
+      : who === 'missing' ? late
+      : sheet,
+  );
+
+  if (withPhone(sheet).length === 0) return null;
+
+  return (
+    <>
+      <button type="button" onClick={() => setOpen(true)} className="btn-ghost text-[14px] text-bad">
+        <Megaphone size={16} aria-hidden /> {c.broadcast.open}
+      </button>
+
+      {open && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
+          <button
+            type="button"
+            aria-label={c.broadcast.cancel}
+            onClick={() => setOpen(false)}
+            className="absolute inset-0 h-full w-full cursor-default bg-ink/30 backdrop-blur-[2px]"
+          />
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label={c.broadcast.title}
+            className="glass-strong relative w-full max-w-lg rounded-t-3xl border border-line p-4 shadow-dock sm:rounded-3xl"
+            style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 1rem)' }}
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h2 className="font-display text-[19px] font-semibold text-ink">{c.broadcast.title}</h2>
+                <p className="mt-1 text-[13px] text-ink-soft">{c.broadcast.sub}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                aria-label={c.broadcast.cancel}
+                className="grid h-11 w-11 shrink-0 place-items-center rounded-full text-ink-mute hover:text-ink"
+              >
+                <X size={20} aria-hidden />
+              </button>
+            </div>
+
+            <fieldset className="mt-4">
+              <legend className="label">{c.broadcast.to}</legend>
+              <div className="flex flex-wrap gap-2">
+                {([
+                  ['everyone', c.broadcast.everyone],
+                  ['missing', c.broadcast.allMissing],
+                  ['here', c.broadcast.allHere],
+                ] as const).map(([key, label]) => (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => setWho(key)}
+                    aria-pressed={who === key}
+                    className={cn(
+                      'min-h-[44px] rounded-full border px-4 text-[13.5px] font-medium transition-colors',
+                      who === key ? 'border-ink text-ink' : 'border-line text-ink-soft',
+                    )}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+              <p className="mt-2 text-[12.5px] text-ink-mute">{c.broadcast.count(target.length)}</p>
+            </fieldset>
+
+            <div className="mt-4">
+              <label className="label" htmlFor="bc-text">{c.broadcast.title}</label>
+              <textarea
+                id="bc-text"
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                rows={3}
+                maxLength={500}
+                placeholder={c.broadcast.placeholder}
+                className="field"
+              />
+              <div className="mt-2 flex flex-wrap gap-2">
+                {c.broadcast.presets.map((preset) => (
+                  <button
+                    key={preset}
+                    type="button"
+                    onClick={() => setText(preset)}
+                    className="rounded-full border border-line px-3 py-2 text-[12.5px] text-ink-soft hover:border-line-strong"
+                  >
+                    {preset}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <ul className="mt-4 max-h-48 list-none space-y-1 overflow-y-auto p-0">
+              {target.map((p) => {
+                const e164 = normalizePhone(p.phone)!;
+                return (
+                  <li key={`${p.kind}-${p.id}`}>
+                    <a
+                      href={`https://wa.me/${e164.replace('+', '')}?text=${encodeURIComponent(text)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={cn(
+                        'flex min-h-[48px] items-center justify-between gap-3 rounded-2xl px-3',
+                        'text-[15px] transition-colors hover:bg-surface-100',
+                        text ? 'text-ink' : 'pointer-events-none text-ink-mute opacity-60',
+                      )}
+                    >
+                      <span>{p.name}</span>
+                      <span className="chip-mute">{c.broadcast.send}</span>
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

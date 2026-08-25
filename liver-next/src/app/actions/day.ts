@@ -37,6 +37,7 @@ function readDuration(form: FormData): number | null {
 type DayFields = {
   track: Track; at_time: string; title: string; note: string;
   owner: string; audience: string[]; duration_min: number | null;
+  key_moment: boolean;
 };
 
 function readFields(form: FormData): DayFields | string {
@@ -55,6 +56,10 @@ function readFields(form: FormData): DayFields | string {
     owner: String(form.get('owner') ?? '').trim().slice(0, 80),
     audience: readAudience(form),
     duration_min: readDuration(form),
+    /* An unchecked box sends nothing at all, which is why this reads presence
+       rather than a value. The field is only rendered for the producer, so a
+       couple saving a line can never mark or unmark one. */
+    key_moment: form.get('key_moment') === 'on',
   };
 }
 

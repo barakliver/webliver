@@ -39,21 +39,23 @@ export default async function DayOfPage({ params }: { params: Promise<{ id: stri
   if (!client) notFound();
 
   const [schedule, crew, vendors] = await Promise.all([
-    sb.from('day_schedule').select('id,at_time,title,duration_min,done_at').eq('client_id', id),
-    sb.from('crew').select('id,name,role,phone,call_time').eq('client_id', id),
+    sb.from('day_schedule').select('id,at_time,title,duration_min,done_at,key_moment').eq('client_id', id),
+    sb.from('crew').select('id,name,role,phone,call_time,arrived_at').eq('client_id', id),
     /* Only suppliers who are actually coming. A shortlist is a decision that
        has not been made, and putting three candidate photographers on a call
        sheet is how somebody ends up ringing the one who was not booked. */
-    sb.from('event_vendors').select('id,name,category,phone,call_time')
+    sb.from('event_vendors').select('id,name,category,phone,call_time,arrived_at')
       .eq('client_id', id).eq('status', 'booked'),
   ]);
 
   const lines = (schedule.data ?? []) as Line[];
   const crewRows: Caller[] = (crew.data ?? []).map((r) => ({
-    id: r.id, name: r.name, role: r.role, phone: r.phone, call_time: r.call_time, kind: 'crew',
+    id: r.id, name: r.name, role: r.role, phone: r.phone, call_time: r.call_time,
+    arrived_at: r.arrived_at, kind: 'crew',
   }));
   const vendorRows: Caller[] = (vendors.data ?? []).map((r) => ({
-    id: r.id, name: r.name, role: r.category, phone: r.phone, call_time: r.call_time, kind: 'vendor',
+    id: r.id, name: r.name, role: r.category, phone: r.phone, call_time: r.call_time,
+    arrived_at: r.arrived_at, kind: 'vendor',
   }));
 
   const when = formatDate(dateFmt, client.event_date, '');
@@ -81,10 +83,14 @@ export default async function DayOfPage({ params }: { params: Promise<{ id: stri
         />
       )}
 
-      {/* Two phones on the same evening is the normal case, not the edge one:
-          the producer ticks a line and whoever else is holding the sheet has
-          to see it without being told to refresh. */}
-      <Live sources={[{ table: 'day_schedule', filter: `client_id=eq.${id}` }]} />
+      {/* Two phones on the same evening is the normal case, not the edge one.
+          Arrivals matter most: one person is on the door checking suppliers in
+          and another is inside asking who has turned up. */}
+      <Live sources={[
+        { table: 'day_schedule', filter: `client_id=eq.${id}` },
+        { table: 'crew', filter: `client_id=eq.${id}` },
+        { table: 'event_vendors', filter: `client_id=eq.${id}` },
+      ]} />
     </>
   );
 }

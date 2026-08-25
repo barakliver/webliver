@@ -20,6 +20,9 @@ export type Line = Timed & {
   title: string;
   duration_min?: number | null;
   done_at?: string | null;
+  /** Worth a countdown. A run sheet has forty lines and an alert before every
+   *  one of them is an alert before none. */
+  key_moment?: boolean | null;
 };
 
 /** Where a line stands right now.
@@ -125,6 +128,7 @@ export type Caller = {
   phone: string;
   call_time: string | null;
   kind: 'crew' | 'vendor';
+  arrived_at?: string | null;
 };
 
 export function callSheet(crew: Caller[], vendors: Caller[]): Caller[] {
@@ -160,4 +164,52 @@ export function isToday(eventDate: string | null, now: Date): boolean {
   return d.getUTCFullYear() === now.getFullYear()
       && d.getUTCMonth() === now.getMonth()
       && d.getUTCDate() === now.getDate();
+}
+
+
+/**
+ * The moment worth interrupting somebody for.
+ *
+ * Only lines the producer marked, only within the window, and only one at a
+ * time: two banners shouting at once is the state in which both get dismissed
+ * without being read. The nearest one wins, because it is the one about to
+ * happen.
+ *
+ * A line already ticked never alerts. The chuppah that started early should
+ * not be counted down to.
+ */
+export const ALERT_WINDOW = 10;
+
+export function pendingAlert(placed: Placed[], within = ALERT_WINDOW): Placed | null {
+  const due = placed.filter(
+    (p) =>
+      p.line.key_moment
+      && p.state !== 'done'
+      && p.inMinutes !== null
+      && p.inMinutes >= 0
+      && p.inMinutes <= within,
+  );
+  if (due.length === 0) return null;
+  return due.reduce((a, b) => ((a.inMinutes ?? 0) <= (b.inMinutes ?? 0) ? a : b));
+}
+
+/** Who was due and is not here. The list the emergency button is aimed at, and
+ *  the one worth a red count at the top of the screen.
+ *
+ *  Somebody with no call time cannot be late, which is a real distinction: the
+ *  photographer who was told "after the ceremony" is not missing at 16:00. */
+export function missing(sheet: Caller[], now: Date, live: boolean): Caller[] {
+  if (!live) return [];
+  const wraps = crossesMidnight(sheet.map((c) => c.call_time ?? '').filter(Boolean));
+  const nowM = clockMinutes(now, wraps);
+  return sheet.filter((c) => {
+    if (c.arrived_at || !c.call_time) return false;
+    return eventMinutes(c.call_time, wraps) < nowM;
+  });
+}
+
+/** How the evening is going, in one line: here, still coming, late. */
+export function headcount(sheet: Caller[], now: Date, live: boolean) {
+  const here = sheet.filter((c) => c.arrived_at).length;
+  return { here, of: sheet.length, late: missing(sheet, now, live).length };
 }

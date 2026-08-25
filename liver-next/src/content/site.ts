@@ -346,6 +346,39 @@ export const appCopy = {
       crew: 'צוות',
       vendor: 'ספק',
       empty: 'עוד לא נרשמו אנשים לאירוע הזה.',
+      here: 'הגיע',
+      arrived: 'כאן',
+      arrivedAt: (t: string) => `הגיע ב-${t}`,
+      undo: 'ביטול',
+      missing: 'טרם הגיעו',
+      headcount: (here: number, of: number) => `${here} מתוך ${of} כאן`,
+    },
+
+    alert: {
+      inMinutes: (n: number) => (n === 0 ? 'מתחיל עכשיו' : n === 1 ? 'עוד דקה' : `עוד ${n} דקות`),
+      dismiss: 'הבנתי',
+    },
+
+    keyMoment: 'רגע מרכזי',
+
+    broadcast: {
+      title: 'הודעה לכולם',
+      sub: 'פותח וואטסאפ לכל אחד בנפרד עם אותה הודעה. אין כאן שליחה אוטומטית: הודעה לספק באמצע ערב נשלחת בידיים.',
+      open: 'הודעת חירום',
+      placeholder: 'מה קורה ומה צריך לעשות',
+      presets: [
+        'שינוי בלוז, נא להתעדכן איתי לפני שממשיכים.',
+        'צריך אתכם עכשיו בכניסה הראשית.',
+        'עיכוב של רבע שעה, אין צורך למהר.',
+      ],
+      send: 'פתיחת וואטסאפ',
+      to: 'למי',
+      allHere: 'לכל מי שכאן',
+      allMissing: 'לכל מי שטרם הגיע',
+      everyone: 'לכולם',
+      noPhones: 'לאף אחד ברשימה אין מספר טלפון שמור.',
+      count: (n: number) => (n === 1 ? 'איש קשר אחד' : `${n} אנשי קשר`),
+      cancel: 'סגירה',
     },
   },
 
@@ -871,6 +904,8 @@ export const dayCopy = {
   templateApply: 'פתיחת הלוז',
   templateApplying: 'פותח',
   templateOr: 'או להתחיל משורה ריקה',
+  keyMoment: 'רגע מרכזי',
+  keyMomentHint: 'החמ״ל יתריע 10 דקות לפני',
 } as const;
 
 export const leadsCopy = {

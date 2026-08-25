@@ -149,3 +149,67 @@ test('tonight is tonight, and a missing or broken date is not', () => {
   assert.equal(isToday(null, now), false);
   assert.equal(isToday('rubbish', now), false);
 });
+
+/* ── the evening's own alarms ─────────────────────────────────────────────── */
+
+import { pendingAlert, missing, headcount } from '../dayof.ts';
+
+const marked: Line[] = [
+  { id: 'a', at_time: at(18), title: 'קבלת פנים', duration_min: 90 },
+  { id: 'b', at_time: at(19, 30), title: 'חופה', duration_min: 30, key_moment: true },
+  { id: 'c', at_time: at(20, 30), title: 'ריקוד ראשון', duration_min: 10, key_moment: true },
+];
+
+test('only a marked moment gets a countdown', () => {
+  /* Forty lines with an alert before each is an alert before none. */
+  assert.equal(pendingAlert(placeLines(marked, clock(17, 55), true)), null);
+  assert.equal(pendingAlert(placeLines(marked, clock(19, 25), true))?.line.id, 'b');
+});
+
+test('the window is ten minutes, not whenever', () => {
+  assert.equal(pendingAlert(placeLines(marked, clock(19, 19), true)), null);
+  assert.equal(pendingAlert(placeLines(marked, clock(19, 20), true))?.line.id, 'b');
+});
+
+test('two moments at once is one banner, the nearer one', () => {
+  const tight: Line[] = [
+    { id: 'x', at_time: at(20), title: 'א', duration_min: 5, key_moment: true },
+    { id: 'y', at_time: at(20, 5), title: 'ב', duration_min: 5, key_moment: true },
+  ];
+  assert.equal(pendingAlert(placeLines(tight, clock(19, 58), true))?.line.id, 'x');
+});
+
+test('a moment already ticked is not counted down to', () => {
+  const done = marked.map((l) => (l.id === 'b' ? { ...l, done_at: '2026-08-23T16:20:00Z' } : l));
+  assert.equal(pendingAlert(placeLines(done, clock(19, 25), true)), null);
+});
+
+test('nothing alerts on a day that is not the day', () => {
+  assert.equal(pendingAlert(placeLines(marked, clock(19, 25), false)), null);
+});
+
+const withArrivals: Caller[] = [
+  { id: 'v1', name: 'תאורה', role: '', phone: '', call_time: at(15, 30), kind: 'vendor', arrived_at: '2026-08-23T12:31:00Z' },
+  { id: 'c1', name: 'דנה', role: '', phone: '', call_time: at(16), kind: 'crew', arrived_at: null },
+  { id: 'v2', name: 'צלם', role: '', phone: '', call_time: at(17), kind: 'vendor', arrived_at: null },
+  { id: 'c2', name: 'אורי', role: '', phone: '', call_time: null, kind: 'crew', arrived_at: null },
+];
+
+test('missing means due and not here, not merely absent', () => {
+  const late = missing(withArrivals, clock(16, 30), true);
+  assert.deepEqual(late.map((c) => c.id), ['c1']);
+  /* The photographer due at 17:00 is not late at 16:30, and the person with
+     no call time was never told a time to be late for. */
+});
+
+test('somebody with no call time is never late', () => {
+  assert.deepEqual(missing(withArrivals, clock(23), true).map((c) => c.id), ['c1', 'v2']);
+});
+
+test('nobody is late on a day that is not the day', () => {
+  assert.deepEqual(missing(withArrivals, clock(23), false), []);
+});
+
+test('the headcount is here, of, and late', () => {
+  assert.deepEqual(headcount(withArrivals, clock(16, 30), true), { here: 1, of: 4, late: 1 });
+});
