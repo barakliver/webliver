@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { tenantOf, cleanHost, isLocal, lookupKey, platformRoot } from '../tenant.ts';
 
-const ROOT = 'liverproduction.com';
+const ROOT = 'liverproductions.com';
 
 test('a host header is not a hostname until the port and the www come off', () => {
   assert.equal(cleanHost('WWW.Example.COM:3000'), 'example.com');

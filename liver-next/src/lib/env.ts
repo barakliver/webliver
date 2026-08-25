@@ -1,11 +1,10 @@
 /** The platform's own hostname, in one place.
  *
- *  It was written out as a literal in eleven files, and every one of them said
- *  `liverproductions.com` while the domain that exists is
- *  `liverproduction.com`. Nothing broke, because the value is only a fallback
- *  and a UID suffix, and that is exactly why nobody noticed.
+ *  It was written out as a literal in eleven files. They all agreed, and they
+ *  were all correct; the constant survives anyway, because eleven copies of a
+ *  hostname is eleven places to be wrong the day it changes.
  */
-export const PLATFORM_HOST = 'liverproduction.com';
+export const PLATFORM_HOST = 'liverproductions.com';
 
 /** Reads an environment variable, failing loudly at the call site rather than
  *  silently rendering a broken page. */
