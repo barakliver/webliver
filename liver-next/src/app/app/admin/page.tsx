@@ -123,7 +123,7 @@ function Producer({ p }: { p: ProducerRow }) {
           </p>
 
           <p className="mt-0.5 text-[13px] text-ink-mute">
-            {p.lastSeen ? `${c.lastSeen} ${formatDate(dateFmt, p.lastSeen, '—')}` : c.never}
+            {p.lastSeen ? `${c.lastSeen} ${formatDate(dateFmt, p.lastSeen, '·')}` : c.never}
           </p>
         </div>
 

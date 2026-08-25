@@ -4,13 +4,13 @@ import { useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { addBudgetItem, deleteBudgetItem, toggleBudgetVisible, type MoneyResult } from '@/app/actions/money';
 import { appCopy } from '@/content/site';
+import { Money, ils } from '@/components/Ltr';
 
 export type BudgetItem = {
   id: string; category: string; label: string;
   estimate: number; agreed: number | null; vendor: string;
 };
 
-const ils = (n: number) => '₪' + Math.round(n).toLocaleString('he-IL');
 
 function Add() {
   const { pending } = useFormStatus();
@@ -64,18 +64,18 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
       <div className="mt-5 grid gap-3 sm:grid-cols-3">
         <div className="rounded-2xl bg-surface-200 px-4 py-3">
           <div className="text-[12.5px] text-ink-mute">{c.budTotalEst}</div>
-          <div className="font-display text-[22px] font-semibold tabular-nums text-ink">{ils(totalEst)}</div>
+          <div className="font-display text-[22px] font-semibold tabular-nums text-ink"><Money value={totalEst} /></div>
         </div>
         <div className="rounded-2xl bg-accent-wash px-4 py-3">
           <div className="text-[12.5px] text-accent">{c.budTotalAgreed}</div>
-          <div className="font-display text-[22px] font-semibold tabular-nums text-ink">{ils(totalAgreed)}</div>
+          <div className="font-display text-[22px] font-semibold tabular-nums text-ink"><Money value={totalAgreed} /></div>
         </div>
         <div className={`rounded-2xl px-4 py-3 ${diff >= 0 ? 'bg-ok-wash' : 'bg-bad-wash'}`}>
           <div className={`text-[12.5px] ${diff >= 0 ? 'text-ok' : 'text-bad'}`}>
             {diff >= 0 ? c.budUnder : c.budOver}
           </div>
           <div className={`font-display text-[22px] font-semibold tabular-nums ${diff >= 0 ? 'text-ok' : 'text-bad'}`}>
-            {ils(Math.abs(diff))}
+            <Money value={Math.abs(diff)} />
           </div>
         </div>
       </div>
@@ -118,11 +118,11 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
                     as what it was before somebody negotiated. */}
                 <div className="shrink-0 text-left">
                   <p className="font-display text-[16px] font-semibold tabular-nums text-ink">
-                    {i.agreed === null ? ils(Number(i.estimate)) : ils(Number(i.agreed))}
+                    <Money value={i.agreed === null ? Number(i.estimate) : Number(i.agreed)} />
                   </p>
                   {i.agreed !== null && Number(i.agreed) !== Number(i.estimate) && (
                     <p className="text-[12px] tabular-nums text-ink-mute">
-                      {c.budEstimate} {ils(Number(i.estimate))}
+                      {c.budEstimate} <Money value={Number(i.estimate)} />
                     </p>
                   )}
                 </div>
@@ -153,9 +153,11 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
               {items.map((i) => (
                 <tr key={i.id} className="border-b border-line last:border-0">
                   <td className="py-3 font-medium text-ink">{i.label}</td>
-                  <td className="py-3 text-ink-soft">{i.vendor || '—'}</td>
-                  <td className="py-3 tabular-nums text-ink-soft">{ils(Number(i.estimate))}</td>
-                  <td className="py-3 tabular-nums text-ink">{i.agreed === null ? '—' : ils(Number(i.agreed))}</td>
+                  <td className="py-3 text-ink-soft">{i.vendor || '·'}</td>
+                  <td className="py-3 tabular-nums text-ink-soft"><Money value={Number(i.estimate)} /></td>
+                  <td className="py-3 tabular-nums text-ink">
+                    {i.agreed === null ? '·' : <Money value={Number(i.agreed)} />}
+                  </td>
                   {viewer === 'producer' && (
                     <td className="py-3">
                       <form action={deleteBudgetItem}>

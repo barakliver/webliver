@@ -118,7 +118,7 @@ export function SeatingPlan({ clientId, tables, guests }: {
           {c.unseated} · {waiting.reduce((a, g) => a + Number(g.party_size || 0), 0)} {c.peopleShort}
         </h3>
         {waiting.length === 0 ? (
-          <p className="mt-2 text-[14px] text-ink-mute">{attending.length ? c.unseatedNone : '—'}</p>
+          <p className="mt-2 text-[14px] text-ink-mute">{attending.length ? c.unseatedNone : '·'}</p>
         ) : (
           <ul className="mt-3 space-y-2">
             {waiting.map((g) => (

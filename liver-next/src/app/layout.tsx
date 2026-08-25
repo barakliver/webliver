@@ -4,15 +4,24 @@ import { site } from '@/content/site';
 import { ServiceWorker } from '@/components/app/ServiceWorker';
 import './globals.css';
 
-/* Two families, three weights. Both carry Hebrew, which is the whole reason
-   they were chosen over the pairing the design tooling suggested. */
+/* Two families. Both carry Hebrew, which is the whole reason they were chosen
+   over the pairings the design tooling suggested; most celebrated display
+   faces ship no Hebrew glyphs at all.
+
+   Frank drops to 300 and loses 700 entirely. It sets every heading and every
+   large number, and at 104px a light weight carries by shape while a bold one
+   turns an editorial page into a brochure. 400 stays for the sizes small
+   enough that 300 goes thin.
+
+   Heebo picks up 200 and 300 for the kickers and meta lines, which are set
+   light and tracked wide rather than small and grey. */
 const heebo = Heebo({
   subsets: ['hebrew', 'latin'], variable: '--font-heebo',
-  display: 'swap', weight: ['400', '500', '700'],
+  display: 'swap', weight: ['200', '300', '400', '500'],
 });
 const frank = Frank_Ruhl_Libre({
   subsets: ['hebrew', 'latin'], variable: '--font-frank',
-  display: 'swap', weight: ['500', '700'],
+  display: 'swap', weight: ['300', '400'],
 });
 
 export const metadata: Metadata = {

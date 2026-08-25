@@ -16,7 +16,7 @@ function readable(message: string): string {
   if (/cannot be edited/i.test(message)) return 'הסכם חתום לא ניתן לעריכה';
   if (/signature cannot be altered/i.test(message)) return 'חתימה לא ניתנת לשינוי';
   if (/only be voided/i.test(message)) return 'הסכם חתום אפשר רק לבטל';
-  if (/cannot be deleted/i.test(message)) return 'הסכם חתום לא נמחק — אפשר לבטל אותו';
+  if (/cannot be deleted/i.test(message)) return 'הסכם חתום לא נמחק, אפשר לבטל אותו';
   if (/couple signs this/i.test(message)) return 'את ההסכם חותם הזוג, לא המפיק';
   if (/already signed/i.test(message)) return 'ההסכם כבר חתום';
   if (/not open for signature/i.test(message)) return 'ההסכם עדיין לא נשלח לחתימה';

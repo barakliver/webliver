@@ -37,7 +37,7 @@ export function CallsPanel({ calls, leads }: { calls: Call[]; leads: { id: strin
               <div className="min-w-0 flex-1">
                 <p className="text-[14.5px] text-ink">{call.title}{nameOf(call.lead_id) ? ` · ${nameOf(call.lead_id)}` : ''}</p>
                 <p className="text-[12.5px] text-ink-mute">
-                  {formatDate(dateFmt, call.remind_on, '—')}
+                  {formatDate(dateFmt, call.remind_on, '·')}
                   {st === 'late' ? ` · ${c.callLate}` : st === 'today' ? ` · ${c.callToday}` : ''}
                 </p>
               </div>

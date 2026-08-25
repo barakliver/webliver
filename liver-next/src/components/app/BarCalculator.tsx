@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import { Martini, Printer } from 'lucide-react';
 import { planBar, shoppingList, DEFAULT_PRICES, type BarStyle, type Season, type Prices } from '@/lib/bar';
 import { barCopy as c } from '@/content/site';
+import { Money } from '@/components/Ltr';
 
 const ils = (n: number) => `₪${Math.round(n).toLocaleString('he-IL')}`;
 
@@ -153,7 +154,7 @@ export function BarCalculator({ guestEstimate, confirmedGuests }: {
                 {l.qty} <span className="text-[13px] font-normal text-ink-mute">{c.units[l.key]}</span>
               </span>
               {l.total > 0 && (
-                <span className="w-[86px] shrink-0 text-left text-[14px] tabular-nums text-ink-soft">{ils(l.total)}</span>
+                <span className="w-[86px] shrink-0 text-left text-[14px] tabular-nums text-ink-soft"><Money value={l.total} /></span>
               )}
             </li>
           ))}
@@ -161,7 +162,7 @@ export function BarCalculator({ guestEstimate, confirmedGuests }: {
 
         {total > 0 && (
           <p className="mt-4 text-left text-[15px] text-ink-soft">
-            {c.grandTotal} <b className="font-display text-[19px] tabular-nums text-ink">{ils(total)}</b>
+            {c.grandTotal} <b className="font-display text-[19px] tabular-nums text-ink"><Money value={total} /></b>
           </p>
         )}
       </div>

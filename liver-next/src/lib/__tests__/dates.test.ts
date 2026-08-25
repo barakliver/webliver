@@ -19,10 +19,10 @@ test('formatting never throws, whatever it is handed', () => {
   /* Intl.format does not return "Invalid Date" the way toString does. It
      throws RangeError, and thrown during a server render that is a blank page
      from one unexpected row. */
-  assert.doesNotThrow(() => formatDate(fmt, 'garbage', '—'));
-  assert.equal(formatDate(fmt, 'garbage', '—'), '—');
+  assert.doesNotThrow(() => formatDate(fmt, 'garbage', '·'));
+  assert.equal(formatDate(fmt, 'garbage', '·'), '·');
   assert.equal(formatDate(fmt, null, 'טרם נקבע'), 'טרם נקבע');
-  assert.equal(formatDate(fmt, '2027-08-14', '—').includes('2027'), true);
+  assert.equal(formatDate(fmt, '2027-08-14', '·').includes('2027'), true);
 });
 
 test('a countdown is counted on calendar dates', () => {

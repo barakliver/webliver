@@ -16,7 +16,7 @@ export type Lead = {
 export type Call = { id: string; lead_id: string | null; title: string; remind_on: string | null; done: boolean };
 
 const dateFmt = new Intl.DateTimeFormat('he-IL', { day: '2-digit', month: '2-digit', year: '2-digit' });
-const show = (d: string | null) => formatDate(dateFmt, d, '—');
+const show = (d: string | null) => formatDate(dateFmt, d, '·');
 
 /** A channel nobody has named yet is shown as it was stored rather than
  *  hidden. A new source that starts working is then visible on day one,
@@ -45,7 +45,7 @@ export function LeadRow({ lead, calls }: { lead: Lead; calls: Call[] }) {
         <div className="min-w-0 flex-1">
           <p className="font-medium text-ink">{lead.full_name}</p>
           <p className="text-[12.5px] text-ink-mute" dir="ltr">
-            {[lead.phone, lead.email].filter(Boolean).join(' · ') || '—'}
+            {[lead.phone, lead.email].filter(Boolean).join(' · ') || '·'}
           </p>
           <p className="mt-0.5 text-[12.5px] text-ink-mute">
             {kind}

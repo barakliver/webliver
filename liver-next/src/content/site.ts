@@ -671,7 +671,7 @@ export const appCopy = {
       tasksOpen: 'משימות פתוחות',
       dayLines: 'שורות בלוז',
       contracts: 'מסמכים חתומים',
-      none: '—',
+      none: '·',
     },
 
     nextUp: 'הדבר הבא',

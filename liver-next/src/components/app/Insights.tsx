@@ -1,9 +1,9 @@
 import Link from 'next/link';
 import { appCopy } from '@/content/site';
 import type { Funnel, SourceRow, Response, Cash } from '@/lib/analytics';
+import { Money, ils } from '@/components/Ltr';
 
 const c = appCopy.insights;
-const ils = (n: number) => '₪' + Math.round(n).toLocaleString('he-IL');
 
 /** A rate, or the reason there isn't one. Never a percentage sign with three
  *  cases behind it. */
@@ -103,7 +103,10 @@ export function Sources({ rows }: { rows: SourceRow[] }) {
 
 /** One figure, big, with the thing it is a figure about under it. */
 function Figure({ label, value, tone = 'ink', note }: {
-  label: string; value: string; tone?: 'ink' | 'ok' | 'warn' | 'bad'; note?: string;
+  /* ReactNode rather than string: an amount arrives as <Money>, which is an
+     element, because a bare shekel string inside a Hebrew page renders with
+     the sign on the wrong side. */
+  label: string; value: React.ReactNode; tone?: 'ink' | 'ok' | 'warn' | 'bad'; note?: string;
 }) {
   const colour = tone === 'ok' ? 'text-ok' : tone === 'warn' ? 'text-warn' : tone === 'bad' ? 'text-bad' : 'text-ink';
   return (
@@ -121,11 +124,11 @@ export function CashPanel({ cash }: { cash: Cash }) {
       <h2 className="font-display text-[19px] font-semibold text-ink">{c.cash.title}</h2>
       <p className="mt-1 text-[13.5px] text-ink-soft">{c.cash.sub}</p>
       <div className="mt-4 grid gap-3 sm:grid-cols-3">
-        <Figure label={c.cash.collected} value={ils(cash.collected)} tone="ok" />
-        <Figure label={c.cash.due} value={ils(cash.due)} />
+        <Figure label={c.cash.collected} value=<Money value={cash.collected} /> tone="ok" />
+        <Figure label={c.cash.due} value=<Money value={cash.due} /> />
         <Figure
           label={c.cash.overdue}
-          value={ils(cash.overdue)}
+          value=<Money value={cash.overdue} />
           tone={cash.overdue > 0 ? 'bad' : 'ink'}
           note={cash.overdueCount > 0 ? c.cash.overdueCount(cash.overdueCount) : undefined}
         />
@@ -142,7 +145,7 @@ export function ResponsePanel({ r }: { r: Response }) {
       <div className="mt-4 grid gap-3 sm:grid-cols-3">
         <Figure
           label={c.response.median}
-          value={r.medianHours === null ? '—' : c.response.hours(r.medianHours)}
+          value={r.medianHours === null ? '·' : c.response.hours(r.medianHours)}
           note={r.medianHours === null ? c.response.none : undefined}
         />
         <Figure label={c.response.answered} value={String(r.answered)} />

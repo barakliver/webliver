@@ -1,66 +1,100 @@
 /**
  * The accents a producer may choose from.
  *
- * A colour picker was the obvious thing to build and the wrong one. The whole
- * palette in this app was measured rather than judged by eye, and two tones
- * were darkened on the way in because the measurement said so and they looked
- * fine. Handing a producer a free hex field hands them the ability to make
- * their own couples' text unreadable, and neither of them would find out from
- * looking at it.
+ * A colour picker was the obvious thing to build and the wrong one. Every tone
+ * in this palette was measured rather than judged by eye, and three of them
+ * were darkened on the way in from the design handoff because the measurement
+ * said so and all three looked fine. A free hex field hands a producer the
+ * ability to make their own couples' text unreadable, and neither of them
+ * would find out by looking at it.
  *
- * So the choice is a shortlist. Every entry here has all four roles worked out
- * and every pairing checked by scripts/check-contrast.mjs, which iterates this
- * file — a preset cannot ship without passing.
+ * So the choice is a shortlist, and every entry has four worked-out roles
+ * rather than one hue. scripts/check-contrast.mjs iterates this file and fails
+ * the build rather than shipping a tone somebody cannot read.
  *
- * Four roles, the same split the base palette uses:
- *   base   safe for words, 4.5:1 on the ground and on a card
- *   soft   borders and rings, 3:1
- *   bright decoration only, never words
- *   wash   a background, only ever sat on by `base`
+ * The whole set was recomputed when the ground changed from cool white to
+ * ivory. A tone that clears 4.5:1 on #F3F6FA does not automatically clear it
+ * on #FAF7F2, and quietly carrying the old numbers over is how a palette stops
+ * meaning anything.
+ *
+ * Four roles:
+ *   base    safe for words at any size. Solved against its own wash, which is
+ *           the darkest ground it ever sits on: solving against ivory alone
+ *           leaves it at exactly 4.5 there and under it everywhere else
+ *   bright  large serif numerals only, 24px and up, where 3:1 is the bar
+ *   line    hairlines and rules. Decoration, never carrying meaning alone
+ *   light   on the dark ground only, where the ratios invert
  */
 
 export type Accent = {
   key: string;
   label: string;
   base: string;
-  soft: string;
   bright: string;
+  line: string;
+  light: string;
   wash: string;
 };
 
 export const ACCENTS: Accent[] = [
   {
-    key: 'slate',
-    label: 'כחול־אפור',
-    base: '#2E5F8C', soft: '#4A80B0', bright: '#4C8BC4', wash: '#E9F0F8',
+    key: 'gold',
+    label: 'זהב',
+    base:   '#846941',
+    bright: '#A18150',
+    line:   '#B08D57',
+    light:  '#B08D57',
+    wash:   'rgba(176, 141, 87, .07)',
   },
   {
     key: 'olive',
     label: 'זית',
-    base: '#4A6136', soft: '#6B8752', bright: '#6E8B52', wash: '#EDF1E7',
+    base:   '#647340',
+    bright: '#7B8E4F',
+    line:   '#7A8C4E',
+    light:  '#7A8C4E',
+    wash:   'rgba(122, 140, 78, .07)',
   },
   {
     key: 'clay',
     label: 'טרקוטה',
-    base: '#8F4A32', soft: '#B26A4E', bright: '#C07A5C', wash: '#F8ECE7',
+    base:   '#9D5C3E',
+    bright: '#C2724D',
+    line:   '#C0714C',
+    light:  '#C0714C',
+    wash:   'rgba(192, 113, 76, .07)',
   },
   {
     key: 'plum',
     label: 'שזיף',
-    base: '#6B3A63', soft: '#8E5885', bright: '#9C6392', wash: '#F3EAF2',
+    base:   '#935888',
+    bright: '#B76DA9',
+    line:   '#9A5C8E',
+    light:  '#A66399',
+    wash:   'rgba(154, 92, 142, .07)',
   },
   {
     key: 'teal',
     label: 'טורקיז עמוק',
-    base: '#1F6360', soft: '#3D8480', bright: '#45938E', wash: '#E5F1F0',
+    base:   '#327772',
+    bright: '#3E938D',
+    line:   '#3C8F89',
+    light:  '#3C8F89',
+    wash:   'rgba(60, 143, 137, .07)',
   },
   {
-    key: 'ink',
+    key: 'graphite',
     label: 'גרפיט',
-    base: '#3A4453', soft: '#5C6878', bright: '#697687', wash: '#EDEFF3',
+    base:   '#686C75',
+    bright: '#828792',
+    line:   '#6B6F78',
+    light:  '#767A84',
+    wash:   'rgba(107, 111, 120, .07)',
   },
 ];
 
+/* Gold. The handoff's own accent, and the one the whole Lux direction is
+   built around. */
 export const DEFAULT_ACCENT = ACCENTS[0];
 
 export const accentByKey = (key: string | null | undefined): Accent =>
@@ -72,8 +106,9 @@ export const accentByKey = (key: string | null | undefined): Accent =>
 export function accentVars(a: Accent): Record<string, string> {
   return {
     '--accent': a.base,
-    '--accent-soft': a.soft,
     '--accent-bright': a.bright,
+    '--accent-line': a.line,
+    '--accent-light': a.light,
     '--accent-wash': a.wash,
   };
 }

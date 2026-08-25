@@ -112,7 +112,7 @@ function Row({ member, clientId }: { member: CrewMember; clientId: string }) {
     <li className="flex gap-4 rounded-2xl border border-line px-4 py-3.5 transition hover:border-line-strong">
       <div className="w-[58px] shrink-0 text-center" dir="ltr">
         <span className={`font-display text-[16px] font-semibold tabular-nums ${member.call_time ? 'text-ink' : 'text-ink-mute'}`}>
-          {member.call_time ? hhmm(member.call_time) : '—'}
+          {member.call_time ? hhmm(member.call_time) : '·'}
         </span>
       </div>
 

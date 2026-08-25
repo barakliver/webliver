@@ -25,7 +25,7 @@ const journey = site.journey.steps.map((s, i) => `${i + 1}. ${s}`).join('\n');
 
 const playbook = SOP.map((chapter) => {
   const sections = chapter.sections.map((s) => `  · ${s.title}: ${s.sub}`).join('\n');
-  return `${chapter.title} — ${chapter.sub}\n${sections}`;
+  return `${chapter.title} · ${chapter.sub}\n${sections}`;
 }).join('\n\n');
 
 export const CONCIERGE_SYSTEM = `אתה העוזר הדיגיטלי של ברק ליור, מפיק חתונות ואירועים.

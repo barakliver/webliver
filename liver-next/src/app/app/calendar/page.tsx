@@ -7,11 +7,11 @@ import { appCopy } from '@/content/site';
 import { PageHead, Empty } from '@/components/app/PageHead';
 import { Live } from '@/components/app/Live';
 import { CalendarFeed } from '@/components/app/CalendarFeed';
+import { Money, ils } from '@/components/Ltr';
 
 export const metadata = { title: appCopy.calendar.title };
 
 const c = appCopy.calendar;
-const ils = (n: number) => '₪' + Math.round(n).toLocaleString('he-IL');
 
 const monthFmt = new Intl.DateTimeFormat('he-IL', { month: 'long', year: 'numeric' });
 const dayFmt = new Intl.DateTimeFormat('he-IL', { weekday: 'long', day: 'numeric', month: 'long' });
@@ -90,7 +90,7 @@ export default async function CalendarPage() {
                                   {i.detail && <span className="block truncate text-[13px] opacity-75">{i.detail}</span>}
                                 </span>
                                 {i.amount ? (
-                                  <span className="shrink-0 text-[14px] tabular-nums">{ils(i.amount)}</span>
+                                  <span className="shrink-0 text-[14px] tabular-nums"><Money value={i.amount} /></span>
                                 ) : null}
                               </Link>
                             </li>

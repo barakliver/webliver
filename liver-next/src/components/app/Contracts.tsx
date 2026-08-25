@@ -10,6 +10,7 @@ import {
 } from '@/app/actions/contracts';
 import { supabaseBrowser } from '@/lib/supabase/client';
 import { contractCopy } from '@/content/site';
+import { Money, ils } from '@/components/Ltr';
 
 export type Contract = {
   id: string;
@@ -26,7 +27,6 @@ export type Contract = {
 };
 
 const c = contractCopy;
-const ils = (n: number) => '₪' + Math.round(n).toLocaleString('he-IL');
 const dateFmt = new Intl.DateTimeFormat('he-IL', {
   day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit',
 });
@@ -134,7 +134,7 @@ function Row({ contract: k, clientId, viewer }: {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <h3 className="font-display text-[17px] font-semibold text-ink">{k.title || c.untitled}</h3>
-          {k.amount !== null && <p className="mt-0.5 text-[14px] text-ink-soft tabular-nums">{ils(k.amount)}</p>}
+          {k.amount !== null && <p className="mt-0.5 text-[14px] text-ink-soft tabular-nums"><Money value={k.amount} /></p>}
         </div>
         <span className={`rounded-full px-2.5 py-1 text-[12.5px] font-medium ${TONE[k.status]}`}>
           {c.status[k.status]}

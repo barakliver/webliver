@@ -51,7 +51,7 @@ export function BrandEditor({ fields, rootDomain }: { fields: BrandFields; rootD
             <span className="font-display text-[17px] font-semibold text-ink">
               {name || c.namePh}
             </span>
-            <span className="chip" style={{ background: chosen.wash, color: chosen.base }}>
+            <span className="chip" style={{ borderColor: chosen.line, color: chosen.base }}>
               {appCopy.nav.overview}
             </span>
           </div>
@@ -65,7 +65,7 @@ export function BrandEditor({ fields, rootDomain }: { fields: BrandFields; rootD
             </span>
             <span
               className="inline-flex min-h-[36px] items-center rounded-full border px-4 text-[13.5px]"
-              style={{ borderColor: chosen.soft, color: chosen.base }}
+              style={{ borderColor: chosen.line, color: chosen.base }}
             >
               {appCopy.nav.clients}
             </span>

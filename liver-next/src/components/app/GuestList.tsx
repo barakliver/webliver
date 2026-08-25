@@ -173,7 +173,7 @@ export function GuestList({ clientId, guests }: { clientId: string; guests: Gues
                   <div className="min-w-0">
                     <p className="font-medium text-ink">{g.full_name}</p>
                     <p className="text-[12.5px] text-ink-mute">
-                      {[g.side, g.phone].filter(Boolean).join(' · ') || '—'}
+                      {[g.side, g.phone].filter(Boolean).join(' · ') || '·'}
                     </p>
                   </div>
                   <StatusChip status={g.status} />
@@ -211,13 +211,13 @@ export function GuestList({ clientId, guests }: { clientId: string; guests: Gues
                     <td className="py-3">
                       <div className="font-medium text-ink">{g.full_name}</div>
                       <div className="text-[12.5px] text-ink-mute">
-                        {[g.side, g.phone].filter(Boolean).join(' · ') || '—'}
+                        {[g.side, g.phone].filter(Boolean).join(' · ') || '·'}
                       </div>
                     </td>
                     <td className="py-3"><StatusChip status={g.status} /></td>
-                    <td className="py-3 tabular-nums text-ink-soft">{g.status === 'attending' ? g.party_size : '—'}</td>
-                    <td className="py-3 text-ink-soft">{g.status === 'attending' ? dietLabel(g.diet) : '—'}</td>
-                    <td className="py-3 text-ink-soft">{g.note || '—'}</td>
+                    <td className="py-3 tabular-nums text-ink-soft">{g.status === 'attending' ? g.party_size : '·'}</td>
+                    <td className="py-3 text-ink-soft">{g.status === 'attending' ? dietLabel(g.diet) : '·'}</td>
+                    <td className="py-3 text-ink-soft">{g.note || '·'}</td>
                     <td className="py-3">
                       <div className="flex flex-wrap justify-end gap-1">
                         <RowActions guest={g} clientId={clientId} />

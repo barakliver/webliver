@@ -7,11 +7,11 @@ import { Live } from '@/components/app/Live';
 import { appCopy } from '@/content/site';
 import { PageHead } from '@/components/app/PageHead';
 import { AttentionList } from '@/components/app/Attention';
+import { Money, ils } from '@/components/Ltr';
 
 export const metadata = { title: appCopy.nav.overview };
 
 const c = appCopy.overview2;
-const ils = (n: number) => '₪' + Math.round(n).toLocaleString('he-IL');
 
 export default async function OverviewPage() {
   const account = await requireAccount();
@@ -71,16 +71,16 @@ export default async function OverviewPage() {
             <dl className="mt-4 grid gap-3 text-[15px] tabular-nums">
               <div className="flex items-baseline justify-between gap-4">
                 <dt className="text-ink-soft">{c.paid}</dt>
-                <dd className="font-medium text-ink">{ils(money.paid)}</dd>
+                <dd className="font-medium text-ink"><Money value={money.paid} /></dd>
               </div>
               <div className="flex items-baseline justify-between gap-4">
                 <dt className="text-ink-soft">{c.owed}</dt>
-                <dd className="font-medium text-ink">{ils(money.owed)}</dd>
+                <dd className="font-medium text-ink"><Money value={money.owed} /></dd>
               </div>
               {money.overdue > 0 && (
                 <div className="flex items-baseline justify-between gap-4">
                   <dt className="text-bad">{c.overdue}</dt>
-                  <dd className="font-medium text-bad">{ils(money.overdue)}</dd>
+                  <dd className="font-medium text-bad"><Money value={money.overdue} /></dd>
                 </div>
               )}
             </dl>

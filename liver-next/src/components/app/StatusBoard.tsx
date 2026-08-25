@@ -4,9 +4,9 @@ import { appCopy } from '@/content/site';
 import type { ClientStatus } from '@/lib/status';
 import { ArchiveButton } from '@/components/app/ArchiveButton';
 import { formatDate } from '@/lib/dates';
+import { Money, ils } from '@/components/Ltr';
 
 const dateFmt = new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'short', year: 'numeric' });
-const ils = (n: number) => '₪' + Math.round(n).toLocaleString('he-IL');
 
 const c = appCopy.statusBoard;
 
@@ -121,7 +121,7 @@ function Row({ s }: { s: ClientStatus }) {
               <div className="flex items-center gap-1.5">
                 <Wallet size={14} className="text-ink-mute" aria-hidden strokeWidth={1.75} />
                 <dd className={`tabular-nums ${s.money.overdue > 0 ? 'text-bad' : ''}`}>
-                  {ils(s.money.owed)} {c.owed}
+                  <Money value={s.money.owed} /> {c.owed}
                 </dd>
               </div>
             )}

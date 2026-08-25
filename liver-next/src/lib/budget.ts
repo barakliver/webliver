@@ -96,5 +96,10 @@ function clamp(n: number, lo: number, hi: number): number {
   return Math.min(hi, Math.max(lo, n));
 }
 
-export const ils = (n: number) => '₪' + Math.round(n).toLocaleString('he-IL');
+/* Re-exported from the component that owns the rule, so there is one
+   definition of what a shekel string looks like rather than nine. Callers that
+   render it into a page must use <Money> instead: this returns a bare string,
+   and a bare string inside a Hebrew paragraph is exactly the bug. */
+import { ils } from '@/components/Ltr';
+export { ils };
 export const ilsRounded = (n: number) => ils(Math.round(n / 500) * 500);

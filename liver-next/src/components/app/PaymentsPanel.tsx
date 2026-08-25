@@ -5,13 +5,13 @@ import { formatDate } from '@/lib/dates';
 import { useFormStatus } from 'react-dom';
 import { addPayment, togglePaid, deletePayment, type MoneyResult } from '@/app/actions/money';
 import { appCopy } from '@/content/site';
+import { Money, ils } from '@/components/Ltr';
 
 export type Payment = {
   id: string; title: string; amount: number;
   due_on: string | null; paid: boolean; paid_on: string | null;
 };
 
-const ils = (n: number) => '₪' + Math.round(n).toLocaleString('he-IL');
 const dateFmt = new Intl.DateTimeFormat('he-IL', { day: '2-digit', month: '2-digit', year: '2-digit' });
 
 function isOverdue(due: string | null): boolean {
@@ -50,15 +50,15 @@ export function PaymentsPanel({ clientId, payments, viewer }: {
       <div className="mt-5 grid gap-3 sm:grid-cols-3">
         <div className="rounded-2xl bg-ok-wash px-4 py-3">
           <div className="text-[12.5px] text-ok">{c.totalPaid}</div>
-          <div className="font-display text-[22px] font-semibold tabular-nums text-ok">{ils(paid)}</div>
+          <div className="font-display text-[22px] font-semibold tabular-nums text-ok"><Money value={paid} /></div>
         </div>
         <div className="rounded-2xl bg-warn-wash px-4 py-3">
           <div className="text-[12.5px] text-warn">{c.totalOwed}</div>
-          <div className="font-display text-[22px] font-semibold tabular-nums text-warn">{ils(owed)}</div>
+          <div className="font-display text-[22px] font-semibold tabular-nums text-warn"><Money value={owed} /></div>
         </div>
         <div className="rounded-2xl bg-surface-200 px-4 py-3">
           <div className="text-[12.5px] text-ink-mute">{c.totalAll}</div>
-          <div className="font-display text-[22px] font-semibold tabular-nums text-ink">{ils(paid + owed)}</div>
+          <div className="font-display text-[22px] font-semibold tabular-nums text-ink"><Money value={paid + owed} /></div>
         </div>
       </div>
 
@@ -103,7 +103,7 @@ export function PaymentsPanel({ clientId, payments, viewer }: {
                 </div>
 
                 <span className={`tabular-nums text-[15px] font-semibold ${p.paid ? 'text-ok' : 'text-ink'}`}>
-                  {ils(Number(p.amount))}
+                  <Money value={Number(p.amount)} />
                 </span>
 
                 {viewer === 'producer' ? (

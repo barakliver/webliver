@@ -7,6 +7,7 @@ import {
   computeBudget, TIER_PLATE, ils, ilsRounded,
   type Tier, type Day, type Season, type Style, type Bar, type Scale,
 } from '@/lib/budget';
+import { Money } from '@/components/Ltr';
 
 const TIERS: { v: Tier; label: string }[] = [
   { v: 'garden',   label: 'גן אירועים' },
@@ -161,7 +162,7 @@ export function BudgetSimulator() {
           <div className="mt-4 flex flex-wrap gap-x-5 gap-y-1.5 text-[13.5px] text-ink-mute">
             <span>מגיעים בפועל: <b className="text-ink">{r.attending}</b></span>
             <span>שולחנות: <b className="text-ink">{r.tables}</b></span>
-            <span>לאורח: <b className="tabular-nums text-ink">{ils(r.perGuest)}</b></span>
+            <span>לאורח: <b className="tabular-nums text-ink"><Money value={r.perGuest} /></b></span>
           </div>
 
           <ul className="mt-6 space-y-3" aria-label="חלוקה לפי סעיפים">
@@ -173,7 +174,7 @@ export function BudgetSimulator() {
                     <span className="text-ink-soft">
                       {l.label} <span className="text-[11.5px] text-ink-mute">{SCALE_LABEL[l.scale]}</span>
                     </span>
-                    <span className="tabular-nums text-ink">{ils(l.amount)}</span>
+                    <span className="tabular-nums text-ink"><Money value={l.amount} /></span>
                   </div>
                   <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-surface-200">
                     <div className="h-full rounded-full bg-accent transition-[width] duration-500" style={{ width: `${pct}%` }} />
@@ -184,7 +185,7 @@ export function BudgetSimulator() {
           </ul>
 
           <p className="mt-6 rounded-2xl bg-accent-wash px-4 py-3 text-[14px] text-ink-soft">
-            כל עשרה אורחים נוספים: <b className="tabular-nums text-ink">{ils(r.marginalTen)}</b>
+            כל עשרה אורחים נוספים: <b className="tabular-nums text-ink"><Money value={r.marginalTen} /></b>
           </p>
 
           <div className="mt-6 border-t border-line pt-6">

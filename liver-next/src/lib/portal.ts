@@ -170,7 +170,7 @@ export async function loadThread(
     clientIds.map(async (cid) => {
       const { data: people } = await sb.rpc('thread_people', { p_client: cid });
       (people ?? []).forEach((p: { id: string; display_name: string; avatar_url: string | null }) => {
-        if (!who.has(p.id)) who.set(p.id, { name: p.display_name || '—', avatar: p.avatar_url });
+        if (!who.has(p.id)) who.set(p.id, { name: p.display_name || '·', avatar: p.avatar_url });
       });
     })
   );
@@ -183,7 +183,7 @@ export async function loadThread(
       author_id: m.author_id,
       body: m.body,
       created_at: m.created_at,
-      author_name: person?.name ?? '—',
+      author_name: person?.name ?? '·',
       author_avatar: person?.avatar ?? null,
     });
     byClient.set(m.client_id, list);
