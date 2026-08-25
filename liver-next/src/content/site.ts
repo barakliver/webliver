@@ -223,6 +223,7 @@ export const appCopy = {
     leads: 'לידים',
     clients: 'אירועים',
     calendar: 'יומן',
+    sop: 'מדריכים',
     admin: 'ניהול מערכת',
     portal: 'האזור שלנו',
   },
