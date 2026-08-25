@@ -427,6 +427,7 @@ export const appCopy = {
       day: 'לוז',
       guests: 'אורחים',
       crew: 'צוות וספקים',
+      bar: 'בר',
       money: 'כסף',
       docs: 'מסמכים',
       messages: 'הודעות',
@@ -821,6 +822,55 @@ export const vendorCopy = {
   count: (n: number) => `${n} ספקים`,
   noResults: 'לא נמצא ספק מתאים.',
   allCategories: 'כל התחומים',
+} as const;
+
+export const barCopy = {
+  title: 'מחשבון בר',
+  sub: 'כמה בקבוקים, כמה קרח, וכמה זה עולה. נקודת פתיחה למשא ומתן עם הספק, לא הצעת מחיר.',
+  guests: 'אורחים',
+  children: 'אחוז ילדים',
+  childrenHint: 'לא שותים אלכוהול, ושותים הכל חוץ מזה',
+  drinkers: 'אחוז שותים מהמבוגרים',
+  drinkersHint: 'המספר שמזיז את התוצאה יותר מכל דבר אחר',
+  hours: 'שעות פתיחת הבר',
+  hoursHint: 'לא אורך הערב. הבר נסגר לפני השיר האחרון',
+  style: 'אופי השתייה',
+  season: 'עונה',
+  styles: {
+    classic: 'מעורב',
+    spirits: 'חזק',
+    wine: 'יין',
+    beer: 'בירה',
+    light: 'קליל',
+  } as Record<string, string>,
+  seasons: { summer: 'קיץ', mild: 'אביב או סתיו', winter: 'חורף' } as Record<string, string>,
+
+  planTitle: 'מה לקנות',
+  drinkersOut: 'שותים',
+  servingsOut: 'מנות משקה',
+  items: {
+    vodka: 'וודקה', whiskey: 'וויסקי', gin: 'ג׳ין', other: 'ליקרים ואחר',
+    wine: 'יין', beer: 'בירה', soft: 'שתייה קלה', ice: 'קרח',
+    citrus: 'לימונים ולימים', cups: 'כוסות',
+  } as Record<string, string>,
+  units: {
+    vodka: 'בקבוקים', whiskey: 'בקבוקים', gin: 'בקבוקים', other: 'בקבוקים',
+    wine: 'בקבוקים', beer: 'יחידות', soft: 'ליטר', ice: 'ק״ג',
+    citrus: 'יחידות', cups: 'יחידות',
+  } as Record<string, string>,
+  unitPrice: 'מחיר ליחידה',
+  lineTotal: 'סה״כ',
+  grandTotal: 'סה״כ משוער',
+  prices: 'מחירים',
+  pricesHint: 'המחירים שלכם, לא שלנו. שנו אותם ומה שלמטה מתעדכן.',
+  print: 'הדפסה של רשימת הקנייה',
+  assumptions: 'איך זה חושב',
+  assumptionLines: [
+    'שעה ראשונה שתי מנות לשותה, כל שעה אחריה מנה אחת. אנשים מגיעים צמאים ואז מתייצבים.',
+    'בקבוק אלכוהול חזק הוא 15 מנות ולא 17, כי יד ממהרת נדיבה. יין הוא 5 כוסות.',
+    'קרח לפי אורח ולא לפי שעה, כי גם הבקבוקים והדגים צריכים אותו.',
+    'העדפנו לטעות למעלה בקרח ולמטה באלכוהול. בר בלי קרח נגמר באחת עשרה; בקבוק וודקה שנשאר הולך הביתה עם מישהו.',
+  ],
 } as const;
 
 export const conciergeCopy = {
