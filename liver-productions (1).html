@@ -8806,6 +8806,124 @@ renderAll();
 })();
 renderAll();
 
+/* ══════════════════════════════════════════════════════════
+   v53 — the root account is master on every load, not just at signup
+   ══════════════════════════════════════════════════════════
+   doSignup gives ROOT_ADMIN_EMAIL the master role, and nothing else can
+   reach it: "הוספת מנהל ראשי" only writes a masters row with role
+   'admin' and grants no account, and a stranger who signs up with that
+   email gets producer + pending. Verified both.
+
+   The hole was the other direction. Set that user's role to anything
+   else — a bad restore from an old backup, a half-written save, a future
+   bug — and it survives the reload, because nothing re-asserts the rule
+   at boot. Measured: after forcing role='client' and reloading, the
+   account came back as a client and landed in the couple portal, with no
+   route back to master and no way to fix it from the UI.
+
+   So the guarantee is enforced on every load instead of once:
+     · the root email always holds the master role
+     · it always owns the 'own_root' masters row
+     · nobody else ever holds master
+
+   Anyone else who wants in still signs up and waits for approval. */
+(function(){
+
+ var ROOT = (typeof ROOT_ADMIN_EMAIL === 'string') ? ROOT_ADMIN_EMAIL : 'barakliver@gmail.com';
+
+ function enforceRoot(){
+  if(!DB || !Array.isArray(DB.users)) return false;
+  var changed = false;
+
+  var root = DB.users.filter(function(u){
+   return String(u.email || '').trim().toLowerCase() === ROOT;
+  })[0];
+
+  if(root && root.role !== 'master'){ root.role = 'master'; changed = true; }
+
+  /* nobody but the root email carries master */
+  DB.users.forEach(function(u){
+   if(u === root) return;
+   if(u.role === 'master'){ u.role = 'producer'; changed = true; }
+  });
+
+  /* the owner row in מנהלים ראשיים belongs to the root email */
+  if(root){
+   if(!Array.isArray(DB.masters)) DB.masters = [];
+   var owner = DB.masters.filter(function(m){ return m.role === 'owner'; })[0];
+   if(!owner){
+    DB.masters.unshift({ id:'own_root', name: root.name || '', email: root.email, role:'owner' });
+    changed = true;
+   } else if(String(owner.email || '').trim().toLowerCase() !== ROOT){
+    owner.email = root.email; changed = true;
+   }
+   /* and no second owner row */
+   var seen = false;
+   DB.masters.forEach(function(m){
+    if(m.role !== 'owner') return;
+    if(seen){ m.role = 'admin'; changed = true; }
+    seen = true;
+   });
+  }
+
+  return changed;
+ }
+
+ /* the restored session carries its own copy of the role, and the boot
+    code has already picked a home screen from it — so correct both */
+ function enforceSession(){
+  if(typeof session === 'undefined' || !session) return false;
+  if(String(session.email || '').trim().toLowerCase() !== ROOT) return false;
+  if(session.role === 'master') return false;
+  session.role = 'master';
+  return true;
+ }
+
+ /* Boot picks the home screen from the old role, and it does so after
+    this layer has run — so a timer here is a race. Correcting on the
+    first render instead is deterministic: whatever screen boot settles
+    on, the next paint sees it. The public site is a legitimate place for
+    a signed-in root; the couple portal and the staff screen are not. */
+ var homed = false;
+ function homeRoot(){
+  if(homed) return;
+  if(typeof session === 'undefined' || !session) return;
+  if(String(session.email || '').trim().toLowerCase() !== ROOT) return;
+  if(typeof activeRole === 'undefined') return;
+  if(activeRole !== 'portal' && activeRole !== 'staff') return;
+  homed = true;
+  if(typeof setRole === 'function') setRole('owner');
+ }
+
+ var fixed = enforceRoot();
+ if(enforceSession()) fixed = true;
+ if(fixed){
+  if(typeof saveSoon === 'function') saveSoon();
+  if(typeof renderAll === 'function') renderAll();
+ }
+
+ /* a restore from file replaces the whole DB, so re-assert afterwards */
+ if(typeof importData === 'function'){
+  var _importDataV53 = importData;
+  importData = function(inp){
+   var r = _importDataV53(inp);
+   setTimeout(function(){
+    if(enforceRoot()){ if(typeof saveSoon === 'function') saveSoon(); if(typeof renderAll === 'function') renderAll(); }
+   }, 400);
+   return r;
+  };
+ }
+
+ var _renderAllV53 = renderAll;
+ renderAll = function(){
+  _renderAllV53();
+  homeRoot();
+ };
+
+ window.enforceRootAdmin = enforceRoot;
+})();
+renderAll();
+
 /* ══ PWA: real manifest.json + sw.js on the server so "Install app" works.
    (Blob/data: URLs cannot be used to register a service worker — that was
    the reason the previous version never satisfied install criteria.) ══ */
