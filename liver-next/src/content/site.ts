@@ -207,6 +207,7 @@ export const appCopy = {
     overview: 'סקירה',
     leads: 'לידים',
     clients: 'אירועים',
+    calendar: 'יומן',
     admin: 'ניהול מערכת',
     portal: 'האזור שלנו',
   },
@@ -287,6 +288,14 @@ export const appCopy = {
     nothingNew: 'כולם כבר היו ברשימה. לא נוסף אף אחד.',
     skipped: 'שורות שלא נקלטו',
     line: 'שורה',
+  },
+
+  calendar: {
+    title: 'יומן',
+    sub: 'האירועים, מה שצריך לקרות לפניהם, ומתי הכסף אמור להיכנס — על אותו ציר.',
+    subscribe: 'הוספה ליומן שלי',
+    empty: 'אין כלום ביומן קדימה.',
+    addEvent: 'הוספת האירוע ליומן',
   },
 
   runsheet: {
