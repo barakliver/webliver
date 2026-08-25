@@ -208,3 +208,80 @@ export async function markDayItem(form: FormData): Promise<void> {
   if (error) console.error('[day] tick failed', error);
   touch(clientId);
 }
+
+/**
+ * Moving a line earlier or later in the run sheet.
+ *
+ * The sheet has no order column and does not want one: it is ordered by the
+ * time each thing happens, and a second, invisible ordering that could
+ * disagree with the clock is a run sheet that lies on the day. So moving a
+ * line up trades start times with the line above it. That is also what a
+ * producer means by the words: this happens at the earlier slot now, and the
+ * other one takes this slot.
+ *
+ * The swap can leave an overlap. That is not hidden: the sheet already marks
+ * two lines that collide, and a move that creates one should say so rather
+ * than be refused, because "photos and the reception in the same half hour"
+ * is sometimes exactly what somebody is arranging on purpose.
+ */
+export async function moveDayItem(form: FormData): Promise<void> {
+  const id = String(form.get('item_id') ?? '');
+  const clientId = String(form.get('client_id') ?? '');
+  const up = String(form.get('direction') ?? '') === 'up';
+  if (!id || !clientId) return;
+
+  const sb = await supabaseServer();
+
+  const { data: me, error: meError } = await sb
+    .from('day_schedule')
+    .select('id,track,at_time')
+    .eq('id', id)
+    .single();
+  if (meError || !me) {
+    console.error('[day] move: line not found', meError);
+    return;
+  }
+
+  /* The neighbour within the same track, because the tracks are read as
+     separate columns and a line jumping between them is not a move. Ordered
+     and limited rather than fetched whole: a sheet can be forty lines and
+     only the adjacent one matters. */
+  const neighbour = await sb
+    .from('day_schedule')
+    .select('id,at_time')
+    .eq('client_id', clientId)
+    .eq('track', me.track)
+    .neq('id', id)
+    [up ? 'lt' : 'gt']('at_time', me.at_time)
+    .order('at_time', { ascending: !up })
+    .limit(1)
+    .maybeSingle();
+
+  if (neighbour.error) {
+    console.error('[day] move: neighbour lookup failed', neighbour.error);
+    return;
+  }
+  /* Already first or already last. Nothing to say and nothing to do. */
+  if (!neighbour.data) return;
+
+  /* Two writes rather than one statement, because PostgREST has no swap and
+     the pair has no uniqueness constraint to trip over in between. If the
+     second fails the first is rolled back by hand, so the sheet is never left
+     with both lines on the same minute. */
+  const mine = me.at_time as string;
+  const theirs = neighbour.data.at_time as string;
+
+  const first = await sb.from('day_schedule').update({ at_time: theirs }).eq('id', id);
+  if (first.error) {
+    console.error('[day] move: first write failed', first.error);
+    return;
+  }
+  const second = await sb.from('day_schedule').update({ at_time: mine }).eq('id', neighbour.data.id);
+  if (second.error) {
+    console.error('[day] move: second write failed, undoing the first', second.error);
+    await sb.from('day_schedule').update({ at_time: mine }).eq('id', id);
+    return;
+  }
+
+  touch(clientId);
+}

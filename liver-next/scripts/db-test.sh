@@ -80,6 +80,7 @@ check() {
 
 check "$here/supabase/test/02_boundary.sql"
 check "$here/supabase/test/03_invite.sql"
+check "$here/supabase/test/04_move.sql"
 
 echo
 psql -tA -d liver -f "$here/supabase/verify.sql" | sed 's/|/  /' | while IFS= read -r l; do

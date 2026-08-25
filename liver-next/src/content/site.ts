@@ -949,6 +949,9 @@ export const seatingCopy = {
 } as const;
 
 export const dayCopy = {
+  moveUp: 'להזיז מוקדם יותר',
+  moveDown: 'להזיז מאוחר יותר',
+  dragHint: 'אפשר גם לגרור שורה למעלה או למטה',
   audience: 'למי הלוז הזה (ריק = לכולם):',
   title: 'לוז יום האירוע',
   sub: 'הבוקר נראה אחרת לכל אחד, אז לכל אחד יש מסלול משלו, ומה שמשותף מופיע באמצע.',

@@ -2,9 +2,9 @@
 
 import { useActionState, useState } from 'react';
 import { useFormStatus } from 'react-dom';
-import { Clock, Pencil, Plus, Trash2, TriangleAlert, Wand2 } from 'lucide-react';
+import { ChevronDown, ChevronUp, Clock, GripVertical, Pencil, Plus, Trash2, TriangleAlert, Wand2 } from 'lucide-react';
 import {
-  addDayItem, updateDayItem, deleteDayItem, renameTracks, applyRunsheetTemplate, type DayResult,
+  addDayItem, updateDayItem, deleteDayItem, moveDayItem, renameTracks, applyRunsheetTemplate, type DayResult,
 } from '@/app/actions/day';
 import { AUDIENCES, type Track } from '@/content/lists';
 import { RUNSHEET_TEMPLATES } from '@/content/runsheets';
@@ -134,12 +134,16 @@ function LineFields({ item, labels, showOwner }: {
 /** One line of the day. Reads as a line until somebody chooses to change it,
  *  at which point it becomes the same form the line was written in. */
 function Row({
-  item, clientId, labels, span, clash, showOwner,
+  item, clientId, labels, span, clash, showOwner, isFirst, isLast,
 }: {
   item: DayItem; clientId: string; labels: Record<Track, string>;
   span: { minutes: number | null; stated: boolean };
   clash?: { withTitle: string };
   showOwner: boolean;
+  /* First and last within its own track, which is what the arrows move
+     inside. A disabled arrow says "this is already the first thing on the
+     morning" without anybody pressing it to find out. */
+  isFirst: boolean; isLast: boolean;
 }) {
   const [editing, setEditing] = useState(false);
   const [state, action] = useActionState<DayResult | null, FormData>(
@@ -206,6 +210,14 @@ function Row({
       </div>
 
       <div className="flex shrink-0 items-start gap-1">
+        {/* Earlier and later, as buttons.
+            Dragging is added underneath and is never the only way: HTML5 drag
+            fires for a mouse and for nothing else, so a keyboard, a screen
+            reader and most touch browsers would have no way to reorder a run
+            sheet at all. These two are the mechanism; the drag is a shortcut
+            on top of them. */}
+        <Move item={item} clientId={clientId} direction="up" disabled={isFirst} />
+        <Move item={item} clientId={clientId} direction="down" disabled={isLast} />
         <button
           type="button" onClick={() => setEditing(true)}
           className="rounded-none p-1.5 text-ink-mute transition hover:bg-surface-200 hover:text-ink"
@@ -226,6 +238,31 @@ function Row({
         </form>
       </div>
     </li>
+  );
+}
+
+/** One press, one slot. The row trades start times with its neighbour, which
+ *  is what the sheet's own ordering is made of. */
+function Move({ item, clientId, direction, disabled }: {
+  item: DayItem; clientId: string; direction: 'up' | 'down'; disabled: boolean;
+}) {
+  const Icon = direction === 'up' ? ChevronUp : ChevronDown;
+  const label = direction === 'up' ? c.moveUp : c.moveDown;
+  return (
+    <form action={moveDayItem}>
+      <input type="hidden" name="item_id" value={item.id} />
+      <input type="hidden" name="client_id" value={clientId} />
+      <input type="hidden" name="direction" value={direction} />
+      <button
+        type="submit"
+        disabled={disabled}
+        className="rounded-none p-1.5 text-ink-mute transition hover:bg-surface-200 hover:text-ink
+                   disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-ink-mute"
+        title={label} aria-label={`${label} · ${item.title}`}
+      >
+        <Icon size={15} aria-hidden strokeWidth={1.5} />
+      </button>
+    </form>
   );
 }
 
@@ -386,17 +423,26 @@ export function DaySchedule({ clientId, items, labelA, labelB, viewer = 'produce
             </p>
           )}
           <ol className="mt-5 space-y-2.5">
-            {ordered.map((item, i) => (
-              <Row
-                key={item.id}
-                item={item}
-                clientId={clientId}
-                labels={labels}
-                span={spanOf(ordered, i)}
-                clash={clashes.get(item.id)}
-                showOwner={showOwner}
-              />
-            ))}
+            {ordered.map((item, i) => {
+              /* The ends are per track, because that is what a move stays
+                 inside. Read off the ordered list rather than a second sort:
+                 the first line of a track is the first one of that track to
+                 appear in a list already in time order. */
+              const sameTrack = ordered.filter((o) => o.track === item.track);
+              return (
+                <Row
+                  key={item.id}
+                  item={item}
+                  clientId={clientId}
+                  labels={labels}
+                  span={spanOf(ordered, i)}
+                  clash={clashes.get(item.id)}
+                  showOwner={showOwner}
+                  isFirst={sameTrack[0]?.id === item.id}
+                  isLast={sameTrack[sameTrack.length - 1]?.id === item.id}
+                />
+              );
+            })}
           </ol>
         </>
       )}
