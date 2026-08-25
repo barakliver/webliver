@@ -9,7 +9,7 @@ export function BookMeeting({ className = 'btn-primary' }: { className?: string 
   if (!publicEnv.bookingUrl) return null;
   return (
     <a href={publicEnv.bookingUrl} target="_blank" rel="noopener noreferrer" className={className}>
-      <CalendarDays size={17} aria-hidden strokeWidth={1.75} />
+      <CalendarDays size={17} aria-hidden strokeWidth={1.5} />
       <span>{site.closing.cta}</span>
     </a>
   );

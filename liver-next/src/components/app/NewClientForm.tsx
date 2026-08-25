@@ -30,12 +30,12 @@ export function NewClientForm() {
   return (
     <form action={action} className="card space-y-5" noValidate>
       <div>
-        <h2 className="font-display text-[19px] font-semibold text-ink">{c.title}</h2>
+        <h2 className="font-display text-[19px] font-light text-ink">{c.title}</h2>
         <p className="mt-1 text-[14px] text-ink-soft">{c.sub}</p>
       </div>
 
       {state && !state.ok && state.error && (
-        <p role="alert" className="rounded-2xl border border-bad/25 bg-bad-wash px-4 py-3 text-[14.5px] text-bad">
+        <p role="alert" className="rounded-none border border-bad/25 bg-bad-wash px-4 py-3 text-[14.5px] text-bad">
           {state.error}
         </p>
       )}

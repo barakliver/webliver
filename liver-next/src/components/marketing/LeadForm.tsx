@@ -21,7 +21,7 @@ export function LeadForm({ compact = false }: { compact?: boolean }) {
     return (
       <div className="card text-center" role="status">
         <div aria-hidden className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-accent-wash text-[22px]">✓</div>
-        <h3 className="mt-4 font-display text-title font-semibold text-ink">{site.lead.okTitle}</h3>
+        <h3 className="mt-4 font-display text-title font-light text-ink">{site.lead.okTitle}</h3>
         <p className="mt-2 text-[16px] text-ink-soft">{site.lead.okBody}</p>
       </div>
     );
@@ -33,7 +33,7 @@ export function LeadForm({ compact = false }: { compact?: boolean }) {
   return (
     <form action={action} className={compact ? 'space-y-4' : 'card space-y-5'} noValidate>
       {err && (
-        <p role="alert" className="rounded-2xl border border-bad/25 bg-bad-wash px-4 py-3 text-[14.5px] text-bad">
+        <p role="alert" className="rounded-none border border-bad/25 bg-bad-wash px-4 py-3 text-[14.5px] text-bad">
           {err.error}
         </p>
       )}

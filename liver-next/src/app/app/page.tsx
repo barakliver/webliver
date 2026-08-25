@@ -47,14 +47,14 @@ export default async function OverviewPage() {
               className="card group block transition-shadow duration-200 hover:shadow-lift"
             >
               <div className="flex items-center gap-2 text-accent">
-                <CalendarHeart size={16} strokeWidth={1.9} aria-hidden />
+                <CalendarHeart size={16} strokeWidth={1.5} aria-hidden />
                 <span className="eyebrow">{c.nextEvent}</span>
               </div>
-              <p className="mt-3 font-display text-[24px] font-semibold leading-tight text-ink">
+              <p className="mt-3 font-display text-[24px] font-light leading-tight text-ink">
                 {next.name}
               </p>
               <p className="mt-1 text-[14px] text-ink-soft">{next.date}</p>
-              <p className="mt-4 font-display text-[32px] font-semibold leading-none text-ink">
+              <p className="mt-4 font-display text-[32px] font-light leading-none text-ink">
                 {c.inDays(next.days)}
               </p>
             </Link>
@@ -62,7 +62,7 @@ export default async function OverviewPage() {
 
           <section className="card">
             <div className="flex items-center gap-2 text-accent">
-              <Wallet size={16} strokeWidth={1.9} aria-hidden />
+              <Wallet size={16} strokeWidth={1.5} aria-hidden />
               <span className="eyebrow">{c.money}</span>
             </div>
 
@@ -88,7 +88,7 @@ export default async function OverviewPage() {
             <hr className="hairline my-4" />
             <Link href="/app/clients" className="btn-quiet px-0 text-[14px]">
               {c.allClients}
-              <ChevronLeft size={16} strokeWidth={2} aria-hidden />
+              <ChevronLeft size={16} strokeWidth={1.5} aria-hidden />
             </Link>
           </section>
         </div>

@@ -18,16 +18,16 @@ const c = appCopy.statusBoard;
 function Countdown({ days }: { days: number | null }) {
   if (days === null) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-2xl bg-surface-200 px-3 py-2 text-center">
-        <CalendarX2 size={18} className="text-ink-mute" aria-hidden strokeWidth={1.75} />
+      <div className="flex flex-col items-center justify-center rounded-none bg-surface-200 px-3 py-2 text-center">
+        <CalendarX2 size={18} className="text-ink-mute" aria-hidden strokeWidth={1.5} />
         <span className="mt-1 text-[11.5px] leading-tight text-ink-mute">{c.noDate}</span>
       </div>
     );
   }
   if (days < 0) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-2xl bg-surface-200 px-3 py-2 text-center">
-        <span className="font-display text-[15px] font-semibold leading-none text-ink-soft">{c.passed}</span>
+      <div className="flex flex-col items-center justify-center rounded-none bg-surface-200 px-3 py-2 text-center">
+        <span className="font-display text-[15px] font-light leading-none text-ink-soft">{c.passed}</span>
         <span className="mt-1 text-[11.5px] leading-tight text-ink-mute">
           {Math.abs(days)} {c.daysAgo}
         </span>
@@ -41,11 +41,11 @@ function Countdown({ days }: { days: number | null }) {
   const soon = days <= 14;
   return (
     <div
-      className={`flex flex-col items-center justify-center rounded-2xl px-3 py-2 text-center ${
+      className={`flex flex-col items-center justify-center rounded-none px-3 py-2 text-center ${
         soon ? 'bg-accent-wash text-accent' : 'bg-surface-200 text-ink'
       }`}
     >
-      <span className="font-display text-[24px] font-semibold leading-none tabular-nums">{days}</span>
+      <span className="font-display text-[24px] font-light leading-none tabular-nums">{days}</span>
       <span className="mt-1 text-[11.5px] leading-tight opacity-80">{c.daysLeft}</span>
     </div>
   );
@@ -54,7 +54,7 @@ function Countdown({ days }: { days: number | null }) {
 function GapChip({ label, level }: { label: string; level: 'now' | 'soon' }) {
   return (
     <span
-      className={`inline-flex items-center rounded-full px-2.5 py-1 text-[12.5px] font-medium ${
+      className={`inline-flex items-center rounded-none px-2.5 py-1 text-[12.5px] font-medium ${
         level === 'now'
           ? 'bg-bad-wash text-bad'
           : 'bg-warn-wash text-warn'
@@ -87,7 +87,7 @@ function Row({ s }: { s: ClientStatus }) {
 
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-            <h3 className="font-display text-[18.5px] font-semibold text-ink">{s.name}</h3>
+            <h3 className="font-display text-[18.5px] font-light text-ink">{s.name}</h3>
             <p className="text-[13.5px] text-ink-mute">
               {formatDate(dateFmt, s.eventDate, c.noDate)}
               {s.venue ? ` · ${s.venue}` : ''}
@@ -111,7 +111,7 @@ function Row({ s }: { s: ClientStatus }) {
             )}
             {s.guests.invited > 0 && (
               <div className="flex items-center gap-1.5">
-                <Users size={14} className="text-ink-mute" aria-hidden strokeWidth={1.75} />
+                <Users size={14} className="text-ink-mute" aria-hidden strokeWidth={1.5} />
                 <dd className="tabular-nums">
                   {s.guests.attending}/{s.guests.invited} {c.attending}
                 </dd>
@@ -119,7 +119,7 @@ function Row({ s }: { s: ClientStatus }) {
             )}
             {s.money.owed > 0 && (
               <div className="flex items-center gap-1.5">
-                <Wallet size={14} className="text-ink-mute" aria-hidden strokeWidth={1.75} />
+                <Wallet size={14} className="text-ink-mute" aria-hidden strokeWidth={1.5} />
                 <dd className={`tabular-nums ${s.money.overdue > 0 ? 'text-bad' : ''}`}>
                   <Money value={s.money.owed} /> {c.owed}
                 </dd>
@@ -129,7 +129,7 @@ function Row({ s }: { s: ClientStatus }) {
         </div>
 
         <div className="flex shrink-0 flex-col items-end justify-between gap-2">
-          <ChevronLeft size={18} aria-hidden strokeWidth={2} className="mt-1.5 text-ink-mute" />
+          <ChevronLeft size={18} aria-hidden strokeWidth={1.5} className="mt-1.5 text-ink-mute" />
           <div className="pointer-events-auto relative z-10">
             <ArchiveButton clientId={s.id} archived={!!s.archivedAt} highlight={s.needsClosing} />
           </div>

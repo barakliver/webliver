@@ -32,7 +32,7 @@ import { Thread } from '@/components/app/Thread';
 export const dynamic = 'force-dynamic';
 
 const link =
-  'inline-flex min-h-[40px] items-center gap-2 rounded-full border border-line-strong bg-white px-4 text-[14px] font-medium text-ink transition hover:border-accent/40 hover:text-accent';
+  'inline-flex min-h-[40px] items-center gap-2 rounded-none border border-line-strong bg-white px-4 text-[14px] font-medium text-ink transition hover:border-accent/40 hover:text-accent';
 
 /**
  * One event, as its producer works on it.
@@ -74,24 +74,24 @@ export default async function ClientPage({
         <Link href="/app/clients" className="btn-quiet inline-block px-0 text-[14px]">← {c.back}</Link>
         <div className="flex flex-wrap items-center gap-2">
           <a href={`/app/clients/${client.id}/event.ics`} className={link}>
-            <CalendarPlus size={16} aria-hidden strokeWidth={1.75} />
+            <CalendarPlus size={16} aria-hidden strokeWidth={1.5} />
             {appCopy.calendar.addEvent}
           </a>
           <Link href={`/app/clients/${client.id}/runsheet`} className={link}>
-            <ListOrdered size={16} aria-hidden strokeWidth={1.75} />
+            <ListOrdered size={16} aria-hidden strokeWidth={1.5} />
             {appCopy.runsheet.open}
           </Link>
           {/* The same evening, read on the evening. The printed sheet is for
               planning it; this one is for standing in the hall with it. */}
           <Link href={`/app/clients/${client.id}/live`} className={link}>
-            <Radio size={16} aria-hidden strokeWidth={1.75} />
+            <Radio size={16} aria-hidden strokeWidth={1.5} />
             {appCopy.dayOf.open}
           </Link>
           {/* The one honest way to answer "what can they actually see?" — which
               is a question about policy, not about markup, and therefore not
               one to answer from memory. */}
           <Link href={`/app/clients/${client.id}/preview`} className={link}>
-            <Eye size={16} aria-hidden strokeWidth={1.75} />
+            <Eye size={16} aria-hidden strokeWidth={1.5} />
             {appCopy.preview.open}
           </Link>
         </div>

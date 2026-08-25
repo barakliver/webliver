@@ -25,7 +25,7 @@ export default async function LoginPage({
             input landed under the keyboard. The wordmark carries the same
             reassurance in a tenth of the height. */}
         <Link href="/" className="mb-7 block text-center">
-          <span className="font-display text-[21px] font-semibold text-ink">{site.brand}</span>
+          <span className="font-display text-[21px] font-light text-ink">{site.brand}</span>
           <span className="mt-1 block text-[13.5px] text-ink-mute">{site.tagline}</span>
         </Link>
         <LoginForm next={next} prefill={email} reason={reason} />

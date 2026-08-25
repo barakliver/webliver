@@ -41,7 +41,7 @@ export function Avatar({
         src={src}
         alt={label}
         style={dim}
-        className={cn('shrink-0 rounded-full object-cover ring-1 ring-line', className)}
+        className={cn('shrink-0 rounded-none object-cover ring-1 ring-line', className)}
       />
     );
   }
@@ -51,7 +51,7 @@ export function Avatar({
       style={{ ...dim, fontSize: Math.round(size * 0.38) }}
       aria-hidden
       className={cn(
-        'inline-grid shrink-0 place-items-center rounded-full font-medium ring-1 ring-line',
+        'inline-grid shrink-0 place-items-center rounded-none font-medium ring-1 ring-line',
         tintFor(label), className,
       )}
     >

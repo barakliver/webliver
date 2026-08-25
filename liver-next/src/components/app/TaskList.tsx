@@ -51,7 +51,7 @@ function Row({ task, clientId, viewer, canDelete }: {
       : (task.owner === 'producer' ? c.ownerProducerClientView : c.ownerClientClientView);
 
   return (
-    <li className={`flex flex-wrap items-center gap-3 rounded-2xl border px-4 py-3 ${
+    <li className={`flex flex-wrap items-center gap-3 rounded-none border px-4 py-3 ${
       late ? 'border-bad/25 bg-bad-wash/60' : 'border-line'
     }`}>
       <form action={toggleTask} className="flex items-center">
@@ -78,10 +78,10 @@ function Row({ task, clientId, viewer, canDelete }: {
               their list is the policy and not a styling choice. */}
           {task.visible_to_client === false && (
             <span
-              className="ms-2 inline-flex items-center gap-1 align-middle rounded-full bg-surface-200 px-2 py-0.5 text-[11.5px] text-ink-mute"
+              className="ms-2 inline-flex items-center gap-1 align-middle rounded-none bg-surface-200 px-2 py-0.5 text-[11.5px] text-ink-mute"
               title={templateCopy.privateNote}
             >
-              <EyeOff size={11} aria-hidden strokeWidth={2} />
+              <EyeOff size={11} aria-hidden strokeWidth={1.5} />
               {templateCopy.sharedOff}
             </span>
           )}
@@ -122,7 +122,7 @@ export function TaskList({ clientId, tasks, viewer, viewerId }: {
 
   return (
     <section className="card">
-      <h2 className="font-display text-[18px] font-semibold text-ink">{c.title}</h2>
+      <h2 className="font-display text-[18px] font-light text-ink">{c.title}</h2>
       <p className="mt-1 text-[14px] text-ink-soft">{viewer === 'producer' ? c.subProducer : c.subClient}</p>
 
       <form action={action} className="mt-5 grid gap-3 sm:grid-cols-[1fr_auto_auto_auto]">
@@ -137,7 +137,7 @@ export function TaskList({ clientId, tasks, viewer, viewerId }: {
       </form>
 
       {state && !state.ok && state.error && (
-        <p role="alert" className="mt-3 rounded-2xl border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+        <p role="alert" className="mt-3 rounded-none border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
           {state.error}
         </p>
       )}

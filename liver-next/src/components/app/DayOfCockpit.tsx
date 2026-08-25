@@ -113,7 +113,7 @@ export function DayOfCockpit({
 
       <section className="card">
         <div className="flex items-baseline justify-between gap-3">
-          <h2 className="font-display text-[19px] font-semibold text-ink">{c.schedule}</h2>
+          <h2 className="font-display text-[19px] font-light text-ink">{c.schedule}</h2>
           <span className="text-[12.5px] text-ink-mute">{c.openCount(open)}</span>
         </div>
 
@@ -135,7 +135,7 @@ function Headline({ label, placed, fallback, tone }: {
       <div className="text-[12.5px] font-semibold text-ink-mute">{label}</div>
       {placed ? (
         <>
-          <div className="mt-1 font-display text-[22px] font-semibold leading-tight text-ink">
+          <div className="mt-1 font-display text-[22px] font-light leading-tight text-ink">
             {placed.line.title}
           </div>
           <div className="mt-1 text-[14px] text-ink-soft">
@@ -161,7 +161,7 @@ function Row({ p, clientId }: { p: Placed; clientId: string }) {
   return (
     <li
       className={cn(
-        'flex items-start gap-3 rounded-2xl border p-3 transition-colors',
+        'flex items-start gap-3 rounded-none border p-3 transition-colors',
         isNow ? 'border-accent-soft bg-accent-wash'
           : late ? 'border-bad/30 bg-bad-wash'
           : done ? 'border-line bg-surface-100'
@@ -206,7 +206,7 @@ function People({ sheet, clientId }: { sheet: Caller[]; clientId: string }) {
   if (sheet.length === 0) {
     return (
       <section className="card">
-        <h2 className="font-display text-[19px] font-semibold text-ink">{c.people.title}</h2>
+        <h2 className="font-display text-[19px] font-light text-ink">{c.people.title}</h2>
         <p className="mt-2 text-[15px] text-ink-mute">{c.people.empty}</p>
       </section>
     );
@@ -214,7 +214,7 @@ function People({ sheet, clientId }: { sheet: Caller[]; clientId: string }) {
 
   return (
     <section className="card">
-      <h2 className="font-display text-[19px] font-semibold text-ink">{c.people.title}</h2>
+      <h2 className="font-display text-[19px] font-light text-ink">{c.people.title}</h2>
       <p className="mt-1 text-[13.5px] text-ink-soft">{c.people.sub}</p>
 
       <ul className="mt-4 list-none space-y-2 p-0">
@@ -225,7 +225,7 @@ function People({ sheet, clientId }: { sheet: Caller[]; clientId: string }) {
             <li
               key={`${person.kind}-${person.id}`}
               className={cn(
-                'rounded-2xl border p-3 transition-colors',
+                'rounded-none border p-3 transition-colors',
                 here ? 'border-ok/30 bg-ok-wash' : 'border-line',
               )}
             >
@@ -316,7 +316,7 @@ function Countdown({ placed, onDismiss }: { placed: Placed; onDismiss: () => voi
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="min-w-0">
           <div className="text-[12.5px] font-semibold text-warn">{c.alert.inMinutes(mins)}</div>
-          <div className="mt-0.5 font-display text-[22px] font-semibold leading-tight text-ink">
+          <div className="mt-0.5 font-display text-[22px] font-light leading-tight text-ink">
             {placed.line.title}
           </div>
           <div className="mt-0.5 text-[13.5px] text-ink-soft tabular-nums">{hhmm(placed.line.at_time)}</div>
@@ -374,12 +374,12 @@ function Broadcast({ sheet, late }: { sheet: Caller[]; late: Caller[] }) {
             role="dialog"
             aria-modal="true"
             aria-label={c.broadcast.title}
-            className="glass-strong relative w-full max-w-lg rounded-t-3xl border border-line p-4 shadow-dock sm:rounded-3xl"
+            className="glass-strong relative w-full max-w-lg rounded-t-3xl border border-line p-4 shadow-dock sm:rounded-none"
             style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 1rem)' }}
           >
             <div className="flex items-start justify-between gap-3">
               <div>
-                <h2 className="font-display text-[19px] font-semibold text-ink">{c.broadcast.title}</h2>
+                <h2 className="font-display text-[19px] font-light text-ink">{c.broadcast.title}</h2>
                 <p className="mt-1 text-[13px] text-ink-soft">{c.broadcast.sub}</p>
               </div>
               <button
@@ -406,7 +406,7 @@ function Broadcast({ sheet, late }: { sheet: Caller[]; late: Caller[] }) {
                     onClick={() => setWho(key)}
                     aria-pressed={who === key}
                     className={cn(
-                      'min-h-[44px] rounded-full border px-4 text-[13.5px] font-medium transition-colors',
+                      'min-h-[44px] rounded-none border px-4 text-[13.5px] font-medium transition-colors',
                       who === key ? 'border-ink text-ink' : 'border-line text-ink-soft',
                     )}
                   >
@@ -434,7 +434,7 @@ function Broadcast({ sheet, late }: { sheet: Caller[]; late: Caller[] }) {
                     key={preset}
                     type="button"
                     onClick={() => setText(preset)}
-                    className="rounded-full border border-line px-3 py-2 text-[12.5px] text-ink-soft hover:border-line-strong"
+                    className="rounded-none border border-line px-3 py-2 text-[12.5px] text-ink-soft hover:border-line-strong"
                   >
                     {preset}
                   </button>
@@ -452,7 +452,7 @@ function Broadcast({ sheet, late }: { sheet: Caller[]; late: Caller[] }) {
                       target="_blank"
                       rel="noopener noreferrer"
                       className={cn(
-                        'flex min-h-[48px] items-center justify-between gap-3 rounded-2xl px-3',
+                        'flex min-h-[48px] items-center justify-between gap-3 rounded-none px-3',
                         'text-[15px] transition-colors hover:bg-surface-100',
                         text ? 'text-ink' : 'pointer-events-none text-ink-mute opacity-60',
                       )}

@@ -35,11 +35,11 @@ export function FabDock() {
         className="fixed inset-x-0 bottom-0 z-40 flex justify-center px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:inset-x-auto sm:bottom-6 sm:left-6 sm:px-0"
         role="group" aria-label="פעולות מהירות"
       >
-        <div className="flex w-full max-w-md items-center gap-2 rounded-full glass-strong p-1.5 shadow-dock sm:w-auto">
+        <div className="flex w-full max-w-md items-center gap-2 rounded-none glass-strong p-1.5 shadow-dock sm:w-auto">
           {wa && (
             <a href={wa} target="_blank" rel="noopener noreferrer"
-               className="flex flex-1 items-center justify-center gap-2 rounded-full bg-[#25D366] px-4 py-2.5 text-[14px] font-medium text-white transition hover:brightness-105 sm:flex-none">
-              <MessageCircle size={17} aria-hidden strokeWidth={1.75} /><span>{site.fab.whatsapp}</span>
+               className="flex flex-1 items-center justify-center gap-2 rounded-none bg-[#25D366] px-4 py-2.5 text-[14px] font-medium text-white transition hover:brightness-105 sm:flex-none">
+              <MessageCircle size={17} aria-hidden strokeWidth={1.5} /><span>{site.fab.whatsapp}</span>
             </a>
           )}
           {/* Booking is a link, not a sheet. It used to open the calendar in an
@@ -49,13 +49,13 @@ export function FabDock() {
           {publicEnv.bookingUrl ? (
             <a href={publicEnv.bookingUrl} target="_blank" rel="noopener noreferrer"
                title={site.fab.bookingNote}
-               className="flex flex-1 items-center justify-center gap-2 rounded-full bg-ink px-4 py-2.5 text-[14px] font-medium text-white transition hover:bg-ink-soft sm:flex-none">
-              <CalendarDays size={17} aria-hidden strokeWidth={1.75} /><span>{site.fab.booking}</span>
+               className="flex flex-1 items-center justify-center gap-2 rounded-none bg-ink px-4 py-2.5 text-[14px] font-medium text-white transition hover:bg-ink-soft sm:flex-none">
+              <CalendarDays size={17} aria-hidden strokeWidth={1.5} /><span>{site.fab.booking}</span>
             </a>
           ) : null}
           <button type="button" onClick={() => setSheet('lead')}
-                  className="flex flex-1 items-center justify-center gap-2 rounded-full border border-line-strong bg-white/80 px-4 py-2.5 text-[14px] font-medium text-ink transition hover:bg-white sm:flex-none">
-            <PenLine size={17} aria-hidden strokeWidth={1.75} /><span>{site.fab.lead}</span>
+                  className="flex flex-1 items-center justify-center gap-2 rounded-none border border-line-strong bg-white/80 px-4 py-2.5 text-[14px] font-medium text-ink transition hover:bg-white sm:flex-none">
+            <PenLine size={17} aria-hidden strokeWidth={1.5} /><span>{site.fab.lead}</span>
           </button>
         </div>
       </div>
@@ -64,11 +64,11 @@ export function FabDock() {
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-ink/25 backdrop-blur-sm sm:items-center"
              onMouseDown={e => { if (e.target === e.currentTarget) setSheet(null); }}>
           <div role="dialog" aria-modal="true" aria-label={site.fab.lead}
-               className="max-h-[88svh] w-full max-w-lg animate-sheet overflow-y-auto rounded-t-4xl glass-strong p-6 sm:rounded-4xl sm:p-8">
+               className="max-h-[88svh] w-full max-w-lg animate-sheet overflow-y-auto rounded-t-4xl glass-strong p-6 sm:rounded-none sm:p-8">
             <div className="mb-5 flex items-start justify-between gap-4">
-              <h2 className="font-display text-title font-semibold text-ink">{site.lead.title}</h2>
+              <h2 className="font-display text-title font-light text-ink">{site.lead.title}</h2>
               <button type="button" onClick={() => setSheet(null)} aria-label="סגירה"
-                      className="rounded-full p-2 text-ink-mute transition hover:bg-white hover:text-ink">✕</button>
+                      className="rounded-none p-2 text-ink-mute transition hover:bg-white hover:text-ink">✕</button>
             </div>
             <LeadForm compact />
           </div>

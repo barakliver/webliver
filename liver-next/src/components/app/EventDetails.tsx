@@ -68,11 +68,11 @@ export function EventDetails({ event }: { event: EventCore }) {
     return (
       <section className="card">
         <form action={action} noValidate>
-          <h2 className="font-display text-[18px] font-semibold text-ink">{c.edit}</h2>
+          <h2 className="font-display text-[18px] font-light text-ink">{c.edit}</h2>
           <input type="hidden" name="client_id" value={event.id} />
 
           {state && !state.ok && state.error && (
-            <p role="alert" className="mt-4 rounded-2xl border border-bad/25 bg-bad-wash px-4 py-3 text-[14.5px] text-bad">
+            <p role="alert" className="mt-4 rounded-none border border-bad/25 bg-bad-wash px-4 py-3 text-[14.5px] text-bad">
               {state.error}
             </p>
           )}
@@ -123,13 +123,13 @@ export function EventDetails({ event }: { event: EventCore }) {
   return (
     <section className="card">
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <h2 className="font-display text-[18px] font-semibold text-ink">{c.details}</h2>
+        <h2 className="font-display text-[18px] font-light text-ink">{c.details}</h2>
         <button
           type="button"
           onClick={() => setEditing(true)}
           className="inline-flex items-center gap-1.5 text-[13.5px] text-ink-mute transition hover:text-accent"
         >
-          <Pencil size={14} aria-hidden strokeWidth={1.75} />
+          <Pencil size={14} aria-hidden strokeWidth={1.5} />
           {c.edit}
         </button>
       </div>
@@ -142,20 +142,20 @@ export function EventDetails({ event }: { event: EventCore }) {
         <button
           type="button"
           onClick={() => setEditing(true)}
-          className="mt-5 inline-flex items-center gap-2 rounded-2xl border border-dashed border-line-strong px-4 py-3 text-[14.5px] text-ink-soft transition hover:border-accent/50 hover:text-accent"
+          className="mt-5 inline-flex items-center gap-2 rounded-none border border-dashed border-line-strong px-4 py-3 text-[14.5px] text-ink-soft transition hover:border-accent/50 hover:text-accent"
         >
-          <CalendarPlus size={16} aria-hidden strokeWidth={1.75} />
+          <CalendarPlus size={16} aria-hidden strokeWidth={1.5} />
           {c.setDate}
         </button>
       ) : (
         <div className="mt-5 flex items-baseline gap-2.5">
           {left > 1 ? (
             <>
-              <span className="font-display text-[40px] font-semibold leading-none text-ink tabular-nums">{left}</span>
+              <span className="font-display text-[40px] font-light leading-none text-ink tabular-nums">{left}</span>
               <span className="text-[15px] text-ink-mute">{c.daysLeft}</span>
             </>
           ) : (
-            <span className="font-display text-[24px] font-semibold leading-none text-ink">
+            <span className="font-display text-[24px] font-light leading-none text-ink">
               {left === 0 ? c.today : left === 1 ? c.tomorrow : `${c.passed} ${c.daysAgo(-left)}`}
             </span>
           )}

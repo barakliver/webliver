@@ -40,7 +40,7 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
     <section className="card">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="font-display text-[18px] font-semibold text-ink">{c.budTitle}</h2>
+          <h2 className="font-display text-[18px] font-light text-ink">{c.budTitle}</h2>
           <p className="mt-1 text-[14px] text-ink-soft">{c.budSub}</p>
         </div>
 
@@ -48,7 +48,7 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
           <form action={toggleBudgetVisible}>
             <input type="hidden" name="client_id" value={clientId} />
             <input type="hidden" name="visible" value={String(visible)} />
-            <button type="submit" className={`rounded-full px-4 py-2 text-[13px] font-medium transition ${
+            <button type="submit" className={`rounded-none px-4 py-2 text-[13px] font-medium transition ${
               visible ? 'bg-ok-wash text-ok' : 'bg-surface-200 text-ink-mute'
             }`}>
               {visible ? c.budVisible : c.budHidden}
@@ -58,23 +58,23 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
       </div>
 
       {viewer === 'producer' && !visible && (
-        <p className="mt-4 rounded-2xl bg-surface-200 px-4 py-3 text-[13.5px] text-ink-soft">{c.budHiddenNote}</p>
+        <p className="mt-4 rounded-none bg-surface-200 px-4 py-3 text-[13.5px] text-ink-soft">{c.budHiddenNote}</p>
       )}
 
       <div className="mt-5 grid gap-3 sm:grid-cols-3">
-        <div className="rounded-2xl bg-surface-200 px-4 py-3">
+        <div className="rounded-none bg-surface-200 px-4 py-3">
           <div className="text-[12.5px] text-ink-mute">{c.budTotalEst}</div>
-          <div className="font-display text-[22px] font-semibold tabular-nums text-ink"><Money value={totalEst} /></div>
+          <div className="font-display text-[22px] font-light tabular-nums text-ink"><Money value={totalEst} /></div>
         </div>
-        <div className="rounded-2xl bg-accent-wash px-4 py-3">
+        <div className="rounded-none bg-accent-wash px-4 py-3">
           <div className="text-[12.5px] text-accent">{c.budTotalAgreed}</div>
-          <div className="font-display text-[22px] font-semibold tabular-nums text-ink"><Money value={totalAgreed} /></div>
+          <div className="font-display text-[22px] font-light tabular-nums text-ink"><Money value={totalAgreed} /></div>
         </div>
-        <div className={`rounded-2xl px-4 py-3 ${diff >= 0 ? 'bg-ok-wash' : 'bg-bad-wash'}`}>
+        <div className={`rounded-none px-4 py-3 ${diff >= 0 ? 'bg-ok-wash' : 'bg-bad-wash'}`}>
           <div className={`text-[12.5px] ${diff >= 0 ? 'text-ok' : 'text-bad'}`}>
             {diff >= 0 ? c.budUnder : c.budOver}
           </div>
-          <div className={`font-display text-[22px] font-semibold tabular-nums ${diff >= 0 ? 'text-ok' : 'text-bad'}`}>
+          <div className={`font-display text-[22px] font-light tabular-nums ${diff >= 0 ? 'text-ok' : 'text-bad'}`}>
             <Money value={Math.abs(diff)} />
           </div>
         </div>
@@ -92,7 +92,7 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
       )}
 
       {state && !state.ok && state.error && (
-        <p role="alert" className="mt-3 rounded-2xl border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+        <p role="alert" className="mt-3 rounded-none border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
           {state.error}
         </p>
       )}
@@ -107,7 +107,7 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
             to read their budget on. */}
         <ul className="mt-5 space-y-2.5 sm:hidden">
           {items.map((i) => (
-            <li key={i.id} className="rounded-2xl border border-line px-4 py-3.5">
+            <li key={i.id} className="rounded-none border border-line px-4 py-3.5">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <p className="font-medium text-ink">{i.label}</p>
@@ -117,7 +117,7 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
                     it is the one that gets the size; the estimate sits under it
                     as what it was before somebody negotiated. */}
                 <div className="shrink-0 text-left">
-                  <p className="font-display text-[16px] font-semibold tabular-nums text-ink">
+                  <p className="font-display text-[16px] font-light tabular-nums text-ink">
                     <Money value={i.agreed === null ? Number(i.estimate) : Number(i.agreed)} />
                   </p>
                   {i.agreed !== null && Number(i.agreed) !== Number(i.estimate) && (

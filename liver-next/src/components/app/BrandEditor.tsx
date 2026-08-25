@@ -46,9 +46,9 @@ export function BrandEditor({ fields, rootDomain }: { fields: BrandFields; rootD
       {/* ── what it will look like ─────────────────────────────────────── */}
       <section className="card" style={accentVars(chosen) as React.CSSProperties}>
         <div className="text-[12.5px] font-semibold text-ink-mute">{c.preview}</div>
-        <div className="mt-3 rounded-2xl border border-line bg-surface p-4">
+        <div className="mt-3 rounded-none border border-line bg-surface p-4">
           <div className="flex items-center justify-between gap-3 border-b border-line pb-3">
-            <span className="font-display text-[17px] font-semibold text-ink">
+            <span className="font-display text-[17px] font-light text-ink">
               {name || c.namePh}
             </span>
             <span className="chip" style={{ borderColor: chosen.line, color: chosen.base }}>
@@ -58,13 +58,13 @@ export function BrandEditor({ fields, rootDomain }: { fields: BrandFields; rootD
           <p className="mt-3 text-[14px] text-ink-soft">{tagline || c.taglinePh}</p>
           <div className="mt-3 flex flex-wrap gap-2">
             <span
-              className="inline-flex min-h-[36px] items-center rounded-full px-4 text-[13.5px] font-medium text-white"
+              className="inline-flex min-h-[36px] items-center rounded-none px-4 text-[13.5px] font-medium text-white"
               style={{ background: chosen.base }}
             >
               {appCopy.brand.save}
             </span>
             <span
-              className="inline-flex min-h-[36px] items-center rounded-full border px-4 text-[13.5px]"
+              className="inline-flex min-h-[36px] items-center rounded-none border px-4 text-[13.5px]"
               style={{ borderColor: chosen.line, color: chosen.base }}
             >
               {appCopy.nav.clients}
@@ -104,7 +104,7 @@ export function BrandEditor({ fields, rootDomain }: { fields: BrandFields; rootD
                 onClick={() => setAccent(a.key)}
                 aria-pressed={a.key === accent}
                 className={cn(
-                  'inline-flex min-h-[44px] items-center gap-2 rounded-full border px-3.5 text-[13.5px] font-medium transition-colors',
+                  'inline-flex min-h-[44px] items-center gap-2 rounded-none border px-3.5 text-[13.5px] font-medium transition-colors',
                   a.key === accent ? 'border-ink text-ink' : 'border-line text-ink-soft hover:border-line-strong',
                 )}
               >
@@ -113,7 +113,7 @@ export function BrandEditor({ fields, rootDomain }: { fields: BrandFields; rootD
                   className="grid h-5 w-5 place-items-center rounded-full"
                   style={{ background: a.base }}
                 >
-                  {a.key === accent && <Check size={12} strokeWidth={3} color="#fff" />}
+                  {a.key === accent && <Check size={12} strokeWidth={1.5} color="#fff" />}
                 </span>
                 {a.label}
               </button>
@@ -139,7 +139,7 @@ export function BrandEditor({ fields, rootDomain }: { fields: BrandFields; rootD
 
       {/* ── your address ───────────────────────────────────────────────── */}
       <section className="card space-y-4">
-        <h2 className="font-display text-[17px] font-semibold text-ink">{c.address}</h2>
+        <h2 className="font-display text-[17px] font-light text-ink">{c.address}</h2>
 
         <div>
           <label className="label" htmlFor="slug">{c.slug}</label>

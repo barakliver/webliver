@@ -19,7 +19,7 @@ function Submit({ label, busy }: { label: string; busy: string }) {
 
 function Alert({ text }: { text: string }) {
   return (
-    <p role="alert" className="rounded-2xl border border-bad/25 bg-bad-wash px-4 py-3 text-[14.5px] text-bad">
+    <p role="alert" className="rounded-none border border-bad/25 bg-bad-wash px-4 py-3 text-[14.5px] text-bad">
       {text}
     </p>
   );
@@ -27,7 +27,7 @@ function Alert({ text }: { text: string }) {
 
 function Note({ text }: { text: string }) {
   return (
-    <p role="status" className="rounded-2xl border border-ok/30 bg-ok-wash px-4 py-3 text-[14.5px] text-ok">
+    <p role="status" className="rounded-none border border-ok/30 bg-ok-wash px-4 py-3 text-[14.5px] text-ok">
       {text}
     </p>
   );
@@ -97,7 +97,7 @@ export function LoginForm({ next, prefill, reason }: {
   return (
     <form action={askAction} className="card space-y-5" noValidate>
       <div>
-        <h1 className="font-display text-title font-semibold text-ink">{copy.title}</h1>
+        <h1 className="font-display text-title font-light text-ink">{copy.title}</h1>
         <p className="mt-2 text-[15px] text-ink-soft">{copy.sub}</p>
       </div>
 
@@ -107,7 +107,7 @@ export function LoginForm({ next, prefill, reason }: {
           client. Said plainly and once: the address is already in the field
           below, so this is a sentence and a button rather than a dead end. */}
       {!askState && reason && (
-        <p role="status" className="rounded-2xl border border-line-strong bg-surface-100 px-4 py-3 text-[14.5px] text-ink-soft">
+        <p role="status" className="rounded-none border border-line-strong bg-surface-100 px-4 py-3 text-[14.5px] text-ink-soft">
           {reason === 'expired' ? copy.linkExpired : copy.linkMissing}
         </p>
       )}
@@ -115,7 +115,7 @@ export function LoginForm({ next, prefill, reason }: {
       {/* Two doors, named. A single field could sniff which one was meant, and
           does on the server, but a couple who were told "we texted you" need
           to see that texting is a thing this screen does before they type. */}
-      <div role="group" className="grid grid-cols-2 gap-1 rounded-2xl border border-line bg-surface-100 p-1">
+      <div role="group" className="grid grid-cols-2 gap-1 rounded-none border border-line bg-surface-100 p-1">
         {(['email', 'phone'] as const).map((c) => (
           <button
             key={c}
@@ -125,11 +125,11 @@ export function LoginForm({ next, prefill, reason }: {
             /* The chosen channel carries the accent. It is the first blue
                anybody sees in the product, and it is on the one control this
                screen is actually asking somebody to think about. */
-            className={`flex min-h-[44px] items-center justify-center gap-2 rounded-xl px-3 text-[14.5px] transition ${
+            className={`flex min-h-[44px] items-center justify-center gap-2 rounded-none px-3 text-[14.5px] transition ${
               channel === c ? 'bg-card font-semibold text-accent shadow-soft' : 'text-ink-mute hover:text-ink'
             }`}
           >
-            {c === 'email' ? <Mail size={16} aria-hidden strokeWidth={1.75} /> : <MessageSquare size={16} aria-hidden strokeWidth={1.75} />}
+            {c === 'email' ? <Mail size={16} aria-hidden strokeWidth={1.5} /> : <MessageSquare size={16} aria-hidden strokeWidth={1.5} />}
             {c === 'email' ? copy.byEmail : copy.byPhone}
           </button>
         ))}
@@ -247,7 +247,7 @@ function CodeStep({
   return (
     <form action={action} className="card space-y-5" noValidate>
       <div>
-        <h1 className="font-display text-title font-semibold text-ink">{copy.codeTitle}</h1>
+        <h1 className="font-display text-title font-light text-ink">{copy.codeTitle}</h1>
         <p className="mt-2 text-[15px] text-ink-soft">
           {channel === 'phone' ? copy.codeSentPhone : copy.codeSentEmail}{' '}
           <b className="text-ink" dir="ltr">{sent.display ?? sent.contact}</b>
@@ -278,7 +278,7 @@ function CodeStep({
         disabled={resending || resendLeft > 0}
         className="btn-quiet flex w-full items-center justify-center gap-2 disabled:opacity-55"
       >
-        <RotateCw size={15} aria-hidden strokeWidth={1.75} className={resending ? 'animate-spin' : ''} />
+        <RotateCw size={15} aria-hidden strokeWidth={1.5} className={resending ? 'animate-spin' : ''} />
         {resending ? copy.resendSending : resendLeft > 0 ? copy.resendIn(resendLeft) : copy.resend}
       </button>
 

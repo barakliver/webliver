@@ -40,7 +40,7 @@ export function LeadRow({ lead, calls }: { lead: Lead; calls: Call[] }) {
   const openCalls = calls.filter((x) => !x.done);
 
   return (
-    <li className="rounded-2xl border border-line">
+    <li className="rounded-none border border-line">
       <div className="flex flex-wrap items-center gap-3 p-4">
         <div className="min-w-0 flex-1">
           <p className="font-medium text-ink">{lead.full_name}</p>
@@ -56,7 +56,7 @@ export function LeadRow({ lead, calls }: { lead: Lead; calls: Call[] }) {
         </div>
 
         {openCalls.length > 0 && (
-          <span className="rounded-full bg-warn-wash px-3 py-1 text-[12.5px] text-warn">
+          <span className="rounded-none bg-warn-wash px-3 py-1 text-[12.5px] text-warn">
             {c.callTitle} · {show(openCalls[0].remind_on)}
           </span>
         )}
@@ -81,7 +81,7 @@ export function LeadRow({ lead, calls }: { lead: Lead; calls: Call[] }) {
       {open && (
         <div className="space-y-4 border-t border-line bg-surface-100 p-4">
           {lead.message && (
-            <p className="rounded-2xl bg-white px-4 py-3 text-[14px] leading-relaxed text-ink-soft">“{lead.message}”</p>
+            <p className="rounded-none bg-white px-4 py-3 text-[14px] leading-relaxed text-ink-soft">“{lead.message}”</p>
           )}
 
           <form action={setLeadNote} className="flex flex-wrap gap-2">
@@ -99,7 +99,7 @@ export function LeadRow({ lead, calls }: { lead: Lead; calls: Call[] }) {
             <Book />
           </form>
           {state && !state.ok && state.error && (
-            <p role="alert" className="rounded-2xl border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">{state.error}</p>
+            <p role="alert" className="rounded-none border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">{state.error}</p>
           )}
 
           <form action={convertLead}>

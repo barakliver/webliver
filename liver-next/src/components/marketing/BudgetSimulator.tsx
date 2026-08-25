@@ -50,7 +50,7 @@ function Chips<T extends string>({ items, value, onChange, label }: {
         {items.map((i) => (
           <button
             key={i.v} type="button" onClick={() => onChange(i.v)} aria-pressed={value === i.v}
-            className={`inline-flex min-h-[44px] items-center rounded-full px-4 text-[14px] transition sm:min-h-0 sm:py-2 ${
+            className={`inline-flex min-h-[44px] items-center rounded-none px-4 text-[14px] transition sm:min-h-0 sm:py-2 ${
               value === i.v ? 'bg-ink text-white shadow-soft' : 'border border-line bg-white/70 text-ink-soft hover:bg-white'
             }`}
           >{i.label}</button>
@@ -94,7 +94,7 @@ export function BudgetSimulator() {
 
   return (
     <div>
-      <p className="mb-6 rounded-2xl border border-warn/30 bg-warn-wash px-4 py-3 text-[14px] leading-relaxed text-warn">
+      <p className="mb-6 rounded-none border border-warn/30 bg-warn-wash px-4 py-3 text-[14px] leading-relaxed text-warn">
         כל המספרים כאן הם אומדן בלבד ואינם מדויקים. הם נועדו לתת סדר גודל להתחלה, ומשתנים לפי הספקים, המקום והעונה.
         המחיר האמיתי נקבע רק מול הצעות מחיר.
       </p>
@@ -116,7 +116,7 @@ export function BudgetSimulator() {
               {RATES.map((v) => (
                 <button
                   key={v} type="button" onClick={() => setAttendance(v)} aria-pressed={attendance === v}
-                  className={`inline-flex min-h-[44px] items-center rounded-full px-4 text-[14px] transition sm:min-h-0 sm:py-2 ${
+                  className={`inline-flex min-h-[44px] items-center rounded-none px-4 text-[14px] transition sm:min-h-0 sm:py-2 ${
                     attendance === v ? 'bg-ink text-white shadow-soft' : 'border border-line bg-white/70 text-ink-soft hover:bg-white'
                   }`}
                 >{Math.round(v * 100)}%</button>
@@ -153,7 +153,7 @@ export function BudgetSimulator() {
           {/* "עד" rather than a dash. A range written with a dash reads
               ambiguously in a right-to-left line, where the eye cannot tell
               which end it started from; the word cannot be read backwards. */}
-          <p className="font-display text-display font-semibold text-ink">
+          <p className="font-display text-display font-light text-ink">
             <span className="tabular-nums">{ilsRounded(r.low)}</span>
             <span className="mx-2 text-[0.6em] font-normal text-ink-mute">עד</span>
             <span className="tabular-nums">{ilsRounded(r.high)}</span>
@@ -177,14 +177,14 @@ export function BudgetSimulator() {
                     <span className="tabular-nums text-ink"><Money value={l.amount} /></span>
                   </div>
                   <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-surface-200">
-                    <div className="h-full rounded-full bg-accent transition-[width] duration-500" style={{ width: `${pct}%` }} />
+                    <div className="h-full rounded-none bg-accent transition-[width] duration-500" style={{ width: `${pct}%` }} />
                   </div>
                 </li>
               );
             })}
           </ul>
 
-          <p className="mt-6 rounded-2xl bg-accent-wash px-4 py-3 text-[14px] text-ink-soft">
+          <p className="mt-6 rounded-none bg-accent-wash px-4 py-3 text-[14px] text-ink-soft">
             כל עשרה אורחים נוספים: <b className="tabular-nums text-ink"><Money value={r.marginalTen} /></b>
           </p>
 

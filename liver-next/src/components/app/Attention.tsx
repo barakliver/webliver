@@ -18,10 +18,10 @@ export function AttentionList({ items }: { items: AttentionItem[] }) {
     return (
       <div className="card flex items-center gap-4">
         <span className="grid h-11 w-11 place-items-center rounded-full bg-ok-wash text-ok">
-          <CircleCheck size={22} strokeWidth={1.9} aria-hidden />
+          <CircleCheck size={22} strokeWidth={1.5} aria-hidden />
         </span>
         <div>
-          <p className="font-display text-[19px] font-semibold text-ink">{c.clear}</p>
+          <p className="font-display text-[19px] font-light text-ink">{c.clear}</p>
           <p className="text-[14px] text-ink-soft">{c.clearSub}</p>
         </div>
       </div>
@@ -46,7 +46,7 @@ export function AttentionList({ items }: { items: AttentionItem[] }) {
           <li key={it.id} className="min-w-0">
             <Link
               href={it.href}
-              className="group flex items-center gap-3.5 rounded-xl2 border border-line bg-card
+              className="group flex items-center gap-3.5 rounded-none border border-line bg-card
                          p-4 shadow-soft transition duration-200 ease-out hover:shadow-lift"
             >
               <span
@@ -56,7 +56,7 @@ export function AttentionList({ items }: { items: AttentionItem[] }) {
                   urgent ? 'bg-bad-wash text-bad' : 'bg-accent-wash text-accent',
                 )}
               >
-                <Icon size={19} strokeWidth={1.9} />
+                <Icon size={19} strokeWidth={1.5} />
               </span>
 
               <span className="min-w-0 flex-1">
@@ -72,7 +72,7 @@ export function AttentionList({ items }: { items: AttentionItem[] }) {
 
               <ChevronLeft
                 size={17}
-                strokeWidth={2}
+                strokeWidth={1.5}
                 aria-hidden
                 className="shrink-0 text-ink-mute transition-transform duration-200
                            group-hover:-translate-x-0.5"

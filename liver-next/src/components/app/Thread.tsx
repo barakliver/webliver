@@ -39,7 +39,7 @@ function Send_({ }: Record<string, never>) {
   const { pending } = useFormStatus();
   return (
     <button type="submit" disabled={pending} className="btn-primary inline-flex items-center gap-2 disabled:opacity-60">
-      <Send size={16} aria-hidden strokeWidth={1.75} />
+      <Send size={16} aria-hidden strokeWidth={1.5} />
       {pending ? c.sending : c.send}
     </button>
   );
@@ -64,14 +64,14 @@ export function Thread({ clientId, messages, viewerId }: {
 
   return (
     <section className="card">
-      <h2 className="flex items-center gap-2 font-display text-[18px] font-semibold text-ink">
-        <MessagesSquare size={18} aria-hidden strokeWidth={1.75} />
+      <h2 className="flex items-center gap-2 font-display text-[18px] font-light text-ink">
+        <MessagesSquare size={18} aria-hidden strokeWidth={1.5} />
         {c.title}
       </h2>
       <p className="mt-1 text-[14px] text-ink-soft">{c.sub}</p>
 
       {messages.length === 0 ? (
-        <p className="mt-5 rounded-2xl bg-surface-100 px-4 py-3 text-[14.5px] text-ink-mute">{c.empty}</p>
+        <p className="mt-5 rounded-none bg-surface-100 px-4 py-3 text-[14.5px] text-ink-mute">{c.empty}</p>
       ) : (
         <ol className="mt-5 space-y-3">
           {messages.map((m) => {
@@ -89,7 +89,7 @@ export function Thread({ clientId, messages, viewerId }: {
                   <Avatar name={m.author_name} src={m.author_avatar} size={32} />
                   <div className={`min-w-0 max-w-[80%] ${mine ? 'text-left' : ''}`}>
                     <div
-                      className={`rounded-2xl px-3.5 py-2.5 text-[14.5px] leading-[1.65] ${
+                      className={`rounded-none px-3.5 py-2.5 text-[14.5px] leading-[1.65] ${
                         mine ? 'bg-ink text-white' : 'bg-surface-200 text-ink'
                       }`}
                     >
@@ -130,7 +130,7 @@ export function Thread({ clientId, messages, viewerId }: {
         <Send_ />
       </form>
       {state && !state.ok && state.error && (
-        <p role="alert" className="mt-3 rounded-2xl bg-bad-wash px-4 py-2.5 text-[14px] text-bad">{state.error}</p>
+        <p role="alert" className="mt-3 rounded-none bg-bad-wash px-4 py-2.5 text-[14px] text-bad">{state.error}</p>
       )}
     </section>
   );

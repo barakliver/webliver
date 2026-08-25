@@ -30,14 +30,14 @@ export function PortalWorkspace({
   return (
     <div>
       <article className="card">
-        <h2 className="font-display text-[26px] font-semibold text-ink">{c.display_name}</h2>
+        <h2 className="font-display text-[26px] font-light text-ink">{c.display_name}</h2>
         <p className="mt-2 text-[15.5px] text-ink-soft">
           {formatDate(dateFmt, c.event_date, appCopy.portal.dateTbd)}
           {c.venue ? ` · ${c.venue}` : ''}
         </p>
         {left !== null && left >= 0 && (
           <div className="mt-6 flex items-baseline gap-2.5">
-            <span className="font-display text-[44px] font-semibold leading-none text-ink">{left}</span>
+            <span className="font-display text-[44px] font-light leading-none text-ink">{left}</span>
             <span className="text-[15px] text-ink-mute">{appCopy.portal.daysLeft}</span>
           </div>
         )}

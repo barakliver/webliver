@@ -25,7 +25,7 @@ function Choice<T extends string>({ label, hint, value, options, labels, onChang
             type="button"
             aria-pressed={o === value}
             onClick={() => onChange(o)}
-            className={`inline-flex min-h-[44px] items-center rounded-full border px-4 text-[14px] transition sm:min-h-[38px] ${
+            className={`inline-flex min-h-[44px] items-center rounded-none border px-4 text-[14px] transition sm:min-h-[38px] ${
               o === value
                 ? 'border-ink bg-ink font-medium text-surface'
                 : 'border-line-strong text-ink-soft hover:border-accent/40 hover:text-accent'
@@ -54,7 +54,7 @@ function Number_({ label, hint, value, onChange, min, max, step = 1, suffix }: {
           aria-label={label}
           className="h-11 flex-1 accent-accent"
         />
-        <span className="w-[74px] shrink-0 text-left font-display text-[17px] font-semibold tabular-nums text-ink">
+        <span className="w-[74px] shrink-0 text-left font-display text-[17px] font-light tabular-nums text-ink">
           {value}{suffix ? ` ${suffix}` : ''}
         </span>
       </div>
@@ -112,8 +112,8 @@ export function BarCalculator({ guestEstimate, confirmedGuests }: {
       `}</style>
 
       <div className="no-print">
-        <h2 className="inline-flex items-center gap-2 font-display text-[18px] font-semibold text-ink">
-          <Martini size={18} aria-hidden strokeWidth={1.75} />
+        <h2 className="inline-flex items-center gap-2 font-display text-[18px] font-light text-ink">
+          <Martini size={18} aria-hidden strokeWidth={1.5} />
           {c.title}
         </h2>
         <p className="mt-1 text-[14px] text-ink-soft">{c.sub}</p>
@@ -134,7 +134,7 @@ export function BarCalculator({ guestEstimate, confirmedGuests }: {
 
       <div className="bar-print mt-8">
         <div className="flex flex-wrap items-baseline justify-between gap-3 border-b border-line pb-3">
-          <h3 className="font-display text-[18px] font-semibold text-ink">{c.planTitle}</h3>
+          <h3 className="font-display text-[18px] font-light text-ink">{c.planTitle}</h3>
           <p className="text-[13px] tabular-nums text-ink-mute">
             {plan.litres} {c.litresOut}
             {style !== 'barak' && ` · ${plan.servings} ${c.servingsOut}`}
@@ -150,7 +150,7 @@ export function BarCalculator({ guestEstimate, confirmedGuests }: {
           {lines.map((l) => (
             <li key={l.key} className="flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b border-line py-2.5 last:border-0">
               <span className="min-w-0 flex-1 text-[15px] text-ink">{c.items[l.key]}</span>
-              <span className="font-display text-[16px] font-semibold tabular-nums text-ink">
+              <span className="font-display text-[16px] font-light tabular-nums text-ink">
                 {l.qty} <span className="text-[13px] font-normal text-ink-mute">{c.units[l.key]}</span>
               </span>
               {l.total > 0 && (
@@ -172,13 +172,13 @@ export function BarCalculator({ guestEstimate, confirmedGuests }: {
           {c.prices}
         </button>
         <button type="button" className="btn-ghost text-[14px]" onClick={() => window.print()}>
-          <Printer size={16} aria-hidden strokeWidth={1.75} />
+          <Printer size={16} aria-hidden strokeWidth={1.5} />
           {c.print}
         </button>
       </div>
 
       {showPrices && (
-        <div className="no-print mt-4 rounded-2xl border border-line bg-surface-100 p-4">
+        <div className="no-print mt-4 rounded-none border border-line bg-surface-100 p-4">
           <p className="text-[13px] text-ink-mute">{c.pricesHint}</p>
           <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {(Object.keys(prices) as (keyof Prices)[]).map((k) => (

@@ -93,7 +93,7 @@ export default async function RunsheetPage({
 
       <div className="no-print mb-6 flex flex-wrap items-center justify-between gap-3">
         <Link href={`/app/clients/${id}`} className="btn-quiet inline-flex items-center gap-1.5 px-0 text-[14px]">
-          <ArrowRight size={16} aria-hidden strokeWidth={2} />
+          <ArrowRight size={16} aria-hidden strokeWidth={1.5} />
           {c.back}
         </Link>
         <PrintButton label={c.print} />
@@ -109,7 +109,7 @@ export default async function RunsheetPage({
               key={a.value ?? 'all'}
               href={a.value ? `/app/clients/${id}/runsheet?for=${a.value}` : `/app/clients/${id}/runsheet`}
               aria-current={on ? 'page' : undefined}
-              className={`min-h-[44px] rounded-full border px-4 text-[14px] leading-[42px] sm:min-h-[38px] sm:leading-[36px] transition ${
+              className={`min-h-[44px] rounded-none border px-4 text-[14px] leading-[42px] sm:min-h-[38px] sm:leading-[36px] transition ${
                 on ? 'border-ink bg-ink font-medium text-white' : 'border-line-strong text-ink-soft hover:border-accent/40 hover:text-accent'
               }`}
             >
@@ -121,7 +121,7 @@ export default async function RunsheetPage({
 
       <div className="runsheet-print">
         <header className="border-b-2 border-ink pb-4">
-          <h1 className="font-display text-[27px] font-semibold text-ink">{client.display_name}</h1>
+          <h1 className="font-display text-[27px] font-light text-ink">{client.display_name}</h1>
           <p className="mt-1.5 text-[15px] text-ink-soft">
             {formatDate(dateFmt, client.event_date, c.noDate)}
             {client.venue ? ` · ${client.venue}` : ''}
@@ -149,7 +149,7 @@ export default async function RunsheetPage({
                   {/* Left to right inside a right-to-left page, because a clock
                       reads that way in every language. */}
                   <span className="w-[62px] shrink-0 text-center" dir="ltr">
-                    <span className="block font-display text-[17px] font-semibold tabular-nums text-ink">
+                    <span className="block font-display text-[17px] font-light tabular-nums text-ink">
                       {hhmm(i.at_time)}
                     </span>
                     {span.minutes !== null && (

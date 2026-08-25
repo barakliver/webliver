@@ -50,7 +50,7 @@ export default async function CalendarPage() {
             all, and the subscription under it for the people who want the
             diary to stay right without being re-saved. */}
         <a href="/app/calendar.ics" className="btn-ghost inline-flex items-center gap-2 text-[14px]">
-          <CalendarPlus size={16} aria-hidden strokeWidth={1.75} />
+          <CalendarPlus size={16} aria-hidden strokeWidth={1.5} />
           {c.subscribe}
         </a>
         <CalendarFeed />
@@ -80,9 +80,9 @@ export default async function CalendarPage() {
                             <li key={i.id}>
                               <Link
                                 href={i.href}
-                                className={`flex items-center gap-3 rounded-xl px-3 py-2.5 transition hover:brightness-[0.98] ${TONE[i.kind]}`}
+                                className={`flex items-center gap-3 rounded-none px-3 py-2.5 transition hover:brightness-[0.98] ${TONE[i.kind]}`}
                               >
-                                <Icon size={16} aria-hidden strokeWidth={1.75} className="shrink-0" />
+                                <Icon size={16} aria-hidden strokeWidth={1.5} className="shrink-0" />
                                 <span className="min-w-0 flex-1">
                                   <span className={`block truncate text-[15px] ${i.done ? 'line-through opacity-60' : ''}`}>
                                     {i.title}

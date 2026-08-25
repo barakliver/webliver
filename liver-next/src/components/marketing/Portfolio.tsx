@@ -11,7 +11,7 @@ export function Portfolio() {
     <ul className="grid list-none grid-cols-1 gap-5 p-0 sm:grid-cols-2 lg:grid-cols-3">
       {portfolio.map((shot, i) => (
         <li key={shot.slug}>
-          <figure className="group m-0 overflow-hidden rounded-2xl bg-surface-200">
+          <figure className="group m-0 overflow-hidden rounded-none bg-surface-200">
             <div className="relative overflow-hidden" style={{ aspectRatio: SHOT_RATIO }}>
               <Image
                 src={`/portfolio/${shot.slug}-w1400.webp`}

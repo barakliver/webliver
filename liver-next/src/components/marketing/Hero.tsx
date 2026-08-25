@@ -44,11 +44,11 @@ export function Hero({ site }: { site: SiteCopy }) {
       <div className="shell flex min-h-[86svh] flex-col justify-center py-24 sm:py-32">
         <p className="eyebrow animate-rise !text-white/80">{site.hero.eyebrow}</p>
 
-        <h1 className="mt-4 max-w-[16ch] animate-rise font-display text-display-xl font-semibold text-white [animation-delay:60ms]">
+        <h1 className="mt-4 max-w-[16ch] animate-rise font-display text-display-xl font-light text-white [animation-delay:60ms]">
           {site.hero.headline}
         </h1>
 
-        <p className="mt-6 animate-rise font-display text-title font-semibold text-white/95 [animation-delay:120ms]">
+        <p className="mt-6 animate-rise font-display text-title font-light text-white/95 [animation-delay:120ms]">
           {site.hero.name}
         </p>
 

@@ -15,9 +15,9 @@ function Tile({ label, value, tone = 'plain', sub }: {
   const colour =
     tone === 'warn' ? 'text-bad' : tone === 'good' ? 'text-ok' : 'text-ink';
   return (
-    <div className="rounded-2xl border border-line px-4 py-3.5">
+    <div className="rounded-none border border-line px-4 py-3.5">
       <div className="text-[12.5px] text-ink-mute">{label}</div>
-      <div className={`mt-1 font-display text-[22px] font-semibold tabular-nums leading-none ${colour}`}>
+      <div className={`mt-1 font-display text-[22px] font-light tabular-nums leading-none ${colour}`}>
         {value}
       </div>
       {sub && <div className="mt-1.5 text-[12px] text-ink-mute">{sub}</div>}
@@ -68,14 +68,14 @@ export function EventSummary({ clientId, summary }: { clientId: string; summary:
       </div>
 
       {money.overdue > 0 && (
-        <p className="inline-flex items-center gap-2 rounded-2xl border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
-          <CircleAlert size={16} aria-hidden strokeWidth={1.75} />
+        <p className="inline-flex items-center gap-2 rounded-none border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+          <CircleAlert size={16} aria-hidden strokeWidth={1.5} />
           {t.overdue} {shekels(money.overdue)}
         </p>
       )}
 
       <div className="card">
-        <h2 className="font-display text-[18px] font-semibold text-ink">{c.nextUp}</h2>
+        <h2 className="font-display text-[18px] font-light text-ink">{c.nextUp}</h2>
         {next.length === 0 ? (
           <p className="mt-3 text-[14.5px] text-ink-mute">{c.nextUpNone}</p>
         ) : (
@@ -85,14 +85,14 @@ export function EventSummary({ clientId, summary }: { clientId: string; summary:
               return (
                 <li
                   key={`${item.kind}-${item.id}`}
-                  className={`flex flex-wrap items-center gap-3 rounded-2xl border px-4 py-3 ${
+                  className={`flex flex-wrap items-center gap-3 rounded-none border px-4 py-3 ${
                     late ? 'border-bad/25 bg-bad-wash/60' : 'border-line'
                   }`}
                 >
                   <span className={late ? 'text-bad' : 'text-ink-mute'} aria-hidden>
                     {item.kind === 'task'
-                      ? <CheckSquare size={16} strokeWidth={1.75} />
-                      : <Coins size={16} strokeWidth={1.75} />}
+                      ? <CheckSquare size={16} strokeWidth={1.5} />
+                      : <Coins size={16} strokeWidth={1.5} />}
                   </span>
                   <span className="min-w-0 flex-1 text-[14.5px] text-ink">{item.title}</span>
                   {item.amount !== undefined && item.amount > 0 && (

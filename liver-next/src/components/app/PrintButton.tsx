@@ -8,7 +8,7 @@ import { Printer } from 'lucide-react';
 export function PrintButton({ label }: { label: string }) {
   return (
     <button type="button" onClick={() => window.print()} className="btn-primary inline-flex items-center gap-2">
-      <Printer size={17} aria-hidden strokeWidth={1.75} />
+      <Printer size={17} aria-hidden strokeWidth={1.5} />
       {label}
     </button>
   );

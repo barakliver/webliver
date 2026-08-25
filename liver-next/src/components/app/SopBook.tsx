@@ -33,7 +33,7 @@ export function SopBook() {
       <div className="no-print relative">
         <Search
           size={17}
-          strokeWidth={1.75}
+          strokeWidth={1.5}
           aria-hidden
           className="pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-ink-mute"
         />
@@ -50,9 +50,9 @@ export function SopBook() {
             type="button"
             onClick={() => setQuery('')}
             aria-label={c.clear}
-            className="absolute top-1/2 left-3 -translate-y-1/2 rounded-full p-1.5 text-ink-mute transition hover:bg-surface-200 hover:text-ink"
+            className="absolute top-1/2 left-3 -translate-y-1/2 rounded-none p-1.5 text-ink-mute transition hover:bg-surface-200 hover:text-ink"
           >
-            <X size={15} strokeWidth={2} aria-hidden />
+            <X size={15} strokeWidth={1.5} aria-hidden />
           </button>
         )}
       </div>
@@ -65,7 +65,7 @@ export function SopBook() {
           ) : (
             <ul className="mt-4 space-y-2.5">
               {hits.map((h) => (
-                <li key={h.key} className="rounded-2xl border border-line px-4 py-3.5">
+                <li key={h.key} className="rounded-none border border-line px-4 py-3.5">
                   <p className="text-[12px] text-accent">{h.chapterTitle} · {h.sectionTitle}</p>
                   <p className="mt-1 text-[15px] text-ink">{h.item.text}</p>
                   {h.item.why && <p className="mt-1 text-[13.5px] text-ink-soft">{h.item.why}</p>}
@@ -80,8 +80,8 @@ export function SopBook() {
           {SOP.map((chapter) => (
             <section key={chapter.id} id={chapter.id} className="sop-chapter">
               <header className="border-b-2 border-ink pb-3">
-                <h2 className="inline-flex items-center gap-2 font-display text-[24px] font-semibold text-ink">
-                  <BookOpen size={20} aria-hidden strokeWidth={1.75} className="no-print" />
+                <h2 className="inline-flex items-center gap-2 font-display text-[24px] font-light text-ink">
+                  <BookOpen size={20} aria-hidden strokeWidth={1.5} className="no-print" />
                   {chapter.title}
                 </h2>
                 <p className="mt-2 max-w-2xl text-[14.5px] leading-relaxed text-ink-soft">{chapter.sub}</p>
@@ -90,12 +90,12 @@ export function SopBook() {
               <div className="mt-7 space-y-8">
                 {chapter.sections.map((section) => (
                   <article key={section.id} className="sop-section">
-                    <h3 className="font-display text-[18px] font-semibold text-ink">{section.title}</h3>
+                    <h3 className="font-display text-[18px] font-light text-ink">{section.title}</h3>
                     <p className="mt-1 max-w-2xl text-[13.5px] leading-relaxed text-ink-mute">{section.sub}</p>
 
                     <ul className="mt-4 space-y-2.5">
                       {section.items.map((item, i) => (
-                        <li key={i} className="sop-item flex gap-3.5 rounded-2xl border border-line px-4 py-3.5">
+                        <li key={i} className="sop-item flex gap-3.5 rounded-none border border-line px-4 py-3.5">
                           {/* A rule of thumb reads as a rule when it is
                               numbered. These are ordered by how a day runs, so
                               the number carries something true. */}

@@ -57,22 +57,22 @@ export function CalendarFeed({ clientId }: { clientId?: string }) {
 
   return (
     <div className="card">
-      <h2 className="font-display text-[17px] font-semibold text-ink">{c.title}</h2>
+      <h2 className="font-display text-[17px] font-light text-ink">{c.title}</h2>
       <p className="mt-1 text-[13.5px] text-ink-soft">{c.sub}</p>
 
       {!token ? (
         <>
           <button type="button" onClick={create} disabled={pending} className="btn-ghost mt-3 text-[14px]">
-            <CalendarPlus size={16} aria-hidden strokeWidth={1.75} />
+            <CalendarPlus size={16} aria-hidden strokeWidth={1.5} />
             {pending ? c.creating : c.create}
           </button>
           {gone && <p className="mt-2 text-[13.5px] text-ok">{c.revoked}</p>}
         </>
       ) : (
         <div className="mt-3 space-y-3">
-          <p className="rounded-2xl bg-warn-wash p-3 text-[13.5px] text-warn">{c.warning}</p>
+          <p className="rounded-none bg-warn-wash p-3 text-[13.5px] text-warn">{c.warning}</p>
 
-          <code className="block overflow-x-auto rounded-2xl bg-surface-100 p-3 text-[12.5px] text-ink-soft" dir="ltr">
+          <code className="block overflow-x-auto rounded-none bg-surface-100 p-3 text-[12.5px] text-ink-soft" dir="ltr">
             {url}
           </code>
 

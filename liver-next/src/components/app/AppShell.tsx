@@ -79,7 +79,7 @@ export function AppShell({
                 <span className="sr-only">{brand.name}</span>
               </>
             ) : (
-              <span className="truncate font-display text-[17px] font-semibold text-ink">
+              <span className="truncate font-display text-[17px] font-light text-ink">
                 {brand.name}
               </span>
             )}
@@ -91,7 +91,7 @@ export function AppShell({
             <NoticeBell notices={notices} />
             <Link
               href="/app/me"
-              className="rounded-full transition-opacity hover:opacity-80"
+              className="rounded-none transition-opacity hover:opacity-80"
               aria-label={appCopy.profile.title}
             >
               <Avatar name={account.fullName || account.email} src={account.avatarUrl} size={34} />
@@ -102,10 +102,10 @@ export function AppShell({
                 aria-label={appCopy.signOut}
                 title={appCopy.signOut}
                 className="inline-flex min-h-[40px] min-w-[40px] items-center justify-center gap-2
-                           rounded-full px-3 text-[14px] text-ink-soft transition
+                           rounded-none px-3 text-[14px] text-ink-soft transition
                            hover:bg-surface-200 hover:text-ink"
               >
-                <LogOut size={16} strokeWidth={1.9} aria-hidden />
+                <LogOut size={16} strokeWidth={1.5} aria-hidden />
                 <span className="hidden sm:inline">{appCopy.signOut}</span>
               </button>
             </form>

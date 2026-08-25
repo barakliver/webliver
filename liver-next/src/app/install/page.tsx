@@ -24,8 +24,8 @@ function Steps({ icon: Icon, title, steps }: {
 }) {
   return (
     <section className="card">
-      <h2 className="inline-flex items-center gap-2 font-display text-[18px] font-semibold text-ink">
-        <Icon size={18} aria-hidden strokeWidth={1.75} />
+      <h2 className="inline-flex items-center gap-2 font-display text-[18px] font-light text-ink">
+        <Icon size={18} aria-hidden strokeWidth={1.5} />
         {title}
       </h2>
       <ol className="mt-4 space-y-3">
@@ -50,7 +50,7 @@ export default function InstallPage() {
           {site.brand}
         </Link>
 
-        <h1 className="mt-5 font-display text-title font-semibold text-ink">{c.title}</h1>
+        <h1 className="mt-5 font-display text-title font-light text-ink">{c.title}</h1>
         <p className="mt-2 text-[15.5px] leading-relaxed text-ink-soft">{c.sub}</p>
 
         <ul className="mt-5 space-y-1.5 text-[14.5px] text-ink-soft">
@@ -69,8 +69,8 @@ export default function InstallPage() {
         </div>
 
         <section className="card mt-6">
-          <h2 className="inline-flex items-center gap-2 font-display text-[16.5px] font-semibold text-ink">
-            <CircleHelp size={17} aria-hidden strokeWidth={1.75} />
+          <h2 className="inline-flex items-center gap-2 font-display text-[16.5px] font-light text-ink">
+            <CircleHelp size={17} aria-hidden strokeWidth={1.5} />
             {c.troubleTitle}
           </h2>
           <ul className="mt-3 space-y-2 text-[14.5px] leading-relaxed text-ink-soft">

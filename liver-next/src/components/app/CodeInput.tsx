@@ -53,9 +53,14 @@ export function CodeInput({ name, label, length }: {
     focus(i);
   };
 
-  const boxSize = length > 6
-    ? 'size-10 text-[19px] sm:size-12 sm:text-[21px]'
-    : 'size-12 text-[22px] sm:size-14';
+  /* A rule under each digit rather than a box around it. 46x60 from the
+     handoff; the height is what keeps a bottom-border cell feeling like a
+     place to type rather than an underline in a sentence, and it clears the
+     44px target without any padding tricks. Narrower when the code is longer
+     than six, so eight cells still fit a 320px phone. */
+  const cell = length > 6
+    ? 'h-[56px] w-[34px] text-[22px] sm:w-[40px]'
+    : 'h-[60px] w-[38px] text-[26px] sm:w-[46px]';
 
   return (
     <div>
@@ -71,12 +76,12 @@ export function CodeInput({ name, label, length }: {
           aria-label={label}
           value={plain}
           onChange={(e) => setPlain(e.target.value.replace(/\D/g, '').slice(0, 12))}
-          className="field mt-1.5 w-full text-center text-[22px] font-semibold tracking-[0.4em] tabular-nums"
+          className="field mt-1.5 w-full text-center font-display text-[26px] font-light tracking-[0.4em] tabular-nums"
         />
       ) : (
         /* Left to right inside a right-to-left page, because a number reads
            that way regardless of the language around it. */
-        <div dir="ltr" className="mt-1.5 flex justify-center gap-2">
+        <div dir="ltr" className="mt-3 flex justify-center gap-2">
           {digits.map((d, i) => (
             <input
               key={i}
@@ -89,7 +94,17 @@ export function CodeInput({ name, label, length }: {
               inputMode="numeric"
               autoComplete={i === 0 ? 'one-time-code' : 'off'}
               aria-label={`${label} ${i + 1}`}
-              className={`field p-0 text-center font-semibold tabular-nums ${boxSize}`}
+              /* The border is the whole control: it goes gold the moment the
+                 cell holds a digit, which is the only feedback there is now
+                 that the fill and the focus ring are gone. */
+              className={[
+                'rounded-none border-0 border-b bg-transparent p-0 text-center tabular-nums',
+                'font-display font-light text-ink outline-none',
+                'transition-colors duration-300 ease-out',
+                d ? 'border-b-2 border-accent-line' : 'border-b border-line-strong',
+                'focus:border-b-2 focus:border-accent',
+                cell,
+              ].join(' ')}
               onChange={(e) => write(i, e.target.value)}
               onFocus={(e) => e.target.select()}
               onKeyDown={(e) => {

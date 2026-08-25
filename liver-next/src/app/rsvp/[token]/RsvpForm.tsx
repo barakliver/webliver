@@ -29,7 +29,7 @@ export function RsvpForm({ token, initial }: {
     return (
       <div className="card text-center" role="status">
         <div aria-hidden className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-accent-wash text-[22px]">✓</div>
-        <h2 className="mt-4 font-display text-title font-semibold text-ink">
+        <h2 className="mt-4 font-display text-title font-light text-ink">
           {state.status === 'attending' ? c.okComing : c.okNotComing}
         </h2>
         <p className="mt-2 text-[15.5px] text-ink-soft">
@@ -45,10 +45,10 @@ export function RsvpForm({ token, initial }: {
       <input type="hidden" name="token" value={token} />
 
       {initial.responded && (
-        <p className="rounded-2xl bg-surface-200 px-4 py-3 text-[14px] text-ink-soft">{c.already}</p>
+        <p className="rounded-none bg-surface-200 px-4 py-3 text-[14px] text-ink-soft">{c.already}</p>
       )}
       {state && !state.ok && state.error && (
-        <p role="alert" className="rounded-2xl border border-bad/25 bg-bad-wash px-4 py-3 text-[14.5px] text-bad">
+        <p role="alert" className="rounded-none border border-bad/25 bg-bad-wash px-4 py-3 text-[14.5px] text-bad">
           {state.error}
         </p>
       )}
@@ -59,7 +59,7 @@ export function RsvpForm({ token, initial }: {
           {(['attending', 'declined'] as const).map((v) => (
             <label
               key={v}
-              className={`cursor-pointer rounded-2xl border px-5 py-4 text-center text-[15.5px] transition ${
+              className={`cursor-pointer rounded-none border px-5 py-4 text-center text-[15.5px] transition ${
                 coming === v ? 'border-ink bg-ink text-white' : 'border-line bg-white/70 text-ink hover:bg-white'
               }`}
             >

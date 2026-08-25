@@ -30,7 +30,7 @@ function Busy({ label, busy }: { label: string; busy: string }) {
 
 function Alert({ text }: { text: string }) {
   return (
-    <p role="alert" className="mt-3 rounded-2xl border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+    <p role="alert" className="mt-3 rounded-none border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
       {text}
     </p>
   );
@@ -153,7 +153,7 @@ function Row({
 
   if (editing) {
     return (
-      <li className="rounded-2xl border border-accent/40 bg-surface-50 p-4">
+      <li className="rounded-none border border-accent/40 bg-surface-50 p-4">
         <form action={action} noValidate>
           <input type="hidden" name="item_id" value={item.id} />
           <input type="hidden" name="client_id" value={clientId} />
@@ -169,13 +169,13 @@ function Row({
   }
 
   return (
-    <li className={`group flex gap-4 rounded-2xl border px-4 py-3.5 transition ${
+    <li className={`group flex gap-4 rounded-none border px-4 py-3.5 transition ${
       clash ? 'border-warn/30 bg-warn-wash/70' : 'border-line hover:border-line-strong'
     }`}>
       {/* Left to right inside a right-to-left page, because a clock reads that
           way in every language. */}
       <div className="w-[62px] shrink-0 text-center" dir="ltr">
-        <div className="font-display text-[17px] font-semibold tabular-nums text-ink">{hhmm(item.at_time)}</div>
+        <div className="font-display text-[17px] font-light tabular-nums text-ink">{hhmm(item.at_time)}</div>
         {span.minutes !== null && (
           <div className={`mt-0.5 text-[11.5px] tabular-nums ${span.stated ? 'text-accent' : 'text-ink-mute'}`}>
             {span.stated ? humanSpan(span.minutes) : `↓ ${humanSpan(span.minutes)}`}
@@ -188,7 +188,7 @@ function Row({
         {item.note && <p className="mt-0.5 text-[13px] text-ink-soft">{item.note}</p>}
 
         <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px]">
-          <span className={`rounded-full px-2 py-0.5 ${trackTone[item.track]}`}>{labels[item.track]}</span>
+          <span className={`rounded-none px-2 py-0.5 ${trackTone[item.track]}`}>{labels[item.track]}</span>
           {showOwner && item.owner && <span className="text-ink-mute">{item.owner}</span>}
           {item.audience.length > 0 && (
             <span className="text-ink-mute">
@@ -199,7 +199,7 @@ function Row({
 
         {clash && (
           <p className="mt-2 inline-flex items-center gap-1.5 text-[12.5px] text-warn">
-            <TriangleAlert size={14} aria-hidden strokeWidth={2} />
+            <TriangleAlert size={14} aria-hidden strokeWidth={1.5} />
             {c.overlap(clash.withTitle)}
           </p>
         )}
@@ -208,20 +208,20 @@ function Row({
       <div className="flex shrink-0 items-start gap-1">
         <button
           type="button" onClick={() => setEditing(true)}
-          className="rounded-full p-1.5 text-ink-mute transition hover:bg-surface-200 hover:text-ink"
+          className="rounded-none p-1.5 text-ink-mute transition hover:bg-surface-200 hover:text-ink"
           title={c.edit} aria-label={`${c.edit} ${item.title}`}
         >
-          <Pencil size={15} aria-hidden strokeWidth={1.75} />
+          <Pencil size={15} aria-hidden strokeWidth={1.5} />
         </button>
         <form action={deleteDayItem}>
           <input type="hidden" name="item_id" value={item.id} />
           <input type="hidden" name="client_id" value={clientId} />
           <button
             type="submit"
-            className="rounded-full p-1.5 text-ink-mute transition hover:bg-bad-wash hover:text-bad"
+            className="rounded-none p-1.5 text-ink-mute transition hover:bg-bad-wash hover:text-bad"
             title={c.remove} aria-label={`${c.remove} ${item.title}`}
           >
-            <Trash2 size={15} aria-hidden strokeWidth={1.75} />
+            <Trash2 size={15} aria-hidden strokeWidth={1.5} />
           </button>
         </form>
       </div>
@@ -240,9 +240,9 @@ function Templates({ clientId }: { clientId: string }) {
   const [chosen, setChosen] = useState<string | null>(null);
 
   return (
-    <div className="mt-5 rounded-2xl border border-dashed border-line-strong bg-surface-50 p-5">
-      <h3 className="inline-flex items-center gap-2 font-display text-[16px] font-semibold text-ink">
-        <Wand2 size={16} aria-hidden strokeWidth={1.75} />
+    <div className="mt-5 rounded-none border border-dashed border-line-strong bg-surface-50 p-5">
+      <h3 className="inline-flex items-center gap-2 font-display text-[16px] font-light text-ink">
+        <Wand2 size={16} aria-hidden strokeWidth={1.5} />
         {c.templateTitle}
       </h3>
       <p className="mt-1 text-[13.5px] text-ink-soft">{c.templateSub}</p>
@@ -254,7 +254,7 @@ function Templates({ clientId }: { clientId: string }) {
             type="button"
             aria-pressed={chosen === t.id}
             onClick={() => setChosen(t.id)}
-            className={`rounded-2xl border p-4 text-right transition ${
+            className={`rounded-none border p-4 text-right transition ${
               chosen === t.id
                 ? 'border-accent bg-white shadow-soft'
                 : 'border-line bg-white/60 hover:border-accent/40'
@@ -320,8 +320,8 @@ export function DaySchedule({ clientId, items, labelA, labelB, viewer = 'produce
     <section className="card">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="inline-flex items-center gap-2 font-display text-[18px] font-semibold text-ink">
-            <Clock size={18} aria-hidden strokeWidth={1.75} />
+          <h2 className="inline-flex items-center gap-2 font-display text-[18px] font-light text-ink">
+            <Clock size={18} aria-hidden strokeWidth={1.5} />
             {c.title}
           </h2>
           <p className="mt-1 text-[14px] text-ink-soft">{c.sub}</p>
@@ -342,17 +342,17 @@ export function DaySchedule({ clientId, items, labelA, labelB, viewer = 'produce
           </button>
           <button
             type="button"
-            className="inline-flex items-center gap-1.5 rounded-full border border-line-strong bg-white px-4 py-2 text-[13.5px] font-medium text-ink transition hover:border-accent/40 hover:text-accent"
+            className="inline-flex items-center gap-1.5 rounded-none border border-line-strong bg-white px-4 py-2 text-[13.5px] font-medium text-ink transition hover:border-accent/40 hover:text-accent"
             onClick={() => setAdding((v) => !v)}
           >
-            <Plus size={15} aria-hidden strokeWidth={2} />
+            <Plus size={15} aria-hidden strokeWidth={1.5} />
             {adding ? c.addClose : c.addOpen}
           </button>
         </div>
       </div>
 
       {renaming && (
-        <form action={nameAction} className="mt-4 grid gap-3 rounded-2xl bg-surface-100 p-4 sm:grid-cols-[1fr_1fr_auto]">
+        <form action={nameAction} className="mt-4 grid gap-3 rounded-none bg-surface-100 p-4 sm:grid-cols-[1fr_1fr_auto]">
           <input type="hidden" name="client_id" value={clientId} />
           <input name="track_a_label" defaultValue={labelA} maxLength={40} className="field" aria-label={labelA} />
           <input name="track_b_label" defaultValue={labelB} maxLength={40} className="field" aria-label={labelB} />
@@ -363,7 +363,7 @@ export function DaySchedule({ clientId, items, labelA, labelB, viewer = 'produce
       {nameState && !nameState.ok && nameState.error && <Alert text={nameState.error} />}
 
       {adding && (
-        <form action={addAction} className="mt-4 rounded-2xl border border-line bg-surface-50 p-4" noValidate>
+        <form action={addAction} className="mt-4 rounded-none border border-line bg-surface-50 p-4" noValidate>
           <input type="hidden" name="client_id" value={clientId} />
           <LineFields labels={labels} showOwner={showOwner} />
           {addState && !addState.ok && addState.error && <Alert text={addState.error} />}
@@ -381,7 +381,7 @@ export function DaySchedule({ clientId, items, labelA, labelB, viewer = 'produce
       ) : (
         <>
           {wraps && (
-            <p className="mt-5 rounded-2xl bg-surface-100 px-4 py-2.5 text-[13px] text-ink-soft">
+            <p className="mt-5 rounded-none bg-surface-100 px-4 py-2.5 text-[13px] text-ink-soft">
               {c.crossesMidnight}
             </p>
           )}

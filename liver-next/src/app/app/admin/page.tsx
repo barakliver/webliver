@@ -30,7 +30,7 @@ function StatusButton({ id, status, label, tone }: {
       <input type="hidden" name="producer_id" value={id} />
       <input type="hidden" name="status" value={status} />
       <button type="submit" className={`btn-${tone} px-3.5 text-[13.5px]`}>
-        <Icon size={15} aria-hidden strokeWidth={1.75} />
+        <Icon size={15} aria-hidden strokeWidth={1.5} />
         {label}
       </button>
     </form>
@@ -52,7 +52,7 @@ function Band({ title, rows }: { title: string; rows: { label: string; value: nu
             <span
               className={
                 i === 0
-                  ? 'font-display text-[22px] font-semibold tabular-nums text-ink'
+                  ? 'font-display text-[22px] font-light tabular-nums text-ink'
                   : 'text-[15px] font-medium tabular-nums text-ink-soft'
               }
             >
@@ -100,15 +100,15 @@ function Producer({ p }: { p: ProducerRow }) {
     <li className="card">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
-          <h3 className="flex flex-wrap items-center gap-2 font-display text-[17.5px] font-semibold text-ink">
+          <h3 className="flex flex-wrap items-center gap-2 font-display text-[17.5px] font-light text-ink">
             {p.brand}
             {p.isRoot && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-accent-wash px-2.5 py-0.5 text-[12px] font-medium text-accent">
-                <ShieldCheck size={13} aria-hidden strokeWidth={2} />
+              <span className="inline-flex items-center gap-1 rounded-none bg-accent-wash px-2.5 py-0.5 text-[12px] font-medium text-accent">
+                <ShieldCheck size={13} aria-hidden strokeWidth={1.5} />
                 {c.rootBadge}
               </span>
             )}
-            <span className={`rounded-full px-2.5 py-0.5 text-[12px] font-medium ${STATUS_TONE[p.status]}`}>
+            <span className={`rounded-none px-2.5 py-0.5 text-[12px] font-medium ${STATUS_TONE[p.status]}`}>
               {appCopy.pending.statuses[p.status]}
             </span>
           </h3>
@@ -185,8 +185,8 @@ export default async function AdminPage() {
         {/* The screen says out loud what it cannot show. An empty list where a
             list used to be reads as a bug; a paragraph reads as a decision. */}
         <section className="card">
-          <h2 className="flex items-center gap-2 font-display text-[17px] font-semibold text-ink">
-            <Lock size={16} aria-hidden strokeWidth={1.75} />
+          <h2 className="flex items-center gap-2 font-display text-[17px] font-light text-ink">
+            <Lock size={16} aria-hidden strokeWidth={1.5} />
             {c.privacy.title}
           </h2>
           <ul className="mt-2 list-none space-y-1.5 p-0 text-[14px] text-ink-soft">

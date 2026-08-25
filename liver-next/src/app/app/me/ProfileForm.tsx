@@ -93,13 +93,13 @@ export function ProfileForm({
           id="avatar-file"
         />
         <label htmlFor="avatar-file" className="btn-ghost cursor-pointer text-[14px]">
-          <Camera size={16} strokeWidth={1.9} aria-hidden />
+          <Camera size={16} strokeWidth={1.5} aria-hidden />
           {preview ? c.replace : c.choose}
         </label>
 
         {preview && (
           <button type="button" onClick={onRemove} className="btn-quiet text-[13.5px]" disabled={busy}>
-            <Trash2 size={15} strokeWidth={1.9} aria-hidden />
+            <Trash2 size={15} strokeWidth={1.5} aria-hidden />
             {c.remove}
           </button>
         )}
@@ -135,7 +135,7 @@ export function ProfileForm({
         <div className="flex items-center gap-3">
           <SaveButton />
           {state?.ok && (
-            <span className="chip-ok"><Check size={14} strokeWidth={2.2} aria-hidden />{c.saved}</span>
+            <span className="chip-ok"><Check size={14} strokeWidth={1.5} aria-hidden />{c.saved}</span>
           )}
           {state?.error && <span role="alert" className="chip-bad">{state.error}</span>}
         </div>

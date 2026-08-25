@@ -26,12 +26,12 @@ export function CallsPanel({ calls, leads }: { calls: Call[]; leads: { id: strin
 
   return (
     <section className="card mt-6">
-      <h2 className="font-display text-[18px] font-semibold text-ink">📞 {c.callsTitle}</h2>
+      <h2 className="font-display text-[18px] font-light text-ink">📞 {c.callsTitle}</h2>
       <ul className="mt-4 space-y-2">
         {open.map((call) => {
           const st = dueState(call.remind_on);
           return (
-            <li key={call.id} className={`flex flex-wrap items-center gap-3 rounded-2xl border px-4 py-3 ${
+            <li key={call.id} className={`flex flex-wrap items-center gap-3 rounded-none border px-4 py-3 ${
               st === 'late' ? 'border-bad/25 bg-bad-wash/60' : st === 'today' ? 'border-warn/30 bg-warn-wash/70' : 'border-line'
             }`}>
               <div className="min-w-0 flex-1">

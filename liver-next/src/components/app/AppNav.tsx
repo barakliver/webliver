@@ -37,14 +37,13 @@ function isCurrent(pathname: string, href: string) {
 export function DesktopNav({ items }: { items: NavItem[] }) {
   const pathname = usePathname();
   return (
-    /* lg rather than sm. Six pills, a brand name, a bell, an avatar and a
+    /* lg rather than sm. Seven labels, a brand name, a bell, an avatar and a
        sign-out button do not fit on a 700px window, and what happens there is
        not a graceful squeeze: the nav wins the space and the sign-out button
        leaves the screen. Below this width the bottom bar is the navigation,
        which is the better shape for that size anyway. */
-    <nav aria-label="ניווט ראשי" className="hidden items-center gap-1 lg:flex">
+    <nav aria-label="ניווט ראשי" className="hidden items-center gap-6 lg:flex">
       {items.map((i) => {
-        const Icon = ICONS[i.icon];
         const current = isCurrent(pathname, i.href);
         return (
           <Link
@@ -52,13 +51,22 @@ export function DesktopNav({ items }: { items: NavItem[] }) {
             href={i.href}
             aria-current={current ? 'page' : undefined}
             className={cn(
-              'inline-flex min-h-[40px] items-center gap-2 rounded-full px-3.5 text-[14.5px]',
-              'transition duration-200 ease-out',
-              current ? 'bg-ink text-surface' : 'text-ink-soft hover:bg-surface-200 hover:text-ink',
+              'relative py-1 text-[13.5px] tracking-[.06em] transition-colors duration-300',
+              current ? 'text-ink' : 'text-ink-mute hover:text-ink',
             )}
           >
-            <Icon size={16} strokeWidth={1.9} aria-hidden />
             {i.label}
+            {/* The active mark is a gold rule under the word rather than a
+                pill around it. It is the same mark the sidebar and the
+                segmented control use, which is what makes the three read as
+                one system instead of three components. */}
+            <span
+              aria-hidden
+              className={cn(
+                'absolute inset-x-0 -bottom-0.5 h-px transition-opacity duration-300',
+                current ? 'bg-accent-line opacity-100' : 'opacity-0',
+              )}
+            />
           </Link>
         );
       })}
@@ -135,12 +143,12 @@ export function MobileTabBar({ items }: { items: NavItem[] }) {
                       href={i.href}
                       aria-current={current ? 'page' : undefined}
                       className={cn(
-                        'flex min-h-[52px] items-center gap-3 rounded-2xl px-3 text-[15px] font-medium',
-                        'transition-colors duration-200',
-                        current ? 'bg-surface-200 text-ink' : 'text-ink-soft hover:bg-surface-100',
+                        'flex min-h-[52px] items-center gap-3 border-b border-line px-1 text-[15px]',
+                        'transition-colors duration-300',
+                        current ? 'text-ink' : 'text-ink-soft hover:text-ink',
                       )}
                     >
-                      <Icon size={20} strokeWidth={current ? 2.1 : 1.7} aria-hidden />
+                      <Icon size={20} strokeWidth={1.5} aria-hidden />
                       {i.label}
                     </Link>
                   </li>
@@ -158,7 +166,6 @@ export function MobileTabBar({ items }: { items: NavItem[] }) {
       >
         <ul className="mx-auto flex max-w-lg list-none items-stretch justify-around p-0">
           {tabs.map((i) => {
-            const Icon = ICONS[i.icon];
             const current = isCurrent(pathname, i.href);
             return (
               <li key={i.href} className="flex-1">
@@ -166,20 +173,23 @@ export function MobileTabBar({ items }: { items: NavItem[] }) {
                   href={i.href}
                   aria-current={current ? 'page' : undefined}
                   className={cn(
-                    'flex min-h-[56px] flex-col items-center justify-center gap-1 px-1 pt-2',
-                    'text-[11px] font-medium transition-colors duration-200',
+                    'flex min-h-[56px] flex-col items-center justify-center gap-1.5 px-1 pt-2',
+                    'text-[12px] tracking-[.04em] transition-colors duration-300',
                     current ? 'text-ink' : 'text-ink-mute',
                   )}
                 >
-                  <Icon size={21} strokeWidth={current ? 2.1 : 1.7} aria-hidden />
+                  {/* Labels, not icons. The handoff drops icons from the bar
+                      entirely: five short Hebrew words read faster at this
+                      size than five glyphs somebody has to learn, and the
+                      gold rule does the work the filled pill used to. */}
                   <span className="max-w-full truncate">{i.label}</span>
-                  {/* The active mark is a shape as well as a colour, so the state
-                      survives greyscale and low-contrast displays. */}
+                  {/* The active mark is a shape as well as a colour, so the
+                      state survives greyscale and a low-contrast display. */}
                   <span
                     aria-hidden
                     className={cn(
-                      'h-[3px] w-6 rounded-full transition-opacity duration-200',
-                      current ? 'bg-accent-bright opacity-100' : 'opacity-0',
+                      'h-px w-7 transition-opacity duration-300',
+                      current ? 'bg-accent-line opacity-100' : 'opacity-0',
                     )}
                   />
                 </Link>
@@ -195,14 +205,14 @@ export function MobileTabBar({ items }: { items: NavItem[] }) {
                 aria-expanded={open}
                 aria-haspopup="dialog"
                 className={cn(
-                  'flex min-h-[56px] w-full flex-col items-center justify-center gap-1 px-1 pt-2',
-                  'text-[11px] font-medium transition-colors duration-200',
+                  'flex min-h-[56px] w-full flex-col items-center justify-center gap-1.5 px-1 pt-2',
+                  'text-[12px] tracking-[.04em] transition-colors duration-300',
                   /* Lit when the open screen lives behind it, so the nav never
                      reports that you are nowhere. */
                   open || inOverflow ? 'text-ink' : 'text-ink-mute',
                 )}
               >
-                <Ellipsis size={21} strokeWidth={open || inOverflow ? 2.1 : 1.7} aria-hidden />
+                <Ellipsis size={21} strokeWidth={1.5} aria-hidden />
                 <span className="max-w-full truncate">{appCopy.nav.more}</span>
                 <span
                   aria-hidden

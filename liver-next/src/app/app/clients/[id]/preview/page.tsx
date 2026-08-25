@@ -45,7 +45,7 @@ export default async function PreviewPage({ params }: { params: Promise<{ id: st
       <div className="sticky top-0 z-20 -mx-4 mb-6 border-b border-accent/25 bg-accent-wash/95 px-4 py-3 backdrop-blur-sm sm:-mx-6 sm:px-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <p className="flex items-center gap-2.5 text-[14.5px] text-accent">
-            <Eye size={17} aria-hidden strokeWidth={1.75} />
+            <Eye size={17} aria-hidden strokeWidth={1.5} />
             <span>
               <strong className="font-semibold">{c.banner}</strong>
               <span className="text-ink-soft"> · {workspace.display_name}</span>
@@ -53,9 +53,9 @@ export default async function PreviewPage({ params }: { params: Promise<{ id: st
           </p>
           <Link
             href={`/app/clients/${id}`}
-            className="inline-flex items-center gap-1.5 rounded-full border border-accent/30 bg-white/70 px-3.5 py-1.5 text-[13.5px] font-medium text-accent transition hover:bg-white"
+            className="inline-flex items-center gap-1.5 rounded-none border border-accent/30 bg-white/70 px-3.5 py-1.5 text-[13.5px] font-medium text-accent transition hover:bg-white"
           >
-            <ArrowRight size={15} aria-hidden strokeWidth={2} />
+            <ArrowRight size={15} aria-hidden strokeWidth={1.5} />
             {c.exit}
           </Link>
         </div>

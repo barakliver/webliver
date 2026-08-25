@@ -86,7 +86,7 @@ export function AiConcierge() {
         aria-label={open ? c.close : c.open}
         className="fixed bottom-[calc(env(safe-area-inset-bottom)+6.5rem)] left-4 z-40 inline-flex h-12 w-12 items-center justify-center rounded-full glass-strong text-accent shadow-dock transition hover:text-ink sm:left-6"
       >
-        {open ? <X size={20} strokeWidth={2} aria-hidden /> : <MessagesSquare size={20} strokeWidth={1.75} aria-hidden />}
+        {open ? <X size={20} strokeWidth={1.5} aria-hidden /> : <MessagesSquare size={20} strokeWidth={1.5} aria-hidden />}
       </button>
 
       {open && (
@@ -94,18 +94,18 @@ export function AiConcierge() {
           role="dialog"
           aria-modal="false"
           aria-label={c.title}
-          className="fixed inset-x-3 bottom-[calc(env(safe-area-inset-bottom)+10.5rem)] z-40 flex max-h-[58svh] flex-col overflow-hidden rounded-4xl glass-strong shadow-lift sm:inset-x-auto sm:left-6 sm:w-[24rem]"
+          className="fixed inset-x-3 bottom-[calc(env(safe-area-inset-bottom)+10.5rem)] z-40 flex max-h-[58svh] flex-col overflow-hidden rounded-none glass-strong shadow-lift sm:inset-x-auto sm:left-6 sm:w-[24rem]"
         >
           <header className="flex items-start justify-between gap-3 border-b border-line px-5 py-4">
             <div>
-              <h2 className="font-display text-[16.5px] font-semibold text-ink">{c.title}</h2>
+              <h2 className="font-display text-[16.5px] font-light text-ink">{c.title}</h2>
               <p className="mt-0.5 text-[12.5px] text-ink-mute">{c.sub}</p>
             </div>
             <button
               type="button" onClick={() => setOpen(false)} aria-label={c.close}
-              className="rounded-full p-1.5 text-ink-mute transition hover:bg-surface-200 hover:text-ink"
+              className="rounded-none p-1.5 text-ink-mute transition hover:bg-surface-200 hover:text-ink"
             >
-              <X size={16} strokeWidth={2} aria-hidden />
+              <X size={16} strokeWidth={1.5} aria-hidden />
             </button>
           </header>
 
@@ -122,7 +122,7 @@ export function AiConcierge() {
                       key={s}
                       type="button"
                       onClick={() => { setDraft(s); inputRef.current?.focus(); }}
-                      className="rounded-full border border-line px-3 py-1.5 text-[12.5px] text-ink-soft transition hover:border-accent/40 hover:text-accent"
+                      className="rounded-none border border-line px-3 py-1.5 text-[12.5px] text-ink-soft transition hover:border-accent/40 hover:text-accent"
                     >
                       {s}
                     </button>
@@ -136,7 +136,7 @@ export function AiConcierge() {
                 key={i}
                 className={
                   t.role === 'user'
-                    ? 'ms-8 rounded-2xl rounded-se-md bg-ink px-3.5 py-2.5 text-[14px] leading-relaxed text-surface'
+                    ? 'ms-8 rounded-none rounded-se-md bg-ink px-3.5 py-2.5 text-[14px] leading-relaxed text-surface'
                     : 'me-4 whitespace-pre-line text-[14px] leading-relaxed text-ink'
                 }
               >
@@ -168,7 +168,7 @@ export function AiConcierge() {
               aria-label={c.send}
               className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-ink text-surface transition hover:bg-ink-soft disabled:opacity-40"
             >
-              <Send size={16} strokeWidth={2} aria-hidden />
+              <Send size={16} strokeWidth={1.5} aria-hidden />
             </button>
           </form>
 

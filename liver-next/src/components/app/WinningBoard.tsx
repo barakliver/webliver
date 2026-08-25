@@ -35,7 +35,7 @@ export function WinningBoard({ clientId, images, viewer }: {
 
   return (
     <section className="card">
-      <h2 className="font-display text-[18px] font-semibold text-ink">🏆 {c.title}</h2>
+      <h2 className="font-display text-[18px] font-light text-ink">🏆 {c.title}</h2>
       <p className="mt-1 text-[14px] text-ink-soft">{viewer === 'client' ? c.subClient : c.subProducer}</p>
 
       {viewer === 'client' && (
@@ -43,7 +43,7 @@ export function WinningBoard({ clientId, images, viewer }: {
           <input type="hidden" name="client_id" value={clientId} />
           <input
             name="image" type="file" required accept="image/*"
-            className="text-[14px] file:mr-0 file:ml-3 file:rounded-full file:border-0 file:bg-ink file:px-4 file:py-2 file:text-white"
+            className="text-[14px] file:mr-0 file:ml-3 file:rounded-none file:border-0 file:bg-ink file:px-4 file:py-2 file:text-white"
             aria-label={c.upload}
           />
           <input name="caption" placeholder={c.captionPh} autoComplete="off" className="field" aria-label={c.caption} />
@@ -55,7 +55,7 @@ export function WinningBoard({ clientId, images, viewer }: {
       )}
 
       {state && !state.ok && state.error && (
-        <p role="alert" className="mt-3 rounded-2xl border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+        <p role="alert" className="mt-3 rounded-none border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
           {state.error}
         </p>
       )}
@@ -70,7 +70,7 @@ export function WinningBoard({ clientId, images, viewer }: {
                 <button
                   key={cat.value} type="button" onClick={() => setFilter(cat.value)}
                   aria-pressed={filter === cat.value}
-                  className={`rounded-full px-4 py-1.5 text-[13.5px] transition ${
+                  className={`rounded-none px-4 py-1.5 text-[13.5px] transition ${
                     filter === cat.value ? 'bg-ink text-white' : 'border border-line bg-white/70 text-ink-soft hover:bg-white'
                   }`}
                 >{cat.label}</button>
@@ -80,7 +80,7 @@ export function WinningBoard({ clientId, images, viewer }: {
 
           <ul className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {shown.map((img) => (
-              <li key={img.id} className="overflow-hidden rounded-2xl border border-line bg-white">
+              <li key={img.id} className="overflow-hidden rounded-none border border-line bg-white">
                 {/* a plain img: these are signed one-off URLs, not a fixed asset path */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={img.url} alt={img.caption || labelOf(img.category)} className="h-52 w-full object-cover" loading="lazy" />
