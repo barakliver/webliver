@@ -10,10 +10,10 @@ export const metadata: Metadata = { title: 'כניסה' };
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ next?: string }>;
+  searchParams: Promise<{ next?: string; email?: string; reason?: string }>;
 }) {
   if (await currentAccount()) redirect('/app');
-  const { next } = await searchParams;
+  const { next, email, reason } = await searchParams;
 
   return (
     <main id="main" className="flex min-h-dvh items-center justify-center px-5 py-16">
@@ -28,7 +28,7 @@ export default async function LoginPage({
           <span className="font-display text-[21px] font-semibold text-ink">{site.brand}</span>
           <span className="mt-1 block text-[13.5px] text-ink-mute">{site.tagline}</span>
         </Link>
-        <LoginForm next={next} />
+        <LoginForm next={next} prefill={email} reason={reason} />
       </div>
     </main>
   );

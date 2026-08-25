@@ -6,6 +6,7 @@ import { supabaseServer } from '@/lib/supabase/server';
 import { currentAccount } from '@/lib/auth';
 import { sendMail } from '@/lib/notify/mail';
 import { clientInviteEmail } from '@/lib/notify/templates';
+import { inviteLinkFor } from '@/lib/invite';
 import { publicEnv } from '@/lib/env';
 import { MIN_EVENT_DATE, MAX_GUESTS } from '@/content/site';
 
@@ -164,19 +165,25 @@ export async function inviteToClient(_prev: ActionResult | null, form: FormData)
     .insert({ client_id: clientId, email });
   if (error) return { ok: false, error: readable(error.message) };
 
-  /* The invitation is already saved. Mail is best effort on top of it. */
+  /* The invitation is already saved. Mail is best effort on top of it: the
+     access exists whether or not the letter arrives, and the producer can
+     resend from the same screen. */
   try {
+    const link = await inviteLinkFor(email);
     await sendMail({
       to: email,
       subject: 'האזור האישי שלכם מוכן',
       html: clientInviteEmail({
         eventName: client.display_name,
         producerName: account.producer?.brandName || account.fullName || 'ההפקה',
-        signInUrl: `${publicEnv.siteUrl.replace(/\/+$/, '')}/login`,
+        signInUrl: link.url,
+        oneClick: link.kind === 'magic',
+        installUrl: `${publicEnv.siteUrl.replace(/\/+$/, '')}/install`,
+        producerPhone: publicEnv.whatsapp || undefined,
       }),
     });
-  } catch {
-    /* the producer can resend from the same screen */
+  } catch (e) {
+    console.error('[clients] the invitation email did not go out', e);
   }
 
   revalidatePath(`/app/clients/${clientId}`);

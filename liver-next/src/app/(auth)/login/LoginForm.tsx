@@ -52,7 +52,15 @@ function useCountdown(from: number, seconds: number): number {
 
 const mmss = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 
-export function LoginForm({ next }: { next?: string }) {
+export function LoginForm({ next, prefill, reason }: {
+  next?: string;
+  /** An address the callback already knows, so somebody arriving from a spent
+   *  invitation link does not have to remember which of their addresses was
+   *  invited. */
+  prefill?: string;
+  /** Why they were sent here rather than signed in. */
+  reason?: string;
+}) {
   /* Both steps live in one component so the address typed in step one is still
      on screen in step two: retyping it is the single most common way a code
      gets sent to one place and entered against another. */
@@ -95,6 +103,15 @@ export function LoginForm({ next }: { next?: string }) {
 
       {askState && !askState.ok && askState.error && <Alert text={askState.error} />}
 
+      {/* A link that has already been used, or that arrived truncated by a mail
+          client. Said plainly and once: the address is already in the field
+          below, so this is a sentence and a button rather than a dead end. */}
+      {!askState && reason && (
+        <p role="status" className="rounded-2xl border border-line-strong bg-surface-100 px-4 py-3 text-[14.5px] text-ink-soft">
+          {reason === 'expired' ? copy.linkExpired : copy.linkMissing}
+        </p>
+      )}
+
       {/* Two doors, named. A single field could sniff which one was meant, and
           does on the server, but a couple who were told "we texted you" need
           to see that texting is a thing this screen does before they type. */}
@@ -134,6 +151,7 @@ export function LoginForm({ next }: { next?: string }) {
           autoComplete={phone ? 'tel' : 'email'}
           required
           dir="ltr"
+          defaultValue={channel === 'email' ? prefill ?? '' : ''}
           className="field"
         />
         {phone && <p className="mt-1.5 text-[13px] text-ink-mute">{copy.phoneHint}</p>}
