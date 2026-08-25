@@ -45,3 +45,8 @@ export const AUDIENCES = [
   { value: 'crew',    label: 'צוות' },
 ] as const;
 export type Audience = (typeof AUDIENCES)[number]['value'];
+
+/** How many people may hold a login to one event workspace.
+ *  Mirrors max_authorized_emails() in the database, which is the authority:
+ *  this copy only keeps the screen from offering what the insert would refuse. */
+export const MAX_CLIENT_EMAILS = 3;

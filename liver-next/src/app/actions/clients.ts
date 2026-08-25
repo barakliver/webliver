@@ -17,7 +17,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
  *  invariants live in the schema, so this is about wording, not about
  *  deciding what is allowed. */
 function readable(message: string): string {
-  if (/at most 2 authorized emails/i.test(message)) return 'לאירוע אפשר לצרף שתי כתובות לכל היותר';
+  if (/at most \d+ authorized emails/i.test(message)) return 'לאירוע אפשר לצרף שלוש כתובות לכל היותר';
   if (/cae_client_email_key|duplicate key/i.test(message)) return 'הכתובת הזאת כבר מצורפת לאירוע';
   if (/clients_date_2026/i.test(message)) return 'התאריך צריך להיות משנת 2026 ואילך';
   if (/row-level security/i.test(message)) return 'אין לך הרשאה לפעולה הזאת';
