@@ -140,7 +140,15 @@ export async function POST(req: Request) {
            conversation about a wedding, not a problem to reason through, and
            latency is what makes a widget feel alive. */
         output_config: { effort: 'low' },
-        system: CONCIERGE_SYSTEM,
+        /* The system prompt is a few thousand tokens of site copy and playbook,
+           it is identical on every request, and it is sent on every request.
+           Cached, the repeat sends cost about a tenth of that, which on a
+           public widget is most of the bill. It sits before `messages` in the
+           request order, so the whole conversation prefix benefits.
+
+           Watch usage.cache_read_input_tokens: if it stays at zero, something
+           has made the prefix vary between requests. */
+        system: [{ type: 'text', text: CONCIERGE_SYSTEM, cache_control: { type: 'ephemeral' } }],
         tools: [SAVE_ENQUIRY_TOOL],
         messages,
       });
