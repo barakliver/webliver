@@ -8,6 +8,7 @@ import { Journey } from '@/components/marketing/Journey';
 import { BudgetSimulator } from '@/components/marketing/BudgetSimulator';
 import { LeadForm } from '@/components/marketing/LeadForm';
 import { Portfolio } from '@/components/marketing/Portfolio';
+import { Portrait } from '@/components/marketing/Portrait';
 import { FabDock } from '@/components/marketing/FabDock';
 
 export default function HomePage() {
@@ -28,7 +29,10 @@ export default function HomePage() {
         <Journey />
 
         <Section id="about" title={site.about.title}>
-          <Prose lines={site.about.body} />
+          <div className="grid items-start gap-8 sm:grid-cols-[minmax(0,260px)_1fr] sm:gap-10">
+            <Portrait className="w-full max-w-[260px] rounded-2xl object-cover shadow-soft" />
+            <Prose lines={site.about.body} />
+          </div>
         </Section>
 
         <Section title={site.dayOf.title} className="pt-0">
