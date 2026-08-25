@@ -1,4 +1,4 @@
-import { CalendarPlus, Eye, ListOrdered } from 'lucide-react';
+import { CalendarPlus, Eye, ListOrdered, Radio } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { requireLiveProducer } from '@/lib/auth';
@@ -80,6 +80,12 @@ export default async function ClientPage({
           <Link href={`/app/clients/${client.id}/runsheet`} className={link}>
             <ListOrdered size={16} aria-hidden strokeWidth={1.75} />
             {appCopy.runsheet.open}
+          </Link>
+          {/* The same evening, read on the evening. The printed sheet is for
+              planning it; this one is for standing in the hall with it. */}
+          <Link href={`/app/clients/${client.id}/live`} className={link}>
+            <Radio size={16} aria-hidden strokeWidth={1.75} />
+            {appCopy.dayOf.open}
           </Link>
           {/* The one honest way to answer "what can they actually see?" — which
               is a question about policy, not about markup, and therefore not
