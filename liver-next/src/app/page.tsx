@@ -7,6 +7,7 @@ import { Prose } from '@/components/marketing/Prose';
 import { Journey } from '@/components/marketing/Journey';
 import { BudgetSimulator } from '@/components/marketing/BudgetSimulator';
 import { LeadForm } from '@/components/marketing/LeadForm';
+import { Portfolio } from '@/components/marketing/Portfolio';
 import { FabDock } from '@/components/marketing/FabDock';
 
 export default function HomePage() {
@@ -32,6 +33,14 @@ export default function HomePage() {
 
         <Section title={site.dayOf.title} className="pt-0">
           <Prose lines={site.dayOf.body} />
+        </Section>
+
+        <Section
+          id="work"
+          title="עבודות אחרונות"
+          sub="שמונה רגעים מאירועים שהופקו בשנה האחרונה."
+        >
+          <Portfolio />
         </Section>
 
         <Section id="budget" title={site.budget.title} sub={site.budget.sub}>
