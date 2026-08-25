@@ -3,13 +3,14 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { supabaseServer } from '@/lib/supabase/server';
-import { currentAccount } from '@/lib/auth';
+import { currentAccount, ROOT_ADMIN_EMAIL } from '@/lib/auth';
 import { sendMail } from '@/lib/notify/mail';
 import { clientInviteEmail } from '@/lib/notify/templates';
 import { inviteLinkFor } from '@/lib/invite';
 import { publicEnv } from '@/lib/env';
 import { MIN_EVENT_DATE, MAX_GUESTS } from '@/content/site';
 import { STANDING_CHECKLIST } from '@/content/eventFile';
+import { explainRefusal } from '@/lib/rls';
 
 export type ActionResult = { ok: boolean; error?: string; id?: string };
 
@@ -18,30 +19,6 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 /** Turns a database complaint into something a producer can act on. The
  *  invariants live in the schema, so this is about wording, not about
  *  deciding what is allowed. */
-/**
- * A refusal that is really an expired session.
- *
- * Row level security answers "not allowed" the same way whether the account
- * genuinely lacks permission or the request reached the database carrying
- * nobody at all. Both are 42501, and the second one told a producer who owns
- * the workspace, whose producer is approved and whose profile is super_admin
- * that he had no permission to open his own event. Every condition in that
- * policy was true for him; his session simply was not in the request.
- *
- * `whoami()` returns `auth.uid()` as the policies see it. Null means the
- * session did not arrive, which is a thing signing in again fixes and a
- * thing "you have no permission" sends nobody towards.
- */
-async function staleSession(sb: Awaited<ReturnType<typeof supabaseServer>>): Promise<boolean> {
-  const { data, error } = await sb.rpc('whoami');
-  /* An older database has no whoami(). Say nothing rather than guess: a
-     wrong diagnosis is worse than the vague message it replaces. */
-  if (error) return false;
-  return data === null;
-}
-
-const SESSION_LOST = 'ההתחברות פגה. צאו והתחברו שוב, והפעולה תעבוד.';
-
 function readable(message: string): string {
   if (/at most \d+ authorized emails/i.test(message)) return 'לאירוע אפשר לצרף שלוש כתובות לכל היותר';
   if (/cae_client_email_key|duplicate key/i.test(message)) return 'הכתובת הזאת כבר מצורפת לאירוע';
@@ -90,31 +67,31 @@ export async function createClient(_prev: ActionResult | null, form: FormData): 
     .single();
 
   if (error) {
-    /* The wording a producer sees is deliberately short, and short is useless
-       to whoever has to fix it: "אין לך הרשאה" is the same sentence whether a
-       policy refused the row, the account is attached to the wrong producer,
-       or the schema on this database is older than this build. The database's
-       own words go to the log, where they name which. */
-    console.error('[clients] create refused', {
+    /* A refusal here used to end as "אין לך הרשאה לפעולה הזאת" whatever had
+       actually happened, and that sentence sends nobody anywhere. When it is
+       row level security, ask the policy's own conditions who said no. */
+    if (/row-level security/i.test(error.message)) {
+      const why = await explainRefusal(sb, account.producer.id);
+      console.error('[clients] create refused', {
+        code: (error as { code?: string }).code,
+        message: error.message,
+        producerId: account.producer.id,
+        producerStatus: account.producer.status,
+        role: account.role,
+        seenByDatabase: why.detail,
+      });
+      /* The root account is the one person who can act on the raw finding,
+         and the one person who cannot read the server's log from a phone.
+         Everybody else gets the sentence and nothing else. */
+      const isRoot = account.email.toLowerCase() === ROOT_ADMIN_EMAIL;
+      return { ok: false, error: isRoot ? `${why.message} (${why.detail})` : why.message };
+    }
+    console.error('[clients] create failed', {
       code: (error as { code?: string }).code,
       message: error.message,
       details: (error as { details?: string }).details,
       hint: (error as { hint?: string }).hint,
-      producerId: account.producer.id,
-      producerStatus: account.producer.status,
-      role: account.role,
-      /* Three answers, not two. A uid means the session arrived and the
-         refusal is real; null means it did not; "no whoami()" means this
-         database predates the function and the line says nothing either way.
-         Collapsing the last two would print `null` for a missing function and
-         read as a lost session, which is the wrong diagnosis dressed as a
-         finding. */
-      seenByDatabase: await sb.rpc('whoami').then(
-        (r) => (r.error ? 'no whoami() on this database' : r.data ?? null),
-        () => 'whoami() threw',
-      ),
     });
-    if (await staleSession(sb)) return { ok: false, error: SESSION_LOST };
     return { ok: false, error: readable(error.message) };
   }
 
