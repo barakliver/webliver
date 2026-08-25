@@ -18,6 +18,30 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 /** Turns a database complaint into something a producer can act on. The
  *  invariants live in the schema, so this is about wording, not about
  *  deciding what is allowed. */
+/**
+ * A refusal that is really an expired session.
+ *
+ * Row level security answers "not allowed" the same way whether the account
+ * genuinely lacks permission or the request reached the database carrying
+ * nobody at all. Both are 42501, and the second one told a producer who owns
+ * the workspace, whose producer is approved and whose profile is super_admin
+ * that he had no permission to open his own event. Every condition in that
+ * policy was true for him; his session simply was not in the request.
+ *
+ * `whoami()` returns `auth.uid()` as the policies see it. Null means the
+ * session did not arrive, which is a thing signing in again fixes and a
+ * thing "you have no permission" sends nobody towards.
+ */
+async function staleSession(sb: Awaited<ReturnType<typeof supabaseServer>>): Promise<boolean> {
+  const { data, error } = await sb.rpc('whoami');
+  /* An older database has no whoami(). Say nothing rather than guess: a
+     wrong diagnosis is worse than the vague message it replaces. */
+  if (error) return false;
+  return data === null;
+}
+
+const SESSION_LOST = 'ההתחברות פגה. צאו והתחברו שוב, והפעולה תעבוד.';
+
 function readable(message: string): string {
   if (/at most \d+ authorized emails/i.test(message)) return 'לאירוע אפשר לצרף שלוש כתובות לכל היותר';
   if (/cae_client_email_key|duplicate key/i.test(message)) return 'הכתובת הזאת כבר מצורפת לאירוע';
@@ -79,7 +103,9 @@ export async function createClient(_prev: ActionResult | null, form: FormData): 
       producerId: account.producer.id,
       producerStatus: account.producer.status,
       role: account.role,
+      seenByDatabase: await sb.rpc('whoami').then((r) => r.data ?? null, () => 'unknown'),
     });
+    if (await staleSession(sb)) return { ok: false, error: SESSION_LOST };
     return { ok: false, error: readable(error.message) };
   }
 

@@ -46,3 +46,19 @@ where c.display_name = 'בדיקה';
 
 reset role;
 delete from public.clients where display_name = 'בדיקה';
+
+-- ── whoami(), and the distinction it exists to make ────────────────────────
+-- The failure this was written for looked exactly like a refusal and was not.
+-- What matters is that the function answers as the caller: as a signed-in
+-- user it returns that user, and with no session it returns null, which is
+-- what lets the app say "sign in again" instead of "you have no permission".
+
+set role authenticated;
+set request.jwt.claim.sub = '11111111-1111-1111-1111-111111111111';
+
+select
+  case when public.whoami() = '11111111-1111-1111-1111-111111111111'
+       then 'PASS — whoami reports the signed-in caller'
+       else 'FAIL — whoami does not report the caller' end as result;
+
+reset role;
