@@ -1,5 +1,6 @@
 import { requireAccount } from '@/lib/auth';
 import { supabaseServer } from '@/lib/supabase/server';
+import { Live } from '@/components/app/Live';
 import { appCopy } from '@/content/site';
 import { PageHead, Empty } from '@/components/app/PageHead';
 import { TaskList, type Task } from '@/components/app/TaskList';
@@ -32,6 +33,7 @@ function daysUntil(iso: string): number {
 }
 
 export default async function PortalPage() {
+
   const account = await requireAccount();
   const sb = await supabaseServer();
   const { data } = await sb
@@ -139,6 +141,7 @@ export default async function PortalPage() {
           );
         })}
       </div>
+      <Live sources={[{ table: 'clients' }, { table: 'tasks' }, { table: 'guests_rsvp' }, { table: 'tables_seating' }, { table: 'moodboards' }, { table: 'day_schedule' }, { table: 'budget_items' }, { table: 'payments' }]} />
     </>
   );
 }
