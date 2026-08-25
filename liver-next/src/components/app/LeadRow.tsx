@@ -1,6 +1,7 @@
 'use client';
 
 import { useActionState, useState } from 'react';
+import { formatDate } from '@/lib/dates';
 import { useFormStatus } from 'react-dom';
 import { setLeadStatus, setLeadNote, bookCall, convertLead, type LeadActionResult } from '@/app/actions/leads';
 import { leadsCopy, appCopy, EVENT_KINDS } from '@/content/site';
@@ -15,7 +16,7 @@ export type Lead = {
 export type Call = { id: string; lead_id: string | null; title: string; remind_on: string | null; done: boolean };
 
 const dateFmt = new Intl.DateTimeFormat('he-IL', { day: '2-digit', month: '2-digit', year: '2-digit' });
-const show = (d: string | null) => (d ? dateFmt.format(new Date(d)) : '—');
+const show = (d: string | null) => formatDate(dateFmt, d, '—');
 
 /** A channel nobody has named yet is shown as it was stored rather than
  *  hidden. A new source that starts working is then visible on day one,

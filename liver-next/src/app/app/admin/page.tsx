@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { formatDate } from '@/lib/dates';
 import { Users, HeartHandshake, Check, Ban, RotateCcw, ArrowLeftRight, ShieldCheck } from 'lucide-react';
 import { requireRoot } from '@/lib/auth';
 import { getDirectory, type ProducerRow, type ClientRow } from '@/lib/directory';
@@ -61,7 +62,7 @@ function Producer({ p }: { p: ProducerRow }) {
           <p className="mt-1 text-[13px] text-ink-mute">
             {p.liveClients} {p.liveClients === 1 ? c.oneLive : c.manyLive}
             {p.totalClients !== p.liveClients && ` · ${c.ofTotal} ${p.totalClients}`}
-            {' · '}{c.cols.since} {dateFmt.format(new Date(p.createdAt))}
+            {' · '}{c.cols.since} {formatDate(dateFmt, p.createdAt, '—')}
           </p>
         </div>
 
@@ -104,7 +105,7 @@ function Client({ k, producers }: { k: ClientRow; producers: ProducerRow[] }) {
           </p>
 
           <p className="mt-1 text-[13px] text-ink-mute">
-            {k.eventDate ? dateFmt.format(new Date(k.eventDate)) : c.noDate}
+            {formatDate(dateFmt, k.eventDate, c.noDate)}
           </p>
 
           {k.emails.length === 0 ? (

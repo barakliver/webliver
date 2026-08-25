@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { formatDate } from '@/lib/dates';
 import { supabaseServer } from '@/lib/supabase/server';
 import { site, rsvpCopy } from '@/content/site';
 import { RsvpForm } from './RsvpForm';
@@ -50,7 +51,7 @@ export default async function RsvpPage({ params }: { params: Promise<{ token: st
               </p>
               {(guest.event_date || guest.venue) && (
                 <p className="mt-1 text-[14.5px] text-ink-mute">
-                  {guest.event_date ? dateFmt.format(new Date(guest.event_date)) : ''}
+                  {formatDate(dateFmt, guest.event_date, '')}
                   {guest.event_date && guest.venue ? ' · ' : ''}
                   {guest.venue}
                 </p>

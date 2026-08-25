@@ -27,10 +27,13 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
   const [state, action] = useActionState<MoneyResult | null, FormData>(addBudgetItem, null);
   const c = appCopy.money;
 
-  const totalEst = items.reduce((a, i) => a + Number(i.estimate), 0);
+  const totalEst = items.reduce((a, i) => a + (Number(i.estimate) || 0), 0);
   /* A line with nothing agreed yet still costs its estimate, so the comparison
      is like for like instead of flattering whatever has not been booked. */
-  const totalAgreed = items.reduce((a, i) => a + Number(i.agreed ?? i.estimate), 0);
+  /* One missing number would otherwise make the whole column read ₪NaN,
+     which is worse than reading zero because it looks like a bug in the app
+     rather than a gap in the data. */
+  const totalAgreed = items.reduce((a, i) => a + (Number(i.agreed ?? i.estimate) || 0), 0);
   const diff = totalEst - totalAgreed;
 
   return (

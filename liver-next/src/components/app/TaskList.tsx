@@ -1,6 +1,7 @@
 'use client';
 
 import { useActionState } from 'react';
+import { formatDate } from '@/lib/dates';
 import { useFormStatus } from 'react-dom';
 import { addTask, toggleTask, deleteTask, type TaskResult } from '@/app/actions/tasks';
 import { appCopy } from '@/content/site';
@@ -69,7 +70,7 @@ function Row({ task, clientId, viewer, canDelete }: {
         <p className={`text-[15px] ${task.done ? 'text-ink-mute line-through' : 'text-ink'}`}>{task.title}</p>
         <p className="mt-0.5 text-[12.5px] text-ink-mute">
           <span className={late ? 'font-semibold text-bad' : ''}>
-            {task.due_on ? dateFmt.format(new Date(task.due_on)) : c.noDue}
+            {formatDate(dateFmt, task.due_on, c.noDue)}
             {late ? ` · ${c.overdue}` : ''}
           </span>
           {' · '}{ownerLabel}

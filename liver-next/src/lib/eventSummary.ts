@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { safeRows } from '@/lib/safe';
+import { isOverdue } from '@/lib/dates';
 
 /**
  * The event in numbers, for the top of its file.
@@ -27,15 +28,6 @@ export type EventSummary = {
 type GuestRow = { status: string; party_size: number | null };
 type PaymentRow = { id: string; title: string; amount: number | null; due_on: string | null; paid: boolean };
 type TaskRow = { id: string; title: string; due_on: string | null; done: boolean };
-
-/** Compared on calendar dates so something due today never reads as late. */
-function isPast(due: string | null): boolean {
-  if (!due) return false;
-  const now = new Date();
-  const today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
-  const d = new Date(due);
-  return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) < today;
-}
 
 export async function loadEventSummary(
   sb: SupabaseClient,
@@ -71,7 +63,7 @@ export async function loadEventSummary(
     paid: paymentRows.filter((p) => p.paid).reduce((s, p) => s + (p.amount ?? 0), 0),
     owed: paymentRows.filter((p) => !p.paid).reduce((s, p) => s + (p.amount ?? 0), 0),
     overdue: paymentRows
-      .filter((p) => !p.paid && isPast(p.due_on))
+      .filter((p) => !p.paid && isOverdue(p.due_on))
       .reduce((s, p) => s + (p.amount ?? 0), 0),
   };
 

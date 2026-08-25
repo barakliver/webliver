@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { formatDate } from '@/lib/dates';
 import { notFound } from 'next/navigation';
 import { ArrowRight } from 'lucide-react';
 import { requireAccount } from '@/lib/auth';
@@ -122,7 +123,7 @@ export default async function RunsheetPage({
         <header className="border-b-2 border-ink pb-4">
           <h1 className="font-display text-[27px] font-semibold text-ink">{client.display_name}</h1>
           <p className="mt-1.5 text-[15px] text-ink-soft">
-            {client.event_date ? dateFmt.format(new Date(client.event_date)) : c.noDate}
+            {formatDate(dateFmt, client.event_date, c.noDate)}
             {client.venue ? ` · ${client.venue}` : ''}
           </p>
           <p className="mt-1 text-[14px] font-medium text-accent">

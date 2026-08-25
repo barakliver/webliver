@@ -21,6 +21,13 @@ export const metadata: Metadata = {
   description: 'הפקת חתונות ואירועים מקצה לקצה. תכנון, תקציב, ספקים וניהול יום האירוע.',
   manifest: '/manifest.json',
   appleWebApp: { capable: true, title: 'Liver', statusBarStyle: 'black-translucent' },
+  /* `appleWebApp.capable` emits the standard `mobile-web-app-capable` and, in
+     this version, not the legacy Apple one. Older iOS reads only the legacy
+     tag, and without it an installed app opens inside Safari's chrome rather
+     than standalone. Found by reading the rendered head on a phone viewport
+     rather than by trusting the config, which said capable: true the whole
+     time. */
+  other: { 'apple-mobile-web-app-capable': 'yes' },
   icons: { icon: '/icon-192.png', apple: '/icon-192.png' },
   openGraph: {
     type: 'website', locale: 'he_IL', siteName: site.brand,
@@ -30,7 +37,10 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#F7F4EE',
+  /* The app's own ground, so the browser chrome and the status bar continue
+     the page rather than framing it. Left behind by the palette change once
+     already, which is what a stale hex in a second file looks like. */
+  themeColor: '#F3F6FA',
   width: 'device-width',
   initialScale: 1,
   /* cover lets env(safe-area-inset-*) report real values; globals.css spends
