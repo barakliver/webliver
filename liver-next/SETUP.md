@@ -32,7 +32,7 @@
 3. לכבות **Confirm email**. הכניסה היא בקוד חד פעמי, והקוד עצמו הוא האימות,
    אז אין מה לאשר פעמיים.
 4. **Authentication** ואז **URL Configuration**: ב-Site URL לכתוב
-   `https://liverproductions.com`.
+   `https://liverproduction.com`.
 5. **Authentication** ואז **Emails** ואז התבנית **Magic Link**: לוודא
    שהתבנית מכילה `{{ .Token }}`. זה הקוד בן שש הספרות שהמסך מבקש.
    אם התבנית מכילה רק קישור, המסך יבקש קוד שלא נשלח.
@@ -46,7 +46,7 @@
 מה שצריך זה SMTP משלנו, וזה גם מה שממילא נדרש למיילים של הלידים:
 
 1. להירשם ב-https://resend.com (יש שכבה חינמית).
-2. **Domains** ואז **Add Domain** ולהזין `liverproductions.com`.
+2. **Domains** ואז **Add Domain** ולהזין `liverproduction.com`.
 3. Resend נותן כמה רשומות DNS. להוסיף אותן אצל ספק הדומיין ולחכות לאימות.
 4. **API Keys** ואז **Create API Key**. לשמור את המפתח.
 5. ב-Supabase: **Project Settings** ואז **Authentication** ואז
@@ -55,7 +55,7 @@
    - Port: `587`
    - Username: `resend`
    - Password: מפתח ה-API מ-Resend
-   - Sender email: כתובת בדומיין שאומת, למשל `noreply@liverproductions.com`
+   - Sender email: כתובת בדומיין שאומת, למשל `noreply@liverproduction.com`
 
 ## 4. חיבור המפתחות לאתר
 
@@ -66,10 +66,10 @@
 NEXT_PUBLIC_SUPABASE_URL=       # Project URL
 NEXT_PUBLIC_SUPABASE_ANON_KEY=  # anon public
 SUPABASE_SERVICE_ROLE_KEY=      # service_role  ← סודי, לא נכנס ל-git לעולם
-NEXT_PUBLIC_SITE_URL=https://liverproductions.com
+NEXT_PUBLIC_SITE_URL=https://liverproduction.com
 
 RESEND_API_KEY=                 # אותו מפתח מסעיף 3
-MAIL_FROM=noreply@liverproductions.com
+MAIL_FROM=noreply@liverproduction.com
 ADMIN_ALERT_EMAIL=barakliver@gmail.com   # לאן מגיעה התראה על ליד חדש
 ```
 

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Heebo, Frank_Ruhl_Libre } from 'next/font/google';
 import { site } from '@/content/site';
+import { PLATFORM_HOST } from '@/lib/env';
 import { ServiceWorker } from '@/components/app/ServiceWorker';
 import './globals.css';
 
@@ -25,7 +26,7 @@ const frank = Frank_Ruhl_Libre({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://liverproductions.com'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? `https://${PLATFORM_HOST}`),
   title: { default: `${site.brand} | ${site.tagline}`, template: `%s | ${site.brand}` },
   description: 'הפקת חתונות ואירועים מקצה לקצה. תכנון, תקציב, ספקים וניהול יום האירוע.',
   manifest: '/manifest.webmanifest',

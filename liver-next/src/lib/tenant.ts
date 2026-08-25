@@ -7,8 +7,8 @@
  *
  * Three shapes of request arrive:
  *
- *   the platform's own site        liverproductions.com, www., localhost
- *   a producer's subdomain         keren.liverproductions.com
+ *   the platform's own site        liverproduction.com, www., localhost
+ *   a producer's subdomain         keren.liverproduction.com
  *   a producer's own domain        events.keren-weddings.com
  *
  * The distinction matters because a subdomain is looked up by its first label

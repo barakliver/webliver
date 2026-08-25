@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { supabasePublic } from '@/lib/supabase/public';
 import { buildIcs, eventInstant, type IcsEvent } from '@/lib/ics';
+import { PLATFORM_HOST } from '@/lib/env';
 
 export const dynamic = 'force-dynamic';
 
@@ -51,7 +52,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ token: 
        must recognise the same line as the same entry, or every refresh
        duplicates the whole wedding. The row's own content is the identity,
        since the function deliberately hands back no ids. */
-    const uid = `${r.kind}-${r.starts_on}-${r.at_time ?? ''}-${i}@liverproductions.com`;
+    const uid = `${r.kind}-${r.starts_on}-${r.at_time ?? ''}-${i}@${PLATFORM_HOST}`;
 
     if (r.at_time) {
       const start = eventInstant(r.starts_on, r.at_time.slice(0, 5));

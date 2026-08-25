@@ -2,7 +2,7 @@
 # ============================================================================
 #  Put the app on a real domain, with HTTPS.
 #
-#      bash scripts/setup-domain.sh liverproductions.com
+#      bash scripts/setup-domain.sh liverproduction.com
 #
 #  Run it on the server, as root. It is safe to run twice: every step checks
 #  whether it has already been done.

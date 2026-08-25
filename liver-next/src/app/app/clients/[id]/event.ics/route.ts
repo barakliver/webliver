@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { requireAccount } from '@/lib/auth';
 import { supabaseServer } from '@/lib/supabase/server';
 import { buildIcs, eventInstant, type IcsEvent } from '@/lib/ics';
+import { PLATFORM_HOST } from '@/lib/env';
 
 /** One event, plus its run sheet, for the couple's own calendar.
  *
@@ -25,7 +26,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
   const events: IcsEvent[] = [];
   const start = eventInstant(client.event_date, '19:00')!;
   events.push({
-    uid: `event-${id}@liverproductions.com`,
+    uid: `event-${id}@${PLATFORM_HOST}`,
     start,
     end: new Date(start.getTime() + 6 * 60 * 60 * 1000),
     summary: client.display_name,
@@ -39,7 +40,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
     const at = eventInstant(client.event_date, String(line.at_time).slice(0, 5));
     if (!at) continue;
     events.push({
-      uid: `day-${line.id}@liverproductions.com`,
+      uid: `day-${line.id}@${PLATFORM_HOST}`,
       start: at,
       end: new Date(at.getTime() + 30 * 60 * 1000),
       summary: line.title,

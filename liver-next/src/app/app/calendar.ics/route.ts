@@ -3,6 +3,7 @@ import { requireLiveProducer } from '@/lib/auth';
 import { supabaseServer } from '@/lib/supabase/server';
 import { getCalendar } from '@/lib/calendar';
 import { buildIcs, eventInstant, type IcsEvent } from '@/lib/ics';
+import { PLATFORM_HOST } from '@/lib/env';
 
 /** The producer's whole diary, subscribable from a phone.
  *
@@ -23,7 +24,7 @@ export async function GET() {
       const start = eventInstant(i.date, '19:00')!;
       const end = new Date(start.getTime() + 6 * 60 * 60 * 1000);
       return {
-        uid: `${i.id}@liverproductions.com`,
+        uid: `${i.id}@${PLATFORM_HOST}`,
         start, end,
         summary: i.title,
         description: i.detail,
@@ -32,7 +33,7 @@ export async function GET() {
       };
     }
     return {
-      uid: `${i.id}@liverproductions.com`,
+      uid: `${i.id}@${PLATFORM_HOST}`,
       start: i.date,
       allDay: true,
       summary: i.kind === 'payment'

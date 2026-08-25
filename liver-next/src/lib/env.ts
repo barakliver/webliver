@@ -1,3 +1,12 @@
+/** The platform's own hostname, in one place.
+ *
+ *  It was written out as a literal in eleven files, and every one of them said
+ *  `liverproductions.com` while the domain that exists is
+ *  `liverproduction.com`. Nothing broke, because the value is only a fallback
+ *  and a UID suffix, and that is exactly why nobody noticed.
+ */
+export const PLATFORM_HOST = 'liverproduction.com';
+
 /** Reads an environment variable, failing loudly at the call site rather than
  *  silently rendering a broken page. */
 export function required(name: string): string {
@@ -9,7 +18,7 @@ export function optional(name: string, fallback = ''): string {
   return process.env[name] ?? fallback;
 }
 export const publicEnv = {
-  siteUrl:   process.env.NEXT_PUBLIC_SITE_URL   ?? 'https://liverproductions.com',
+  siteUrl:   process.env.NEXT_PUBLIC_SITE_URL   ?? `https://${PLATFORM_HOST}`,
   whatsapp:  process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? '',
   /* The booking page is a fixed property of the business, not of a
      deployment, so it has a real default rather than an empty string that
