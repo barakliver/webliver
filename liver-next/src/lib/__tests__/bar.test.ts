@@ -142,3 +142,26 @@ test('the serving model leaves his three bottles at zero rather than guessing', 
   assert.equal(p.bottles.rum, 0);
   assert.ok(p.litres > 0);
 });
+
+/* ── the second way of counting the same beer ─────────────────────────────── */
+
+test('six-packs are the same beer, not a second answer', () => {
+  /* A supplier quote and a shop shelf are both priced by the six-pack, so the
+     screen offers the other reading. What it must never do is compute it
+     separately: two answers to "how much beer" is worse than an awkward unit. */
+  for (const style of ['barak', 'classic', 'spirits', 'beer'] as const) {
+    const p = planBar(wedding, { ...evening, style });
+    assert.equal(p.beerSixPacks, Math.ceil(p.bottles.beer / 6), style);
+  }
+});
+
+test('a bar that is not open buys no six-packs either', () => {
+  const p = planBar(wedding, { ...evening, hours: 0 });
+  assert.equal(p.beerSixPacks, 0);
+});
+
+test('rounding goes up, because five sixths of a pack cannot be bought', () => {
+  const p = planBar({ guests: 100, childrenPct: 0, drinkersPct: 100 }, { ...evening, style: 'barak' });
+  assert.ok(p.beerSixPacks * 6 >= p.bottles.beer);
+  assert.ok((p.beerSixPacks - 1) * 6 < p.bottles.beer);
+});

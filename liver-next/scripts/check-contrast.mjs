@@ -37,6 +37,7 @@ const c = {
   card: '#FFFDF9',
   dark: '#0E0C0A',
   line: 'rgba(26,22,19,.09)', lineStrong: 'rgba(26,22,19,.16)',
+  lineControl: 'rgba(26,22,19,.48)',
   accent: '#846941',               /* handoff #B08D57 → 2.89:1 as words */
   accentBright: '#A18150',         /* large numerals only, 3:1 bar      */
   accentLine: '#B08D57',           /* decoration, no bar                */
@@ -85,6 +86,9 @@ const checks = [
      cannot be seen is a layout that has fallen apart. */
   ['a hairline on the ground',     over(c.line, c.surface),       c.surface, 1.15],
   ['a strong line on the ground',  over(c.lineStrong, c.surface), c.surface, 1.35],
+  /* An input's own edge is the only thing saying where to type, so it is a
+     control boundary and carries the 3:1 that comes with one. */
+  ['the edge of a field',          over(c.lineControl, c.surface), c.surface, 3.0],
 ];
 
 let failed = 0;

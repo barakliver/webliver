@@ -38,7 +38,12 @@ export function FabDock() {
         <div className="flex w-full max-w-md items-center gap-2 rounded-none glass-strong p-1.5 shadow-dock sm:w-auto">
           {wa && (
             <a href={wa} target="_blank" rel="noopener noreferrer"
-               className="flex flex-1 items-center justify-center gap-2 rounded-none bg-[#25D366] px-4 py-2.5 text-[14px] font-medium text-white transition hover:brightness-105 sm:flex-none">
+               /* WhatsApp's own green was the one colour on this page that
+                  belonged to somebody else. On a warm ivory palette it reads
+                  as a banner ad rather than as a way to reach a producer, and
+                  it was the brightest thing on a screen whose whole argument
+                  is restraint. The icon still says which app it opens. */
+               className="flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-none bg-ink px-4 text-[14px] tracking-[.03em] text-surface transition-colors duration-300 hover:bg-ink-soft sm:flex-none">
               <MessageCircle size={17} aria-hidden strokeWidth={1.5} /><span>{site.fab.whatsapp}</span>
             </a>
           )}

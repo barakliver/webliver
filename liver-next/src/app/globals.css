@@ -29,6 +29,13 @@
 
     --line: rgba(26, 22, 19, .09);
     --line-strong: rgba(26, 22, 19, .16);
+    /* The visible edge of a control, which is a different job from separating
+       two rows. The handoff's hairlines read 1.2:1 and 1.4:1 against ivory,
+       which is right for a separator and wrong for the only thing telling
+       somebody where to type: on the login screen the email field simply was
+       not there. A boundary that identifies a control needs 3:1, and this is
+       the lightest value that clears it. */
+    --line-control: rgba(26, 22, 19, .48);
 
     --accent: #846941;          /* gold, safe for words at any size, 4.54:1 */
     --accent-bright: #A18150;   /* gold, large serif numerals only, 3.03:1  */
@@ -171,7 +178,7 @@
      the rule to gold and thickens it, which is visible without a ring and
      without a fill. */
   .field {
-    @apply min-h-[44px] w-full rounded-none border-0 border-b border-line bg-transparent
+    @apply min-h-[44px] w-full rounded-none border-0 border-b border-line-control bg-transparent
            px-0 py-3 text-[15px] text-ink placeholder:text-ink-mute
            focus:border-accent focus:outline-none;
     border-bottom-width: 1px;

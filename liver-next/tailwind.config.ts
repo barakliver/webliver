@@ -67,6 +67,8 @@ const config: Config = {
         line: {
           DEFAULT: 'var(--line, rgba(26,22,19,.09))',
           strong:  'var(--line-strong, rgba(26,22,19,.16))',
+          /* The edge of a control, not the gap between two rows. 3:1. */
+          control: 'var(--line-control, rgba(26,22,19,.48))',
         },
 
         /* The accent, split by job, and every one of them a producer's own.

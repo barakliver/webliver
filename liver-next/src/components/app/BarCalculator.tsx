@@ -99,6 +99,12 @@ export function BarCalculator({ guestEstimate, confirmedGuests }: {
   );
   const { lines, total } = useMemo(() => shoppingList(plan, prices), [plan, prices]);
 
+  /* Beer is bought two ways and calculated one way. His sheet answers in 330ml
+     singles and that stays the answer; a supplier quote and a shop shelf are
+     both priced by the six-pack, so the list can be read either way without
+     anybody dividing by six at the till. The litres never move. */
+  const [beerPacks, setBeerPacks] = useState(false);
+
   return (
     <section className="card">
       <style>{`
@@ -151,7 +157,10 @@ export function BarCalculator({ guestEstimate, confirmedGuests }: {
             <li key={l.key} className="flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b border-line py-2.5 last:border-0">
               <span className="min-w-0 flex-1 text-[15px] text-ink">{c.items[l.key]}</span>
               <span className="font-display text-[16px] font-light tabular-nums text-ink">
-                {l.qty} <span className="text-[13px] font-normal text-ink-mute">{c.units[l.key]}</span>
+                {l.key === 'beer' && beerPacks ? plan.beerSixPacks : l.qty}{' '}
+                <span className="text-[13px] font-normal text-ink-mute">
+                  {l.key === 'beer' && beerPacks ? c.beerAsPacks : c.units[l.key]}
+                </span>
               </span>
               {l.total > 0 && (
                 <span className="w-[86px] shrink-0 text-left text-[14px] tabular-nums text-ink-soft"><Money value={l.total} /></span>
@@ -166,6 +175,33 @@ export function BarCalculator({ guestEstimate, confirmedGuests }: {
           </p>
         )}
       </div>
+
+      {/* Only offered when there is beer to count. A switch that changes
+          nothing is a switch somebody presses twice looking for the effect. */}
+      {plan.bottles.beer > 0 && (
+        <div className="no-print mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-line pt-4">
+          <span className="text-[13px] text-ink-mute">{c.beerUnit}</span>
+          <div role="group" className="flex">
+            {([false, true] as const).map((packs) => (
+              <button
+                key={String(packs)}
+                type="button"
+                onClick={() => setBeerPacks(packs)}
+                aria-pressed={beerPacks === packs}
+                className={[
+                  'min-h-[44px] border-b px-3 text-[13.5px] tracking-[.04em] transition-colors duration-300',
+                  beerPacks === packs
+                    ? 'border-accent-line text-ink'
+                    : 'border-transparent text-ink-mute hover:text-ink',
+                ].join(' ')}
+              >
+                {packs ? c.beerAsPacks : c.beerAsBottles}
+              </button>
+            ))}
+          </div>
+          {beerPacks && <span className="text-[12.5px] text-ink-mute">{c.beerPackNote}</span>}
+        </div>
+      )}
 
       <div className="no-print mt-6 flex flex-wrap items-center gap-3">
         <button type="button" className="btn-quiet text-[13.5px]" onClick={() => setShowPrices((v) => !v)}>

@@ -36,9 +36,15 @@ export function Hero({ site }: { site: SiteCopy }) {
         {/* Weighted toward the side the words sit on rather than flat across
             the frame: enough contrast to read, while the photograph keeps its
             colour. A flat 70% wash turned a warm golden-hour frame grey. */}
-        <div className="absolute inset-0 bg-[linear-gradient(105deg,rgba(9,13,20,.74)_0%,rgba(9,13,20,.55)_42%,rgba(9,13,20,.30)_100%)]" />
-        <div className="absolute inset-x-0 bottom-0 h-1/3 bg-[linear-gradient(180deg,transparent_0%,rgba(9,13,20,.55)_100%)]" />
-        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-surface-200" />
+        {/* Warm, and heavier than it was. The scrim was mixed from a blue
+            black, which on an ivory page reads as a different photograph
+            lit by a different sun. And it thinned to 30% at the far edge,
+            which is fine behind a headline and not fine behind five lines of
+            body copy: on a phone the paragraph sat directly on the dress.
+            Nothing under 55% now, anywhere text goes. */}
+        <div className="absolute inset-0 bg-[linear-gradient(105deg,rgba(14,12,10,.82)_0%,rgba(14,12,10,.68)_46%,rgba(14,12,10,.62)_100%)]" />
+        <div className="absolute inset-x-0 bottom-0 h-1/3 bg-[linear-gradient(180deg,transparent_0%,rgba(14,12,10,.6)_100%)]" />
+        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-surface" />
       </div>
 
       <div className="shell flex min-h-[86svh] flex-col justify-center py-24 sm:py-32">

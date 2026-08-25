@@ -111,6 +111,19 @@ export type BarPlan = {
   };
   /** Total litres of alcohol, which is the number his sheet works in. */
   litres: number;
+  /**
+   * The same beer, counted the other way.
+   *
+   * His sheet buys beer as 330ml singles and that stays the answer. A supplier
+   * quote and a cash-and-carry shelf are both priced by the six-pack, so the
+   * screen offers the second reading rather than making somebody divide by six
+   * in their head at the till.
+   *
+   * Derived, never a second calculation: the litres are the same litres. A
+   * second formula would be a second answer, and two answers to "how much beer"
+   * is worse than an awkward unit.
+   */
+  beerSixPacks: number;
   softLitres: number;
   iceKg: number;
   /** Whole limes and lemons, which is the thing every bar runs out of. */
@@ -159,6 +172,7 @@ export function planBar(crowd: Crowd, party: Party): BarPlan {
     litres: Math.round(
       ((spiritServings * 0.045) + (wineServings * 0.15) + (beerServings * 0.33)) * 10
     ) / 10,
+    beerSixPacks: up(up(beerServings / SERVINGS.beer) / 6),
     softLitres: up(guests * hours * SOFT_PER_PERSON_HOUR[party.season]),
     iceKg: up(guests * ICE_PER_GUEST[party.season]),
     /* One fruit per fifteen drinkers, floor of two. It is the cheapest thing
@@ -201,6 +215,7 @@ function byLitres(
       beer:    up((litres * BARAK_SPLIT.beer) / BOTTLE_LITRES.beer),
     },
     litres: Math.round(litres * 10) / 10,
+    beerSixPacks: up(up((litres * BARAK_SPLIT.beer) / BOTTLE_LITRES.beer) / 6),
     softLitres: up(guests * Math.max(1, hours) * SOFT_PER_PERSON_HOUR[season]),
     iceKg: up(guests * ICE_PER_GUEST[season]),
     citrus: Math.max(2, up(adults / 15)),
