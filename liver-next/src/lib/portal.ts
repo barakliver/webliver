@@ -9,6 +9,7 @@ import type { DayItem } from '@/components/app/DaySchedule';
 import type { BoardImage } from '@/components/app/WinningBoard';
 import { signBoardImages } from '@/lib/board';
 import type { Message as ThreadMessage } from '@/components/app/Thread';
+import type { Contract as ContractRow } from '@/components/app/Contracts';
 
 export type Workspace = {
   id: string; display_name: string; event_date: string | null;
@@ -153,6 +154,69 @@ export async function loadThread(
       author_avatar: person?.avatar ?? null,
     });
     byClient.set(m.client_id, list);
+  }
+  return byClient;
+}
+
+/** Contracts for one or more workspaces, with signed links and an integrity
+ *  answer per row.
+ *
+ *  The intact check is asked of the database rather than recomputed here: the
+ *  digest is defined in one place, and a second implementation in TypeScript
+ *  would eventually disagree with it — at which point the screen would either
+ *  cry tampering over a whitespace difference or, far worse, stay quiet about
+ *  a real one. */
+export async function loadContracts(
+  sb: SupabaseClient,
+  clientIds: string[]
+): Promise<Map<string, ContractRow[]>> {
+  const byClient = new Map<string, ContractRow[]>();
+  if (clientIds.length === 0) return byClient;
+
+  const { data } = await sb
+    .from('contracts')
+    .select('id,client_id,title,body,file_path,amount,status,signed_at,signed_name')
+    .in('client_id', clientIds)
+    .order('created_at', { ascending: false });
+
+  const rows = data ?? [];
+  if (rows.length === 0) return byClient;
+
+  const [signedUrls, intacts] = await Promise.all([
+    (async () => {
+      const paths = rows.map((r) => r.file_path).filter((p): p is string => !!p);
+      if (paths.length === 0) return new Map<string, string>();
+      const { data: urls } = await sb.storage.from('contracts').createSignedUrls(paths, 60 * 30);
+      return new Map((urls ?? []).filter((u) => u.signedUrl && u.path).map((u) => [u.path!, u.signedUrl!]));
+    })(),
+    (async () => {
+      const answers = await Promise.all(
+        rows.map(async (r) => {
+          if (r.status !== 'signed') return [r.id, true] as const;
+          const { data: ok } = await sb.rpc('contract_intact', { p_contract: r.id });
+          /* A check that could not run is not a pass. */
+          return [r.id, ok === true] as const;
+        })
+      );
+      return new Map(answers);
+    })(),
+  ]);
+
+  for (const r of rows) {
+    const list = byClient.get(r.client_id) ?? [];
+    list.push({
+      id: r.id,
+      title: r.title,
+      body: r.body,
+      file_path: r.file_path,
+      amount: r.amount === null ? null : Number(r.amount),
+      status: r.status,
+      signed_at: r.signed_at,
+      signed_name: r.signed_name,
+      intact: intacts.get(r.id) ?? true,
+      file_url: r.file_path ? (signedUrls.get(r.file_path) ?? null) : null,
+    });
+    byClient.set(r.client_id, list);
   }
   return byClient;
 }
