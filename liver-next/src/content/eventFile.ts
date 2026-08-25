@@ -122,6 +122,98 @@ export type TaskGroup = { id: string; title: string; sub: string; tasks: Templat
  * Everything is a default and nothing is a rule. Each line is ticked or
  * unticked, and shared or private, before it is applied.
  */
+
+/* ── the standing checklist ────────────────────────────────────────────────
+   His own list, as he wrote it, in his order and with his wording. It is not
+   a suggestion the way the two groups above are: these are the lines that are
+   on every wedding, so they are applied to a new event without being asked
+   for. Every one of them stays editable and deletable afterwards.
+
+   Most are shared. This list is largely the couple's own errands — a dress,
+   shoes, the mikveh, opening a file at the rabbinate — and a checklist the
+   couple cannot see is a checklist the producer chases by phone. The two that
+   are not shared carry money, which is producer-only everywhere else in this
+   product and stays that way here. */
+export const STANDING_CHECKLIST: TaskGroup[] = [
+  {
+    id: 'checklist',
+    title: 'צ׳ק ליסט',
+    sub: 'מה שסוגרים לכל אירוע. נכנס לבד לכל אירוע חדש, וניתן למחיקה שורה שורה.',
+    tasks: [
+      { title: 'מקום', shared: true },
+      { title: 'DJ', shared: true },
+      { title: 'צלם וידיאו', shared: true },
+      { title: 'צלם סטילס', shared: true },
+      { title: 'צלם מגנטים', shared: true },
+      { title: 'תא צילום', shared: true },
+      { title: 'צלמת סושיאל', shared: true },
+      { title: 'עיצוב', shared: true, note: 'להבין איך רוצים את העיצוב ולסגור עם מקום' },
+      { title: 'איפור', shared: true },
+      { title: 'שיער', shared: true },
+      { title: 'לפתוח תיק ברבנות', shared: true },
+      { title: 'לסגור רב', shared: true },
+      { title: 'מקווה', shared: true },
+      { title: 'חינה ?', shared: true },
+      { title: 'שבת חתן?', shared: true },
+    ],
+  },
+  {
+    id: 'clothing',
+    title: 'ביגוד',
+    sub: 'מה שלובשים ומה שנוסע איתם.',
+    tasks: [
+      { title: 'חליפה +בגדים להחלפה', shared: true },
+      { title: 'שמלה +הינומה', shared: true },
+      { title: 'שמלה שניה', shared: true },
+      { title: 'נעליים לכל אחד', shared: true },
+      { title: 'כוס שבירה לחתונה', shared: true },
+      { title: 'טבעות לטקס', shared: true },
+      { title: 'AirTag', shared: true, note: 'אם אין זמין לי יש' },
+      { title: 'כתובה', shared: true },
+      { title: 'רמקול למוזיקה להתארגנות', shared: true },
+      { title: 'תיק ללילה במלון לפני', shared: true },
+      { title: 'וביגוד למלון', shared: true },
+    ],
+  },
+  {
+    id: 'seating',
+    title: 'הושבה',
+    sub: 'מי מגיע, ומי יושב איפה.',
+    tasks: [
+      { title: 'לסגור חברת לאישורי הגעה', shared: true },
+      { title: 'לעשות רשומות', shared: true },
+      { title: 'לסדר מי יושב באיזה שולחן', shared: true },
+      { title: 'לקבל מוזמנים מההורים', shared: true },
+      { title: 'חברים של האחים', shared: true },
+      { title: 'עיצוב מתאים באולם', shared: true },
+    ],
+  },
+  {
+    id: 'venue',
+    title: 'מקום',
+    sub: 'מה קורה באולם עצמו.',
+    tasks: [
+      { title: 'בר אלכוהול/קוקטיילים', shared: true },
+      { title: 'גומי', shared: true },
+      {
+        title: 'אטקציה מגניבה',
+        shared: true,
+        note: 'קוקטיילים, ברמן מפעיל בבר, משהו שמוסיף עניין בגדול',
+      },
+      { title: 'בטקס- 7 ברכות ?', shared: true, note: 'מי מקריא, ילדות פרחים מי הן ?' },
+      { title: 'מתנות לאורחים', shared: true },
+      /* Carries a rate. Money is producer-only everywhere else in this
+         product, and a couple reading what the staff are tipped is the same
+         kind of leak as a couple reading what the staff are paid. */
+      {
+        title: 'טיפ במזומן',
+        shared: false,
+        note: 'נע בדרך כלל ל 50-80 שקל למלצר, 200-300 שקל למנהלים (מטעם האולם)',
+      },
+    ],
+  },
+];
+
 export const TASK_TEMPLATE: TaskGroup[] = [
   {
     id: 'planning',

@@ -9,6 +9,7 @@ import { clientInviteEmail } from '@/lib/notify/templates';
 import { inviteLinkFor } from '@/lib/invite';
 import { publicEnv } from '@/lib/env';
 import { MIN_EVENT_DATE, MAX_GUESTS } from '@/content/site';
+import { STANDING_CHECKLIST } from '@/content/eventFile';
 
 export type ActionResult = { ok: boolean; error?: string; id?: string };
 
@@ -65,6 +66,28 @@ export async function createClient(_prev: ActionResult | null, form: FormData): 
     .single();
 
   if (error) return { ok: false, error: readable(error.message) };
+
+  /* The standing checklist, without being asked for.
+   *
+   * The other templates are pickers, and rightly so: half of a planning list
+   * does not apply to any given event. This one is different because it is
+   * the list that is on every wedding, and a list somebody has to remember to
+   * apply is a list that is missing from the first three events before anyone
+   * notices. Every line stays editable and deletable.
+   *
+   * Failure here does not fail the event. A wedding that exists without its
+   * checklist is a wedding somebody can add lines to; a creation that rolls
+   * back because a seed insert failed is an event that does not exist. */
+  const seed = STANDING_CHECKLIST.flatMap((group) =>
+    group.tasks.map((t) => ({
+      client_id: data.id,
+      phase: group.title,
+      title: t.note ? `${t.title} · ${t.note}` : t.title,
+      visible_to_client: t.shared,
+    })),
+  );
+  const { error: seedError } = await sb.from('tasks').insert(seed);
+  if (seedError) console.error('[clients] the standing checklist did not seed', seedError);
 
   revalidatePath('/app/clients');
   redirect(`/app/clients/${data.id}`);
