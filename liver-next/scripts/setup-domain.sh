@@ -139,10 +139,44 @@ RESTORE
   ok "האתר הישן הופסק"
 fi
 
-say "3. nginx"
+say "3. מי מחזיק את פורט 80"
+# Asked before nginx is installed, not after. The first version assumed nginx
+# was the thing serving this domain and looked only at its config; on a machine
+# where the old site is served by something else entirely, that search comes
+# back empty, the install proceeds, and nginx then refuses to start because the
+# port is taken. The failure lands at `systemctl reload`, four steps from the
+# cause.
+holder="$(ss -tlnpH 'sport = :80' 2>/dev/null | grep -oE 'users:\(\("[^"]+' | grep -oE '[^"]+$' | sort -u | tr '\n' ' ')"
+holder="$(echo "$holder" | sed 's/ *$//')"
+
+if [ -n "$holder" ] && [ "$holder" != "nginx" ]; then
+  bad "פורט 80 תפוס על ידי: $holder"
+  echo
+  echo "    זה מה שמגיש את האתר הישן, וזה לא nginx."
+  echo "    הסקריפט לא נוגע בו: לעצור תהליך שלא הוא הקים זו בדיוק הדרך"
+  echo "    להפיל אתר חי בלי לדעת איך להחזיר אותו."
+  echo
+  echo "    שתי דרכים:"
+  echo
+  echo "    א. להעביר את התפקיד ל-nginx (מה שהסקריפט יודע לעשות):"
+  echo "         systemctl stop $holder && systemctl disable $holder"
+  echo "         bash \$0 ${domain} --force"
+  echo "       הישן מפסיק להיות מוגש. הקבצים שלו נשארים על הדיסק."
+  echo
+  echo "    ב. אם $holder הוא שרת אינטרנט שאתה רוצה לשמור, תגיד לי"
+  echo "       ואוסיף לו תצורה במקום להחליף אותו."
+  exit 1
+fi
+[ -n "$holder" ] && ok "פורט 80: nginx, כמו שצריך" || ok "פורט 80 פנוי"
+
+say "4. nginx"
 if ! command -v nginx >/dev/null; then
   apt-get update -qq && apt-get install -y -qq nginx
 fi
+# Installed but never started, which is what happens when the port was busy
+# during install. Starting it here rather than only reloading later.
+systemctl enable nginx >/dev/null 2>&1 || true
+systemctl start nginx >/dev/null 2>&1 || true
 ok "nginx מותקן"
 
 www_names=""
@@ -188,10 +222,14 @@ ln -sf "$conf" "/etc/nginx/sites-enabled/liver-${domain}"
 # already answering. Left alone when something is.
 [ -z "$existing" ] && rm -f /etc/nginx/sites-enabled/default
 nginx -t >/dev/null 2>&1 && ok "התצורה תקינה" || { bad "nginx -t נכשל"; nginx -t; exit 1; }
-systemctl reload nginx
-ok "nginx טעון מחדש"
+if systemctl is-active --quiet nginx; then
+  systemctl reload nginx && ok "nginx טעון מחדש"
+else
+  systemctl start nginx && ok "nginx הופעל" || {
+    bad "nginx לא עולה. מה שמחזיק את הפורט:"; ss -tlnp 'sport = :80' | sed 's/^/        /'; exit 1; }
+fi
 
-say "4. תעודת HTTPS"
+say "5. תעודת HTTPS"
 if ! command -v certbot >/dev/null; then
   apt-get install -y -qq certbot python3-certbot-nginx
 fi
@@ -207,7 +245,7 @@ fi
 systemctl list-timers 2>/dev/null | grep -q certbot && ok "חידוש אוטומטי פעיל" || \
   bad "אין טיימר חידוש. הרץ: systemctl enable --now certbot.timer"
 
-say "5. הכתובת שהאפליקציה מכירה"
+say "6. הכתובת שהאפליקציה מכירה"
 env_file="$(dirname "$0")/../.env.local"
 if grep -q '^NEXT_PUBLIC_SITE_URL=' "$env_file" 2>/dev/null; then
   sed -i "s#^NEXT_PUBLIC_SITE_URL=.*#NEXT_PUBLIC_SITE_URL=https://${domain}#" "$env_file"
@@ -220,11 +258,11 @@ echo "    NEXT_PUBLIC_ROOT_DOMAIN נשאר ריק בכוונה."
 echo "    הוא מפעיל תת-דומיינים לכל מפיק (keren.${domain}), וזה שלב נפרד"
 echo "    שדורש רשומת DNS נוספת: *  A  ${here}"
 
-say "6. בנייה מחדש והפעלה"
+say "7. בנייה מחדש והפעלה"
 ( cd "$(dirname "$0")/.." && npm run build ) && systemctl restart liver-next
 ok "השירות הופעל מחדש"
 
-say "7. בדיקה מבחוץ"
+say "8. בדיקה מבחוץ"
 sleep 2
 code="$(curl -fsS -o /dev/null -w '%{http_code}' "https://${domain}/" || echo 000)"
 [ "$code" = "200" ] && ok "https://${domain} → 200" || bad "https://${domain} → $code"
