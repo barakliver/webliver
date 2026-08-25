@@ -1,5 +1,8 @@
 'use client';
 
+import { Target, Mail, CheckCircle2, Wallet, KeyRound, MessagesSquare, Bell } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
+
 import Link from 'next/link';
 import { useState } from 'react';
 import { markRead, markAllRead } from '@/app/actions/notifications';
@@ -11,8 +14,11 @@ export type Notice = {
   read_at: string | null; created_at: string;
 };
 
-const ICONS: Record<string, string> = {
-  lead: '🎯', rsvp: '✉️', task: '✅', payment: '₪', invite: '🔑',
+/* Lucide rather than emoji: emoji render differently on every platform, carry
+   a colour we did not choose, and read as decoration next to Hebrew text. */
+const ICONS: Record<string, LucideIcon> = {
+  lead: Target, rsvp: Mail, task: CheckCircle2, payment: Wallet,
+  invite: KeyRound, message: MessagesSquare,
 };
 
 const rel = (iso: string) => {
@@ -66,7 +72,7 @@ export function NoticeBell({ notices }: { notices: Notice[] }) {
                 {notices.map((n) => (
                   <li key={n.id} className={`border-b border-line last:border-0 ${n.read_at ? '' : 'bg-bronze-wash/60'}`}>
                     <div className="flex gap-3 px-4 py-3">
-                      <span aria-hidden className="text-[15px]">{ICONS[n.kind] ?? '•'}</span>
+                      {(() => { const I = ICONS[n.kind] ?? Bell; return <I size={16} aria-hidden strokeWidth={1.75} className="mt-0.5 shrink-0 text-bronze" />; })()}
                       <div className="min-w-0 flex-1">
                         <p className="text-[14px] font-medium text-ink">{n.title}</p>
                         {n.body && <p className="truncate text-[13px] text-ink-soft">{n.body}</p>}

@@ -16,6 +16,8 @@ import { GuestList, type Guest } from '@/components/app/GuestList';
 import { SeatingPlan, type SeatTable } from '@/components/app/SeatingPlan';
 import { DaySchedule, type DayItem } from '@/components/app/DaySchedule';
 import { signBoardImages } from '@/lib/board';
+import { loadThread } from '@/lib/portal';
+import { Thread } from '@/components/app/Thread';
 
 export const dynamic = 'force-dynamic';
 
@@ -51,6 +53,7 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
     sb.from('day_schedule').select('id,track,at_time,title,note').eq('client_id', id).order('at_time'),
   ]);
   const board = await signBoardImages(sb, (boardRows ?? []) as never);
+  const threads = await loadThread(sb, [id]);
   const c = appCopy.clientPage;
   const kind = EVENT_KINDS.find((k) => k.value === client.kind)?.label ?? client.kind;
 
@@ -129,9 +132,10 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
           labelA={client.track_a_label}
           labelB={client.track_b_label}
         />
+        <Thread clientId={client.id} messages={threads.get(client.id) ?? []} viewerId={account.id} />
         <WinningBoard clientId={client.id} images={board} viewer="producer" />
       </div>
-      <Live sources={workspaceSources(client.id)} />
+      <Live sources={[...workspaceSources(client.id), { table: 'messages', filter: `client_id=eq.${client.id}` }]} />
     </>
   );
 }

@@ -570,5 +570,18 @@ export const noticeCopy = {
     task: 'משימה',
     payment: 'תשלום',
     invite: 'גישה',
+    message: 'הודעה',
   },
+} as const;
+
+export const threadCopy = {
+  title: 'הודעות',
+  sub: 'כל מה שסוכם על האירוע, במקום אחד שנשאר איתו.',
+  empty: 'עוד אין הודעות. כתבו את הראשונה.',
+  placeholder: 'לכתוב הודעה',
+  send: 'שליחה',
+  sending: 'שולח',
+  retract: 'מחיקה',
+  today: 'היום',
+  yesterday: 'אתמול',
 } as const;
