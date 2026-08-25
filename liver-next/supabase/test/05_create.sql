@@ -24,9 +24,16 @@ from (
     'root owns his own producer row'
 ) checks;
 
--- the write itself, exactly as the action performs it
+-- The write itself, exactly as the action performs it — and the words
+-- "exactly as" are the whole point of this line. The app asks for the new id
+-- back, so what it sends is `insert … returning id`, and a RETURNING clause
+-- makes the table's SELECT policy apply to the row being inserted. This test
+-- used to send the insert without it, passed, and reported a working create on
+-- a database where opening an event was impossible: the row went in and the
+-- read of it on the way out was refused.
 insert into public.clients (producer_id, display_name, kind, event_date, venue)
-values ('aaaaaaaa-0000-0000-0000-000000000001', 'בדיקה', 'wedding', '2027-01-01', '');
+values ('aaaaaaaa-0000-0000-0000-000000000001', 'בדיקה', 'wedding', '2027-01-01', '')
+returning id;
 
 select
   case when count(*) = 1 then 'PASS — the row was written and is readable back'

@@ -84,7 +84,14 @@ export async function createClient(_prev: ActionResult | null, form: FormData): 
          and the one person who cannot read the server's log from a phone.
          Everybody else gets the sentence and nothing else. */
       const isRoot = account.email.toLowerCase() === ROOT_ADMIN_EMAIL;
-      return { ok: false, error: isRoot ? `${why.message} (${why.detail})` : why.message };
+      /* The database's own sentence travels with it. Postgres says which side
+         of the statement refused — a WITH CHECK violation and a USING one on a
+         RETURNING clause are different sentences and different bugs — and that
+         distinction was invisible from a phone. */
+      return {
+        ok: false,
+        error: isRoot ? `${why.message} · ${error.message} · ${why.detail}` : why.message,
+      };
     }
     console.error('[clients] create failed', {
       code: (error as { code?: string }).code,
