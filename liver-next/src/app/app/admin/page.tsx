@@ -6,6 +6,7 @@ import { setProducerStatus } from '@/app/actions/admin';
 import { appCopy } from '@/content/site';
 import { PageHead, Empty } from '@/components/app/PageHead';
 import { FeatureFlags } from '@/components/app/FeatureFlags';
+import { MetricBlock } from '@/components/app/Metric';
 import { Live } from '@/components/app/Live';
 
 export const dynamic = 'force-dynamic';
@@ -37,31 +38,22 @@ function StatusButton({ id, status, label, tone }: {
   );
 }
 
-/** One number, and the thing it counts. Three to a card, because these are
- *  read as a set: a user count without the active share is a vanity figure. */
+/** One number, and the thing it counts. The first row is the headline and
+ *  gets the design's own metric size; the two under it are the qualifiers,
+ *  because a user count without the active share is a vanity figure.
+ *
+ *  This used to set the headline at `text-[22px]`, which is why the console
+ *  carried the right palette and still did not look like the design: the
+ *  numbers were the smallest thing on a screen that is entirely numbers. */
 function Band({ title, rows }: { title: string; rows: { label: string; value: number }[] }) {
+  const [lead, ...rest] = rows;
   return (
-    <div className="card">
-      <div className="text-[12.5px] font-semibold text-ink-mute">{title}</div>
-      <div className="mt-2 space-y-1">
-        {rows.map((r, i) => (
-          <div key={r.label} className="flex items-baseline justify-between gap-3">
-            <span className={i === 0 ? 'text-[14px] text-ink' : 'text-[13px] text-ink-soft'}>
-              {r.label}
-            </span>
-            <span
-              className={
-                i === 0
-                  ? 'font-display text-[22px] font-light tabular-nums text-ink'
-                  : 'text-[15px] font-medium tabular-nums text-ink-soft'
-              }
-            >
-              {r.value}
-            </span>
-          </div>
-        ))}
-      </div>
-    </div>
+    <MetricBlock
+      kicker={title}
+      value={lead.value.toLocaleString('en-US')}
+      sub={lead.label}
+      rows={rest.map((r) => ({ label: r.label, value: r.value.toLocaleString('en-US') }))}
+    />
   );
 }
 
@@ -69,7 +61,7 @@ function Telemetry({ s }: { s: Stats }) {
   return (
     <section>
       <h2 className="eyebrow mb-3">{c.stats.title}</h2>
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
         <Band title={c.stats.users} rows={[
           { label: c.stats.users, value: s.usersTotal },
           { label: c.stats.active30, value: s.usersActive30d },
