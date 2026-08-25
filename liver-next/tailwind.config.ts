@@ -24,10 +24,20 @@ import type { Config } from 'tailwindcss';
    the handoff's gold reads 2.89:1 against ivory and its faint ink 2.64:1, both
    under the bar for the text they were being used for.
 
-   Type is Frank Ruhl Libre over Heebo. Frank carries every heading, every
-   large number and every currency value, at weight 300 and never bold. Most of
-   the celebrated display pairings ship no Hebrew glyphs at all, which rules
-   them out before taste comes into it; both of these carry Hebrew. */
+   Type is Heebo, and only Heebo. That is what the design source sets, on
+   headings, figures, kickers and body alike; the brief that came with it says
+   in as many words that where it and the README disagree, the source file
+   wins.
+
+   What shipped before this was Frank Ruhl Libre over Heebo, a serif on every
+   heading and every large number, from the warm Lux direction. The palette
+   here was already correct and the screens still did not look like the
+   design, and the face is why.
+
+   Display sizes are tracked tight, which is the opposite of what the serif
+   wanted: -0.035em on a headline, -0.04em on a metric. A kicker is the one
+   thing tracked open.
+*/
 const config: Config = {
   content: ['./src/**/*.{ts,tsx}'],
   theme: {
@@ -74,6 +84,11 @@ const config: Config = {
         line: {
           DEFAULT: 'var(--line, rgba(15,23,42,.10))',
           strong:  'var(--line-strong, rgba(15,23,42,.18))',
+          /* The edge of a glass panel. Lighter than a separator on purpose:
+             here the fill and the shadow carry the surface and the border only
+             finishes it, which is the whole difference between this design and
+             the hairline one it replaced. */
+          soft:    'var(--line-soft, rgba(226,232,240,.6))',
           /* The edge of a control, not the gap between two rows. 3:1. */
           control: 'var(--line-control, rgba(15,23,42,.60))',
         },
@@ -102,20 +117,31 @@ const config: Config = {
         warn: { DEFAULT: '#8A5A17', wash: '#F5EEDF' },
         bad:  { DEFAULT: '#96322A', wash: '#F5E7E3' },
       },
+      /* One family. `display` is kept as a name because a hundred components
+         ask for it, and it now resolves to the same face as the body, which is
+         what the design source does. Keeping the name means the day a display
+         face is chosen deliberately, it is one line here. */
       fontFamily: {
-        sans:    ['var(--font-heebo)', 'system-ui', 'sans-serif'],
-        display: ['var(--font-frank)', 'Georgia', 'serif'],
+        sans:    ['var(--font-heebo)', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif'],
+        display: ['var(--font-heebo)', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif'],
       },
       fontSize: {
-        /* Positive tracking on the serif, which is the opposite of the tight
-           display type the slate version used. At weight 300 the letters need
-           the air or they close up. */
-        'display-xl': ['clamp(42px,7.4vw,104px)', { lineHeight: '1.04', letterSpacing: '.01em' }],
-        'display':    ['clamp(30px,5vw,46px)',    { lineHeight: '1.12', letterSpacing: '.015em' }],
-        'title':      ['clamp(22px,2.4vw,32px)',  { lineHeight: '1.2',  letterSpacing: '.02em' }],
+        /* Tracked tight, from the design source: -0.035em on a headline and
+           -0.04em on a metric. The previous values were positive, because a
+           serif at weight 300 closes up without air. This face is the other
+           way round: at these sizes Heebo needs the letters pulled together or
+           a headline reads as a row of separate words. */
+        'display-xl': ['clamp(42px,7.4vw,104px)', { lineHeight: '1.04', letterSpacing: '-.035em' }],
+        'display':    ['clamp(30px,5vw,46px)',    { lineHeight: '1.1',  letterSpacing: '-.035em' }],
+        'title':      ['clamp(22px,2.4vw,32px)',  { lineHeight: '1.2',  letterSpacing: '-.03em' }],
         /* The numbers the screens are built around. */
-        'metric':     ['62px', { lineHeight: '1',   letterSpacing: '.01em' }],
-        'metric-sm':  ['42px', { lineHeight: '1.05', letterSpacing: '.01em' }],
+        'metric':     ['62px', { lineHeight: '1',    letterSpacing: '-.04em' }],
+        'metric-sm':  ['42px', { lineHeight: '1.05', letterSpacing: '-.04em' }],
+      },
+      letterSpacing: {
+        /* A kicker is the one thing tracked open rather than tight. */
+        kicker: '.12em',
+        'kicker-wide': '.14em',
       },
       boxShadow: {
         /* Content carries no shadow at all on this palette. What is left is
@@ -127,8 +153,14 @@ const config: Config = {
            as nothing, so four cards lost their hover state without anybody
            writing a line that said so. They stay here as a landing place, in
            case one comes back. */
-        soft: 'none',
-        lift: 'none',
+        /* Surfaces carry a shadow again, and it is the design source's own:
+           barely there at rest, and a real lift only on the things that float.
+           The Lux direction had removed every one of them, which is why the
+           screens read as a flat document rather than as the stack of panels
+           that was designed. */
+        soft: '0 1px 2px rgba(15,23,42,.04)',
+        lift: '0 14px 34px -22px rgba(15,23,42,.30)',
+        cta:  '0 12px 26px -14px rgba(15,23,42,.70)',
         /* Chrome that floats over arbitrary content rather than over the
            page's own ground: a dropdown, the concierge panel. A hairline
            alone cannot say "above" on a ground this light. */
@@ -142,7 +174,14 @@ const config: Config = {
          this palette comes from is pills and rounded cards, and that is the
          one being built. Changing the token changes every surface at once,
          which is the point of having had one. */
-      borderRadius: { xl2: '14px', '4xl': '24px' },
+      /* The design source's own scale, by the name of the thing each value is
+         for. `xl2` and `4xl` stay as the two aliases a hundred components
+         already ask for, mapped onto it. */
+      borderRadius: {
+        control: '14px', button: '16px', 'card-sm': '20px', kpi: '22px',
+        card: '24px', panel: '26px', sheet: '30px',
+        xl2: '14px', '4xl': '24px',
+      },
       maxWidth: { content: '70rem', prose2: '44rem' },
       spacing: { safe: 'env(safe-area-inset-bottom, 0px)' },
       transitionTimingFunction: { out: 'cubic-bezier(.16,1,.3,1)' },

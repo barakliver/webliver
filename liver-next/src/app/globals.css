@@ -66,6 +66,11 @@
 
     --line: rgba(15, 23, 42, .10);
     --line-strong: rgba(15, 23, 42, .18);
+    /* The design source's own two: a panel edge and the glass it edges. Not
+       derived from the ink like the separators above, because these are the
+       slate line colour itself rather than a percentage of the text. */
+    --line-soft: rgba(226, 232, 240, .6);
+    --surface-glass: rgba(255, 255, 255, .78);
     /* The visible edge of a control, which is a different job from separating
        two rows. The handoff's hairlines read 1.2:1 and 1.4:1 against ivory,
        which is right for a separator and wrong for the only thing telling
@@ -151,7 +156,15 @@
   }
 
   body {
-    background: theme('colors.surface.DEFAULT');
+    /* The flat fill stays as the colour underneath, and the gradient from the
+       design source goes over it: white at the top corner, falling to slate
+       across the page. It is not decoration. The panels on top are
+       translucent, and a translucent surface over a flat fill is just a
+       slightly different flat fill; the gradient is what gives the glass
+       something to be glass over. */
+    background-color: theme('colors.surface.DEFAULT');
+    background-image: radial-gradient(120% 80% at 80% 0%, #fff 0%, #f8fafc 45%, #eef2f7 100%);
+    background-attachment: fixed;
     /* Installed, this is an app rather than a page: a tap should not flash a
        grey rectangle, and a scroll that reaches the end should not rubber band
        the whole shell. Neither is possible to fix from inside a component. */
@@ -160,6 +173,14 @@
     font-feature-settings: 'kern' 1;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+  }
+
+  /* Headings are tracked tight and balanced across their lines, from the
+     design source. Set here rather than only on the size tokens so a heading
+     that uses a plain size gets it too. */
+  h1, h2, h3 {
+    letter-spacing: -.03em;
+    text-wrap: balance;
   }
 
   /* Hebrew has no ascenders or descenders to speak of, so lines pack tighter
@@ -213,25 +234,42 @@
   .shell { @apply mx-auto w-full max-w-content px-4 sm:px-8; }
   .measure { max-width: 62ch; }
 
-  /* ── The biggest change: there is no card ────────────────────────────────
-     A hundred components ask for `.card`, so the name survives and its meaning
-     changes. What used to be a white box with a radius and a shadow is now a
-     group of rows opened by a hairline. No fill, no border on three sides, no
-     radius, no shadow.
+  /* ── The card, restored ──────────────────────────────────────────────────
+     This was a hairline with no fill, no radius and no shadow, from the Lux
+     direction. The design source is the other one, and it is built out of
+     glass panels: a translucent white surface, a soft edge, a 24px radius and
+     a shadow barely heavier than a hairline. `surface-glass` in the handoff's
+     own config, and a hundred components here already ask for `.card`.
 
-     Vertical padding only. A card used to inset its contents from the page;
-     a hairline group is flush with it, which is what makes a column of them
-     read as one document rather than as a stack of tiles. */
+     The blur is what makes it glass rather than grey, and it is why the page
+     ground underneath is a gradient rather than a flat fill: there has to be
+     something for the surface to be translucent over. */
   .card {
-    @apply border-t border-line bg-transparent py-4 sm:py-5;
+    @apply rounded-card border border-line-soft p-5 shadow-soft sm:p-6;
+    background: var(--surface-glass);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
   }
-  /* Where a group really does need a ground of its own: the dark result panel,
-     a sheet. Rare on purpose. */
+  /* The solid variant. Where a panel has to hold its own against whatever is
+     behind it rather than borrow from it: a sheet, a login card, the result
+     of a calculation. */
   .panel {
-    @apply border border-line bg-surface-100 p-4 sm:p-5;
+    @apply rounded-panel border border-surface bg-card p-5 shadow-lift sm:p-6;
   }
   .panel-dark {
-    @apply bg-dark p-5 text-surface;
+    @apply rounded-panel bg-dark p-5 text-surface shadow-lift;
+  }
+  /* And the third: an outline with almost no fill, for a group that needs an
+     edge without becoming another panel in a column of panels. */
+  .panel-outline {
+    @apply rounded-card border border-line p-5;
+    background: rgb(255 255 255 / .45);
+  }
+
+  /* Where blur is unsupported, glass has to stay readable rather than become
+     a wash of half-legible text over whatever is behind it. */
+  @supports not (backdrop-filter: blur(1px)) {
+    .card { background: theme('colors.card'); }
   }
 
   /* 44px minimum on every control, per the brief and the accessibility rule
@@ -252,17 +290,23 @@
   /* A rule under the value rather than a box around it. The focus state moves
      the rule to gold and thickens it, which is visible without a ring and
      without a fill. */
+  /* A box with a 14px corner, which is what every control in the design
+     source is. It had been an underline: no radius, no fill, one rule under
+     the value. That is the Lux direction, and it is also why a field could be
+     hard to find on a page — a single hairline is the least a control can say
+     about where it is. A filled box with an edge says it plainly, and 14px is
+     the design's own control radius rather than a guess. */
   .field {
-    /* No radius. This control is a rule under the value, not a box, and a
-       corner radius on a bottom border curls the ends of the underline up
-       into little hooks. */
-    @apply min-h-[44px] w-full rounded-none border-0 border-b border-line-control bg-transparent
-           px-0 py-3 text-[15px] text-ink placeholder:text-ink-mute
+    @apply min-h-[44px] w-full rounded-control border border-line-strong
+           px-4 py-2.5 text-[15px] text-ink placeholder:text-ink-mute
            focus:border-accent focus:outline-none;
-    border-bottom-width: 1px;
-    transition: border-color .3s cubic-bezier(.16, 1, .3, 1);
+    background: rgb(255 255 255 / .8);
+    transition: border-color .2s cubic-bezier(.16, 1, .3, 1),
+                box-shadow .2s cubic-bezier(.16, 1, .3, 1);
   }
-  .field:focus { border-bottom-width: 2px; padding-bottom: calc(.75rem - 1px); }
+  /* Focus is a ring rather than a thicker border, so the control does not
+     change size when it is entered and the line below it does not jump. */
+  .field:focus { box-shadow: 0 0 0 3px rgba(15, 23, 42, .08); }
   .label { @apply mb-1.5 block text-[13.5px] font-medium text-ink-soft; }
 
   /* Status reads without colour too: every chip carries a word. */
@@ -341,8 +385,19 @@
     --accent-line-rgb: 74 55 20;
     --accent-light-rgb: 255 255 255;
     --accent-wash: #f4efe4;
+    /* Glass is the first thing to go. A translucent panel over a gradient is
+       exactly the surface somebody turns this mode on to escape: the text sits
+       on a ground that changes across the page and the edge is barely there.
+       Solid white, a real border, no blur. */
+    --line-soft: #4a4a4a;
+    --surface-glass: #ffffff;
   }
-  :root.a11y-contrast body { background: #fff; }
+  :root.a11y-contrast body { background: #fff; background-image: none; }
+  :root.a11y-contrast .card {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: none;
+  }
   /* A fading rule is decoration, and decoration is the first thing to go. */
   :root.a11y-contrast .rule-gold {
     background: #4a4a4a;
@@ -356,11 +411,12 @@
     text-underline-offset: 3px;
   }
 
-  /* The serif is the house face and it is also the harder one to read. This
-     hands the whole page to Heebo and opens it up. */
-  :root.a11y-readable {
-    --font-frank: var(--font-heebo);
-  }
+  /* This used to swap the serif for Heebo and open the page up. The whole
+     product is Heebo now, so the swap has nothing left to do and is gone
+     rather than left in as a line that looks like it works. What remains is
+     the half that always did the work: letters, words and lines given room,
+     which is what dyslexia guidance actually asks for. The control's own
+     wording says spacing rather than a font, for the same reason. */
   :root.a11y-readable * {
     letter-spacing: .02em !important;
     word-spacing: .08em !important;

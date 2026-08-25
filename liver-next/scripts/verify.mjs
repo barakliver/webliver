@@ -102,9 +102,20 @@ function checkBuiltCss() {
     'the unmeasured gold is not used as text',
   );
 
-  /* Structure is hairlines now, not glass. A backdrop-filter left on content
-     means a card survived the sweep. */
   record(has('--line-control'), 'control edges have their own token');
+
+  /* The face, which is the one thing about this design that cannot be checked
+     by looking at a screenshot on a phone. The design source sets everything
+     in Heebo; what shipped for months was a serif on every heading and every
+     large number, and that alone is why screens carrying the correct palette
+     still did not look like the thing that was designed. If the serif's
+     variable is back in the stylesheet, so is the wrong design. */
+  record(!has('--font-frank'), 'the serif is not in the build');
+
+  /* And the surfaces. A card in this design is glass: a translucent fill, a
+     soft edge and a 24px corner. Its absence is what a flat page looks like. */
+  record(/backdrop-filter:\s*blur/.test(css), 'panels are glass rather than flat');
+  record(/border-radius:\s*24px/.test(css), 'a card has the design\'s own corner');
 
   /* The tones are stored as channels so that an opacity modifier resolves at
      all. Tailwind can only fold an alpha into a custom property holding bare

@@ -1,29 +1,35 @@
 import type { Metadata, Viewport } from 'next';
-import { Heebo, Frank_Ruhl_Libre } from 'next/font/google';
+import { Heebo } from 'next/font/google';
 import { site } from '@/content/site';
 import { PLATFORM_HOST } from '@/lib/env';
 import { ServiceWorker } from '@/components/app/ServiceWorker';
 import './globals.css';
 import { A11yPanel } from '@/components/a11y/A11yPanel';
 
-/* Two families. Both carry Hebrew, which is the whole reason they were chosen
-   over the pairings the design tooling suggested; most celebrated display
-   faces ship no Hebrew glyphs at all.
+/* One family, and it is the one the handoff names.
 
-   Frank drops to 300 and loses 700 entirely. It sets every heading and every
-   large number, and at 104px a light weight carries by shape while a bold one
-   turns an editorial page into a brochure. 400 stays for the sizes small
-   enough that 300 goes thin.
+   The design source is `Event Platform.dc.html`, and the brief that came with
+   it says in as many words that when it and the README disagree, that file
+   wins. It sets everything in Heebo: headings, figures, kickers, body. There
+   is no second face and no serif anywhere in it.
 
-   Heebo picks up 200 and 300 for the kickers and meta lines, which are set
-   light and tracked wide rather than small and grey. */
+   What shipped instead was Frank Ruhl Libre on every heading and every large
+   number, from the warm Lux direction. That is a beautiful face and it is not
+   this design — and it is the single reason the screens carried the right
+   palette and still did not look like the thing that was designed. A serif
+   headline is not a detail somebody overlooks.
+
+   Heebo carries Hebrew properly, which is why it was chosen over the display
+   pairings the tooling suggests; most of those ship no Hebrew glyphs at all.
+   The full range is loaded because the design uses it: 300 for the large
+   figures, 800 for the places it wants weight.
+
+   Display sizes are tracked tight rather than wide. That is a property of
+   this face at these sizes and it is in the config: -0.035em on a headline,
+   -0.04em on a metric, which is the opposite of what the serif needed. */
 const heebo = Heebo({
   subsets: ['hebrew', 'latin'], variable: '--font-heebo',
-  display: 'swap', weight: ['200', '300', '400', '500'],
-});
-const frank = Frank_Ruhl_Libre({
-  subsets: ['hebrew', 'latin'], variable: '--font-frank',
-  display: 'swap', weight: ['300', '400'],
+  display: 'swap', weight: ['300', '400', '500', '600', '700', '800'],
 });
 
 export const metadata: Metadata = {
@@ -61,7 +67,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="he" dir="rtl" className={`${heebo.variable} ${frank.variable}`}>
+    <html lang="he" dir="rtl" className={heebo.variable}>
       <body className="font-sans antialiased a11y-zoom">
         <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:right-3 focus:z-[100] focus:rounded-xl2 focus:bg-ink focus:px-5 focus:py-2 focus:text-surface">
           דלג לתוכן הראשי

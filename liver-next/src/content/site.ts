@@ -238,7 +238,7 @@ export const a11yCopy = {
   bigger: 'הגדלת טקסט',
   contrast: 'ניגודיות גבוהה',
   links: 'הדגשת קישורים',
-  readable: 'גופן קריא ומרווח',
+  readable: 'ריווח מוגדל לקריאה',
   motion: 'עצירת אנימציות',
   cursor: 'סמן גדול',
   reset: 'איפוס הגדרות',

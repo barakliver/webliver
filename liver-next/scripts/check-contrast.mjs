@@ -171,6 +171,9 @@ const hc = {
   surface: '#FFFFFF', surface200: '#F0F0F0',
   accent: '#6A4F1C', accentLine: '#4A3714',
   line: '#767676', lineStrong: '#4A4A4A', lineControl: '#000000',
+  /* The panel edge, which in this mode is a border somebody has to find
+     rather than the soft finish it is on the default palette. */
+  lineSoft: '#4A4A4A',
 };
 
 console.log('\n  ניגודיות גבוהה');
@@ -184,6 +187,7 @@ line('a label on the accent',     hc.surface,  hc.accent,     4.5);
    to the 3:1 a control boundary needs rather than the 1.15 a hint does. */
 line('a separator',               hc.line,     hc.surface,    3);
 line('a group edge',              hc.lineStrong, hc.surface,  3);
+line('the edge of a panel',       hc.lineSoft,   hc.surface,  3);
 line('the edge of a field',       hc.lineControl, hc.surface, 3);
 
 console.log(failed === 0 ? '\nall pairings pass' : `\n${failed} below target`);
