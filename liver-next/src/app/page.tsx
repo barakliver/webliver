@@ -5,7 +5,9 @@ import { Nav } from '@/components/marketing/Nav';
 import { Hero } from '@/components/marketing/Hero';
 import { Section } from '@/components/marketing/Section';
 import { Prose } from '@/components/marketing/Prose';
-import { Journey } from '@/components/marketing/Journey';
+import { Steps } from '@/components/marketing/Steps';
+import { PhoneStage } from '@/components/marketing/PhoneStage';
+import { DarkBand } from '@/components/marketing/DarkBand';
 import { BudgetSimulator } from '@/components/marketing/BudgetSimulator';
 import { LeadForm } from '@/components/marketing/LeadForm';
 import { Portfolio } from '@/components/marketing/Portfolio';
@@ -34,11 +36,20 @@ export default async function HomePage() {
           <Prose lines={site.philosophy.body} />
         </Section>
 
+        {/* The product, shown. It sits directly after the argument for why the
+            work matters, which is the first point on the page where somebody
+            wonders what they would actually be handed. */}
+        <PhoneStage
+          kicker={site.tagline}
+          title={site.value.title}
+          body={site.value.body[0] ?? ''}
+        />
+
         <Section title={site.value.title} className="pt-0">
           <Prose lines={site.value.body} />
         </Section>
 
-        <Journey site={site} />
+        <Steps site={site} />
 
         <Section id="about" title={site.about.title}>
           <div className="grid items-start gap-8 sm:grid-cols-[minmax(0,260px)_1fr] sm:gap-10">
@@ -66,7 +77,16 @@ export default async function HomePage() {
           </div>
         </Section>
 
-        <Section id="contact" title={site.closing.title} sub={site.lead.sub}>
+        {/* The one place the page inverts, immediately before the ask. */}
+        <DarkBand
+          kicker={site.tagline}
+          title={site.closing.title}
+          body={site.closing.body[0]}
+          cta={site.closing.cta}
+          href="#contact"
+        />
+
+        <Section id="contact" title={site.lead.title} sub={site.lead.sub}>
           <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
             <div>
               <Prose lines={site.closing.body} />
