@@ -70,10 +70,18 @@ function checkBuiltCss() {
 
   const has = (hex) => css.includes(hex.toLowerCase()) || css.includes(hex.toUpperCase());
 
-  /* The Lux ground and the warm ink. Checked in the compiled stylesheet rather
-     than in the config, because the question is what the browser received. */
-  record(has('#faf7f2'), 'the warm ground is in the build');
-  record(has('#1a1613'), 'the warm ink is in the build');
+  /* The Lux ground and the warm ink, as the declarations that define them
+     rather than as loose hex. Checked in the compiled stylesheet rather than
+     in the config, because the question is what the browser received.
+
+     Written this precisely because the loose form lied. `has('#1a1613')` had
+     been passing on the strength of `--line:#1a161317`, which is the hairline
+     with its alpha folded in — so the check reported the ink present in a
+     build that no longer contained it anywhere as a colour. A check that
+     passes for the wrong reason is worse than one that fails. */
+  record(/--surface-rgb:\s*250 247 242/.test(css), 'the warm ground is in the build');
+  record(/--ink-rgb:\s*26 22 19/.test(css), 'the warm ink is in the build');
+  record(/--accent-rgb:\s*132 105 65/.test(css), 'the measured gold is in the build');
 
   /* And the two palettes it replaced. A build that still carries the slate is
      a build that predates the design work, whatever the page looks like on a
@@ -84,11 +92,30 @@ function checkBuiltCss() {
   /* The gold the handoff shipped reads 2.89:1 against ivory, under the 3:1 a
      large numeral needs. If it is back in the stylesheet as a text colour,
      somebody has reverted the measured value. */
-  record(!/color:\s*#b08d57/i.test(css), 'the unmeasured gold is not used as text');
+  /* Anchored to the start of a declaration. Unanchored, `color:` is also the
+     tail of `border-color:` and `background-color:`, and this reported a
+     violation against `.border-accent-line`, which is exactly the decorative
+     use the tone is for. */
+  record(
+    !/[;{]\s*color:\s*(#b08d57|rgb\(var\(--accent-line-rgb)/i.test(css),
+    'the unmeasured gold is not used as text',
+  );
 
   /* Structure is hairlines now, not glass. A backdrop-filter left on content
      means a card survived the sweep. */
   record(has('--line-control'), 'control edges have their own token');
+
+  /* The tones are stored as channels so that an opacity modifier resolves at
+     all. Tailwind can only fold an alpha into a custom property holding bare
+     channels; against a whole colour it emits no declaration, so a rule like
+     `border-accent/40` reads correctly in the source and paints nothing.
+     Thirty-three of them were being dropped that way, including the dimming
+     behind two modals. Proving one survived into the stylesheet proves the
+     indirection is intact in the build the browser actually got. */
+  record(
+    /rgb\(var\(--[a-z0-9-]+-rgb,[^)]*\)\s*\/\s*\.\d+\)/.test(css),
+    'an opacity modifier still resolves',
+  );
 }
 
 // ── the dependency added this release is actually installed ─────────────────
