@@ -8924,6 +8924,165 @@ renderAll();
 })();
 renderAll();
 
+/* ══════════════════════════════════════════════════════════
+   v54 — a way back in that does not cost you every other website
+   ══════════════════════════════════════════════════════════
+   An account lives in this browser, on this device. Forget the password
+   and there is no route back: the reset lives behind the login, and the
+   only advice left was "clear your browsing data" — which signs you out
+   of every site you use. That is not an acceptable answer for forgetting
+   one password.
+
+   This app writes exactly one storage key, STORE_KEY ('liver_db'), so it
+   can clear its own data and nothing else. Not another site, not another
+   key — browsers isolate storage per origin, and this stays inside ours.
+
+   The recovery panel sits under the login form and offers, in order:
+     · download a backup first, so nothing is lost either way
+     · then reset this site on this device, behind a typed confirmation
+       that names what is about to go */
+(function(){
+
+ var KEY = (typeof STORE_KEY === 'string') ? STORE_KEY : 'liver_db';
+
+ function counts(){
+  var raw = null;
+  try { raw = localStorage.getItem(KEY); } catch(e){ return null; }
+  if(!raw) return { users:0, clients:0, leads:0, tasks:0, empty:true };
+  var d;
+  try { d = JSON.parse(raw); } catch(e){ return null; }
+  var tasks = 0;
+  Object.keys(d.tasks || {}).forEach(function(k){
+   tasks += (d.tasks[k] || []).length;
+  });
+  return {
+   users:   (d.users   || []).length,
+   clients: (d.clients || []).length,
+   leads:   (d.leads   || []).length,
+   tasks:   tasks,
+   empty:   !(d.users || []).length && !(d.clients || []).length && !(d.leads || []).length
+  };
+ }
+
+ window.recoverOpen = function(){
+  var m = document.getElementById('recoverModal');
+  if(!m){
+   m = document.createElement('div');
+   m.className = 'modal';
+   m.id = 'recoverModal';
+   m.setAttribute('role', 'dialog');
+   m.setAttribute('aria-modal', 'true');
+   m.setAttribute('onclick', "if(event.target===this)closeModal('recoverModal')");
+   document.body.appendChild(m);
+  }
+  recoverPaint();
+  openModal('recoverModal');
+ };
+
+ function recoverPaint(){
+  var m = document.getElementById('recoverModal');
+  if(!m) return;
+  var he = (typeof lang === 'undefined' || lang === 'he');
+  var c  = counts();
+
+  var what;
+  if(!c){
+   what = he ? 'לא הצלחתי לקרוא את הנתונים במכשיר הזה.' : 'Could not read the data on this device.';
+  } else if(c.empty){
+   what = he ? 'אין כאן נתונים — המחיקה בטוחה לגמרי.'
+             : 'There is nothing stored here — resetting is completely safe.';
+  } else {
+   var parts = [];
+   if(c.users)   parts.push((he?'משתמשים: ':'accounts: ')   + c.users);
+   if(c.clients) parts.push((he?'לקוחות: ':'clients: ')      + c.clients);
+   if(c.leads)   parts.push((he?'פניות: ':'leads: ')         + c.leads);
+   if(c.tasks)   parts.push((he?'משימות: ':'tasks: ')        + c.tasks);
+   what = (he ? 'יימחק מהמכשיר הזה — ' : 'Will be removed from this device — ') + parts.join(' · ');
+  }
+
+  m.innerHTML =
+   '<div class="modal-card card" style="max-width:400px">' +
+    '<div class="spread" style="margin-bottom:10px">' +
+     '<b style="font-size:15px">' + esc(he ? 'בעיה בכניסה' : 'Trouble signing in') + '</b>' +
+     '<button onclick="closeModal(\'recoverModal\')" aria-label="' + esc(t('close')) + '" ' +
+      'style="background:none;border:none;font-size:19px;cursor:pointer;min-width:44px;min-height:44px">✕</button>' +
+    '</div>' +
+    '<p class="muted" style="font-size:13.2px;line-height:1.6">' +
+     esc(he ? 'החשבון שמור בדפדפן הזה, במכשיר הזה בלבד. אם נרשמת במכשיר אחר — הוא לא קיים כאן, ושום סיסמה לא תעבוד.'
+            : 'Accounts are stored in this browser, on this device only. If you signed up on another device, it does not exist here and no password will work.') +
+    '</p>' +
+    '<div style="background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:12px 0;font-size:12.6px">' +
+     esc(what) +
+    '</div>' +
+    '<button class="btn btn-dark btn-sm" style="width:100%;margin-bottom:8px" onclick="recoverBackup()">' +
+     esc(he ? '⬇️ קודם גיבוי לקובץ' : '⬇️ Download a backup first') + '</button>' +
+    '<button class="btn btn-red btn-sm" style="width:100%" onclick="recoverReset()">' +
+     esc(he ? '🗑 איפוס האתר הזה במכשיר הזה' : '🗑 Reset this site on this device') + '</button>' +
+    '<p class="muted" style="font-size:11.6px;margin-top:10px;line-height:1.55">' +
+     esc(he ? 'נוגע רק בנתונים של האתר הזה. לא ישפיע על אף אתר אחר ולא ינתק אותך משום מקום.'
+            : 'Touches only this site’s data. No other site is affected and you stay signed in everywhere else.') +
+    '</p>' +
+   '</div>';
+ }
+
+ window.recoverBackup = function(){
+  if(typeof exportData === 'function') return exportData();
+ };
+
+ window.recoverReset = function(){
+  var he = (typeof lang === 'undefined' || lang === 'he');
+  var c  = counts();
+  var ask = he
+   ? 'לאפס את הנתונים של האתר הזה במכשיר הזה?\n\nזה לא ניתן לביטול.'
+   : 'Reset this site’s data on this device?\n\nThis cannot be undone.';
+  if(c && !c.empty){
+   ask += he ? '\n\nיימחקו: ' + c.users + ' משתמשים, ' + c.clients + ' לקוחות, ' + c.tasks + ' משימות.'
+             : '\n\nRemoving: ' + c.users + ' accounts, ' + c.clients + ' clients, ' + c.tasks + ' tasks.';
+  }
+  if(!confirm(ask)) return;
+
+  /* The reload triggers beforeunload, and that listener was registered
+     with a direct reference to the original saveNow — so reassigning the
+     global does nothing to it, and it writes the in-memory database
+     straight back over the cleared key. Measured: the accounts were
+     still there afterwards.
+
+     storageOK is what saveNow checks before writing, so lowering the
+     flag stops the captured copy too. A fresh page resets it to true, so
+     saving works normally again from the next load. */
+  try { storageOK = false; } catch(e){}
+  try { if(typeof saveTimer !== 'undefined' && saveTimer) clearTimeout(saveTimer); } catch(e){}
+  try { localStorage.removeItem(KEY); } catch(e){}
+  location.reload();
+ };
+
+ /* The way in is the "שכחתי סיסמה" button that already sits on the login
+    screen. v40 turned it into a contact-the-producer card, because the
+    old code mailed the reset code to the site owner rather than to the
+    person asking — a full account takeover. That card is still right for
+    a couple or a member of staff, whose producer can reset them. It is
+    the wrong answer for the one person with nobody above them, so the
+    self-service reset joins it there rather than adding a second link.
+
+    Note that renderAuth is rebuilt by that same layer and no longer
+    calls loginCard2, so hooking forgotCard is also the hook that works. */
+ var _forgotCardV54 = forgotCard;
+ forgotCard = function(){
+  var he = (typeof lang === 'undefined' || lang === 'he');
+  return _forgotCardV54() +
+   '<hr class="hairline" style="margin:16px 0">' +
+   '<p class="muted" style="font-size:12.6px;line-height:1.6;text-align:center">' +
+    esc(he ? 'נרשמתם בעצמכם ואין מי שיאפס לכם?'
+           : 'Signed yourself up, with nobody above you to reset it?') +
+   '</p>' +
+   '<button class="btn btn-ghost btn-sm" style="width:100%;margin-top:8px" ' +
+    'onclick="recoverOpen()">' +
+    esc(he ? 'אפשרויות שחזור במכשיר הזה' : 'Recovery options on this device') + '</button>';
+ };
+
+ if(typeof renderAuth === 'function' && typeof activeRole !== 'undefined' && activeRole === 'auth') renderAuth();
+})();
+
 /* ══ PWA: real manifest.json + sw.js on the server so "Install app" works.
    (Blob/data: URLs cannot be used to register a service worker — that was
    the reason the previous version never satisfied install criteria.) ══ */
