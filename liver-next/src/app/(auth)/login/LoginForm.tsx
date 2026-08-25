@@ -1,5 +1,7 @@
 'use client';
 
+import { CodeInput } from '@/components/app/CodeInput';
+
 import { useActionState, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { requestCode, verifyCode, type AuthResult } from '@/app/actions/auth';
@@ -53,19 +55,7 @@ export function LoginForm({ next }: { next?: string }) {
 
         <input type="hidden" name="email" value={sent} />
         {next && <input type="hidden" name="next" value={next} />}
-        <div>
-          <label className="label" htmlFor="lg-code">{copy.codeLabel}</label>
-          <input
-            id="lg-code"
-            name="code"
-            inputMode="numeric"
-            autoComplete="one-time-code"
-            maxLength={12}
-            required
-            dir="ltr"
-            className="field text-center text-[22px] tracking-[0.5em]"
-          />
-        </div>
+        <CodeInput name="code" label={copy.codeLabel} />
 
         <Submit label={copy.codeSubmit} busy={copy.codeChecking} />
 
