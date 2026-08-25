@@ -6,6 +6,7 @@ import { getCalendar, type CalItem } from '@/lib/calendar';
 import { appCopy } from '@/content/site';
 import { PageHead, Empty } from '@/components/app/PageHead';
 import { Live } from '@/components/app/Live';
+import { CalendarFeed } from '@/components/app/CalendarFeed';
 
 export const metadata = { title: appCopy.calendar.title };
 
@@ -44,11 +45,15 @@ export default async function CalendarPage() {
     <>
       <PageHead title={c.title} sub={c.sub} />
 
-      <div className="mb-7 flex flex-wrap gap-2">
+      <div className="mb-7 space-y-3">
+        {/* The file first, because it is the thing that works with no setup at
+            all, and the subscription under it for the people who want the
+            diary to stay right without being re-saved. */}
         <a href="/app/calendar.ics" className="btn-ghost inline-flex items-center gap-2 text-[14px]">
           <CalendarPlus size={16} aria-hidden strokeWidth={1.75} />
           {c.subscribe}
         </a>
+        <CalendarFeed />
       </div>
 
       {items.length === 0 ? (

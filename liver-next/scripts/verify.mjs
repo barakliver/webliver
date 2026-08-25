@@ -100,6 +100,24 @@ async function main() {
      never signed in and may never sign in on the device they are holding. */
   await page('/auth/callback?email=a%40b.co', 'a spent link lands somewhere useful', { expect: [307, 308] });
 
+  /* A calendar app fetches this from its own servers with no cookies. The
+     failure it guards against is silent by design: handed a sign-in redirect,
+     the app parses the HTML, finds no events, and reports that it subscribed.
+     So an unknown token must answer 200 with a real, empty calendar. */
+  const feed = await page(
+    '/feed/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.ics',
+    'a calendar app gets a calendar and not a login page',
+    { expect: [200] },
+  );
+  if (feed) {
+    const body = await feed.text();
+    record(
+      feed.headers.get('content-type')?.includes('text/calendar') && body.startsWith('BEGIN:VCALENDAR'),
+      'an unknown feed token is empty rather than a redirect',
+      body.slice(0, 15).replace(/\n/g, ' '),
+    );
+  }
+
   // behind the sign in: a redirect is the correct answer to a stranger
   for (const [path, label] of [
     ['/app', 'the overview'],
