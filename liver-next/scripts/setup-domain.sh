@@ -95,10 +95,48 @@ if [ -n "$existing" ]; then
     echo "        bash scripts/setup-domain.sh ${domain} --force"
     exit 1
   fi
+  # Replacing a live site. The config is copied, the old symlinks are recorded
+  # so the restore is one command, and a script is written next to the backup
+  # so getting back does not depend on anybody remembering how.
   stamp="$(date +%Y%m%d-%H%M%S)"
-  mkdir -p "/root/nginx-backup-${stamp}"
-  echo "$existing" | while read -r f; do cp -a "$f" "/root/nginx-backup-${stamp}/"; done
-  ok "גיבוי נשמר ב-/root/nginx-backup-${stamp}"
+  backup="/root/nginx-backup-${stamp}"
+  mkdir -p "$backup"
+  : > "$backup/enabled.list"
+  echo "$existing" | while read -r f; do
+    [ -n "$f" ] || continue
+    cp -aL "$f" "$backup/$(basename "$f")"
+    echo "$f" >> "$backup/enabled.list"
+  done
+
+  cat > "$backup/restore.sh" <<RESTORE
+#!/usr/bin/env bash
+# Puts the previous site back exactly as it was. Run as root.
+set -euo pipefail
+while read -r target; do
+  [ -n "\$target" ] || continue
+  cp -a "$backup/\$(basename "\$target")" "\$target"
+  echo "  שוחזר: \$target"
+done < "$backup/enabled.list"
+rm -f "/etc/nginx/sites-enabled/liver-${domain}"
+nginx -t && systemctl reload nginx
+echo "  האתר הישן חזר."
+RESTORE
+  chmod +x "$backup/restore.sh"
+
+  ok "גיבוי נשמר ב-$backup"
+  echo "        חזרה לאתר הישן בפקודה אחת:"
+  echo "            bash $backup/restore.sh"
+  echo
+  echo "    שים לב: הקבצים של האתר הישן לא נמחקים, רק מפסיקים להיות מוגשים."
+  echo "    כתובות ישנות שהיו מסומנות אצל מבקרים יחזירו 404 מהאפליקציה החדשה."
+
+  # Disable rather than delete: the file stays where it was, so the restore is
+  # a copy back rather than a rebuild from memory.
+  echo "$existing" | while read -r f; do
+    [ -n "$f" ] || continue
+    case "$f" in /etc/nginx/sites-enabled/*) rm -f "$f" ;; *) mv "$f" "$f.disabled-${stamp}" ;; esac
+  done
+  ok "האתר הישן הופסק"
 fi
 
 say "3. nginx"
