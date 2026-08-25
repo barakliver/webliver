@@ -24,7 +24,7 @@ export function CallsPanel({ calls, leads }: { calls: Call[]; leads: { id: strin
   const nameOf = (id: string | null) => leads.find((l) => l.id === id)?.name ?? '';
 
   return (
-    <section className="card">
+    <section className="card mt-6">
       <h2 className="font-display text-[18px] font-semibold text-ink">📞 {c.callsTitle}</h2>
       <ul className="mt-4 space-y-2">
         {open.map((call) => {
