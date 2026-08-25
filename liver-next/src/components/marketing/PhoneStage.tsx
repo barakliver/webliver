@@ -24,7 +24,12 @@ import { Ltr, Money } from '@/components/Ltr';
 export function PhoneStage({
   kicker, title, body,
 }: {
-  kicker: string; title: string; body: string;
+  /* The whole passage, not its opening line. It used to take one line and a
+     second section underneath repeated the heading and that same line, so the
+     page carried the h2 twice and the sentence directly under itself. Handing
+     the stage all of it also balances the column against the phone, which is
+     what left a screen of empty space beside it before. */
+  kicker: string; title: string; body: readonly string[];
 }) {
   const stage = useRef<HTMLDivElement>(null);
   const phone = useRef<HTMLDivElement>(null);
@@ -101,7 +106,9 @@ export function PhoneStage({
         <div>
           <p className="eyebrow">{kicker}</p>
           <h2 className="mt-4 max-w-[14ch] font-display text-display font-light text-ink">{title}</h2>
-          <p className="measure mt-5 text-[16.5px] leading-relaxed text-ink-soft">{body}</p>
+          <div className="measure mt-5 space-y-2.5 text-[16.5px] leading-relaxed text-ink-soft">
+            {body.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+          </div>
         </div>
 
         <div className="justify-self-center lg:justify-self-end">

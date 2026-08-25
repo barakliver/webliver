@@ -42,12 +42,8 @@ export default async function HomePage() {
         <PhoneStage
           kicker={site.tagline}
           title={site.value.title}
-          body={site.value.body[0] ?? ''}
+          body={site.value.body}
         />
-
-        <Section title={site.value.title} className="pt-0">
-          <Prose lines={site.value.body} />
-        </Section>
 
         <Steps site={site} />
 

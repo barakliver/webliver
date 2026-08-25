@@ -63,6 +63,10 @@ const roots = new Set([...solid, ...whole].map((t) => t.split('-')[0]));
 const props = [
   'bg', 'text', 'border', 'ring', 'divide', 'outline', 'decoration',
   'fill', 'stroke', 'caret', 'placeholder', 'from', 'to', 'via', 'shadow',
+  /* `accent-color`, which is how a native checkbox is tinted. It shares its
+     name with one of our token roots, so `accent-accent` is a real class and
+     parses as this property carrying that tone. */
+  'accent',
 ];
 
 const propSet = new Set(props);
