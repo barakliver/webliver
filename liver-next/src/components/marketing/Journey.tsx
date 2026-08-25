@@ -1,8 +1,8 @@
 import Link from 'next/link';
-import { site } from '@/content/site';
+import type { SiteCopy } from '@/content/site';
 import { Section } from './Section';
 
-export function Journey() {
+export function Journey({ site }: { site: SiteCopy }) {
   return (
     <Section id="journey" title={site.journey.title}>
       <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
