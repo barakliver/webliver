@@ -1,11 +1,11 @@
 'use client';
 
+import { useActionState, useEffect, useState, useTransition } from 'react';
+import { useFormStatus } from 'react-dom';
+import { Mail, MessageSquare, RotateCw } from 'lucide-react';
 import { CodeInput } from '@/components/app/CodeInput';
 import { publicEnv } from '@/lib/env';
-
-import { useActionState, useState } from 'react';
-import { useFormStatus } from 'react-dom';
-import { requestCode, verifyCode, type AuthResult } from '@/app/actions/auth';
+import { requestCode, verifyCode, type AuthResult, type Channel } from '@/app/actions/auth';
 import { auth as copy } from '@/content/site';
 
 function Submit({ label, busy }: { label: string; busy: string }) {
@@ -25,47 +25,66 @@ function Alert({ text }: { text: string }) {
   );
 }
 
+function Note({ text }: { text: string }) {
+  return (
+    <p role="status" className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-[14.5px] text-emerald-900">
+      {text}
+    </p>
+  );
+}
+
+/** Seconds remaining from a fixed starting point, ticking once a second and
+ *  stopping at zero. Counting from a timestamp rather than decrementing a
+ *  number means a tab that was asleep for five minutes wakes up with the right
+ *  answer instead of five minutes behind. */
+function useCountdown(from: number, seconds: number): number {
+  const [left, setLeft] = useState(() => Math.max(0, Math.ceil(seconds - (Date.now() - from) / 1000)));
+
+  useEffect(() => {
+    const tick = () => setLeft(Math.max(0, Math.ceil(seconds - (Date.now() - from) / 1000)));
+    tick();
+    const id = window.setInterval(tick, 1000);
+    return () => window.clearInterval(id);
+  }, [from, seconds]);
+
+  return left;
+}
+
+const mmss = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+
 export function LoginForm({ next }: { next?: string }) {
-  /* Kept in one component so the address typed in step one is still on screen
-     in step two: retyping it is the single most common way a code gets sent
-     to one address and entered against another. */
-  const [sent, setSent] = useState<string | null>(null);
+  /* Both steps live in one component so the address typed in step one is still
+     on screen in step two: retyping it is the single most common way a code
+     gets sent to one place and entered against another. */
+  const [channel, setChannel] = useState<Channel>('email');
   const [isNew, setIsNew] = useState(false);
+  const [sent, setSent] = useState<AuthResult | null>(null);
 
   const [askState, askAction] = useActionState<AuthResult | null, FormData>(
     async (prev, form) => {
+      form.set('channel', channel);
       const r = await requestCode(prev, form);
-      if (r.ok && r.email) setSent(r.email);
+      if (r.ok && r.contact) setSent(r);
       return r;
     },
     null
   );
   const [checkState, checkAction] = useActionState<AuthResult | null, FormData>(verifyCode, null);
 
-  if (sent) {
+  if (sent?.contact) {
     return (
-      <form action={checkAction} className="card space-y-5" noValidate>
-        <div>
-          <h1 className="font-display text-title font-semibold text-ink">{copy.codeTitle}</h1>
-          <p className="mt-2 text-[15px] text-ink-soft">
-            {copy.codeSent} <b className="text-ink">{sent}</b>
-          </p>
-        </div>
-
-        {checkState && !checkState.ok && checkState.error && <Alert text={checkState.error} />}
-
-        <input type="hidden" name="email" value={sent} />
-        {next && <input type="hidden" name="next" value={next} />}
-        <CodeInput name="code" label={copy.codeLabel} length={publicEnv.otpLength} />
-
-        <Submit label={copy.codeSubmit} busy={copy.codeChecking} />
-
-        <button type="button" onClick={() => setSent(null)} className="btn-quiet w-full">
-          {copy.codeBack}
-        </button>
-      </form>
+      <CodeStep
+        sent={sent}
+        next={next}
+        state={checkState}
+        action={checkAction}
+        onRestart={(c) => { setChannel(c); setSent(null); }}
+        onResent={(r) => setSent(r)}
+      />
     );
   }
+
+  const phone = channel === 'phone';
 
   return (
     <form action={askAction} className="card space-y-5" noValidate>
@@ -76,13 +95,54 @@ export function LoginForm({ next }: { next?: string }) {
 
       {askState && !askState.ok && askState.error && <Alert text={askState.error} />}
 
+      {/* Two doors, named. A single field could sniff which one was meant, and
+          does on the server, but a couple who were told "we texted you" need
+          to see that texting is a thing this screen does before they type. */}
+      <div role="group" className="grid grid-cols-2 gap-1 rounded-2xl border border-line bg-ivory-100 p-1">
+        {(['email', 'phone'] as const).map((c) => (
+          <button
+            key={c}
+            type="button"
+            aria-pressed={channel === c}
+            onClick={() => setChannel(c)}
+            className={`flex items-center justify-center gap-2 rounded-xl px-3 py-2 text-[14.5px] transition ${
+              channel === c ? 'bg-white font-semibold text-ink shadow-soft' : 'text-ink-mute hover:text-ink'
+            }`}
+          >
+            {c === 'email' ? <Mail size={16} aria-hidden strokeWidth={1.75} /> : <MessageSquare size={16} aria-hidden strokeWidth={1.75} />}
+            {c === 'email' ? copy.byEmail : copy.byPhone}
+          </button>
+        ))}
+      </div>
+
       <div>
-        <label className="label" htmlFor="lg-email">{copy.emailLabel}</label>
-        <input id="lg-email" name="email" type="email" required autoComplete="email" dir="ltr" className="field" />
+        <label className="label" htmlFor="lg-contact">
+          {phone ? copy.phoneLabel : copy.emailLabel}
+        </label>
+        <input
+          /* Keyed on the channel so switching gives a genuinely empty field:
+             a half typed address left behind in the phone box is the kind of
+             thing that gets submitted without being looked at. */
+          key={channel}
+          id="lg-contact"
+          name="contact"
+          type={phone ? 'tel' : 'email'}
+          inputMode={phone ? 'tel' : 'email'}
+          autoComplete={phone ? 'tel' : 'email'}
+          required
+          dir="ltr"
+          className="field"
+        />
+        {phone && <p className="mt-1.5 text-[13px] text-ink-mute">{copy.phoneHint}</p>}
       </div>
 
       <label className="flex items-center gap-2.5 text-[14.5px] text-ink-soft">
-        <input type="checkbox" className="h-4 w-4 rounded border-line-strong" checked={isNew} onChange={(e) => setIsNew(e.target.checked)} />
+        <input
+          type="checkbox"
+          className="h-4 w-4 rounded border-line-strong"
+          checked={isNew}
+          onChange={(e) => setIsNew(e.target.checked)}
+        />
         {copy.newHere}
       </label>
 
@@ -102,6 +162,118 @@ export function LoginForm({ next }: { next?: string }) {
       <Submit label={copy.submit} busy={copy.sending} />
 
       <p className="text-[13px] leading-relaxed text-ink-mute">{copy.note}</p>
+    </form>
+  );
+}
+
+/** Step two, with the two things it was missing: a way to see that the code is
+ *  running out, and a way to get another one.
+ *
+ *  Neither countdown is a rule. The server decides whether a code is still
+ *  good; these only make the decision somebody has to take next obvious. When
+ *  the validity timer reaches zero the field stays enabled, because the number
+ *  in this file is a guess at a project setting and the code may well still
+ *  work. */
+function CodeStep({
+  sent, next, state, action, onRestart, onResent,
+}: {
+  sent: AuthResult;
+  next?: string;
+  state: AuthResult | null;
+  action: (form: FormData) => void;
+  onRestart: (channel: Channel) => void;
+  onResent: (result: AuthResult) => void;
+}) {
+  const channel: Channel = sent.channel ?? 'email';
+  const at = sent.sentAt ?? Date.now();
+
+  const validLeft = useCountdown(at, publicEnv.otpTtl);
+  const resendLeft = useCountdown(at, publicEnv.otpResendAfter);
+
+  const [resending, startResend] = useTransition();
+  const [resent, setResent] = useState<string | null>(null);
+  const [resendError, setResendError] = useState<string | null>(null);
+
+  const resend = () => {
+    setResent(null);
+    setResendError(null);
+    startResend(async () => {
+      const form = new FormData();
+      form.set('channel', channel);
+      form.set('contact', sent.contact ?? '');
+      const r = await requestCode(null, form);
+      if (r.ok && r.contact) {
+        onResent(r);
+        setResent(channel === 'phone' ? copy.resentPhone : copy.resentEmail);
+      } else {
+        setResendError(r.error ?? copy.expired);
+      }
+    });
+  };
+
+  /* An error belongs to the code it was raised about. Once a new one has been
+     sent, "the code is not right" is a statement about a code nobody is
+     holding any more, and leaving it on screen next to a fresh code is how
+     somebody concludes the new one failed before they had typed it. The
+     timestamp travels through the form and comes back, so the two can be
+     told apart without any extra bookkeeping. */
+  const failed = state && !state.ok && state.error && state.sentAt === at;
+  const other: Channel = channel === 'email' ? 'phone' : 'email';
+
+  return (
+    <form action={action} className="card space-y-5" noValidate>
+      <div>
+        <h1 className="font-display text-title font-semibold text-ink">{copy.codeTitle}</h1>
+        <p className="mt-2 text-[15px] text-ink-soft">
+          {channel === 'phone' ? copy.codeSentPhone : copy.codeSentEmail}{' '}
+          <b className="text-ink" dir="ltr">{sent.display ?? sent.contact}</b>
+        </p>
+      </div>
+
+      {failed && <Alert text={state!.error!} />}
+      {resendError && <Alert text={resendError} />}
+      {resent && !failed && <Note text={resent} />}
+
+      <input type="hidden" name="channel" value={channel} />
+      <input type="hidden" name="contact" value={sent.contact ?? ''} />
+      <input type="hidden" name="display" value={sent.display ?? ''} />
+      <input type="hidden" name="sent_at" value={String(at)} />
+      {next && <input type="hidden" name="next" value={next} />}
+
+      <CodeInput key={at} name="code" label={copy.codeLabel} length={publicEnv.otpLength} />
+
+      <p className={`text-center text-[13px] ${validLeft === 0 ? 'text-rose-700' : 'text-ink-mute'}`}>
+        {validLeft > 0 ? copy.validFor(mmss(validLeft)) : copy.expired}
+      </p>
+
+      <Submit label={copy.codeSubmit} busy={copy.codeChecking} />
+
+      <button
+        type="button"
+        onClick={resend}
+        disabled={resending || resendLeft > 0}
+        className="btn-quiet flex w-full items-center justify-center gap-2 disabled:opacity-55"
+      >
+        <RotateCw size={15} aria-hidden strokeWidth={1.75} className={resending ? 'animate-spin' : ''} />
+        {resending ? copy.resendSending : resendLeft > 0 ? copy.resendIn(resendLeft) : copy.resend}
+      </button>
+
+      <div className="flex flex-col items-center gap-1.5 text-[13px]">
+        <button
+          type="button"
+          onClick={() => onRestart(other)}
+          className="text-ink-mute underline-offset-2 hover:text-ink hover:underline"
+        >
+          {other === 'email' ? copy.switchToEmail : copy.switchToPhone}
+        </button>
+        <button
+          type="button"
+          onClick={() => onRestart(channel)}
+          className="text-ink-mute underline-offset-2 hover:text-ink hover:underline"
+        >
+          {channel === 'phone' ? copy.codeBackPhone : copy.codeBackEmail}
+        </button>
+      </div>
     </form>
   );
 }
