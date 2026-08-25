@@ -131,7 +131,7 @@ function Headline({ label, placed, fallback, tone }: {
   label: string; placed: Placed | null; fallback: string; tone: 'now' | 'next';
 }) {
   return (
-    <div className={cn('card', tone === 'now' && 'border-accent-soft bg-accent-wash')}>
+    <div className={cn('card', tone === 'now' && 'border-accent bg-accent-wash')}>
       <div className="text-[12.5px] font-semibold text-ink-mute">{label}</div>
       {placed ? (
         <>
@@ -162,7 +162,7 @@ function Row({ p, clientId }: { p: Placed; clientId: string }) {
     <li
       className={cn(
         'flex items-start gap-3 rounded-none border p-3 transition-colors',
-        isNow ? 'border-accent-soft bg-accent-wash'
+        isNow ? 'border-accent bg-accent-wash'
           : late ? 'border-bad/30 bg-bad-wash'
           : done ? 'border-line bg-surface-100'
           : 'border-line bg-card',

@@ -144,7 +144,7 @@ export function EventTemplate({ clientId }: { clientId: string }) {
                       <li
                         key={t.title}
                         className={`flex flex-wrap items-center gap-3 rounded-none border px-3.5 py-2.5 transition ${
-                          on ? 'border-line bg-card' : 'border-line/60 bg-surface-100 opacity-60'
+                          on ? 'border-line bg-card' : 'border-line bg-surface-100 opacity-60'
                         }`}
                       >
                         <label className="flex min-h-[36px] min-w-0 flex-1 items-center gap-2.5">
@@ -205,7 +205,7 @@ export function EventTemplate({ clientId }: { clientId: string }) {
             {BUDGET_LINES.map((b) => (
               <li key={b.label}>
                 <label className={`flex min-h-[44px] items-center gap-2.5 rounded-none border px-3.5 py-2 transition ${
-                  budget.has(b.label) ? 'border-line bg-card' : 'border-line/60 bg-surface-100 opacity-60'
+                  budget.has(b.label) ? 'border-line bg-card' : 'border-line bg-surface-100 opacity-60'
                 }`}>
                   <input
                     type="checkbox" checked={budget.has(b.label)}
@@ -234,7 +234,7 @@ export function EventTemplate({ clientId }: { clientId: string }) {
             {SUPPLIER_ROLES.map((r) => (
               <li key={r.name}>
                 <label className={`flex min-h-[44px] items-center gap-2.5 rounded-none border px-3.5 py-2 transition ${
-                  roles.has(r.name) ? 'border-line bg-card' : 'border-line/60 bg-surface-100 opacity-60'
+                  roles.has(r.name) ? 'border-line bg-card' : 'border-line bg-surface-100 opacity-60'
                 }`}>
                   <input
                     type="checkbox" checked={roles.has(r.name)}

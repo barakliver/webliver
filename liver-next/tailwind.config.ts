@@ -35,33 +35,40 @@ const config: Config = {
       colors: {
         /* Text, darkest first. Warm near-black rather than blue-black: the
            whole palette sits on ivory, and a cool ink on a warm ground reads
-           as a mistake rather than as a choice. */
+           as a mistake rather than as a choice.
+
+           Every solid tone is `rgb(var(--x-rgb) / <alpha-value>)` rather than
+           `var(--x)`. The indirection buys one thing and it is not tidiness:
+           Tailwind can only apply an opacity modifier to a custom property
+           holding bare channels. Written the other way, `border-accent/40`
+           and `bg-ink/25` compile to no declaration at all, which is how a
+           modal backdrop can stop dimming without anybody noticing. */
         ink: {
-          DEFAULT: 'var(--ink, #1A1613)',
+          DEFAULT: 'rgb(var(--ink-rgb, 26 22 19) / <alpha-value>)',
           /* body copy, 5.59:1 */
-          soft:    'var(--ink-soft, #6B6259)',
+          soft:    'rgb(var(--ink-soft-rgb, 107 98 89) / <alpha-value>)',
           /* large text and UI marks only, 3.89:1 — never small copy */
-          mid:     'var(--ink-mid, #8A7A66)',
+          mid:     'rgb(var(--ink-mid-rgb, 138 122 102) / <alpha-value>)',
           /* kickers, meta, inactive nav. The handoff's #A79881 reads 2.64:1
              at the 11px it is used at; this is the same hue at 4.53:1. */
-          mute:    'var(--ink-mute, #726858)',
+          mute:    'rgb(var(--ink-mute-rgb, 114 104 88) / <alpha-value>)',
         },
 
         /* The ground and the two steps around it. No white anywhere. */
         surface: {
-          DEFAULT: 'var(--surface, #FAF7F2)',
+          DEFAULT: 'rgb(var(--surface-rgb, 250 247 242) / <alpha-value>)',
           /* the producer dashboard sits a shade brighter */
-          100:     'var(--surface-100, #FFFDF9)',
+          100:     'rgb(var(--surface-100-rgb, 255 253 249) / <alpha-value>)',
           /* the page behind the artboards */
-          200:     'var(--surface-200, #EDEAE4)',
+          200:     'rgb(var(--surface-200-rgb, 237 234 228) / <alpha-value>)',
         },
         /* Kept as a name because a hundred components ask for it. On this
            palette a "card" is the ground with a line above it, not a box. */
-        card: 'var(--surface-100, #FFFDF9)',
+        card: 'rgb(var(--surface-100-rgb, 255 253 249) / <alpha-value>)',
 
         /* The one dark ground: Bride Mode, the bar result panel, the site CTA
            band. Gold reads 6.32:1 on it, so gold is a text colour there. */
-        dark: 'var(--dark, #0E0C0A)',
+        dark: 'rgb(var(--dark-rgb, 14 12 10) / <alpha-value>)',
 
         /* Hairlines. These are the structure, so they have real names. */
         line: {
@@ -77,12 +84,14 @@ const config: Config = {
            and never carries meaning on its own. `wash` is a background only
            ever sat on by `accent`. */
         accent: {
-          DEFAULT: 'var(--accent, #846941)',
-          bright:  'var(--accent-bright, #A18150)',
-          line:    'var(--accent-line, #B08D57)',
-          wash:    'var(--accent-wash, rgba(176,141,87,.12))',
+          DEFAULT: 'rgb(var(--accent-rgb, 132 105 65) / <alpha-value>)',
+          bright:  'rgb(var(--accent-bright-rgb, 161 129 80) / <alpha-value>)',
+          line:    'rgb(var(--accent-line-rgb, 176 141 87) / <alpha-value>)',
+          /* Translucent by definition, so it stays whole and takes no
+             opacity modifier. `bg-accent-wash/60` would compile to nothing. */
+          wash:    'var(--accent-wash, rgba(176,141,87,.07))',
           /* on the dark ground only */
-          light:   'var(--accent-light, #D8BC8A)',
+          light:   'rgb(var(--accent-light-rgb, 216 188 138) / <alpha-value>)',
         },
 
         /* State, deliberately nowhere near the accent. On a gold system a gold

@@ -70,7 +70,7 @@ export function NoticeBell({ notices }: { notices: Notice[] }) {
             ) : (
               <ul className="max-h-[60vh] overflow-y-auto">
                 {notices.map((n) => (
-                  <li key={n.id} className={`border-b border-line last:border-0 ${n.read_at ? '' : 'bg-accent-wash/60'}`}>
+                  <li key={n.id} className={`border-b border-line last:border-0 ${n.read_at ? '' : 'bg-accent-wash'}`}>
                     <div className="flex gap-3 px-4 py-3">
                       {(() => { const I = ICONS[n.kind] ?? Bell; return <I size={16} aria-hidden strokeWidth={1.5} className="mt-0.5 shrink-0 text-accent" />; })()}
                       <div className="min-w-0 flex-1">

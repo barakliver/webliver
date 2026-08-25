@@ -100,15 +100,42 @@ export const DEFAULT_ACCENT = ACCENTS[0];
 export const accentByKey = (key: string | null | undefined): Accent =>
   ACCENTS.find((a) => a.key === key) ?? DEFAULT_ACCENT;
 
+/** A hex tone as the three bare channels Tailwind needs.
+ *
+ *  The presets above stay hex because a person reads and a contrast script
+ *  measures them, and `#846941` is a colour where `132 105 65` is arithmetic.
+ *  The conversion happens here, at the one boundary that cares.
+ *
+ *  It has to be channels on the other side of that boundary. A custom
+ *  property holding a whole colour cannot take a Tailwind opacity modifier:
+ *  `border-accent/40` against `var(--accent)` compiles to no declaration at
+ *  all, so the hover border a producer's brand was supposed to tint simply
+ *  never appeared. */
+const channels = (hex: string): string => {
+  const n = parseInt(hex.slice(1), 16);
+  return `${(n >> 16) & 255} ${(n >> 8) & 255} ${n & 255}`;
+};
+
 /** The custom properties the stylesheet reads. Written as a style attribute
  *  rather than a stylesheet, so it costs no extra request and cannot arrive
- *  after the first paint. */
+ *  after the first paint.
+ *
+ *  Both forms are written: the channels Tailwind classes resolve through, and
+ *  the whole colour that a gradient stop, an `accent-color` or an SVG fill
+ *  needs. The whole ones are derived from the channels rather than passed
+ *  separately, so the two cannot drift apart. */
 export function accentVars(a: Accent): Record<string, string> {
   return {
-    '--accent': a.base,
-    '--accent-bright': a.bright,
-    '--accent-line': a.line,
-    '--accent-light': a.light,
+    '--accent-rgb': channels(a.base),
+    '--accent-bright-rgb': channels(a.bright),
+    '--accent-line-rgb': channels(a.line),
+    '--accent-light-rgb': channels(a.light),
+
+    '--accent': `rgb(${channels(a.base)})`,
+    '--accent-bright': `rgb(${channels(a.bright)})`,
+    '--accent-line': `rgb(${channels(a.line)})`,
+    '--accent-light': `rgb(${channels(a.light)})`,
+    /* Translucent by definition, so it stays whole. */
     '--accent-wash': a.wash,
   };
 }

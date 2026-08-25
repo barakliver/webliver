@@ -17,15 +17,40 @@
        values fail the text they are used for: gold at 2.89:1 behind numerals
        that need 3, and faint ink at 2.64:1 behind 11px kickers that need 4.5.
        Same hues, readable. */
-    --ink: #1A1613;
-    --ink-soft: #6B6259;
-    --ink-mid: #8A7A66;
-    --ink-mute: #726858;        /* handoff #A79881 → 2.64:1 */
+    /* Solid tones are stored as channels rather than as hex, and the hex is
+       derived from them below. That is not a style preference, it is the fix
+       for a whole class of bug: Tailwind can only fold an opacity modifier
+       into a custom property when the property holds bare channels. While
+       these were hex, every `border-accent/40`, `bg-ink/25` and `text-ink/60`
+       in the codebase compiled to nothing at all. Not to a wrong colour, to
+       no declaration — so a modal backdrop stopped dimming and a hover
+       border stopped appearing, and the source still read as if they did.
+       Thirty-three declarations were silently dropped before this.
 
-    --surface: #FAF7F2;
-    --surface-100: #FFFDF9;
-    --surface-200: #EDEAE4;
-    --dark: #0E0C0A;
+       Tones that are translucent by definition stay whole further down. An
+       opacity modifier on a hairline is a mistake either way. */
+    --ink-rgb: 26 22 19;
+    --ink-soft-rgb: 107 98 89;
+    --ink-mid-rgb: 138 122 102;
+    --ink-mute-rgb: 114 104 88;      /* handoff #A79881 → 2.64:1 */
+
+    --surface-rgb: 250 247 242;
+    --surface-100-rgb: 255 253 249;
+    --surface-200-rgb: 237 234 228;
+    --dark-rgb: 14 12 10;
+
+    /* The whole-colour forms, derived. Anything that needs a colour rather
+       than a Tailwind class reads these: a gradient stop, `accent-color`, an
+       SVG fill. Overriding a palette means setting the channel form; these
+       follow on their own. */
+    --ink: rgb(var(--ink-rgb));
+    --ink-soft: rgb(var(--ink-soft-rgb));
+    --ink-mid: rgb(var(--ink-mid-rgb));
+    --ink-mute: rgb(var(--ink-mute-rgb));
+    --surface: rgb(var(--surface-rgb));
+    --surface-100: rgb(var(--surface-100-rgb));
+    --surface-200: rgb(var(--surface-200-rgb));
+    --dark: rgb(var(--dark-rgb));
 
     --line: rgba(26, 22, 19, .09);
     --line-strong: rgba(26, 22, 19, .16);
@@ -37,11 +62,18 @@
        the lightest value that clears it. */
     --line-control: rgba(26, 22, 19, .48);
 
-    --accent: #846941;          /* gold, safe for words at any size, 4.54:1 */
-    --accent-bright: #A18150;   /* gold, large serif numerals only, 3.03:1  */
-    --accent-line: #B08D57;     /* the handoff's gold, decoration only      */
-    --accent-wash: rgba(176, 141, 87, .07);
-    --accent-light: #D8BC8A;    /* on the dark ground only                  */
+    --accent-rgb: 132 105 65;        /* safe for words at any size, 4.54:1 */
+    --accent-bright-rgb: 161 129 80; /* large serif numerals only, 3.03:1  */
+    --accent-line-rgb: 176 141 87;   /* the handoff's gold, decoration     */
+    --accent-light-rgb: 216 188 138; /* on the dark ground only            */
+
+    --accent: rgb(var(--accent-rgb));
+    --accent-bright: rgb(var(--accent-bright-rgb));
+    --accent-line: rgb(var(--accent-line-rgb));
+    --accent-light: rgb(var(--accent-light-rgb));
+    /* A wash is translucent by definition, so it stays whole and takes no
+       opacity modifier of its own. */
+    --accent-wash: rgb(var(--accent-line-rgb) / .07);
   }
 
   html, body {

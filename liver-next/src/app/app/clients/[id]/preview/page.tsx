@@ -42,7 +42,7 @@ export default async function PreviewPage({ params }: { params: Promise<{ id: st
     <>
       {/* Fixed rather than scrolled away, because the entire risk of this
           screen is forgetting whose screen it is. */}
-      <div className="sticky top-0 z-20 -mx-4 mb-6 border-b border-accent/25 bg-accent-wash/95 px-4 py-3 backdrop-blur-sm sm:-mx-6 sm:px-6">
+      <div className="sticky top-0 z-20 -mx-4 mb-6 border-b border-accent bg-surface-100/95 px-4 py-3 backdrop-blur-sm sm:-mx-6 sm:px-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <p className="flex items-center gap-2.5 text-[14.5px] text-accent">
             <Eye size={17} aria-hidden strokeWidth={1.5} />

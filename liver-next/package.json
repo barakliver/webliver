@@ -11,6 +11,7 @@
     "sql": "node scripts/build-setup-sql.mjs",
     "test": "node --test --experimental-strip-types \"src/**/__tests__/*.test.ts\"",
     "contrast": "node --experimental-strip-types scripts/check-contrast.mjs",
+    "classes": "node --experimental-strip-types scripts/check-classes.mjs",
     "verify": "node scripts/verify.mjs",
     "db": "bash scripts/db-test.sh"
   },

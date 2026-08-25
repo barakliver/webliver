@@ -153,7 +153,7 @@ function Row({
 
   if (editing) {
     return (
-      <li className="rounded-none border border-accent/40 bg-surface-50 p-4">
+      <li className="rounded-none border border-accent/40 bg-surface-100 p-4">
         <form action={action} noValidate>
           <input type="hidden" name="item_id" value={item.id} />
           <input type="hidden" name="client_id" value={clientId} />
@@ -240,7 +240,7 @@ function Templates({ clientId }: { clientId: string }) {
   const [chosen, setChosen] = useState<string | null>(null);
 
   return (
-    <div className="mt-5 rounded-none border border-dashed border-line-strong bg-surface-50 p-5">
+    <div className="mt-5 rounded-none border border-dashed border-line-strong bg-surface-100 p-5">
       <h3 className="inline-flex items-center gap-2 font-display text-[16px] font-light text-ink">
         <Wand2 size={16} aria-hidden strokeWidth={1.5} />
         {c.templateTitle}
@@ -363,7 +363,7 @@ export function DaySchedule({ clientId, items, labelA, labelB, viewer = 'produce
       {nameState && !nameState.ok && nameState.error && <Alert text={nameState.error} />}
 
       {adding && (
-        <form action={addAction} className="mt-4 rounded-none border border-line bg-surface-50 p-4" noValidate>
+        <form action={addAction} className="mt-4 rounded-none border border-line bg-surface-100 p-4" noValidate>
           <input type="hidden" name="client_id" value={clientId} />
           <LineFields labels={labels} showOwner={showOwner} />
           {addState && !addState.ok && addState.error && <Alert text={addState.error} />}

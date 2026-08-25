@@ -83,7 +83,7 @@ export function Sources({ rows }: { rows: SourceRow[] }) {
           </thead>
           <tbody>
             {rows.map((r) => (
-              <tr key={r.source} className="border-b border-line/60 last:border-0">
+              <tr key={r.source} className="border-b border-line last:border-0">
                 <td className="py-2.5 text-ink">{r.source === 'unknown' ? c.sources.unknown : r.source}</td>
                 <td className="py-2.5 tabular-nums text-ink-soft">{r.leads}</td>
                 <td className="py-2.5 tabular-nums text-ink-soft">{r.won}</td>

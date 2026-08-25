@@ -65,7 +65,7 @@ function Row({ flag }: { flag: Flag }) {
   };
 
   return (
-    <li className="flex flex-wrap items-center justify-between gap-3 border-b border-line/60 py-2 last:border-0">
+    <li className="flex flex-wrap items-center justify-between gap-3 border-b border-line py-2 last:border-0">
       <span className="text-[15px] text-ink">
         {flag.label || flag.key}
         {saved && <span className="ms-2 text-[12.5px] text-ok">{c.saved}</span>}

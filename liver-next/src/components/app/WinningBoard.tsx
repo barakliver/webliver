@@ -46,24 +46,34 @@ export function WinningBoard({ clientId, images, viewer }: {
      * 2.89:1 on ivory reads 6.32:1 here, which is why gold may carry words on
      * this screen and nowhere else. */
     <section
-      className="border-t border-white/10 bg-dark p-5 text-surface sm:p-8"
+      className="border-t border-line bg-dark p-5 text-ink sm:p-8"
       style={{
-        '--ink': '#FAF7F2',
-        '--ink-soft': 'rgba(250,247,242,.78)',
-        '--ink-mute': 'rgba(250,247,242,.6)',
+        /* Channels, not hex. The classes below resolve through `--ink-rgb`,
+           not through `--ink`, so an override written the old way was read by
+           nothing and the whole screen quietly fell back to the light
+           palette: near-black text on a near-black ground.
+
+           The two soft tones were `rgba(250,247,242,.78)` and `.6` over this
+           ground. They are written flattened rather than translucent because
+           a channel triplet has no room for an alpha, and flattening over a
+           known ground is what the browser was computing anyway. The contrast
+           script derives the same two numbers the same way. */
+        '--ink-rgb': '250 247 242',
+        '--ink-soft-rgb': '198 195 191',   /* was #FAF7F2 at .78 */
+        '--ink-mute-rgb': '156 153 149',   /* was #FAF7F2 at .60 */
         '--line': 'rgba(250,247,242,.12)',
         '--line-strong': 'rgba(250,247,242,.22)',
         '--line-control': 'rgba(250,247,242,.45)',
-        '--surface': '#0E0C0A',
-        '--surface-100': '#15110E',
-        '--surface-200': '#2A241D',
-        '--accent': 'var(--accent-light, #D8BC8A)',
-        '--accent-bright': 'var(--accent-light, #D8BC8A)',
+        '--surface-rgb': '14 12 10',
+        '--surface-100-rgb': '21 17 14',
+        '--surface-200-rgb': '42 36 29',
+        '--accent-rgb': 'var(--accent-light-rgb, 216 188 138)',
+        '--accent-bright-rgb': 'var(--accent-light-rgb, 216 188 138)',
       } as React.CSSProperties}
     >
       <p className="text-[11.5px] tracking-[.14em] text-accent-light">BRIDE MODE</p>
-      <h2 className="mt-2 font-display text-[30px] font-light text-surface">{c.title}</h2>
-      <p className="mt-2 text-[14.5px] text-surface/70">{viewer === 'client' ? c.subClient : c.subProducer}</p>
+      <h2 className="mt-2 font-display text-[30px] font-light text-ink">{c.title}</h2>
+      <p className="mt-2 text-[14.5px] text-ink-soft">{viewer === 'client' ? c.subClient : c.subProducer}</p>
       <hr className="rule-gold mt-6" />
 
       {viewer === 'client' && (
@@ -71,7 +81,7 @@ export function WinningBoard({ clientId, images, viewer }: {
           <input type="hidden" name="client_id" value={clientId} />
           <input
             name="image" type="file" required accept="image/*"
-            className="text-[14px] file:mr-0 file:ml-3 file:rounded-none file:border-0 file:bg-ink file:px-4 file:py-2 file:text-white"
+            className="text-[14px] file:mr-0 file:ml-3 file:rounded-none file:border-0 file:bg-ink file:px-4 file:py-2 file:text-surface"
             aria-label={c.upload}
           />
           <input name="caption" placeholder={c.captionPh} autoComplete="off" className="field" aria-label={c.caption} />
@@ -99,7 +109,7 @@ export function WinningBoard({ clientId, images, viewer }: {
                   key={cat.value} type="button" onClick={() => setFilter(cat.value)}
                   aria-pressed={filter === cat.value}
                   className={`rounded-none px-4 py-1.5 text-[13.5px] transition ${
-                    filter === cat.value ? 'bg-ink text-white' : 'border border-line bg-white/70 text-ink-soft hover:bg-white'
+                    filter === cat.value ? 'bg-ink text-surface' : 'border border-line bg-surface-100 text-ink-soft hover:bg-surface-200'
                   }`}
                 >{cat.label}</button>
               ))}
@@ -108,7 +118,7 @@ export function WinningBoard({ clientId, images, viewer }: {
 
           <ul className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {shown.map((img) => (
-              <li key={img.id} className="overflow-hidden rounded-none border border-line bg-white">
+              <li key={img.id} className="overflow-hidden rounded-none border border-line bg-surface-100">
                 {/* a plain img: these are signed one-off URLs, not a fixed asset path */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={img.url} alt={img.caption || labelOf(img.category)} className="h-52 w-full object-cover" loading="lazy" />
