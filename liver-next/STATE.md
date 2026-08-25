@@ -53,12 +53,12 @@ cd "$(systemctl show liver-next -p WorkingDirectory --value)" && git log --oneli
 cd ~/webliver
 git status --short          # צריך להיות ריק
 git fetch origin
-git checkout -B claude/general-fixes-kqxoqc origin/claude/general-fixes-kqxoqc
+git checkout -B design-overhaul origin/design-overhaul
 cd liver-next
 npm ci                      # חובה — נוספה תלות חדשה
 npm run build               # אם נהרג בזיכרון, צריך swap
 systemctl restart liver-next
-npm run verify              # 30 בדיקות
+npm run verify              # 35 בדיקות
 ```
 
 `.env.local` לא בגיט ולא ייגע.
@@ -127,10 +127,23 @@ journalctl -u liver-next -n 80 --no-pager | grep -i auth
 
 ```bash
 npm run verify      # בשרת: כל מסך, הפלטה שבאמת רצה, והמנוי ליומן
-npm test            # 105 בדיקות על החוקים הטהורים
+npm test            # 118 בדיקות על החוקים הטהורים
+npm run classes     # שכל מחלקת צבע באמת מייצרת הצהרה
+npm run bidi        # שכל סכום ויחס עטופים בבידוד LTR
 npm run contrast    # ניגודיות הצבעים
 npm run typecheck
 ```
+
+שתי הבדיקות החדשות נולדו משתי תקלות אמיתיות, ושתיהן מהסוג שלא רואים בקוד
+ולא רואים במסך:
+
+- `classes` מוצאת מחלקה שלא מייצרת שום הצהרה. `border-accent/40` נראה תקין
+  בקוד ולא צייר כלום, כי Tailwind לא יודע להוסיף שקיפות למשתנה שמחזיק צבע
+  שלם. שלושים ושלוש הצהרות נמחקו כך בשקט, כולל ההחשכה מאחורי שני חלונות.
+- `bidi` מוצאת סכום או יחס שנבנה ביד. `2/5` בתוך שורה בעברית מתהפך ל-`5/2`,
+  ו-`₪1,200` מעביר את הסימן לצד הלא נכון. תשעה מקומות היו כאלה.
+
+שתיהן נבדקו מול תקלה שהוחזרה בכוונה, ושתיהן נכשלו כמו שצריך.
 
 וב-Supabase: להדביק את `supabase/verify.sql`. קורא בלבד, לא משנה כלום.
 מדפיס 24 שורות, כולל אחת שמוודאת שזוג לא יכול להגיע לצוות ולעלויות.
