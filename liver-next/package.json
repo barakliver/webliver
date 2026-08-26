@@ -6,7 +6,6 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "sql": "node scripts/build-setup-sql.mjs",
     "test": "node --test --experimental-strip-types \"src/**/__tests__/*.test.ts\"",
@@ -14,7 +13,8 @@
     "classes": "node --experimental-strip-types scripts/check-classes.mjs",
     "bidi": "node scripts/check-bidi.mjs",
     "verify": "node scripts/verify.mjs",
-    "db": "bash scripts/db-test.sh"
+    "db": "bash scripts/db-test.sh",
+    "check": "npm run typecheck && npm run test && npm run classes && npm run bidi && npm run contrast"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.120.0",

@@ -93,7 +93,7 @@ export function A11yPanel() {
           className="fixed inset-0 z-[70] flex items-end justify-center bg-ink/40 p-0 sm:items-center sm:p-6"
           onClick={(e) => { if (e.target === e.currentTarget) setOpen(false); }}
         >
-          <div className="max-h-[86svh] w-full overflow-y-auto rounded-t-4xl border border-line-strong bg-surface-100 p-6 shadow-pop sm:max-w-[28rem] sm:rounded-4xl">
+          <div className="max-h-[86svh] w-full overflow-y-auto rounded-t-sheet border border-line-strong bg-card p-6 shadow-pop sm:max-w-[28rem] sm:rounded-sheet">
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0">
                 <h2 className="font-display text-[22px] font-light text-ink">{c.title}</h2>

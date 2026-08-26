@@ -69,7 +69,7 @@ export function FabDock() {
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-ink/25 backdrop-blur-sm sm:items-center"
              onMouseDown={e => { if (e.target === e.currentTarget) setSheet(null); }}>
           <div role="dialog" aria-modal="true" aria-label={site.fab.lead}
-               className="max-h-[88svh] w-full max-w-lg animate-sheet overflow-y-auto rounded-t-4xl glass-strong p-6 sm:rounded-xl2 sm:p-8">
+               className="max-h-[88svh] w-full max-w-lg animate-sheet overflow-y-auto rounded-t-sheet glass-strong p-6 sm:rounded-sheet sm:p-8">
             <div className="mb-5 flex items-start justify-between gap-4">
               <h2 className="font-display text-title font-light text-ink">{site.lead.title}</h2>
               <button type="button" onClick={() => setSheet(null)} aria-label="סגירה"

@@ -54,7 +54,7 @@ export function NoticeBell({ notices }: { notices: Notice[] }) {
         <>
           {/* a click anywhere else closes it, without trapping focus */}
           <button type="button" aria-hidden tabIndex={-1} className="fixed inset-0 z-40 cursor-default" onClick={() => setOpen(false)} />
-          <div className="absolute top-12 z-50 w-[330px] max-w-[86vw] overflow-hidden rounded-xl2 border border-line bg-card shadow-pop"
+          <div className="absolute top-12 z-50 w-[330px] max-w-[86vw] overflow-hidden rounded-card-sm border border-line bg-card shadow-pop"
                style={{ insetInlineStart: 0 }}>
             <div className="flex items-center justify-between gap-2 border-b border-line px-4 py-3">
               <b className="text-[14px] text-ink">{c.title}</b>

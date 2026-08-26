@@ -81,8 +81,13 @@ export function Sheet({
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className="animate-sheet relative max-h-[88svh] w-full max-w-lg overflow-y-auto border-t border-line
-                   bg-surface-100 p-5 shadow-fab sm:border sm:p-7"
+        /* 30px, which is the design source's own sheet radius, and rounded
+           only on the edge it does not come from: a bottom sheet whose lower
+           corners are curved looks like it is floating rather than like it
+           slid up from the edge of the screen. */
+        className="animate-sheet relative max-h-[88svh] w-full max-w-lg overflow-y-auto
+                   rounded-t-sheet border-t border-line bg-card p-5 shadow-fab
+                   sm:rounded-sheet sm:border sm:p-7"
         style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 1.5rem)' }}
       >
         {/* The grab handle. Decorative here, and the reason it stays is that it
