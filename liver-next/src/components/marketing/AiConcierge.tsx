@@ -60,10 +60,64 @@ export function AiConcierge() {
       const res = await fetch('/api/ai-concierge', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ messages: next }),
+        /* Asking for the answer in pieces. The route still speaks plain JSON
+           to anybody who does not ask, which is what the deploy checker and
+           the fallback below rely on. */
+        body: JSON.stringify({ messages: next, stream: true }),
       });
-      const data = (await res.json()) as { reply?: string };
-      setTurns((prev) => [...prev, { role: 'assistant', content: data.reply || c.wentWrong }]);
+
+      const streaming = res.body
+        && (res.headers.get('content-type') ?? '').includes('ndjson');
+
+      if (!streaming) {
+        /* Rate limited, no key, or a browser with no readable body. One
+           object, one bubble, exactly as before. */
+        const data = (await res.json()) as { reply?: string };
+        setTurns((prev) => [...prev, { role: 'assistant', content: data.reply || c.wentWrong }]);
+        return;
+      }
+
+      const reader = res.body!.getReader();
+      const decoder = new TextDecoder();
+      let pending = '';
+      let answer = '';
+
+      /* The bubble is created by the first words, not before them. An empty
+         one waiting to be filled is a blank rectangle sitting under "רגע",
+         which reads as something broken rather than as something starting. */
+      const show = (text: string) => {
+        setTurns((prev) => {
+          const copy = [...prev];
+          const last = copy[copy.length - 1];
+          if (last?.role === 'assistant') copy[copy.length - 1] = { role: 'assistant', content: text };
+          else copy.push({ role: 'assistant', content: text });
+          return copy;
+        });
+      };
+
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        pending += decoder.decode(value, { stream: true });
+
+        /* Split on newlines and keep the tail: a chunk boundary lands in the
+           middle of a line often enough that parsing whatever arrived would
+           throw on perfectly good output. */
+        const lines = pending.split('\n');
+        pending = lines.pop() ?? '';
+
+        for (const raw of lines) {
+          if (!raw.trim()) continue;
+          let event: { delta?: string; done?: boolean };
+          try { event = JSON.parse(raw); } catch { continue; }
+          if (typeof event.delta === 'string' && event.delta) {
+            answer += event.delta;
+            show(answer);
+          }
+        }
+      }
+
+      if (!answer) show(c.wentWrong);
     } catch {
       /* The network, rather than the service. Same answer either way, because
          the difference is not something the person typing can act on. */
@@ -144,7 +198,10 @@ export function AiConcierge() {
               </p>
             ))}
 
-            {busy && (
+            {/* Only until the first words land. Once the answer is being
+                written, the answer is the progress indicator, and leaving
+                "רגע" under it says the opposite of what the screen shows. */}
+            {busy && turns[turns.length - 1]?.role !== 'assistant' && (
               <p className="text-[13.5px] text-ink-mute" role="status">{c.thinking}</p>
             )}
           </div>

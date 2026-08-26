@@ -94,6 +94,106 @@ async function saveEnquiry(input: Record<string, unknown>): Promise<string> {
 const say = (reply: string, extra: Record<string, unknown> = {}) =>
   NextResponse.json({ reply, ...extra });
 
+const REFUSED = 'אני מעדיף לא לענות על זה. אפשר לשאול אותי על התהליך, על מה שכלול, או לקבוע פגישה.';
+const NO_WORDS = 'לא הצלחתי לנסח תשובה. אפשר לנסות לשאול אחרת?';
+const SAVED_ONLY = 'קיבלתי את הפרטים. ברק יחזור אליכם.';
+const BROKE = 'משהו נתקע אצלי. אפשר לכתוב לברק בוואטסאפ והוא יחזור אליכם.';
+
+/**
+ * The conversation, as it is written rather than after it is written.
+ *
+ * One generator serves both callers. Streaming hands each piece to the browser
+ * as it arrives; the plain JSON path collects the same pieces and joins them.
+ * Two code paths for one conversation is how the streaming one quietly stops
+ * matching the other.
+ *
+ * Why stream at all: the answer takes several seconds to compose and arrived
+ * as one block, so the widget showed "רגע" for the whole of it and then
+ * everything at once. Nothing about that is faster or slower than words
+ * appearing as they are written, and the second one is the one that feels
+ * like somebody is answering.
+ */
+async function* converse(
+  client: Anthropic,
+  messages: Anthropic.MessageParam[],
+  state: { saved: boolean },
+): AsyncGenerator<string> {
+  /* At most one round of tool use. The concierge has one tool and one reason
+     to call it, so a loop here would only ever be a loop. */
+  for (let round = 0; round < 2; round += 1) {
+    const stream = client.messages.stream({
+      model: MODEL,
+      max_tokens: 1024,
+      /* Short answers in a chat bubble. Low effort because this is a
+         conversation about a wedding, not a problem to reason through, and
+         latency is what makes a widget feel alive. */
+      output_config: { effort: 'low' },
+      /* The system prompt is a few thousand tokens of site copy and playbook,
+         it is identical on every request, and it is sent on every request.
+         Cached, the repeat sends cost about a tenth of that, which on a
+         public widget is most of the bill. It sits before `messages` in the
+         request order, so the whole conversation prefix benefits.
+
+         Watch usage.cache_read_input_tokens: if it stays at zero, something
+         has made the prefix vary between requests. */
+      system: [{ type: 'text', text: CONCIERGE_SYSTEM, cache_control: { type: 'ephemeral' } }],
+      tools: [SAVE_ENQUIRY_TOOL],
+      messages,
+    });
+
+    for await (const event of stream) {
+      if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
+        yield event.delta.text;
+      }
+    }
+
+    const response = await stream.finalMessage();
+
+    if (response.stop_reason === 'refusal') {
+      console.warn('[concierge] refused', response.stop_details);
+      yield REFUSED;
+      return;
+    }
+
+    const toolUses = response.content.filter(
+      (b): b is Anthropic.ToolUseBlock => b.type === 'tool_use'
+    );
+    if (toolUses.length === 0) return;
+
+    messages.push({ role: 'assistant', content: response.content });
+
+    /* Every result goes back in one user message. Splitting them teaches the
+       model to stop calling tools in parallel, and a dropped result leaves
+       the conversation with a call nobody answered. */
+    const results: Anthropic.ToolResultBlockParam[] = [];
+    for (const use of toolUses) {
+      if (use.name !== SAVE_ENQUIRY_TOOL.name) {
+        results.push({ type: 'tool_result', tool_use_id: use.id, content: 'כלי לא מוכר.', is_error: true });
+        continue;
+      }
+      const outcome = await saveEnquiry(use.input as Record<string, unknown>);
+      if (outcome.startsWith('נשמר')) state.saved = true;
+      results.push({ type: 'tool_result', tool_use_id: use.id, content: outcome });
+    }
+    messages.push({ role: 'user', content: results });
+  }
+}
+
+/** Most specific first, so a rate limit and a bad key do not come back as the
+ *  same sentence in the log. The visitor sees one message either way, because
+ *  none of these are their problem to solve. */
+function logFailure(e: unknown): void {
+  if (e instanceof Anthropic.AuthenticationError) {
+    console.error('[concierge] the API key was refused');
+  } else if (e instanceof Anthropic.RateLimitError) {
+    console.error('[concierge] rate limited by the API');
+  } else if (e instanceof Anthropic.APIError) {
+    console.error('[concierge] API error', { status: e.status, message: e.message });
+  } else {
+    console.error('[concierge] failed', e);
+  }
+}
+
 export async function POST(req: Request) {
   const key = optional('ANTHROPIC_API_KEY');
   if (!key) {
@@ -126,83 +226,58 @@ export async function POST(req: Request) {
 
   const client = new Anthropic({ apiKey: key });
   const messages: Anthropic.MessageParam[] = history.map((m) => ({ role: m.role, content: m.content }));
+  const state = { saved: false };
 
-  try {
-    let saved = false;
+  /* Opt in, rather than the default. Everything that is not the widget reads
+     this route as one JSON object: the deploy checker, anything scripted, and
+     the widget itself when a browser has no readable body. A route that
+     changed shape for all of them would have broken those on the way past. */
+  const wantsStream = (body as { stream?: unknown }).stream === true;
 
-    /* At most one round of tool use. The concierge has one tool and one reason
-       to call it, so a loop here would only ever be a loop. */
-    for (let round = 0; round < 2; round += 1) {
-      const response = await client.messages.create({
-        model: MODEL,
-        max_tokens: 1024,
-        /* Short answers in a chat bubble. Low effort because this is a
-           conversation about a wedding, not a problem to reason through, and
-           latency is what makes a widget feel alive. */
-        output_config: { effort: 'low' },
-        /* The system prompt is a few thousand tokens of site copy and playbook,
-           it is identical on every request, and it is sent on every request.
-           Cached, the repeat sends cost about a tenth of that, which on a
-           public widget is most of the bill. It sits before `messages` in the
-           request order, so the whole conversation prefix benefits.
-
-           Watch usage.cache_read_input_tokens: if it stays at zero, something
-           has made the prefix vary between requests. */
-        system: [{ type: 'text', text: CONCIERGE_SYSTEM, cache_control: { type: 'ephemeral' } }],
-        tools: [SAVE_ENQUIRY_TOOL],
-        messages,
-      });
-
-      if (response.stop_reason === 'refusal') {
-        console.warn('[concierge] refused', response.stop_details);
-        return say('אני מעדיף לא לענות על זה. אפשר לשאול אותי על התהליך, על מה שכלול, או לקבוע פגישה.');
-      }
-
-      const toolUses = response.content.filter(
-        (b): b is Anthropic.ToolUseBlock => b.type === 'tool_use'
-      );
-
-      if (toolUses.length === 0) {
-        const text = response.content
-          .filter((b): b is Anthropic.TextBlock => b.type === 'text')
-          .map((b) => b.text)
-          .join('\n')
-          .trim();
-        return say(text || 'לא הצלחתי לנסח תשובה. אפשר לנסות לשאול אחרת?', { saved });
-      }
-
-      messages.push({ role: 'assistant', content: response.content });
-
-      /* Every result goes back in one user message. Splitting them teaches the
-         model to stop calling tools in parallel, and a dropped result leaves
-         the conversation with a call nobody answered. */
-      const results: Anthropic.ToolResultBlockParam[] = [];
-      for (const use of toolUses) {
-        if (use.name !== SAVE_ENQUIRY_TOOL.name) {
-          results.push({ type: 'tool_result', tool_use_id: use.id, content: 'כלי לא מוכר.', is_error: true });
-          continue;
-        }
-        const outcome = await saveEnquiry(use.input as Record<string, unknown>);
-        if (outcome.startsWith('נשמר')) saved = true;
-        results.push({ type: 'tool_result', tool_use_id: use.id, content: outcome });
-      }
-      messages.push({ role: 'user', content: results });
+  if (!wantsStream) {
+    try {
+      const parts: string[] = [];
+      for await (const piece of converse(client, messages, state)) parts.push(piece);
+      const text = parts.join('').trim();
+      return say(text || (state.saved ? SAVED_ONLY : NO_WORDS), { saved: state.saved });
+    } catch (e) {
+      logFailure(e);
+      return say(BROKE, { failed: true });
     }
-
-    return say('קיבלתי את הפרטים. ברק יחזור אליכם.', { saved: true });
-  } catch (e) {
-    /* Most specific first, so a rate limit and a bad key do not come back as
-       the same sentence in the log. The visitor sees one message either way,
-       because none of these are their problem to solve. */
-    if (e instanceof Anthropic.AuthenticationError) {
-      console.error('[concierge] the API key was refused');
-    } else if (e instanceof Anthropic.RateLimitError) {
-      console.error('[concierge] rate limited by the API');
-    } else if (e instanceof Anthropic.APIError) {
-      console.error('[concierge] API error', { status: e.status, message: e.message });
-    } else {
-      console.error('[concierge] failed', e);
-    }
-    return say('משהו נתקע אצלי. אפשר לכתוב לברק בוואטסאפ והוא יחזור אליכם.', { failed: true });
   }
+
+  /* Newline delimited JSON rather than server sent events: this is a plain
+     POST with a body, `EventSource` cannot make one, and the framing SSE adds
+     would only be parsed away on the other side. */
+  const encoder = new TextEncoder();
+  const stream = new ReadableStream<Uint8Array>({
+    async start(controller) {
+      const line = (o: unknown) => controller.enqueue(encoder.encode(`${JSON.stringify(o)}\n`));
+      let any = false;
+      try {
+        for await (const piece of converse(client, messages, state)) {
+          if (piece) { any = true; line({ delta: piece }); }
+        }
+        if (!any) line({ delta: state.saved ? SAVED_ONLY : NO_WORDS });
+        line({ done: true, saved: state.saved });
+      } catch (e) {
+        logFailure(e);
+        /* Whatever arrived before the failure stays on screen. Replacing a
+           half written answer with an apology loses the half that was right. */
+        if (!any) line({ delta: BROKE });
+        line({ done: true, failed: true });
+      }
+      controller.close();
+    },
+  });
+
+  return new Response(stream, {
+    headers: {
+      'content-type': 'application/x-ndjson; charset=utf-8',
+      'cache-control': 'no-store',
+      /* Tells a reverse proxy not to hold the pieces until the end, which
+         would give back exactly the wait this change is removing. */
+      'x-accel-buffering': 'no',
+    },
+  });
 }
