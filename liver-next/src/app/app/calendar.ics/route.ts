@@ -4,6 +4,7 @@ import { supabaseServer } from '@/lib/supabase/server';
 import { getCalendar } from '@/lib/calendar';
 import { buildIcs, eventInstant, type IcsEvent } from '@/lib/ics';
 import { PLATFORM_HOST } from '@/lib/env';
+import { site } from '@/content/site';
 
 /** The producer's whole diary, subscribable from a phone.
  *
@@ -43,7 +44,7 @@ export async function GET() {
     };
   });
 
-  return new NextResponse(buildIcs(events, 'ליבר הפקות'), {
+  return new NextResponse(buildIcs(events, site.brand), {
     headers: {
       'content-type': 'text/calendar; charset=utf-8',
       'content-disposition': 'attachment; filename="liver-productions.ics"',

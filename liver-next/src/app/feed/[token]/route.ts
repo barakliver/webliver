@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { supabasePublic } from '@/lib/supabase/public';
 import { buildIcs, eventInstant, type IcsEvent } from '@/lib/ics';
 import { PLATFORM_HOST } from '@/lib/env';
+import { site } from '@/content/site';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,7 +29,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ token: 
   const clean = token.replace(/\.ics$/i, '');
 
   const empty = () =>
-    new NextResponse(buildIcs([], 'ליבר הפקות'), {
+    new NextResponse(buildIcs([], site.brand), {
       headers: {
         'content-type': 'text/calendar; charset=utf-8',
         'cache-control': 'no-store',
@@ -85,7 +86,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ token: 
     return { uid, start: r.starts_on, allDay: true, summary: r.title, description: r.detail };
   });
 
-  return new NextResponse(buildIcs(events, 'ליבר הפקות'), {
+  return new NextResponse(buildIcs(events, site.brand), {
     headers: {
       'content-type': 'text/calendar; charset=utf-8',
       /* An hour. Calendar apps poll on their own schedule anyway, and a feed
