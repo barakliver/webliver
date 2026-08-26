@@ -3,6 +3,7 @@ import { Heebo } from 'next/font/google';
 import { site } from '@/content/site';
 import { PLATFORM_HOST } from '@/lib/env';
 import { ServiceWorker } from '@/components/app/ServiceWorker';
+import { VersionWatch } from '@/components/app/VersionWatch';
 import './globals.css';
 import { A11yPanel } from '@/components/a11y/A11yPanel';
 
@@ -77,6 +78,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             has to reach the app and the couple's portal too. */}
         <A11yPanel />
         <ServiceWorker />
+        <VersionWatch />
       </body>
     </html>
   );

@@ -1257,6 +1257,14 @@ export const barCopy = {
   ],
 } as const;
 
+export const updateCopy = {
+  /* Deliberately not "עדכון זמין". Nothing is downloaded and nothing is
+     installed: the newer version is already being served, and the page simply
+     has not picked it up yet. */
+  ready: 'יש גרסה חדשה של המערכת',
+  refresh: 'רענון',
+} as const;
+
 export const conciergeCopy = {
   title: 'שאלות על ההפקה',
   sub: 'העוזר הדיגיטלי של ברק',

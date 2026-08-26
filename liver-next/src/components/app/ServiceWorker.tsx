@@ -10,7 +10,13 @@ export function ServiceWorker() {
   useEffect(() => {
     if (!('serviceWorker' in navigator) || !window.isSecureContext) return;
     const id = window.setTimeout(() => {
-      navigator.serviceWorker.register('/sw.js').catch(() => {});
+      navigator.serviceWorker
+        /* `updateViaCache: 'none'` makes the browser fetch the worker itself
+           past its HTTP cache every time it checks. Without it a browser can
+           sit on yesterday's copy for a day, and the worker is the thing that
+           decides what everything else is allowed to do. */
+        .register('/sw.js', { updateViaCache: 'none' })
+        .catch(() => {});
     }, 1200); /* let the page finish painting first */
     return () => window.clearTimeout(id);
   }, []);
