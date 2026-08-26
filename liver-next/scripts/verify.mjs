@@ -221,6 +221,22 @@ async function main() {
     record(false, 'the concierge replies', e.message);
   }
 
+  /* The receipt reader spends money on somebody's behalf and writes into a
+     budget, so the thing worth checking from outside is that a stranger cannot
+     reach it at all. 401 unauthenticated, 503 with no key configured; a 200
+     here would mean the door is open. */
+  try {
+    const res = await fetch(`${base}/api/receipt`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ client_id: 'x', media_type: 'image/png', data: 'x' }),
+    });
+    record([401, 403, 503].includes(res.status), 'reading a receipt refuses strangers',
+      res.status === 503 ? 'no key configured, so it refuses everything' : `→ ${res.status}`);
+  } catch (e) {
+    record(false, 'reading a receipt refuses strangers', e.message);
+  }
+
   // the lead webhook refuses an unauthenticated delivery
   try {
     const res = await fetch(`${base}/api/leads/webhook`, {

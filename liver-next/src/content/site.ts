@@ -825,6 +825,15 @@ export const appCopy = {
     budEstimate: 'אומדן',
     budAgreed: 'נסגר בפועל',
     budAdd: 'הוספת סעיף',
+    /* Reading a receipt fills the form. It never saves, and the wording says
+       so, because a producer who believes the line was added will not look. */
+    scan: 'צילום קבלה',
+    scanning: 'קורא את הקבלה',
+    scanHint: 'צלמו קבלה של ספק והשדות יתמלאו. שום דבר לא נשמר עד שתלחצו על ההוספה.',
+    scanFilled: 'מילאתי לפי הקבלה. תבדקו ותוסיפו.',
+    scanUnsure: 'מילאתי מה שהצלחתי לקרוא, אבל לא הכל היה ברור. כדאי לבדוק את הסכום.',
+    scanFailed: 'לא הצלחתי לקרוא את התמונה. אפשר למלא ידנית.',
+    scanTooBig: 'התמונה גדולה מדי. נסו לצלם שוב.',
     budNone: 'עוד לא נרשמו סעיפי תקציב.',
     budTotalEst: 'סך האומדן',
     budTotalAgreed: 'סך מה שנסגר',

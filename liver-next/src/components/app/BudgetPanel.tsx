@@ -6,6 +6,7 @@ import { addBudgetItem, deleteBudgetItem, toggleBudgetVisible, type MoneyResult 
 import { appCopy } from '@/content/site';
 import { Money, ils } from '@/components/Ltr';
 import { Metric } from '@/components/app/Metric';
+import { ReceiptScan } from '@/components/app/ReceiptScan';
 
 export type BudgetItem = {
   id: string; category: string; label: string;
@@ -27,6 +28,10 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
 }) {
   const [state, action] = useActionState<MoneyResult | null, FormData>(addBudgetItem, null);
   const c = appCopy.money;
+  /* The scanner writes into this form by name, so the two have to agree on
+     one id, and it has to be unique per event on a page that can show more
+     than one. */
+  const formId = `budget-${clientId}`;
 
   const totalEst = items.reduce((a, i) => a + (Number(i.estimate) || 0), 0);
   /* A line with nothing agreed yet still costs its estimate, so the comparison
@@ -73,7 +78,7 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
       </div>
 
       {viewer === 'producer' && (
-        <form action={action} className="mt-5 grid gap-3 sm:grid-cols-[1fr_1fr_130px_130px_auto]">
+        <form id={formId} action={action} className="mt-5 grid gap-3 sm:grid-cols-[1fr_1fr_130px_130px_auto]">
           <input type="hidden" name="client_id" value={clientId} />
           <input name="label" required placeholder={c.budLabelPh} autoComplete="off" className="field" aria-label={c.budLabel} />
           <input name="vendor" placeholder={c.budVendor} autoComplete="off" className="field" aria-label={c.budVendor} />
@@ -82,6 +87,12 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
           <Add />
         </form>
       )}
+
+      {/* Under the form rather than above it, because it fills that form and
+          does not replace it. Every field it writes is still a field somebody
+          can type over, and nothing is saved until the same button as always
+          is pressed. */}
+      {viewer === 'producer' && <ReceiptScan clientId={clientId} formId={formId} />}
 
       {state && !state.ok && state.error && (
         <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
