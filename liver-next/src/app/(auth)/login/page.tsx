@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { currentAccount } from '@/lib/auth';
 import { site } from '@/content/site';
+import { PromiseLine } from '@/components/Promise';
 import { LoginForm } from './LoginForm';
 
 export const metadata: Metadata = { title: 'כניסה' };
@@ -28,6 +29,10 @@ export default async function LoginPage({
           <span className="font-display text-[21px] font-light text-ink">{site.brand}</span>
           <span className="mt-1 block text-[13.5px] text-ink-mute">{site.tagline}</span>
         </Link>
+        {/* Signing in is the first screen a couple sees that is not the
+            marketing site. The line is what tells them they are still in the
+            same place. */}
+        <PromiseLine className="mb-7" />
         <LoginForm next={next} prefill={email} reason={reason} />
       </div>
     </main>

@@ -1,10 +1,15 @@
-import { site } from '@/content/site';
+import { site, PROMISE } from '@/content/site';
 
 const shell = (inner: string) => `
 <div dir="rtl" style="font-family:Assistant,Heebo,Arial,sans-serif;background:#f4f8fd;padding:28px">
   <div style="max-width:560px;margin:0 auto;background:#fff;border-radius:20px;padding:28px;border:1px solid #e6eef8">
     ${inner}
     <hr style="border:none;border-top:1px solid #eef2f7;margin:22px 0">
+    <!-- The line, once, at the foot of every letter this business sends. In
+         the accent and tracked open, so it reads as a signature rather than as
+         another line of small print. Above the name, because it is what the
+         name is for. -->
+    <p style="margin:0 0 6px;color:#a3814f;font-size:12px;font-weight:600;letter-spacing:.14em">${PROMISE}</p>
     <p style="color:#6b7686;font-size:12.5px;margin:0">${site.brand} · ${site.tagline}</p>
   </div>
 </div>`;

@@ -182,7 +182,11 @@ async function main() {
   const home = await page('/', 'the public site answers');
   if (home) {
     const html = await home.text();
-    record(html.includes('רגע מאושר שישאר לנצח'), 'the headline is on the page');
+    /* His line, word for word. It is the headline and it is now on a handful
+       of other screens, all from one constant, so this checks the sentence
+       rather than the markup around it. A comma moved here is a comma moved
+       in something that is not ours to edit. */
+    record(html.includes('רגע מאושר שישאר לנצח'), 'the promise is on the page, word for word');
     record(html.includes('apple-mobile-web-app-capable'), 'the tag an installed app needs');
     record(html.includes('/manifest.webmanifest'), 'the manifest is linked');
   }

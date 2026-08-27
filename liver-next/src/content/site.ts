@@ -35,13 +35,26 @@ export type SiteCopy = {
   footer: string;
 };
 
+/**
+ * The line the business is built on.
+ *
+ * His words, written by hand before they were ever typed. It is the headline on
+ * the site and it appears in a handful of other places, and it is a constant
+ * rather than a string in each of them for one reason: a sentence that is
+ * copied is a sentence that eventually differs, and this one is not ours to
+ * change by a comma.
+ *
+ * Used sparingly on purpose. A line that appears everywhere stops being read.
+ */
+export const PROMISE = 'רגע מאושר שישאר לנצח';
+
 export const site: SiteCopy = {
   brand: 'ברק ליור',
   tagline: 'הפקת חתונות ואירועים',
 
   hero: {
     eyebrow: 'הפקת חתונות ואירועים',
-    headline: 'רגע מאושר שישאר לנצח',
+    headline: PROMISE,
     name: 'ברק ליור',
     body: [
       'יש לכם בראש את החתונה שאתם רוצים.',
