@@ -4408,3 +4408,590 @@ comment on function public.whoami() is
   'genuine refusal, which arrive as the same error.';
 
 grant execute on function public.whoami() to anon, authenticated;
+
+-- ============================================================================
+--  The root account cannot be locked out of its own platform
+-- ============================================================================
+--  Everything admin on this platform hangs off is_super_admin(), and that
+--  function asked one question: is there a row in public.profiles for
+--  auth.uid() carrying the role super_admin. Which means the root account's
+--  rights depend on a cached row rather than on who is signed in — and a
+--  profile row that is missing, or that was written before handle_new_user()
+--  learned to elevate the root address, silently demotes the owner of the
+--  platform to a couple. Nothing announces it. Screens simply stop working,
+--  and row level security reports it as "you have no permission".
+--
+--  Two changes, both idempotent, neither of which touches anybody's data:
+--
+--    1. is_super_admin() also answers true for the root address as the token
+--       itself states it. The rule does not change — public.root_admin_email()
+--       has always been the single source of truth, and a trigger already
+--       refuses the role to every other address — this only stops the answer
+--       from depending on a row being present and correct.
+--
+--    2. Any auth user with no profile gets one, and the root address's profile
+--       is set to super_admin if it is not already. Repair, not migration:
+--       run it twice and the second run changes nothing.
+-- ============================================================================
+
+create or replace function public.is_super_admin() returns boolean
+language sql stable security definer set search_path = public as $$
+  select
+    exists (
+      select 1 from public.profiles p
+      where p.id = auth.uid() and p.role = 'super_admin'
+    )
+    -- The token's own email, for the case where the row is missing or wrong.
+    -- Only ever true for the one address, which is the same rule the trigger
+    -- on public.profiles enforces from the other direction.
+    or lower(coalesce(auth.jwt() ->> 'email', '')) = public.root_admin_email()
+$$;
+
+-- ── repair ──────────────────────────────────────────────────────────────────
+--  Insert only. No existing profile is overwritten, no role is downgraded and
+--  no row is deleted, so this cannot cost anybody anything they already have.
+insert into public.profiles (id, email, full_name, role)
+select
+  u.id,
+  lower(u.email),
+  coalesce(u.raw_user_meta_data ->> 'full_name', ''),
+  case when lower(u.email) = public.root_admin_email()
+       then 'super_admin'::app_role else 'producer'::app_role end
+from auth.users u
+where u.email is not null
+  and not exists (select 1 from public.profiles p where p.id = u.id)
+on conflict do nothing;
+
+--  And the one row whose role is not a matter of opinion.
+update public.profiles
+   set role = 'super_admin'
+ where lower(email) = public.root_admin_email()
+   and role <> 'super_admin';
+
+-- ============================================================================
+--  0036 — a new event could not be read back, so it could not be created
+-- ============================================================================
+--  The symptom: "אין לך הרשאה לפעולה הזאת" on opening an event, for the
+--  account that owns the workspace, whose producer is approved, and whose
+--  every condition in clients_write evaluates true. Asked directly, in the
+--  same request and under the same session, the database agreed:
+--
+--      uid=48505dc7-…  owns=true  approved=true  root=true
+--
+--  Which means the row passed the write policy. The refusal was on the way
+--  back out.
+--
+--  The app inserts and asks for the new id in one statement, so PostgreSQL
+--  runs `insert into clients (…) returning id`. A RETURNING clause makes the
+--  table's SELECT policy apply to the row being inserted, and clients_read was
+--
+--      using (public.can_read_client(id))
+--
+--  which answers by looking the row up in public.clients. That function is
+--  STABLE, so it sees the snapshot taken when the statement began — a snapshot
+--  from before the row existed. It looks for the new event, does not find it,
+--  and says no. Postgres then raises the USING-expression form of 42501, whose
+--  message is a row level security violation like any other.
+--
+--  So the policy was asking "may this account read a row with this id", when
+--  the only question a new row can answer is "may this account read a row with
+--  these columns". The fix is to ask that instead: the producer_id is right
+--  there on the row, and owns_producer() reads public.producers, a table the
+--  statement is not inserting into.
+--
+--  Why it worked before and stopped: until 0030, can_read_client() opened with
+--  `is_super_admin() or …`, which short-circuited to true for the root account
+--  and never reached the lookup. Removing the master key was correct and
+--  stands. It simply also removed the only reason this ever returned true.
+--
+--  Replaces two policies and adds one function. No data is touched, and it is
+--  safe to run more than once.
+-- ============================================================================
+
+
+-- The half of can_read_client() that is about the couple, on its own, so both
+-- the row-based and the column-based policy can use the same words for it.
+create or replace function public.is_authorized_on_client(cid uuid) returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (
+    select 1
+      from public.client_authorized_emails e
+      join public.profiles p on p.id = auth.uid()
+     where e.client_id = cid
+       and (e.email = lower(p.email) or e.profile_id = p.id)
+  )
+$$;
+
+comment on function public.is_authorized_on_client(uuid) is
+  'Whether the signed-in account is one of the addresses invited to this '
+  'workspace. Reads client_authorized_emails, never public.clients, so it is '
+  'safe to evaluate against a row that is still being inserted.';
+
+
+-- ── the read, stated in the row''s own columns ──────────────────────────────
+--  producer_id is on the row. A couple''s invitation is not, so that branch
+--  still needs the id — but a couple never inserts a workspace, so it is never
+--  reached with a row the snapshot cannot see.
+drop policy if exists clients_read on public.clients;
+create policy clients_read on public.clients for select
+  using (
+    public.owns_producer(producer_id)
+    or public.is_authorized_on_client(id)
+  );
+
+--  Restated the same way. The write side already tested owns_producer() in its
+--  WITH CHECK; using it on both sides removes the lookup from the UPDATE and
+--  DELETE paths too, and says plainly what was already true: a couple is not an
+--  approved producer, so this policy was never about them.
+drop policy if exists clients_write on public.clients;
+create policy clients_write on public.clients for all
+  using      (public.owns_producer(producer_id) and public.is_approved_producer())
+  with check (public.owns_producer(producer_id) and public.is_approved_producer());
+
+
+-- ── and the shared helper, kept as one truth ────────────────────────────────
+--  Every other workspace table calls this with a client_id whose row already
+--  exists, where the lookup is correct and necessary. Rewritten in terms of the
+--  two pieces above so the rule cannot drift between here and the policy on
+--  public.clients.
+create or replace function public.can_read_client(cid uuid) returns boolean
+language sql stable security definer set search_path = public as $$
+  select public.owns_producer(public.producer_of_client(cid))
+      or public.is_authorized_on_client(cid)
+$$;
+
+-- ============================================================================
+--  0037 — a supplier signs from a link, with no account
+-- ============================================================================
+--  0019 built a signature that means something: the terms freeze on signature
+--  by a trigger rather than by a screen that hides a button, and the exact text
+--  is fingerprinted so later tampering is detectable rather than a matter of
+--  opinion. All of that stands and none of it is loosened here.
+--
+--  What it could not do was reach anybody outside the workspace. A DJ, a
+--  caterer or a rabbi is not going to open an account to agree a price, and a
+--  contract that requires one is a contract that goes back to WhatsApp.
+--
+--  So: the same door 0006 opened for a guest confirming attendance. A long
+--  random token, security definer functions that take it, and no other way in.
+--  The token is the credential; there is no account, no password and nothing
+--  to guess.
+--
+--  Three properties this keeps, and each one is a way an e-signature is
+--  normally worse than paper:
+--
+--    · A link can be withdrawn. Revoking it does not un-sign anything already
+--      signed, because that is a record, but it closes the door.
+--    · Signing through a link records that it was a link. A signature whose
+--      provenance is unknown is a signature somebody can argue with later.
+--    · The producer still cannot sign for the other side. That was true for
+--      the couple in 0019 and it is true here.
+-- ============================================================================
+
+-- ── who the other side is, and how they get in ──────────────────────────────
+alter table public.contracts
+  add column if not exists party_name  text not null default '',
+  add column if not exists party_role  text not null default '',
+  add column if not exists party_phone text not null default '',
+  add column if not exists party_email text not null default '',
+  /* Null until a link is made, and set back to null to withdraw one. */
+  add column if not exists sign_token  text,
+  /* How it was signed. 'account' is the couple in the portal, 'link' is
+     somebody who opened a URL. Recorded because provenance is part of what a
+     signature is worth. */
+  add column if not exists signed_via  text;
+
+do $$ begin
+  alter table public.contracts add constraint contracts_party_len
+    check (char_length(party_name) <= 120 and char_length(party_role) <= 80
+           and char_length(party_phone) <= 40 and char_length(party_email) <= 200);
+exception when duplicate_object then null; end $$;
+
+do $$ begin
+  alter table public.contracts add constraint contracts_signed_via
+    check (signed_via is null or signed_via in ('account', 'link'));
+exception when duplicate_object then null; end $$;
+
+/* A token is long enough that guessing is not a strategy, and unique so a
+   collision cannot hand one supplier another's contract. Partial, so the many
+   contracts with no link do not all collide on null. */
+create unique index if not exists contracts_sign_token_key
+  on public.contracts (sign_token) where sign_token is not null;
+
+--  The completeness rule from 0019 said a signed contract must name an account.
+--  A supplier has no account, so the rule becomes: a signed contract must name
+--  *somebody*, by profile or by having come through a link. Half a signature is
+--  still not storable.
+alter table public.contracts drop constraint if exists contracts_signature_complete;
+alter table public.contracts add constraint contracts_signature_complete check (
+  (status <> 'signed')
+  or (signed_at is not null
+      and coalesce(btrim(signed_name), '') <> ''
+      and signed_hash is not null
+      and (signed_by is not null or signed_via = 'link'))
+);
+
+
+-- ── the freeze, extended to the new columns ─────────────────────────────────
+--  Not decoration: without this a producer could change the supplier's name on
+--  a signed agreement, which is the same class of edit the freeze exists to
+--  prevent. The token is deliberately left editable so a link can be withdrawn
+--  after signature without touching the record.
+create or replace function public.freeze_signed_contract() returns trigger
+language plpgsql as $$
+begin
+  if old.status = 'signed' then
+    if new.title      is distinct from old.title
+    or new.body       is distinct from old.body
+    or new.file_path  is distinct from old.file_path
+    or new.amount     is distinct from old.amount
+    or new.party_name is distinct from old.party_name
+    or new.party_role is distinct from old.party_role
+    or new.signed_at   is distinct from old.signed_at
+    or new.signed_by   is distinct from old.signed_by
+    or new.signed_name is distinct from old.signed_name
+    or new.signed_hash is distinct from old.signed_hash
+    or new.signed_via  is distinct from old.signed_via
+    then
+      raise exception 'a signed agreement cannot be changed';
+    end if;
+  end if;
+  return new;
+end $$;
+
+
+-- ── reading one, with nothing but the token ─────────────────────────────────
+--  Returns the document and who it is for, and nothing about the workspace it
+--  belongs to. A supplier is being shown their own agreement, not given a
+--  window into a wedding.
+--
+--  A draft is never returned. Somebody reading terms that are still being
+--  written, which then change, is how people stop trusting a document.
+create or replace function public.contract_by_token(p_token text)
+returns table (
+  id uuid, title text, body text, file_path text, amount numeric,
+  party_name text, party_role text, status contract_state,
+  signed_at timestamptz, signed_name text, brand text
+)
+language sql stable security definer set search_path = public as $$
+  select c.id, c.title, c.body, c.file_path, c.amount,
+         c.party_name, c.party_role, c.status,
+         c.signed_at, c.signed_name,
+         coalesce(pr.brand_name, '')
+    from public.contracts c
+    join public.clients   cl on cl.id = c.client_id
+    join public.producers pr on pr.id = cl.producer_id
+   where c.sign_token = p_token
+     and char_length(coalesce(p_token, '')) >= 32
+     and c.status in ('sent', 'signed')
+$$;
+grant execute on function public.contract_by_token(text) to anon, authenticated, service_role;
+
+
+-- ── signing with it ─────────────────────────────────────────────────────────
+--  One transition, and every refusal says the same thing to somebody holding a
+--  wrong token: this does not exist. A message that distinguishes "no such
+--  contract" from "already signed" is a message that confirms a guess.
+create or replace function public.sign_contract_by_token(p_token text, p_name text)
+returns void
+language plpgsql security definer set search_path = public as $$
+declare
+  c    public.contracts%rowtype;
+  name text := btrim(coalesce(p_name, ''));
+begin
+  if char_length(coalesce(p_token, '')) < 32 then
+    raise exception 'that agreement does not exist';
+  end if;
+
+  select * into c from public.contracts where sign_token = p_token;
+  if not found then
+    raise exception 'that agreement does not exist';
+  end if;
+  if c.status = 'signed' then
+    raise exception 'this is already signed';
+  end if;
+  if c.status <> 'sent' then
+    raise exception 'that agreement does not exist';
+  end if;
+  if char_length(name) < 2 then
+    raise exception 'נא לחתום בשם מלא';
+  end if;
+
+  update public.contracts
+     set status      = 'signed',
+         signed_at   = now(),
+         /* No account behind this signature, deliberately. What is recorded is
+            the name typed, the moment, the fingerprint of what was on screen,
+            and that it came through a link. */
+         signed_by   = null,
+         signed_via  = 'link',
+         signed_name = left(name, 120),
+         signed_hash = public.contract_digest(c.title, c.body, c.file_path, c.amount)
+   where id = c.id;
+end $$;
+grant execute on function public.sign_contract_by_token(text, text) to anon, authenticated, service_role;
+
+
+-- ── making and withdrawing a link ───────────────────────────────────────────
+--  The producer's side. Making a link also moves a draft to sent, because a
+--  link to a draft is a link to terms that can still change underneath it.
+/* `extensions` is named alongside `public`, and it is not decoration: this
+   function calls gen_random_bytes, pgcrypto lives in `extensions` on Supabase
+   and in `public` on a plain PostgreSQL install, and a plpgsql body is resolved
+   when it runs rather than when it is created. Pinned to `public` alone it
+   creates without complaint and then fails on the first click, which is exactly
+   what it did. 0019 wrote that warning down; this is it happening again. */
+create or replace function public.issue_sign_link(p_contract uuid)
+returns text
+language plpgsql security definer set search_path = public, extensions as $$
+declare
+  c   public.contracts%rowtype;
+  tok text;
+begin
+  select * into c from public.contracts where id = p_contract;
+  if not found or not public.owns_producer(public.producer_of_client(c.client_id)) then
+    raise exception 'that agreement does not exist';
+  end if;
+  if c.status = 'void' then raise exception 'this agreement was withdrawn'; end if;
+
+  /* An existing link is returned rather than replaced. Issuing twice from two
+     screens must not quietly kill the link already sitting in somebody's
+     WhatsApp. */
+  if c.sign_token is not null then return c.sign_token; end if;
+
+  tok := encode(gen_random_bytes(24), 'hex');
+  update public.contracts
+     set sign_token = tok,
+         status     = case when status = 'draft' then 'sent'::contract_state else status end,
+         sent_at    = coalesce(sent_at, now())
+   where id = p_contract;
+  return tok;
+end $$;
+grant execute on function public.issue_sign_link(uuid) to authenticated, service_role;
+
+create or replace function public.revoke_sign_link(p_contract uuid)
+returns void
+language plpgsql security definer set search_path = public as $$
+declare c public.contracts%rowtype;
+begin
+  select * into c from public.contracts where id = p_contract;
+  if not found or not public.owns_producer(public.producer_of_client(c.client_id)) then
+    raise exception 'that agreement does not exist';
+  end if;
+  /* Withdrawing a link never un-signs anything. What was signed is a record. */
+  update public.contracts set sign_token = null where id = p_contract;
+end $$;
+grant execute on function public.revoke_sign_link(uuid) to authenticated, service_role;
+
+-- ============================================================================
+--  0038 — the link button failed on the first click
+-- ============================================================================
+--  `issue_sign_link` was created with `set search_path = public`, and it calls
+--  gen_random_bytes. pgcrypto lives in `extensions` on Supabase and in `public`
+--  on a plain PostgreSQL install, so pinned to `public` alone the name does not
+--  resolve there.
+--
+--  It did not fail on the way in. A `language plpgsql` body is parsed when the
+--  function runs rather than when it is created, so 0037 applied cleanly and
+--  the button then reported "we could not make a link" every time it was
+--  pressed. 0019 wrote this warning down in a comment for exactly this reason,
+--  and the warning was not enough.
+--
+--  Nothing else changes. Same function, same rules, one clause longer.
+-- ============================================================================
+
+create or replace function public.issue_sign_link(p_contract uuid)
+returns text
+language plpgsql security definer set search_path = public, extensions as $$
+declare
+  c   public.contracts%rowtype;
+  tok text;
+begin
+  select * into c from public.contracts where id = p_contract;
+  if not found or not public.owns_producer(public.producer_of_client(c.client_id)) then
+    raise exception 'that agreement does not exist';
+  end if;
+  if c.status = 'void' then raise exception 'this agreement was withdrawn'; end if;
+
+  /* An existing link is returned rather than replaced. Issuing twice from two
+     screens must not quietly kill the link already sitting in somebody's
+     WhatsApp. */
+  if c.sign_token is not null then return c.sign_token; end if;
+
+  tok := encode(gen_random_bytes(24), 'hex');
+  update public.contracts
+     set sign_token = tok,
+         status     = case when status = 'draft' then 'sent'::contract_state else status end,
+         sent_at    = coalesce(sent_at, now())
+   where id = p_contract;
+  return tok;
+end $$;
+grant execute on function public.issue_sign_link(uuid) to authenticated, service_role;
+
+-- ============================================================================
+--  0039 — the couple can hand over a file
+-- ============================================================================
+--  Until now everything a couple wanted to send arrived somewhere else. The
+--  seating chart their aunt made, the invitation PDF, the photo of the hall
+--  they liked, the guest list their mother typed into Word — all of it lands
+--  in WhatsApp, gets scrolled past, and is gone by the week of the wedding.
+--  The moodboard is not the answer: it takes images only, and it exists to
+--  agree on a look, not to hold a document somebody has to open in the hall.
+--
+--  So: one shared folder per event. Both sides put things in it, both sides
+--  see everything in it. Deliberately symmetric — a file one side cannot see
+--  is not a shared folder, it is two folders and a misunderstanding. Anything
+--  genuinely producer-only already has a home: costs live in budget_items,
+--  crew in crew, and the signed agreement in contracts.
+-- ============================================================================
+
+alter type notice_kind add value if not exists 'file';
+
+
+-- ── the bucket ──────────────────────────────────────────────────────────────
+--  Private, and laid out the same way the moodboard bucket is: the first path
+--  segment is the workspace, which is what the storage policies read to decide
+--  who may touch the object. storage_client_id() answers null for a path that
+--  is not a uuid folder, and can_read_client() answers false rather than
+--  raising for a null id — so a file dropped at the root of the bucket belongs
+--  to nobody and is reachable by nobody.
+insert into storage.buckets (id, name, public)
+values ('files', 'files', false)
+on conflict (id) do update set public = false;
+
+drop policy if exists client_files_objects_read on storage.objects;
+create policy client_files_objects_read on storage.objects for select
+  using (bucket_id = 'files' and public.can_read_client(public.storage_client_id(name)));
+
+drop policy if exists client_files_objects_write on storage.objects;
+create policy client_files_objects_write on storage.objects for insert
+  with check (bucket_id = 'files' and public.can_read_client(public.storage_client_id(name)));
+
+drop policy if exists client_files_objects_update on storage.objects;
+create policy client_files_objects_update on storage.objects for update
+  using (bucket_id = 'files' and public.can_read_client(public.storage_client_id(name)));
+
+drop policy if exists client_files_objects_delete on storage.objects;
+create policy client_files_objects_delete on storage.objects for delete
+  using (bucket_id = 'files' and public.can_read_client(public.storage_client_id(name)));
+
+
+-- ── the record of what is in it ─────────────────────────────────────────────
+--  The object store holds bytes under a generated name. This holds what the
+--  file was called when somebody chose it, who put it there, and what they
+--  said about it — none of which survives a path.
+create table if not exists public.client_files (
+  id          uuid primary key default gen_random_uuid(),
+  client_id   uuid not null references public.clients(id) on delete cascade,
+  uploaded_by uuid references public.profiles(id) on delete set null,
+  name        text not null,
+  path        text not null unique,
+  mime        text not null default '',
+  size_bytes  bigint not null default 0,
+  note        text not null default '',
+  created_at  timestamptz not null default now(),
+  constraint client_files_name_len check (char_length(btrim(name)) between 1 and 200),
+  constraint client_files_note_len check (char_length(note) <= 300),
+  /* 50MB. Large enough for a venue plan or a long PDF, small enough that a
+     phone video does not become the platform's storage bill by accident. The
+     screen refuses first and says why; this is the floor under it. */
+  constraint client_files_size check (size_bytes between 0 and 52428800)
+);
+create index if not exists client_files_client_idx
+  on public.client_files (client_id, created_at desc);
+
+alter table public.client_files enable row level security;
+
+drop policy if exists client_files_read on public.client_files;
+create policy client_files_read on public.client_files for select
+  using (public.can_read_client(client_id));
+
+/* Signing your own name, the same rule the thread uses. Without it a couple
+   could file something as the producer, and the one thing this table is for is
+   knowing where a document came from. */
+drop policy if exists client_files_write on public.client_files;
+create policy client_files_write on public.client_files for insert
+  with check (public.can_read_client(client_id) and uploaded_by = auth.uid());
+
+/* The note is the only thing worth changing after the fact. Renaming the path
+   would point the row at somebody else's object, so the path is not editable
+   and neither is the workspace it belongs to. */
+drop policy if exists client_files_update on public.client_files;
+create policy client_files_update on public.client_files for update
+  using (public.can_read_client(client_id))
+  with check (public.can_read_client(client_id));
+
+create or replace function public.client_files_immutable() returns trigger
+language plpgsql as $$
+begin
+  new.client_id   := old.client_id;
+  new.path        := old.path;
+  new.uploaded_by := old.uploaded_by;
+  new.mime        := old.mime;
+  new.size_bytes  := old.size_bytes;
+  new.created_at  := old.created_at;
+  return new;
+end $$;
+
+drop trigger if exists client_files_keep_provenance on public.client_files;
+create trigger client_files_keep_provenance before update on public.client_files
+  for each row execute function public.client_files_immutable();
+
+/* Whoever put it there may take it back, and the producer who owns the event
+   may clear anything from their own folder — a wrong file sitting on an event
+   for six months is the producer's problem to fix, not a support ticket. */
+drop policy if exists client_files_delete on public.client_files;
+create policy client_files_delete on public.client_files for delete
+  using (
+    uploaded_by = auth.uid()
+    or public.client_producer_profile(client_id) = auth.uid()
+    or public.is_super_admin()
+  );
+
+
+-- ── telling the other side ──────────────────────────────────────────────────
+--  A file nobody is told about is a file nobody opens. Same shape as the
+--  thread's notice: whoever did it is not told they did it.
+create or replace function public.notify_new_file() returns trigger
+language plpgsql security definer set search_path = public as $$
+declare
+  who      uuid;
+  producer uuid;
+  author   text;
+begin
+  select coalesce(nullif(btrim(full_name), ''), email) into author
+    from public.profiles where id = new.uploaded_by;
+
+  producer := public.client_producer_profile(new.client_id);
+  if producer is not null and producer is distinct from new.uploaded_by then
+    perform public.notify(producer, 'file', coalesce(author, 'קובץ חדש'),
+                          new.name, '/app/clients/' || new.client_id || '?tab=files');
+  end if;
+
+  for who in select public.client_couple_profiles(new.client_id) loop
+    if who is distinct from new.uploaded_by then
+      perform public.notify(who, 'file', coalesce(author, 'קובץ חדש'),
+                            new.name, '/app/portal');
+    end if;
+  end loop;
+
+  return new;
+end $$;
+
+drop trigger if exists client_files_notify on public.client_files;
+create trigger client_files_notify after insert on public.client_files
+  for each row execute function public.notify_new_file();
+
+
+-- ── live, like everything else ──────────────────────────────────────────────
+alter table public.client_files replica identity full;
+do $$ begin
+  if not exists (
+    select 1 from pg_publication_tables
+     where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = 'client_files'
+  ) then
+    alter publication supabase_realtime add table public.client_files;
+  end if;
+end $$;
+
+grant all on public.client_files to authenticated, service_role;

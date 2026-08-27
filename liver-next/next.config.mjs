@@ -47,6 +47,33 @@ const nextConfig = {
      running still what is being served". */
   env: { NEXT_PUBLIC_BUILD_ID: id },
 
+  experimental: {
+    serverActions: {
+      /* A server action is a request body, and the default ceiling on one is a
+         single megabyte. Every photograph taken on a phone in the last decade
+         is larger than that, which means the moodboard upload — an 8MB limit
+         written into the action, carefully, with its own message — was being
+         refused by the framework before the action ever ran. The error never
+         reached the screen either; it is a 413 on the action endpoint, so the
+         upload simply did nothing.
+
+         The shared folder does not go through here at all: it uploads straight
+         from the browser to storage, under the couple's own session, where the
+         same row level policies decide whether it may. This ceiling is for the
+         paths that still post a file to the server. */
+      bodySizeLimit: '12mb',
+
+      /* Behind Caddy the browser's Origin is the public host while the app
+         sees a request forwarded to localhost, and Next logs
+         "Missing 'origin' header from a forwarded Server Actions request" and
+         refuses. Naming the real hosts is what that check is for. */
+      allowedOrigins: [
+        'liverproductions.com',
+        'www.liverproductions.com',
+      ],
+    },
+  },
+
   async headers() {
     return [
       {

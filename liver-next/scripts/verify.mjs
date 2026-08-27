@@ -307,6 +307,33 @@ async function main() {
     record(false, 'the lead webhook refuses strangers', e.message);
   }
 
+  /* The shared folder is the one feature whose bytes never touch this server:
+     the browser uploads straight to storage under the couple's own session.
+     Which means nothing about it shows up in a server log, and the only thing
+     checkable from out here is that the screen for it actually shipped —
+     its copy is in the client bundle, and the tab it lives on is a real
+     address rather than a 404. */
+  {
+    const chunks = [];
+    const walk = (dir) => {
+      if (!existsSync(dir)) return;
+      for (const entry of readdirSync(dir, { withFileTypes: true })) {
+        const full = join(dir, entry.name);
+        if (entry.isDirectory()) walk(full);
+        else if (entry.name.endsWith('.js')) chunks.push(full);
+      }
+    };
+    walk(join(root, '.next', 'static'));
+    const js = chunks.map((f) => readFileSync(f, 'utf8')).join('');
+    record(js.includes('גוררים לכאן'), 'the shared folder shipped to the browser');
+    /* An upload that went through a server action would be refused by the
+       framework at one megabyte, silently, before the action ran. If the
+       component ever starts posting the file instead of putting it in the
+       bucket, this is the line that notices. */
+    record(/\.from\((["'])files\1\)/.test(js),
+      'it uploads into the bucket rather than through the server');
+  }
+
   const width = Math.max(...results.map((r) => r.label.length));
   for (const r of results) {
     console.log(`  ${r.ok ? 'ok  ' : 'FAIL'}  ${r.label.padEnd(width)}  ${r.detail}`);

@@ -25,8 +25,10 @@ import { EventVendors, type EventVendor, type DirectoryEntry } from '@/component
 import { signBoardImages } from '@/lib/board';
 import { safeRows, safeValue } from '@/lib/safe';
 import { loadThread, loadContracts } from '@/lib/portal';
+import { loadFiles } from '@/lib/files';
 import { loadEventSummary } from '@/lib/eventSummary';
 import { Contracts } from '@/components/app/Contracts';
+import { EventFiles } from '@/components/app/EventFiles';
 import { Thread } from '@/components/app/Thread';
 
 export const dynamic = 'force-dynamic';
@@ -232,6 +234,11 @@ async function Section({ tab, client, viewerId }: { tab: EventTab; client: Clien
   if (tab === 'docs') {
     const contracts = await safeValue('contracts', loadContracts(sb, [id]), new Map());
     return <Contracts clientId={id} contracts={contracts.get(id) ?? []} viewer="producer" />;
+  }
+
+  if (tab === 'files') {
+    const files = await safeValue('files', loadFiles(sb, [id]), new Map());
+    return <EventFiles clientId={id} files={files.get(id) ?? []} viewer="producer" />;
   }
 
   if (tab === 'messages') {
