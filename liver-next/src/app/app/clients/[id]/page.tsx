@@ -145,7 +145,9 @@ async function Section({ tab, client, viewerId }: { tab: EventTab; client: Clien
   if (tab === 'tasks') {
     const tasks = await safeRows<Task>('tasks', sb.from('tasks')
       .select('id,title,due_on,done,owner,created_by,visible_to_client').eq('client_id', id)
-      .order('done').order('due_on', { ascending: true, nullsFirst: false }));
+      /* The producer's own order first, then the fallbacks — so a list
+         nobody has dragged still comes out sorted by what is due. */
+      .order('done').order('sort_order').order('due_on', { ascending: true, nullsFirst: false }));
     return <TaskList clientId={id} tasks={tasks} viewer="producer" viewerId={viewerId} />;
   }
 

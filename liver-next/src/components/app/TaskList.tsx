@@ -3,7 +3,8 @@
 import { useActionState } from 'react';
 import { formatDate } from '@/lib/dates';
 import { useFormStatus } from 'react-dom';
-import { addTask, toggleTask, deleteTask, type TaskResult } from '@/app/actions/tasks';
+import { addTask, toggleTask, deleteTask, reorderTasks, type TaskResult } from '@/app/actions/tasks';
+import { Sortable, Handle } from '@/components/app/Sortable';
 import { appCopy, templateCopy } from '@/content/site';
 import { EyeOff } from 'lucide-react';
 
@@ -40,8 +41,12 @@ function AddButton() {
   );
 }
 
-function Row({ task, clientId, viewer, canDelete }: {
+/* A row rather than a list item, because the sortable list supplies the item
+   and the finished list supplies its own. One row, drawn the same way in
+   both, is worth more than two that drift. */
+function Row({ task, clientId, viewer, canDelete, grip }: {
   task: Task; clientId: string; viewer: 'producer' | 'client'; canDelete: boolean;
+  grip?: React.ReactNode;
 }) {
   const c = appCopy.tasks;
   const late = !task.done && isOverdue(task.due_on);
@@ -51,9 +56,10 @@ function Row({ task, clientId, viewer, canDelete }: {
       : (task.owner === 'producer' ? c.ownerProducerClientView : c.ownerClientClientView);
 
   return (
-    <li className={`flex flex-wrap items-center gap-3 rounded-xl2 border px-4 py-3 ${
+    <div className={`flex flex-wrap items-center gap-2 rounded-xl2 border px-3 py-3 ${
       late ? 'border-bad/25 bg-bad-wash/60' : 'border-line'
     }`}>
+      {grip}
       <form action={toggleTask} className="flex items-center">
         <input type="hidden" name="task_id" value={task.id} />
         <input type="hidden" name="client_id" value={clientId} />
@@ -102,7 +108,7 @@ function Row({ task, clientId, viewer, canDelete }: {
           <button type="submit" className="btn-quiet px-3 py-1 text-[13px]">{c.remove}</button>
         </form>
       )}
-    </li>
+    </div>
   );
 }
 
@@ -147,15 +153,38 @@ export function TaskList({ clientId, tasks, viewer, viewerId }: {
       ) : (
         <>
           <h3 className="mt-7 text-[13px] font-semibold text-accent">{c.open} · {open.length}</h3>
-          <ul className="mt-3 space-y-2">
-            {open.map((t) => <Row key={t.id} task={t} clientId={clientId} viewer={viewer} canDelete={mayDelete(t)} />)}
-          </ul>
+          {/* The order here is a decision, not a sort. What matters this week
+              is not the three with the earliest dates; it is the three the
+              person doing them decided matter. The finished list below stays a
+              plain list, because putting completed work in a preferred order
+              is not a thing anybody means to do. */}
+          <Sortable
+            items={open}
+            onReorder={async (ids) => {
+              const res = await reorderTasks(clientId, ids);
+              if (!res.ok) throw new Error(res.error);
+            }}
+            announce={(id, at, of) =>
+              `${open.find((t) => t.id === id)?.title ?? ''} · מיקום ${at} מתוך ${of}`}
+            className="mt-3 space-y-2"
+          >
+            {(t, { handle }) => (
+              <Row
+                task={t} clientId={clientId} viewer={viewer} canDelete={mayDelete(t)}
+                grip={<Handle label={c.reorder} {...handle} />}
+              />
+            )}
+          </Sortable>
 
           {done.length > 0 && (
             <>
               <h3 className="mt-7 text-[13px] font-semibold text-ink-mute">{c.done} · {done.length}</h3>
               <ul className="mt-3 space-y-2">
-                {done.map((t) => <Row key={t.id} task={t} clientId={clientId} viewer={viewer} canDelete={mayDelete(t)} />)}
+                {done.map((t) => (
+                  <li key={t.id}>
+                    <Row task={t} clientId={clientId} viewer={viewer} canDelete={mayDelete(t)} />
+                  </li>
+                ))}
               </ul>
             </>
           )}

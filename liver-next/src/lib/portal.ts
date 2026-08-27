@@ -81,7 +81,8 @@ export async function loadPortal(
 
   const [tasks, payments, budget, guests, tables, day, boardRows] = await Promise.all([
     sb.from('tasks').select('id,client_id,title,due_on,done,owner,created_by')
-      .in('client_id', ids).order('done').order('due_on', { ascending: true, nullsFirst: false }),
+      .in('client_id', ids).order('done').order('sort_order')
+      .order('due_on', { ascending: true, nullsFirst: false }),
     sb.from('payments').select('id,client_id,title,amount,due_on,paid,paid_on')
       .in('client_id', ids).order('paid').order('due_on', { ascending: true, nullsFirst: false }),
     sb.from('budget_items').select('id,client_id,category,label,estimate,agreed,vendor')

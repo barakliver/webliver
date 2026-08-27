@@ -67,3 +67,27 @@ export async function deleteTask(form: FormData): Promise<void> {
   revalidatePath('/app/portal');
   revalidatePath('/app');
 }
+
+/**
+ * The result of a drag, in one call.
+ *
+ * The database writes the whole new order in one statement, so a half applied
+ * drag cannot exist — and it matches each row by id against what the caller
+ * may already read, so an array carrying somebody else's task id reorders
+ * everything except that one rather than failing outright.
+ */
+export async function reorderTasks(clientId: string, ids: string[]): Promise<TaskResult> {
+  if (!Array.isArray(ids) || ids.length === 0) return { ok: true };
+  if (ids.length > 500) return { ok: false, error: 'יותר מדי שורות' };
+  if (!ids.every((id) => /^[0-9a-f-]{36}$/i.test(id))) {
+    return { ok: false, error: 'סדר לא תקין' };
+  }
+
+  const sb = await supabaseServer();
+  const { error } = await sb.rpc('reorder_tasks', { p_ids: ids });
+  if (error) return { ok: false, error: 'לא הצלחנו לשמור את הסדר' };
+
+  revalidatePath('/app/portal');
+  revalidatePath(`/app/clients/${clientId}`);
+  return { ok: true };
+}

@@ -1,16 +1,21 @@
 'use client';
 
-import { useActionState, useState } from 'react';
+import { useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { addTable, setTableSeats, deleteTable, seatGuest, type SeatResult } from '@/app/actions/seating';
 import { seatingCopy } from '@/content/site';
 import { Ratio } from '@/components/Ltr';
+import { useDragOnto, Grip, Carried } from '@/components/app/DragOnto';
 
 export type SeatTable = { id: string; name: string; seats: number };
 export type SeatGuest = {
   id: string; full_name: string; party_size: number;
   status: 'pending' | 'attending' | 'declined'; table_id: string | null;
 };
+
+/* The waiting list is a drop zone like any table, and it needs an id that
+   cannot collide with one. */
+const UNSEATED = 'unseated';
 
 function Busy({ label, busy }: { label: string; busy: string }) {
   const { pending } = useFormStatus();
@@ -151,8 +156,6 @@ export function SeatingPlan({ clientId, tables, guests }: {
      simply do not fire there — so every seat and unseat below still has its
      own control. What follows makes the mouse path quicker, and nothing
      depends on it. */
-  const [dragging, setDragging] = useState<SeatGuest | null>(null);
-  const [over, setOver] = useState<string | null>(null);
 
   const move = (guest: SeatGuest, tableId: string | null) => {
     if ((guest.table_id ?? '') === (tableId ?? '')) return;
@@ -169,38 +172,28 @@ export function SeatingPlan({ clientId, tables, guests }: {
   const fits = (guest: SeatGuest, table: SeatTable) =>
     takenAt(table.id) + Number(guest.party_size || 0) <= table.seats;
 
-  const dragProps = (g: SeatGuest) => ({
-    draggable: true,
-    onDragStart: (e: React.DragEvent) => {
-      setDragging(g);
-      e.dataTransfer.effectAllowed = 'move';
-      /* Some browsers cancel a drag that carries no data at all. */
-      e.dataTransfer.setData('text/plain', g.id);
+  /* This used to be the HTML drag and drop API, which meant the seating plan
+     — the one screen here that is genuinely a diagram somebody moves things
+     around on — did nothing whatsoever on a phone. `dragstart` does not exist
+     on a touch screen. Standing in a venue with a tablet is precisely when
+     somebody moves a family from table four to table six. */
+  const drag = useDragOnto<SeatGuest>({
+    canDrop: (g, zone) => {
+      if (zone === UNSEATED) return !!g.table_id;
+      const t = tables.find((x) => x.id === zone);
+      return !!t && (g.table_id === t.id || fits(g, t));
     },
-    onDragEnd: () => { setDragging(null); setOver(null); },
+    onDrop: (g, zone) => move(g, zone === UNSEATED ? null : zone),
   });
 
-  const dropProps = (tableId: string | null, allowed: boolean) => ({
-    onDragOver: (e: React.DragEvent) => {
-      if (!dragging || !allowed) return;
-      e.preventDefault();
-      e.dataTransfer.dropEffect = 'move';
-      setOver(tableId ?? 'unseated');
-    },
-    onDragLeave: () => setOver((v) => (v === (tableId ?? 'unseated') ? null : v)),
-    onDrop: (e: React.DragEvent) => {
-      e.preventDefault();
-      if (dragging && allowed) move(dragging, tableId);
-      setDragging(null);
-      setOver(null);
-    },
-  });
+  const dragging = drag.item;
+  const over = drag.over;
 
   return (
     <section className="card">
       <h2 className="font-display text-[18px] font-light text-ink">🪑 {c.title}</h2>
       <p className="mt-1 text-[14px] text-ink-soft">{c.sub}</p>
-      <p className="mt-1 hidden text-[13px] text-ink-mute sm:block">{c.dragHint}</p>
+      <p className="mt-1 text-[13px] text-ink-mute">{c.dragHint}</p>
 
       <form action={addAction} className="mt-5 grid gap-3 sm:grid-cols-[1fr_120px_auto]">
         <input type="hidden" name="client_id" value={clientId} />
@@ -215,9 +208,9 @@ export function SeatingPlan({ clientId, tables, guests }: {
       {attending.length === 0 && <p className="mt-5 rounded-xl2 bg-warn-wash px-4 py-3 text-[14px] text-warn">{c.needRsvp}</p>}
 
       <div
-        {...dropProps(null, !!dragging && !!dragging.table_id)}
+        {...drag.zone(UNSEATED)}
         className={`mt-6 rounded-xl2 border p-4 transition-colors ${
-          over === 'unseated' ? 'border-accent bg-accent-wash' : 'border-line'
+          over === UNSEATED ? 'border-accent bg-accent-wash' : 'border-line'
         }`}
       >
         <h3 className="text-[13px] font-semibold text-accent">
@@ -230,9 +223,12 @@ export function SeatingPlan({ clientId, tables, guests }: {
             {waiting.map((g) => (
               <li
                 key={g.id}
-                {...dragProps(g)}
-                className="flex flex-wrap items-center gap-3 rounded-xl2 bg-surface-100 px-3 py-2 sm:cursor-grab sm:active:cursor-grabbing"
+                {...drag.row(g)}
+                className={`flex flex-wrap items-center gap-2 rounded-xl2 bg-surface-100 px-3 py-2 transition ${
+                  dragging?.id === g.id ? 'opacity-40' : ''
+                }`}
               >
+                <Grip label={c.dragHint} {...drag.grip(g)} />
                 <span className="flex-1 text-[14.5px] text-ink">
                   {g.full_name} <span className="text-ink-mute">· {g.party_size}</span>
                 </span>
@@ -276,7 +272,7 @@ export function SeatingPlan({ clientId, tables, guests }: {
                   document.getElementById(`table-${t.id}`)
                     ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }}
-                drop={dropProps(t.id, !!dragging && fits(dragging, t))}
+                drop={drag.zone(t.id)}
               />
             ))}
           </div>
@@ -294,7 +290,7 @@ export function SeatingPlan({ clientId, tables, guests }: {
               <li
                 key={t.id}
                 id={`table-${t.id}`}
-                {...dropProps(t.id, !!dragging && fits(dragging, t))}
+                {...drag.zone(t.id)}
                 className={`scroll-mt-24 rounded-4xl border p-4 transition-colors ${
                   over === t.id ? 'border-accent bg-accent-wash'
                   : dragging && !fits(dragging, t) ? 'border-line opacity-50'
@@ -322,10 +318,13 @@ export function SeatingPlan({ clientId, tables, guests }: {
                     {atTable(t.id).map((g) => (
                       <li
                         key={g.id}
-                        {...dragProps(g)}
-                        className="flex items-center justify-between gap-2 rounded-xl2 text-[14px] sm:cursor-grab sm:active:cursor-grabbing"
+                        {...drag.row(g)}
+                        className={`flex items-center justify-between gap-1 rounded-xl2 text-[14px] transition ${
+                          dragging?.id === g.id ? 'opacity-40' : ''
+                        }`}
                       >
-                        <span className="text-ink">{g.full_name} <span className="text-ink-mute">· {g.party_size}</span></span>
+                        <Grip label={c.dragHint} {...drag.grip(g)} />
+                        <span className="flex-1 text-ink">{g.full_name} <span className="text-ink-mute">· {g.party_size}</span></span>
                         <form action={seatAction}>
                           <input type="hidden" name="guest_id" value={g.id} />
                           <input type="hidden" name="client_id" value={clientId} />
@@ -360,6 +359,9 @@ export function SeatingPlan({ clientId, tables, guests }: {
           })}
         </ul>
       )}
+      <Carried at={drag.at}>
+        {dragging?.full_name}
+      </Carried>
     </section>
   );
 }

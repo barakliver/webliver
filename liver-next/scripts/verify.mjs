@@ -336,6 +336,14 @@ async function main() {
        silently stops working on every phone and nowhere else. */
     record(js.includes('onPointerDown') || js.includes('pointerdown'),
       'the drag works with a finger, not only a mouse');
+
+    /* And that the old one is gone. The seating plan shipped on the HTML drag
+       and drop API for months, which meant the one screen here that is
+       genuinely a diagram somebody rearranges did nothing at all on a phone.
+       `dataTransfer` is the fingerprint of that API; nothing in this app
+       should carry it any more. */
+    record(!js.includes('dataTransfer.setData'),
+      'nothing still relies on a drag that a phone never starts');
     /* An upload that went through a server action would be refused by the
        framework at one megabyte, silently, before the action ran. If the
        component ever starts posting the file instead of putting it in the
