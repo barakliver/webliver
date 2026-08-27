@@ -31,7 +31,7 @@ export type SiteCopy = {
     submit: string; sending: string; okTitle: string; okBody: string;
   };
   fab: { whatsapp: string; booking: string; bookingNote: string; lead: string; whatsappMessage: string };
-  nav: { philosophy: string; journey: string; about: string; budget: string; contact: string; login: string };
+  nav: { philosophy: string; journey: string; about: string; budget: string; shop: string; contact: string; login: string };
   footer: string;
 };
 
@@ -187,6 +187,7 @@ export const site: SiteCopy = {
     journey: 'התהליך',
     about: 'על ברק',
     budget: 'תקציב',
+    shop: 'חנות',
     contact: 'יצירת קשר',
     login: 'כניסה',
   },
@@ -512,6 +513,7 @@ export const appCopy = {
     insights: 'נתונים',
     brand: 'מיתוג',
     vendors: 'ספקים',
+    store: 'חנות',
     sop: 'מדריכים',
     site: 'האתר',
     admin: 'ניהול מערכת',
@@ -1398,6 +1400,90 @@ export const threadCopy = {
   retract: 'מחיקה',
   today: 'היום',
   yesterday: 'אתמול',
+} as const;
+
+/* ── the shop ─────────────────────────────────────────────────────────────
+   Two audiences from one block: the producer arranging what is for sale, and
+   the visitor buying it. Kept together because half these lines appear on both
+   screens and a second copy of them is how the shop and the shopfront end up
+   calling the same thing by two names. */
+export const storeCopy = {
+  title: 'חנות',
+  sub: 'מוצרים ושירותים שאפשר להזמין דרך האתר.',
+  tabProducts: 'מה מוכרים',
+  tabOrders: 'הזמנות',
+
+  add: 'הוספת פריט',
+  edit: 'עריכה',
+  saving: 'שומר',
+  save: 'שמירה',
+  cancel: 'ביטול',
+  remove: 'מחיקה',
+  removeAsk: 'למחוק את הפריט מהחנות?',
+  drag: 'גרירה לשינוי הסדר',
+  dragHint: 'הסדר כאן הוא הסדר שהמבקרים רואים בעמוד החנות.',
+
+  name: 'שם',
+  namePh: 'חבילת בר מלא',
+  blurb: 'שורה אחת',
+  blurbPh: 'מה זה, במשפט',
+  body: 'תיאור מלא',
+  bodyPh: 'מה כלול, מה לא, כמה זמן',
+  price: 'מחיר',
+  pricePh: '0',
+  kind: 'סוג',
+  kindProduct: 'מוצר',
+  kindService: 'שירות',
+  photo: 'תמונה',
+  photoAdd: 'העלאת תמונה',
+  photoUploading: 'מעלה',
+  photoDone: 'תמונה נבחרה',
+  active: 'מוצג בחנות',
+  hidden: 'מוסתר',
+  show: 'הצגה',
+  hide: 'הסתרה',
+  noneProducts: 'עוד לא הוספת שום דבר למכירה.',
+  noneOrders: 'עוד לא הגיעו הזמנות.',
+  saveFailed: 'לא הצלחנו לשמור',
+
+  /* the columns an order moves between */
+  state: {
+    draft: 'טיוטה',
+    pending: 'ממתין לתשלום',
+    paid: 'שולם',
+    refunded: 'הוחזר',
+  },
+  moveTo: 'העברה אל',
+  orderNote: 'הערה פנימית',
+  orderNotePh: 'מה סוכם בטלפון',
+  items: 'פריטים',
+  total: 'סך הכל',
+  ordersHint: 'גוררים כרטיס בין העמודות, או בוחרים מהתפריט שבו.',
+
+  /* ── the shopfront, as a visitor sees it ─────────────────────────────── */
+  shopTitle: 'מה אפשר להזמין',
+  shopSub: 'בוחרים, משאירים פרטים, ואנחנו חוזרים לסגור.',
+  shopEmpty: 'החנות ריקה כרגע. דברו איתנו ונרכיב לכם הצעה.',
+  addToCart: 'הוספה',
+  inCart: 'בסל',
+  cart: 'הסל שלי',
+  cartEmpty: 'הסל ריק.',
+  qty: 'כמות',
+  clear: 'ריקון הסל',
+  checkout: 'שליחת הזמנה',
+  sending: 'שולח',
+  buyerName: 'שם מלא',
+  buyerPhone: 'טלפון',
+  buyerEmail: 'אימייל',
+  buyerNote: 'הערה',
+  buyerNotePh: 'תאריך האירוע, שאלה, כל דבר',
+  /* No card is charged here, and saying so is not a disclaimer, it is the
+     product: this business closes on the phone. */
+  payLater: 'לא מחייבים כרטיס. שולחים את ההזמנה, ואנחנו חוזרים לסגור תשלום ותאריך.',
+  thanksTitle: 'ההזמנה התקבלה',
+  thanks: 'שמרנו את ההזמנה ונחזור אליכם. מספר ההזמנה שלכם:',
+  again: 'הזמנה נוספת',
+  failed: 'לא הצלחנו לשלוח את ההזמנה. נסו שוב.',
 } as const;
 
 export const contractCopy = {

@@ -15,6 +15,9 @@ export function Nav({ site = fallback, locale = DEFAULT_LOCALE }: {
     ['#journey', site.nav.journey],
     ['#about', site.nav.about],
     ['#budget', site.nav.budget],
+    /* A route rather than a hash: the shop is its own page, and a link that
+       scrolls to nothing on every other page is worse than no link. */
+    ['/store', site.nav.shop],
   ] as const;
 
   return (

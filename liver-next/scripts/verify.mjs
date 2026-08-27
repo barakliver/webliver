@@ -190,6 +190,10 @@ async function main() {
     record(html.includes('apple-mobile-web-app-capable'), 'the tag an installed app needs');
     record(html.includes('/manifest.webmanifest'), 'the manifest is linked');
   }
+  /* The shopfront is a public page like the homepage, and it renders whether
+     or not anything is for sale — an empty shop says so rather than 500ing,
+     which is the state it will be in on the day it ships. */
+  await page('/store', 'the shop answers', { expect: [200] });
   await page('/login', 'sign in answers');
   await page('/install', 'the install guide answers');
   await page('/offline', 'the offline page answers');
@@ -326,6 +330,12 @@ async function main() {
     walk(join(root, '.next', 'static'));
     const js = chunks.map((f) => readFileSync(f, 'utf8')).join('');
     record(js.includes('גוררים לכאן'), 'the shared folder shipped to the browser');
+    /* Dragging is written on pointer events rather than the HTML drag and drop
+       API, because `dragstart` never fires on a touch screen and this product
+       is used on a phone. If a build ever ships the other one, the reorder
+       silently stops working on every phone and nowhere else. */
+    record(js.includes('onPointerDown') || js.includes('pointerdown'),
+      'the drag works with a finger, not only a mouse');
     /* An upload that went through a server action would be refused by the
        framework at one megabyte, silently, before the action ran. If the
        component ever starts posting the file instead of putting it in the

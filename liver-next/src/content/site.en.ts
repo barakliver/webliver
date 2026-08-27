@@ -155,6 +155,7 @@ export const siteEn: SiteCopy = {
     journey: 'Process',
     about: 'About Barak',
     budget: 'Budget',
+    shop: 'Shop',
     contact: 'Contact',
     login: 'Sign in',
   },
