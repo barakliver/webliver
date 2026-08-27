@@ -12,16 +12,18 @@ import type { SiteCopy } from './site.ts';
  * The shape is `SiteCopy`, the same type the Hebrew uses, so the two cannot
  * drift: a field added to one is a compile error until it exists in the other.
  *
- * The name stays as it is written. A producer's name is not translated.
+ * The name is Barak Liver in English and ברק ליור in Hebrew. Not a
+ * transliteration of one into the other: it is how he writes it in each, and it
+ * is the name on the domain and on every email this business sends.
  */
 export const siteEn: SiteCopy = {
-  brand: 'Barak Lior',
+  brand: 'Barak Liver',
   tagline: 'Wedding and event production',
 
   hero: {
     eyebrow: 'Wedding and event production',
     headline: 'One perfect day, held together',
-    name: 'Barak Lior',
+    name: 'Barak Liver',
     body: [
       'You already know the wedding you want.',
       'What you need is somebody who knows how to get you there.',
@@ -72,7 +74,7 @@ export const siteEn: SiteCopy = {
   about: {
     title: 'The person walking with you',
     body: [
-      'With more than eight years producing hundreds of luxury events, outdoor weddings and complex productions, Barak Lior brings a rare combination to a wedding: command, strategy, a calm room, and a conversation at eye level.',
+      'With more than eight years producing hundreds of luxury events, outdoor weddings and complex productions, Barak Liver brings a rare combination to a wedding: command, strategy, a calm room, and a conversation at eye level.',
       'Somebody who knows when to listen, when to check the numbers again, and when to say that something is not right for you.',
       'Because in the end you need to feel that the person beside you is one you trust.',
     ],
