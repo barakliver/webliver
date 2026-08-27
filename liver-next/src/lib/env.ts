@@ -16,8 +16,40 @@ export function required(name: string): string {
 export function optional(name: string, fallback = ''): string {
   return process.env[name] ?? fallback;
 }
+/**
+ * Where this deployment actually lives.
+ *
+ * `NEXT_PUBLIC_SITE_URL` is right almost everywhere and catastrophic in one
+ * case: a production server still carrying the value a laptop needed. Every
+ * link this app *mails* is built from it — the invitation, the sign-in, the
+ * signing link for a supplier — so one stale variable does not break a page
+ * anybody can see, it silently posts `http://localhost:3000` to a couple who
+ * then get a connection refused. Which is exactly what happened.
+ *
+ * A local address is honoured in development, where it is the whole point,
+ * and refused outside it in favour of the real host. Loudly, because the
+ * variable still needs fixing and a silent correction is how it stays wrong.
+ */
+function resolveSiteUrl(): string {
+  const raw = (process.env.NEXT_PUBLIC_SITE_URL ?? '').trim().replace(/\/+$/, '');
+  const real = `https://${PLATFORM_HOST}`;
+  if (!raw) return real;
+
+  const local = /^https?:\/\/(localhost|127\.0\.0\.1|\[::1\]|0\.0\.0\.0)(:\d+)?$/i.test(raw);
+  if (local && process.env.NODE_ENV === 'production') {
+    console.error(
+      '[env] NEXT_PUBLIC_SITE_URL is a local address on a production build, so '
+      + 'every mailed link would point at the recipient\'s own machine. Using '
+      + `${real} instead. Fix the variable in .env.local and rebuild.`,
+      { value: raw },
+    );
+    return real;
+  }
+  return raw;
+}
+
 export const publicEnv = {
-  siteUrl:   process.env.NEXT_PUBLIC_SITE_URL   ?? `https://${PLATFORM_HOST}`,
+  siteUrl:   resolveSiteUrl(),
   whatsapp:  process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? '',
   /* Where an accessibility problem is reported. A statement that names no
      way to reach anybody does not meet the requirement it is written for. */

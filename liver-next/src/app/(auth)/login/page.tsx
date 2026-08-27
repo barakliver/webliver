@@ -5,6 +5,7 @@ import { currentAccount } from '@/lib/auth';
 import { site } from '@/content/site';
 import { PromiseLine } from '@/components/Promise';
 import { LoginForm } from './LoginForm';
+import { HashSession } from './HashSession';
 
 export const metadata: Metadata = { title: 'כניסה' };
 
@@ -33,6 +34,10 @@ export default async function LoginPage({
             marketing site. The line is what tells them they are still in the
             same place. */}
         <PromiseLine className="mb-7" />
+        {/* A link that handed the session back in the fragment lands here
+            with the credential still in the address bar. This picks it up
+            rather than letting it go to waste. */}
+        <HashSession next={next ?? '/app'} />
         <LoginForm next={next} prefill={email} reason={reason} />
       </div>
     </main>

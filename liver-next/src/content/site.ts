@@ -235,6 +235,7 @@ export const auth = {
   resentPhone: 'שלחנו קוד חדש במסרון.',
   switchToEmail: 'לשלוח קוד לאימייל במקום',
   switchToPhone: 'לשלוח קוד ב-SMS במקום',
+  signingIn: 'מכניסים אתכם',
   linkExpired: 'הקישור כבר שימש או שפג תוקפו. נשלח לכם קוד חדש לאותה כתובת.',
   linkMissing: 'הקישור לא היה שלם. אפשר להיכנס מכאן.',
 } as const;

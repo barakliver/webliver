@@ -53,11 +53,31 @@ export async function inviteLinkFor(email: string, next = '/app/portal'): Promis
       options: { redirectTo: callbackFor(email, next) },
     });
 
-    if (error || !data?.properties?.action_link) {
+    /* The hashed token, not the action link.
+     *
+     * `action_link` points at Supabase's own verify endpoint, which checks the
+     * token and then redirects to us with the session in the URL *fragment* —
+     * the implicit flow. A fragment never reaches a server. So the callback
+     * saw a request carrying neither a code nor a token hash, correctly said
+     * so, and sent the person to the sign-in screen with the credential still
+     * sitting unused in their address bar. Every invitation this app has ever
+     * sent did that.
+     *
+     * The hash is the same token, before Supabase spends it. Handing it to our
+     * own callback lets the exchange happen on the server, where the session
+     * becomes a cookie rather than something a browser has to notice. */
+    const hashed = data?.properties?.hashed_token;
+    if (error || !hashed) {
       console.error('[invite] could not generate a one click link', error);
       return { kind: 'plain', url: plain };
     }
-    return { kind: 'magic', url: data.properties.action_link };
+
+    const to = new URL(`${site}/auth/callback`);
+    to.searchParams.set('token_hash', hashed);
+    to.searchParams.set('type', 'magiclink');
+    to.searchParams.set('email', email);
+    if (next !== '/app') to.searchParams.set('next', next);
+    return { kind: 'magic', url: to.toString() };
   } catch (e) {
     console.error('[invite] link generation threw', e);
     return { kind: 'plain', url: plain };

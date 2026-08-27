@@ -44,3 +44,18 @@ test('the list matches the sizes the config actually defines', () => {
     + 'or cn() will silently drop the ones it does not know',
   );
 });
+
+/* ── where a mailed link points ──────────────────────────────────────────── */
+import { publicEnv, PLATFORM_HOST } from '../env.ts';
+
+test('a mailed link never points at the recipient’s own machine', () => {
+  /* The one variable that breaks nothing visible and ruins every invitation.
+     A production build carrying a laptop's address mails `localhost:3000` to
+     a couple, who get a connection refused and no way to tell why. */
+  assert.ok(!/localhost|127\.0\.0\.1/.test(publicEnv.siteUrl), publicEnv.siteUrl);
+  assert.ok(publicEnv.siteUrl.startsWith('http'), publicEnv.siteUrl);
+});
+
+test('with nothing configured it is the real host', () => {
+  assert.equal(PLATFORM_HOST, 'liverproductions.com');
+});
