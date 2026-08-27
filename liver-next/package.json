@@ -12,9 +12,10 @@
     "contrast": "node --experimental-strip-types scripts/check-contrast.mjs",
     "classes": "node --experimental-strip-types scripts/check-classes.mjs",
     "bidi": "node scripts/check-bidi.mjs",
+    "sqlcheck": "node scripts/check-sql.mjs",
     "verify": "node scripts/verify.mjs",
     "db": "bash scripts/db-test.sh",
-    "check": "npm run typecheck && npm run test && npm run classes && npm run bidi && npm run contrast"
+    "check": "npm run typecheck && npm run test && npm run classes && npm run bidi && npm run contrast && npm run sqlcheck"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.120.0",

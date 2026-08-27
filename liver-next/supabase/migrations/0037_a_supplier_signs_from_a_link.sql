@@ -173,9 +173,15 @@ grant execute on function public.sign_contract_by_token(text, text) to anon, aut
 -- ── making and withdrawing a link ───────────────────────────────────────────
 --  The producer's side. Making a link also moves a draft to sent, because a
 --  link to a draft is a link to terms that can still change underneath it.
+/* `extensions` is named alongside `public`, and it is not decoration: this
+   function calls gen_random_bytes, pgcrypto lives in `extensions` on Supabase
+   and in `public` on a plain PostgreSQL install, and a plpgsql body is resolved
+   when it runs rather than when it is created. Pinned to `public` alone it
+   creates without complaint and then fails on the first click, which is exactly
+   what it did. 0019 wrote that warning down; this is it happening again. */
 create or replace function public.issue_sign_link(p_contract uuid)
 returns text
-language plpgsql security definer set search_path = public as $$
+language plpgsql security definer set search_path = public, extensions as $$
 declare
   c   public.contracts%rowtype;
   tok text;
