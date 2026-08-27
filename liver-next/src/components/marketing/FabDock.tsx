@@ -32,7 +32,7 @@ export function FabDock() {
   return (
     <>
       <div
-        className="fixed inset-x-0 bottom-0 z-40 flex justify-center px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:inset-x-auto sm:bottom-6 sm:left-6 sm:px-0"
+        className="fixed inset-x-0 bottom-0 z-40 flex justify-center px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:inset-x-auto sm:bottom-6 sm:end-6 sm:px-0"
         role="group" aria-label="פעולות מהירות"
       >
         <div className="flex w-full max-w-md items-center gap-2 rounded-xl2 glass-strong p-1.5 shadow-dock sm:w-auto">

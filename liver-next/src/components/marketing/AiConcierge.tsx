@@ -132,13 +132,18 @@ export function AiConcierge() {
     <>
       {/* Above the dock rather than beside it: the dock owns the bottom edge,
           and two things competing for one corner is how a floating button ends
-          up on top of a phone's home indicator. */}
+          up on top of a phone's home indicator.
+
+          `end` rather than `left`. In Hebrew the two are the same corner, which
+          is why this read as correct for months. In English they are not: the
+          accessibility button sits on the start edge, and a hard-coded `left`
+          would put both of them in the same place the moment the page mirrors. */}
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-label={open ? c.close : c.open}
-        className="fixed bottom-[calc(env(safe-area-inset-bottom)+6.5rem)] left-4 z-40 inline-flex h-12 w-12 items-center justify-center rounded-full glass-strong text-accent shadow-dock transition hover:text-ink sm:left-6"
+        className="fixed bottom-[calc(env(safe-area-inset-bottom)+6.5rem)] end-4 z-40 inline-flex h-12 w-12 items-center justify-center rounded-full glass-strong text-accent shadow-dock transition hover:text-ink sm:end-6"
       >
         {open ? <X size={20} strokeWidth={1.5} aria-hidden /> : <MessagesSquare size={20} strokeWidth={1.5} aria-hidden />}
       </button>
@@ -148,7 +153,7 @@ export function AiConcierge() {
           role="dialog"
           aria-modal="false"
           aria-label={c.title}
-          className="fixed inset-x-3 bottom-[calc(env(safe-area-inset-bottom)+10.5rem)] z-40 flex max-h-[58svh] flex-col overflow-hidden rounded-xl2 glass-strong shadow-pop sm:inset-x-auto sm:left-6 sm:w-[24rem]"
+          className="fixed inset-x-3 bottom-[calc(env(safe-area-inset-bottom)+10.5rem)] z-40 flex max-h-[58svh] flex-col overflow-hidden rounded-xl2 glass-strong shadow-pop sm:inset-x-auto sm:end-6 sm:w-[24rem]"
         >
           <header className="flex items-start justify-between gap-3 border-b border-line px-5 py-4">
             <div>

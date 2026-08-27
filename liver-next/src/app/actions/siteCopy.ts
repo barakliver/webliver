@@ -1,6 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { forgetSiteCopy } from '@/lib/siteCopy';
 import { supabaseServer } from '@/lib/supabase/server';
 import { EDITABLE_KEYS } from '@/content/editable';
 
@@ -41,6 +42,11 @@ export async function saveSiteCopy(_prev: CopyResult | null, form: FormData): Pr
   /* The public page is cached so a visitor does not pay for this lookup. An
      edit is the one moment it has to be thrown away, and both pages that read
      the copy are named rather than guessed at. */
+  /* The public page reads the overrides through a five minute memo now, so
+     clearing the route alone would leave the old sentence up for as much as
+     five more minutes. Both, in this order: forget the copy, then rebuild the
+     page that renders it. */
+  forgetSiteCopy();
   revalidatePath('/');
   revalidatePath('/app/site');
 

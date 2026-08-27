@@ -1,7 +1,15 @@
 import Link from 'next/link';
-import { site } from '@/content/site';
+import { site as fallback, type SiteCopy } from '@/content/site';
+import { LangToggle } from '@/components/marketing/LangToggle';
+import { DEFAULT_LOCALE, type Locale } from '@/lib/locale';
 
-export function Nav() {
+/* The copy arrives from the page rather than being imported here, because the
+   page is the thing that knows which language is being read and whether any of
+   the wording has been edited. Importing it directly is how a nav ends up in
+   Hebrew on an English page. */
+export function Nav({ site = fallback, locale = DEFAULT_LOCALE }: {
+  site?: SiteCopy; locale?: Locale;
+} = {}) {
   const links = [
     ['#philosophy', site.nav.philosophy],
     ['#journey', site.nav.journey],
@@ -23,6 +31,7 @@ export function Nav() {
           ))}
         </div>
         <div className="flex items-center gap-2">
+          <LangToggle current={locale} className="hidden sm:inline-flex" />
           <Link href="/login" className="btn-ghost !px-4 !py-2 !text-[14px]">{site.nav.login}</Link>
           <Link href="#contact" className="btn-primary !px-4 !py-2 !text-[14px]">{site.nav.contact}</Link>
         </div>

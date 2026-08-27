@@ -6,6 +6,8 @@ import { ServiceWorker } from '@/components/app/ServiceWorker';
 import { VersionWatch } from '@/components/app/VersionWatch';
 import './globals.css';
 import { A11yPanel } from '@/components/a11y/A11yPanel';
+import { cookies } from 'next/headers';
+import { LOCALE_COOKIE, dirOf, readLocale } from '@/lib/locale';
 
 /* One family, and it is the one the handoff names.
 
@@ -66,12 +68,22 @@ export const viewport: Viewport = {
   viewportFit: 'cover',
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+/* The one place the page's language and direction are decided. `dir` is an
+   attribute on `<html>`, so nothing further down can flip it and everything
+   further down inherits it — which is why the whole layout of this product is
+   written in logical properties (`start`, `end`, `ms-`, `me-`) rather than in
+   left and right. Change this one attribute and the design mirrors. */
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const locale = readLocale((await cookies()).get(LOCALE_COOKIE)?.value);
+  const dir = dirOf(locale);
+
   return (
-    <html lang="he" dir="rtl" className={heebo.variable}>
+    <html lang={locale} dir={dir} className={heebo.variable}>
       <body className="font-sans antialiased a11y-zoom">
-        <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:right-3 focus:z-[100] focus:rounded-xl2 focus:bg-ink focus:px-5 focus:py-2 focus:text-surface">
-          דלג לתוכן הראשי
+        {/* Pinned to the start edge rather than the right one, so it lands in
+            the corner a reader of this language is already looking at. */}
+        <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:start-3 focus:z-[100] focus:rounded-xl2 focus:bg-ink focus:px-5 focus:py-2 focus:text-surface">
+          {locale === 'he' ? 'דלג לתוכן הראשי' : 'Skip to main content'}
         </a>
         {children}
         {/* Required on every screen, not only the marketing pages: the menu

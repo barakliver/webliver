@@ -1,5 +1,7 @@
 import Link from 'next/link';
+import { cookies } from 'next/headers';
 import { a11yCopy } from '@/content/site';
+import { LOCALE_COOKIE, readLocale } from '@/lib/locale';
 import { getSiteCopy } from '@/lib/siteCopy';
 import { supabasePublic } from '@/lib/supabase/public';
 import { Nav } from '@/components/marketing/Nav';
@@ -17,19 +19,23 @@ import { FabDock } from '@/components/marketing/FabDock';
 import { BookMeeting } from '@/components/marketing/BookMeeting';
 import { AiConcierge } from '@/components/marketing/AiConcierge';
 
-/* Rebuilt on a timer rather than on every visit. The copy is read from the
-   database so it can be edited without a deploy, and a marketing page that
-   pays for a round trip per visitor would be a worse page than the static one
-   it replaced. An edit calls revalidatePath('/'), so the wait is only ever the
-   fallback for a change made some other way. */
-export const revalidate = 300;
+/* Rendered per request, because the language is read from a cookie and a page
+   built once cannot be in two languages.
+
+   The reason that used to be unacceptable has moved rather than disappeared:
+   the five minute timer now sits on the copy lookup itself, in getSiteCopy, so
+   the database is still read once every five minutes however many people
+   visit. English reads nothing at all. What changed is that the timer no longer
+   depends on how this page happens to be rendered. */
+export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
-  const site = await getSiteCopy(supabasePublic());
+  const locale = readLocale((await cookies()).get(LOCALE_COOKIE)?.value);
+  const site = await getSiteCopy(supabasePublic(), locale);
 
   return (
     <>
-      <Nav />
+      <Nav site={site} locale={locale} />
       <main id="main">
         <Hero site={site} />
 
