@@ -136,8 +136,44 @@ function checkDeps() {
   record(installed, 'the concierge SDK is installed', installed ? '' : 'run: npm ci');
 }
 
+/**
+ * Wait for the thing being checked to be listening.
+ *
+ * `systemctl restart` returns as soon as systemd has started the unit, and the
+ * server needs a moment after that to bind. Run straight afterwards, every
+ * fetch here fails with a refused connection — instantly, so all twenty land
+ * inside the gap and the report reads like a broken deploy rather than a
+ * checker that was early. That happened, and it cost a round of debugging a
+ * server that was fine.
+ *
+ * Thirty seconds, then give up and let the checks report what they find. A
+ * server that has not bound in thirty seconds is a real failure and should be
+ * reported as one rather than waited on forever.
+ */
+async function waitForServer(seconds = 30) {
+  const until = Date.now() + seconds * 1000;
+  let waited = false;
+  for (;;) {
+    try {
+      await fetch(base, { redirect: 'manual', signal: AbortSignal.timeout(2000) });
+      if (waited) console.log('');
+      return true;
+    } catch {
+      if (Date.now() >= until) {
+        console.log(`\n  ${base} did not answer within ${seconds}s\n`);
+        return false;
+      }
+      if (!waited) { process.stdout.write('  waiting for the server'); waited = true; }
+      else process.stdout.write('.');
+      await new Promise((r) => setTimeout(r, 1000));
+    }
+  }
+}
+
 async function main() {
   console.log(`\nchecking ${base}\n`);
+
+  await waitForServer();
 
   checkDeps();
   checkBuiltCss();
