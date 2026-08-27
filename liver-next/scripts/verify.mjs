@@ -209,6 +209,23 @@ async function main() {
       sizes.join(' '),
     );
   }
+  /* The page a supplier opens from a link, with no account and no session. It
+     has to answer for a stranger, and a token that is not one has to look
+     exactly like a token that has been withdrawn. Anything else confirms a
+     guess to whoever is guessing. */
+  const bad = await page(
+    '/sign/0000000000000000000000000000000000000000000000000000',
+    'a signing link answers a stranger',
+    { expect: [200] },
+  );
+  if (bad) {
+    const html = await bad.text();
+    record(
+      html.includes('הקישור הזה כבר לא פעיל'),
+      'an unknown signing token looks exactly like a withdrawn one',
+    );
+  }
+
   /* Linked from every invitation, so it has to work for somebody who has
      never signed in and may never sign in on the device they are holding. */
   await page('/auth/callback?email=a%40b.co', 'a spent link lands somewhere useful', { expect: [307, 308] });

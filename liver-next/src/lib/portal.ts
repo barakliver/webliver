@@ -208,7 +208,7 @@ export async function loadContracts(
 
   const { data } = await sb
     .from('contracts')
-    .select('id,client_id,title,body,file_path,amount,status,signed_at,signed_name')
+    .select('id,client_id,title,body,file_path,amount,status,signed_at,signed_name,party_name,party_role')
     .in('client_id', clientIds)
     .order('created_at', { ascending: false });
 

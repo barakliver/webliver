@@ -8,6 +8,8 @@ import {
   saveContract, sendContract, signContract, voidContract, deleteContract,
   type ContractResult,
 } from '@/app/actions/contracts';
+import { SignLink } from '@/components/app/SignLink';
+import { partyCopy as p } from '@/content/site';
 import { supabaseBrowser } from '@/lib/supabase/client';
 import { contractCopy } from '@/content/site';
 import { Money, ils } from '@/components/Ltr';
@@ -19,6 +21,10 @@ export type Contract = {
   file_path: string | null;
   amount: number | null;
   status: 'draft' | 'sent' | 'signed' | 'void';
+  /* Who the other side is, when it is not the couple. Optional because most
+     agreements in the system predate suppliers being able to sign one. */
+  party_name?: string;
+  party_role?: string;
   signed_at: string | null;
   signed_name: string | null;
   /** False only if the stored terms no longer match what was signed. */
@@ -76,6 +82,14 @@ function Draft({ clientId }: { clientId: string }) {
       <div className="grid gap-3 sm:grid-cols-[1fr_160px]">
         <input name="title" required maxLength={200} placeholder={c.titlePh} className="field" aria-label={c.titleLabel} />
         <input name="amount" inputMode="decimal" placeholder={c.amountPh} className="field" aria-label={c.amountLabel} />
+      </div>
+
+      {/* Who the other side is. Optional, because an agreement with the couple
+          already knows who it is with; a supplier's agreement does not, and the
+          name is what appears on the page they open and on the signature. */}
+      <div className="grid gap-3 sm:grid-cols-2">
+        <input name="party_name" maxLength={120} placeholder={p.namePh} className="field" aria-label={p.name} autoComplete="off" />
+        <input name="party_role" maxLength={80} placeholder={p.rolePh} className="field" aria-label={p.role} autoComplete="off" />
       </div>
 
       <textarea name="body" rows={6} maxLength={60000} placeholder={c.bodyPh} className="field w-full resize-y" aria-label={c.bodyLabel} />
@@ -192,6 +206,12 @@ function Row({ contract: k, clientId, viewer }: {
                 </button>
               </form>
             </>
+          )}
+          {/* A supplier has no account and is not going to open one to agree a
+              price. The link is the way in, and it exists from the moment
+              there is something to agree to. */}
+          {k.status !== 'void' && k.status !== 'signed' && (
+            <SignLink contractId={k.id} clientId={clientId} party={k.party_name ?? ''} />
           )}
           {(k.status === 'sent' || k.status === 'signed') && (
             <form action={voidContract}>

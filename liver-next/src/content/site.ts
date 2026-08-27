@@ -1278,6 +1278,48 @@ export const updateCopy = {
   refresh: 'רענון',
 } as const;
 
+export const partyCopy = {
+  name: 'שם הצד השני',
+  namePh: 'שם הספק או הזוג',
+  role: 'תפקיד',
+  rolePh: 'דיג׳יי, צלם, רב',
+} as const;
+
+export const linkCopy = {
+  make: 'קישור לחתימה',
+  making: 'יוצר',
+  ready: 'הקישור מוכן. שלחו אותו לספק בוואטסאפ או במייל.',
+  copy: 'העתקה',
+  copied: 'הועתק',
+  whatsapp: 'שליחה בוואטסאפ',
+  revoke: 'ביטול הקישור',
+  /* Said where the producer decides, not after. Withdrawing a link is not the
+     same as cancelling an agreement, and the two are easy to confuse. */
+  revokeNote: 'ביטול הקישור סוגר את הדלת ולא מבטל חתימה שכבר נעשתה.',
+  failed: 'לא הצלחנו ליצור קישור. נסו שוב.',
+} as const;
+
+export const signCopy = {
+  eyebrow: 'הסכם לחתימה',
+  badLink: 'הקישור הזה כבר לא פעיל',
+  badLinkBody: 'ייתכן שההסכם נחתם, שהקישור הוחלף, או שהוא הועתק חלקית. אפשר לפנות למי ששלח לכם אותו ולבקש קישור חדש.',
+  amount: 'סכום',
+  file: 'לצפייה בקובץ המצורף',
+  nameLabel: 'השם המלא שלכם',
+  namePh: 'כפי שיופיע על ההסכם',
+  sign: 'קראתי ואני מאשר',
+  signing: 'חותם',
+  /* Said before the button, not after it. Somebody should know what pressing
+     it does while they can still not press it. */
+  before: 'לחיצה על הכפתור היא חתימה. מרגע זה אי אפשר לשנות את התנאים שלמעלה, לא על ידכם ולא על ידי מי ששלח.',
+  doneTitle: 'נחתם',
+  doneBy: 'נחתם על ידי',
+  doneAt: 'בתאריך',
+  doneBody: 'שמרו את הקישור הזה. הוא ימשיך להראות את ההסכם שנחתם ואת מועד החתימה.',
+  short: 'נא לחתום בשם מלא',
+  failed: 'החתימה לא נקלטה. נסו שוב, ואם זה חוזר פנו למי ששלח את הקישור.',
+} as const;
+
 export const conciergeCopy = {
   title: 'שאלות על ההפקה',
   sub: 'העוזר הדיגיטלי של ברק',

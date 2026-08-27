@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
+import { publicEnv } from '@/lib/env';
 
 export type ContractResult = { ok: boolean; error?: string; id?: string };
 
@@ -44,7 +45,13 @@ export async function saveContract(_prev: ContractResult | null, form: FormData)
   }
 
   const sb = await supabaseServer();
-  const row = { client_id: clientId, title, body, amount, file_path: filePath };
+  const row = {
+    client_id: clientId, title, body, amount, file_path: filePath,
+    /* Who the other side is. Blank for an agreement with the couple, whose
+       identity the workspace already knows. */
+    party_name: String(form.get('party_name') ?? '').trim().slice(0, 120),
+    party_role: String(form.get('party_role') ?? '').trim().slice(0, 80),
+  };
 
   const { data, error } = id
     ? await sb.from('contracts').update(row).eq('id', id).select('id').maybeSingle()
@@ -112,4 +119,45 @@ export async function contractFileUrl(path: string): Promise<string | null> {
   const sb = await supabaseServer();
   const { data } = await sb.storage.from('contracts').createSignedUrl(path, 60 * 30);
   return data?.signedUrl ?? null;
+}
+
+/**
+ * A link a supplier can sign from, with no account.
+ *
+ * The producer's half of 0037. The token is made in the database, not here: a
+ * link minted in application code is a link whose secrecy depends on whoever
+ * writes the next screen remembering to use the same generator.
+ *
+ * Issuing twice returns the same link rather than replacing it, so opening
+ * this from two tabs cannot quietly kill the link already sitting in
+ * somebody's WhatsApp. A draft becomes sent on the way, because a link to a
+ * draft is a link to terms that can still change underneath it.
+ */
+export async function issueSignLink(_prev: ContractResult | null, form: FormData): Promise<ContractResult> {
+  const id = String(form.get('contract_id') ?? '');
+  const clientId = String(form.get('client_id') ?? '');
+  if (!id) return { ok: false, error: 'חסר מזהה הסכם' };
+
+  const sb = await supabaseServer();
+  const { data, error } = await sb.rpc('issue_sign_link', { p_contract: id });
+  if (error || typeof data !== 'string') {
+    console.error('[contracts] could not issue a signing link', error);
+    return { ok: false, error: 'לא הצלחנו ליצור קישור' };
+  }
+
+  touch(clientId);
+  return { ok: true, id: `${publicEnv.siteUrl}/sign/${data}` };
+}
+
+/** Withdrawing one. Never un-signs anything: what was signed is a record, and
+ *  the link is only the door. */
+export async function revokeSignLink(form: FormData): Promise<void> {
+  const id = String(form.get('contract_id') ?? '');
+  const clientId = String(form.get('client_id') ?? '');
+  if (!id) return;
+
+  const sb = await supabaseServer();
+  const { error } = await sb.rpc('revoke_sign_link', { p_contract: id });
+  if (error) console.error('[contracts] could not withdraw the link', error);
+  touch(clientId);
 }
