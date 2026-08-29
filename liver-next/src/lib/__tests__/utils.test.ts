@@ -59,3 +59,44 @@ test('a mailed link never points at the recipient’s own machine', () => {
 test('with nothing configured it is the real host', () => {
   assert.equal(PLATFORM_HOST, 'liverproductions.com');
 });
+
+/* ── where a sign-in comes back to ───────────────────────────────────────── */
+
+/** The callback route's own rule, stated here so the trap that broke Google
+ *  sign-in cannot come back without a test failing. */
+function siteOrigin(headers: Record<string, string>, prod: boolean): string {
+  const host = (headers['x-forwarded-host'] ?? headers.host ?? '').split(',')[0].trim();
+  const local = /^(localhost|127\.0\.0\.1|\[::1\]|0\.0\.0\.0)(:\d+)?$/i.test(host);
+  if (host && !(local && prod)) {
+    const proto = (headers['x-forwarded-proto'] ?? '').split(',')[0].trim()
+      || (local ? 'http' : 'https');
+    return `${proto}://${host}`;
+  }
+  return 'https://liverproductions.com';
+}
+
+test('behind the proxy it comes back to the site, not to the machine', () => {
+  /* What actually arrives on the droplet: Caddy answers liverproductions.com
+     over TLS and forwards a plain request to 127.0.0.1:3000. Reading the
+     origin off that request is what sent people to their own computer. */
+  assert.equal(
+    siteOrigin({ host: 'localhost:3000', 'x-forwarded-host': 'liverproductions.com', 'x-forwarded-proto': 'https' }, true),
+    'https://liverproductions.com',
+  );
+});
+
+test('a proxy that forwards nothing still cannot send anybody to localhost', () => {
+  assert.equal(siteOrigin({ host: 'localhost:3000' }, true), 'https://liverproductions.com');
+  assert.equal(siteOrigin({}, true), 'https://liverproductions.com');
+});
+
+test('in development localhost is the right answer and is kept', () => {
+  assert.equal(siteOrigin({ host: 'localhost:3000' }, false), 'http://localhost:3000');
+});
+
+test('a forwarded host list takes the first, which is the browser’s', () => {
+  assert.equal(
+    siteOrigin({ 'x-forwarded-host': 'liverproductions.com, internal.lan', 'x-forwarded-proto': 'https, http' }, true),
+    'https://liverproductions.com',
+  );
+});

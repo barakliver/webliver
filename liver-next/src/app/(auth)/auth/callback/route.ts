@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { supabaseServer } from '@/lib/supabase/server';
+import { publicEnv } from '@/lib/env';
 
 /**
  * Where a one click sign-in link lands.
@@ -19,6 +20,39 @@ import { supabaseServer } from '@/lib/supabase/server';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
+/**
+ * Where this site actually is, from the point of view of the person's browser.
+ *
+ * Not `new URL(request.url).origin`, which is the trap this route fell into and
+ * the reason signing in with Google ended on a connection refused. The app sits
+ * behind a reverse proxy: the browser asks liverproductions.com over TLS, and
+ * what arrives here is a plain request to 127.0.0.1:3000. Redirecting to the
+ * origin of *that* sends somebody to their own machine, where nothing is
+ * listening. It looks like a broken sign-in and it is a correct sign-in with
+ * the wrong address on the envelope.
+ *
+ * The forwarded headers are what a proxy sets to say who was actually asked.
+ * When they name a real host that is the answer; when they name a local one it
+ * is either development, where local is right, or a proxy that is not passing
+ * them on, where the configured site address is right and a local address is
+ * certainly wrong.
+ */
+function siteOrigin(request: Request): string {
+  const h = request.headers;
+  const host = (h.get('x-forwarded-host') ?? h.get('host') ?? '').split(',')[0].trim();
+  const local = /^(localhost|127\.0\.0\.1|\[::1\]|0\.0\.0\.0)(:\d+)?$/i.test(host);
+
+  if (host && !(local && process.env.NODE_ENV === 'production')) {
+    const proto = (h.get('x-forwarded-proto') ?? '').split(',')[0].trim()
+      || (local ? 'http' : 'https');
+    return `${proto}://${host}`;
+  }
+
+  /* Already refuses a local address on a production build, so this cannot
+     quietly reintroduce the same failure from the other direction. */
+  return publicEnv.siteUrl;
+}
+
 /** Only a path inside this site is ever followed, so a crafted ?next= cannot
  *  bounce somebody straight off to another origin the moment they sign in. */
 function safeNext(value: string | null): string {
@@ -28,6 +62,7 @@ function safeNext(value: string | null): string {
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
+  const origin = siteOrigin(request);
   const tokenHash = url.searchParams.get('token_hash');
   const code = url.searchParams.get('code');
   const type = url.searchParams.get('type') ?? 'magiclink';
@@ -35,7 +70,7 @@ export async function GET(request: Request) {
   const next = safeNext(url.searchParams.get('next'));
 
   const backToLogin = (reason: string) => {
-    const to = new URL('/login', url.origin);
+    const to = new URL('/login', origin);
     if (email) to.searchParams.set('email', email);
     to.searchParams.set('reason', reason);
     if (next !== '/app') to.searchParams.set('next', next);
@@ -69,7 +104,7 @@ export async function GET(request: Request) {
       console.error('[auth] code exchange failed', { message: error.message });
       return backToLogin('expired');
     }
-    return NextResponse.redirect(new URL(next, url.origin));
+    return NextResponse.redirect(new URL(next, origin));
   }
 
   if (tokenHash) {
@@ -81,7 +116,7 @@ export async function GET(request: Request) {
       console.error('[auth] one click sign-in failed', { message: error.message });
       return backToLogin('expired');
     }
-    return NextResponse.redirect(new URL(next, url.origin));
+    return NextResponse.redirect(new URL(next, origin));
   }
 
   /* Nothing usable arrived. The likeliest cause by far is a mail template
