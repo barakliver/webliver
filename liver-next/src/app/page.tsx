@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { cookies } from 'next/headers';
-import { a11yCopy } from '@/content/site';
+import { a11yCopy, privacyCopy } from '@/content/site';
 import { LOCALE_COOKIE, readLocale } from '@/lib/locale';
 import { getSiteCopy } from '@/lib/siteCopy';
 import { supabasePublic } from '@/lib/supabase/public';
@@ -112,6 +112,10 @@ export default async function HomePage() {
                 requirement a menu button alone does not meet. */}
             <Link href="/accessibility" className="underline underline-offset-4 transition-colors hover:text-accent">
               {a11yCopy.statement}
+            </Link>
+            <span aria-hidden>·</span>
+            <Link href="/privacy" className="underline underline-offset-4 transition-colors hover:text-accent">
+              {privacyCopy.title}
             </Link>
           </div>
         </footer>

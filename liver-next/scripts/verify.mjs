@@ -194,6 +194,11 @@ async function main() {
      or not anything is for sale — an empty shop says so rather than 500ing,
      which is the state it will be in on the day it ships. */
   await page('/store', 'the shop answers', { expect: [200] });
+
+  /* Google refuses to publish an application whose consent screen has no
+     privacy policy behind it, so this page is load bearing rather than
+     decorative: a 404 here is a sign-in button that stops working. */
+  await page('/privacy', 'the privacy policy answers', { expect: [200] });
   await page('/login', 'sign in answers');
   await page('/install', 'the install guide answers');
   await page('/offline', 'the offline page answers');
@@ -344,6 +349,14 @@ async function main() {
        should carry it any more. */
     record(!js.includes('dataTransfer.setData'),
       'nothing still relies on a drag that a phone never starts');
+
+    /* Signing in with Google must go through the callback this app owns, so
+       the session is exchanged on the server and becomes a cookie. A build
+       that sends people at Supabase's hosted redirect instead lands them back
+       with the credential in a fragment, which is the failure the invitations
+       were quietly hitting for months. */
+    record(js.includes('signInWithOAuth'), 'google sign-in shipped');
+    record(js.includes('/auth/callback'), 'and it comes back through our own callback');
     /* An upload that went through a server action would be refused by the
        framework at one megabyte, silently, before the action ran. If the
        component ever starts posting the file instead of putting it in the

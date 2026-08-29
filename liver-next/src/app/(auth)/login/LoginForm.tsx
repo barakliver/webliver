@@ -6,7 +6,8 @@ import { Mail, MessageSquare, RotateCw } from 'lucide-react';
 import { CodeInput } from '@/components/app/CodeInput';
 import { publicEnv } from '@/lib/env';
 import { requestCode, verifyCode, type AuthResult, type Channel } from '@/app/actions/auth';
-import { auth as copy } from '@/content/site';
+import { auth as copy, privacyCopy } from '@/content/site';
+import { GoogleButton } from './GoogleButton';
 
 function Submit({ label, busy }: { label: string; busy: string }) {
   const { pending } = useFormStatus();
@@ -101,6 +102,13 @@ export function LoginForm({ next, prefill, reason }: {
         <p className="mt-2 text-[15px] text-ink-soft">{copy.sub}</p>
       </div>
 
+      {/* Above the fields, because for most people this is the whole screen.
+          What is under it is not a fallback for a broken feature, it is the
+          way in for somebody without a Google account on their phone — which
+          is a real person, usually a parent, and usually the one who needs it
+          to work. */}
+      <GoogleButton next={next ?? '/app'} />
+
       {askState && !askState.ok && askState.error && <Alert text={askState.error} />}
 
       {/* A link that has already been used, or that arrived truncated by a mail
@@ -189,6 +197,15 @@ export function LoginForm({ next, prefill, reason }: {
       <Submit label={copy.submit} busy={copy.sending} />
 
       <p className="text-[13px] leading-relaxed text-ink-mute">{copy.note}</p>
+
+      {/* Reachable from the screen where somebody is about to hand something
+          over, which is the one place a policy is actually worth linking. */}
+      <p className="text-[13px] text-ink-mute">
+        {copy.privacyNote}
+        <a href="/privacy" className="underline underline-offset-4 transition-colors hover:text-accent">
+          {privacyCopy.title}
+        </a>
+      </p>
     </form>
   );
 }

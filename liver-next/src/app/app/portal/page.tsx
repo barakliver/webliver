@@ -13,6 +13,7 @@ import { Thread } from '@/components/app/Thread';
 import { PortalActions } from '@/components/app/PortalActions';
 import { fileReport } from '@/app/actions/report';
 import { brandFor } from '@/lib/branding';
+import { Ltr } from '@/components/Ltr';
 
 export const metadata = { title: appCopy.portal.title };
 
@@ -37,6 +38,17 @@ export default async function PortalPage() {
       <>
         <PageHead title={appCopy.portal.title} sub={appCopy.portal.sub} />
         <Empty text={appCopy.portal.empty} />
+        {/* Almost every empty area is an address mismatch rather than an event
+            that has not been opened. Since Google made signing in with the
+            wrong one a single tap, the address is named here and the fix is
+            spelled out, rather than leaving somebody looking at a blank page
+            wondering whether the invitation was real. */}
+        <div className="card mt-5">
+          <p className="text-[14.5px] text-ink">
+            <Ltr>{appCopy.portal.emptyWho(account.email)}</Ltr>
+          </p>
+          <p className="mt-2 text-[14px] text-ink-soft">{appCopy.portal.emptyMismatch}</p>
+        </div>
       </>
     );
   }
