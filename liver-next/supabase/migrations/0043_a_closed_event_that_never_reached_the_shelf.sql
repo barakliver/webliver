@@ -47,7 +47,14 @@ begin
         'name', k.name, 'role', k.role, 'phone', k.phone, 'fee', k.fee))
        from public.crew k where k.client_id = p_client), '[]'::jsonb),
     jsonb_build_object(
-      'budget', coalesce((select sum(b.amount) from public.budget_items b
+      /* What was agreed, falling back to what was estimated. There is no
+         `amount` on this table and never was — it carries an estimate and an
+         agreed price, and for a closed event the agreed one is the number that
+         actually happened. Getting this wrong is what made 0043 fail on its
+         first call: a plpgsql body resolves its column names at run time, so
+         it created cleanly and broke the moment somebody used it. */
+      'budget', coalesce((select sum(coalesce(b.agreed, b.estimate))
+                            from public.budget_items b
                            where b.client_id = p_client), 0),
       'paid',   coalesce((select sum(p.amount) from public.payments p
                            where p.client_id = p_client and p.paid), 0)),
