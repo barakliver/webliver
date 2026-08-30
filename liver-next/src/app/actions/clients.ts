@@ -268,18 +268,42 @@ export async function revokeInvite(form: FormData): Promise<void> {
  *  not the closing of it — there is usually a last payment to chase or a
  *  supplier to settle, and an event that tidied itself away on the morning
  *  after would take those with it. */
+/**
+ * Closing an event, and reopening one.
+ *
+ * Closing goes through `close_event` rather than setting the flag here, and
+ * that is the whole of a bug worth writing down: 0042 added the snapshot the
+ * archive shelf is built from, and this action went on setting `archived_at`
+ * by itself. Every event closed in between was closed, correct, and invisible
+ * on a page that reads snapshots. The database now does all three things in
+ * one call — mark it closed, freeze the supplier sheet and the money, schedule
+ * next year's anniversary — so a second way to close an event cannot drift
+ * from the first, because there is no longer a second way.
+ *
+ * Reopening still writes the column directly, deliberately. It is one field
+ * and it has no snapshot to take; the frozen record stays exactly where it is,
+ * because a reopen is almost always a correction being made a week later and
+ * throwing away the record of the night in order to make one is backwards.
+ */
 export async function setArchived(form: FormData): Promise<void> {
   const id = String(form.get('client_id') ?? '');
   const archived = String(form.get('archived') ?? '') === '1';
   if (!id) return;
 
   const sb = await supabaseServer();
-  await sb
-    .from('clients')
-    .update({ archived_at: archived ? new Date().toISOString() : null })
-    .eq('id', id);
+
+  if (archived) {
+    const { error } = await sb.rpc('close_event', { p_client: id, p_note: '' });
+    if (error) {
+      console.error('[clients] close_event refused', { message: error.message });
+      return;
+    }
+  } else {
+    await sb.from('clients').update({ archived_at: null }).eq('id', id);
+  }
 
   revalidatePath('/app/clients');
+  revalidatePath('/app/clients/archive');
   revalidatePath(`/app/clients/${id}`);
   revalidatePath('/app');
 }
