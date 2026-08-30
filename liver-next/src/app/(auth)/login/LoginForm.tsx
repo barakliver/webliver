@@ -53,7 +53,7 @@ function useCountdown(from: number, seconds: number): number {
 
 const mmss = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 
-export function LoginForm({ next, prefill, reason }: {
+export function LoginForm({ next, prefill, reason, referral }: {
   next?: string;
   /** An address the callback already knows, so somebody arriving from a spent
    *  invitation link does not have to remember which of their addresses was
@@ -61,11 +61,19 @@ export function LoginForm({ next, prefill, reason }: {
   prefill?: string;
   /** Why they were sent here rather than signed in. */
   reason?: string;
+  /** A referral code off the address, carried through both steps so a producer
+   *  who arrived on somebody's link is still attributed after the round trip
+   *  to their inbox. Rides in a hidden field rather than in a cookie: it is
+   *  one string, it is not a secret, and a cookie would outlive the signup it
+   *  belongs to. */
+  referral?: string;
 }) {
   /* Both steps live in one component so the address typed in step one is still
      on screen in step two: retyping it is the single most common way a code
      gets sent to one place and entered against another. */
-  const [channel, setChannel] = useState<Channel>('email');
+  /* Kept as a value rather than removed, so step two still posts the
+     channel it verified against and the resend path stays one code path. */
+  const channel: Channel = 'email';
   const [isNew, setIsNew] = useState(false);
   const [sent, setSent] = useState<AuthResult | null>(null);
 
@@ -87,13 +95,12 @@ export function LoginForm({ next, prefill, reason }: {
         next={next}
         state={checkState}
         action={checkAction}
-        onRestart={(c) => { setChannel(c); setSent(null); }}
+        referral={referral}
+        onRestart={() => setSent(null)}
         onResent={(r) => setSent(r)}
       />
     );
   }
-
-  const phone = channel === 'phone';
 
   return (
     <form action={askAction} className="card space-y-5" noValidate>
@@ -120,52 +127,25 @@ export function LoginForm({ next, prefill, reason }: {
         </p>
       )}
 
-      {/* Two doors, named. A single field could sniff which one was meant, and
-          does on the server, but a couple who were told "we texted you" need
-          to see that texting is a thing this screen does before they type. */}
-      {/* Underlined text rather than a pill in a box. A segmented control that
-          fills the chosen half reads as two buttons where one is pressed; a
-          gold rule under one word reads as a choice already made, which is
-          what this is. The rule is the same mark the nav and the sidebar use. */}
-      <div role="group" className="flex gap-6 border-b border-line">
-        {(['email', 'phone'] as const).map((c) => (
-          <button
-            key={c}
-            type="button"
-            aria-pressed={channel === c}
-            onClick={() => setChannel(c)}
-            className={`relative -mb-px flex min-h-[44px] items-center gap-2 border-b px-1 text-[14.5px] tracking-[.03em] transition-colors duration-300 ${
-              channel === c
-                ? 'border-accent-line text-ink'
-                : 'border-transparent text-ink-mute hover:text-ink'
-            }`}
-          >
-            {c === 'email' ? <Mail size={16} aria-hidden strokeWidth={1.5} /> : <MessageSquare size={16} aria-hidden strokeWidth={1.5} />}
-            {c === 'email' ? copy.byEmail : copy.byPhone}
-          </button>
-        ))}
-      </div>
+      {/* One door now. The phone tab is gone rather than disabled: a control
+          that cannot be pressed is a question the screen is still asking.
+          Authorisation here is keyed on an email address — an event names up
+          to three of them — so a person arriving any other way is signed in
+          and belongs to nothing. */}
 
       <div>
-        <label className="label" htmlFor="lg-contact">
-          {phone ? copy.phoneLabel : copy.emailLabel}
-        </label>
+        <label className="label" htmlFor="lg-contact">{copy.emailLabel}</label>
         <input
-          /* Keyed on the channel so switching gives a genuinely empty field:
-             a half typed address left behind in the phone box is the kind of
-             thing that gets submitted without being looked at. */
-          key={channel}
           id="lg-contact"
           name="contact"
-          type={phone ? 'tel' : 'email'}
-          inputMode={phone ? 'tel' : 'email'}
-          autoComplete={phone ? 'tel' : 'email'}
+          type="email"
+          inputMode="email"
+          autoComplete="email"
           required
           dir="ltr"
-          defaultValue={channel === 'email' ? prefill ?? '' : ''}
+          defaultValue={prefill ?? ''}
           className="field"
         />
-        {phone && <p className="mt-1.5 text-[13px] text-ink-mute">{copy.phoneHint}</p>}
       </div>
 
       {/* The whole row is the target, not the 16px box. A checkbox is the
@@ -219,13 +199,14 @@ export function LoginForm({ next, prefill, reason }: {
  *  in this file is a guess at a project setting and the code may well still
  *  work. */
 function CodeStep({
-  sent, next, state, action, onRestart, onResent,
+  sent, next, state, action, onRestart, onResent, referral,
 }: {
   sent: AuthResult;
   next?: string;
   state: AuthResult | null;
   action: (form: FormData) => void;
-  onRestart: (channel: Channel) => void;
+  onRestart: () => void;
+  referral?: string;
   onResent: (result: AuthResult) => void;
 }) {
   const channel: Channel = sent.channel ?? 'email';
@@ -262,7 +243,6 @@ function CodeStep({
      timestamp travels through the form and comes back, so the two can be
      told apart without any extra bookkeeping. */
   const failed = state && !state.ok && state.error && state.sentAt === at;
-  const other: Channel = channel === 'email' ? 'phone' : 'email';
 
   return (
     <form action={action} className="card space-y-5" noValidate>
@@ -283,6 +263,7 @@ function CodeStep({
       <input type="hidden" name="display" value={sent.display ?? ''} />
       <input type="hidden" name="sent_at" value={String(at)} />
       {next && <input type="hidden" name="next" value={next} />}
+      {referral && <input type="hidden" name="ref" value={referral} />}
 
       <CodeInput key={at} name="code" label={copy.codeLabel} length={publicEnv.otpLength} />
 
@@ -303,16 +284,12 @@ function CodeStep({
       </button>
 
       <div className="flex flex-col items-center gap-1.5 text-[13px]">
+        {/* One link where there were two. With a single door there is nothing
+            to switch to, and offering it would send somebody back to a screen
+            that looks identical to the one they left. */}
         <button
           type="button"
-          onClick={() => onRestart(other)}
-          className="text-ink-mute underline-offset-2 hover:text-ink hover:underline"
-        >
-          {other === 'email' ? copy.switchToEmail : copy.switchToPhone}
-        </button>
-        <button
-          type="button"
-          onClick={() => onRestart(channel)}
+          onClick={() => onRestart()}
           className="text-ink-mute underline-offset-2 hover:text-ink hover:underline"
         >
           {channel === 'phone' ? copy.codeBackPhone : copy.codeBackEmail}

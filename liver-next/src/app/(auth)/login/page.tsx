@@ -12,10 +12,10 @@ export const metadata: Metadata = { title: 'כניסה' };
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ next?: string; email?: string; reason?: string }>;
+  searchParams: Promise<{ next?: string; email?: string; reason?: string; ref?: string }>;
 }) {
   if (await currentAccount()) redirect('/app');
-  const { next, email, reason } = await searchParams;
+  const { next, email, reason, ref } = await searchParams;
 
   return (
     <main id="main" className="flex min-h-dvh items-center justify-center px-5 py-16">
@@ -38,7 +38,7 @@ export default async function LoginPage({
             with the credential still in the address bar. This picks it up
             rather than letting it go to waste. */}
         <HashSession next={next ?? '/app'} />
-        <LoginForm next={next} prefill={email} reason={reason} />
+        <LoginForm next={next} prefill={email} reason={reason} referral={ref} />
       </div>
     </main>
   );

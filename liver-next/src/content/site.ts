@@ -207,11 +207,7 @@ export const MAX_GUESTS = 1500;
 export const auth = {
   title: 'כניסה לאזור האישי',
   sub: 'נשלח לכם קוד חד פעמי. אין סיסמאות לזכור.',
-  byEmail: 'אימייל',
-  byPhone: 'טלפון',
   emailLabel: 'כתובת אימייל',
-  phoneLabel: 'מספר טלפון',
-  phoneHint: 'למשל 050-1234567',
   newHere: 'זו הפעם הראשונה שלי כאן',
   nameLabel: 'שם מלא',
   brandLabel: 'שם העסק (למפיקים)',
@@ -232,9 +228,10 @@ export const auth = {
   resendIn: (s: number) => `אפשר לבקש קוד חדש בעוד ${s} שניות`,
   resendSending: 'שולח קוד חדש',
   resentEmail: 'שלחנו קוד חדש לאימייל.',
+  /* The two that stay. Phone sign-in is closed, and the code step still
+     renders whichever channel a session was actually opened on — an account
+     created that way before the door shut is still a real account. */
   resentPhone: 'שלחנו קוד חדש במסרון.',
-  switchToEmail: 'לשלוח קוד לאימייל במקום',
-  switchToPhone: 'לשלוח קוד ב-SMS במקום',
   google: 'כניסה עם גוגל',
   googleGoing: 'מעבירים לגוגל',
   googleFailed: 'לא הצלחנו לפתוח את החלון של גוגל. אפשר להיכנס עם קוד למטה.',
@@ -858,6 +855,7 @@ export const appCopy = {
       money: 'כסף',
       docs: 'מסמכים',
       files: 'קבצים',
+      meetings: 'פגישות',
       messages: 'הודעות',
       board: 'השראה',
     },
@@ -1614,6 +1612,128 @@ export const storeCopy = {
   thanks: 'שמרנו את ההזמנה ונחזור אליכם. מספר ההזמנה שלכם:',
   again: 'הזמנה נוספת',
   failed: 'לא הצלחנו לשלוח את ההזמנה. נסו שוב.',
+} as const;
+
+/* ── הארכיון, הפגישות והתבניות ───────────────────────────────────────────
+   One block for the year after the wedding: closing an event, finding it again
+   two summers later, the four meetings along the way, and the anniversary. */
+export const archiveCopy = {
+  title: 'ארכיון',
+  sub: 'אירועים שנסגרו, לפי השנה שבה הם היו.',
+  open: 'ארכיון',
+  backToLive: 'לאירועים הפעילים',
+  yearLabel: (year: number) => `אירועי ${year}`,
+  noYear: 'בלי תאריך',
+  count: (n: number) => (n === 1 ? 'אירוע אחד' : `${n} אירועים`),
+  empty: 'עוד לא נסגר כאן אף אירוע.',
+  emptyYear: 'אין אירועים בשנה הזאת.',
+
+  close: 'סגירת אירוע',
+  closing: 'סוגר',
+  closeAsk: 'לסגור את האירוע? נשמור תמונת מצב של הספקים, הצוות והכסף כפי שהם עכשיו.',
+  closeNote: 'הערה לסגירה',
+  closeNotePh: 'מה שכדאי לזכור מהערב הזה',
+  reopen: 'פתיחה מחדש',
+  reopened: 'האירוע חזר לפעילים',
+  /* Said once, on the button, because it is the part people do not expect. */
+  closeNote2: 'התמונה שנשמרת בסגירה נשארת גם אם תפתחו את האירוע מחדש.',
+
+  frozen: 'תמונת מצב מהסגירה',
+  vendors: 'ספקים',
+  crew: 'צוות',
+  money: 'כסף',
+  runsheet: 'לוז',
+  guestsFinal: 'אורחים שהגיעו',
+  budget: 'תקציב',
+  paid: 'שולם',
+  closedOn: 'נסגר בתאריך',
+
+  anniversary: 'שנה לאירוע',
+  anniversarySub: 'תזכורת נשלחת חודש, שבוע ויום לפני. רק בשנה הראשונה.',
+  anniversaryCancel: 'ביטול התזכורת',
+  anniversaryIn: {
+    month: 'בעוד חודש',
+    week: 'בעוד שבוע',
+    day: 'מחר',
+  },
+  greet: 'שליחת ברכה',
+} as const;
+
+export const meetingCopy = {
+  title: 'פגישות',
+  sub: 'מה נשאל, מה נענה, ומה סוכם. כל גרסה נשמרת.',
+  none: 'עוד לא תועדה פגישה.',
+  add: 'תיעוד פגישה',
+  pick: 'איזו פגישה',
+  held: 'תאריך הפגישה',
+  save: 'שמירה',
+  saving: 'שומר',
+  cancel: 'ביטול',
+  remove: 'מחיקה',
+  removeAsk: 'למחוק את תיעוד הפגישה?',
+  open: 'פתיחה',
+  close: 'סגירה',
+
+  summary: 'סיכום',
+  summarise: 'כתיבת סיכום',
+  summarising: 'כותב',
+  summaryByModel: 'הפסקה העליונה נכתבה אוטומטית. הרישום שמתחתיה הוא מה שנרשם בפגישה.',
+  summaryNone: 'אין עדיין מה לסכם. מלאו כמה שדות ושמרו.',
+  answered: (filled: number, total: number) => `נענו ${filled} מתוך ${total}`,
+  shareWithCouple: 'משותף עם הזוג',
+  shareHint: 'כברירת מחדל פגישה נשארת אצלכם בלבד.',
+  versions: 'גרסאות',
+  versionsNone: 'זאת הגרסה הראשונה.',
+  savedAt: 'נשמר',
+  saveFailed: 'לא הצלחנו לשמור',
+} as const;
+
+export const workflowCopy = {
+  title: 'תבניות עבודה',
+  sub: 'רשימות שחוזרות בכל אירוע. מוחלות על התאריך של החתונה ומתפרסות ללוז.',
+  none: 'עוד לא בניתם תבנית.',
+  add: 'תבנית חדשה',
+  seed: 'להתחיל מארבע הפגישות',
+  name: 'שם התבנית',
+  namePh: 'הדרך שלי לחתונה',
+  steps: 'שלבים',
+  stepTitle: 'מה עושים',
+  stepWhen: 'כמה ימים לפני החתונה',
+  stepWhenHint: 'מספר חיובי. 90 זה שלושה חודשים לפני.',
+  stepOwner: 'על מי',
+  ownerProducer: 'עליי',
+  ownerClient: 'על הזוג',
+  addStep: 'הוספת שלב',
+  removeStep: 'הסרה',
+  save: 'שמירה',
+  saving: 'שומר',
+  remove: 'מחיקה',
+  removeAsk: 'למחוק את התבנית?',
+  apply: 'החלה על אירוע',
+  applying: 'מחיל',
+  applied: (n: number) => (n === 0 ? 'הכל כבר היה שם' : `נוספו ${n} שלבים`),
+  noDate: 'לאירוע אין עדיין תאריך, אז השלבים ייכנסו בלי תאריך יעד.',
+  saveFailed: 'לא הצלחנו לשמור',
+} as const;
+
+export const referralCopy = {
+  title: 'הפניות',
+  sub: 'מי הצטרף דרך מי. מספרים בלבד, בלי שם של אף זוג ואף אירוע.',
+  myLink: 'הקישור שלי',
+  copy: 'העתקה',
+  copied: 'הועתק',
+  producer: 'מפיק',
+  code: 'קוד',
+  invitedBy: 'הצטרף דרך',
+  invited: 'הביא',
+  clients: 'אירועים',
+  direct: 'ישירות',
+  none: 'עוד לא הצטרף אף אחד דרך קישור.',
+  claim: 'הצטרפתי דרך קוד',
+  claimPh: 'הקוד שקיבלתם',
+  claimSave: 'שיוך',
+  claimed: 'השיוך נשמר',
+  claimFailed: 'הקוד לא נמצא, או שכבר משויכים.',
 } as const;
 
 export const contractCopy = {

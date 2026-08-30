@@ -199,6 +199,7 @@ async function main() {
      privacy policy behind it, so this page is load bearing rather than
      decorative: a 404 here is a sign-in button that stops working. */
   await page('/privacy', 'the privacy policy answers', { expect: [200] });
+  await page('/app/clients/archive', 'the archive shelf', { expect: [200, 307] });
   await page('/login', 'sign in answers');
   await page('/install', 'the install guide answers');
   await page('/offline', 'the offline page answers');
@@ -303,6 +304,18 @@ async function main() {
     record(false, 'reading a receipt refuses strangers', e.message);
   }
 
+  /* The nightly sweep closes other people's events and sends other people's
+     greetings, with nobody signed in. The only thing checkable from out here
+     is that it refuses a stranger — a 200 on this endpoint would be an open
+     door onto every tenant at once. */
+  try {
+    const res = await fetch(`${base}/api/cron`, { method: 'POST' });
+    record([401, 503].includes(res.status), 'the nightly sweep refuses strangers',
+      res.status === 503 ? 'no key configured, so it refuses everything' : `→ ${res.status}`);
+  } catch (e) {
+    record(false, 'the nightly sweep refuses strangers', e.message);
+  }
+
   // the lead webhook refuses an unauthenticated delivery
   try {
     const res = await fetch(`${base}/api/leads/webhook`, {
@@ -356,6 +369,14 @@ async function main() {
        with the credential in a fragment, which is the failure the invitations
        were quietly hitting for months. */
     record(js.includes('signInWithOAuth'), 'google sign-in shipped');
+
+    /* One door. Phone sign-in is closed in the action and gone from the
+       screen; if the tab is ever back in a build, so is a corridor that ends
+       in "SMS is unavailable" and an account that belongs to no event. */
+    record(!js.includes('לשלוח קוד ב-SMS במקום'), 'sign-in asks for one thing, an address');
+
+    /* The four meetings, as questions rather than as a free text box. */
+    record(js.includes('פגישת טעימות'), 'the meeting questionnaires shipped');
     record(js.includes('/auth/callback'), 'and it comes back through our own callback');
     /* An upload that went through a server action would be refused by the
        framework at one megabyte, silently, before the action ran. If the

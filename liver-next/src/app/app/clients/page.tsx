@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { requireLiveProducer } from '@/lib/auth';
-import { appCopy } from '@/content/site';
+import { appCopy, archiveCopy } from '@/content/site';
 import { PageHead, Empty } from '@/components/app/PageHead';
 import { NewClientForm } from '@/components/app/NewClientForm';
 import { StatusBoard } from '@/components/app/StatusBoard';
@@ -40,6 +40,10 @@ export default async function ClientsPage({
         {[
           { key: 'live', href: '/app/clients', label: c.tabLive, on: !archived },
           { key: 'done', href: '/app/clients?show=done', label: c.tabDone, on: archived },
+          /* The shelf is a third question, not a filter on the second: "which
+             events are closed" is asked this week, and "who was the
+             photographer in 2025" is asked two summers later. */
+          { key: 'archive', href: '/app/clients/archive', label: archiveCopy.title, on: false },
         ].map((t) => (
           <Link
             key={t.key}

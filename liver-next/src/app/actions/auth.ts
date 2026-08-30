@@ -5,9 +5,27 @@ import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { normalizePhone, displayPhone } from '@/lib/phone';
 
-/** Which door somebody came in by. One person can use both; 0022 makes the
- *  two arrive at the same account rather than at two. */
+/**
+ * One door.
+ *
+ * Phone sign-in was built in 0022 and is now closed. Two reasons, and the
+ * second is the one that decided it: authorisation in this product is keyed on
+ * an email address — an event names up to three of them, and a person who
+ * arrives by any other route is signed in and belongs to nothing. And a text
+ * message costs money per send and needs a provider that is not configured,
+ * so the door was open onto a corridor that ended in "SMS is unavailable".
+ *
+ * The type keeps both members and `resolve()` still recognises a number,
+ * deliberately. Nothing about an account that was created by phone is
+ * deleted, renamed or migrated here: those rows stay exactly where they are,
+ * and reopening the door is one constant away. A person in that position signs
+ * in with the address on their profile and lands on the same account, which is
+ * what 0022 built the linking for.
+ */
 export type Channel = 'email' | 'phone';
+
+/** The single place the door is bolted, so it is one edit to unbolt. */
+const PHONE_SIGN_IN = false;
 
 export type AuthResult = {
   ok: boolean;
@@ -61,11 +79,15 @@ export async function requestCode(_prev: AuthResult | null, form: FormData): Pro
   const who = resolve(String(form.get('contact') ?? form.get('email') ?? ''), hint);
 
   if (!who) {
+    return { ok: false, error: 'כתובת האימייל לא תקינה' };
+  }
+
+  /* Refused here rather than only hidden on the screen. A form is a
+     suggestion; this is the rule. */
+  if (!PHONE_SIGN_IN && who.channel === 'phone') {
     return {
       ok: false,
-      error: hint === 'phone'
-        ? 'מספר הטלפון לא תקין. אפשר להקליד 050-1234567'
-        : 'כתובת האימייל או מספר הטלפון לא תקינים',
+      error: 'הכניסה היא עם כתובת אימייל. נשלח לשם קוד חד פעמי.',
     };
   }
 
@@ -138,6 +160,17 @@ export async function verifyCode(_prev: AuthResult | null, form: FormData): Prom
       return { ok: false, error: 'הקוד פג תוקף. בקשו קוד חדש בכפתור שלמטה.', ...back };
     }
     return { ok: false, error: 'הקוד אינו נכון. בדקו שוב, או בקשו קוד חדש.', ...back };
+  }
+
+  /* Attribution, once there is a session to attribute. Before this point
+     there is no producer row to point at and the code is just a string off a
+     URL. Failure is silent on purpose: a wrong or already-used code means the
+     signup goes unattributed, which is a reporting gap, and refusing to let
+     somebody into their own account over it would be absurd. */
+  const ref = String(form.get('ref') ?? '').trim();
+  if (ref) {
+    const { error: refErr } = await sb.rpc('claim_referral', { p_code: ref });
+    if (refErr) console.error('[auth] referral not claimed', { message: refErr.message });
   }
 
   revalidatePath('/', 'layout');

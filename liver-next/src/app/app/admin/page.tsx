@@ -5,6 +5,10 @@ import { getConsole, type ProducerRow, type Stats } from '@/lib/directory';
 import { setProducerStatus } from '@/app/actions/admin';
 import { appCopy } from '@/content/site';
 import { PageHead, Empty } from '@/components/app/PageHead';
+import { Referrals, type ReferralRow } from '@/components/app/Referrals';
+import { supabaseServer } from '@/lib/supabase/server';
+import { safeRows } from '@/lib/safe';
+import { publicEnv } from '@/lib/env';
 import { FeatureFlags } from '@/components/app/FeatureFlags';
 import { MetricBlock } from '@/components/app/Metric';
 import { Live } from '@/components/app/Live';
@@ -144,8 +148,15 @@ function Producer({ p }: { p: ProducerRow }) {
 }
 
 export default async function AdminPage() {
-  await requireRoot();
+  const account = await requireRoot();
   const { stats, producers, flags } = await getConsole(ROOT_ADMIN_EMAIL);
+
+  /* Counts and brand names, which is the whole of what crosses this boundary.
+     Allowed to fail on its own: a referral table that will not load is one
+     panel missing, not a console that will not open. */
+  const sb = await supabaseServer();
+  const referrals = await safeRows<ReferralRow>('referrals', sb.rpc('referral_stats'));
+  const mine = referrals.find((r) => r.producer_id === account.producer?.id)?.referral_code ?? null;
 
   const waiting = producers.filter((p) => p.status === 'pending');
   const rest = producers.filter((p) => p.status !== 'pending');
@@ -179,6 +190,8 @@ export default async function AdminPage() {
             </ul>
           )}
         </section>
+
+        <Referrals rows={referrals} siteUrl={publicEnv.siteUrl} mine={mine} />
 
         <FeatureFlags flags={flags} />
 
