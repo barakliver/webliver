@@ -82,7 +82,7 @@ function Row({ event: e }: { event: ArchivedEvent }) {
         <button type="button" onClick={() => setOpen(!open)} className="min-w-0 flex-1 text-start" aria-expanded={open}>
           <p className="text-[15.5px] text-ink">{e.display_name}</p>
           <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px] text-ink-mute">
-            {e.event_date && <Ltr>{dateFmt.format(new Date(e.event_date))}</Ltr>}
+            {e.event_date && dateFmt.format(new Date(e.event_date))}
             {e.venue && (
               <span className="inline-flex items-center gap-1">
                 <MapPin size={13} aria-hidden strokeWidth={1.5} />
@@ -121,7 +121,7 @@ function Row({ event: e }: { event: ArchivedEvent }) {
             <span className="text-ink-mute">{c.budget} <Money value={budget} className="text-ink" /></span>
             <span className="text-ink-mute">{c.paid} <Money value={paid} className="text-ink" /></span>
             <span className="text-ink-mute">
-              {c.closedOn} <Ltr>{dateFmt.format(new Date(e.closed_at))}</Ltr>
+              {c.closedOn} {dateFmt.format(new Date(e.closed_at))}
             </span>
           </div>
 

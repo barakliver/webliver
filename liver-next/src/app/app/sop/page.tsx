@@ -3,6 +3,9 @@ import { PrintButton } from '@/components/app/PrintButton';
 import { SopBook } from '@/components/app/SopBook';
 import { requireLiveProducer } from '@/lib/auth';
 import { sopCopy, sopItemCount } from '@/content/sop';
+import { supabaseServer } from '@/lib/supabase/server';
+import { loadTemplates } from '@/lib/workflow';
+import { WorkflowTemplates } from '@/components/app/WorkflowTemplates';
 
 export const metadata = { title: sopCopy.title };
 
@@ -18,8 +21,18 @@ export const metadata = { title: sopCopy.title };
  * writing — which means it will actually get corrected when somebody learns
  * something new, instead of waiting for a screen to be built for editing it.
  */
+export const dynamic = 'force-dynamic';
+
 export default async function SopPage() {
   await requireLiveProducer();
+
+  /* The playbook is how this business works and never changes per producer;
+     the templates are how *this* producer works and are theirs alone. They sit
+     on one page because a person looking for either is looking for "the way I
+     do things", and splitting that across two screens is a distinction only
+     the database cares about. */
+  const sb = await supabaseServer();
+  const templates = await loadTemplates(sb);
 
   return (
     <>
@@ -38,6 +51,10 @@ export default async function SopPage() {
 
       <div className="no-print mb-2 flex flex-wrap items-center justify-end gap-3">
         <PrintButton label={sopCopy.print} />
+      </div>
+
+      <div className="no-print mb-8">
+        <WorkflowTemplates templates={templates} />
       </div>
 
       <div className="sop-print">

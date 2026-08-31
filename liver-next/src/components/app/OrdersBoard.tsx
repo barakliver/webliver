@@ -151,7 +151,7 @@ export function OrdersBoard({ orders }: { orders: Order[] }) {
                         >
                           <p className="truncate text-[14.5px] text-ink">{o.buyer_name}</p>
                           <p className="mt-0.5 text-[12px] text-ink-mute">
-                            <Ltr>{o.number}</Ltr> · <Ltr>{dateFmt.format(new Date(o.created_at))}</Ltr>
+                            <Ltr>{o.number}</Ltr> · {dateFmt.format(new Date(o.created_at))}
                           </p>
                           <Money value={o.total} className="mt-1 block text-[14px] text-ink" />
                         </button>

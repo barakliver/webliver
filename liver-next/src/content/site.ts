@@ -1651,6 +1651,7 @@ export const archiveCopy = {
   anniversary: 'שנה לאירוע',
   anniversarySub: 'תזכורת נשלחת חודש, שבוע ויום לפני. רק בשנה הראשונה.',
   anniversaryCancel: 'ביטול התזכורת',
+  yearSince: 'שנה ל-',
   anniversaryIn: {
     month: 'בעוד חודש',
     week: 'בעוד שבוע',
@@ -1707,8 +1708,15 @@ export const workflowCopy = {
   removeStep: 'הסרה',
   save: 'שמירה',
   saving: 'שומר',
+  cancel: 'ביטול',
   remove: 'מחיקה',
   removeAsk: 'למחוק את התבנית?',
+  /* The panel on the event page is about *this* event, so it says so. Its
+     heading used to repeat the one on the playbook page, which put the same
+     three words on two screens that do different things. */
+  onThisEvent: 'רשימה לאירוע הזה',
+  which: 'איזו תבנית',
+  stepsCount: (n: number) => (n === 1 ? 'שלב אחד' : `${n} שלבים`),
   apply: 'החלה על אירוע',
   applying: 'מחיל',
   applied: (n: number) => (n === 0 ? 'הכל כבר היה שם' : `נוספו ${n} שלבים`),

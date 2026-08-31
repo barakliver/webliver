@@ -78,6 +78,18 @@ for (const file of files) {
       findings.push({ where, line: i + 1, why: 'a ratio built by hand', text: line.trim() });
     }
 
+    /* A Hebrew date inside an LTR isolate.
+       `15 באוקטובר 2025` is a Hebrew sentence with digits in it, not a neutral
+       string. Isolating it lays it out left to right inside a right to left
+       paragraph, which puts the day at the far end and makes it read
+       `באוקטובר 2025 15`. Six screens shipped that way in one afternoon.
+       A formatter using `month: 'long'` or `'short'` on he-IL produces Hebrew;
+       one producing `27.08.26` is the opposite case and does need the isolate,
+       which is why this looks for the formatter and not for the wrapper. */
+    if (/<Ltr>\{[^}]*(?:date|Date)[A-Za-z]*Fmt\.format/.test(code)) {
+      findings.push({ where, line: i + 1, why: 'a Hebrew date isolated as ltr', text: line.trim() });
+    }
+
     /* The same thing inside a template literal. */
     if (!wrapped && /\$\{[^}]+\}\s*\/\s*\$\{/.test(code)
         && !/(href|src|action|url|`\/|https?:)/.test(code)) {

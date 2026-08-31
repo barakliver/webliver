@@ -9,6 +9,9 @@ import { PageHead } from '@/components/app/PageHead';
 import { AttentionList } from '@/components/app/Attention';
 import { Money, ils } from '@/components/Ltr';
 import { MetricRows } from '@/components/app/Metric';
+import { Anniversaries } from '@/components/app/Anniversaries';
+import { supabaseServer } from '@/lib/supabase/server';
+import { loadAnniversaries } from '@/lib/workflow';
 
 export const metadata = { title: appCopy.nav.overview };
 
@@ -21,6 +24,12 @@ export default async function OverviewPage() {
 
   const { items, next, money } = await getOverview();
   const first = account.fullName.split(' ')[0];
+
+  /* Renders nothing at all when there is none, which is most mornings. A panel
+     that is present and empty on a screen built around what needs a decision
+     is a panel that trains people to skip that column. */
+  const sb = await supabaseServer();
+  const anniversaries = await loadAnniversaries(sb);
 
   return (
     <>
@@ -42,6 +51,7 @@ export default async function OverviewPage() {
         </section>
 
         <div className="grid min-w-0 content-start gap-5">
+          <Anniversaries items={anniversaries} />
           {next && (
             <Link
               href={next.href}

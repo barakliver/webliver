@@ -19,6 +19,13 @@
  * Applies to every mixed number and every currency string on every screen:
  * amounts, counts written as `x / y`, dates written with dots, times, phone
  * numbers and email addresses.
+ *
+ * **Not for a date formatted in Hebrew.** `15 באוקטובר 2025` is a Hebrew
+ * sentence with digits in it, not a neutral string, and isolating it as LTR
+ * lays it out left to right inside a right to left paragraph — which puts
+ * the day at the far end and makes it read `באוקטובר 2025 15`. Six screens
+ * shipped that way in one afternoon before anybody looked at one. A date
+ * written `27.08.26` is the opposite case and does need this.
  */
 export function Ltr({ children, className }: { children: React.ReactNode; className?: string }) {
   return (

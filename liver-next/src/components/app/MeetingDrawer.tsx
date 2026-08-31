@@ -101,7 +101,7 @@ export function MeetingDrawer({ clientId, logs }: { clientId: string; logs: Meet
                       {log.held_on && (
                         <span className="inline-flex items-center gap-1">
                           <CalendarDays size={13} aria-hidden strokeWidth={1.5} />
-                          <Ltr>{dateFmt.format(new Date(log.held_on))}</Ltr>
+                          {dateFmt.format(new Date(log.held_on))}
                         </span>
                       )}
                       {t && <span>{answered(t, log.answers)}</span>}

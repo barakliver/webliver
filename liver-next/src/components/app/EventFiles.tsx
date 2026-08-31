@@ -219,7 +219,7 @@ function Row({ file: f, clientId, viewer, start, compact }: {
         {f.note && <p className="mt-1 text-[13.5px] text-ink-soft">{f.note}</p>}
 
         <p className="mt-1 text-[12.5px] text-ink-mute">
-          {c.by} {f.uploader} · <Ltr>{dateFmt.format(new Date(f.created_at))}</Ltr>
+          {c.by} {f.uploader} · {dateFmt.format(new Date(f.created_at))}
           {f.size_bytes > 0 && <> · <Ltr>{humanSize(f.size_bytes)}</Ltr></>}
         </p>
 

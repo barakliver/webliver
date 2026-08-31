@@ -11,6 +11,8 @@ import { EventTabs, readTab, type EventTab } from '@/components/app/EventTabs';
 import { EventDetails } from '@/components/app/EventDetails';
 import { EventSummary } from '@/components/app/EventSummary';
 import { EventTemplate } from '@/components/app/EventTemplate';
+import { ApplyTemplate } from '@/components/app/ApplyTemplate';
+import { loadTemplates } from '@/lib/workflow';
 import { InviteBox, type Invite } from '@/components/app/InviteBox';
 import { TaskList, type Task } from '@/components/app/TaskList';
 import { PaymentsPanel, type Payment } from '@/components/app/PaymentsPanel';
@@ -124,10 +126,11 @@ async function Section({ tab, client, viewerId }: { tab: EventTab; client: Clien
   const id = client.id;
 
   if (tab === 'overview') {
-    const [summary, invites] = await Promise.all([
+    const [summary, invites, templates] = await Promise.all([
       loadEventSummary(sb, id),
       safeRows<Invite>('invites', sb.from('client_authorized_emails')
         .select('id,email,profile_id').eq('client_id', id).order('created_at')),
+      loadTemplates(sb),
     ]);
     return (
       <div className="space-y-6">
@@ -135,6 +138,9 @@ async function Section({ tab, client, viewerId }: { tab: EventTab; client: Clien
         {/* On the overview because this is where an event gets set up, and it
             collapses to a single button once there is nothing left to add. */}
         <EventTemplate clientId={id} />
+        {/* The producer's own lists, next to the shipped ones. Renders nothing
+            until they have built one. */}
+        <ApplyTemplate clientId={id} templates={templates} hasDate={!!client.event_date} />
         <div className="grid gap-6 lg:grid-cols-2">
           <EventDetails event={client} />
           <InviteBox clientId={id} invites={invites} />
