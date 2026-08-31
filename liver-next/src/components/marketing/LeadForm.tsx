@@ -3,18 +3,24 @@
 import { useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { submitLead, type LeadResult } from '@/app/actions/lead';
-import { site, EVENT_KINDS, MIN_EVENT_DATE, MAX_GUESTS } from '@/content/site';
+import { MIN_EVENT_DATE, MAX_GUESTS, type SiteCopy } from '@/content/site';
+import type { EventKinds } from '@/content/ui';
 
-function Submit() {
+function Submit({ label, busy }: { label: string; busy: string }) {
   const { pending } = useFormStatus();
   return (
     <button type="submit" className="btn-primary w-full sm:w-auto" disabled={pending}>
-      {pending ? site.lead.sending : site.lead.submit}
+      {pending ? busy : label}
     </button>
   );
 }
 
-export function LeadForm({ compact = false }: { compact?: boolean }) {
+/* The copy arrives resolved. This runs on the client, so importing the site
+   constant here shipped the Hebrew form to an English visitor no matter what
+   the rest of the page said. */
+export function LeadForm({ compact = false, site, kinds }: {
+  compact?: boolean; site: SiteCopy; kinds: EventKinds;
+}) {
   const [state, action] = useActionState<LeadResult | null, FormData>(submitLead, null);
 
   if (state?.ok) {
@@ -58,7 +64,7 @@ export function LeadForm({ compact = false }: { compact?: boolean }) {
         <div>
           <label className="label" htmlFor="lf-kind">{site.lead.fields.kind}</label>
           <select id="lf-kind" name="kind" className="field" defaultValue="wedding">
-            {EVENT_KINDS.map(k => <option key={k.value} value={k.value}>{k.label}</option>)}
+            {kinds.map(k => <option key={k.value} value={k.value}>{k.label}</option>)}
           </select>
         </div>
         <div>
@@ -76,7 +82,7 @@ export function LeadForm({ compact = false }: { compact?: boolean }) {
         <textarea id="lf-msg" name="message" rows={3} className="field resize-y" />
       </div>
 
-      <Submit />
+      <Submit label={site.lead.submit} busy={site.lead.sending} />
     </form>
   );
 }

@@ -1,8 +1,14 @@
 import Link from 'next/link';
-import { termsCopy as c, privacyCopy, site } from '@/content/site';
+import { getSiteCopy } from '@/lib/siteCopy';
+import { supabasePublic } from '@/lib/supabase/public';
+import { privacyFor, termsFor } from '@/content/ui';
 import { publicEnv } from '@/lib/env';
+import { currentLocale, dateFormat } from '@/lib/serverLocale';
 
-export const metadata = { title: c.title, description: c.sub, alternates: { canonical: '/terms' } };
+export async function generateMetadata() {
+  const c = termsFor(await currentLocale());
+  return { title: c.title, description: c.sub, alternates: { canonical: '/terms' } };
+}
 
 /**
  * What may be done here, and what is promised back.
@@ -19,10 +25,11 @@ export const metadata = { title: c.title, description: c.sub, alternates: { cano
  * And nothing about charging a card appears anywhere, because the shop charges
  * none: an order is a request that reaches him in a second, and it says so.
  */
-export default function Page() {
-  const updated = new Intl.DateTimeFormat('he-IL', {
-    day: '2-digit', month: '2-digit', year: 'numeric',
-  }).format(new Date('2026-08-31'));
+export default async function Page() {
+  const locale = await currentLocale();
+  const c = termsFor(locale);
+  const site = await getSiteCopy(supabasePublic(), locale);
+  const updated = dateFormat(locale).format(new Date('2026-08-31'));
 
   return (
     <main id="main" className="shell max-w-prose2 py-16 sm:py-24">
@@ -103,7 +110,7 @@ export default function Page() {
         <p className="mt-4">
           {c.privacyLink}{' '}
           <Link href="/privacy" className="text-accent underline underline-offset-4">
-            {privacyCopy.title}
+            {privacyFor(locale).title}
           </Link>
         </p>
       </Section>

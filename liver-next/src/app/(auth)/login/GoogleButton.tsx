@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { supabaseBrowser } from '@/lib/supabase/client';
-import { auth as copy } from '@/content/site';
+import type { AuthCopy } from '@/content/ui';
 
 /** Google's own mark. Drawn rather than fetched: Google's brand guidelines
  *  require the four colours unaltered, and an <img> from their CDN is a
@@ -40,7 +40,7 @@ function GoogleMark() {
  * nothing. The screen they land on says so by name rather than showing them an
  * empty page.
  */
-export function GoogleButton({ next = '/app' }: { next?: string }) {
+export function GoogleButton({ next = '/app', copy }: { next?: string; copy: AuthCopy }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
 

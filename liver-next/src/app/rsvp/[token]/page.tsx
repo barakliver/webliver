@@ -1,18 +1,26 @@
 import type { Metadata } from 'next';
 import { formatDate } from '@/lib/dates';
 import { supabaseServer } from '@/lib/supabase/server';
-import { site, rsvpCopy } from '@/content/site';
+import { getSiteCopy } from '@/lib/siteCopy';
+import { supabasePublic } from '@/lib/supabase/public';
+import { rsvpFor } from '@/content/ui';
+import { currentLocale } from '@/lib/serverLocale';
 import { RsvpForm } from './RsvpForm';
 
 export const dynamic = 'force-dynamic';
 /* A guest list is nobody's business but the couple's, and an invitation link
    is a credential, so this page must never be indexed or cached anywhere. */
-export const metadata: Metadata = {
-  title: rsvpCopy.eyebrow,
-  robots: { index: false, follow: false, nocache: true },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: rsvpFor(await currentLocale()).eyebrow,
+    robots: { index: false, follow: false, nocache: true },
+  };
+}
 
-const dateFmt = new Intl.DateTimeFormat('he-IL', {
+/* The long, written out date, in the language the guest is reading. Never
+   wrapped in an ltr isolate: `15 באוקטובר 2025` comes out as
+   `באוקטובר 2025 15` the moment it is. */
+const dateFmtFor = (locale: string) => new Intl.DateTimeFormat(locale === 'en' ? 'en-GB' : 'he-IL', {
   weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
 });
 
@@ -23,6 +31,11 @@ type Lookup = {
 
 export default async function RsvpPage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
+
+  const locale = await currentLocale();
+  const rsvpCopy = rsvpFor(locale);
+  const site = await getSiteCopy(supabasePublic(), locale);
+  const dateFmt = dateFmtFor(locale);
 
   const sb = await supabaseServer();
   const { data } = await sb.rpc('rsvp_lookup', { p_token: token });
@@ -60,6 +73,7 @@ export default async function RsvpPage({ params }: { params: Promise<{ token: st
 
             <RsvpForm
               token={token}
+              copy={rsvpCopy}
               initial={{
                 status: guest.status,
                 partySize: guest.party_size,

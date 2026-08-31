@@ -1,8 +1,16 @@
 import Link from 'next/link';
-import { privacyCopy as c, site } from '@/content/site';
+import { getSiteCopy } from '@/lib/siteCopy';
+import { supabasePublic } from '@/lib/supabase/public';
+import { privacyFor } from '@/content/ui';
 import { publicEnv } from '@/lib/env';
+import { currentLocale, dateFormat } from '@/lib/serverLocale';
 
-export const metadata = { title: c.title, description: c.sub, alternates: { canonical: '/privacy' } };
+/* Generated rather than exported flat, because the title of this page is one
+   of the strings that changes with the language. */
+export async function generateMetadata() {
+  const c = privacyFor(await currentLocale());
+  return { title: c.title, description: c.sub, alternates: { canonical: '/privacy' } };
+}
 
 /**
  * What is held, and about whom.
@@ -16,10 +24,11 @@ export const metadata = { title: c.title, description: c.sub, alternates: { cano
  * it — the footer, the sign-in screen, and Google's consent screen, which
  * refuses to publish an application without one.
  */
-export default function Page() {
-  const updated = new Intl.DateTimeFormat('he-IL', {
-    day: '2-digit', month: '2-digit', year: 'numeric',
-  }).format(new Date('2026-08-27'));
+export default async function Page() {
+  const locale = await currentLocale();
+  const c = privacyFor(locale);
+  const site = await getSiteCopy(supabasePublic(), locale);
+  const updated = dateFormat(locale).format(new Date('2026-08-27'));
 
   return (
     <main id="main" className="shell max-w-prose2 py-16 sm:py-24">

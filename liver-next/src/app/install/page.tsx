@@ -1,9 +1,15 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { Smartphone, Monitor, CircleHelp } from 'lucide-react';
-import { installCopy as c, site } from '@/content/site';
+import { getSiteCopy } from '@/lib/siteCopy';
+import { supabasePublic } from '@/lib/supabase/public';
+import { installFor } from '@/content/ui';
+import { currentLocale } from '@/lib/serverLocale';
 
-export const metadata: Metadata = { title: c.title, alternates: { canonical: '/install' } };
+export async function generateMetadata(): Promise<Metadata> {
+  const c = installFor(await currentLocale());
+  return { title: c.title, alternates: { canonical: '/install' } };
+}
 
 /**
  * How to put this on a phone.
@@ -42,7 +48,11 @@ function Steps({ icon: Icon, title, steps }: {
   );
 }
 
-export default function InstallPage() {
+export default async function InstallPage() {
+  const locale = await currentLocale();
+  const c = installFor(locale);
+  const site = await getSiteCopy(supabasePublic(), locale);
+
   return (
     <main id="main" className="shell py-10 sm:py-16">
       <div className="mx-auto max-w-prose2">

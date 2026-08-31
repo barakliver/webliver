@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Accessibility, Minus, Plus, RotateCcw, X } from 'lucide-react';
-import { a11yCopy as c } from '@/content/site';
+import type { A11yCopy } from '@/content/ui';
 import {
   CLASSES, DEFAULTS, MAX_FONT_STEP, STORAGE_KEY,
   clampStep, read, scaleOf, type A11ySettings,
@@ -21,7 +21,11 @@ import {
  * reload undid them. And the text size uses `zoom`, because the old
  * root-font-size approach moves nothing on a type scale made of pixels.
  */
-export function A11yPanel() {
+/* The wording is a prop. This is a client component and the language lives in
+   a cookie the layout has already read, so importing the copy here would ship
+   both languages to every visitor and still render whichever one was compiled
+   in. */
+export function A11yPanel({ copy: c }: { copy: A11yCopy }) {
   const [open, setOpen] = useState(false);
   const [s, setS] = useState<A11ySettings>(DEFAULTS);
   /* Nothing is applied until the stored value has been read, so the first
@@ -127,11 +131,11 @@ export function A11yPanel() {
               </div>
             </div>
 
-            <Switch label={c.contrast} on={s.contrast} onChange={(v) => set('contrast', v)} />
-            <Switch label={c.links} on={s.links} onChange={(v) => set('links', v)} />
-            <Switch label={c.readable} on={s.readable} onChange={(v) => set('readable', v)} />
-            <Switch label={c.motion} on={s.motion} onChange={(v) => set('motion', v)} />
-            <Switch label={c.cursor} on={s.cursor} onChange={(v) => set('cursor', v)} />
+            <Switch label={c.contrast} on={s.contrast} onChange={(v) => set('contrast', v)} onWord={c.on} offWord={c.off} />
+            <Switch label={c.links} on={s.links} onChange={(v) => set('links', v)} onWord={c.on} offWord={c.off} />
+            <Switch label={c.readable} on={s.readable} onChange={(v) => set('readable', v)} onWord={c.on} offWord={c.off} />
+            <Switch label={c.motion} on={s.motion} onChange={(v) => set('motion', v)} onWord={c.on} offWord={c.off} />
+            <Switch label={c.cursor} on={s.cursor} onChange={(v) => set('cursor', v)} onWord={c.on} offWord={c.off} />
 
             <button
               type="button"
@@ -177,8 +181,9 @@ function Step({ label, icon, onClick, disabled }: {
 
 /** A real switch, so a screen reader announces it as one and says which way
  *  it is set. The word is in the label rather than only in the colour. */
-function Switch({ label, on, onChange }: {
+function Switch({ label, on, onChange, onWord, offWord }: {
   label: string; on: boolean; onChange: (v: boolean) => void;
+  onWord: string; offWord: string;
 }) {
   return (
     <div className="flex items-center justify-between gap-4 border-b border-line py-3">
@@ -202,7 +207,7 @@ function Switch({ label, on, onChange }: {
           aria-hidden
           className={`h-5 w-5 transition-colors ${on ? 'bg-surface' : 'bg-ink-mute'}`}
         />
-        <span className="sr-only">{on ? c.on : c.off}</span>
+        <span className="sr-only">{on ? onWord : offWord}</span>
       </button>
     </div>
   );

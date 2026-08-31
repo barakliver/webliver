@@ -18,6 +18,11 @@ export type SiteCopy = {
   hero: { eyebrow: string; headline: string; name: string; body: string[]; cta: string };
   philosophy: { title: string; body: string[] };
   value: { title: string; body: string[] };
+  /* The mock screen standing beside that argument. The words on a phone that
+     is standing in for the product belong with the rest of the public copy:
+     they were literals inside the component, which meant the English site put
+     an English argument next to a Hebrew screenshot. */
+  stage: { couple: string; days: string; rows: [string, string, string, string] };
   journey: { title: string; steps: string[]; link: string };
   about: { title: string; body: string[] };
   dayOf: { title: string; body: string[] };
@@ -88,6 +93,15 @@ export const site: SiteCopy = {
       'והדברים הקטנים לא הופכים לבעיה גדולה שבוע לפני החתונה.',
       'יש לכם כתובת אחת לאורך כל הדרך.',
     ],
+  },
+
+  /* The screen on the phone standing beside that argument. A worked example,
+     not a real couple: the numbers are what an event of this size looks like
+     halfway through. */
+  stage: {
+    couple: 'נועה ואיתי',
+    days: 'ימים לאירוע',
+    rows: ['תקציב', 'אישורי הגעה', 'כספת השראה', 'חמ״ל ספקים'],
   },
 
   journey: {
@@ -222,10 +236,14 @@ export const auth = {
   codeChecking: 'בודק',
   codeBackEmail: 'לשנות כתובת',
   codeBackPhone: 'לשנות מספר',
-  validFor: (mmss: string) => `הקוד בתוקף עוד ${mmss}`,
+  /* A sentence with a hole in it rather than a function. The whole block is
+     handed to a client component, and a function cannot cross that boundary:
+     React refuses to serialise it and the sign-in screen returns a 500. The
+     wording is unchanged; only the substitution moved. */
+  validFor: 'הקוד בתוקף עוד {t}',
   expired: 'הקוד כנראה כבר לא בתוקף. אפשר לבקש חדש.',
   resend: 'שליחת קוד חדש',
-  resendIn: (s: number) => `אפשר לבקש קוד חדש בעוד ${s} שניות`,
+  resendIn: 'אפשר לבקש קוד חדש בעוד {s} שניות',
   resendSending: 'שולח קוד חדש',
   resentEmail: 'שלחנו קוד חדש לאימייל.',
   /* The two that stay. Phone sign-in is closed, and the code step still
@@ -237,9 +255,66 @@ export const auth = {
   googleFailed: 'לא הצלחנו לפתוח את החלון של גוגל. אפשר להיכנס עם קוד למטה.',
   or: 'או',
   privacyNote: 'בכניסה אתם מסכימים ל',
+  /* The word between the two documents. It was a literal in the component,
+     which is how an English sign-in screen ended up reading
+     "Terms of use ול Privacy policy". */
+  legalJoin: ' ול',
   signingIn: 'מכניסים אתכם',
   linkExpired: 'הקישור כבר שימש או שפג תוקפו. נשלח לכם קוד חדש לאותה כתובת.',
   linkMissing: 'הקישור לא היה שלם. אפשר להיכנס מכאן.',
+} as const;
+
+/* ── מחשבון התקציב ────────────────────────────────────────────────────────
+   Every word the simulator renders, in one place.
+
+   It was the last thing on the public site still holding its own strings,
+   including the eight budget line names, which sat inside the arithmetic in
+   `lib/budget`. That is why an English visitor got English chips above Hebrew
+   line items: the maths was carrying the wording.
+
+   The keys on `tier`, `day`, `season`, `style`, `bar` and `line` are the
+   values the calculation actually branches on, so a language cannot rename an
+   option out from under the maths. */
+export const budgetSimCopy = {
+  note:
+    'כל המספרים כאן הם אומדן בלבד ואינם מדויקים. הם נועדו לתת סדר גודל להתחלה, ומשתנים לפי '
+    + 'הספקים, המקום והעונה. המחיר האמיתי נקבע רק מול הצעות מחיר.',
+  invited: 'כמה הזמנות אתם שולחים',
+  attending: 'כמה מהם באמת מגיעים',
+  attendingHint: 'הקייטרינג נספר על מי שמגיע בפועל, לא על מי שהוזמן.',
+  tierLabel: 'סוג המקום',
+  plate: 'מחיר למנה',
+  plateHint: 'יש לכם הצעת מחיר? הקלידו את המספר שקיבלתם והתחשיב יתעדכן לפיו.',
+  dayLabel: 'יום בשבוע',
+  seasonLabel: 'עונה',
+  styleLabel: 'סגנון',
+  barLabel: 'אלכוהול',
+  rangeLabel: 'טווח תקציב משוער',
+  /* "עד" rather than a dash. A range written with a dash reads ambiguously in
+     a right to left line, where the eye cannot tell which end it started
+     from; the word cannot be read backwards. */
+  to: 'עד',
+  attendingCount: 'מגיעים בפועל',
+  tables: 'שולחנות',
+  perGuest: 'לאורח',
+  breakdown: 'חלוקה לפי סעיפים',
+  marginal: 'כל עשרה אורחים נוספים',
+  tier: { garden: 'גן אירועים', hall: 'אולם', boutique: 'מקום בוטיק', field: 'שטח פתוח' },
+  day: { weekday: 'אמצע שבוע', friday: 'שישי', saturday: 'שבת' },
+  season: { spring: 'אביב או סתיו', summer: 'קיץ', winter: 'חורף' },
+  style: { classic: 'קלאסי', modern: 'מודרני', rustic: 'כפרי', lux: 'יוקרתי' },
+  bar: { venue: 'כלול במקום', external: 'בר חיצוני', none: 'בלי בר' },
+  scale: { guest: 'לפי אורח', table: 'לפי שולחן', fixed: 'קבוע' },
+  line: {
+    catering: 'מקום וקייטרינג',
+    bar: 'בר ואלכוהול',
+    center: 'עיצוב שולחנות',
+    photo: 'צילום ווידאו',
+    music: 'מוזיקה והגברה',
+    design: 'חופה ועיצוב',
+    prod: 'תכנון והפקה',
+    extra: 'הזמנות, איפור ונלוות',
+  },
 } as const;
 
 /* ── פרטיות ───────────────────────────────────────────────────────────────
@@ -543,6 +618,7 @@ export const a11yCopy = {
     contact:
       'נתקלתם במשהו שלא עובד, או שיש לכם הצעה? נשמח לשמוע ונתקן.',
     updated: 'עודכן לאחרונה',
+    back: 'חזרה לעמוד הבית',
   },
 } as const;
 

@@ -33,7 +33,11 @@ export type BudgetInput = {
   bar: Bar;
 };
 
-export type BudgetLine = { key: string; label: string; scale: Scale; amount: number };
+/* No label. The words belong to the copy, in whichever language the page is
+   being read in, and a Hebrew string in the arithmetic is what made the
+   English simulator show English chips over Hebrew line items. The key is what
+   the component looks the wording up by. */
+export type BudgetLine = { key: string; scale: Scale; amount: number };
 
 export type BudgetResult = {
   invited: number;
@@ -62,14 +66,14 @@ export function computeBudget(input: BudgetInput): BudgetResult {
   const photo = 12000 * styleK + (attending > 350 ? 2600 : 0);
 
   const lines: BudgetLine[] = ([
-    { key: 'catering', label: 'מקום וקייטרינג',    scale: 'guest', amount: attending * plate },
-    { key: 'bar',      label: 'בר ואלכוהול',        scale: 'guest', amount: attending * barPerGuest },
-    { key: 'center',   label: 'עיצוב שולחנות',      scale: 'table', amount: tables * 320 * styleK },
-    { key: 'photo',    label: 'צילום ווידאו',       scale: 'fixed', amount: photo },
-    { key: 'music',    label: 'מוזיקה והגברה',      scale: 'fixed', amount: 8200 * styleK },
-    { key: 'design',   label: 'חופה ועיצוב',        scale: 'fixed', amount: 4800 * styleK },
-    { key: 'prod',     label: 'תכנון והפקה',        scale: 'fixed', amount: 14000 },
-    { key: 'extra',    label: 'הזמנות, איפור ונלוות', scale: 'fixed', amount: 6500 },
+    { key: 'catering', scale: 'guest', amount: attending * plate },
+    { key: 'bar',      scale: 'guest', amount: attending * barPerGuest },
+    { key: 'center',   scale: 'table', amount: tables * 320 * styleK },
+    { key: 'photo',    scale: 'fixed', amount: photo },
+    { key: 'music',    scale: 'fixed', amount: 8200 * styleK },
+    { key: 'design',   scale: 'fixed', amount: 4800 * styleK },
+    { key: 'prod',     scale: 'fixed', amount: 14000 },
+    { key: 'extra',    scale: 'fixed', amount: 6500 },
   ] as BudgetLine[]).filter((l) => l.amount > 0);
 
   const total = lines.reduce((a, l) => a + l.amount, 0);

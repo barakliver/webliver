@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { MessagesSquare, Send, X } from 'lucide-react';
-import { conciergeCopy as c } from '@/content/site';
+import type { ConciergeCopy } from '@/content/ui';
 
 type Turn = { role: 'user' | 'assistant'; content: string };
 
@@ -23,7 +23,7 @@ const MAX_TURNS = 20;
  * the concierge rather than as an error state, so the widget is never a broken
  * thing on a page whose whole job is to look like somebody is in charge.
  */
-export function AiConcierge() {
+export function AiConcierge({ copy: c }: { copy: ConciergeCopy }) {
   const [open, setOpen] = useState(false);
   const [turns, setTurns] = useState<Turn[]>([]);
   const [draft, setDraft] = useState('');

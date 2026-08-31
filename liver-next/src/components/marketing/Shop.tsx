@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { Minus, Plus, ShoppingBag, X } from 'lucide-react';
 import { placeOrder } from '@/app/actions/shop';
-import { storeCopy as c } from '@/content/site';
+import type { ShopCopy } from '@/content/ui';
 import { Money, Ltr } from '@/components/Ltr';
 
 export type ShopItem = {
@@ -24,7 +24,13 @@ export type ShopItem = {
  * until somebody presses send, so closing the tab costs a visitor nothing and
  * leaves no half-order behind for anybody to chase.
  */
-export function Shop({ producerId, items }: { producerId: string; items: ShopItem[] }) {
+/* The wording arrives as a prop rather than being imported here. This is a
+   client component, so importing the copy would ship both languages to every
+   visitor and still render the wrong one: the language lives in a cookie the
+   server has already read. */
+export function Shop({ producerId, items, copy: c }: {
+  producerId: string; items: ShopItem[]; copy: ShopCopy;
+}) {
   const [cart, setCart] = useState<Record<string, number>>({});
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);

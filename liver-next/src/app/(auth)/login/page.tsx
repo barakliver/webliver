@@ -2,7 +2,10 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { currentAccount } from '@/lib/auth';
-import { site } from '@/content/site';
+import { getSiteCopy } from '@/lib/siteCopy';
+import { supabasePublic } from '@/lib/supabase/public';
+import { authFor, privacyFor, termsFor } from '@/content/ui';
+import { currentLocale } from '@/lib/serverLocale';
 import { PromiseLine } from '@/components/Promise';
 import { LoginForm } from './LoginForm';
 import { HashSession } from './HashSession';
@@ -10,7 +13,9 @@ import { HashSession } from './HashSession';
 /* A door, not a destination. Indexing it means somebody searching for a
    wedding producer can land on a sign-in form for an account they do not
    have, which answers no question they asked. */
-export const metadata: Metadata = { title: 'כניסה', robots: { index: false, follow: true } };
+export async function generateMetadata(): Promise<Metadata> {
+  return { title: authFor(await currentLocale()).title, robots: { index: false, follow: true } };
+}
 
 export default async function LoginPage({
   searchParams,
@@ -20,8 +25,17 @@ export default async function LoginPage({
   if (await currentAccount()) redirect('/app');
   const { next, email, reason, ref } = await searchParams;
 
+  const locale = await currentLocale();
+  const site = await getSiteCopy(supabasePublic(), locale);
+
+  /* Extra room at the foot rather than symmetric padding. The accessibility
+     button is fixed about 5.5rem up from the bottom on the start edge, and on a
+     short viewport the card's last line, which is the sentence linking the
+     terms and the privacy policy, lands underneath it. Visible in both
+     languages once you look; it simply moves from one corner to the other with
+     the direction. */
   return (
-    <main id="main" className="flex min-h-dvh items-center justify-center px-5 py-16">
+    <main id="main" className="flex min-h-dvh items-center justify-center px-5 pb-36 pt-16">
       <div className="w-full max-w-md">
         {/* The name, and nothing else. A portrait sat here on the argument that
             signing in is the moment somebody hands something over and should
@@ -36,12 +50,16 @@ export default async function LoginPage({
         {/* Signing in is the first screen a couple sees that is not the
             marketing site. The line is what tells them they are still in the
             same place. */}
-        <PromiseLine className="mb-7" />
+        <PromiseLine className="mb-7" text={site.hero.headline} />
         {/* A link that handed the session back in the fragment lands here
             with the credential still in the address bar. This picks it up
             rather than letting it go to waste. */}
         <HashSession next={next ?? '/app'} />
-        <LoginForm next={next} prefill={email} reason={reason} referral={ref} />
+        <LoginForm
+          next={next} prefill={email} reason={reason} referral={ref}
+          copy={authFor(locale)}
+          legal={{ privacy: privacyFor(locale), terms: termsFor(locale) }}
+        />
       </div>
     </main>
   );

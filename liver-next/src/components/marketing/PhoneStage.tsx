@@ -22,7 +22,7 @@ import { Ltr, Money } from '@/components/Ltr';
  * the product actually looks like the way a mockup screenshot does.
  */
 export function PhoneStage({
-  kicker, title, body,
+  kicker, title, body, screen,
 }: {
   /* The whole passage, not its opening line. It used to take one line and a
      second section underneath repeated the heading and that same line, so the
@@ -30,6 +30,10 @@ export function PhoneStage({
      the stage all of it also balances the column against the phone, which is
      what left a screen of empty space beside it before. */
   kicker: string; title: string; body: readonly string[];
+  /* The words on the mock screen, in the language the page is in. They were
+     literals in here, which put a Hebrew screenshot next to an English
+     argument. */
+  screen: { couple: string; days: string; rows: readonly [string, string, string, string] };
 }) {
   const stage = useRef<HTMLDivElement>(null);
   const phone = useRef<HTMLDivElement>(null);
@@ -117,7 +121,7 @@ export function PhoneStage({
             className="animate-floatSlow transition-transform duration-stage ease-out"
             style={{ transformStyle: 'preserve-3d' }}
           >
-            <PortalScreen />
+            <PortalScreen screen={screen} />
           </div>
         </div>
       </div>
@@ -127,12 +131,14 @@ export function PhoneStage({
 
 /** The couple's own screen, built from the same tokens as the real one so it
  *  cannot drift away from the product. */
-function PortalScreen() {
+function PortalScreen({ screen }: {
+  screen: { couple: string; days: string; rows: readonly [string, string, string, string] };
+}) {
   const rows: [string, React.ReactNode][] = [
-    ['תקציב', <Money key="b" value={228000} />],
-    ['אישורי הגעה', <Ltr key="r">218 / 340</Ltr>],
-    ['כספת השראה', <Ltr key="m">24</Ltr>],
-    ['חמ״ל ספקים', <Ltr key="v">7</Ltr>],
+    [screen.rows[0], <Money key="b" value={228000} />],
+    [screen.rows[1], <Ltr key="r">218 / 340</Ltr>],
+    [screen.rows[2], <Ltr key="m">24</Ltr>],
+    [screen.rows[3], <Ltr key="v">7</Ltr>],
   ];
 
   return (
@@ -140,11 +146,11 @@ function PortalScreen() {
       className="w-[268px] border border-line-strong bg-surface-100 p-6 shadow-fab sm:w-[300px]"
       style={{ borderRadius: '44px' }}
     >
-      <p className="text-[11.5px] tracking-[.14em] text-ink-mute">נועה ואיתי</p>
+      <p className="text-[11.5px] tracking-[.14em] text-ink-mute">{screen.couple}</p>
       <p className="mt-6 font-display text-[86px] font-light leading-none text-ink">
         <Ltr>200</Ltr>
       </p>
-      <p className="mt-1 text-[13.5px] text-ink-soft">ימים לאירוע</p>
+      <p className="mt-1 text-[13.5px] text-ink-soft">{screen.days}</p>
       <hr className="rule-gold my-6" />
       <ul className="list-none space-y-0 p-0">
         {rows.map(([label, value]) => (

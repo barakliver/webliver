@@ -4,26 +4,31 @@ import { useActionState, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { submitRsvp, type RsvpResult } from '@/app/actions/rsvp';
 import { DIETS } from '@/content/lists';
-import { rsvpCopy } from '@/content/site';
+import type { RsvpCopy } from '@/content/ui';
 
-function Submit({ label }: { label: string }) {
+function Submit({ label, busy }: { label: string; busy: string }) {
   const { pending } = useFormStatus();
   return (
     <button type="submit" className="btn-primary w-full" disabled={pending}>
-      {pending ? rsvpCopy.sending : label}
+      {pending ? busy : label}
     </button>
   );
 }
 
-export function RsvpForm({ token, initial }: {
+export function RsvpForm({ token, initial, copy }: {
   token: string;
   initial: { status: string; partySize: number; diet: string; note: string; responded: boolean };
+  /* A guest at an Israeli wedding may not read Hebrew, and this screen is the
+     one thing they are asked to fill in. The wording arrives resolved rather
+     than imported, for the same reason as everywhere else: this runs on the
+     client and the language is a cookie the server already read. */
+  copy: RsvpCopy;
 }) {
   const [state, action] = useActionState<RsvpResult | null, FormData>(submitRsvp, null);
   const [coming, setComing] = useState<'attending' | 'declined' | null>(
     initial.status === 'attending' ? 'attending' : initial.status === 'declined' ? 'declined' : null
   );
-  const c = rsvpCopy;
+  const c = copy;
 
   if (state?.ok) {
     return (
@@ -99,7 +104,7 @@ export function RsvpForm({ token, initial }: {
         <textarea id="rsvp-note" name="note" rows={2} maxLength={500} defaultValue={initial.note} className="field" placeholder={c.notePh} />
       </div>
 
-      <Submit label={c.submit} />
+      <Submit label={c.submit} busy={c.sending} />
     </form>
   );
 }

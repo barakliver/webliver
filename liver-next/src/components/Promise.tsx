@@ -17,10 +17,17 @@ import { cn } from '@/lib/utils';
  * read, because it is the one thing on some of these screens that says what
  * this business is for.
  */
-export function PromiseLine({ className = '', tone = 'accent' }: {
+export function PromiseLine({ className = '', tone = 'accent', text = PROMISE }: {
   className?: string;
   /** `accent` on a light ground, `light` on the dark one. */
   tone?: 'accent' | 'light';
+  /** What the line says. The default is his Hebrew, unchanged and not ours to
+   *  edit. English screens pass the English site's own version of it, because
+   *  a line whose whole job is to be understood at a glance does not do that
+   *  job in a script the reader cannot read. Nothing here rewrites the Hebrew:
+   *  it chooses which of the two already written lines an English reader is
+   *  shown. */
+  text?: string;
 }) {
   const ink = tone === 'light' ? 'text-accent-light' : 'text-accent';
   const rule = tone === 'light'
@@ -31,7 +38,7 @@ export function PromiseLine({ className = '', tone = 'accent' }: {
     <p className={cn('flex items-center justify-center gap-3', className)}>
       <span aria-hidden className={cn('h-px w-8 bg-gradient-to-l sm:w-12', rule)} />
       <span className={cn('text-[12.5px] font-medium tracking-[.16em] whitespace-nowrap', ink)}>
-        {PROMISE}
+        {text}
       </span>
       <span aria-hidden className={cn('h-px w-8 bg-gradient-to-r sm:w-12', rule)} />
     </p>

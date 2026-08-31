@@ -1,11 +1,13 @@
 import type { Metadata, Viewport } from 'next';
 import { Heebo } from 'next/font/google';
 import { site } from '@/content/site';
+import { siteEn } from '@/content/site.en';
 import { publicEnv } from '@/lib/env';
 import { ServiceWorker } from '@/components/app/ServiceWorker';
 import { VersionWatch } from '@/components/app/VersionWatch';
 import './globals.css';
 import { A11yPanel } from '@/components/a11y/A11yPanel';
+import { a11yFor } from '@/content/ui';
 import { cookies } from 'next/headers';
 import { LOCALE_COOKIE, dirOf, readLocale } from '@/lib/locale';
 
@@ -35,52 +37,69 @@ const heebo = Heebo({
   display: 'swap', weight: ['300', '400', '500', '600', '700', '800'],
 });
 
-export const metadata: Metadata = {
-  /* `publicEnv.siteUrl` rather than the raw variable, which is the same
-     guard the mailed links already got: a production build carrying a
-     laptop's value would otherwise stamp localhost into every canonical and
-     every share card. */
-  metadataBase: new URL(publicEnv.siteUrl),
-  title: { default: `${site.brand} | ${site.tagline}`, template: `%s | ${site.brand}` },
-  description: 'הפקת חתונות ואירועים מקצה לקצה. תכנון, תקציב, ספקים וניהול יום האירוע.',
-  manifest: '/manifest.webmanifest',
-  appleWebApp: { capable: true, title: 'Liver', statusBarStyle: 'black-translucent' },
-  /* `appleWebApp.capable` emits the standard `mobile-web-app-capable` and, in
-     this version, not the legacy Apple one. Older iOS reads only the legacy
-     tag, and without it an installed app opens inside Safari's chrome rather
-     than standalone. Found by reading the rendered head on a phone viewport
-     rather than by trusting the config, which said capable: true the whole
-     time. */
-  other: { 'apple-mobile-web-app-capable': 'yes' },
-  icons: { icon: '/icon-192.png', apple: '/icon-192.png' },
-  /* The card a link carries when somebody sends it on.
-   *
-   *  The audit measured zero Open Graph tags and called it the most expensive
-   *  finding in its list, for a reason that has nothing to do with search:
-   *  couples pass this link to each other in WhatsApp, and a link with no
-   *  image and no title arrives looking like spam. That is the strongest
-   *  recommendation this business gets, a recommendation from a friend,
-   *  rendered as a bare URL.
-   *
-   *  The tags existed by the time I checked. The image did not, which is the
-   *  half WhatsApp actually shows. `/og.jpg` is one of his own photographs
-   *  with his name set into the foot of it; `tools/og-card.py` at the repo
-   *  root rebuilds it from `og-image.jpg` if the photograph or the wording
-   *  ever changes. Absolute rather than relative, because several scrapers
-   *  still do not resolve a relative og:image against the page. */
-  openGraph: {
-    type: 'website', locale: 'he_IL', siteName: site.brand,
-    title: `${site.brand} | ${site.tagline}`,
-    description: 'הפקת חתונות ואירועים מקצה לקצה.',
-    images: [{ url: `${publicEnv.siteUrl}/og.jpg`, width: 1200, height: 630, alt: `${site.brand} | ${site.tagline}` }],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: `${site.brand} | ${site.tagline}`,
-    description: 'הפקת חתונות ואירועים מקצה לקצה.',
-    images: [`${publicEnv.siteUrl}/og.jpg`],
-  },
-};
+/* Generated per request rather than exported flat, because the name and the
+   description are two of the strings that change with the language. An English
+   visitor was getting `Privacy policy | ברק ליור` in the tab and a Hebrew
+   description in the search result, on a page whose body was entirely English.
+
+   `siteEn` and `site` directly rather than through `getSiteCopy`: metadata is
+   built for every route in the app, including screens behind sign in, and none
+   of them is worth a database read. The producer's own overrides move the copy
+   on the page; the tab keeps the shipped wording. */
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = readLocale((await cookies()).get(LOCALE_COOKIE)?.value);
+  const c = locale === 'en' ? siteEn : site;
+  const description = locale === 'en'
+    ? 'Wedding and event production, end to end. Planning, budget, suppliers and running the day itself.'
+    : 'הפקת חתונות ואירועים מקצה לקצה. תכנון, תקציב, ספקים וניהול יום האירוע.';
+
+  return {
+    /* `publicEnv.siteUrl` rather than the raw variable, which is the same
+       guard the mailed links already got: a production build carrying a
+       laptop's value would otherwise stamp localhost into every canonical and
+       every share card. */
+    metadataBase: new URL(publicEnv.siteUrl),
+    title: { default: `${c.brand} | ${c.tagline}`, template: `%s | ${c.brand}` },
+    description,
+    manifest: '/manifest.webmanifest',
+    appleWebApp: { capable: true, title: 'Liver', statusBarStyle: 'black-translucent' },
+    /* `appleWebApp.capable` emits the standard `mobile-web-app-capable` and, in
+       this version, not the legacy Apple one. Older iOS reads only the legacy
+       tag, and without it an installed app opens inside Safari's chrome rather
+       than standalone. Found by reading the rendered head on a phone viewport
+       rather than by trusting the config, which said capable: true the whole
+       time. */
+    other: { 'apple-mobile-web-app-capable': 'yes' },
+    icons: { icon: '/icon-192.png', apple: '/icon-192.png' },
+    /* The card a link carries when somebody sends it on.
+     *
+     *  The audit measured zero Open Graph tags and called it the most expensive
+     *  finding in its list, for a reason that has nothing to do with search:
+     *  couples pass this link to each other in WhatsApp, and a link with no
+     *  image and no title arrives looking like spam. That is the strongest
+     *  recommendation this business gets, a recommendation from a friend,
+     *  rendered as a bare URL.
+     *
+     *  The tags existed by the time I checked. The image did not, which is the
+     *  half WhatsApp actually shows. `/og.jpg` is one of his own photographs
+     *  with his name set into the foot of it; `tools/og-card.py` at the repo
+     *  root rebuilds it from `og-image.jpg` if the photograph or the wording
+     *  ever changes. Absolute rather than relative, because several scrapers
+     *  still do not resolve a relative og:image against the page. */
+    openGraph: {
+      type: 'website', locale: locale === 'en' ? 'en_US' : 'he_IL', siteName: c.brand,
+      title: `${c.brand} | ${c.tagline}`,
+      description,
+      images: [{ url: `${publicEnv.siteUrl}/og.jpg`, width: 1200, height: 630, alt: `${c.brand} | ${c.tagline}` }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${c.brand} | ${c.tagline}`,
+      description,
+      images: [`${publicEnv.siteUrl}/og.jpg`],
+    },
+  };
+}
 
 export const viewport: Viewport = {
   /* The app's own ground, so the browser chrome and the status bar continue
@@ -114,7 +133,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         {children}
         {/* Required on every screen, not only the marketing pages: the menu
             has to reach the app and the couple's portal too. */}
-        <A11yPanel />
+        <A11yPanel copy={a11yFor(locale)} />
         <ServiceWorker />
         <VersionWatch />
       </body>

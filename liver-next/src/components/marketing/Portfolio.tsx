@@ -1,15 +1,18 @@
 import Image from 'next/image';
-import { portfolio, SHOT_RATIO } from '@/content/portfolio';
+import { portfolio, portfolioEn, SHOT_RATIO } from '@/content/portfolio';
+import type { Locale } from '@/lib/locale';
 
 /** Sits below the story rather than above it. On the live site the gallery
  *  was the second thing on the page and ran to 4,624px on a phone, 37% of the
  *  whole document, so a visitor met a wall of photographs before learning who
  *  Barak is or how he works. Photographs prove taste; they cannot prove
  *  method, so they come after the part that does. */
-export function Portfolio() {
+export function Portfolio({ locale }: { locale: Locale }) {
+  const shots = locale === 'en' ? portfolioEn : portfolio;
+
   return (
     <ul className="grid list-none grid-cols-1 gap-5 p-0 sm:grid-cols-2 lg:grid-cols-3">
-      {portfolio.map((shot, i) => (
+      {shots.map((shot, i) => (
         <li key={shot.slug}>
           <figure className="group m-0 overflow-hidden rounded-xl2 bg-surface-200">
             <div className="relative overflow-hidden" style={{ aspectRatio: SHOT_RATIO }}>

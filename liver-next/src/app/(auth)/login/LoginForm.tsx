@@ -6,7 +6,7 @@ import { Mail, MessageSquare, RotateCw } from 'lucide-react';
 import { CodeInput } from '@/components/app/CodeInput';
 import { publicEnv } from '@/lib/env';
 import { requestCode, verifyCode, type AuthResult, type Channel } from '@/app/actions/auth';
-import { auth as copy, privacyCopy, termsCopy } from '@/content/site';
+import type { AuthCopy, PrivacyCopy, TermsCopy } from '@/content/ui';
 import { GoogleButton } from './GoogleButton';
 
 function Submit({ label, busy }: { label: string; busy: string }) {
@@ -53,8 +53,14 @@ function useCountdown(from: number, seconds: number): number {
 
 const mmss = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 
-export function LoginForm({ next, prefill, reason, referral }: {
+export function LoginForm({ next, prefill, reason, referral, copy, legal }: {
   next?: string;
+  /** The wording, in the language the layout already resolved. This is a
+   *  client component, so importing it here would ship both languages to
+   *  every visitor and still render whichever one was compiled in. */
+  copy: AuthCopy;
+  /** The two documents the sentence under the form links to. */
+  legal: { privacy: PrivacyCopy; terms: TermsCopy };
   /** An address the callback already knows, so somebody arriving from a spent
    *  invitation link does not have to remember which of their addresses was
    *  invited. */
@@ -96,6 +102,7 @@ export function LoginForm({ next, prefill, reason, referral }: {
         state={checkState}
         action={checkAction}
         referral={referral}
+        copy={copy}
         onRestart={() => setSent(null)}
         onResent={(r) => setSent(r)}
       />
@@ -114,7 +121,7 @@ export function LoginForm({ next, prefill, reason, referral }: {
           way in for somebody without a Google account on their phone — which
           is a real person, usually a parent, and usually the one who needs it
           to work. */}
-      <GoogleButton next={next ?? '/app'} />
+      <GoogleButton next={next ?? '/app'} copy={copy} />
 
       {askState && !askState.ok && askState.error && <Alert text={askState.error} />}
 
@@ -183,11 +190,11 @@ export function LoginForm({ next, prefill, reason, referral }: {
       <p className="text-[13px] text-ink-mute">
         {copy.privacyNote}
         <a href="/terms" className="underline underline-offset-4 transition-colors hover:text-accent">
-          {termsCopy.title}
+          {legal.terms.title}
         </a>
-        {' ול'}
+        {copy.legalJoin}
         <a href="/privacy" className="underline underline-offset-4 transition-colors hover:text-accent">
-          {privacyCopy.title}
+          {legal.privacy.title}
         </a>
       </p>
     </form>
@@ -203,10 +210,11 @@ export function LoginForm({ next, prefill, reason, referral }: {
  *  in this file is a guess at a project setting and the code may well still
  *  work. */
 function CodeStep({
-  sent, next, state, action, onRestart, onResent, referral,
+  sent, next, state, action, onRestart, onResent, referral, copy,
 }: {
   sent: AuthResult;
   next?: string;
+  copy: AuthCopy;
   state: AuthResult | null;
   action: (form: FormData) => void;
   onRestart: () => void;
@@ -272,7 +280,7 @@ function CodeStep({
       <CodeInput key={at} name="code" label={copy.codeLabel} length={publicEnv.otpLength} />
 
       <p className={`text-center text-[13px] ${validLeft === 0 ? 'text-bad' : 'text-ink-mute'}`}>
-        {validLeft > 0 ? copy.validFor(mmss(validLeft)) : copy.expired}
+        {validLeft > 0 ? copy.validFor.replace('{t}', mmss(validLeft)) : copy.expired}
       </p>
 
       <Submit label={copy.codeSubmit} busy={copy.codeChecking} />
@@ -284,7 +292,7 @@ function CodeStep({
         className="btn-quiet flex w-full items-center justify-center gap-2 disabled:opacity-55"
       >
         <RotateCw size={15} aria-hidden strokeWidth={1.5} className={resending ? 'animate-spin' : ''} />
-        {resending ? copy.resendSending : resendLeft > 0 ? copy.resendIn(resendLeft) : copy.resend}
+        {resending ? copy.resendSending : resendLeft > 0 ? copy.resendIn.replace('{s}', String(resendLeft)) : copy.resend}
       </button>
 
       <div className="flex flex-col items-center gap-1.5 text-[13px]">

@@ -1,15 +1,14 @@
 import Link from 'next/link';
-import { a11yCopy } from '@/content/site';
-import { site } from '@/content/site';
+import { getSiteCopy } from '@/lib/siteCopy';
+import { supabasePublic } from '@/lib/supabase/public';
+import { a11yFor } from '@/content/ui';
 import { publicEnv } from '@/lib/env';
+import { currentLocale, dateFormat } from '@/lib/serverLocale';
 
-const c = a11yCopy.page;
-
-export const metadata = {
-  title: c.title,
-  description: c.sub,
-  alternates: { canonical: '/accessibility' },
-};
+export async function generateMetadata() {
+  const c = a11yFor(await currentLocale()).page;
+  return { title: c.title, description: c.sub, alternates: { canonical: '/accessibility' } };
+}
 
 /**
  * The statement, on a page of its own.
@@ -20,10 +19,11 @@ export const metadata = {
  * standard, which is what ת"י 5568 actually asks for. The footer links here
  * on every screen.
  */
-export default function Page() {
-  const updated = new Intl.DateTimeFormat('he-IL', {
-    day: '2-digit', month: '2-digit', year: 'numeric',
-  }).format(new Date('2026-08-25'));
+export default async function Page() {
+  const locale = await currentLocale();
+  const c = a11yFor(locale).page;
+  const site = await getSiteCopy(supabasePublic(), locale);
+  const updated = dateFormat(locale).format(new Date('2026-08-25'));
 
   return (
     <main id="main" className="shell max-w-prose2 py-16 sm:py-24">
@@ -70,7 +70,7 @@ export default function Page() {
       </p>
 
       <p className="mt-8">
-        <Link href="/" className="btn-ghost">חזרה לעמוד הבית</Link>
+        <Link href="/" className="btn-ghost">{c.back}</Link>
       </p>
     </main>
   );

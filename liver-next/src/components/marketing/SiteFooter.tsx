@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { a11yCopy, privacyCopy, termsCopy } from '@/content/site';
+import { a11yFor, privacyFor, termsFor } from '@/content/ui';
+import type { Locale } from '@/lib/locale';
 
 /**
  * The three documents, on every public page.
@@ -13,22 +14,28 @@ import { a11yCopy, privacyCopy, termsCopy } from '@/content/site';
  * site can be overridden from the database and a footer that read the constant
  * would be the one line on the page still showing last month's wording.
  */
-export function SiteFooter({ brand, note }: { brand: string; note: string }) {
+export function SiteFooter({ brand, note, locale }: {
+  brand: string; note: string; locale: Locale;
+}) {
+  const a11y = a11yFor(locale);
+  const privacy = privacyFor(locale);
+  const terms = termsFor(locale);
+
   return (
     <footer className="border-t border-line py-10">
       <div className="shell flex flex-wrap items-center gap-x-3 gap-y-2 text-[13.5px] text-ink-mute">
         <span>{brand} · {note}</span>
         <span aria-hidden>·</span>
         <Link href="/accessibility" className="underline underline-offset-4 transition-colors hover:text-accent">
-          {a11yCopy.statement}
+          {a11y.statement}
         </Link>
         <span aria-hidden>·</span>
         <Link href="/privacy" className="underline underline-offset-4 transition-colors hover:text-accent">
-          {privacyCopy.title}
+          {privacy.title}
         </Link>
         <span aria-hidden>·</span>
         <Link href="/terms" className="underline underline-offset-4 transition-colors hover:text-accent">
-          {termsCopy.title}
+          {terms.title}
         </Link>
       </div>
     </footer>

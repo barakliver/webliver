@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { CalendarDays, MessageCircle, PenLine } from 'lucide-react';
-import { site } from '@/content/site';
+import type { SiteCopy } from '@/content/site';
+import type { EventKinds } from '@/content/ui';
 import { publicEnv } from '@/lib/env';
 import { LeadForm } from './LeadForm';
 
@@ -11,7 +12,9 @@ type Sheet = null | 'lead';
 /** A single fixed dock owns every floating action, so nothing can drift on top
  *  of anything else: the three actions are laid out by one flex container
  *  rather than each positioning itself independently. */
-export function FabDock() {
+/* Same reason as the form it opens: this is a client component and the words
+   have to arrive already in the right language. */
+export function FabDock({ site, kinds }: { site: SiteCopy; kinds: EventKinds }) {
   const [sheet, setSheet] = useState<Sheet>(null);
 
   useEffect(() => {
@@ -75,7 +78,7 @@ export function FabDock() {
               <button type="button" onClick={() => setSheet(null)} aria-label="סגירה"
                       className="rounded-xl2 p-2 text-ink-mute transition hover:bg-card hover:text-ink">✕</button>
             </div>
-            <LeadForm compact />
+            <LeadForm compact site={site} kinds={kinds} />
           </div>
         </div>
       )}

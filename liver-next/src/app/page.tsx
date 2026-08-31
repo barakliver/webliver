@@ -19,6 +19,7 @@ import { BookMeeting } from '@/components/marketing/BookMeeting';
 import { AiConcierge } from '@/components/marketing/AiConcierge';
 import { SiteFooter } from '@/components/marketing/SiteFooter';
 import { StructuredData } from '@/components/marketing/StructuredData';
+import { budgetSimFor, conciergeFor, eventKindsFor } from '@/content/ui';
 
 /* Rendered per request, because the language is read from a cookie and a page
    built once cannot be in two languages.
@@ -58,6 +59,7 @@ export default async function HomePage() {
           kicker={site.tagline}
           title={site.value.title}
           body={site.value.body}
+          screen={site.stage}
         />
 
         <Steps site={site} />
@@ -74,11 +76,11 @@ export default async function HomePage() {
         </Section>
 
         <Section id="work" title={site.work.title} sub={site.work.sub}>
-          <Portfolio />
+          <Portfolio locale={locale} />
         </Section>
 
         <Section id="budget" title={site.budget.title} sub={site.budget.sub}>
-          <BudgetSimulator />
+          <BudgetSimulator copy={budgetSimFor(locale)} closing={site.budget.closing} bookLabel={site.closing.cta} />
         </Section>
 
         <Section title={site.academy.title}>
@@ -104,19 +106,19 @@ export default async function HomePage() {
               {/* Two ways in, side by side and honestly labelled: pick a slot
                   now, or leave details and be called back. */}
               <div className="mt-7">
-                <BookMeeting className="btn-primary inline-flex items-center gap-2" />
+                <BookMeeting className="btn-primary inline-flex items-center gap-2" label={site.closing.cta} />
                 <p className="mt-2.5 text-[13.5px] text-ink-mute">{site.fab.bookingNote}</p>
               </div>
             </div>
-            <LeadForm />
+            <LeadForm site={site} kinds={eventKindsFor(locale)} />
           </div>
         </Section>
 
-        <SiteFooter brand={site.brand} note={site.footer} />
+        <SiteFooter brand={site.brand} note={site.footer} locale={locale} />
       </main>
       <div className="h-24 sm:h-0" aria-hidden />
-      <FabDock />
-      <AiConcierge />
+      <FabDock site={site} kinds={eventKindsFor(locale)} />
+      <AiConcierge copy={conciergeFor(locale)} />
     </>
   );
 }

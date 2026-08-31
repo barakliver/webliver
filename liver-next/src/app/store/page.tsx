@@ -6,12 +6,15 @@ import { Nav } from '@/components/marketing/Nav';
 import { Section } from '@/components/marketing/Section';
 import { PromiseLine } from '@/components/Promise';
 import { Shop, type ShopItem } from '@/components/marketing/Shop';
-import { storeCopy } from '@/content/site';
+import { storeFor } from '@/content/ui';
 import { storeImageUrl } from '@/lib/store';
 import { SiteFooter } from '@/components/marketing/SiteFooter';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: storeCopy.shopTitle, alternates: { canonical: '/store' } };
+export async function generateMetadata() {
+  const c = storeFor(readLocale((await cookies()).get(LOCALE_COOKIE)?.value));
+  return { title: c.shopTitle, alternates: { canonical: '/store' } };
+}
 
 type Row = {
   id: string; name: string; blurb: string; body: string;
@@ -30,6 +33,7 @@ export default async function StorePage() {
   const locale = readLocale((await cookies()).get(LOCALE_COOKIE)?.value);
   const sb = supabasePublic();
   const site = await getSiteCopy(sb, locale);
+  const c = storeFor(locale);
 
   const { data: producerId } = await sb.rpc('public_site_producer');
 
@@ -58,13 +62,13 @@ export default async function StorePage() {
     <>
       <Nav site={site} locale={locale} />
       <main id="main">
-        <Section id="shop" title={storeCopy.shopTitle} level={1}>
-          <p className="mb-8 text-[15.5px] text-ink-soft">{storeCopy.shopSub}</p>
-          <Shop producerId={String(producerId ?? '')} items={items} />
-          <PromiseLine className="mt-16" />
+        <Section id="shop" title={c.shopTitle} level={1}>
+          <p className="mb-8 text-[15.5px] text-ink-soft">{c.shopSub}</p>
+          <Shop producerId={String(producerId ?? '')} items={items} copy={c} />
+          <PromiseLine className="mt-16" text={site.hero.headline} />
         </Section>
 
-        <SiteFooter brand={site.brand} note={site.footer} />
+        <SiteFooter brand={site.brand} note={site.footer} locale={locale} />
       </main>
     </>
   );

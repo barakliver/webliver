@@ -1,7 +1,8 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { site, MAX_GUESTS } from '@/content/site';
+import { MAX_GUESTS } from '@/content/site';
+import type { BudgetSimCopy } from '@/content/ui';
 import { BookMeeting } from './BookMeeting';
 import {
   computeBudget, TIER_PLATE, ils, ilsRounded,
@@ -9,58 +10,46 @@ import {
 } from '@/lib/budget';
 import { Money } from '@/components/Ltr';
 
-const TIERS: { v: Tier; label: string }[] = [
-  { v: 'garden',   label: 'גן אירועים' },
-  { v: 'hall',     label: 'אולם' },
-  { v: 'boutique', label: 'מקום בוטיק' },
-  { v: 'field',    label: 'שטח פתוח' },
-];
-const DAYS: { v: Day; label: string }[] = [
-  { v: 'weekday',  label: 'אמצע שבוע' },
-  { v: 'friday',   label: 'שישי' },
-  { v: 'saturday', label: 'שבת' },
-];
-const SEASONS: { v: Season; label: string }[] = [
-  { v: 'spring', label: 'אביב או סתיו' },
-  { v: 'summer', label: 'קיץ' },
-  { v: 'winter', label: 'חורף' },
-];
-const STYLES: { v: Style; label: string }[] = [
-  { v: 'classic', label: 'קלאסי' },
-  { v: 'modern',  label: 'מודרני' },
-  { v: 'rustic',  label: 'כפרי' },
-  { v: 'lux',     label: 'יוקרתי' },
-];
-const BARS: { v: Bar; label: string }[] = [
-  { v: 'venue',    label: 'כלול במקום' },
-  { v: 'external', label: 'בר חיצוני' },
-  { v: 'none',     label: 'בלי בר' },
-];
+/* The values, without their words. The maths branches on these, so a
+   translation cannot rename an option out from under it; the label is looked
+   up from the copy by the same key. */
+const TIERS: Tier[] = ['garden', 'hall', 'boutique', 'field'];
+const DAYS: Day[] = ['weekday', 'friday', 'saturday'];
+const SEASONS: Season[] = ['spring', 'summer', 'winter'];
+const STYLES: Style[] = ['classic', 'modern', 'rustic', 'lux'];
+const BARS: Bar[] = ['venue', 'external', 'none'];
 const RATES = [0.75, 0.85, 0.95];
 
-const SCALE_LABEL: Record<Scale, string> = { guest: 'לפי אורח', table: 'לפי שולחן', fixed: 'קבוע' };
-
-function Chips<T extends string>({ items, value, onChange, label }: {
-  items: { v: T; label: string }[]; value: T; onChange: (v: T) => void; label: string;
+function Chips<T extends string>({ items, words, value, onChange, label }: {
+  items: readonly T[]; words: Record<T, string>;
+  value: T; onChange: (v: T) => void; label: string;
 }) {
   return (
     <fieldset>
       <legend className="label">{label}</legend>
       <div className="flex flex-wrap gap-2">
-        {items.map((i) => (
+        {items.map((v) => (
           <button
-            key={i.v} type="button" onClick={() => onChange(i.v)} aria-pressed={value === i.v}
+            key={v} type="button" onClick={() => onChange(v)} aria-pressed={value === v}
             className={`inline-flex min-h-[44px] items-center rounded-xl2 px-4 text-[14px] transition sm:min-h-0 sm:py-2 ${
-              value === i.v ? 'bg-ink text-surface' : 'border border-line bg-card/70 text-ink-soft hover:bg-card'
+              value === v ? 'bg-ink text-surface' : 'border border-line bg-card/70 text-ink-soft hover:bg-card'
             }`}
-          >{i.label}</button>
+          >{words[v]}</button>
         ))}
       </div>
     </fieldset>
   );
 }
 
-export function BudgetSimulator() {
+export function BudgetSimulator({ copy: c, closing, bookLabel }: {
+  copy: BudgetSimCopy;
+  /* The sentence under the result and the words on the button below it belong
+     to the editable site copy rather than to this block, so they arrive
+     already resolved: reading the Hebrew constant in here was the one line on
+     an English page still in Hebrew. */
+  closing: string;
+  bookLabel: string;
+}) {
   /* The two numbers are held as the text that was typed, not as a clamped
      number. Clamping on every keystroke makes the field impossible to clear
      and fights whoever is halfway through typing a figure. */
@@ -95,14 +84,13 @@ export function BudgetSimulator() {
   return (
     <div>
       <p className="mb-6 rounded-xl2 border border-warn/30 bg-warn-wash px-4 py-3 text-[14px] leading-relaxed text-warn">
-        כל המספרים כאן הם אומדן בלבד ואינם מדויקים. הם נועדו לתת סדר גודל להתחלה, ומשתנים לפי הספקים, המקום והעונה.
-        המחיר האמיתי נקבע רק מול הצעות מחיר.
+        {c.note}
       </p>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_1.05fr]">
         <div className="card space-y-6">
           <div>
-            <label className="label" htmlFor="bsim-invited">כמה הזמנות אתם שולחים</label>
+            <label className="label" htmlFor="bsim-invited">{c.invited}</label>
             <input
               id="bsim-invited" type="number" inputMode="numeric" min={0} max={MAX_GUESTS}
               value={invitedText} onChange={(e) => setInvitedText(e.target.value)}
@@ -111,7 +99,7 @@ export function BudgetSimulator() {
           </div>
 
           <fieldset>
-            <legend className="label">כמה מהם באמת מגיעים</legend>
+            <legend className="label">{c.attending}</legend>
             <div className="flex flex-wrap gap-2">
               {RATES.map((v) => (
                 <button
@@ -123,14 +111,14 @@ export function BudgetSimulator() {
               ))}
             </div>
             <p className="mt-1.5 text-[12.5px] text-ink-mute">
-              הקייטרינג נספר על מי שמגיע בפועל, לא על מי שהוזמן.
+              {c.attendingHint}
             </p>
           </fieldset>
 
-          <Chips items={TIERS} value={tier} onChange={setTier} label="סוג המקום" />
+          <Chips items={TIERS} words={c.tier} value={tier} onChange={setTier} label={c.tierLabel} />
 
           <div>
-            <label className="label" htmlFor="bsim-plate">מחיר למנה</label>
+            <label className="label" htmlFor="bsim-plate">{c.plate}</label>
             <input
               id="bsim-plate" type="number" inputMode="numeric" min={0} max={2000}
               value={plateText}
@@ -138,41 +126,41 @@ export function BudgetSimulator() {
               className="field"
             />
             <p className="mt-1.5 text-[12.5px] text-ink-mute">
-              יש לכם הצעת מחיר? הקלידו את המספר שקיבלתם והתחשיב יתעדכן לפיו.
+              {c.plateHint}
             </p>
           </div>
 
-          <Chips items={DAYS} value={day} onChange={setDay} label="יום בשבוע" />
-          <Chips items={SEASONS} value={season} onChange={setSeason} label="עונה" />
-          <Chips items={STYLES} value={style} onChange={setStyle} label="סגנון" />
-          <Chips items={BARS} value={bar} onChange={setBar} label="אלכוהול" />
+          <Chips items={DAYS} words={c.day} value={day} onChange={setDay} label={c.dayLabel} />
+          <Chips items={SEASONS} words={c.season} value={season} onChange={setSeason} label={c.seasonLabel} />
+          <Chips items={STYLES} words={c.style} value={style} onChange={setStyle} label={c.styleLabel} />
+          <Chips items={BARS} words={c.bar} value={bar} onChange={setBar} label={c.barLabel} />
         </div>
 
         <div className="card flex flex-col">
-          <p className="text-[13px] text-ink-mute">טווח תקציב משוער</p>
+          <p className="text-[13px] text-ink-mute">{c.rangeLabel}</p>
           {/* "עד" rather than a dash. A range written with a dash reads
               ambiguously in a right-to-left line, where the eye cannot tell
               which end it started from; the word cannot be read backwards. */}
           <p className="font-display text-display font-light text-ink">
             <span className="tabular-nums">{ilsRounded(r.low)}</span>
-            <span className="mx-2 text-[0.6em] font-normal text-ink-mute">עד</span>
+            <span className="mx-2 text-[0.6em] font-normal text-ink-mute">{c.to}</span>
             <span className="tabular-nums">{ilsRounded(r.high)}</span>
           </p>
 
           <div className="mt-4 flex flex-wrap gap-x-5 gap-y-1.5 text-[13.5px] text-ink-mute">
-            <span>מגיעים בפועל: <b className="text-ink">{r.attending}</b></span>
-            <span>שולחנות: <b className="text-ink">{r.tables}</b></span>
-            <span>לאורח: <b className="tabular-nums text-ink"><Money value={r.perGuest} /></b></span>
+            <span>{c.attendingCount}: <b className="text-ink">{r.attending}</b></span>
+            <span>{c.tables}: <b className="text-ink">{r.tables}</b></span>
+            <span>{c.perGuest}: <b className="tabular-nums text-ink"><Money value={r.perGuest} /></b></span>
           </div>
 
-          <ul className="mt-6 space-y-3" aria-label="חלוקה לפי סעיפים">
+          <ul className="mt-6 space-y-3" aria-label={c.breakdown}>
             {r.lines.map((l) => {
               const pct = r.total ? (l.amount / r.total) * 100 : 0;
               return (
                 <li key={l.key}>
                   <div className="flex items-baseline justify-between gap-3 text-[14.5px]">
                     <span className="text-ink-soft">
-                      {l.label} <span className="text-[11.5px] text-ink-mute">{SCALE_LABEL[l.scale]}</span>
+                      {c.line[l.key as keyof typeof c.line]} <span className="text-[11.5px] text-ink-mute">{c.scale[l.scale]}</span>
                     </span>
                     <span className="tabular-nums text-ink"><Money value={l.amount} /></span>
                   </div>
@@ -185,12 +173,12 @@ export function BudgetSimulator() {
           </ul>
 
           <p className="mt-6 rounded-xl2 bg-accent-wash px-4 py-3 text-[14px] text-ink-soft">
-            כל עשרה אורחים נוספים: <b className="tabular-nums text-ink"><Money value={r.marginalTen} /></b>
+            {c.marginal}: <b className="tabular-nums text-ink"><Money value={r.marginalTen} /></b>
           </p>
 
           <div className="mt-6 border-t border-line pt-6">
-            <p className="text-[15px] text-ink-soft">{site.budget.closing}</p>
-            <BookMeeting className="btn-primary mt-4 inline-flex items-center gap-2" />
+            <p className="text-[15px] text-ink-soft">{closing}</p>
+            <BookMeeting className="btn-primary mt-4 inline-flex items-center gap-2" label={bookLabel} />
           </div>
         </div>
       </div>
