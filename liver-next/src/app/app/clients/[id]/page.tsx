@@ -12,6 +12,8 @@ import { EventDetails } from '@/components/app/EventDetails';
 import { EventSummary } from '@/components/app/EventSummary';
 import { EventTemplate } from '@/components/app/EventTemplate';
 import { ApplyTemplate } from '@/components/app/ApplyTemplate';
+import { EventFileLists } from '@/components/app/EventFileLists';
+import { loadEventFile } from '@/lib/eventFile';
 import { loadTemplates } from '@/lib/workflow';
 import { InviteBox, type Invite } from '@/components/app/InviteBox';
 import { TaskList, type Task } from '@/components/app/TaskList';
@@ -186,6 +188,11 @@ async function Section({ tab, client, viewerId }: { tab: EventTab; client: Clien
         <SeatingPlan clientId={id} tables={tables} guests={guests as never} />
       </div>
     );
+  }
+
+  if (tab === 'details') {
+    const { songs, kit, people } = await loadEventFile(sb, id);
+    return <EventFileLists clientId={id} songs={songs} kit={kit} people={people} viewer="producer" />;
   }
 
   if (tab === 'crew') {

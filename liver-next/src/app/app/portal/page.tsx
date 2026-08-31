@@ -7,8 +7,10 @@ import { PortalWorkspace } from '@/components/app/PortalWorkspace';
 import { PORTAL_LIVE_SOURCES } from '@/lib/liveSources';
 import { loadPortal, loadThread, loadContracts } from '@/lib/portal';
 import { loadFiles } from '@/lib/files';
+import { loadEventFile } from '@/lib/eventFile';
 import { Contracts } from '@/components/app/Contracts';
 import { EventFiles } from '@/components/app/EventFiles';
+import { EventFileLists } from '@/components/app/EventFileLists';
 import { Thread } from '@/components/app/Thread';
 import { PortalActions } from '@/components/app/PortalActions';
 import { fileReport } from '@/app/actions/report';
@@ -32,6 +34,14 @@ export default async function PortalPage() {
   const [threads, contracts, files] = await Promise.all([
     loadThread(sb, ids), loadContracts(sb, ids), loadFiles(sb, ids),
   ]);
+
+  /* The songs and the personal details are the couple's to fill in — they are
+     the ones who know what she likes to drink and who is walking her in. Read
+     per workspace rather than in one go, because a couple has one event and
+     the loop below already has the id. */
+  const eventFiles = new Map(
+    await Promise.all(ids.map(async (id) => [id, await loadEventFile(sb, id)] as const))
+  );
 
   if (data.workspaces.length === 0) {
     return (
@@ -66,6 +76,15 @@ export default async function PortalPage() {
             {data.can(w.id, 'files') && (
               <EventFiles clientId={w.id} files={files.get(w.id) ?? []} viewer="client" />
             )}
+            {/* Theirs to fill in. The equipment is read only for them — it is
+                the producer's logistics — and the component knows that. */}
+            <EventFileLists
+              clientId={w.id}
+              songs={eventFiles.get(w.id)?.songs ?? []}
+              kit={eventFiles.get(w.id)?.kit ?? []}
+              people={eventFiles.get(w.id)?.people ?? []}
+              viewer="client"
+            />
             <Thread clientId={w.id} messages={threads.get(w.id) ?? []} viewerId={account.id} />
           </div>
         ))}

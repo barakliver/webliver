@@ -850,6 +850,7 @@ export const appCopy = {
       tasks: 'משימות',
       day: 'לוז',
       guests: 'אורחים',
+      details: 'תיק האירוע',
       crew: 'צוות וספקים',
       bar: 'בר',
       money: 'כסף',
@@ -1742,6 +1743,52 @@ export const referralCopy = {
   claimSave: 'שיוך',
   claimed: 'השיוך נשמר',
   claimFailed: 'הקוד לא נמצא, או שכבר משויכים.',
+} as const;
+
+/* ── תיק האירוע ───────────────────────────────────────────────────────────
+   The three lists out of his own file. The wording is his: "כניסה שנייה אחרי
+   החלפת בגדים" is not a phrase anybody invents, it is a thing that happens at
+   an Israeli wedding and gets forgotten every time. */
+export const eventFileCopy = {
+  music: {
+    title: 'מוזיקה',
+    sub: 'שבעה רגעים שצריך לבחור להם שיר. הרשימה עוברת לדיג׳יי כמו שהיא.',
+    song: 'שיר',
+    songPh: 'שם השיר',
+    artist: 'אמן',
+    note: 'הערה',
+    notePh: 'גרסה, אורך, איפה לעצור',
+    save: 'שמירה',
+    chosen: (n: number, of: number) => `נבחרו ${n} מתוך ${of}`,
+    empty: 'עוד לא נבחר שיר לאף רגע.',
+  },
+
+  equipment: {
+    title: 'ציוד',
+    sub: 'מה צריך, ומה כבר סגור.',
+    /* Three states, not a tick. A checkbox cannot say "we need a generator and
+       have not booked one", which is the only state here worth a reminder. */
+    /* An item nobody has looked at yet. Not the same as one somebody checked
+       and ruled out, which is what `off` means. */
+    undecided: 'טרם נבדק',
+    off: 'לא צריך',
+    needed: 'צריך',
+    sorted: 'סגור',
+    openCount: (n: number) => (n === 1 ? 'פריט אחד פתוח' : `${n} פריטים פתוחים`),
+    allSorted: 'הכל סגור.',
+  },
+
+  couple: {
+    title: 'פרטים אישיים',
+    sub: 'מה שהופך חתונה לחתונה שלהם. הזוג ממלא, ואתם רואים.',
+    personA: 'צד א׳',
+    personB: 'צד ב׳',
+    name: 'שם',
+    namePh: 'איך קוראים לו/לה',
+    save: 'שמירה',
+    saved: 'נשמר',
+    emptyHint: 'ריק. אפשר למלא מכאן, או לבקש מהזוג למלא באזור שלהם.',
+  },
 } as const;
 
 export const contractCopy = {
