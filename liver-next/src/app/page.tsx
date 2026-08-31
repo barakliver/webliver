@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { cookies } from 'next/headers';
-import { a11yCopy, privacyCopy, termsCopy } from '@/content/site';
 import { LOCALE_COOKIE, readLocale } from '@/lib/locale';
 import { getSiteCopy } from '@/lib/siteCopy';
 import { supabasePublic } from '@/lib/supabase/public';
@@ -18,6 +17,7 @@ import { Portrait } from '@/components/marketing/Portrait';
 import { FabDock } from '@/components/marketing/FabDock';
 import { BookMeeting } from '@/components/marketing/BookMeeting';
 import { AiConcierge } from '@/components/marketing/AiConcierge';
+import { SiteFooter } from '@/components/marketing/SiteFooter';
 import { StructuredData } from '@/components/marketing/StructuredData';
 
 /* Rendered per request, because the language is read from a cookie and a page
@@ -112,25 +112,7 @@ export default async function HomePage() {
           </div>
         </Section>
 
-        <footer className="border-t border-line py-10">
-          <div className="shell flex flex-wrap items-center gap-x-3 gap-y-2 text-[13.5px] text-ink-mute">
-            <span>{site.brand} · {site.footer}</span>
-            <span aria-hidden>·</span>
-            {/* Reachable from every page, which is the half of the
-                requirement a menu button alone does not meet. */}
-            <Link href="/accessibility" className="underline underline-offset-4 transition-colors hover:text-accent">
-              {a11yCopy.statement}
-            </Link>
-            <span aria-hidden>·</span>
-            <Link href="/privacy" className="underline underline-offset-4 transition-colors hover:text-accent">
-              {privacyCopy.title}
-            </Link>
-            <span aria-hidden>·</span>
-            <Link href="/terms" className="underline underline-offset-4 transition-colors hover:text-accent">
-              {termsCopy.title}
-            </Link>
-          </div>
-        </footer>
+        <SiteFooter brand={site.brand} note={site.footer} />
       </main>
       <div className="h-24 sm:h-0" aria-hidden />
       <FabDock />
