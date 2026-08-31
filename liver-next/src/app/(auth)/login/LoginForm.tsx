@@ -6,7 +6,7 @@ import { Mail, MessageSquare, RotateCw } from 'lucide-react';
 import { CodeInput } from '@/components/app/CodeInput';
 import { publicEnv } from '@/lib/env';
 import { requestCode, verifyCode, type AuthResult, type Channel } from '@/app/actions/auth';
-import { auth as copy, privacyCopy } from '@/content/site';
+import { auth as copy, privacyCopy, termsCopy } from '@/content/site';
 import { GoogleButton } from './GoogleButton';
 
 function Submit({ label, busy }: { label: string; busy: string }) {
@@ -182,6 +182,10 @@ export function LoginForm({ next, prefill, reason, referral }: {
           over, which is the one place a policy is actually worth linking. */}
       <p className="text-[13px] text-ink-mute">
         {copy.privacyNote}
+        <a href="/terms" className="underline underline-offset-4 transition-colors hover:text-accent">
+          {termsCopy.title}
+        </a>
+        {' ול'}
         <a href="/privacy" className="underline underline-offset-4 transition-colors hover:text-accent">
           {privacyCopy.title}
         </a>
