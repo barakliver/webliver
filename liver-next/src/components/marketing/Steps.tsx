@@ -18,7 +18,7 @@ const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
 
 export function Steps({ site }: { site: SiteCopy }) {
   return (
-    <section id="journey" className="shell py-20 sm:py-28">
+    <section id="journey" className="section shell">
       <h2 className="font-display text-display font-light text-ink">{site.journey.title}</h2>
 
       <ol className="mt-10 list-none p-0">

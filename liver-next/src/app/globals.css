@@ -231,6 +231,27 @@
     .glass-strong { background: theme('colors.card'); }
   }
 
+  /* The vertical rhythm of the marketing page.
+
+     This class was applied by every `<Section>` on the site and defined
+     nowhere, so Tailwind emitted nothing for it and every section rendered
+     with no vertical padding at all. The page still looked spaced because the
+     content inside each one carries its own margins, which is why nobody
+     caught it: the spacing was an accident of what happened to be in the
+     section rather than a decision. Measured at 412px, the gap between one
+     section's last line and the next one's heading ran 136, 133, 203, 80, 0,
+     0, 42, 21, 154, 96. Two boundaries were literally flush.
+
+     The same silent failure as `glass-strong` further up, and for the same
+     reason: an unknown utility class is invisible to the compiler, the linter
+     and the browser alike. `scripts/check-classes.mjs` now refuses one.
+
+     64px on a phone and 96px beyond it, which is what `Steps` was already
+     hard-coding for itself. The two full bleed bands keep their own, larger
+     padding: a band with its own background needs to hold the colour for
+     longer than a section needs to separate from its neighbour. */
+  .section { @apply py-16 sm:py-24; }
+
   .shell { @apply mx-auto w-full max-w-content px-4 sm:px-8; }
   .measure { max-width: 62ch; }
 

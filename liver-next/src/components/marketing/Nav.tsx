@@ -21,7 +21,14 @@ export function Nav({ site = fallback, locale = DEFAULT_LOCALE }: {
   ] as const;
 
   return (
-    <nav className="sticky top-0 z-30 border-b border-line bg-card/60 backdrop-blur-xl">
+    /* Opaque, not translucent. This bar is sticky over a full bleed photograph
+       with white type on it, and at 60% the headline underneath came straight
+       through: scrolling put "התכנון, התקציב, הספקים" across the brand mark.
+       `glass` is the palette's own answer for chrome that floats over content,
+       and it stopped being translucent when the palette changed; the nav was
+       the one piece of chrome still setting its own background instead of
+       asking for it. */
+    <nav className="glass sticky top-0 z-30 border-b border-line">
       <div className="shell flex h-16 items-center justify-between gap-4">
         <Link href="/" className="inline-flex min-h-[44px] items-center font-display text-[17px] font-light tracking-tight text-ink">
           {site.brand}

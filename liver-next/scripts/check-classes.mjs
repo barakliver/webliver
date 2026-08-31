@@ -113,10 +113,96 @@ walk(join(root, 'src'));
 
 const unknown = [];
 const dropped = [];
+const orphans = [];
+
+/* ── the bespoke classes, and whether globals.css defines them ──────────── */
+/* A third silent failure, and the one that has now cost twice.
+   `glass-strong` was written in the floating dock and defined nowhere, so
+   three buttons floated with no surface behind them. `section` was written by
+   every marketing section and defined nowhere, so the whole page rendered with
+   no vertical rhythm and looked spaced only by accident.
+   Neither is visible to the compiler, the linter or the browser: an unknown
+   class name is not an error anywhere in this stack, it is simply nothing. */
+const classNames = (css) => [...css.matchAll(/\.([a-z][a-z0-9-]*)\s*(?=[,{:\s])/g)].map((m) => m[1]);
+
+/* Names Tailwind itself owns, so the scan only asks about our own. Anything
+   that looks like a utility (a known prefix, an arbitrary value, a variant)
+   is Tailwind's to resolve and is left alone. */
+const TW_PREFIX = new RegExp('^(' + [
+  'sr', 'not', 'group', 'peer', 'container', 'aspect', 'columns', 'break', 'box', 'float', 'clear',
+  'isolate', 'object', 'overflow', 'overscroll', 'static', 'fixed', 'absolute', 'relative', 'sticky',
+  'inset', 'start', 'end', 'top', 'right', 'bottom', 'left', 'z', 'order', 'col', 'row', 'grid',
+  'flex', 'basis', 'grow', 'shrink', 'table', 'caption', 'border', 'divide', 'ring', 'shadow',
+  'opacity', 'mix', 'bg', 'from', 'via', 'to', 'decoration', 'bs', 'blur', 'brightness', 'contrast',
+  'drop', 'grayscale', 'hue', 'invert', 'saturate', 'sepia', 'backdrop', 'transition', 'duration',
+  'ease', 'delay', 'animate', 'transform', 'origin', 'scale', 'rotate', 'translate', 'skew',
+  'accent', 'appearance', 'cursor', 'caret', 'pointer', 'resize', 'scroll', 'snap', 'touch',
+  'select', 'will', 'fill', 'stroke', 'space', 'place', 'content', 'items', 'self', 'justify',
+  'gap', 'p', 'px', 'py', 'pt', 'pr', 'pb', 'pl', 'ps', 'pe', 'm', 'mx', 'my', 'mt', 'mr', 'mb',
+  'ml', 'ms', 'me', 'w', 'min', 'max', 'h', 'size', 'font', 'text', 'antialiased', 'subpixel',
+  'italic', 'not-italic', 'normal', 'ordinal', 'slashed', 'lining', 'oldstyle', 'proportional',
+  'tabular', 'diagonal', 'stacked', 'tracking', 'leading', 'list', 'placeholder', 'align',
+  'whitespace', 'hyphens', 'underline', 'overline', 'line', 'uppercase', 'lowercase', 'capitalize',
+  'truncate', 'indent', 'rounded', 'outline', 'hidden', 'block', 'inline', 'flow', 'visible',
+  'invisible', 'collapse', 'filter', 'backface', 'perspective', 'first', 'last', 'only', 'odd',
+  'even', 'empty', 'motion', 'print', 'dark', 'rtl', 'ltr', 'aria', 'data', 'has', 'supports',
+  'sm', 'md', 'lg', 'xl',
+].join('|') + ')(-|$)');
+
+/* Every rule the project actually ships: the stylesheet, plus the inline
+   <style> blocks the printable screens carry. A component may use a class its
+   parent page defines, so this is one set rather than one per file. */
+const defined = new Set(files.flatMap((f) => classNames(readFileSync(f, 'utf8'))));
+
+/* Bespoke names: anything that is not a Tailwind utility and is defined
+   nowhere produces no declaration at all.
+
+   Read from two places, because the bug this exists for hid in the second.
+   `glass-strong` was written straight into a className and went unnoticed for
+   weeks. `section` was passed through `cn()`, which is how every component
+   here composes classes, so a scan that only read className attributes walked
+   straight past the class that was silently doing nothing on ten sections of
+   the home page. */
+const classLists = (source) => {
+  const out = [];
+  const push = (text, index) => out.push({ text, index });
+  for (const m of source.matchAll(/className=(?:"([^"]*)"|\{`([^`]*)`\}|\{'([^']*)'\})/g)) {
+    push(m[1] ?? m[2] ?? m[3] ?? '', m.index);
+  }
+  /* The string arguments of a class composer. Bounded rather than balanced:
+     a call longer than this is a wrapper, not a class list. */
+  for (const call of source.matchAll(/\b(?:cn|clsx|twMerge)\(([\s\S]{0,600}?)\)/g)) {
+    for (const lit of call[1].matchAll(/'([^']*)'|"([^"]*)"|`([^`$]*)`/g)) {
+      /* A string inside a class composer is not always a class: `cn('a',
+         role === 'client' ? …)` compares, and `TONE[tone ?? 'ink']` indexes.
+         What comes immediately before the quote says which it is. */
+      if (/(?:===|!==|==|\?\?|\[)\s*$/.test(call[1].slice(0, lit.index))) continue;
+      push(lit[1] ?? lit[2] ?? lit[3] ?? '', call.index + lit.index);
+    }
+  }
+  return out;
+};
 
 for (const file of files) {
   const where = relative(root, file);
-  readFileSync(file, 'utf8').split('\n').forEach((text, i) => {
+  const source = readFileSync(file, 'utf8');
+
+  if (/\.tsx?$/.test(where)) {
+    for (const { text, index } of classLists(source)) {
+      const line = source.slice(0, index).split('\n').length;
+      for (const raw of text.replace(/\$\{[^}]*\}/g, ' ').split(/\s+/).filter(Boolean)) {
+        const bare = raw.replace(/^.*:/, '').replace(/^!/, '');
+        if (!/^[a-z][a-z0-9-]*$/.test(bare)) continue;
+        /* `btn-${kind}` leaves `btn-` once the hole is stripped. A name that
+           ends mid-word is a fragment, not a class. */
+        if (bare.endsWith('-')) continue;
+        if (TW_PREFIX.test(bare) || defined.has(bare)) continue;
+        orphans.push({ where, line, cls: bare });
+      }
+    }
+  }
+
+  source.split('\n').forEach((text, i) => {
     for (const candidate of candidates(text)) {
       const hit = parse(candidate);
       if (!hit) continue;
@@ -142,6 +228,11 @@ let failed = 0;
 failed += report(
   unknown, 'FAIL  no such token',
   'These compile to no declaration. Check the name against tailwind.config.ts.',
+);
+failed += report(
+  orphans, 'FAIL  no such class',
+  'These are not Tailwind utilities and globals.css does not define them, so\n'
+  + '  they compile to nothing. Either define the class or remove it.',
 );
 failed += report(
   dropped, 'FAIL  opacity modifier on a whole colour',

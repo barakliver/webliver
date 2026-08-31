@@ -65,7 +65,7 @@ function Shell({ href, onClick, label, className, children }: {
   href?: string; onClick?: () => void; label?: string; className?: string; children: ReactNode;
 }) {
   const shared = cn(
-    'metric-link group/metric block w-full min-w-0 rounded-xl2 text-start',
+    'group/metric block w-full min-w-0 rounded-xl2 text-start',
     'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4',
     'focus-visible:outline-accent',
     className,
@@ -190,7 +190,7 @@ export function MetricRows({ rows, className }: { rows: Row[]; className?: strin
             {row.href ? (
               <Link
                 href={row.href}
-                className="metric-link group/metric flex items-baseline justify-between gap-4 py-3
+                className="group/metric flex items-baseline justify-between gap-4 py-3
                            focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
                            focus-visible:outline-accent"
               >
