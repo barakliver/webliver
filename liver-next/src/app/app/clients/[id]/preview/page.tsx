@@ -5,6 +5,9 @@ import { requireLiveProducer } from '@/lib/auth';
 import { supabaseServer } from '@/lib/supabase/server';
 import { Live } from '@/components/app/Live';
 import { appCopy } from '@/content/site';
+import { appUiFor } from '@/content/appUi';
+import { CopyProvider } from '@/components/app/CopyProvider';
+import { currentLocale } from '@/lib/serverLocale';
 import { PortalWorkspace } from '@/components/app/PortalWorkspace';
 import { PORTAL_LIVE_SOURCES } from '@/lib/liveSources';
 import { loadPortal } from '@/lib/portal';
@@ -29,6 +32,9 @@ export const metadata = { title: appCopy.preview.title };
  */
 export default async function PreviewPage({ params }: { params: Promise<{ id: string }> }) {
   const account = await requireLiveProducer();
+  /* The same resolution the couple's own screen does, so a preview shows what
+     they would see rather than what this page happened to compile with. */
+  const ui = appUiFor(await currentLocale());
   const { id } = await params;
 
   const sb = await supabaseServer();
@@ -64,7 +70,9 @@ export default async function PreviewPage({ params }: { params: Promise<{ id: st
         </p>
       </div>
 
-      <PortalWorkspace workspace={workspace} data={data} viewerId={account.id} />
+      <CopyProvider value={ui}>
+        <PortalWorkspace workspace={workspace} data={data} viewerId={account.id} ui={ui} />
+      </CopyProvider>
       <Live sources={PORTAL_LIVE_SOURCES} />
     </>
   );

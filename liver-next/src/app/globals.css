@@ -342,6 +342,22 @@
   }
   [dir='rtl'] .rule-gold { transform: scaleX(-1); }
 
+  /* A chevron that means "onward".
+
+     Every one of these was drawn as a left chevron, which is correct in Hebrew
+     and backwards in English: the arrow on a row that opens something has to
+     point the way the language runs, or it reads as a way back. The icon stays
+     one component and the direction is decided by the document, the same way
+     the gold rule above flips. */
+  [dir='ltr'] .chev-onward {
+    /* Both, on purpose. The plain property covers a chevron with no other
+       transform on it; `--tw-rotate` is what Tailwind's own composed transform
+       reads, so the two icons that also nudge on hover stay rotated while they
+       nudge instead of snapping back to pointing the wrong way. */
+    --tw-rotate: 180deg;
+    transform: rotate(180deg);
+  }
+
   /* Every heading, every large number, every currency value. Weight 300 and
      never bold: at this size the serif carries by shape, and bolding it turns
      an editorial page into a brochure. */

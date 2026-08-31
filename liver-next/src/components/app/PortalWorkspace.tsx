@@ -1,4 +1,5 @@
-import { appCopy } from '@/content/site';
+import type { AppUi } from '@/content/appUi';
+import { weekdayDate } from '@/lib/appDates';
 import { formatDate, daysUntil } from '@/lib/dates';
 import { TaskList } from '@/components/app/TaskList';
 import { PaymentsPanel } from '@/components/app/PaymentsPanel';
@@ -11,10 +12,6 @@ import { PortalSummary, summaryRows } from '@/components/app/PortalSummary';
 import { Ltr } from '@/components/Ltr';
 import type { PortalData, Workspace } from '@/lib/portal';
 
-const dateFmt = new Intl.DateTimeFormat('he-IL', {
-  weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
-});
-
 /** One event, as the couple sees it.
  *
  *  This is the couple's screen and the producer's preview of it, the same
@@ -23,9 +20,10 @@ const dateFmt = new Intl.DateTimeFormat('he-IL', {
  *  is only nearly right is worse than none: it invites decisions about what
  *  the couple can see, based on a screen they never saw. */
 export function PortalWorkspace({
-  workspace, data, viewerId,
-}: { workspace: Workspace; data: PortalData; viewerId: string }) {
+  workspace, data, viewerId, ui,
+}: { workspace: Workspace; data: PortalData; viewerId: string; ui: AppUi }) {
   const c = workspace;
+  const dateFmt = weekdayDate(ui.locale);
   const left = daysUntil(c.event_date);
   const budget = data.budgetFor(c.id);
   const guests = data.guestsFor(c.id);
@@ -44,7 +42,7 @@ export function PortalWorkspace({
           is a consequence of it. */}
       <header>
         <p className="text-[12px] tracking-[.14em] text-ink-mute">
-          {formatDate(dateFmt, c.event_date, appCopy.portal.dateTbd)}
+          {formatDate(dateFmt, c.event_date, ui.portal.dateTbd)}
           {c.venue ? ` · ${c.venue}` : ''}
         </p>
 
@@ -57,7 +55,7 @@ export function PortalWorkspace({
             <p className="font-display text-[72px] font-light leading-none text-ink sm:text-[104px]">
               <Ltr>{left.toLocaleString('en-US')}</Ltr>
             </p>
-            <p className="mt-2 text-[14px] text-ink-mute">{appCopy.portal.daysLeft}</p>
+            <p className="mt-2 text-[14px] text-ink-mute">{ui.portal.daysLeft}</p>
           </div>
         )}
 
@@ -72,7 +70,9 @@ export function PortalWorkspace({
           saved: data.boardFor(c.id).length,
           vendors: data.dayFor(c.id).length,
           can: (key) => data.can(c.id, key as never),
+          c: ui.portal,
         })}
+        label={ui.portal.summary}
       />
 
       <div className="mt-10 space-y-10">

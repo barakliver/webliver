@@ -9,9 +9,10 @@ import {
   type ContractResult,
 } from '@/app/actions/contracts';
 import { SignLink } from '@/components/app/SignLink';
-import { partyCopy as p } from '@/content/site';
+
 import { supabaseBrowser } from '@/lib/supabase/client';
-import { contractCopy } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
+import { signedAt } from '@/lib/appDates';
 import { Money, ils } from '@/components/Ltr';
 
 export type Contract = {
@@ -32,11 +33,6 @@ export type Contract = {
   file_url: string | null;
 };
 
-const c = contractCopy;
-const dateFmt = new Intl.DateTimeFormat('he-IL', {
-  day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit',
-});
-
 const TONE: Record<Contract['status'], string> = {
   draft:  'bg-surface-200 text-ink-mute',
   sent:   'bg-warn-wash text-warn',
@@ -52,6 +48,9 @@ function Busy({ label, busy }: { label: string; busy: string }) {
 /* ── the producer's side ─────────────────────────────────────────────────── */
 
 function Draft({ clientId }: { clientId: string }) {
+  const ui = useCopy();
+  const c = ui.contract;
+  const p = ui.party;
   const [state, action] = useActionState<ContractResult | null, FormData>(saveContract, null);
   const [path, setPath] = useState('');
   const [uploading, setUploading] = useState(false);
@@ -118,6 +117,7 @@ function Draft({ clientId }: { clientId: string }) {
 /* ── one contract, either side ───────────────────────────────────────────── */
 
 function Sign({ contract, clientId }: { contract: Contract; clientId: string }) {
+  const c = useCopy().contract;
   const [state, action] = useActionState<ContractResult | null, FormData>(signContract, null);
   return (
     <form action={action} className="mt-4 rounded-xl2 border border-accent/30 bg-accent-wash p-4">
@@ -143,6 +143,9 @@ function Sign({ contract, clientId }: { contract: Contract; clientId: string }) 
 function Row({ contract: k, clientId, viewer }: {
   contract: Contract; clientId: string; viewer: 'producer' | 'client';
 }) {
+  const ui = useCopy();
+  const c = ui.contract;
+  const dateFmt = signedAt(ui.locale);
   return (
     <li className="rounded-xl2 border border-line p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -231,6 +234,7 @@ function Row({ contract: k, clientId, viewer }: {
 export function Contracts({ clientId, contracts, viewer }: {
   clientId: string; contracts: Contract[]; viewer: 'producer' | 'client';
 }) {
+  const c = useCopy().contract;
   const [drafting, setDrafting] = useState(false);
 
   return (

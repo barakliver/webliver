@@ -102,7 +102,7 @@ export default async function OverviewPage() {
             <hr className="hairline my-4" />
             <Link href="/app/clients" className="btn-quiet px-0 text-[14px]">
               {c.allClients}
-              <ChevronLeft size={16} strokeWidth={1.5} aria-hidden />
+              <ChevronLeft size={16} strokeWidth={1.5} aria-hidden className="chev-onward" />
             </Link>
           </section>
         </div>

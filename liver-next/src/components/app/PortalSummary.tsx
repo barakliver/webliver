@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
 import { Ltr, Money, Ratio } from '@/components/Ltr';
-import { appCopy } from '@/content/site';
+import type { PortalCopy } from '@/content/appUi';
 
 /**
  * The four numbers a couple opens the app for.
@@ -29,12 +29,12 @@ export type SummaryRow = {
   shown: boolean;
 };
 
-export function PortalSummary({ rows }: { rows: SummaryRow[] }) {
+export function PortalSummary({ rows, label }: { rows: SummaryRow[]; label: string }) {
   const live = rows.filter((r) => r.shown);
   if (live.length === 0) return null;
 
   return (
-    <nav aria-label={appCopy.portal.summary} className="mt-10">
+    <nav aria-label={label} className="mt-10">
       <ul className="list-none p-0">
         {live.map((r) => (
           <li key={r.key}>
@@ -48,7 +48,7 @@ export function PortalSummary({ rows }: { rows: SummaryRow[] }) {
                 <span className="font-display text-[22px] font-light text-ink">{r.value}</span>
                 {/* Points the way the language runs. In a right-to-left page
                     a chevron aimed right is aimed backwards. */}
-                <ChevronLeft size={16} strokeWidth={1.5} className="text-ink-mute" aria-hidden />
+                <ChevronLeft size={16} strokeWidth={1.5} className="chev-onward text-ink-mute" aria-hidden />
               </span>
             </Link>
           </li>
@@ -66,8 +66,11 @@ export function summaryRows(opts: {
   attending: number; invited: number;
   saved: number; vendors: number;
   can: (key: string) => boolean;
+  /* The labels come in rather than being read here, because this runs on the
+     server for a couple who may be reading English. */
+  c: PortalCopy;
 }): SummaryRow[] {
-  const c = appCopy.portal;
+  const c = opts.c;
   return [
     {
       key: 'budget',

@@ -4,7 +4,8 @@ import { useActionState } from 'react';
 import { formatDate } from '@/lib/dates';
 import { useFormStatus } from 'react-dom';
 import { addPayment, togglePaid, deletePayment, type MoneyResult } from '@/app/actions/money';
-import { appCopy } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
+import { shortDate } from '@/lib/appDates';
 import { Money, ils } from '@/components/Ltr';
 import { Metric } from '@/components/app/Metric';
 
@@ -13,7 +14,6 @@ export type Payment = {
   due_on: string | null; paid: boolean; paid_on: string | null;
 };
 
-const dateFmt = new Intl.DateTimeFormat('he-IL', { day: '2-digit', month: '2-digit', year: '2-digit' });
 
 function isOverdue(due: string | null): boolean {
   if (!due) return false;
@@ -24,10 +24,13 @@ function isOverdue(due: string | null): boolean {
 }
 
 function Add() {
+  const ui = useCopy();
+  const c = ui.money;
+  const dateFmt = shortDate(ui.locale);
   const { pending } = useFormStatus();
   return (
     <button type="submit" className="btn-primary whitespace-nowrap" disabled={pending}>
-      {pending ? appCopy.money.payAdding : appCopy.money.payAdd}
+      {pending ? c.payAdding : c.payAdd}
     </button>
   );
 }
@@ -36,7 +39,9 @@ export function PaymentsPanel({ clientId, payments, viewer }: {
   clientId: string; payments: Payment[]; viewer: 'producer' | 'client';
 }) {
   const [state, action] = useActionState<MoneyResult | null, FormData>(addPayment, null);
-  const c = appCopy.money;
+  const ui = useCopy();
+  const c = ui.money;
+  const dateFmt = shortDate(ui.locale);
 
   const paid = payments.filter((p) => p.paid).reduce((a, p) => a + Number(p.amount), 0);
   const owed = payments.filter((p) => !p.paid).reduce((a, p) => a + Number(p.amount), 0);

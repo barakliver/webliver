@@ -5,7 +5,8 @@ import { Download, FileText, Image as ImageIcon, Film, Music, Table2, Upload, X 
 import { supabaseBrowser } from '@/lib/supabase/client';
 import { registerFile, deleteFile, noteFile } from '@/app/actions/files';
 import { fileAllowed, guessMime, humanSize, MAX_FILE_BYTES } from '@/lib/fileTypes';
-import { appCopy } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
+import { longDate } from '@/lib/appDates';
 import { Ltr } from '@/components/Ltr';
 
 export type EventFile = {
@@ -22,9 +23,6 @@ export type EventFile = {
   url: string;
 };
 
-const dateFmt = new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'long', year: 'numeric' });
-
-const c = appCopy.files;
 const isImage = (m: string) => m.startsWith('image/');
 
 function Icon({ mime }: { mime: string }) {
@@ -58,6 +56,7 @@ const downloadHref = (f: EventFile) =>
 export function EventFiles({ clientId, files, viewer }: {
   clientId: string; files: EventFile[]; viewer: 'producer' | 'client';
 }) {
+  const c = useCopy().files;
   const input = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState<string[]>([]);
   const [error, setError] = useState('');
@@ -196,6 +195,9 @@ function Row({ file: f, clientId, viewer, start, compact }: {
   file: EventFile; clientId: string; viewer: 'producer' | 'client';
   start: (fn: () => void) => void; compact?: boolean;
 }) {
+  const ui = useCopy();
+  const c = ui.files;
+  const dateFmt = longDate(ui.locale);
   const [editing, setEditing] = useState(false);
   /* A producer may clear anything from their own event; anybody may take back
      what they themselves put there. The same two conditions the delete policy

@@ -5,7 +5,9 @@ import { useFormStatus } from 'react-dom';
 import { Send, MessagesSquare } from 'lucide-react';
 import { sendMessage, deleteMessage, markThreadRead, type MessageResult } from '@/app/actions/messages';
 import { Avatar } from '@/components/app/Avatar';
-import { threadCopy } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
+import { clock, dayMonth } from '@/lib/appDates';
+import type { ThreadCopy } from '@/content/appUi';
 
 export type Message = {
   id: string;
@@ -16,14 +18,10 @@ export type Message = {
   author_avatar: string | null;
 };
 
-const c = threadCopy;
-
-const timeFmt = new Intl.DateTimeFormat('he-IL', { hour: '2-digit', minute: '2-digit' });
-const dayFmt = new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'long' });
 
 /** "Today" and "yesterday" are what people actually say, and a date is only
  *  useful once it is far enough away to have stopped being either. */
-function dayLabel(iso: string): string {
+function dayLabel(iso: string, c: ThreadCopy, dayFmt: Intl.DateTimeFormat): string {
   const d = new Date(iso);
   const today = new Date();
   const days = Math.round(
@@ -36,6 +34,7 @@ function dayLabel(iso: string): string {
 }
 
 function Send_({ }: Record<string, never>) {
+  const c = useCopy().thread;
   const { pending } = useFormStatus();
   return (
     <button type="submit" disabled={pending} className="btn-primary inline-flex items-center gap-2 disabled:opacity-60">
@@ -48,6 +47,11 @@ function Send_({ }: Record<string, never>) {
 export function Thread({ clientId, messages, viewerId }: {
   clientId: string; messages: Message[]; viewerId: string;
 }) {
+  const ui = useCopy();
+  const c = ui.thread;
+  const timeFmt = clock(ui.locale);
+  const dayFmt = dayMonth(ui.locale);
+
   const [state, action] = useActionState<MessageResult | null, FormData>(sendMessage, null);
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -76,7 +80,7 @@ export function Thread({ clientId, messages, viewerId }: {
         <ol className="mt-5 space-y-3">
           {messages.map((m) => {
             const mine = m.author_id === viewerId;
-            const day = dayLabel(m.created_at);
+            const day = dayLabel(m.created_at, c, dayFmt);
             const newDay = day !== lastDay;
             lastDay = day;
 

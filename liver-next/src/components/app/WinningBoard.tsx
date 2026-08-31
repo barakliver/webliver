@@ -4,17 +4,18 @@ import { useActionState, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { uploadBoardImage, deleteBoardImage, type BoardResult } from '@/app/actions/board';
 import { BOARD_CATEGORIES } from '@/content/lists';
-import { appCopy } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
 
 export type BoardImage = {
   id: string; category: string; caption: string; url: string;
 };
 
 function Upload() {
+  const c = useCopy().board;
   const { pending } = useFormStatus();
   return (
     <button type="submit" className="btn-primary whitespace-nowrap" disabled={pending}>
-      {pending ? appCopy.board.uploading : appCopy.board.upload}
+      {pending ? c.uploading : c.upload}
     </button>
   );
 }
@@ -26,7 +27,7 @@ export function WinningBoard({ clientId, images, viewer }: {
 }) {
   const [state, action] = useActionState<BoardResult | null, FormData>(uploadBoardImage, null);
   const [filter, setFilter] = useState<string>('all');
-  const c = appCopy.board;
+  const c = useCopy().board;
 
   /* Only offer a filter for a category that actually has something in it,
      so the row never promises a view that turns out empty. */

@@ -4,7 +4,7 @@ import { useState, useTransition } from 'react';
 import { Check, Music, Package, Users } from 'lucide-react';
 import { saveSong, setEquipment, saveCouple } from '@/app/actions/eventFile';
 import { MUSIC_MOMENTS, EQUIPMENT_CHECK, COUPLE_DETAIL_FIELDS } from '@/content/eventFile';
-import { eventFileCopy as c } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
 import { Ltr } from '@/components/Ltr';
 
 export type Song = { moment: string; song: string; artist: string; note: string };
@@ -43,6 +43,7 @@ export function EventFileLists({ clientId, songs, kit, people, viewer }: {
 /* ── the seven moments ────────────────────────────────────────────────────── */
 
 function MusicList({ clientId, songs }: { clientId: string; songs: Song[] }) {
+  const c = useCopy().eventFile;
   const [open, setOpen] = useState<string | null>(null);
   const by = new Map(songs.map((s) => [s.moment, s]));
   const chosen = MUSIC_MOMENTS.filter((m) => (by.get(m)?.song ?? '').trim() !== '').length;
@@ -55,7 +56,7 @@ function MusicList({ clientId, songs }: { clientId: string; songs: Song[] }) {
           <h2 className="eyebrow">{c.music.title}</h2>
         </div>
         <p className="text-[13px] text-ink-mute">
-          <Ltr>{c.music.chosen(chosen, MUSIC_MOMENTS.length)}</Ltr>
+          <Ltr>{c.music.chosen.replace('{n}', String(chosen)).replace('{of}', String(MUSIC_MOMENTS.length))}</Ltr>
         </p>
       </div>
       <p className="mt-2 text-[13.5px] text-ink-soft">{c.music.sub}</p>
@@ -135,6 +136,7 @@ const stateOf = (k?: Kit): State | null => {
 function Equipment({ clientId, kit, editable }: {
   clientId: string; kit: Kit[]; editable: boolean;
 }) {
+  const c = useCopy().eventFile;
   const [, start] = useTransition();
   const by = new Map(kit.map((k) => [k.item, k]));
   /* Undecided counts as open. An item nobody has looked at is exactly the one
@@ -153,7 +155,9 @@ function Equipment({ clientId, kit, editable }: {
           <h2 className="eyebrow">{c.equipment.title}</h2>
         </div>
         <p className={`text-[13px] ${open > 0 ? 'text-warn' : 'text-ink-mute'}`}>
-          {open > 0 ? <Ltr>{c.equipment.openCount(open)}</Ltr> : c.equipment.allSorted}
+          {open > 0
+            ? <Ltr>{open === 1 ? c.equipment.openCountOne : c.equipment.openCountMany.replace('{n}', String(open))}</Ltr>
+            : c.equipment.allSorted}
         </p>
       </div>
       <p className="mt-2 text-[13.5px] text-ink-soft">{c.equipment.sub}</p>
@@ -207,6 +211,7 @@ function Equipment({ clientId, kit, editable }: {
 /* ── the two of them ──────────────────────────────────────────────────────── */
 
 function Couple({ clientId, people }: { clientId: string; people: Person[] }) {
+  const c = useCopy().eventFile;
   const by = new Map(people.map((p) => [p.person, p]));
 
   return (
@@ -234,6 +239,7 @@ function Couple({ clientId, people }: { clientId: string; people: Person[] }) {
 function Side({ clientId, person, row }: {
   clientId: string; person: 'a' | 'b'; row?: Person;
 }) {
+  const c = useCopy().eventFile;
   const [saved, setSaved] = useState(false);
   const [, start] = useTransition();
   const filled = COUPLE_DETAIL_FIELDS.filter((f) => (row?.fields?.[f] ?? '').trim() !== '').length;

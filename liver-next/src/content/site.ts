@@ -1244,7 +1244,11 @@ export const appCopy = {
        address from the one they were invited at, which Google made easy to do
        by accident. Naming the address they are actually signed in as turns a
        blank page into something they can fix in one message. */
-    emptyWho: (email: string) => `נכנסתם בתור ${email}.`,
+    /* Sentences with a hole in them rather than functions. This block is
+        handed to a client component so a couple can read it in English, and a
+        function cannot be serialised across that boundary. The wording is
+        unchanged; only the substitution moved to the call site. */
+    emptyWho: 'נכנסתם בתור {email}.',
     emptyMismatch:
       'אם ההזמנה הגיעה לכתובת אחרת, זאת הסיבה שהמסך ריק. אפשר לצאת ולהיכנס עם הכתובת '
       + 'שאליה קיבלתם את ההזמנה, או פשוט לכתוב לברק ונחבר את הכתובת הזאת לאירוע.',
@@ -1379,10 +1383,10 @@ export const dayCopy = {
   cancel: 'ביטול',
   addOpen: 'הוספת שורה',
   addClose: 'סגירה',
-  overlap: (title: string) => `חופף ל"${title}" באותו מסלול`,
+  overlap: 'חופף ל"{title}" באותו מסלול',
   crossesMidnight: 'הלוז ממשיך אחרי חצות, והשורות מסודרות לפי סדר הערב.',
-  totalLines: (n: number) => `${n} שורות`,
-  span: (from: string, to: string) => `${from} עד ${to}`,
+  totalLines: '{n} שורות',
+  span: '{from} עד {to}',
 
   templateTitle: 'להתחיל מלוז מוכן',
   templateSub: 'בחרו נקודת פתיחה, ואז תמחקו ותשנו מה שלא מתאים. אפשר רק כשהלוז ריק.',
@@ -1972,7 +1976,7 @@ export const eventFileCopy = {
     note: 'הערה',
     notePh: 'גרסה, אורך, איפה לעצור',
     save: 'שמירה',
-    chosen: (n: number, of: number) => `נבחרו ${n} מתוך ${of}`,
+    chosen: 'נבחרו {n} מתוך {of}',
     empty: 'עוד לא נבחר שיר לאף רגע.',
   },
 
@@ -1987,7 +1991,10 @@ export const eventFileCopy = {
     off: 'לא צריך',
     needed: 'צריך',
     sorted: 'סגור',
-    openCount: (n: number) => (n === 1 ? 'פריט אחד פתוח' : `${n} פריטים פתוחים`),
+    /* Two sentences rather than one with a branch, because the plural rule is
+       a property of the language and not of the count. */
+    openCountOne: 'פריט אחד פתוח',
+    openCountMany: '{n} פריטים פתוחים',
     allSorted: 'הכל סגור.',
   },
 

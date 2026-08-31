@@ -8,7 +8,7 @@ import {
 } from '@/app/actions/day';
 import { AUDIENCES, type Track } from '@/content/lists';
 import { RUNSHEET_TEMPLATES } from '@/content/runsheets';
-import { dayCopy } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
 import { hhmm, inDayOrder, spanOf, humanSpan, findOverlaps, crossesMidnight } from '@/lib/runsheet';
 
 export type DayItem = {
@@ -17,7 +17,6 @@ export type DayItem = {
   key_moment?: boolean | null;
 };
 
-const c = dayCopy;
 
 function Busy({ label, busy }: { label: string; busy: string }) {
   const { pending } = useFormStatus();
@@ -47,6 +46,7 @@ const trackTone: Record<Track, string> = {
 function LineFields({ item, labels, showOwner }: {
   item?: DayItem; labels: Record<Track, string>; showOwner: boolean;
 }) {
+  const c = useCopy().day;
   return (
     <>
       <div className="grid gap-3 sm:grid-cols-[110px_1fr_110px]">
@@ -145,6 +145,7 @@ function Row({
      morning" without anybody pressing it to find out. */
   isFirst: boolean; isLast: boolean;
 }) {
+  const c = useCopy().day;
   const [editing, setEditing] = useState(false);
   const [state, action] = useActionState<DayResult | null, FormData>(
     async (prev, form) => {
@@ -204,7 +205,7 @@ function Row({
         {clash && (
           <p className="mt-2 inline-flex items-center gap-1.5 text-[12.5px] text-warn">
             <TriangleAlert size={14} aria-hidden strokeWidth={1.5} />
-            {c.overlap(clash.withTitle)}
+            {c.overlap.replace('{title}', clash.withTitle)}
           </p>
         )}
       </div>
@@ -246,6 +247,7 @@ function Row({
 function Move({ item, clientId, direction, disabled }: {
   item: DayItem; clientId: string; direction: 'up' | 'down'; disabled: boolean;
 }) {
+  const c = useCopy().day;
   const Icon = direction === 'up' ? ChevronUp : ChevronDown;
   const label = direction === 'up' ? c.moveUp : c.moveDown;
   return (
@@ -273,6 +275,7 @@ function Move({ item, clientId, direction, disabled }: {
  *  The server checks this again for itself, because between this render and
  *  the click a partner may have started writing. */
 function Templates({ clientId }: { clientId: string }) {
+  const c = useCopy().day;
   const [state, action] = useActionState<DayResult | null, FormData>(applyRunsheetTemplate, null);
   const [chosen, setChosen] = useState<string | null>(null);
 
@@ -299,7 +302,7 @@ function Templates({ clientId }: { clientId: string }) {
           >
             <span className="block text-[14.5px] font-semibold text-ink">{t.label}</span>
             <span className="mt-1 block text-[12.5px] leading-relaxed text-ink-mute">{t.sub}</span>
-            <span className="mt-2 block text-[12px] tabular-nums text-accent">{c.totalLines(t.lines.length)}</span>
+            <span className="mt-2 block text-[12px] tabular-nums text-accent">{c.totalLines.replace('{n}', String(t.lines.length))}</span>
           </button>
         ))}
       </div>
@@ -333,6 +336,7 @@ export function DaySchedule({ clientId, items, labelA, labelB, viewer = 'produce
   clientId: string; items: DayItem[]; labelA: string; labelB: string;
   viewer?: 'producer' | 'client';
 }) {
+  const c = useCopy().day;
   const showOwner = viewer === 'producer';
   const [adding, setAdding] = useState(false);
   const [renaming, setRenaming] = useState(false);
@@ -364,10 +368,10 @@ export function DaySchedule({ clientId, items, labelA, labelB, viewer = 'produce
           <p className="mt-1 text-[14px] text-ink-soft">{c.sub}</p>
           {ordered.length > 0 && (
             <p className="mt-1 text-[12.5px] text-ink-mute" dir="rtl">
-              {c.totalLines(ordered.length)}
+              {c.totalLines.replace('{n}', String(ordered.length))}
               {' · '}
               <span dir="ltr">
-                {c.span(hhmm(ordered[0].at_time), hhmm(ordered[ordered.length - 1].at_time))}
+                {c.span.replace('{from}', hhmm(ordered[0].at_time)).replace('{to}', hhmm(ordered[ordered.length - 1].at_time))}
               </span>
             </p>
           )}

@@ -131,7 +131,7 @@ function Row({ s }: { s: ClientStatus }) {
         </div>
 
         <div className="flex shrink-0 flex-col items-end justify-between gap-2">
-          <ChevronLeft size={18} aria-hidden strokeWidth={1.5} className="mt-1.5 text-ink-mute" />
+          <ChevronLeft size={18} aria-hidden strokeWidth={1.5} className="chev-onward mt-1.5 text-ink-mute" />
           <div className="pointer-events-auto relative z-10">
             <ArchiveButton clientId={s.id} archived={!!s.archivedAt} highlight={s.needsClosing} />
           </div>

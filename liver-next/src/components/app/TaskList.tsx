@@ -5,7 +5,9 @@ import { formatDate } from '@/lib/dates';
 import { useFormStatus } from 'react-dom';
 import { addTask, toggleTask, deleteTask, reorderTasks, type TaskResult } from '@/app/actions/tasks';
 import { Sortable, Handle } from '@/components/app/Sortable';
-import { appCopy, templateCopy } from '@/content/site';
+import { templateCopy } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
+import { shortDate } from '@/lib/appDates';
 import { EyeOff } from 'lucide-react';
 
 export type Task = {
@@ -20,7 +22,6 @@ export type Task = {
   created_by: string | null;
 };
 
-const dateFmt = new Intl.DateTimeFormat('he-IL', { day: '2-digit', month: '2-digit', year: '2-digit' });
 
 /** Compared on calendar dates, so a task due today is never shown as late
  *  merely because it is the evening. */
@@ -33,10 +34,13 @@ function isOverdue(due: string | null): boolean {
 }
 
 function AddButton() {
+  const ui = useCopy();
+  const c = ui.tasks;
+  const dateFmt = shortDate(ui.locale);
   const { pending } = useFormStatus();
   return (
     <button type="submit" className="btn-primary whitespace-nowrap" disabled={pending}>
-      {pending ? appCopy.tasks.adding : appCopy.tasks.add}
+      {pending ? c.adding : c.add}
     </button>
   );
 }
@@ -48,7 +52,9 @@ function Row({ task, clientId, viewer, canDelete, grip }: {
   task: Task; clientId: string; viewer: 'producer' | 'client'; canDelete: boolean;
   grip?: React.ReactNode;
 }) {
-  const c = appCopy.tasks;
+  const ui = useCopy();
+  const c = ui.tasks;
+  const dateFmt = shortDate(ui.locale);
   const late = !task.done && isOverdue(task.due_on);
   const ownerLabel =
     viewer === 'producer'
@@ -116,7 +122,9 @@ export function TaskList({ clientId, tasks, viewer, viewerId }: {
   clientId: string; tasks: Task[]; viewer: 'producer' | 'client'; viewerId: string;
 }) {
   const [state, action] = useActionState<TaskResult | null, FormData>(addTask, null);
-  const c = appCopy.tasks;
+  const ui = useCopy();
+  const c = ui.tasks;
+  const dateFmt = shortDate(ui.locale);
 
   const open = tasks.filter((t) => !t.done);
   const done = tasks.filter((t) => t.done);

@@ -1,7 +1,9 @@
 import { requireAccount } from '@/lib/auth';
 import { supabaseServer } from '@/lib/supabase/server';
 import { Live } from '@/components/app/Live';
-import { appCopy } from '@/content/site';
+import { appUiFor } from '@/content/appUi';
+import { CopyProvider } from '@/components/app/CopyProvider';
+import { currentLocale } from '@/lib/serverLocale';
 import { PageHead, Empty } from '@/components/app/PageHead';
 import { PortalWorkspace } from '@/components/app/PortalWorkspace';
 import { PORTAL_LIVE_SOURCES } from '@/lib/liveSources';
@@ -17,11 +19,18 @@ import { fileReport } from '@/app/actions/report';
 import { brandFor } from '@/lib/branding';
 import { Ltr } from '@/components/Ltr';
 
-export const metadata = { title: appCopy.portal.title };
+export async function generateMetadata() {
+  return { title: appUiFor(await currentLocale()).portal.title };
+}
 
 export default async function PortalPage() {
   const account = await requireAccount();
   const sb = await supabaseServer();
+
+  /* The couple's own language. Everything below reads its words from here, and
+     the panels read theirs from the provider, so one cookie decides the whole
+     screen instead of half of it. */
+  const ui = appUiFor(await currentLocale());
 
   /* asClient is true even though this reader *is* the client: it costs nothing
      here, and it means the gate is exercised on the path people actually use
@@ -46,8 +55,8 @@ export default async function PortalPage() {
   if (data.workspaces.length === 0) {
     return (
       <>
-        <PageHead title={appCopy.portal.title} sub={appCopy.portal.sub} />
-        <Empty text={appCopy.portal.empty} />
+        <PageHead title={ui.portal.title} sub={ui.portal.sub} />
+        <Empty text={ui.portal.empty} />
         {/* Almost every empty area is an address mismatch rather than an event
             that has not been opened. Since Google made signing in with the
             wrong one a single tap, the address is named here and the fix is
@@ -55,21 +64,26 @@ export default async function PortalPage() {
             wondering whether the invitation was real. */}
         <div className="card mt-5">
           <p className="text-[14.5px] text-ink">
-            <Ltr>{appCopy.portal.emptyWho(account.email)}</Ltr>
+            <Ltr>{ui.portal.emptyWho.replace('{email}', account.email)}</Ltr>
           </p>
-          <p className="mt-2 text-[14px] text-ink-soft">{appCopy.portal.emptyMismatch}</p>
+          <p className="mt-2 text-[14px] text-ink-soft">{ui.portal.emptyMismatch}</p>
         </div>
       </>
     );
   }
 
+  /* One provider over the whole screen. Every panel below is a client
+     component, and the alternative was threading the same prop through
+     thirteen of them and through the producer's console on the way. The
+     context defaults to Hebrew, so a screen that never gets a provider
+     renders exactly what it rendered before. */
   return (
-    <>
-      <PageHead title={appCopy.portal.title} sub={appCopy.portal.sub} />
+    <CopyProvider value={ui}>
+      <PageHead title={ui.portal.title} sub={ui.portal.sub} />
       <div className="space-y-6">
         {data.workspaces.map((w) => (
           <div key={w.id} className="space-y-6">
-            <PortalWorkspace workspace={w} data={data} viewerId={account.id} />
+            <PortalWorkspace workspace={w} data={data} viewerId={account.id} ui={ui} />
             <Contracts clientId={w.id} contracts={contracts.get(w.id) ?? []} viewer="client" />
             {/* Behind the same gate every other module is behind, so a plan
                 that does not include it does not quietly include it here. */}
@@ -104,6 +118,6 @@ export default async function PortalPage() {
         }}
       />
       <Live sources={PORTAL_LIVE_SOURCES} />
-    </>
+    </CopyProvider>
   );
 }

@@ -3,7 +3,7 @@
 import { useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { addTable, setTableSeats, deleteTable, seatGuest, type SeatResult } from '@/app/actions/seating';
-import { seatingCopy } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
 import { Ratio } from '@/components/Ltr';
 import { useDragOnto, Grip, Carried } from '@/components/app/DragOnto';
 
@@ -81,7 +81,7 @@ function Table({ table, seated, taken, dim, active, onOpen, drop }: {
   onOpen: () => void;
   drop: Record<string, unknown>;
 }) {
-  const c = seatingCopy;
+  const c = useCopy().seating;
   const full = taken >= table.seats;
 
   /* One chair per seat, and a party of four fills four of them. Which chair a
@@ -142,7 +142,7 @@ export function SeatingPlan({ clientId, tables, guests }: {
   const [addState, addAction] = useActionState<SeatResult | null, FormData>(addTable, null);
   const [seatState, seatAction] = useActionState<SeatResult | null, FormData>(seatGuest, null);
   const [sizeState, sizeAction] = useActionState<SeatResult | null, FormData>(setTableSeats, null);
-  const c = seatingCopy;
+  const c = useCopy().seating;
 
   /* only people who said yes take a chair, which is the same rule the
      database enforces, so the screen never offers a move that gets refused */

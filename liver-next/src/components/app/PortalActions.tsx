@@ -2,13 +2,12 @@
 
 import { useState } from 'react';
 import { Phone, MessageCircle, CalendarDays, TriangleAlert } from 'lucide-react';
-import { appCopy } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
 import { Sheet } from '@/components/app/Sheet';
 import { Ltr } from '@/components/Ltr';
 import { normalizePhone, displayPhone } from '@/lib/phone';
 import { cn } from '@/lib/utils';
 
-const c = appCopy.sheets;
 
 /**
  * The two things a couple needs at a moment they cannot plan for.
@@ -31,6 +30,7 @@ export function PortalActions({
   bookingUrl: string;
   onReport: (topic: string, body: string) => Promise<{ ok: boolean; error?: string }>;
 }) {
+  const c = useCopy().sheets;
   const [sheet, setSheet] = useState<'contact' | 'report' | null>(null);
   const tel = normalizePhone(phone);
   const wa = normalizePhone(whatsapp || phone);
@@ -139,6 +139,7 @@ function ReportForm({ onSubmit, onDone }: {
   onSubmit: (topic: string, body: string) => Promise<{ ok: boolean; error?: string }>;
   onDone: () => void;
 }) {
+  const c = useCopy().sheets;
   const [topic, setTopic] = useState<string>(c.report.topics[0]);
   const [body, setBody] = useState('');
   const [state, setState] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');

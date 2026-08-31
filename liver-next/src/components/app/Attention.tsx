@@ -74,7 +74,7 @@ export function AttentionList({ items }: { items: AttentionItem[] }) {
                 size={17}
                 strokeWidth={1.5}
                 aria-hidden
-                className="shrink-0 text-ink-mute transition-transform duration-200
+                className="chev-onward shrink-0 text-ink-mute transition-transform duration-200
                            group-hover:-translate-x-0.5"
               />
             </Link>

@@ -49,12 +49,20 @@ export type InstallCopy = Wide<typeof installCopy>;
    Hebrew. Picking the keys the public component actually reads means adding an
    admin string never asks for an English one, and adding a shopfront string
    does. */
-export type ShopCopy = Wide<Pick<typeof storeCopy,
-  | 'shopTitle' | 'shopSub' | 'shopEmpty' | 'addToCart' | 'cart' | 'qty' | 'clear'
-  | 'checkout' | 'sending' | 'cancel' | 'total' | 'kindProduct' | 'kindService'
-  | 'buyerName' | 'buyerPhone' | 'buyerEmail' | 'buyerNote' | 'buyerNotePh'
-  | 'payLater' | 'thanksTitle' | 'thanks' | 'again' | 'failed'
->>;
+const SHOP_KEYS = [
+  'shopTitle', 'shopSub', 'shopEmpty', 'addToCart', 'cart', 'qty', 'clear',
+  'checkout', 'sending', 'cancel', 'total', 'kindProduct', 'kindService',
+  'buyerName', 'buyerPhone', 'buyerEmail', 'buyerNote', 'buyerNotePh',
+  'payLater', 'thanksTitle', 'thanks', 'again', 'failed',
+] as const;
+
+export type ShopCopy = Wide<Pick<typeof storeCopy, (typeof SHOP_KEYS)[number]>>;
+
+/* Narrowed at run time as well as in the type. The Hebrew object is a superset
+   and assignable, so the types were happy handing the whole of `storeCopy` to
+   the shopfront: every admin string, including the wording of the orders board,
+   serialised into the page of anybody browsing the shop. */
+const shopHe = Object.fromEntries(SHOP_KEYS.map((k) => [k, storeCopy[k]])) as ShopCopy;
 export type RsvpCopy = Wide<typeof rsvpCopy>;
 export type BudgetSimCopy = Wide<typeof budgetSimCopy>;
 export type ConciergeCopy = Wide<typeof conciergeCopy>;
@@ -67,7 +75,7 @@ export const privacyFor = (l: Locale): PrivacyCopy => (l === 'en' ? privacyCopyE
 export const termsFor = (l: Locale): TermsCopy => (l === 'en' ? termsCopyEn : termsCopy);
 export const a11yFor = (l: Locale): A11yCopy => (l === 'en' ? a11yCopyEn : a11yCopy);
 export const installFor = (l: Locale): InstallCopy => (l === 'en' ? installCopyEn : installCopy);
-export const storeFor = (l: Locale): ShopCopy => (l === 'en' ? storeCopyEn : storeCopy);
+export const storeFor = (l: Locale): ShopCopy => (l === 'en' ? storeCopyEn : shopHe);
 export const rsvpFor = (l: Locale): RsvpCopy => (l === 'en' ? rsvpCopyEn : rsvpCopy);
 export const budgetSimFor = (l: Locale): BudgetSimCopy => (l === 'en' ? budgetSimCopyEn : budgetSimCopy);
 export const conciergeFor = (l: Locale): ConciergeCopy => (l === 'en' ? conciergeCopyEn : conciergeCopy);

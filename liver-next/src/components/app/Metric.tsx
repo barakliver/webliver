@@ -107,7 +107,7 @@ function Way({ on }: { on?: boolean }) {
       size={15}
       strokeWidth={1.5}
       aria-hidden
-      className="shrink-0 opacity-0 transition-all duration-200
+      className="chev-onward shrink-0 opacity-0 transition-all duration-200
                  group-hover/metric:-translate-x-1 group-hover/metric:opacity-100
                  group-focus-visible/metric:opacity-100"
     />

@@ -5,7 +5,7 @@ import { useFormStatus } from 'react-dom';
 import { addGuests, deleteGuest, setGuestStatus, type GuestResult } from '@/app/actions/guests';
 import { DIETS } from '@/content/lists';
 import { GuestImport } from '@/components/app/GuestImport';
-import { guestsCopy } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
 import { Metric } from '@/components/app/Metric';
 
 export type Guest = {
@@ -15,15 +15,17 @@ export type Guest = {
 };
 
 function Add() {
+  const c = useCopy().guests;
   const { pending } = useFormStatus();
   return (
     <button type="submit" className="btn-primary" disabled={pending}>
-      {pending ? guestsCopy.adding : guestsCopy.add}
+      {pending ? c.adding : c.add}
     </button>
   );
 }
 
 function CopyLink({ token }: { token: string }) {
+  const c = useCopy().guests;
   const [done, setDone] = useState(false);
   return (
     <button
@@ -36,13 +38,13 @@ function CopyLink({ token }: { token: string }) {
         } catch {
           /* clipboard is blocked in some browsers unless the page is focused,
              so fall back to showing the link rather than failing silently */
-          window.prompt(guestsCopy.copyLink, url);
+          window.prompt(c.copyLink, url);
         }
         setDone(true);
         setTimeout(() => setDone(false), 1600);
       }}
     >
-      {done ? guestsCopy.copied : guestsCopy.copyLink}
+      {done ? c.copied : c.copyLink}
     </button>
   );
 }
@@ -52,13 +54,14 @@ const dietLabel = (v: string) => DIETS.find((d) => d.value === v)?.label ?? v;
 /** The one piece of colour on a guest row, shared by both layouts so the phone
  *  and the desktop can never end up calling the same status different things. */
 function StatusChip({ status }: { status: Guest['status'] }) {
+  const c = useCopy().guests;
   return (
     <span className={`shrink-0 rounded-xl2 px-3 py-1 text-[12.5px] ${
       status === 'attending' ? 'bg-ok-wash text-ok'
       : status === 'declined' ? 'bg-bad-wash text-bad'
       : 'bg-surface-200 text-ink-mute'
     }`}>
-      {status === 'attending' ? guestsCopy.attending : status === 'declined' ? guestsCopy.declined : guestsCopy.pending}
+      {status === 'attending' ? c.attending : status === 'declined' ? c.declined : c.pending}
     </span>
   );
 }
@@ -66,6 +69,7 @@ function StatusChip({ status }: { status: Guest['status'] }) {
 /** Copy the invitation, mark them as coming, remove them. Same three actions
  *  wherever the row is drawn. */
 function RowActions({ guest, clientId }: { guest: Guest; clientId: string }) {
+  const c = useCopy().guests;
   return (
     <>
       <CopyLink token={guest.invite_token} />
@@ -80,7 +84,7 @@ function RowActions({ guest, clientId }: { guest: Guest; clientId: string }) {
       <form action={deleteGuest}>
         <input type="hidden" name="guest_id" value={guest.id} />
         <input type="hidden" name="client_id" value={clientId} />
-        <button type="submit" className="btn-quiet px-2 py-1 text-[13px]">{guestsCopy.remove}</button>
+        <button type="submit" className="btn-quiet px-2 py-1 text-[13px]">{c.remove}</button>
       </form>
     </>
   );
@@ -89,7 +93,7 @@ function RowActions({ guest, clientId }: { guest: Guest; clientId: string }) {
 export function GuestList({ clientId, guests }: { clientId: string; guests: Guest[] }) {
   const [state, action] = useActionState<GuestResult | null, FormData>(addGuests, null);
   const [filter, setFilter] = useState<'all' | Guest['status']>('all');
-  const c = guestsCopy;
+  const c = useCopy().guests;
 
   const attending = guests.filter((g) => g.status === 'attending');
   const declined = guests.filter((g) => g.status === 'declined');

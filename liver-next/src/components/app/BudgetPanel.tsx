@@ -3,7 +3,7 @@
 import { useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { addBudgetItem, deleteBudgetItem, toggleBudgetVisible, type MoneyResult } from '@/app/actions/money';
-import { appCopy } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
 import { Money, ils } from '@/components/Ltr';
 import { Metric } from '@/components/app/Metric';
 import { ReceiptScan } from '@/components/app/ReceiptScan';
@@ -15,10 +15,11 @@ export type BudgetItem = {
 
 
 function Add() {
+  const c = useCopy().money;
   const { pending } = useFormStatus();
   return (
     <button type="submit" className="btn-primary whitespace-nowrap" disabled={pending}>
-      {pending ? appCopy.money.payAdding : appCopy.money.budAdd}
+      {pending ? c.payAdding : c.budAdd}
     </button>
   );
 }
@@ -27,7 +28,7 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
   clientId: string; items: BudgetItem[]; viewer: 'producer' | 'client'; visible: boolean;
 }) {
   const [state, action] = useActionState<MoneyResult | null, FormData>(addBudgetItem, null);
-  const c = appCopy.money;
+  const c = useCopy().money;
   /* The scanner writes into this form by name, so the two have to agree on
      one id, and it has to be unique per event on a page that can show more
      than one. */
