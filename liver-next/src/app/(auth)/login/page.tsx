@@ -7,7 +7,10 @@ import { PromiseLine } from '@/components/Promise';
 import { LoginForm } from './LoginForm';
 import { HashSession } from './HashSession';
 
-export const metadata: Metadata = { title: 'כניסה' };
+/* A door, not a destination. Indexing it means somebody searching for a
+   wedding producer can land on a sign-in form for an account they do not
+   have, which answers no question they asked. */
+export const metadata: Metadata = { title: 'כניסה', robots: { index: false, follow: true } };
 
 export default async function LoginPage({
   searchParams,

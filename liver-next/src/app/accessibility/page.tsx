@@ -8,6 +8,7 @@ const c = a11yCopy.page;
 export const metadata = {
   title: c.title,
   description: c.sub,
+  alternates: { canonical: '/accessibility' },
 };
 
 /**

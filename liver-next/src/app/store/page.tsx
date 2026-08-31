@@ -10,7 +10,7 @@ import { storeCopy } from '@/content/site';
 import { storeImageUrl } from '@/lib/store';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: storeCopy.shopTitle };
+export const metadata = { title: storeCopy.shopTitle, alternates: { canonical: '/store' } };
 
 type Row = {
   id: string; name: string; blurb: string; body: string;

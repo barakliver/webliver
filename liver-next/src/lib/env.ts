@@ -50,7 +50,14 @@ function resolveSiteUrl(): string {
 
 export const publicEnv = {
   siteUrl:   resolveSiteUrl(),
-  whatsapp:  process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? '',
+  /* His number, in the international form wa.me needs.
+     It has a real default for the same reason the booking link does: it is a
+     property of the business rather than of a deployment, and the empty
+     string it used to fall back to turned the WhatsApp button into nothing
+     while the example file quietly shipped 972500000000 to anybody who
+     copied it. A placeholder number is worse than none. The variable still
+     wins, for a second producer or a changed line. */
+  whatsapp:  (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '972526604320').replace(/\D/g, ''),
   /* Where an accessibility problem is reported. A statement that names no
      way to reach anybody does not meet the requirement it is written for. */
   contactEmail: process.env.NEXT_PUBLIC_CONTACT_EMAIL || 'barakliver@gmail.com',

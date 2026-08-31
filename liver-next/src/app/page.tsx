@@ -18,6 +18,7 @@ import { Portrait } from '@/components/marketing/Portrait';
 import { FabDock } from '@/components/marketing/FabDock';
 import { BookMeeting } from '@/components/marketing/BookMeeting';
 import { AiConcierge } from '@/components/marketing/AiConcierge';
+import { StructuredData } from '@/components/marketing/StructuredData';
 
 /* Rendered per request, because the language is read from a cookie and a page
    built once cannot be in two languages.
@@ -29,12 +30,19 @@ import { AiConcierge } from '@/components/marketing/AiConcierge';
    depends on how this page happens to be rendered. */
 export const dynamic = 'force-dynamic';
 
+/* The one address this page has, said out loud.
+   Canonical is set per page rather than on the layout on purpose: a canonical
+   inherited from a layout resolves to the same URL on every route, which tells
+   a crawler that the privacy page and the shop are both this one. */
+export const metadata = { alternates: { canonical: '/' }, openGraph: { url: '/' } };
+
 export default async function HomePage() {
   const locale = readLocale((await cookies()).get(LOCALE_COOKIE)?.value);
   const site = await getSiteCopy(supabasePublic(), locale);
 
   return (
     <>
+      <StructuredData site={site} />
       <Nav site={site} locale={locale} />
       <main id="main">
         <Hero site={site} />

@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { Smartphone, Monitor, CircleHelp } from 'lucide-react';
 import { installCopy as c, site } from '@/content/site';
 
-export const metadata: Metadata = { title: c.title };
+export const metadata: Metadata = { title: c.title, alternates: { canonical: '/install' } };
 
 /**
  * How to put this on a phone.

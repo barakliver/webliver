@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { privacyCopy as c, site } from '@/content/site';
 import { publicEnv } from '@/lib/env';
 
-export const metadata = { title: c.title, description: c.sub };
+export const metadata = { title: c.title, description: c.sub, alternates: { canonical: '/privacy' } };
 
 /**
  * What is held, and about whom.

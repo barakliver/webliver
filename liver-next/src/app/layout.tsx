@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Heebo } from 'next/font/google';
 import { site } from '@/content/site';
-import { PLATFORM_HOST } from '@/lib/env';
+import { publicEnv } from '@/lib/env';
 import { ServiceWorker } from '@/components/app/ServiceWorker';
 import { VersionWatch } from '@/components/app/VersionWatch';
 import './globals.css';
@@ -36,7 +36,11 @@ const heebo = Heebo({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? `https://${PLATFORM_HOST}`),
+  /* `publicEnv.siteUrl` rather than the raw variable, which is the same
+     guard the mailed links already got: a production build carrying a
+     laptop's value would otherwise stamp localhost into every canonical and
+     every share card. */
+  metadataBase: new URL(publicEnv.siteUrl),
   title: { default: `${site.brand} | ${site.tagline}`, template: `%s | ${site.brand}` },
   description: 'הפקת חתונות ואירועים מקצה לקצה. תכנון, תקציב, ספקים וניהול יום האירוע.',
   manifest: '/manifest.webmanifest',
@@ -49,10 +53,32 @@ export const metadata: Metadata = {
      time. */
   other: { 'apple-mobile-web-app-capable': 'yes' },
   icons: { icon: '/icon-192.png', apple: '/icon-192.png' },
+  /* The card a link carries when somebody sends it on.
+   *
+   *  The audit measured zero Open Graph tags and called it the most expensive
+   *  finding in its list, for a reason that has nothing to do with search:
+   *  couples pass this link to each other in WhatsApp, and a link with no
+   *  image and no title arrives looking like spam. That is the strongest
+   *  recommendation this business gets, a recommendation from a friend,
+   *  rendered as a bare URL.
+   *
+   *  The tags existed by the time I checked. The image did not, which is the
+   *  half WhatsApp actually shows. `/og.jpg` is one of his own photographs
+   *  with his name set into the foot of it; `tools/og-card.py` at the repo
+   *  root rebuilds it from `og-image.jpg` if the photograph or the wording
+   *  ever changes. Absolute rather than relative, because several scrapers
+   *  still do not resolve a relative og:image against the page. */
   openGraph: {
     type: 'website', locale: 'he_IL', siteName: site.brand,
     title: `${site.brand} | ${site.tagline}`,
     description: 'הפקת חתונות ואירועים מקצה לקצה.',
+    images: [{ url: `${publicEnv.siteUrl}/og.jpg`, width: 1200, height: 630, alt: `${site.brand} | ${site.tagline}` }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: `${site.brand} | ${site.tagline}`,
+    description: 'הפקת חתונות ואירועים מקצה לקצה.',
+    images: [`${publicEnv.siteUrl}/og.jpg`],
   },
 };
 
