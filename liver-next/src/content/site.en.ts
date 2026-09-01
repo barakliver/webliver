@@ -29,11 +29,11 @@ export const siteEn: SiteCopy = {
     headline: 'One perfect day, held together',
     name: 'Barak Liver',
     body: [
-      'One evening in a lifetime, everyone you love is in the same place.',
-      'That evening goes by fast. The worrying is the part you can hand to somebody else.',
-      'From the first meeting to the last song, Barak holds the plan, the budget, the suppliers and every small detail in between.',
-      'You stay close to every decision that matters, and far from everything that weighs.',
-      'So that on the night itself you are in one place only. Inside it.',
+      'One evening in a lifetime, all the people dearest to you are in the same place.',
+      'An evening like that deserves to be walked by somebody who knows the way.',
+      'From the first meeting to the last song, we carry the plan, the budget, the suppliers and every small detail in between.',
+      'You stay close to every decision that matters to you, and far from everything that weighs.',
+      'And when the evening arrives, you are free to live it in full.',
     ],
     cta: 'Let us meet',
   },
@@ -41,32 +41,32 @@ export const siteEn: SiteCopy = {
   begin: {
     title: 'Where to begin',
     steps: [
-      { title: 'Look at the work', body: 'The portfolio is below. Do not look for beauty, look for a feeling.' },
+      { title: 'Look at the work', body: 'The portfolio is waiting below. See whether it speaks to you.' },
       { title: 'Check the numbers', body: 'The budget calculator gives you an order of magnitude in a minute, no details asked.' },
-      { title: 'Book the first meeting', body: 'Half an hour with Barak, no strings. After it you will know whether to go on together.' },
+      { title: 'Book the first meeting', body: 'Half an hour of conversation, no obligation. After it you will know whether to go on together.' },
     ],
   },
 
   philosophy: {
     title: 'Your wedding starts with you',
     body: [
-      'Before a venue, a photographer or a look, one question comes first: how do you want to remember this evening.',
-      'What your people should feel the moment they walk in.',
-      'Which moment must not slip past you among the details.',
-      'Where it is worth spending, and what is not up for compromise.',
-      'From those answers comes a wedding nobody could copy, because it starts from you.',
+      'Before a venue, a photographer or a look, one question comes before all the others: how would you like to remember this evening.',
+      'What your guests should feel the moment they walk in.',
+      'Which moments are too precious to slip past among the details.',
+      'Where it is right to invest, and what is not open to compromise.',
+      'Out of those answers a wedding is built that belongs to you alone.',
     ],
   },
 
   value: {
     title: 'When somebody is holding the whole picture',
     body: [
-      'Calm is not having nothing to do. Calm is knowing somebody is already doing it.',
-      'You know at any moment what is happening now and what comes next.',
-      'The budget in front of you, suppliers getting answers, decisions made in time.',
-      'Small things do not become a large problem the week before the wedding.',
-      'And in the evening, when it is just the two of you, you talk about the wedding. Not about its tasks.',
-      'One address, from the first moment to the last.',
+      'True calm is not the absence of things to do. It is the knowledge that somebody is already taking care of every one of them.',
+      'At any moment you know what is being done now and what comes next.',
+      'The budget is open before you, suppliers receive their answers, and decisions are made in time.',
+      'The small details do not grow into a large worry in the final week.',
+      'And in the evenings you talk about the wedding itself, not about its errands.',
+      'One address walks beside you, from the first moment to the last.',
     ],
   },
 
@@ -90,38 +90,38 @@ export const siteEn: SiteCopy = {
   },
 
   about: {
-    title: 'The person walking with you',
+    title: 'Who walks beside you',
     body: [
-      'More than eight years and hundreds of events, from outdoor weddings to complex evenings of hundreds of guests, taught Barak one simple thing: you do not manage the pressure of this day. You prevent it in advance.',
-      'He is the person who listens to the end, checks the numbers again, and tells you the truth even when it is not the pleasant answer.',
-      'And when something moves at the last minute, and something always moves, there is somebody beside you who has seen it all and stays calm.',
-      'Because on the most important day of your lives, you deserve a person you can simply trust.',
+      'Behind every production stand more than eight years and hundreds of events, from outdoor weddings to complex evenings of hundreds of guests.',
+      'Those years taught us one simple thing: the pressure of the great day is not managed in the moment. It is prevented in advance.',
+      'We listen to the end, check the numbers once more, and tell the truth even when it is not the comfortable answer.',
+      'And when something shifts at the last minute, there is somebody at your side who has seen it all and stays calm.',
     ],
   },
 
   work: {
     title: 'Recent work',
-    sub: 'Eight moments from one year of weddings. Behind each of them stand months of quiet work.',
+    sub: 'Eight moments from one year of weddings. Behind each of them, months of quiet work.',
   },
 
   dayOf: {
     title: 'And on the day itself',
     body: [
-      'And then the moment arrives when the planning stops.',
-      'Your people walk in. The music rises. Somebody is crying before the ceremony has even started.',
-      'Behind it all, Barak already knows who has arrived, what was agreed, and what needs to happen in every minute.',
-      'You will not see any of it happen. That is exactly the point.',
-      'You will be busy dancing.',
+      'And then the moment arrives when the planning ends and the celebration begins.',
+      'The guests walk in, the music rises, and the evening you have waited for truly happens.',
+      'Behind the scenes it is already known who has arrived, what was agreed, and what needs to happen in every minute.',
+      'You are not meant to feel any of it. That is precisely the craft.',
+      'All that is left for you is to celebrate.',
     ],
   },
 
   academy: {
     title: 'Would you rather plan it yourselves?',
     body: [
-      'Some couples want to hold the production in their own hands, and to do it properly.',
-      'Barak built the online course for them: the same method he works by, stage after stage.',
+      'Some couples choose to hold the production in their own hands, and to do it properly.',
+      'For them we built the online course: the same method we work by, stage after stage.',
       'From the budget and the venue through to suppliers, contracts and the day itself.',
-      'You produce it yourselves. You are not by yourselves.',
+      'You produce it yourselves, but you are not by yourselves.',
     ],
     cta: 'See the online course',
   },
@@ -129,9 +129,9 @@ export const siteEn: SiteCopy = {
   closing: {
     title: 'It starts with a conversation',
     body: [
-      'Half an hour, no strings.',
-      'Tell Barak where you are today and what wedding you see when you close your eyes.',
-      'If it feels right, you go on together. If not, you leave with your head in order.',
+      'It all begins with one conversation. Half an hour of acquaintance, no obligation.',
+      'Tell us where you stand today and what wedding you see in your mind.',
+      'If it feels right to walk together, we continue on that road. And if not, you leave with order and direction.',
     ],
     cta: 'Book an introductory meeting',
   },
@@ -139,12 +139,12 @@ export const siteEn: SiteCopy = {
   budget: {
     title: 'What does a wedding like this cost',
     sub: 'A few details, and within a minute you have an order of magnitude. An honest starting point, not a quote.',
-    closing: 'Want to go over the real numbers with Barak? Half an hour in the diary, no strings.',
+    closing: 'Would you like to go over the numbers together? Book an introductory meeting, no obligation.',
   },
 
   lead: {
     title: 'Good to meet you',
-    sub: 'Leave your details, and Barak usually comes back within one business day. A person answers, not a system.',
+    sub: 'Leave your details and we usually come back within one business day. A person answers, not a system.',
     fields: {
       name: 'Full name',
       phone: 'Phone',
@@ -157,21 +157,21 @@ export const siteEn: SiteCopy = {
     submit: 'Send',
     sending: 'Sending',
     okTitle: 'Thank you, we have it',
-    okBody: 'Your details went straight to Barak. He usually comes back within one business day.',
+    okBody: 'Your details have been received. We usually come back within one business day.',
   },
 
   fab: {
     whatsapp: 'WhatsApp',
     booking: 'Book a meeting',
-    bookingNote: 'Half an hour in Barak’s diary',
+    bookingNote: 'Half an hour of acquaintance, no obligation',
     lead: 'Leave details',
-    whatsappMessage: 'Hi Barak, I came from the website and would love to hear about producing our wedding.',
+    whatsappMessage: 'Hello, I came from the website and would love to hear about producing our wedding.',
   },
 
   nav: {
     philosophy: 'Approach',
     journey: 'Process',
-    about: 'About Barak',
+    about: 'About',
     budget: 'Budget',
     shop: 'Shop',
     contact: 'Contact',
@@ -353,10 +353,10 @@ export const termsCopyEn: TermsCopy = {
     ['The site', 'A public page, a budget calculator, an enquiry form and a shop. Open to anybody, without signing up.'],
     ['Your personal area',
      'Opened for a couple with an active event. Inside it: the budget, the tasks, the guest list, the '
-     + 'replies, the run sheet, the files and the conversation with Barak.'],
+     + 'replies, the run sheet, the files and the conversation with the production.'],
     ['The shop', 'Products and services that can be requested through the site. Details below.'],
     ['The production itself',
-     'The work Barak carries out. It is set by the agreement signed between the parties and not by this page.'],
+     'The work we carry out. It is set by the agreement signed between the parties and not by this page.'],
   ],
 
   contractTitle: 'The production agreement governs',
@@ -388,7 +388,7 @@ export const termsCopyEn: TermsCopy = {
   contentTitle: 'The content you upload',
   content: [
     'The files, the guest list and the text you upload stay yours. We do not become their owner.',
-    'We receive one narrow permission: to hold the material, show it to you and to Barak, and use it '
+    'We receive one narrow permission: to hold the material, show it to you and to the production, and use it '
     + 'to produce the event. Nothing beyond that.',
     'You are responsible for having the right to upload what you uploaded. If you uploaded a '
     + 'photographer’s image, the agreement with the photographer is yours.',
@@ -405,7 +405,7 @@ export const termsCopyEn: TermsCopy = {
   shop: [
     'Prices are in new shekels. A price shown in error is not binding, and if that happens we will tell '
     + 'you before any further step.',
-    'An order sent from the shop is a request that reaches Barak, not a purchase. No payment method is '
+    'An order sent from the shop is a request that reaches us, not a purchase. No payment method is '
     + 'given here and no card is charged.',
     'The deal closes in conversation, and a mutual commitment is created only once the terms and the '
     + 'payment are agreed by both sides.',
@@ -635,15 +635,15 @@ export const EVENT_KINDS_EN: EventKinds = [
 
 export const conciergeCopyEn: ConciergeCopy = {
   title: 'Questions about the production',
-  sub: "Barak's digital assistant",
+  sub: 'Our digital assistant',
   open: 'Start a conversation',
   close: 'Close',
   greeting: 'Ask me how the process works, what a production includes, and what happens on the day itself. '
-    + 'If you would like Barak to get back to you, leave me a name and a phone number.',
+    + 'If you would like us to get back to you, leave me a name and a phone number.',
   starters: ['How does the process work?', 'What does a production include?', 'We want an outdoor wedding'],
   placeholder: 'What would you like to know',
   send: 'Send',
   thinking: 'One moment',
-  wentWrong: 'Something jammed on my side. You can write to Barak on WhatsApp and he will get back to you.',
-  disclaimer: 'General answers. Price and availability are settled with Barak at the meeting.',
+  wentWrong: 'Something jammed on my side. You can write to us on WhatsApp and we will get back to you.',
+  disclaimer: 'General answers. Price and availability are settled at the meeting.',
 };

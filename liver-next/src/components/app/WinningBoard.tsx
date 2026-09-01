@@ -1,8 +1,9 @@
 'use client';
 
-import { useActionState, useState } from 'react';
+import { useActionState, useEffect, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { uploadBoardImage, deleteBoardImage, type BoardResult } from '@/app/actions/board';
+import { ImagePlus } from 'lucide-react';
 import { BOARD_CATEGORIES } from '@/content/lists';
 import { useCopy } from '@/components/app/CopyProvider';
 
@@ -27,7 +28,12 @@ export function WinningBoard({ clientId, images, viewer }: {
 }) {
   const [state, action] = useActionState<BoardResult | null, FormData>(uploadBoardImage, null);
   const [filter, setFilter] = useState<string>('all');
+  const [picked, setPicked] = useState('');
   const c = useCopy().board;
+
+  /* React resets the form's own fields after a successful action; the chip
+     text lives in state and has to be told. */
+  useEffect(() => { if (state?.ok) setPicked(''); }, [state]);
 
   /* Only offer a filter for a category that actually has something in it,
      so the row never promises a view that turns out empty. */
@@ -72,7 +78,7 @@ export function WinningBoard({ clientId, images, viewer }: {
         '--accent-bright-rgb': 'var(--accent-light-rgb, 216 188 138)',
       } as React.CSSProperties}
     >
-      <p className="text-[11.5px] tracking-[.14em] text-accent-light">BRIDE MODE</p>
+      <p className="text-[11.5px] tracking-[.14em] text-accent-light">{c.eyebrow}</p>
       <h2 className="mt-2 font-display text-[30px] font-light text-ink">{c.title}</h2>
       <p className="mt-2 text-[14.5px] text-ink-soft">{viewer === 'client' ? c.subClient : c.subProducer}</p>
       <hr className="rule-gold mt-6" />
@@ -80,11 +86,21 @@ export function WinningBoard({ clientId, images, viewer }: {
       {viewer === 'client' && (
         <form action={action} className="mt-5 grid gap-3 sm:grid-cols-[auto_1fr_150px_auto]">
           <input type="hidden" name="client_id" value={clientId} />
-          <input
-            name="image" type="file" required accept="image/*"
-            className="text-[14px] file:mr-0 file:ml-3 file:min-h-[44px] file:rounded-xl2 file:border-0 file:bg-ink file:px-4 file:text-surface sm:file:min-h-0 sm:file:py-2"
-            aria-label={c.upload}
-          />
+          {/* The native control said "Choose File" and "No file chosen" in
+              the browser's own language, in English, in the middle of a
+              Hebrew screen, and no amount of `file:` styling reaches that
+              second string. The input is still here and still submits with
+              the form; it is simply visually replaced by a label that shows
+              the chosen name, in the language of the page. */}
+          <label className="inline-flex min-h-[44px] cursor-pointer items-center gap-2 rounded-xl2 border border-line-strong bg-surface-100 px-4 text-[14px] text-ink transition hover:border-accent/40 sm:min-h-0 sm:py-2">
+            <ImagePlus size={16} aria-hidden strokeWidth={1.5} />
+            <span className="max-w-[14rem] truncate">{picked || c.choose}</span>
+            <input
+              name="image" type="file" required accept="image/*" className="sr-only"
+              aria-label={c.upload}
+              onChange={(e) => setPicked(e.target.files?.[0]?.name ?? '')}
+            />
+          </label>
           <input name="caption" placeholder={c.captionPh} autoComplete="off" className="field" aria-label={c.caption} />
           <select name="category" defaultValue="other" className="field" aria-label={c.category}>
             {BOARD_CATEGORIES.map((cat) => <option key={cat.value} value={cat.value}>{cat.label}</option>)}
@@ -109,7 +125,7 @@ export function WinningBoard({ clientId, images, viewer }: {
                 <button
                   key={cat.value} type="button" onClick={() => setFilter(cat.value)}
                   aria-pressed={filter === cat.value}
-                  className={`rounded-xl2 px-4 py-1.5 text-[13.5px] transition ${
+                  className={`inline-flex min-h-[44px] items-center rounded-xl2 px-4 text-[13.5px] transition sm:min-h-0 sm:py-1.5 ${
                     filter === cat.value ? 'bg-ink text-surface' : 'border border-line bg-surface-100 text-ink-soft hover:bg-surface-200'
                   }`}
                 >{cat.label}</button>

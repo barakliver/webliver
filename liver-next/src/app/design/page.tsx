@@ -14,11 +14,13 @@ import { Contracts } from '@/components/app/Contracts';
 import { EventFiles } from '@/components/app/EventFiles';
 import { EventFileLists } from '@/components/app/EventFileLists';
 import { WinningBoard } from '@/components/app/WinningBoard';
+import { Shop } from '@/components/marketing/Shop';
+import { storeFor } from '@/content/ui';
 import {
   FIXTURE_CLIENT, FIXTURE_VIEWER,
   fixtureTasks, fixturePayments, fixtureBudget, fixtureGuests, fixtureTables,
   fixtureSeatGuests, fixtureDay, fixtureMessages, fixtureContracts, fixtureFiles,
-  fixtureSongs, fixtureKit, fixturePeople, fixtureBoard,
+  fixtureSongs, fixtureKit, fixturePeople, fixtureBoard, fixtureShopItems,
 } from '@/content/fixtures';
 
 /**
@@ -132,6 +134,10 @@ export default async function DesignPage() {
 
         <Panel name="WinningBoard · client" note="empty, which is what a new event looks like">
           <WinningBoard clientId={client} images={fixtureBoard} viewer="client" />
+        </Panel>
+
+        <Panel name="Shop" note="the public shopfront, portfolio stills as product images">
+          <Shop producerId="00000000-0000-4000-8000-00000000000f" items={fixtureShopItems} copy={storeFor(locale)} />
         </Panel>
       </main>
     </CopyProvider>

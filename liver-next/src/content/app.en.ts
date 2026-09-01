@@ -21,11 +21,11 @@ import type {
 export const portalEn: PortalCopy = {
   title: 'Our area',
   sub: 'Everything about your event, in one place.',
-  empty: 'No event has been linked to you yet. Barak will open it and you will hear from us.',
+  empty: 'No event has been linked to you yet. The production will open it and you will hear from us.',
   emptyWho: 'You are signed in as {email}.',
   emptyMismatch:
     'If the invitation went to a different address, that is why this screen is empty. You can sign out '
-    + 'and sign in with the address the invitation arrived at, or simply write to Barak and we will '
+    + 'and sign in with the address the invitation arrived at, or simply write to us and we will '
     + 'attach this address to the event.',
   daysLeft: 'days to the wedding',
   dateTbd: 'The date is not set yet',
@@ -161,10 +161,12 @@ export const moneyEn: MoneyCopy = {
 };
 
 export const boardEn: BoardCopy = {
+  eyebrow: 'Inspiration',
   title: 'Inspiration board',
   subClient: 'The photographs that made you say "that is the one". Everything collected here goes to the suppliers with us.',
   subProducer: 'The photographs the couple collected. Read only, they manage the board from their own area.',
   upload: 'Upload a photograph',
+  choose: 'Choose a photograph',
   uploading: 'Uploading',
   caption: 'Caption',
   captionPh: 'What you liked here',

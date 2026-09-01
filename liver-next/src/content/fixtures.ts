@@ -9,6 +9,7 @@ import type { Message } from '@/components/app/Thread';
 import type { Contract } from '@/components/app/Contracts';
 import type { EventFile } from '@/components/app/EventFiles';
 import type { Song, Kit, Person } from '@/components/app/EventFileLists';
+import type { ShopItem } from '@/components/marketing/Shop';
 import { MUSIC_MOMENTS, EQUIPMENT_CHECK, COUPLE_DETAIL_FIELDS } from '@/content/eventFile';
 
 /**
@@ -45,7 +46,7 @@ export const FIXTURE_VIEWER = '00000000-0000-4000-8000-0000000000aa';
 
 export const fixtureTasks: Task[] = [
   { id: 't1', title: 'לסגור טעימות עם הקייטרינג', due_on: day(4), done: false, owner: 'producer', created_by: FIXTURE_VIEWER, visible_to_client: true },
-  { id: 't2', title: 'לשלוח לברק את רשימת האורחים המעודכנת', due_on: day(-3), done: false, owner: 'client', created_by: FIXTURE_VIEWER, visible_to_client: true },
+  { id: 't2', title: 'לשלוח להפקה את רשימת האורחים המעודכנת', due_on: day(-3), done: false, owner: 'client', created_by: FIXTURE_VIEWER, visible_to_client: true },
   { id: 't3', title: 'לבחור שיר לכניסה לחופה', due_on: null, done: false, owner: 'client', created_by: null, visible_to_client: true },
   { id: 't4', title: 'תיאום סופי עם הצלם על שעת ההגעה והלוקיישן לצילומי המגזין', due_on: day(11), done: false, owner: 'producer', created_by: FIXTURE_VIEWER, visible_to_client: true },
   { id: 't5', title: 'לחתום על הסכם ההפקה', due_on: day(-20), done: true, owner: 'client', created_by: FIXTURE_VIEWER, visible_to_client: true },
@@ -138,3 +139,24 @@ export const fixturePeople: Person[] = [
 ];
 
 export const fixtureBoard: BoardImage[] = [];
+
+/** The shopfront, with the portfolio's own photographs standing in for product
+ *  images so the cards can be looked at without a storage bucket. */
+export const fixtureShopItems: ShopItem[] = [
+  {
+    id: 's1', kind: 'service', name: 'חבילת בר מלא',
+    blurb: 'ברמנים, קרח, כלים ואלכוהול לכל הערב.',
+    body: 'התמחור לפי מספר האורחים בפועל. כולל הקמה ופירוק.',
+    price: 18000, image: '/portfolio/venue-9-w1400.webp',
+  },
+  {
+    id: 's2', kind: 'service', name: 'עיצוב חופה',
+    blurb: 'פרחים טריים, בנייה והתקנה ביום האירוע.',
+    body: '', price: 6800, image: '/portfolio/dsc-8047-w1400.webp',
+  },
+  {
+    id: 's3', kind: 'product', name: 'ערכת קבלת פנים',
+    blurb: 'שילוט, סידורי שולחן וספר ברכות תואמים.',
+    body: '', price: 1450, image: '/portfolio/chuppah-50-w1400.webp',
+  },
+];
