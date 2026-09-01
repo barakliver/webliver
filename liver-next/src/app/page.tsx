@@ -5,6 +5,7 @@ import { getSiteCopy } from '@/lib/siteCopy';
 import { supabasePublic } from '@/lib/supabase/public';
 import { Nav } from '@/components/marketing/Nav';
 import { Hero } from '@/components/marketing/Hero';
+import { BeginPath } from '@/components/marketing/BeginPath';
 import { Section } from '@/components/marketing/Section';
 import { Prose } from '@/components/marketing/Prose';
 import { Steps } from '@/components/marketing/Steps';
@@ -47,6 +48,11 @@ export default async function HomePage() {
       <Nav site={site} locale={locale} />
       <main id="main">
         <Hero site={site} />
+
+        {/* The first thing after the hero answers the only question a new
+            visitor actually has: what do I do now. Everything below it is the
+            argument; this is the instruction. */}
+        <BeginPath site={site} />
 
         <Section id="philosophy" title={site.philosophy.title}>
           <Prose lines={site.philosophy.body} />

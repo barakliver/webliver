@@ -38,6 +38,15 @@ export const siteEn: SiteCopy = {
     cta: 'Let us meet',
   },
 
+  begin: {
+    title: 'Where to begin',
+    steps: [
+      { title: 'Look at the work', body: 'The portfolio is below. Feel whether it speaks to you.' },
+      { title: 'Check the numbers', body: 'The budget calculator gives you an order of magnitude in a minute, no details asked.' },
+      { title: 'Book the first meeting', body: 'Half an hour with Barak. After it you will know whether to go on together.' },
+    ],
+  },
+
   philosophy: {
     title: 'Your wedding starts with you',
     body: [

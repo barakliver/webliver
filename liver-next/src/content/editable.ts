@@ -47,6 +47,20 @@ export const EDITABLE: EditableGroup[] = [
     ],
   },
   {
+    id: 'begin',
+    title: 'מאיפה מתחילים',
+    sub: 'שלושת הצעדים שמוצגים מיד אחרי הפתיחה. הסדר קבוע, המילים שלך.',
+    fields: [
+      { key: 'begin.title',         label: 'כותרת', kind: 'line' },
+      { key: 'begin.steps.0.title', label: 'צעד 1', kind: 'line' },
+      { key: 'begin.steps.0.body',  label: 'צעד 1, שורת הסבר', kind: 'line' },
+      { key: 'begin.steps.1.title', label: 'צעד 2', kind: 'line' },
+      { key: 'begin.steps.1.body',  label: 'צעד 2, שורת הסבר', kind: 'line' },
+      { key: 'begin.steps.2.title', label: 'צעד 3', kind: 'line' },
+      { key: 'begin.steps.2.body',  label: 'צעד 3, שורת הסבר', kind: 'line' },
+    ],
+  },
+  {
     id: 'philosophy',
     title: 'הגישה',
     sub: 'למה עובדים ככה, ולא איך.',

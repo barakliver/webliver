@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Heebo } from 'next/font/google';
+import { Heebo, Frank_Ruhl_Libre } from 'next/font/google';
 import { site } from '@/content/site';
 import { siteEn } from '@/content/site.en';
 import { publicEnv } from '@/lib/env';
@@ -11,30 +11,32 @@ import { a11yFor } from '@/content/ui';
 import { cookies } from 'next/headers';
 import { LOCALE_COOKIE, dirOf, readLocale } from '@/lib/locale';
 
-/* One family, and it is the one the handoff names.
+/* Two families, which is what his own design document specifies.
 
-   The design source is `Event Platform.dc.html`, and the brief that came with
-   it says in as many words that when it and the README disagree, that file
-   wins. It sets everything in Heebo: headings, figures, kickers, body. There
-   is no second face and no serif anywhere in it.
+   This line has moved twice, and the history is worth keeping. The Lux
+   direction set every heading in Frank Ruhl Libre; the `Event Platform.dc.html`
+   handoff set everything in Heebo, and for a while that file was treated as the
+   authority and the serif came out. Then he ruled on it himself: the font he
+   named is the one in `design-system/liver-productions/MASTER.md`, whose own
+   correction section lands on Frank Ruhl Libre for display, because the
+   Cormorant it started from ships no Hebrew and this site is Hebrew first.
 
-   What shipped instead was Frank Ruhl Libre on every heading and every large
-   number, from the warm Lux direction. That is a beautiful face and it is not
-   this design — and it is the single reason the screens carried the right
-   palette and still did not look like the thing that was designed. A serif
-   headline is not a detail somebody overlooks.
+   So: Frank Ruhl Libre carries the headings, the promise line and the large
+   numerals, at the light weight that carries by shape at 104px. Heebo stays on
+   everything read at 13 to 16px, where a serif costs legibility and buys
+   nothing. Both faces ship real Hebrew, which is the non-negotiable that
+   disqualified the Latin pairing in the first place.
 
-   Heebo carries Hebrew properly, which is why it was chosen over the display
-   pairings the tooling suggests; most of those ship no Hebrew glyphs at all.
-   The full range is loaded because the design uses it: 300 for the large
-   figures, 800 for the places it wants weight.
-
-   Display sizes are tracked tight rather than wide. That is a property of
-   this face at these sizes and it is in the config: -0.035em on a headline,
-   -0.04em on a metric, which is the opposite of what the serif needed. */
+   The display tracking in tailwind.config.ts is positive again, .01 to .02em:
+   a light serif closes up without air, the opposite of what Heebo needed. The
+   two sets of values are both in the git history of that file. */
 const heebo = Heebo({
   subsets: ['hebrew', 'latin'], variable: '--font-heebo',
   display: 'swap', weight: ['300', '400', '500', '600', '700', '800'],
+});
+const frank = Frank_Ruhl_Libre({
+  subsets: ['hebrew', 'latin'], variable: '--font-frank',
+  display: 'swap', weight: ['300', '400', '500'],
 });
 
 /* Generated per request rather than exported flat, because the name and the
@@ -123,7 +125,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const dir = dirOf(locale);
 
   return (
-    <html lang={locale} dir={dir} className={heebo.variable}>
+    <html lang={locale} dir={dir} className={`${heebo.variable} ${frank.variable}`}>
       <body className="font-sans antialiased a11y-zoom">
         {/* Pinned to the start edge rather than the right one, so it lands in
             the corner a reader of this language is already looking at. */}

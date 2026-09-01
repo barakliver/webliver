@@ -24,6 +24,13 @@ export type SiteCopy = {
      an English argument next to a Hebrew screenshot. */
   stage: { couple: string; days: string; rows: [string, string, string, string] };
   journey: { title: string; steps: string[]; link: string };
+  /* The visitor's own three moves, in order. Not the production process, which
+     `journey` tells: this is what the person holding the phone does next, and
+     it exists because he asked for exactly that in as many words: that the
+     order of actions be unmistakable. */
+  begin: { title: string; steps: [
+    { title: string; body: string }, { title: string; body: string }, { title: string; body: string },
+  ] };
   about: { title: string; body: string[] };
   dayOf: { title: string; body: string[] };
   work: { title: string; sub: string };
@@ -69,6 +76,17 @@ export const site: SiteCopy = {
       'בלי להחזיק את כל החתונה על הכתפיים.',
     ],
     cta: 'בואו נכיר',
+  },
+
+  /* Three sentences, each one an instruction. The order is the argument:
+     feel first, count second, talk third. */
+  begin: {
+    title: 'מאיפה מתחילים',
+    steps: [
+      { title: 'רואים את העבודות', body: 'תיק העבודות למטה. תרגישו אם זה מדבר אליכם.' },
+      { title: 'בודקים את המספרים', body: 'מחשבון התקציב נותן סדר גודל בדקה, בלי להשאיר פרטים.' },
+      { title: 'קובעים פגישת היכרות', body: 'חצי שעה עם ברק. אחריה תדעו אם ממשיכים יחד.' },
+    ],
   },
 
   philosophy: {

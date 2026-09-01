@@ -117,26 +117,29 @@ const config: Config = {
         warn: { DEFAULT: '#8A5A17', wash: '#F5EEDF' },
         bad:  { DEFAULT: '#96322A', wash: '#F5E7E3' },
       },
-      /* One family. `display` is kept as a name because a hundred components
-         ask for it, and it now resolves to the same face as the body, which is
-         what the design source does. Keeping the name means the day a display
-         face is chosen deliberately, it is one line here. */
+      /* Two families again, and this time by his ruling rather than by a
+         document's. The comment that used to sit here said "the day a display
+         face is chosen deliberately, it is one line here" — this is that day.
+         MASTER.md's correction table names Frank Ruhl Libre for display and
+         Heebo for body, and he pointed at that document by name. Heebo stays
+         in the stack behind the serif so a glyph Frank lacks falls to the
+         face beside it rather than to the system. */
       fontFamily: {
         sans:    ['var(--font-heebo)', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif'],
-        display: ['var(--font-heebo)', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif'],
+        display: ['var(--font-frank)', 'var(--font-heebo)', 'Georgia', 'serif'],
       },
       fontSize: {
-        /* Tracked tight, from the design source: -0.035em on a headline and
-           -0.04em on a metric. The previous values were positive, because a
-           serif at weight 300 closes up without air. This face is the other
-           way round: at these sizes Heebo needs the letters pulled together or
-           a headline reads as a row of separate words. */
-        'display-xl': ['clamp(42px,7.4vw,104px)', { lineHeight: '1.04', letterSpacing: '-.035em' }],
-        'display':    ['clamp(30px,5vw,46px)',    { lineHeight: '1.1',  letterSpacing: '-.035em' }],
-        'title':      ['clamp(22px,2.4vw,32px)',  { lineHeight: '1.2',  letterSpacing: '-.03em' }],
+        /* Tracked open again, the values the serif era used, recovered from
+           this file's own history rather than re-guessed. A light serif closes
+           up without air; the negative tracking below these in the history was
+           right for Heebo and wrong for this face, and each swap of the display
+           family has to carry its tracking with it. */
+        'display-xl': ['clamp(42px,7.4vw,104px)', { lineHeight: '1.04', letterSpacing: '.01em' }],
+        'display':    ['clamp(30px,5vw,46px)',    { lineHeight: '1.12', letterSpacing: '.015em' }],
+        'title':      ['clamp(22px,2.4vw,32px)',  { lineHeight: '1.2',  letterSpacing: '.02em' }],
         /* The numbers the screens are built around. */
-        'metric':     ['62px', { lineHeight: '1',    letterSpacing: '-.04em' }],
-        'metric-sm':  ['42px', { lineHeight: '1.05', letterSpacing: '-.04em' }],
+        'metric':     ['62px', { lineHeight: '1',    letterSpacing: '.01em' }],
+        'metric-sm':  ['42px', { lineHeight: '1.05', letterSpacing: '.01em' }],
       },
       letterSpacing: {
         /* A kicker is the one thing tracked open rather than tight. */
