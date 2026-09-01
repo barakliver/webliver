@@ -67,7 +67,7 @@ export function Hero({ site }: { site: SiteCopy }) {
         <div className="mt-4 animate-veil [animation-delay:180ms]">
           {/* Prose sets text-ink-soft itself, which is a dark grey and would
               vanish against the photograph, so the override goes on Prose. */}
-          <Prose lines={site.hero.body} className="!text-surface/85" />
+          <Prose lines={site.hero.body} className="!text-surface/85" ledeClassName="text-surface" />
         </div>
 
         <div className="mt-9 animate-veil [animation-delay:240ms]">

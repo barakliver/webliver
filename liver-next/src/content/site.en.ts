@@ -29,11 +29,11 @@ export const siteEn: SiteCopy = {
     headline: 'One perfect day, held together',
     name: 'Barak Liver',
     body: [
-      'You already know the wedding you want.',
-      'What you need is somebody who knows how to get you there.',
-      'From the first meeting to the last song, Barak holds the plan, the budget, the suppliers and every detail in between.',
-      'You stay close to every decision that matters to you.',
-      'Without carrying the whole wedding on your shoulders.',
+      'One evening in a lifetime, everyone you love is in the same place.',
+      'That evening goes by fast. The worrying is the part you can hand to somebody else.',
+      'From the first meeting to the last song, Barak holds the plan, the budget, the suppliers and every small detail in between.',
+      'You stay close to every decision that matters, and far from everything that weighs.',
+      'So that on the night itself you are in one place only. Inside it.',
     ],
     cta: 'Let us meet',
   },
@@ -41,33 +41,32 @@ export const siteEn: SiteCopy = {
   begin: {
     title: 'Where to begin',
     steps: [
-      { title: 'Look at the work', body: 'The portfolio is below. Feel whether it speaks to you.' },
+      { title: 'Look at the work', body: 'The portfolio is below. Do not look for beauty, look for a feeling.' },
       { title: 'Check the numbers', body: 'The budget calculator gives you an order of magnitude in a minute, no details asked.' },
-      { title: 'Book the first meeting', body: 'Half an hour with Barak. After it you will know whether to go on together.' },
+      { title: 'Book the first meeting', body: 'Half an hour with Barak, no strings. After it you will know whether to go on together.' },
     ],
   },
 
   philosophy: {
     title: 'Your wedding starts with you',
     body: [
-      'Before a venue, a photographer or a look, we work out what matters to you.',
-      'How you want the evening to feel.',
-      'Who your people are.',
-      'Where it is worth spending.',
-      'And what you are not willing to compromise on.',
-      'A wedding that fits you is built from there, in feeling and in budget alike.',
+      'Before a venue, a photographer or a look, one question comes first: how do you want to remember this evening.',
+      'What your people should feel the moment they walk in.',
+      'Which moment must not slip past you among the details.',
+      'Where it is worth spending, and what is not up for compromise.',
+      'From those answers comes a wedding nobody could copy, because it starts from you.',
     ],
   },
 
   value: {
     title: 'When somebody is holding the whole picture',
     body: [
-      'You know what is happening now and what comes next.',
-      'The budget is in front of you.',
-      'Suppliers get answers.',
-      'Decisions are made in time.',
-      'And small things do not become a large problem the week before the wedding.',
-      'You have one address for the whole of it.',
+      'Calm is not having nothing to do. Calm is knowing somebody is already doing it.',
+      'You know at any moment what is happening now and what comes next.',
+      'The budget in front of you, suppliers getting answers, decisions made in time.',
+      'Small things do not become a large problem the week before the wedding.',
+      'And in the evening, when it is just the two of you, you talk about the wedding. Not about its tasks.',
+      'One address, from the first moment to the last.',
     ],
   },
 
@@ -93,36 +92,36 @@ export const siteEn: SiteCopy = {
   about: {
     title: 'The person walking with you',
     body: [
-      'With more than eight years producing hundreds of luxury events, outdoor weddings and complex productions, Barak Liver brings a rare combination to a wedding: command, strategy, a calm room, and a conversation at eye level.',
-      'Somebody who knows when to listen, when to check the numbers again, and when to say that something is not right for you.',
-      'Because in the end you need to feel that the person beside you is one you trust.',
+      'More than eight years and hundreds of events, from outdoor weddings to complex evenings of hundreds of guests, taught Barak one simple thing: you do not manage the pressure of this day. You prevent it in advance.',
+      'He is the person who listens to the end, checks the numbers again, and tells you the truth even when it is not the pleasant answer.',
+      'And when something moves at the last minute, and something always moves, there is somebody beside you who has seen it all and stays calm.',
+      'Because on the most important day of your lives, you deserve a person you can simply trust.',
     ],
   },
 
   work: {
     title: 'Recent work',
-    sub: 'Eight moments from events produced over the past year.',
+    sub: 'Eight moments from one year of weddings. Behind each of them stand months of quiet work.',
   },
 
   dayOf: {
     title: 'And on the day itself',
     body: [
-      'The moment arrives when the planning stops.',
-      'Your people walk in.',
-      'The music starts.',
-      'And the wedding you have been waiting for happens.',
-      'Behind it Barak already knows who is arriving, when, what was agreed and what needs to happen at every moment.',
-      'You are free to be at your own wedding.',
+      'And then the moment arrives when the planning stops.',
+      'Your people walk in. The music rises. Somebody is crying before the ceremony has even started.',
+      'Behind it all, Barak already knows who has arrived, what was agreed, and what needs to happen in every minute.',
+      'You will not see any of it happen. That is exactly the point.',
+      'You will be busy dancing.',
     ],
   },
 
   academy: {
     title: 'Would you rather plan it yourselves?',
     body: [
-      'Some couples want to hold the production in their own hands.',
-      'Barak built the online course for them.',
-      'An ordered process for planning a wedding, with the knowledge, the tools and the stages a producer works to.',
+      'Some couples want to hold the production in their own hands, and to do it properly.',
+      'Barak built the online course for them: the same method he works by, stage after stage.',
       'From the budget and the venue through to suppliers, contracts and the day itself.',
+      'You produce it yourselves. You are not by yourselves.',
     ],
     cta: 'See the online course',
   },
@@ -130,22 +129,22 @@ export const siteEn: SiteCopy = {
   closing: {
     title: 'It starts with a conversation',
     body: [
-      'Tell Barak where you are today and what wedding you want.',
-      'This is where a whole process turns simple, precise and calm.',
-      'And where you find out whether it is right to walk it together.',
+      'Half an hour, no strings.',
+      'Tell Barak where you are today and what wedding you see when you close your eyes.',
+      'If it feels right, you go on together. If not, you leave with your head in order.',
     ],
     cta: 'Book an introductory meeting',
   },
 
   budget: {
     title: 'What does a wedding like this cost',
-    sub: 'Enter a few details for an opening breakdown. A starting point, not a quote.',
-    closing: 'Want Barak to go through the numbers with you? Book an introductory meeting',
+    sub: 'A few details, and within a minute you have an order of magnitude. An honest starting point, not a quote.',
+    closing: 'Want to go over the real numbers with Barak? Half an hour in the diary, no strings.',
   },
 
   lead: {
     title: 'Good to meet you',
-    sub: 'Leave your details and Barak usually comes back within one business day.',
+    sub: 'Leave your details, and Barak usually comes back within one business day. A person answers, not a system.',
     fields: {
       name: 'Full name',
       phone: 'Phone',
@@ -158,7 +157,7 @@ export const siteEn: SiteCopy = {
     submit: 'Send',
     sending: 'Sending',
     okTitle: 'Thank you, we have it',
-    okBody: 'Your details reached Barak and he will be in touch shortly.',
+    okBody: 'Your details went straight to Barak. He usually comes back within one business day.',
   },
 
   fab: {

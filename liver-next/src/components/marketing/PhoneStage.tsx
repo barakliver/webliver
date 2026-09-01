@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Ltr, Money } from '@/components/Ltr';
+import { Prose } from './Prose';
 
 /**
  * The product, shown rather than described.
@@ -110,9 +111,7 @@ export function PhoneStage({
         <div>
           <p className="eyebrow">{kicker}</p>
           <h2 className="mt-4 max-w-[14ch] font-display text-display font-light text-ink">{title}</h2>
-          <div className="measure mt-5 space-y-2.5 text-[16.5px] leading-relaxed text-ink-soft">
-            {body.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
-          </div>
+          <Prose lines={body} className="mt-5 leading-relaxed" />
         </div>
 
         <div className="justify-self-center lg:justify-self-end">
