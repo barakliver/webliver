@@ -55,7 +55,7 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
           <form action={toggleBudgetVisible}>
             <input type="hidden" name="client_id" value={clientId} />
             <input type="hidden" name="visible" value={String(visible)} />
-            <button type="submit" className={`rounded-xl2 px-4 py-2 text-[13px] font-medium transition ${
+            <button type="submit" className={`inline-flex min-h-[44px] items-center rounded-xl2 px-4 text-[13px] font-medium transition sm:min-h-0 sm:py-2 ${
               visible ? 'bg-ok-wash text-ok' : 'bg-surface-200 text-ink-mute'
             }`}>
               {visible ? c.budVisible : c.budHidden}

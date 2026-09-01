@@ -82,7 +82,7 @@ export function WinningBoard({ clientId, images, viewer }: {
           <input type="hidden" name="client_id" value={clientId} />
           <input
             name="image" type="file" required accept="image/*"
-            className="text-[14px] file:mr-0 file:ml-3 file:rounded-xl2 file:border-0 file:bg-ink file:px-4 file:py-2 file:text-surface"
+            className="text-[14px] file:mr-0 file:ml-3 file:min-h-[44px] file:rounded-xl2 file:border-0 file:bg-ink file:px-4 file:text-surface sm:file:min-h-0 sm:file:py-2"
             aria-label={c.upload}
           />
           <input name="caption" placeholder={c.captionPh} autoComplete="off" className="field" aria-label={c.caption} />

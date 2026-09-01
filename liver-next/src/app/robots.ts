@@ -11,6 +11,9 @@ import { publicEnv } from '@/lib/env';
  * has nothing to rank, and `/auth` is a callback that would be followed into a
  * dead session.
  *
+ * `/design` is the development-only component harness. It returns a 404 on a
+ * production build, so this line is tidiness rather than protection.
+ *
  * Nothing here is a security boundary. A crawler that ignores this file still
  * meets row level security on the other side, which is where the actual
  * enforcement is.
@@ -20,7 +23,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: [{
       userAgent: '*',
       allow: '/',
-      disallow: ['/app', '/api/', '/auth/', '/rsvp/', '/sign/', '/offline'],
+      disallow: ['/app', '/api/', '/auth/', '/rsvp/', '/sign/', '/offline', '/design'],
     }],
     sitemap: `${publicEnv.siteUrl}/sitemap.xml`,
     host: publicEnv.siteUrl,

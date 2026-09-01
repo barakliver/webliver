@@ -166,7 +166,7 @@ export function GuestList({ clientId, guests }: { clientId: string; guests: Gues
               ([v, label]) => (
                 <button
                   key={v} type="button" onClick={() => setFilter(v)} aria-pressed={filter === v}
-                  className={`rounded-xl2 px-4 py-1.5 text-[13.5px] transition ${
+                  className={`inline-flex min-h-[44px] items-center rounded-xl2 px-4 text-[13.5px] transition sm:min-h-0 sm:py-1.5 ${
                     filter === v ? 'bg-ink text-surface' : 'border border-line bg-card/70 text-ink-soft hover:bg-card'
                   }`}
                 >{label}</button>

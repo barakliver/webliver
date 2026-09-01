@@ -1,0 +1,140 @@
+import type { Task } from '@/components/app/TaskList';
+import type { Payment } from '@/components/app/PaymentsPanel';
+import type { BudgetItem } from '@/components/app/BudgetPanel';
+import type { BoardImage } from '@/components/app/WinningBoard';
+import type { Guest } from '@/components/app/GuestList';
+import type { SeatTable, SeatGuest } from '@/components/app/SeatingPlan';
+import type { DayItem } from '@/components/app/DaySchedule';
+import type { Message } from '@/components/app/Thread';
+import type { Contract } from '@/components/app/Contracts';
+import type { EventFile } from '@/components/app/EventFiles';
+import type { Song, Kit, Person } from '@/components/app/EventFileLists';
+import { MUSIC_MOMENTS, EQUIPMENT_CHECK, COUPLE_DETAIL_FIELDS } from '@/content/eventFile';
+
+/**
+ * One invented event, for looking at screens without a database.
+ *
+ * The reason this exists: every screen inside `/app` is behind sign in and
+ * reads from Supabase, so the only way to see one was to have an account, a
+ * network and real data. That is fine for testing and useless for design work,
+ * which is looking at a screen and deciding whether it holds together. Half of
+ * this product's surface could not be looked at at all.
+ *
+ * Deliberately not tidy. A design reviewed against three neat rows tells you
+ * nothing: the questions worth answering are what a long supplier name does to
+ * a column, what an empty list looks like, what happens when a payment is
+ * overdue and another is paid, and whether a panel with fourteen rows still
+ * reads. So the fixtures carry the awkward cases on purpose.
+ *
+ * Nobody real is in here. Noa and Itai are the same invented couple the home
+ * page shows on its phone mock, and the numbers are what an event of this size
+ * actually looks like halfway through.
+ */
+
+/** Relative to today, so a fixture never quietly becomes a screen full of
+ *  events from two years ago. */
+const day = (offset: number): string => {
+  const d = new Date();
+  d.setDate(d.getDate() + offset);
+  return d.toISOString().slice(0, 10);
+};
+const hoursAgo = (n: number): string => new Date(Date.now() - n * 3_600_000).toISOString();
+
+export const FIXTURE_CLIENT = '00000000-0000-4000-8000-000000000001';
+export const FIXTURE_VIEWER = '00000000-0000-4000-8000-0000000000aa';
+
+export const fixtureTasks: Task[] = [
+  { id: 't1', title: 'לסגור טעימות עם הקייטרינג', due_on: day(4), done: false, owner: 'producer', created_by: FIXTURE_VIEWER, visible_to_client: true },
+  { id: 't2', title: 'לשלוח לברק את רשימת האורחים המעודכנת', due_on: day(-3), done: false, owner: 'client', created_by: FIXTURE_VIEWER, visible_to_client: true },
+  { id: 't3', title: 'לבחור שיר לכניסה לחופה', due_on: null, done: false, owner: 'client', created_by: null, visible_to_client: true },
+  { id: 't4', title: 'תיאום סופי עם הצלם על שעת ההגעה והלוקיישן לצילומי המגזין', due_on: day(11), done: false, owner: 'producer', created_by: FIXTURE_VIEWER, visible_to_client: true },
+  { id: 't5', title: 'לחתום על הסכם ההפקה', due_on: day(-20), done: true, owner: 'client', created_by: FIXTURE_VIEWER, visible_to_client: true },
+  { id: 't6', title: 'מקדמה לאולם', due_on: day(-14), done: true, owner: 'client', created_by: FIXTURE_VIEWER, visible_to_client: true },
+];
+
+export const fixturePayments: Payment[] = [
+  { id: 'p1', title: 'מקדמה', amount: 15000, due_on: day(-30), paid: true, paid_on: day(-29) },
+  { id: 'p2', title: 'תשלום שני', amount: 40000, due_on: day(-2), paid: false, paid_on: null },
+  { id: 'p3', title: 'יתרה, שבוע לפני', amount: 55000, due_on: day(23), paid: false, paid_on: null },
+];
+
+export const fixtureBudget: BudgetItem[] = [
+  { id: 'b1', category: 'מקום', label: 'אולם וקייטרינג', estimate: 150000, agreed: 162000, vendor: 'גני ורדים' },
+  { id: 'b2', category: 'צילום', label: 'צילום ווידאו', estimate: 14000, agreed: 13500, vendor: 'סטודיו לביא' },
+  { id: 'b3', category: 'מוזיקה', label: 'דיג׳יי והגברה', estimate: 9000, agreed: null, vendor: '' },
+  { id: 'b4', category: 'עיצוב', label: 'חופה, שולחנות ופרחים', estimate: 22000, agreed: 24800, vendor: 'סטודיו פרח לבן בע״מ' },
+  { id: 'b5', category: 'בר', label: 'בר ואלכוהול', estimate: 18000, agreed: null, vendor: '' },
+];
+
+export const fixtureGuests: Guest[] = [
+  { id: 'g1', full_name: 'משפחת כהן', side: 'כלה', phone: '0501234567', status: 'attending', party_size: 4, diet: 'צמחוני', note: '', invite_token: 'demo-1' },
+  { id: 'g2', full_name: 'דוד ורונית לוי', side: 'חתן', phone: '0521234567', status: 'attending', party_size: 2, diet: '', note: 'כיסא לתינוק', invite_token: 'demo-2' },
+  { id: 'g3', full_name: 'יעל מהעבודה', side: 'כלה', phone: '', status: 'pending', party_size: 1, diet: '', note: '', invite_token: 'demo-3' },
+  { id: 'g4', full_name: 'אבי', side: 'חתן', phone: '0531234567', status: 'declined', party_size: 1, diet: '', note: '', invite_token: 'demo-4' },
+  { id: 'g5', full_name: 'סבתא מרים ובני משפחתה מחיפה', side: 'כלה', phone: '', status: 'attending', party_size: 6, diet: 'ללא גלוטן', note: 'להושיב קרוב לחופה', invite_token: 'demo-5' },
+];
+
+export const fixtureTables: SeatTable[] = [
+  { id: 'tb1', name: 'שולחן 1', seats: 12 },
+  { id: 'tb2', name: 'שולחן 2', seats: 12 },
+  { id: 'tb3', name: 'משפחה קרובה', seats: 8 },
+];
+
+export const fixtureSeatGuests: SeatGuest[] = [
+  { id: 'g1', full_name: 'משפחת כהן', party_size: 4, status: 'attending', table_id: 'tb1' },
+  { id: 'g2', full_name: 'דוד ורונית לוי', party_size: 2, status: 'attending', table_id: 'tb1' },
+  { id: 'g5', full_name: 'סבתא מרים ובני משפחתה מחיפה', party_size: 6, status: 'attending', table_id: 'tb3' },
+  { id: 'g3', full_name: 'יעל מהעבודה', party_size: 1, status: 'attending', table_id: null },
+];
+
+export const fixtureDay: DayItem[] = [
+  { id: 'd1', track: 'partner_a', at_time: '08:00', title: 'איפור ושיער', note: 'בבית, עם רותי', owner: 'רותי', audience: [], duration_min: 180, key_moment: false },
+  { id: 'd2', track: 'partner_b', at_time: '11:30', title: 'הלבשה וצילומי הכנות', note: '', owner: '', audience: ['photo'], duration_min: 60, key_moment: false },
+  { id: 'd3', track: 'shared', at_time: '17:00', title: 'הגעת הספקים לאולם', note: 'הגברה, תאורה, עיצוב', owner: 'ברק', audience: ['vendors', 'crew'], duration_min: 90, key_moment: false },
+  { id: 'd4', track: 'shared', at_time: '19:30', title: 'קבלת פנים', note: '', owner: '', audience: [], duration_min: 90, key_moment: false },
+  { id: 'd5', track: 'shared', at_time: '21:00', title: 'חופה', note: 'שקיעה ב-21:12', owner: 'ברק', audience: ['couple', 'photo', 'vendors'], duration_min: 35, key_moment: true },
+  { id: 'd6', track: 'shared', at_time: '22:15', title: 'ריקוד ראשון', note: '', owner: '', audience: ['couple', 'photo'], duration_min: 10, key_moment: true },
+  { id: 'd7', track: 'shared', at_time: '01:30', title: 'סיום, פירוק והובלה', note: '', owner: 'צוות', audience: ['crew'], duration_min: 90, key_moment: false },
+];
+
+export const fixtureMessages: Message[] = [
+  { id: 'm1', author_id: 'producer', body: 'שלחתי לכם את ההסכם לחתימה. תעברו עליו ותגידו לי אם משהו לא ברור.', created_at: hoursAgo(52), author_name: 'ברק ליור', author_avatar: null },
+  { id: 'm2', author_id: FIXTURE_VIEWER, body: 'קראנו, הכל ברור. חתמנו.', created_at: hoursAgo(50), author_name: 'נועה', author_avatar: null },
+  { id: 'm3', author_id: 'producer', body: 'מעולה. הטעימות אצל הקייטרינג ביום שלישי ב-18:00, נתראה שם.', created_at: hoursAgo(3), author_name: 'ברק ליור', author_avatar: null },
+];
+
+export const fixtureContracts: Contract[] = [
+  {
+    id: 'k1', title: 'הסכם הפקת חתונה', amount: 110000, status: 'signed',
+    body: 'ההפקה כוללת ליווי מלא מהפגישה הראשונה ועד סוף האירוע, ניהול הספקים, בניית הלוז וניהול יום האירוע.',
+    file_path: null, file_url: null, signed_at: hoursAgo(49), signed_name: 'נועה כהן', intact: true,
+  },
+  {
+    id: 'k2', title: 'הסכם דיג׳יי', amount: 9000, status: 'sent',
+    body: 'הגברה, תאורת רחבה ודיג׳יי לכל הערב.', party_name: 'אלון מזרחי', party_role: 'דיג׳יי',
+    file_path: null, file_url: null, signed_at: null, signed_name: null, intact: true,
+  },
+];
+
+export const fixtureFiles: EventFile[] = [
+  { id: 'f1', name: 'הזמנה-סופית.pdf', note: 'הגרסה שיצאה לדפוס', mime: 'application/pdf', size_bytes: 840_000, created_at: hoursAgo(70), uploader: 'נועה', mine: true, url: '#' },
+  { id: 'f2', name: 'תוכנית-אולם.xlsx', note: '', mime: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', size_bytes: 62_000, created_at: hoursAgo(30), uploader: 'ברק ליור', mine: false, url: '#' },
+];
+
+export const fixtureSongs: Song[] = [
+  { moment: MUSIC_MOMENTS[0], song: 'Here Comes The Sun', artist: 'The Beatles', note: '' },
+  { moment: MUSIC_MOMENTS[1], song: 'שיר אהבה', artist: 'שלמה ארצי', note: 'להתחיל מהפזמון' },
+];
+
+export const fixtureKit: Kit[] = [
+  { item: EQUIPMENT_CHECK[0], needed: true, sorted: true },
+  { item: EQUIPMENT_CHECK[1], needed: true, sorted: false },
+  { item: EQUIPMENT_CHECK[3], needed: false, sorted: false },
+];
+
+export const fixturePeople: Person[] = [
+  { person: 'a', name: 'נועה', fields: { [COUPLE_DETAIL_FIELDS[0]]: 'מרים ויוסי', [COUPLE_DETAIL_FIELDS[2]]: 'אספרסו כפול' } },
+  { person: 'b', name: 'איתי', fields: {} },
+];
+
+export const fixtureBoard: BoardImage[] = [];

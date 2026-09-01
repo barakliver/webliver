@@ -70,15 +70,26 @@ function Row({ task, clientId, viewer, canDelete, grip }: {
         <input type="hidden" name="task_id" value={task.id} />
         <input type="hidden" name="client_id" value={clientId} />
         <input type="hidden" name="done" value={String(task.done)} />
+        {/* The circle stays 24px and the target around it grows to 44 tall by
+            32 wide. It was the button itself at 24 square, which is the most
+            tapped control in the product drawn at half the size a finger
+            needs. Tall rather than square on purpose: the row already has the
+            height to spare and none of the width, and a 44px square pushed
+            every task title into wrapping a line earlier. */}
         <button
           type="submit"
           aria-label={task.title}
           aria-pressed={task.done}
-          className={`flex h-6 w-6 items-center justify-center rounded-full border text-[13px] transition ${
-            task.done ? 'border-ok/30 bg-ok text-surface' : 'border-line-strong bg-card hover:border-ink'
-          }`}
+          className="-my-2 -mx-1 flex h-11 w-8 items-center justify-center"
         >
-          {task.done ? '✓' : ''}
+          <span
+            aria-hidden
+            className={`flex h-6 w-6 items-center justify-center rounded-full border text-[13px] transition ${
+              task.done ? 'border-ok/30 bg-ok text-surface' : 'border-line-strong bg-card hover:border-ink'
+            }`}
+          >
+            {task.done ? '✓' : ''}
+          </span>
         </button>
       </form>
 
