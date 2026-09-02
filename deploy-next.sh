@@ -71,6 +71,12 @@ cd "$APP"
 echo "→ installing dependencies"
 npm ci --no-audit --no-fund
 echo "→ building"
+# Node caps its heap at about a quarter of a 1GB machine, and the type-check
+# pass at the end of `next build` now needs more than that: the compile
+# finished in 43s and the checker died at 490MB with "heap out of memory",
+# leaving the old build running and the deploy reported as failed. The swap
+# file above exists for exactly this; the cap just has to let Node use it.
+export NODE_OPTIONS="--max-old-space-size=2048"
 npm run build
 
 # ── service ────────────────────────────────────────────────────────────────

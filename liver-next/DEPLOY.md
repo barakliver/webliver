@@ -110,6 +110,16 @@
 
 ---
 
+## אם ה-build נופל על זיכרון
+
+הסימן: `Compiled successfully`, ואז `Running TypeScript` ואחריו
+`FATAL ERROR: ... JavaScript heap out of memory`. זה גבול הזיכרון של Node על
+מכונה של 1GB, לא שגיאה בקוד. הסקריפט מגדיר את הגבול בעצמו; אם זה קורה בכל
+זאת, לוודא שיש swap (`free -m`), ולהריץ שוב. הבנייה הקודמת ממשיכה לרוץ
+בינתיים, אז האתר לא נופל בזמן שמתקנים.
+
+---
+
 ## אם משהו נשבר
 
 1. `journalctl -u liver-next -n 60 --no-pager` בשרת
