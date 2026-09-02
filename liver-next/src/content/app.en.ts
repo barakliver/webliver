@@ -64,7 +64,7 @@ export const sheetsEn: SheetsCopy = {
   close: 'Close',
   contact: {
     open: 'Talk to the producer',
-    title: 'Barak Liver · your producer',
+    title: 'Your producer',
     sub: 'Available Sunday to Thursday, 09:00 to 19:00',
     call: 'Phone call',
     whatsapp: 'WhatsApp message',

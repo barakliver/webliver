@@ -83,7 +83,7 @@ export const EDITABLE: EditableGroup[] = [
   },
   {
     id: 'about',
-    title: 'על ברק',
+    title: 'על המפיק',
     sub: 'מי עומד מאחורי ההפקה.',
     fields: [
       { key: 'about.title', label: 'כותרת', kind: 'line' },

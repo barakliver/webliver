@@ -3,6 +3,7 @@ import { formatDate } from '@/lib/dates';
 import { supabaseServer } from '@/lib/supabase/server';
 import { getSiteCopy } from '@/lib/siteCopy';
 import { supabasePublic } from '@/lib/supabase/public';
+import { brandForHost } from '@/lib/branding';
 import { rsvpFor } from '@/content/ui';
 import { currentLocale } from '@/lib/serverLocale';
 import { RsvpForm } from './RsvpForm';
@@ -35,6 +36,10 @@ export default async function RsvpPage({ params }: { params: Promise<{ token: st
   const locale = await currentLocale();
   const rsvpCopy = rsvpFor(locale);
   const site = await getSiteCopy(supabasePublic(), locale);
+  /* The name at the head of the invitation. A guest on a tenant's domain is a
+     guest of that tenant's couple; the platform's name means nothing to them. */
+  const host = await brandForHost();
+  const brandLine = host.isPlatform ? site.brand : host.name;
   const dateFmt = dateFmtFor(locale);
 
   const sb = await supabaseServer();
@@ -44,7 +49,7 @@ export default async function RsvpPage({ params }: { params: Promise<{ token: st
   return (
     <main id="main" className="flex min-h-dvh items-center justify-center px-5 py-14">
       <div className="w-full max-w-lg">
-        <p className="mb-6 text-center font-display text-[19px] font-light text-ink">{site.brand}</p>
+        <p className="mb-6 text-center font-display text-[19px] font-light text-ink">{brandLine}</p>
 
         {!guest ? (
           <div className="card text-center">

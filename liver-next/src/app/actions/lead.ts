@@ -3,7 +3,8 @@
 import { supabaseServer } from '@/lib/supabase/server';
 import { sendMail } from '@/lib/notify/mail';
 import { sendWhatsApp } from '@/lib/notify/whatsapp';
-import { adminLeadEmail, clientConfirmEmail, adminLeadWhatsApp, type LeadPayload } from '@/lib/notify/templates';
+import { adminLeadEmail, clientConfirmEmail, adminLeadWhatsApp, type LeadPayload, type MailBrand } from '@/lib/notify/templates';
+import { brandForHost } from '@/lib/branding';
 import { optional } from '@/lib/env';
 import { MIN_EVENT_DATE, MAX_GUESTS } from '@/content/site';
 
@@ -69,11 +70,21 @@ export async function submitLead(_prev: LeadResult | null, form: FormData): Prom
     return { ok: false, error: 'לא הצלחנו לשמור את הפנייה. נסו שוב או שלחו הודעה בוואטסאפ.' };
   }
 
+  /* The confirmation goes back to a visitor who was reading somebody's site.
+     On a tenant's host that somebody is the tenant, and the letter must sign
+     with their name rather than the platform's. The admin alert stays in the
+     platform shell: it goes to the operator's inbox, not to a visitor. */
+  let visitorBrand: MailBrand | undefined;
+  try {
+    const b = await brandForHost();
+    if (!b.isPlatform) visitorBrand = { name: b.name, tagline: b.tagline || undefined };
+  } catch { /* an unresolved brand falls back to the platform shell */ }
+
   const adminTo = optional('ADMIN_ALERT_EMAIL');
   const results = await Promise.allSettled([
     adminTo ? sendMail({ to: adminTo, subject: `פנייה חדשה מהאתר: ${payload.full_name}`, html: adminLeadEmail(payload), replyTo: payload.email || undefined }) : Promise.resolve({ sent: false }),
     sendWhatsApp(adminLeadWhatsApp(payload)),
-    payload.email ? sendMail({ to: payload.email, subject: 'קיבלנו את הפנייה שלכם', html: clientConfirmEmail(payload.full_name.split(' ')[0]) }) : Promise.resolve({ sent: false }),
+    payload.email ? sendMail({ to: payload.email, subject: 'קיבלנו את הפנייה שלכם', html: clientConfirmEmail(payload.full_name.split(' ')[0], visitorBrand) }) : Promise.resolve({ sent: false }),
   ]);
   results.forEach((r, i) => {
     if (r.status === 'rejected') console.error('[lead] notify channel', i, 'threw', r.reason);

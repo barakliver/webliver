@@ -72,7 +72,7 @@ export default async function HomePage() {
 
         <Section id="about" title={site.about.title}>
           <div className="grid items-start gap-8 sm:grid-cols-[minmax(0,260px)_1fr] sm:gap-10">
-            <Portrait className="w-full max-w-[260px] rounded-xl2 object-cover" />
+            <Portrait className="w-full max-w-[260px] rounded-xl2 object-cover" alt={site.brand} />
             <Prose lines={site.about.body} />
           </div>
         </Section>

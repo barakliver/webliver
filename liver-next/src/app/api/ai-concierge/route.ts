@@ -84,7 +84,7 @@ async function saveEnquiry(input: Record<string, unknown>): Promise<string> {
       console.error('[concierge] could not save the enquiry', error);
       return 'לא נשמר בגלל תקלה טכנית. הצע לפונה לכתוב בוואטסאפ.';
     }
-    return 'נשמר. ברק יקבל את הפנייה.';
+    return 'נשמר. המפיק יקבל את הפנייה.';
   } catch (e) {
     console.error('[concierge] save threw', e);
     return 'לא נשמר בגלל תקלה טכנית. הצע לפונה לכתוב בוואטסאפ.';
@@ -96,8 +96,8 @@ const say = (reply: string, extra: Record<string, unknown> = {}) =>
 
 const REFUSED = 'אני מעדיף לא לענות על זה. אפשר לשאול אותי על התהליך, על מה שכלול, או לקבוע פגישה.';
 const NO_WORDS = 'לא הצלחתי לנסח תשובה. אפשר לנסות לשאול אחרת?';
-const SAVED_ONLY = 'קיבלתי את הפרטים. ברק יחזור אליכם.';
-const BROKE = 'משהו נתקע אצלי. אפשר לכתוב לברק בוואטסאפ והוא יחזור אליכם.';
+const SAVED_ONLY = 'קיבלתי את הפרטים. נחזור אליכם בהקדם.';
+const BROKE = 'משהו נתקע אצלי. אפשר לכתוב לנו בוואטסאפ ונחזור אליכם.';
 
 /**
  * The conversation, as it is written rather than after it is written.
@@ -201,15 +201,15 @@ export async function POST(req: Request) {
        configured has a polite concierge that points at a human instead of a
        widget that looks broken. */
     console.error('[concierge] ANTHROPIC_API_KEY is not set');
-    return say('העוזר הדיגיטלי לא פעיל כרגע. אפשר לכתוב לברק בוואטסאפ ונחזור אליכם.', { off: true });
+    return say('העוזר הדיגיטלי לא פעיל כרגע. אפשר לכתוב לנו בוואטסאפ ונחזור אליכם.', { off: true });
   }
 
   const verdict = checkLimit(visitorKeyFrom(req.headers));
   if (!verdict.ok) {
     return say(
       verdict.reason === 'visitor'
-        ? 'שלחתם הרבה הודעות ברצף. קחו רגע ונמשיך, או כתבו לברק בוואטסאפ.'
-        : 'העוזר עמוס כרגע. אפשר לכתוב לברק בוואטסאפ והוא יחזור אליכם.',
+        ? 'שלחתם הרבה הודעות ברצף. קחו רגע ונמשיך, או כתבו לנו בוואטסאפ.'
+        : 'העוזר עמוס כרגע. אפשר לכתוב לנו בוואטסאפ ונחזור אליכם.',
       { limited: true, retryInSec: verdict.retryInSec }
     );
   }

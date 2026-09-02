@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Heebo, Frank_Ruhl_Libre } from 'next/font/google';
 import { site } from '@/content/site';
 import { siteEn } from '@/content/site.en';
+import { brandForHost } from '@/lib/branding';
 import { publicEnv } from '@/lib/env';
 import { ServiceWorker } from '@/components/app/ServiceWorker';
 import { VersionWatch } from '@/components/app/VersionWatch';
@@ -47,13 +48,42 @@ const frank = Frank_Ruhl_Libre({
    `siteEn` and `site` directly rather than through `getSiteCopy`: metadata is
    built for every route in the app, including screens behind sign in, and none
    of them is worth a database read. The producer's own overrides move the copy
-   on the page; the tab keeps the shipped wording. */
+   on the page; the tab keeps the shipped wording.
+
+   The one read it does pay is the host lookup, and only on a tenant host:
+   `brandForHost` short-circuits without touching the database when the tenant
+   header is absent, which is every request to the platform's own address. On a
+   tenant's domain the tab, the share card and the install name must all say
+   the tenant — a white label whose browser tab still says the platform is a
+   label that peels at the first screenshot. */
 export async function generateMetadata(): Promise<Metadata> {
   const locale = readLocale((await cookies()).get(LOCALE_COOKIE)?.value);
   const c = locale === 'en' ? siteEn : site;
   const description = locale === 'en'
     ? 'Wedding and event production, end to end. Planning, budget, suppliers and running the day itself.'
     : 'הפקת חתונות ואירועים מקצה לקצה. תכנון, תקציב, ספקים וניהול יום האירוע.';
+
+  const brand = await brandForHost();
+  if (!brand.isPlatform) {
+    const title = brand.tagline ? `${brand.name} | ${brand.tagline}` : brand.name;
+    return {
+      metadataBase: new URL(publicEnv.siteUrl),
+      title: { default: title, template: `%s | ${brand.name}` },
+      description,
+      manifest: '/manifest.webmanifest',
+      appleWebApp: { capable: true, title: brand.name, statusBarStyle: 'black-translucent' },
+      other: { 'apple-mobile-web-app-capable': 'yes' },
+      icons: { icon: '/icon-192.png', apple: '/icon-192.png' },
+      /* No og.jpg here: that file is the platform owner's photograph with his
+         name set into it. A share card with the wrong producer's face is worse
+         than a share card with no image. */
+      openGraph: {
+        type: 'website', locale: locale === 'en' ? 'en_US' : 'he_IL', siteName: brand.name,
+        title, description,
+      },
+      twitter: { card: 'summary', title, description },
+    };
+  }
 
   return {
     /* `publicEnv.siteUrl` rather than the raw variable, which is the same

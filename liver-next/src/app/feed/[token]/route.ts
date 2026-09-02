@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { supabasePublic } from '@/lib/supabase/public';
 import { buildIcs, eventInstant, type IcsEvent } from '@/lib/ics';
 import { PLATFORM_HOST } from '@/lib/env';
-import { site } from '@/content/site';
+import { brandForHost } from '@/lib/branding';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,11 +25,16 @@ export const dynamic = 'force-dynamic';
 export async function GET(_req: Request, { params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
 
+  /* The calendar's display name. Resolved from the host the subscription was
+     made on: a link handed out from a tenant's domain names the tenant, and
+     the platform's own address keeps the platform. */
+  const { name: calName } = await brandForHost();
+
   /* Trimmed of the .ics that calendar apps and copy-paste both like to add. */
   const clean = token.replace(/\.ics$/i, '');
 
   const empty = () =>
-    new NextResponse(buildIcs([], site.brand), {
+    new NextResponse(buildIcs([], calName), {
       headers: {
         'content-type': 'text/calendar; charset=utf-8',
         'cache-control': 'no-store',
@@ -86,7 +91,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ token: 
     return { uid, start: r.starts_on, allDay: true, summary: r.title, description: r.detail };
   });
 
-  return new NextResponse(buildIcs(events, site.brand), {
+  return new NextResponse(buildIcs(events, calName), {
     headers: {
       'content-type': 'text/calendar; charset=utf-8',
       /* An hour. Calendar apps poll on their own schedule anyway, and a feed

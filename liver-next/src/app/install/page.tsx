@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { Smartphone, Monitor, CircleHelp } from 'lucide-react';
 import { getSiteCopy } from '@/lib/siteCopy';
 import { supabasePublic } from '@/lib/supabase/public';
+import { brandForHost } from '@/lib/branding';
 import { installFor } from '@/content/ui';
 import { currentLocale } from '@/lib/serverLocale';
 
@@ -52,12 +53,15 @@ export default async function InstallPage() {
   const locale = await currentLocale();
   const c = installFor(locale);
   const site = await getSiteCopy(supabasePublic(), locale);
+  /* Read from an invitation email, possibly on a tenant's domain: the name at
+     the head of the page is whoever invited them. */
+  const host = await brandForHost();
 
   return (
     <main id="main" className="shell py-10 sm:py-16">
       <div className="mx-auto max-w-prose2">
         <Link href="/" className="text-[14px] text-ink-mute transition hover:text-ink">
-          {site.brand}
+          {host.isPlatform ? site.brand : host.name}
         </Link>
 
         <h1 className="mt-5 font-display text-title font-light text-ink">{c.title}</h1>

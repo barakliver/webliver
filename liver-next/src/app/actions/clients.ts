@@ -228,6 +228,14 @@ export async function inviteToClient(_prev: ActionResult | null, form: FormData)
      resend from the same screen. */
   try {
     const link = await inviteLinkFor(email);
+    /* A tenant's letter signs with the tenant's identity, and their couples
+       are pointed at the tenant's own number — never the platform's. Only a
+       producer with no brand of their own (the platform itself) falls back to
+       the platform's signature and phone. */
+    const tenantBrand = account.producer?.brandName
+      ? { name: account.producer.brandName, tagline: account.producer.tagline || undefined }
+      : undefined;
+    const phone = tenantBrand ? account.producer?.whatsapp : publicEnv.whatsapp;
     await sendMail({
       to: email,
       subject: 'האזור האישי שלכם מוכן',
@@ -237,7 +245,8 @@ export async function inviteToClient(_prev: ActionResult | null, form: FormData)
         signInUrl: link.url,
         oneClick: link.kind === 'magic',
         installUrl: `${publicEnv.siteUrl.replace(/\/+$/, '')}/install`,
-        producerPhone: publicEnv.whatsapp || undefined,
+        producerPhone: phone || undefined,
+        brand: tenantBrand,
       }),
     });
   } catch (e) {

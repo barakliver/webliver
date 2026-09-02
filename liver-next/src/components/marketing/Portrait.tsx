@@ -17,12 +17,16 @@ export function Portrait({
   sizes = '(max-width: 640px) 60vw, 320px',
   priority = false,
   avatar = false,
+  alt,
 }: {
   className?: string;
   sizes?: string;
   priority?: boolean;
   /** Square crop for small round frames. */
   avatar?: boolean;
+  /** Whose photograph this is, in the reader's language. Passed in from the
+   *  resolved copy so an English page does not describe the image in Hebrew. */
+  alt: string;
 }) {
   const src = avatar ? '/portrait-face.webp' : '/portrait-w480.webp';
   const w = avatar ? 256 : 480;
@@ -31,7 +35,7 @@ export function Portrait({
   return (
     <Image
       src={src}
-      alt="ברק ליור"
+      alt={alt}
       width={w}
       height={h}
       sizes={sizes}

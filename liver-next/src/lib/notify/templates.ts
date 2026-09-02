@@ -1,16 +1,30 @@
 import { site, PROMISE } from '@/content/site';
 
-const shell = (inner: string) => `
+/**
+ * The identity at the foot of a letter.
+ *
+ * Every email closes with a name, and whose name it is depends on whose
+ * business the reader is dealing with. The platform's own mail signs with the
+ * promise line above the brand; a producer's mail signs with their name and
+ * their tagline, and never with the platform's signature — a couple invited by
+ * another producer must not receive a letter that closes in somebody else's
+ * voice. `promise` is therefore part of the identity rather than a constant of
+ * the shell.
+ */
+export type MailBrand = { name: string; tagline?: string; promise?: string };
+
+const PLATFORM_MAIL: MailBrand = { name: site.brand, tagline: site.tagline, promise: PROMISE };
+
+const shell = (inner: string, brand: MailBrand = PLATFORM_MAIL) => `
 <div dir="rtl" style="font-family:Assistant,Heebo,Arial,sans-serif;background:#f4f8fd;padding:28px">
   <div style="max-width:560px;margin:0 auto;background:#fff;border-radius:20px;padding:28px;border:1px solid #e6eef8">
     ${inner}
     <hr style="border:none;border-top:1px solid #eef2f7;margin:22px 0">
-    <!-- The line, once, at the foot of every letter this business sends. In
-         the accent and tracked open, so it reads as a signature rather than as
-         another line of small print. Above the name, because it is what the
-         name is for. -->
-    <p style="margin:0 0 6px;color:#a3814f;font-size:12px;font-weight:600;letter-spacing:.14em">${PROMISE}</p>
-    <p style="color:#6b7686;font-size:12.5px;margin:0">${site.brand} · ${site.tagline}</p>
+    <!-- The signature line, when the sender has one. In the accent and tracked
+         open, so it reads as a signature rather than as another line of small
+         print. Above the name, because it is what the name is for. -->
+    ${brand.promise ? `<p style="margin:0 0 6px;color:#a3814f;font-size:12px;font-weight:600;letter-spacing:.14em">${brand.promise}</p>` : ''}
+    <p style="color:#6b7686;font-size:12.5px;margin:0">${brand.name}${brand.tagline ? ` · ${brand.tagline}` : ''}</p>
   </div>
 </div>`;
 
@@ -34,15 +48,15 @@ export function adminLeadEmail(l: LeadPayload) {
     </table>`);
 }
 
-export function clientConfirmEmail(name: string) {
+export function clientConfirmEmail(name: string, brand?: MailBrand) {
   return shell(`
     <h2 style="margin:0 0 10px;font-size:20px;color:#0b1220">תודה ${name}, קיבלנו את הפרטים</h2>
     <p style="margin:0 0 10px;font-size:15px;line-height:1.8;color:#3c4657">
-      הפנייה שלכם הגיעה לברק והוא יחזור אליכם בדרך כלל תוך יום עסקים.
+      הפנייה שלכם התקבלה, ונחזור אליכם בדרך כלל תוך יום עסקים.
     </p>
     <p style="margin:0;font-size:15px;line-height:1.8;color:#3c4657">
       בינתיים, אם יש משהו דחוף אפשר פשוט להשיב למייל הזה.
-    </p>`);
+    </p>`, brand);
 }
 
 export function adminLeadWhatsApp(l: LeadPayload) {
@@ -70,6 +84,9 @@ export function clientInviteEmail(opts: {
   oneClick: boolean;
   installUrl: string;
   producerPhone?: string;
+  /** The identity the letter signs with. A tenant producer's invitations must
+   *  close with their own name; without this the shell signs as the platform. */
+  brand?: MailBrand;
 }) {
   /* Two different promises, so the button never overstates what it does. A
      button that says "press to enter" and then asks for a code is the kind of
@@ -121,6 +138,6 @@ export function clientInviteEmail(opts: {
     ${opts.producerPhone ? `
     <p style="margin:22px 0 0;font-size:13.5px;line-height:1.8;color:#5b697c">
       שאלה בדרך? ${opts.producerName}, ${opts.producerPhone}.
-    </p>` : ''}`);
+    </p>` : ''}`, opts.brand);
 }
 

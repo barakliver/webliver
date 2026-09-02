@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { currentAccount } from '@/lib/auth';
 import { getSiteCopy } from '@/lib/siteCopy';
 import { supabasePublic } from '@/lib/supabase/public';
+import { brandForHost } from '@/lib/branding';
 import { authFor, privacyFor, termsFor } from '@/content/ui';
 import { currentLocale } from '@/lib/serverLocale';
 import { PromiseLine } from '@/components/Promise';
@@ -27,6 +28,10 @@ export default async function LoginPage({
 
   const locale = await currentLocale();
   const site = await getSiteCopy(supabasePublic(), locale);
+  /* Whose door this is. On a tenant's domain the wordmark is the tenant's,
+     and the platform's promise line stays home: it is one producer's
+     signature, not a fixture of the sign-in screen. */
+  const host = await brandForHost();
 
   /* Extra room at the foot rather than symmetric padding. The accessibility
      button is fixed about 5.5rem up from the bottom on the start edge, and on a
@@ -44,13 +49,13 @@ export default async function LoginPage({
             input landed under the keyboard. The wordmark carries the same
             reassurance in a tenth of the height. */}
         <Link href="/" className="mb-7 block text-center">
-          <span className="font-display text-[21px] font-light text-ink">{site.brand}</span>
-          <span className="mt-1 block text-[13.5px] text-ink-mute">{site.tagline}</span>
+          <span className="font-display text-[21px] font-light text-ink">{host.isPlatform ? site.brand : host.name}</span>
+          <span className="mt-1 block text-[13.5px] text-ink-mute">{host.isPlatform ? site.tagline : host.tagline}</span>
         </Link>
         {/* Signing in is the first screen a couple sees that is not the
             marketing site. The line is what tells them they are still in the
             same place. */}
-        <PromiseLine className="mb-7" text={site.hero.headline} />
+        {host.isPlatform && <PromiseLine className="mb-7" text={site.hero.headline} />}
         {/* A link that handed the session back in the fragment lands here
             with the credential still in the address bar. This picks it up
             rather than letting it go to waste. */}

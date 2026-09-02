@@ -830,7 +830,10 @@ export const appCopy = {
     close: 'סגירה',
     contact: {
       open: 'שיחה עם המפיק',
-      title: 'ברק ליור · מפיק האירוע',
+      /* Role only, never the name: the sheet belongs to whichever producer
+         runs this event, and PortalActions puts the resolved brand's name in
+         front of it. A personal name here would surface on every tenant. */
+      title: 'מפיק האירוע',
       sub: 'זמין בימים א׳ עד ה׳, 09:00 עד 19:00',
       call: 'שיחה טלפונית',
       whatsapp: 'הודעה בוואטסאפ',

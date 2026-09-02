@@ -69,7 +69,7 @@ export function PortalActions({
       <Sheet
         open={sheet === 'contact'}
         onClose={() => setSheet(null)}
-        title={producerName ? `${producerName} · ${c.contact.title.split(' · ')[1]}` : c.contact.title}
+        title={producerName ? `${producerName} · ${c.contact.title}` : c.contact.title}
         sub={c.contact.sub}
       >
         <ul className="list-none space-y-2 p-0">

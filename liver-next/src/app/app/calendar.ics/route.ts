@@ -4,7 +4,7 @@ import { supabaseServer } from '@/lib/supabase/server';
 import { getCalendar } from '@/lib/calendar';
 import { buildIcs, eventInstant, type IcsEvent } from '@/lib/ics';
 import { PLATFORM_HOST } from '@/lib/env';
-import { site } from '@/content/site';
+import { brandFor } from '@/lib/branding';
 
 /** The producer's whole diary, subscribable from a phone.
  *
@@ -12,9 +12,13 @@ import { site } from '@/content/site';
  *  rather than appointments and are written as whole-day entries, which is how
  *  a calendar shows something due rather than something happening. */
 export async function GET() {
-  await requireLiveProducer();
+  const account = await requireLiveProducer();
   const sb = await supabaseServer();
   const items = await getCalendar(sb);
+  /* The calendar app shows this name on every entry it imports. It has to be
+     the producer's own brand: a tenant subscribing to their diary must not
+     carry the platform's name into their phone. */
+  const brand = await brandFor(account);
 
   const events: IcsEvent[] = items.map((i) => {
     if (i.kind === 'event') {
@@ -44,7 +48,7 @@ export async function GET() {
     };
   });
 
-  return new NextResponse(buildIcs(events, site.brand), {
+  return new NextResponse(buildIcs(events, brand.name), {
     headers: {
       'content-type': 'text/calendar; charset=utf-8',
       'content-disposition': 'attachment; filename="liver-productions.ics"',
