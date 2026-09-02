@@ -644,6 +644,14 @@ export const appCopy = {
   overview2: {
     clear: 'הכל מטופל',
     clearSub: 'אין כרגע שום דבר שממתין להחלטה שלך.',
+    /* The first morning: no events yet, so instead of "all clear" the screen
+       says what to do, in the book's own order. */
+    begin: {
+      eyebrow: 'מתחילים כאן',
+      sub: 'עוד אין אירועים במערכת, אז זה הסדר הנכון להתחיל בו.',
+      cta: 'למסך המיתוג',
+      book: 'ספר ההפעלה המלא',
+    },
     needsYou: 'מחכה להחלטה שלך',
     now: 'דחוף',
     soon: 'השבוע',

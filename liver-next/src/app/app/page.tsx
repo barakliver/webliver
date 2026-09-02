@@ -12,6 +12,7 @@ import { MetricRows } from '@/components/app/Metric';
 import { Anniversaries } from '@/components/app/Anniversaries';
 import { supabaseServer } from '@/lib/supabase/server';
 import { loadAnniversaries } from '@/lib/workflow';
+import { BeginHere } from '@/components/app/BeginHere';
 
 export const metadata = { title: appCopy.nav.overview };
 
@@ -31,6 +32,12 @@ export default async function OverviewPage() {
   const sb = await supabaseServer();
   const anniversaries = await loadAnniversaries(sb);
 
+  /* A producer with no events yet is not "all clear", they are before the
+     beginning. The head count is enough to know which of the two mornings
+     this is, and it costs a header, not a row. */
+  const { count } = await sb.from('clients').select('id', { count: 'exact', head: true });
+  const fresh = (count ?? 0) === 0;
+
   return (
     <>
       <PageHead
@@ -46,8 +53,21 @@ export default async function OverviewPage() {
         {/* The pile, first and biggest, because it is the reason to open the
             screen at all. */}
         <section aria-labelledby="needs-you" className="min-w-0">
-          <h2 id="needs-you" className="eyebrow mb-3">{c.needsYou}</h2>
-          <AttentionList items={items} />
+          {fresh && items.length === 0 ? (
+            /* The book's own first steps, on the first screen of the first
+               visit, so nobody has to find the book to learn there is an
+               order. The heading id stays: it is the same slot on the page,
+               holding the version of "what needs you" that a beginning has. */
+            <>
+              <h2 id="needs-you" className="eyebrow mb-3">{c.begin.eyebrow}</h2>
+              <BeginHere />
+            </>
+          ) : (
+            <>
+              <h2 id="needs-you" className="eyebrow mb-3">{c.needsYou}</h2>
+              <AttentionList items={items} />
+            </>
+          )}
         </section>
 
         <div className="grid min-w-0 content-start gap-5">

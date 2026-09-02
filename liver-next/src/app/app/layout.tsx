@@ -1,8 +1,11 @@
 import { requireAccount } from '@/lib/auth';
 import { supabaseServer } from '@/lib/supabase/server';
 import { Live } from '@/components/app/Live';
-import { AppShell } from '@/components/app/AppShell';
+import { AppShell, type ClientNavLabels } from '@/components/app/AppShell';
 import { brandFor } from '@/lib/branding';
+import { currentLocale } from '@/lib/serverLocale';
+import { appUiFor } from '@/content/appUi';
+import { guideUiFor } from '@/content/guide';
 import type { Notice } from '@/components/app/NoticeBell';
 
 export const dynamic = 'force-dynamic';
@@ -31,8 +34,17 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   const brand = await brandFor(account);
 
+  /* The couple's two menu labels, in the couple's language. Reused from the
+     screens they name rather than written again: the portal's own title and
+     the book's own title, so the menu and the page always agree. */
+  let clientNav: ClientNavLabels | undefined;
+  if (account.role === 'client') {
+    const locale = await currentLocale();
+    clientNav = { portal: appUiFor(locale).portal.title, guide: guideUiFor(locale).pageTitle };
+  }
+
   return (
-    <AppShell account={account} notices={(data ?? []) as Notice[]} brand={brand}>
+    <AppShell account={account} notices={(data ?? []) as Notice[]} brand={brand} clientNav={clientNav}>
       {children}
       <Live sources={[{ table: 'notifications' }]} />
     </AppShell>

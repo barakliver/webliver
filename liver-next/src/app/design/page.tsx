@@ -24,6 +24,7 @@ import { CrewPanel } from '@/components/app/CrewPanel';
 import { LeadRow } from '@/components/app/LeadRow';
 import { VendorDirectory } from '@/components/app/VendorDirectory';
 import { GuideBookView } from '@/components/app/GuideBook';
+import { BeginHere } from '@/components/app/BeginHere';
 import { producerGuide, clientGuideFor, guideUiFor } from '@/content/guide';
 import {
   FIXTURE_CLIENT, FIXTURE_VIEWER,
@@ -183,6 +184,10 @@ export default async function DesignPage() {
 
         <Panel name="ArchiveShelf" note="one year, two closed events">
           <ArchiveShelf shelf={fixtureShelf} />
+        </Panel>
+
+        <Panel name="BeginHere" note="a fresh producer's overview: the first steps instead of 'all clear'">
+          <div className="max-w-xl"><BeginHere /></div>
         </Panel>
 
         <Panel name="GuideBook · client" note="the couple's operating book, in the page's language">

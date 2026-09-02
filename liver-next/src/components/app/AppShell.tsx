@@ -9,13 +9,17 @@ import { SidebarNav, MobileTabBar, type NavItem } from './AppNav';
 import { Avatar } from './Avatar';
 import { cn } from '@/lib/utils';
 
-function navFor(a: Account): NavItem[] {
+/** The couple's two labels in the couple's language. The producer's console
+ *  stays Hebrew, so only these two travel as a prop. */
+export type ClientNavLabels = { portal: string; guide: string };
+
+function navFor(a: Account, clientNav?: ClientNavLabels): NavItem[] {
   if (a.role === 'client') {
     /* Two destinations, which is what makes the phone's bottom bar appear for
        a couple: their event, and the book that explains it. */
     return [
-      { href: '/app/portal', label: appCopy.nav.portal, icon: 'portal' },
-      { href: '/app/guide', label: appCopy.nav.guide, icon: 'guide' },
+      { href: '/app/portal', label: clientNav?.portal ?? appCopy.nav.portal, icon: 'portal' },
+      { href: '/app/guide', label: clientNav?.guide ?? appCopy.nav.guide, icon: 'guide' },
     ];
   }
   const items: NavItem[] = [
@@ -61,11 +65,12 @@ function Brand({ brand }: { brand: Brand }) {
 }
 
 export function AppShell({
-  account, notices, brand, children,
+  account, notices, brand, clientNav, children,
 }: {
-  account: Account; notices: Notice[]; brand: Brand; children: React.ReactNode;
+  account: Account; notices: Notice[]; brand: Brand;
+  clientNav?: ClientNavLabels; children: React.ReactNode;
 }) {
-  const items = navFor(account);
+  const items = navFor(account, clientNav);
 
   return (
     /* The accent is repainted here rather than in a stylesheet: one style

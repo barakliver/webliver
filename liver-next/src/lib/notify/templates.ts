@@ -109,6 +109,7 @@ export function clientInviteEmail(opts: {
       <li>רשימת האורחים ואישורי ההגעה</li>
       <li>לוז יום האירוע</li>
       <li>לוח ההשראה, להעלות אליו תמונות</li>
+      <li>וספר הפעלה קצר שמסביר איך הכל עובד</li>
     </ul>
 
     <a href="${opts.signInUrl}"
