@@ -53,6 +53,8 @@ import {
 } from '@/content/fixtures';
 import { NumbersSheet } from '@/components/app/NumbersSheet';
 import { GuestSiteView } from '@/components/guest/GuestSiteView';
+import { GuestSiteLink } from '@/components/app/GuestSiteLink';
+import { GuestSiteCard } from '@/components/app/GuestSiteCard';
 import { guestSiteFor } from '@/content/ui';
 import ConsoleLoading from '@/app/app/loading';
 import EventLoading from '@/app/app/clients/[id]/loading';
@@ -81,6 +83,14 @@ import PortalLoading from '@/app/app/portal/loading';
  * Nothing here writes. The forms post to the same server actions the real
  * screens use, and those check a session first, so a submitted form fails
  * cleanly rather than touching anybody's event.
+ *
+ * Open it at http://localhost:<port>, not 127.0.0.1. The dev server treats
+ * an unlisted origin as cross-origin and answers its CORS-mode chunk requests
+ * with an empty 403, so the page renders from the server and never hydrates:
+ * every client component looks fine and does nothing. That is what a
+ * screenshot cannot tell you, and it cost an afternoon of "the link field is
+ * empty" before the probe found two 403s. `allowedDevOrigins` in next.config
+ * now lists 127.0.0.1 as a belt to this pair of braces.
  */
 export const dynamic = 'force-dynamic';
 
@@ -300,6 +310,14 @@ export default async function DesignPage() {
               }}
             />
           </div>
+        </Panel>
+
+        <Panel name="GuestSiteLink · client" note="the couple's card once the page is on: share first, copy second">
+          <div className="max-w-2xl"><GuestSiteLink token="0123456789abcdef0123456789abcdef" /></div>
+        </Panel>
+
+        <Panel name="GuestSiteCard · producer" note="the switch on the guests tab, with the note and the link">
+          <GuestSiteCard clientId={client} token="0123456789abcdef0123456789abcdef" on note="חניה חופשית בכניסה לחורשה." />
         </Panel>
 
         <Panel name="Loading · console" note="what a tap on the navigation shows before the server answers">

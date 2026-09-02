@@ -1092,6 +1092,8 @@ export const appCopy = {
     copy: 'העתקה',
     copied: 'הועתק',
     open: 'פתיחה',
+    share: 'שיתוף בוואטסאפ',
+    shareText: 'הוזמנתם לחגוג איתנו! כל הפרטים ואישור ההגעה כאן:',
     note: 'כמה מילים לאורחים',
     notePh: 'קוד לבוש, חניה, כל מה שחשוב שידעו',
     save: 'שמירה',
@@ -1324,6 +1326,10 @@ export const appCopy = {
       copy: 'העתקת הקישור',
       copied: 'הועתק',
       open: 'פתיחת העמוד',
+      share: 'שיתוף בוואטסאפ',
+      /* The sentence that travels with the link. Short, because the link's
+         own preview carries the names and the date. */
+      shareText: 'הוזמנתם לחגוג איתנו! כל הפרטים ואישור ההגעה כאן:',
     },
     empty: 'עוד לא שויך לכם אירוע. ההפקה תפתח אותו ותקבלו הודעה.',
     /* The likeliest reason somebody sees an empty area is not that their event

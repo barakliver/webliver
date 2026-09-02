@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { supabasePublic } from '@/lib/supabase/public';
 import { currentLocale } from '@/lib/serverLocale';
 import { guestSiteFor } from '@/content/ui';
+import { weekdayDate } from '@/lib/appDates';
+import { formatDate } from '@/lib/dates';
 import { GuestSiteView, type GuestSite } from '@/components/guest/GuestSiteView';
 
 export const dynamic = 'force-dynamic';
@@ -20,11 +22,24 @@ export const dynamic = 'force-dynamic';
  */
 export async function generateMetadata({ params }: { params: Promise<{ token: string }> }): Promise<Metadata> {
   const { token } = await params;
+  const locale = await currentLocale();
   const site = await load(token);
-  const c = guestSiteFor(await currentLocale());
+  const c = guestSiteFor(locale);
+  if (!site) {
+    return { title: c.gone, robots: { index: false, follow: false, nocache: true } };
+  }
+
+  /* The card WhatsApp draws under the link when it is pasted into a group.
+     Names as the title, the date and the venue as the line under it, and no
+     image: the platform's share image is somebody else's wedding. */
+  const when = formatDate(weekdayDate(locale), site.event_date, c.dateTbd);
+  const description = [when, site.venue?.trim()].filter(Boolean).join(' · ');
   return {
-    title: site ? site.event_name : c.gone,
+    title: site.event_name,
+    description,
     robots: { index: false, follow: false, nocache: true },
+    openGraph: { type: 'website', title: site.event_name, description, siteName: site.event_name },
+    twitter: { card: 'summary', title: site.event_name, description },
   };
 }
 

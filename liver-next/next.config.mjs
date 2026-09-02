@@ -32,6 +32,12 @@ const id = version();
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  /* Development only. The dev server answers CORS-mode chunk requests from
+     an unlisted origin with an empty 403, and a browser opened at 127.0.0.1
+     rather than localhost then renders every page from the server and never
+     hydrates - which looks like a finished screen and is a dead one. The
+     design harness is driven by a headless browser at exactly that address. */
+  allowedDevOrigins: ['127.0.0.1'],
   poweredByHeader: false,
 
   /* Next's own version skew protection. It stamps the id onto every asset URL

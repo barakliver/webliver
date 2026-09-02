@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect, useState } from 'react';
 import { useFormStatus } from 'react-dom';
-import { Check, Copy, ExternalLink, Globe } from 'lucide-react';
+import { Check, Copy, ExternalLink, Globe, MessageCircle } from 'lucide-react';
 import { setGuestSite, type ActionResult } from '@/app/actions/clients';
 import { appCopy } from '@/content/site';
 
@@ -78,6 +78,13 @@ export function GuestSiteCard({ clientId, token, on, note }: {
                 {copied ? <Check size={15} strokeWidth={1.5} aria-hidden /> : <Copy size={15} strokeWidth={1.5} aria-hidden />}
                 {copied ? c.copied : c.copy}
               </button>
+              <a
+                href={`https://wa.me/?text=${encodeURIComponent(`${c.shareText}\n${url}`)}`}
+                target="_blank" rel="noopener noreferrer" className="btn-ghost"
+              >
+                <MessageCircle size={15} strokeWidth={1.5} aria-hidden />
+                {c.share}
+              </a>
               <a href={url || '#'} target="_blank" rel="noopener noreferrer" className="btn-quiet">
                 <ExternalLink size={15} strokeWidth={1.5} aria-hidden />
                 {c.open}

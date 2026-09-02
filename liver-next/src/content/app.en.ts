@@ -26,6 +26,8 @@ export const portalEn: PortalCopy = {
     copy: 'Copy the link',
     copied: 'Copied',
     open: 'Open the page',
+    share: 'Share on WhatsApp',
+    shareText: 'You are invited to celebrate with us! All the details and the RSVP are here:',
   },
   sub: 'Everything about your event, in one place.',
   empty: 'No event has been linked to you yet. The production will open it and you will hear from us.',
