@@ -105,12 +105,13 @@ function checkBuiltCss() {
   record(has('--line-control'), 'control edges have their own token');
 
   /* The face, which is the one thing about this design that cannot be checked
-     by looking at a screenshot on a phone. The design source sets everything
-     in Heebo; what shipped for months was a serif on every heading and every
-     large number, and that alone is why screens carrying the correct palette
-     still did not look like the thing that was designed. If the serif's
-     variable is back in the stylesheet, so is the wrong design. */
-  record(!has('--font-frank'), 'the serif is not in the build');
+     by looking at a screenshot on a phone. This assertion has flipped once:
+     the handoff file set everything in Heebo and for a while this checker
+     refused a build carrying the serif. Then he ruled on it himself - the
+     font he named is the one in MASTER.md, Frank Ruhl Libre for display - and
+     the layout loads it again. So its variable must be in the stylesheet; a
+     build without it has quietly reverted to the wrong design. */
+  record(has('--font-frank'), 'the serif is in the build');
 
   /* And the surfaces. A card in this design is glass: a translucent fill, a
      soft edge and a 24px corner. Its absence is what a flat page looks like. */
@@ -235,6 +236,21 @@ async function main() {
       'an unknown signing token looks exactly like a withdrawn one',
     );
   }
+
+  /* The guests' page, this release's new public surface. Same rule as the
+     signing link: a token nobody minted must read exactly like a page that is
+     switched off, so the two are indistinguishable from outside. */
+  const guest = await page(
+    '/w/00000000000000000000000000000000',
+    'the guests\' page answers a stranger',
+    { expect: [200] },
+  );
+  if (guest) {
+    const html = await guest.text();
+    record(html.includes('הדף לא זמין'), 'an unknown guest token reads as not available');
+  }
+  /* The operating book sits behind sign in; a stranger is sent to the door. */
+  await page('/app/guide', 'the operating book answers', { expect: [200, 307] });
 
   /* Linked from every invitation, so it has to work for somebody who has
      never signed in and may never sign in on the device they are holding. */

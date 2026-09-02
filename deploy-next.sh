@@ -13,7 +13,7 @@ set -euo pipefail
 
 REPO="${REPO:-/root/webliver}"
 APP="$REPO/liver-next"
-BRANCH="${BRANCH:-claude/general-fixes-kqxoqc}"
+BRANCH="${BRANCH:-design-overhaul}"
 HOST="${HOST:-app.liverproductions.com}"
 PORT="${PORT:-3000}"
 
