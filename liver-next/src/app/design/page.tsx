@@ -56,6 +56,9 @@ import { GuestSiteView } from '@/components/guest/GuestSiteView';
 import { GuestSiteLink } from '@/components/app/GuestSiteLink';
 import { GuestSiteCard } from '@/components/app/GuestSiteCard';
 import { guestSiteFor } from '@/content/ui';
+import { AppShell } from '@/components/app/AppShell';
+import { accentByKey } from '@/content/brand';
+import type { Account } from '@/lib/auth';
 import ConsoleLoading from '@/app/app/loading';
 import EventLoading from '@/app/app/clients/[id]/loading';
 import PortalLoading from '@/app/app/portal/loading';
@@ -318,6 +321,27 @@ export default async function DesignPage() {
 
         <Panel name="GuestSiteCard · producer" note="the switch on the guests tab, with the note and the link">
           <GuestSiteCard clientId={client} token="0123456789abcdef0123456789abcdef" on note="חניה חופשית בכניסה לחורשה." />
+        </Panel>
+
+        <Panel name="AppShell · producer" note="the rail: account row under the mark, never behind the floating button">
+          <div className="overflow-hidden rounded-xl2 border border-line">
+            <AppShell
+              account={{
+                id: FIXTURE_VIEWER, email: 'producer@example.com', fullName: 'הפקות הצפון', avatarUrl: null,
+                role: 'super_admin', clientIds: [],
+                producer: {
+                  id: 'p1', brandName: 'הפקות הצפון', status: 'approved', accent: 'slate', logoUrl: null,
+                  tagline: 'הפקת אירועים', whatsapp: '', slug: null, domain: null,
+                },
+              } as Account}
+              notices={[
+                { id: 'n1', kind: 'lead', title: 'פנייה חדשה מהאתר', body: 'רוני ועומר', href: '/app/leads', read_at: null, created_at: new Date().toISOString() },
+              ] as never}
+              brand={{ name: 'הפקות הצפון', tagline: 'הפקת אירועים', logoUrl: null, whatsapp: '', bookingUrl: '', accent: accentByKey('slate'), isPlatform: false }}
+            >
+              <div className="skeleton h-40 w-full" />
+            </AppShell>
+          </div>
         </Panel>
 
         <Panel name="Loading · console" note="what a tap on the navigation shows before the server answers">

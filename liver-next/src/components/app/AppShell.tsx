@@ -89,40 +89,44 @@ export function AppShell({
             A hairline is the whole separation. It does not scroll with the
             content, so a screen of forty rows never puts the navigation out
             of reach, which is most of what made the long screens tiring. */}
-        <aside className="sticky top-0 hidden h-dvh w-[15.5rem] shrink-0 flex-col justify-between border-s border-line px-7 py-8 lg:flex">
+        <aside className="sticky top-0 hidden h-dvh w-[15.5rem] shrink-0 flex-col overflow-y-auto border-s border-line px-7 py-8 lg:flex">
           <div className="min-w-0">
             <Brand brand={brand} />
-            <hr className="rule-gold mt-6" />
-            <div className="mt-6">
-              <SidebarNav items={items} />
-            </div>
-          </div>
 
-          {/* The account, at the foot of the rail rather than in a corner of
-              a header, because that is where it stops competing with the
-              screen's own title. */}
-          <div className="min-w-0 border-t border-line pt-5">
-            <Link
-              href="/app/me"
-              className="flex min-w-0 items-center gap-2.5 transition-opacity hover:opacity-75"
-            >
-              <Avatar name={account.fullName || account.email} src={account.avatarUrl} size={32} />
-              <span className="min-w-0 flex-1 truncate text-[13.5px] text-ink-soft">
-                {account.fullName || account.email}
-              </span>
-            </Link>
-            <div className="mt-3 flex items-center justify-between gap-2">
+            {/* The account, directly under the mark. It sat at the foot of
+                the rail, pinned to the bottom of the viewport, which on a
+                laptop put the name, the bell and the way out behind the
+                floating accessibility button and the last few pixels of the
+                window: the one row that says who is signed in and how many
+                things are waiting was the row nobody could see. Up here it is
+                always in view, and the rail scrolls rather than clips when a
+                screen is short. */}
+            <div className="mt-5 flex min-w-0 items-center gap-2">
+              <Link
+                href="/app/me"
+                className="flex min-w-0 flex-1 items-center gap-2.5 transition-opacity hover:opacity-75"
+              >
+                <Avatar name={account.fullName || account.email} src={account.avatarUrl} size={30} />
+                <span className="min-w-0 flex-1 truncate text-[13.5px] text-ink-soft">
+                  {account.fullName || account.email}
+                </span>
+              </Link>
               <NoticeBell notices={notices} />
               <form action={signOut}>
                 <button
                   type="submit"
-                  className="inline-flex min-h-[36px] items-center gap-2 px-2 text-[13.5px]
-                             text-ink-mute transition-colors hover:text-ink"
+                  aria-label={appCopy.signOut}
+                  title={appCopy.signOut}
+                  className="grid size-9 place-items-center rounded-xl2 text-ink-mute transition-colors hover:bg-surface-200 hover:text-ink"
                 >
                   <LogOut size={15} strokeWidth={1.5} aria-hidden />
-                  {appCopy.signOut}
                 </button>
               </form>
+            </div>
+
+            <hr className="rule-gold mt-5" />
+            <div className="mt-6">
+              <SidebarNav items={items} />
             </div>
           </div>
         </aside>
