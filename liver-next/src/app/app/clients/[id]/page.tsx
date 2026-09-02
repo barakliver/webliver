@@ -21,6 +21,7 @@ import { PaymentsPanel, type Payment } from '@/components/app/PaymentsPanel';
 import { BudgetPanel, type BudgetItem } from '@/components/app/BudgetPanel';
 import { WinningBoard } from '@/components/app/WinningBoard';
 import { GuestList, type Guest } from '@/components/app/GuestList';
+import { GuestSiteCard } from '@/components/app/GuestSiteCard';
 import { SeatingPlan, type SeatTable } from '@/components/app/SeatingPlan';
 import { DaySchedule, type DayItem } from '@/components/app/DaySchedule';
 import { CrewPanel, type CrewMember } from '@/components/app/CrewPanel';
@@ -67,7 +68,7 @@ export default async function ClientPage({
   const sb = await supabaseServer();
   const { data: client } = await sb
     .from('clients')
-    .select('id,display_name,kind,event_date,venue,guest_estimate,budget_visible,track_a_label,track_b_label')
+    .select('id,display_name,kind,event_date,venue,guest_estimate,budget_visible,track_a_label,track_b_label,guest_token,guest_site_on,guest_note')
     .eq('id', id)
     .maybeSingle();
 
@@ -123,6 +124,7 @@ export default async function ClientPage({
 type Client = {
   id: string; display_name: string; kind: string; event_date: string | null;
   venue: string | null; guest_estimate: number | null; budget_visible: boolean | null;
+  guest_token: string | null; guest_site_on: boolean | null; guest_note: string | null;
   track_a_label: string; track_b_label: string;
 };
 
@@ -190,6 +192,15 @@ async function Section({ tab, client, viewerId }: { tab: EventTab; client: Clien
     ]);
     return (
       <div className="space-y-6">
+        {/* The page the couple sends everyone. First on the tab, because the
+            question it answers - "what do we send people?" - comes before the
+            list ever fills. */}
+        <GuestSiteCard
+          clientId={id}
+          token={client.guest_token}
+          on={!!client.guest_site_on}
+          note={client.guest_note ?? ''}
+        />
         <GuestList clientId={id} guests={guests} />
         <SeatingPlan clientId={id} tables={tables} guests={guests as never} />
       </div>

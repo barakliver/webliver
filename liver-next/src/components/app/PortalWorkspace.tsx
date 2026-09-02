@@ -9,6 +9,7 @@ import { GuestList } from '@/components/app/GuestList';
 import { SeatingPlan } from '@/components/app/SeatingPlan';
 import { DaySchedule } from '@/components/app/DaySchedule';
 import { PortalSummary, summaryRows } from '@/components/app/PortalSummary';
+import { GuestSiteLink } from '@/components/app/GuestSiteLink';
 import { Ltr } from '@/components/Ltr';
 import type { PortalData, Workspace } from '@/lib/portal';
 
@@ -76,6 +77,10 @@ export function PortalWorkspace({
       />
 
       <div className="mt-10 space-y-10">
+        {/* The link they paste into the family group, once the producer has
+            switched the page on. Above the tasks because sending it is
+            usually the first thing the couple wants to do. */}
+        {c.guest_site_on && c.guest_token && <GuestSiteLink token={c.guest_token} />}
         <TaskList clientId={c.id} tasks={data.tasksFor(c.id)} viewer="client" viewerId={viewerId} />
         <PaymentsPanel clientId={c.id} payments={data.paymentsFor(c.id)} viewer="client" />
         {/* Gated modules. A closed one is absent rather than greyed out: a

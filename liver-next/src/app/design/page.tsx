@@ -52,6 +52,8 @@ import {
   fixtureSheetGuests, fixtureSheetTables, fixtureSheetMoments, fixtureSheetArrivals,
 } from '@/content/fixtures';
 import { NumbersSheet } from '@/components/app/NumbersSheet';
+import { GuestSiteView } from '@/components/guest/GuestSiteView';
+import { guestSiteFor } from '@/content/ui';
 import ConsoleLoading from '@/app/app/loading';
 import EventLoading from '@/app/app/clients/[id]/loading';
 import PortalLoading from '@/app/app/portal/loading';
@@ -276,6 +278,28 @@ export default async function DesignPage() {
             arrivals={fixtureSheetArrivals}
             brand={{ name: 'הפקות הצפון', tagline: 'הפקת אירועים' }}
           />
+        </Panel>
+
+        <Panel name="GuestSite" note="the page the couple sends everyone: whose, when, where, how, what, and the reply">
+          <div className="-mx-4 overflow-hidden rounded-xl2 border border-line sm:-mx-8">
+            <GuestSiteView
+              token="0123456789abcdef0123456789abcdef"
+              locale={locale}
+              c={guestSiteFor(locale)}
+              site={{
+                event_name: 'נועה ואיתי',
+                event_date: new Date(Date.now() + 200 * 86_400_000).toISOString().slice(0, 10),
+                venue: 'חורשת טל, קיבוץ הגושרים',
+                note: 'חניה חופשית בכניסה לחורשה. הערב מתחיל בשבע, החופה בשמונה וחצי, ואחריה רוקדים עד שנופלים.\nקוד לבוש: חגיגי ונוח, הדשא אמיתי.',
+                producer: 'הפקות הצפון',
+                moments: [
+                  { at: '19:00:00', title: 'קבלת פנים' },
+                  { at: '20:30:00', title: 'חופה' },
+                  { at: '21:30:00', title: 'ישיבה לארוחה' },
+                ],
+              }}
+            />
+          </div>
         </Panel>
 
         <Panel name="Loading · console" note="what a tap on the navigation shows before the server answers">

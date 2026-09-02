@@ -15,6 +15,10 @@ export type Workspace = {
   id: string; display_name: string; event_date: string | null;
   venue: string; guest_estimate: number | null; budget_visible: boolean;
   track_a_label: string; track_b_label: string;
+  /** The guests' page: its address, and whether it is switched on. The
+   *  couple gets the link to paste into their invitations; nothing else about
+   *  the page is theirs to change from here. */
+  guest_token: string | null; guest_site_on: boolean;
 };
 
 /** Which modules this workspace may open. Asked of the database rather than
@@ -37,7 +41,7 @@ export type PortalData = {
 };
 
 const WORKSPACE_COLS =
-  'id,display_name,event_date,venue,guest_estimate,budget_visible,track_a_label,track_b_label';
+  'id,display_name,event_date,venue,guest_estimate,budget_visible,track_a_label,track_b_label,guest_token,guest_site_on';
 
 type WithClient<T> = T & { client_id: string };
 const by = <T,>(rows: WithClient<T>[] | null | undefined, id: string): T[] =>

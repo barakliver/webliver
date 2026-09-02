@@ -20,6 +20,13 @@ import type {
 
 export const portalEn: PortalCopy = {
   title: 'Our area',
+  guestSite: {
+    title: 'The link for your guests',
+    sub: 'Send it on WhatsApp to everyone invited. Each guest finds themselves by phone number and replies.',
+    copy: 'Copy the link',
+    copied: 'Copied',
+    open: 'Open the page',
+  },
   sub: 'Everything about your event, in one place.',
   empty: 'No event has been linked to you yet. The production will open it and you will hear from us.',
   emptyWho: 'You are signed in as {email}.',

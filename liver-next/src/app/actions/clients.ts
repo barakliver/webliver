@@ -316,3 +316,29 @@ export async function setArchived(form: FormData): Promise<void> {
   revalidatePath(`/app/clients/${id}`);
   revalidatePath('/app');
 }
+
+/** The guests' page: on or off, and the couple's words on it.
+ *
+ *  Producer-only, through the ordinary row policy on `clients`. The token is
+ *  never touched here - the trigger in 0045 freezes it on update - so the
+ *  address a couple already pasted into their invitations stays good. */
+export async function setGuestSite(_prev: ActionResult | null, form: FormData): Promise<ActionResult> {
+  const clientId = String(form.get('client_id') ?? '');
+  const on = String(form.get('on') ?? '') === '1';
+  const note = String(form.get('note') ?? '').trim().slice(0, 1200);
+  if (!clientId) return { ok: false, error: 'חסר מזהה אירוע' };
+
+  const account = await currentAccount();
+  if (!account) return { ok: false, error: 'צריך להתחבר' };
+
+  const sb = await supabaseServer();
+  const { error } = await sb
+    .from('clients')
+    .update({ guest_site_on: on, guest_note: note })
+    .eq('id', clientId);
+  if (error) return { ok: false, error: readable(error.message) };
+
+  revalidatePath(`/app/clients/${clientId}`);
+  revalidatePath('/app/portal');
+  return { ok: true };
+}

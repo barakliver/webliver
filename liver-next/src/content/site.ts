@@ -1080,6 +1080,26 @@ export const appCopy = {
     updated: 'נכון לרגע ההפקה של הדף. המספרים ממשיכים לזוז עד הרגע האחרון.',
   },
 
+  /* The producer's switch for the guests' page, on the guests tab. */
+  guestSite: {
+    title: 'אתר האורחים',
+    sub: 'עמוד אחד לשליחה לכל המוזמנים: מתי, איפה, סדר הערב, ואישור הגעה לפי מספר טלפון.',
+    on: 'האתר פתוח',
+    off: 'האתר כבוי',
+    turnOn: 'פתיחת האתר',
+    turnOff: 'כיבוי האתר',
+    link: 'הקישור לשליחה',
+    copy: 'העתקה',
+    copied: 'הועתק',
+    open: 'פתיחה',
+    note: 'כמה מילים לאורחים',
+    notePh: 'קוד לבוש, חניה, כל מה שחשוב שידעו',
+    save: 'שמירה',
+    saving: 'שומר',
+    saved: 'נשמר',
+    hint: 'לאורחים מופיעים רק השמות, התאריך, המקום, רגעי המפתח מהלוז והמילים שכאן. שום דבר אחר.',
+  },
+
   statusBoard: {
     noDate: 'ללא תאריך',
     daysLeft: 'ימים',
@@ -1297,6 +1317,14 @@ export const appCopy = {
   portal: {
     title: 'האזור שלנו',
     sub: 'כל מה שקשור לאירוע שלכם, במקום אחד.',
+    /* The link the couple pastes into the family group. */
+    guestSite: {
+      title: 'הקישור לאורחים',
+      sub: 'שלחו אותו בוואטסאפ לכל המוזמנים. כל אחד מוצא את עצמו לפי מספר הטלפון ומאשר הגעה.',
+      copy: 'העתקת הקישור',
+      copied: 'הועתק',
+      open: 'פתיחת העמוד',
+    },
     empty: 'עוד לא שויך לכם אירוע. ההפקה תפתח אותו ותקבלו הודעה.',
     /* The likeliest reason somebody sees an empty area is not that their event
        has not been opened yet — it is that they signed in with a different
@@ -1324,6 +1352,33 @@ export const appCopy = {
 /** The one screen a guest ever sees. They have no account and no context
  *  beyond the link they were sent, so it says who it is for and what it is
  *  about before it asks anything. */
+/* The guests' page: what a couple sends to everyone they invited. Reached by
+   an unguessable link, read on a phone in a family group, by people who have
+   no account and never will. Every string here is for them. */
+export const guestSiteCopy = {
+  eyebrow: 'הוזמנתם לחגוג איתנו',
+  daysLeft: 'ימים לאירוע',
+  today: 'זה היום',
+  passed: 'האירוע כבר נערך. תודה שהייתם איתנו.',
+  dateTbd: 'התאריך יפורסם בקרוב',
+  waze: 'ניווט בוויז',
+  maps: 'מפות גוגל',
+  calendar: 'הוספה ליומן',
+  moments: 'סדר הערב',
+  note: 'כמה מילים מאיתנו',
+  rsvpTitle: 'אישור הגעה',
+  rsvpSub: 'הקלידו את מספר הטלפון שאליו נשלחה ההזמנה, ונעביר אתכם לאישור האישי שלכם.',
+  phone: 'מספר טלפון',
+  find: 'מצאו אותי',
+  finding: 'מחפש',
+  notFound: 'לא מצאנו את המספר ברשימה. אפשר לפנות ישירות לזוג.',
+  tooMany: 'יותר מדי ניסיונות ברצף. נסו שוב בעוד רגע.',
+  bad: 'המספר לא נראה תקין. בדקו ונסו שוב.',
+  producedBy: 'הפקה',
+  gone: 'הדף לא זמין',
+  goneBody: 'הקישור לא נמצא, או שהדף עדיין לא פורסם. אפשר לפנות לזוג.',
+} as const;
+
 export const rsvpCopy = {
   eyebrow: 'אישור הגעה',
   hello: 'שלום',

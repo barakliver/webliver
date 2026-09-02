@@ -1,7 +1,7 @@
 import type { SiteCopy } from './site.ts';
 import type {
   AuthCopy, PrivacyCopy, TermsCopy, A11yCopy, InstallCopy, ShopCopy, RsvpCopy,
-  BudgetSimCopy, ConciergeCopy, EventKinds,
+  GuestSiteCopy, BudgetSimCopy, ConciergeCopy, EventKinds,
 } from './ui.ts';
 
 /**
@@ -552,6 +552,30 @@ export const storeCopyEn: ShopCopy = {
   thanks: 'We saved the order and we will get back to you. Your order number is:',
   again: 'Another order',
   failed: 'We could not send the order. Please try again.',
+};
+
+export const guestSiteCopyEn: GuestSiteCopy = {
+  eyebrow: 'You are invited to celebrate with us',
+  daysLeft: 'days to go',
+  today: 'It is today',
+  passed: 'The celebration has taken place. Thank you for being with us.',
+  dateTbd: 'The date will be announced soon',
+  waze: 'Navigate with Waze',
+  maps: 'Google Maps',
+  calendar: 'Add to calendar',
+  moments: 'The evening',
+  note: 'A few words from us',
+  rsvpTitle: 'RSVP',
+  rsvpSub: 'Enter the phone number the invitation was sent to, and we will take you to your personal reply.',
+  phone: 'Phone number',
+  find: 'Find me',
+  finding: 'Looking',
+  notFound: 'We could not find that number on the list. You can reach the couple directly.',
+  tooMany: 'Too many attempts in a row. Try again in a moment.',
+  bad: 'That number does not look right. Check it and try again.',
+  producedBy: 'Produced by',
+  gone: 'This page is not available',
+  goneBody: 'The link was not found, or the page has not been published yet. You can reach the couple directly.',
 };
 
 export const rsvpCopyEn: RsvpCopy = {

@@ -141,6 +141,15 @@ export const clientGuideEn: GuideBook = {
           ],
         },
         {
+          q: 'How do I send every guest one link?',
+          steps: [
+            'Once the production switches on the guests\' page, a card with the link for your guests appears in your area.',
+            'Copy it and send it on WhatsApp to everyone invited, groups included.',
+            'Each guest opens it, sees when and where, and replies using the phone number they were invited with.',
+          ],
+          note: 'For a guest to be found, their phone number has to be on the guest list.',
+        },
+        {
           q: 'How do I upload a file?',
           steps: [
             'In the files area, upload anything that belongs to the event: the invitation, lists, documents.',
