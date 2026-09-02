@@ -1048,6 +1048,38 @@ export const appCopy = {
     pastMidnight: '(אחרי חצות)',
   },
 
+  /* The one page a supplier actually asks for: how many, what, and when.
+     A print-first sibling of the run sheet, and deliberately without a
+     shekel on it anywhere: it is handed to the caterer and the venue. */
+  numbers: {
+    open: 'דף מספרים',
+    title: 'דף המספרים',
+    sub: 'עמוד אחד עם כל מה שספק שואל: כמה, מה, ומתי.',
+    back: 'חזרה לאירוע',
+    print: 'הדפסה / שמירה כ-PDF',
+    counts: 'כמה מגיעים',
+    invited: 'הוזמנו',
+    attending: 'אישרו',
+    pending: 'טרם ענו',
+    declined: 'לא מגיעים',
+    heads: 'נפשות שאישרו',
+    households: 'בתי אב',
+    diet: 'מנות לקייטרינג',
+    dietRegular: 'רגיל',
+    dietNone: 'אין בקשות מיוחדות בינתיים.',
+    meals: 'מנות',
+    seating: 'שולחנות והושבה',
+    seatingNone: 'עוד לא הוגדרו שולחנות.',
+    seatedShort: 'הושבו',
+    seatsShort: 'מקומות',
+    unseated: 'טרם הושבו',
+    schedule: 'רגעי המפתח',
+    scheduleNone: 'עוד אין רגעי מפתח בלוז.',
+    arrivals: 'שעות הגעה',
+    arrivalsNone: 'עוד לא נקבעו שעות הגעה.',
+    updated: 'נכון לרגע ההפקה של הדף. המספרים ממשיכים לזוז עד הרגע האחרון.',
+  },
+
   statusBoard: {
     noDate: 'ללא תאריך',
     daysLeft: 'ימים',

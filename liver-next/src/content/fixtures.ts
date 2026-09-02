@@ -406,3 +406,38 @@ export const fixtureDayVendors: Caller[] = [
   { id: 'cv1', name: 'הגברה ותאורה, צליל', role: 'הגברה', phone: '+972533333333', call_time: '16:00', kind: 'vendor', arrived_at: null },
   { id: 'cv2', name: 'קייטרינג השדה', role: 'קייטרינג', phone: '+972544444444', call_time: '16:30', kind: 'vendor', arrived_at: hoursAgo(1) },
 ];
+
+import type { SheetGuest, SheetTable, SheetMoment, SheetArrival } from '@/components/app/NumbersSheet';
+
+/* The numbers sheet: enough shape to exercise every section - special meals,
+   a table over capacity, guests still unseated, and a mixed arrivals clock. */
+export const fixtureSheetGuests: SheetGuest[] = [
+  { id: 'sg1', full_name: 'משפחת כהן', status: 'attending', party_size: 4, diet: 'none', table_id: 'st1' },
+  { id: 'sg2', full_name: 'רות ואבנר לוי', status: 'attending', party_size: 2, diet: 'vegetarian', table_id: 'st1' },
+  { id: 'sg3', full_name: 'יעל ברק', status: 'attending', party_size: 1, diet: 'vegan', table_id: 'st2' },
+  { id: 'sg4', full_name: 'החברים מהצבא', status: 'attending', party_size: 6, diet: 'none', table_id: 'st2' },
+  { id: 'sg5', full_name: 'סבתא רחל', status: 'attending', party_size: 1, diet: 'gluten_free', table_id: null },
+  { id: 'sg6', full_name: 'משפחת אזולאי', status: 'attending', party_size: 5, diet: 'kosher', table_id: null },
+  { id: 'sg7', full_name: 'דוד ממילואים', status: 'pending', party_size: 2, diet: 'none', table_id: null },
+  { id: 'sg8', full_name: 'שכנים מהבניין', status: 'declined', party_size: 2, diet: 'none', table_id: null },
+];
+
+export const fixtureSheetTables: SheetTable[] = [
+  { id: 'st1', name: 'שולחן משפחה', seats: 10 },
+  { id: 'st2', name: 'שולחן חברים', seats: 8 },
+  { id: 'st3', name: 'שולחן עבודה', seats: 10 },
+];
+
+export const fixtureSheetMoments: SheetMoment[] = [
+  { id: 'sm1', at_time: '19:00', title: 'קבלת פנים', key_moment: false },
+  { id: 'sm2', at_time: '20:30', title: 'חופה', key_moment: true },
+  { id: 'sm3', at_time: '21:30', title: 'ישיבה לארוחה', key_moment: true },
+  { id: 'sm4', at_time: '01:00', title: 'סיום ופינוי', key_moment: true },
+];
+
+export const fixtureSheetArrivals: SheetArrival[] = [
+  { id: 'sa1', name: 'עמית שלו', role: 'מנהל שטח', call_time: '15:00' },
+  { id: 'sa2', name: 'הגברה ותאורה, צליל', role: 'הגברה', call_time: '16:00' },
+  { id: 'sa3', name: 'קייטרינג השדה', role: 'קייטרינג', call_time: '16:30' },
+  { id: 'sa4', name: 'דנה בר', role: 'מלווה זוג', call_time: '18:00' },
+];

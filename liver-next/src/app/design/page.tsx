@@ -49,7 +49,9 @@ import {
   fixtureAnniversaries, fixtureEventSummary, fixtureFunnel, fixtureSources,
   fixtureResponse, fixtureCash, fixtureReferrals, fixtureTemplates,
   fixtureMeetings, fixtureDayLines, fixtureDayCrew, fixtureDayVendors,
+  fixtureSheetGuests, fixtureSheetTables, fixtureSheetMoments, fixtureSheetArrivals,
 } from '@/content/fixtures';
+import { NumbersSheet } from '@/components/app/NumbersSheet';
 
 /**
  * Every panel in the product, on one page, with no database behind it.
@@ -260,6 +262,17 @@ export default async function DesignPage() {
 
         <Panel name="CalendarFeed" note="the subscription link; creating one needs a session">
           <CalendarFeed />
+        </Panel>
+
+        <Panel name="NumbersSheet" note="the supplier page: heads, meals, seats and both clocks">
+          <NumbersSheet
+            client={{ display_name: 'נועה ואיתי', event_date: new Date().toISOString().slice(0, 10), venue: 'חורשת טל' }}
+            guests={fixtureSheetGuests}
+            tables={fixtureSheetTables}
+            day={fixtureSheetMoments}
+            arrivals={fixtureSheetArrivals}
+            brand={{ name: 'הפקות הצפון', tagline: 'הפקת אירועים' }}
+          />
         </Panel>
 
         <Panel name="BeginHere" note="a fresh producer's overview: the first steps instead of 'all clear'">
