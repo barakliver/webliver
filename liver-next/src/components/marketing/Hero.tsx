@@ -64,13 +64,20 @@ export function Hero({ site }: { site: SiteCopy }) {
           {site.hero.name}
         </p>
 
-        <div className="mt-4 animate-veil [animation-delay:180ms]">
-          {/* Prose sets text-ink-soft itself, which is a dark grey and would
-              vanish against the photograph, so the override goes on Prose. */}
-          <Prose lines={site.hero.body} className="!text-surface/85" ledeClassName="text-surface" />
+        <div className="mt-6 animate-veil [animation-delay:180ms]">
+          {/* Two lines, set flat and a step larger than body copy: this is
+              the hero's whole argument, and a lede treatment that promotes
+              one of the two would demote the other. The colour override is
+              still needed because Prose's own ink would vanish against the
+              photograph. */}
+          <Prose
+            lines={site.hero.body}
+            lede={false}
+            className="!text-[18px] !leading-relaxed !text-surface/90 sm:!text-[20px]"
+          />
         </div>
 
-        <div className="mt-9 animate-veil [animation-delay:240ms]">
+        <div className="mt-10 animate-veil [animation-delay:240ms]">
           {/* btn-primary is ink on white ground. Over the photograph it was
               dark on dark, so the hero's call inverts to white on ink. */}
           <Link

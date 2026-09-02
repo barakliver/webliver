@@ -246,14 +246,36 @@
      reason: an unknown utility class is invisible to the compiler, the linter
      and the browser alike. `scripts/check-classes.mjs` now refuses one.
 
-     64px on a phone and 96px beyond it, which is what `Steps` was already
-     hard-coding for itself. The two full bleed bands keep their own, larger
-     padding: a band with its own background needs to hold the colour for
-     longer than a section needs to separate from its neighbour. */
-  .section { @apply py-16 sm:py-24; }
+     80px on a phone and 128px beyond it. It was 64/96; the copy pass that
+     cut every section's words in half is what pays for the air, and the air
+     is what lets a short statement land as a statement rather than as a
+     thin paragraph. The two full bleed bands keep their own, larger padding:
+     a band with its own background needs to hold the colour for longer than
+     a section needs to separate from its neighbour. */
+  .section { @apply py-20 sm:py-32; }
 
   .shell { @apply mx-auto w-full max-w-content px-4 sm:px-8; }
   .measure { max-width: 62ch; }
+
+  /* ── Sections arrive the way the hero does ────────────────────────────────
+     The same `veil` rise the hero plays on load, driven by the scroll
+     position instead of a timer, so each section surfaces as the reader
+     reaches it. CSS only: `animation-timeline: view()` maps the animation to
+     the element's entry into the viewport, and the two guards mean a browser
+     without scroll timelines, or a person who asked for less motion, simply
+     gets the page standing still - which is the page as it was. The range
+     ends at 36% of entry so the words are fully present long before they
+     reach reading height; a reveal that finishes under the reader's eyes is
+     a distraction, one that finished below them is an arrival. */
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      .section > .shell {
+        animation: veil both;
+        animation-timeline: view();
+        animation-range: entry 8% entry 36%;
+      }
+    }
+  }
 
   /* ── The card, restored ──────────────────────────────────────────────────
      This was a hairline with no fill, no radius and no shadow, from the Lux

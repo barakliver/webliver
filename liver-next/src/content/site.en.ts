@@ -29,11 +29,8 @@ export const siteEn: SiteCopy = {
     headline: 'One perfect day, held together',
     name: 'Barak Liver',
     body: [
-      'One evening in a lifetime, all the people dearest to you are in the same place.',
-      'An evening like that deserves to be walked by somebody who knows the way.',
-      'From the first meeting to the last song, we carry the plan, the budget, the suppliers and every small detail in between.',
-      'You stay close to every decision that matters to you, and far from everything that weighs.',
-      'And when the evening arrives, you are free to live it in full.',
+      'One evening in a lifetime, everyone dear to you in one place.',
+      'We hold everything else.',
     ],
     cta: 'Let us meet',
   },
@@ -50,11 +47,9 @@ export const siteEn: SiteCopy = {
   philosophy: {
     title: 'Your wedding starts with you',
     body: [
-      'Before a venue, a photographer or a look, one question comes before all the others: how would you like to remember this evening.',
-      'What your guests should feel the moment they walk in.',
-      'Which moments are too precious to slip past among the details.',
-      'Where it is right to invest, and what is not open to compromise.',
-      'Out of those answers a wedding is built that belongs to you alone.',
+      'Before a venue. Before a photographer. Before anything, one question: how would you like to remember this evening.',
+      'What your guests should feel as they walk in. Which moments are too precious to slip past. What is not open to compromise.',
+      'Out of those answers, a wedding that belongs to you alone.',
     ],
   },
 
@@ -62,11 +57,9 @@ export const siteEn: SiteCopy = {
     title: 'When somebody is holding the whole picture',
     body: [
       'True calm is not the absence of things to do. It is the knowledge that somebody is already taking care of every one of them.',
-      'At any moment you know what is being done now and what comes next.',
-      'The budget is open before you, suppliers receive their answers, and decisions are made in time.',
-      'The small details do not grow into a large worry in the final week.',
+      'The budget stays open. Suppliers get answers. Decisions are made in time.',
       'And in the evenings you talk about the wedding itself, not about its errands.',
-      'One address walks beside you, from the first moment to the last.',
+      'One address, from the first moment to the last.',
     ],
   },
 
@@ -92,10 +85,10 @@ export const siteEn: SiteCopy = {
   about: {
     title: 'Who walks beside you',
     body: [
-      'Behind every production stand more than eight years and hundreds of events, from outdoor weddings to complex evenings of hundreds of guests.',
-      'Those years taught us one simple thing: the pressure of the great day is not managed in the moment. It is prevented in advance.',
-      'We listen to the end, check the numbers once more, and tell the truth even when it is not the comfortable answer.',
-      'And when something shifts at the last minute, there is somebody at your side who has seen it all and stays calm.',
+      'More than eight years. Hundreds of events. From open-field weddings to evenings of hundreds of guests.',
+      'Those years taught one simple thing: the pressure of the great day is not managed in the moment. It is prevented in advance.',
+      'Listen to the end. Check once more. Tell the truth, even when it is not the comfortable answer.',
+      'And when something shifts at the last minute, at your side is somebody who has seen it all and stays calm.',
     ],
   },
 
@@ -107,10 +100,8 @@ export const siteEn: SiteCopy = {
   dayOf: {
     title: 'And on the day itself',
     body: [
-      'And then the moment arrives when the planning ends and the celebration begins.',
-      'The guests walk in, the music rises, and the evening you have waited for truly happens.',
-      'Behind the scenes it is already known who has arrived, what was agreed, and what needs to happen in every minute.',
-      'You are not meant to feel any of it. That is precisely the craft.',
+      'The planning ends. The celebration begins.',
+      'Behind the scenes it is known who has arrived, what was agreed, and what happens in every minute. You feel none of it. That is precisely the craft.',
       'All that is left for you is to celebrate.',
     ],
   },
@@ -118,10 +109,9 @@ export const siteEn: SiteCopy = {
   academy: {
     title: 'Would you rather plan it yourselves?',
     body: [
-      'Some couples choose to hold the production in their own hands, and to do it properly.',
-      'For them we built the online course: the same method we work by, stage after stage.',
-      'From the budget and the venue through to suppliers, contracts and the day itself.',
-      'You produce it yourselves, but you are not by yourselves.',
+      'Some couples hold the production in their own hands. And do it properly.',
+      'The online course is the method we work by, stage after stage, from the budget to the day itself.',
+      'You produce it yourselves. You are not by yourselves.',
     ],
     cta: 'See the online course',
   },
@@ -129,9 +119,9 @@ export const siteEn: SiteCopy = {
   closing: {
     title: 'It starts with a conversation',
     body: [
-      'It all begins with one conversation. Half an hour of acquaintance, no obligation.',
-      'Tell us where you stand today and what wedding you see in your mind.',
-      'If it feels right to walk together, we continue on that road. And if not, you leave with order and direction.',
+      'It all begins with one conversation. Half an hour, no obligation.',
+      'Tell us where you stand today, and what wedding you see.',
+      'Right to go on together? We go on. If not, you leave with order and direction.',
     ],
     cta: 'Book an introductory meeting',
   },
