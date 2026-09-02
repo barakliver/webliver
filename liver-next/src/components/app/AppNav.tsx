@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { BookOpen, CalendarDays, Ellipsis, Globe, HeartHandshake, LayoutGrid, LifeBuoy, Palette, ShieldCheck, Sparkles, Store, Target, TrendingUp, Truck, X, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { appCopy } from '@/content/site';
+import { LinkHint } from './LinkHint';
 
 export type NavItem = { href: string; label: string; icon: IconName };
 export type IconName = 'overview' | 'leads' | 'clients' | 'calendar' | 'insights' | 'brand' | 'vendors' | 'store' | 'sop' | 'guide' | 'site' | 'admin' | 'portal';
@@ -71,6 +72,7 @@ export function SidebarNav({ items }: { items: NavItem[] }) {
               >
                 <Icon size={17} strokeWidth={1.5} aria-hidden className="shrink-0" />
                 <span className="truncate">{i.label}</span>
+                <LinkHint />
                 {/* On the edge that faces the content, which under rtl is the
                     start of the row and the inner side of the rail. */}
                 <span
@@ -170,6 +172,7 @@ export function MobileTabBar({ items }: { items: NavItem[] }) {
                     >
                       <Icon size={20} strokeWidth={1.5} aria-hidden />
                       {i.label}
+                      <LinkHint />
                     </Link>
                   </li>
                 );
@@ -202,7 +205,10 @@ export function MobileTabBar({ items }: { items: NavItem[] }) {
                       entirely: five short Hebrew words read faster at this
                       size than five glyphs somebody has to learn, and the
                       gold rule does the work the filled pill used to. */}
-                  <span className="max-w-full truncate">{i.label}</span>
+                  <span className="inline-flex max-w-full items-center gap-1">
+                    <span className="truncate">{i.label}</span>
+                    <LinkHint />
+                  </span>
                   {/* The active mark is a shape as well as a colour, so the
                       state survives greyscale and a low-contrast display. */}
                   <span

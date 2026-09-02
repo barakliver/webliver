@@ -257,6 +257,49 @@
   .shell { @apply mx-auto w-full max-w-content px-4 sm:px-8; }
   .measure { max-width: 62ch; }
 
+  /* ── What a screen looks like before it arrives ──────────────────────────
+     Every signed-in screen reads the database, so a tap on the navigation
+     used to show nothing at all until the server answered: the old screen
+     sat there, the finger lifted, and for most of a second the app looked
+     like it had not heard. Two small devices fix that.
+
+     `.skeleton` is the shape of what is coming, breathing slowly, drawn by
+     each route's loading.tsx so the navigation is instant and the page
+     fills in. `.link-hint` is a dot inside a link that appears only if the
+     navigation is actually taking time (the 120ms delay means a fast one
+     never flashes it). Both collapse to nothing under prefers-reduced-motion
+     via the global rule at the top of this file. */
+  .skeleton {
+    @apply rounded-xl2 bg-surface-200;
+    animation: skeleton 1.6s ease-in-out infinite;
+  }
+  @keyframes skeleton {
+    0%, 100% { opacity: .55; }
+    50% { opacity: 1; }
+  }
+
+  .link-hint {
+    display: inline-block;
+    width: .45em;
+    height: .45em;
+    border-radius: 9999px;
+    background: theme('colors.accent.bright');
+    opacity: 0;
+    visibility: hidden;
+    flex-shrink: 0;
+  }
+  .link-hint.is-pending {
+    visibility: visible;
+    animation-name: hintIn, hintPulse;
+    animation-duration: 200ms, 1s;
+    animation-delay: 120ms, 120ms;
+    animation-timing-function: ease, ease-in-out;
+    animation-iteration-count: 1, infinite;
+    animation-fill-mode: forwards, none;
+  }
+  @keyframes hintIn { to { opacity: .9; } }
+  @keyframes hintPulse { 50% { opacity: .35; } }
+
   /* ── Sections arrive the way the hero does ────────────────────────────────
      The same `veil` rise the hero plays on load, driven by the scroll
      position instead of a timer, so each section surfaces as the reader
@@ -324,6 +367,7 @@
     @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full
            px-6 text-[15px] font-medium tracking-[.02em]
            transition duration-300 ease-out
+           active:translate-y-px active:duration-75
            disabled:pointer-events-none disabled:opacity-50;
   }
   .btn-primary { @apply btn bg-ink text-surface hover:bg-ink-soft; }

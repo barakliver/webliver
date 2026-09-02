@@ -52,6 +52,9 @@ import {
   fixtureSheetGuests, fixtureSheetTables, fixtureSheetMoments, fixtureSheetArrivals,
 } from '@/content/fixtures';
 import { NumbersSheet } from '@/components/app/NumbersSheet';
+import ConsoleLoading from '@/app/app/loading';
+import EventLoading from '@/app/app/clients/[id]/loading';
+import PortalLoading from '@/app/app/portal/loading';
 
 /**
  * Every panel in the product, on one page, with no database behind it.
@@ -273,6 +276,18 @@ export default async function DesignPage() {
             arrivals={fixtureSheetArrivals}
             brand={{ name: 'הפקות הצפון', tagline: 'הפקת אירועים' }}
           />
+        </Panel>
+
+        <Panel name="Loading · console" note="what a tap on the navigation shows before the server answers">
+          <ConsoleLoading />
+        </Panel>
+
+        <Panel name="Loading · event file" note="between one tab and the next">
+          <EventLoading />
+        </Panel>
+
+        <Panel name="Loading · portal" note="the couple's area, the countdown's space first">
+          <div className="max-w-3xl"><PortalLoading /></div>
         </Panel>
 
         <Panel name="BeginHere" note="a fresh producer's overview: the first steps instead of 'all clear'">

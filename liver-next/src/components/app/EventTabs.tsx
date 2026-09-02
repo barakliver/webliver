@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { appCopy } from '@/content/site';
+import { LinkHint } from './LinkHint';
 
 /** The sections of an event file, in the order somebody works through one. */
 export const EVENT_TABS = ['overview', 'tasks', 'day', 'guests', 'details', 'crew', 'bar', 'money', 'docs', 'files', 'meetings', 'messages', 'board'] as const;
@@ -58,6 +59,7 @@ export function EventTabs({
             }`}
           >
             {labels[tab]}
+            <LinkHint />
             {count !== undefined && count > 0 && (
               <span className={`rounded-xl2 px-1.5 text-[11.5px] tabular-nums ${
                 on ? 'bg-card/20 text-surface' : 'bg-surface-200 text-ink-mute'
