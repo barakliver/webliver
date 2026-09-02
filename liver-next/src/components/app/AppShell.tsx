@@ -11,7 +11,12 @@ import { cn } from '@/lib/utils';
 
 function navFor(a: Account): NavItem[] {
   if (a.role === 'client') {
-    return [{ href: '/app/portal', label: appCopy.nav.portal, icon: 'portal' }];
+    /* Two destinations, which is what makes the phone's bottom bar appear for
+       a couple: their event, and the book that explains it. */
+    return [
+      { href: '/app/portal', label: appCopy.nav.portal, icon: 'portal' },
+      { href: '/app/guide', label: appCopy.nav.guide, icon: 'guide' },
+    ];
   }
   const items: NavItem[] = [
     { href: '/app',         label: appCopy.nav.overview, icon: 'overview' },
@@ -22,6 +27,7 @@ function navFor(a: Account): NavItem[] {
     { href: '/app/vendors', label: appCopy.nav.vendors,  icon: 'vendors' },
     { href: '/app/store',   label: appCopy.nav.store,    icon: 'store' },
     { href: '/app/sop',     label: appCopy.nav.sop,      icon: 'sop' },
+    { href: '/app/guide',   label: appCopy.nav.guide,    icon: 'guide' },
     { href: '/app/brand',   label: appCopy.nav.brand,    icon: 'brand' },
   ];
   if (a.role === 'super_admin') {

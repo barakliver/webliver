@@ -865,6 +865,7 @@ export const appCopy = {
     vendors: 'ספקים',
     store: 'חנות',
     sop: 'מדריכים',
+    guide: 'ספר ההפעלה',
     site: 'האתר',
     admin: 'ניהול מערכת',
     portal: 'האזור שלנו',

@@ -2,6 +2,7 @@ import 'server-only';
 import type Anthropic from '@anthropic-ai/sdk';
 import { site } from '@/content/site';
 import { SOP } from '@/content/sop';
+import { producerGuide, clientGuide, type GuideBook } from '@/content/guide';
 import { MIN_EVENT_DATE, MAX_GUESTS } from '@/content/site';
 
 /**
@@ -28,6 +29,24 @@ const playbook = SOP.map((chapter) => {
   return `${chapter.title} · ${chapter.sub}\n${sections}`;
 }).join('\n\n');
 
+/* The operating books, flattened for the prompt. Question and answer in full,
+   because "how do I add a guest" deserves the actual steps and not the name of
+   the chapter they are in. The concierge floats on the guide page itself, so a
+   person who did not find their question in the book asks the assistant, and
+   the assistant answers from the same book. */
+const bookDigest = (book: GuideBook) => {
+  const start = book.start.steps.map((s, i) => `${i + 1}. ${s.title}: ${s.body}`).join('\n');
+  const chapters = book.chapters.map((ch) =>
+    ch.entries.map((e) =>
+      `ש: ${e.q}\nת: ${e.steps.join(' ')}${e.note ? ` (${e.note})` : ''}`
+    ).join('\n')
+  ).join('\n');
+  return `${book.start.title}:\n${start}\n\n${chapters}`;
+};
+
+const clientBook = bookDigest(clientGuide);
+const producerBook = bookDigest(producerGuide);
+
 export const CONCIERGE_SYSTEM = `אתה העוזר הדיגיטלי של ${site.brand}, הפקת חתונות ואירועים.
 אתה מדבר עם זוגות ואנשים שמתעניינים בהפקה, באתר הציבורי.
 
@@ -48,6 +67,21 @@ ${site.dayOf.body.join(' ')}
 
 ## תחומי הידע של ההפקה
 ${playbook}
+
+## הפעלת המערכת: האזור האישי של הזוג
+כך עובד האזור האישי שזוג מקבל. כששואלים איך לעשות משהו שם, ענה מכאן:
+${clientBook}
+
+## הפעלת המערכת: הקונסולה של המפיק
+כך עובדת מערכת הניהול של ההפקה. רלוונטי כשמפיק שואל איך להפעיל אותה:
+${producerBook}
+
+## הכוונה בשימוש במערכת
+- כששואלים "איך עושים" משהו במערכת, ענה בצעדים קצרים ובשם המסך המדויק, לפי
+  ספרי ההפעלה שלמעלה. אל תמציא מסך או כפתור שלא כתוב שם.
+- הזכר שספר ההפעלה המלא יושב בתפריט, תחת "ספר ההפעלה", עם חיפוש.
+- אם השאלה על תקלה או על משהו שלא מופיע בספר, הצע את כפתור הדיווח הצף באזור
+  האישי, או לכתוב לנו, ונחזור עם תשובה.
 
 ## איך אתה מדבר
 - עברית, בגוף שני רבים ("אתם"), חם אבל לא מתחנף.

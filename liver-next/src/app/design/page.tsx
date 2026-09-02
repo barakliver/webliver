@@ -23,6 +23,8 @@ import { ArchiveShelf } from '@/components/app/ArchiveShelf';
 import { CrewPanel } from '@/components/app/CrewPanel';
 import { LeadRow } from '@/components/app/LeadRow';
 import { VendorDirectory } from '@/components/app/VendorDirectory';
+import { GuideBookView } from '@/components/app/GuideBook';
+import { producerGuide, clientGuideFor, guideUiFor } from '@/content/guide';
 import {
   FIXTURE_CLIENT, FIXTURE_VIEWER,
   fixtureTasks, fixturePayments, fixtureBudget, fixtureGuests, fixtureTables,
@@ -181,6 +183,14 @@ export default async function DesignPage() {
 
         <Panel name="ArchiveShelf" note="one year, two closed events">
           <ArchiveShelf shelf={fixtureShelf} />
+        </Panel>
+
+        <Panel name="GuideBook · client" note="the couple's operating book, in the page's language">
+          <GuideBookView book={clientGuideFor(locale)} c={guideUiFor(locale)} />
+        </Panel>
+
+        <Panel name="GuideBook · producer" note="the console's book, Hebrew only like the console">
+          <GuideBookView book={producerGuide} c={guideUiFor('he')} />
         </Panel>
       </main>
     </CopyProvider>
