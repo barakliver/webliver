@@ -160,3 +160,126 @@ export const fixtureShopItems: ShopItem[] = [
     body: '', price: 1450, image: '/portfolio/chuppah-50-w1400.webp',
   },
 ];
+
+/* ── The producer's own screens ─────────────────────────────────────────── */
+
+import type { ClientStatus } from '@/lib/status';
+import type { AttentionItem } from '@/lib/attention';
+import type { Shelf } from '@/lib/archive';
+import type { Order } from '@/components/app/OrdersBoard';
+import type { CrewMember } from '@/components/app/CrewPanel';
+import type { Lead, Call } from '@/components/app/LeadRow';
+import type { Vendor } from '@/components/app/VendorDirectory';
+
+export const fixtureStatus: ClientStatus[] = [
+  {
+    id: FIXTURE_CLIENT, name: 'נועה ואיתי', kind: 'wedding', eventDate: day(45),
+    venue: 'גני ורדים', guestEstimate: 340, archivedAt: null, daysLeft: 45,
+    gaps: [
+      { code: 'runsheet', label: 'אין לוז ליום האירוע', level: 'now' },
+      { code: 'seating', label: 'ההושבה עוד לא התחילה', level: 'soon' },
+    ],
+    nextTask: { title: 'לסגור טעימות עם הקייטרינג', dueOn: day(4) },
+    guests: { invited: 340, attending: 218 },
+    money: { owed: 95000, overdue: 40000 },
+    needsClosing: false,
+  },
+  {
+    id: '00000000-0000-4000-8000-000000000002', name: 'שיר ותומר', kind: 'wedding', eventDate: day(160),
+    venue: '', guestEstimate: null, archivedAt: null, daysLeft: 160,
+    gaps: [], nextTask: null,
+    guests: { invited: 0, attending: 0 },
+    money: { owed: 0, overdue: 0 },
+    needsClosing: false,
+  },
+  {
+    id: '00000000-0000-4000-8000-000000000003', name: 'ערב חברה, לקוח עסקי עם שם ארוך במיוחד בע״מ', kind: 'corporate',
+    eventDate: day(-6), venue: 'חוף הצוק', guestEstimate: 120, archivedAt: null, daysLeft: -6,
+    gaps: [], nextTask: null,
+    guests: { invited: 120, attending: 104 },
+    money: { owed: 12000, overdue: 12000 },
+    needsClosing: true,
+  },
+];
+
+export const fixtureAttention: AttentionItem[] = [
+  { id: 'a1', kind: 'payment', title: 'תשלום שני של נועה ואיתי באיחור', detail: 'ארבעים אלף שקלים, היה אמור להיסגר שלשום', href: '#', urgency: 'now', rank: 0 },
+  { id: 'a2', kind: 'gap', title: 'אין לוז ליום האירוע של נועה ואיתי', detail: '45 ימים לאירוע', href: '#', urgency: 'now', rank: 1 },
+  { id: 'a3', kind: 'lead', title: 'ליד חדש מהאתר: רוני ועומר', detail: 'חתונה, קיץ הבא, עוד לא חזרו אליהם', href: '#', urgency: 'soon', rank: 2 },
+  { id: 'a4', kind: 'task', title: 'תיאום סופי עם הצלם', detail: 'בעוד 11 ימים', href: '#', urgency: 'soon', rank: 3 },
+];
+
+export const fixtureOrders: Order[] = [
+  {
+    id: 'o1', number: 'LP-2026-014', buyer_name: 'רוני אזולאי', buyer_phone: '0521111111',
+    buyer_email: 'roni@example.com', total: 24800, status: 'pending', note: '',
+    created_at: hoursAgo(4),
+    items: [{ id: 'ol1', line: 1, name: 'חבילת בר מלא', qty: 1, price: 18000 }, { id: 'ol2', line: 2, name: 'עיצוב חופה', qty: 1, price: 6800 }],
+  },
+  {
+    id: 'o2', number: 'LP-2026-013', buyer_name: 'משפחת פרץ', buyer_phone: '0532222222',
+    buyer_email: '', total: 1450, status: 'paid', note: 'שולם בהעברה',
+    created_at: hoursAgo(30),
+    items: [{ id: 'ol3', line: 1, name: 'ערכת קבלת פנים', qty: 1, price: 1450 }],
+  },
+  {
+    id: 'o3', number: 'LP-2026-012', buyer_name: 'דנה', buyer_phone: '',
+    buyer_email: 'dana@example.com', total: 6800, status: 'draft', note: '',
+    created_at: hoursAgo(80),
+    items: [{ id: 'ol4', line: 1, name: 'עיצוב חופה', qty: 1, price: 6800 }],
+  },
+];
+
+export const fixtureShelf: Shelf[] = [
+  {
+    year: 2025,
+    events: [
+      {
+        client_id: 'ar1', event_year: 2025, event_date: '2025-09-04', display_name: 'מאיה ועידו',
+        venue: 'אחוזת רונית', guests_final: 280,
+        money: { budget: 240000, paid: 240000 },
+        vendors: [{ name: 'סטודיו לביא', category: 'צילום' }, { name: 'אלון מזרחי', category: 'דיג׳יי' }],
+        crew: [{ name: 'רותם', role: 'מנהלת אירוע' }],
+        runsheet: [{ at: '20:30', title: 'חופה' }],
+        note: 'ירד גשם בערב, הועבר הכל פנימה בשעה', closed_at: '2025-09-10T10:00:00Z',
+      },
+      {
+        client_id: 'ar2', event_year: 2025, event_date: '2025-06-19', display_name: 'הילה ורועי',
+        venue: 'שדה ורד', guests_final: 195,
+        money: { budget: 185000, paid: 185000 },
+        vendors: [], crew: [], runsheet: [],
+        note: '', closed_at: '2025-06-25T10:00:00Z',
+      },
+    ],
+  },
+];
+
+export const fixtureCrew: CrewMember[] = [
+  { id: 'c1', name: 'רותם ברזילי', role: 'מנהלת אירוע', phone: '0543333333', call_time: '15:00', fee: 1800, notes: '' },
+  { id: 'c2', name: 'עידן', role: 'לוגיסטיקה', phone: '', call_time: null, fee: null, notes: 'מגיע עם הטנדר' },
+];
+
+export const fixtureLeads: Lead[] = [
+  {
+    id: 'l1', full_name: 'רוני ועומר', email: 'roni@example.com', phone: '0521111111',
+    kind: 'wedding', event_date: day(300), guest_count: 250,
+    message: 'מתחתנים בקיץ הבא, מחפשים הפקה מלאה לחתונת שטח באזור המרכז.',
+    note: '', status: 'new', created_at: hoursAgo(6), source: 'site',
+  },
+  {
+    id: 'l2', full_name: 'חברת אופק אנרגיה', email: 'events@ofek.example', phone: '036666666',
+    kind: 'corporate', event_date: null, guest_count: null,
+    message: 'ערב חברה לסוף השנה.', note: 'חזרו אליהם, ממתינים לתקציב',
+    status: 'contacted', created_at: hoursAgo(120), source: 'referral',
+  },
+];
+
+export const fixtureCalls: Call[] = [
+  { id: 'call1', lead_id: 'l1', title: 'שיחת היכרות', remind_on: day(1), done: false },
+];
+
+export const fixtureVendors: Vendor[] = [
+  { id: 'v1', name: 'סטודיו לביא', category: 'צילום', contact_name: 'אורי לביא', phone: '0544444444', email: 'uri@example.com', area: 'מרכז', notes: 'עובדים איתו קבוע', archived_at: null },
+  { id: 'v2', name: 'אלון מזרחי', category: 'מוזיקה', contact_name: '', phone: '0525555555', email: '', area: 'כל הארץ', notes: '', archived_at: null },
+  { id: 'v3', name: 'פרח לבן', category: 'עיצוב', contact_name: 'נטע', phone: '', email: 'neta@example.com', area: 'שרון', notes: '', archived_at: '2026-01-01T00:00:00Z' },
+];

@@ -138,7 +138,10 @@ export function OrdersBoard({ orders }: { orders: Order[] }) {
                           onPointerMove={track}
                           onPointerUp={drop}
                           onPointerCancel={drop}
-                          className="mt-0.5 shrink-0 cursor-grab touch-none text-ink-mute transition hover:text-ink active:cursor-grabbing"
+                          /* A 15px handle was the only way to move an order by touch, and a
+                             15px handle cannot be gripped by a finger at all. The icon stays
+                             small; the button around it is a finger's width on a phone. */
+                          className="-my-1.5 grid h-11 w-9 shrink-0 cursor-grab touch-none place-items-center text-ink-mute transition hover:text-ink active:cursor-grabbing sm:my-0 sm:h-8 sm:w-6"
                         >
                           <GripVertical size={15} aria-hidden strokeWidth={1.5} />
                         </button>

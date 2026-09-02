@@ -42,7 +42,12 @@ export function LeadRow({ lead, calls }: { lead: Lead; calls: Call[] }) {
   return (
     <li className="rounded-xl2 border border-line">
       <div className="flex flex-wrap items-center gap-3 p-4">
-        <div className="min-w-0 flex-1">
+        {/* A floor, not just `min-w-0`. In a wrapping row a fully shrinkable
+            flex-1 child absorbs all the squeeze before anything wraps, so at
+            412px the lead's name was rendering one word per line beside an
+            intact status select. With a floor the fixed controls wrap below
+            instead, which is what the wrap was for. */}
+        <div className="min-w-[200px] flex-1">
           <p className="font-medium text-ink">{lead.full_name}</p>
           <p className="text-[12.5px] text-ink-mute" dir="ltr">
             {[lead.phone, lead.email].filter(Boolean).join(' · ') || '·'}

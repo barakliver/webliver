@@ -16,11 +16,20 @@ import { EventFileLists } from '@/components/app/EventFileLists';
 import { WinningBoard } from '@/components/app/WinningBoard';
 import { Shop } from '@/components/marketing/Shop';
 import { storeFor } from '@/content/ui';
+import { StatusBoard } from '@/components/app/StatusBoard';
+import { AttentionList } from '@/components/app/Attention';
+import { OrdersBoard } from '@/components/app/OrdersBoard';
+import { ArchiveShelf } from '@/components/app/ArchiveShelf';
+import { CrewPanel } from '@/components/app/CrewPanel';
+import { LeadRow } from '@/components/app/LeadRow';
+import { VendorDirectory } from '@/components/app/VendorDirectory';
 import {
   FIXTURE_CLIENT, FIXTURE_VIEWER,
   fixtureTasks, fixturePayments, fixtureBudget, fixtureGuests, fixtureTables,
   fixtureSeatGuests, fixtureDay, fixtureMessages, fixtureContracts, fixtureFiles,
   fixtureSongs, fixtureKit, fixturePeople, fixtureBoard, fixtureShopItems,
+  fixtureStatus, fixtureAttention, fixtureOrders, fixtureShelf, fixtureCrew,
+  fixtureLeads, fixtureCalls, fixtureVendors,
 } from '@/content/fixtures';
 
 /**
@@ -138,6 +147,40 @@ export default async function DesignPage() {
 
         <Panel name="Shop" note="the public shopfront, portfolio stills as product images">
           <Shop producerId="00000000-0000-4000-8000-00000000000f" items={fixtureShopItems} copy={storeFor(locale)} />
+        </Panel>
+
+        {/* ── The producer's own screens ─────────────────────────────── */}
+
+        <Panel name="AttentionList" note="the overview's top: two now, two soon">
+          <AttentionList items={fixtureAttention} />
+        </Panel>
+
+        <Panel name="StatusBoard" note="one event with gaps, one clean, one past its date">
+          <StatusBoard items={fixtureStatus} />
+        </Panel>
+
+        <Panel name="LeadRow" note="a site lead with an open call, and a corporate one">
+          <ul className="list-none space-y-3 p-0">
+            {fixtureLeads.map((l) => (
+              <LeadRow key={l.id} lead={l} calls={fixtureCalls.filter((x) => x.lead_id === l.id)} />
+            ))}
+          </ul>
+        </Panel>
+
+        <Panel name="VendorDirectory" note="two live suppliers and one archived">
+          <VendorDirectory vendors={fixtureVendors} />
+        </Panel>
+
+        <Panel name="CrewPanel" note="producer only: fees are visible here and nowhere else">
+          <CrewPanel clientId={client} crew={fixtureCrew} />
+        </Panel>
+
+        <Panel name="OrdersBoard" note="pending, paid and a draft">
+          <OrdersBoard orders={fixtureOrders} />
+        </Panel>
+
+        <Panel name="ArchiveShelf" note="one year, two closed events">
+          <ArchiveShelf shelf={fixtureShelf} />
         </Panel>
       </main>
     </CopyProvider>

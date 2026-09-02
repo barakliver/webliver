@@ -113,7 +113,7 @@ function Row({ vendor }: { vendor: Vendor }) {
       <button
         type="button" onClick={() => setEditing(true)} title={c.edit}
         aria-label={`${c.edit} ${vendor.name}`}
-        className="rounded-xl2 p-1.5 text-ink-mute transition hover:bg-surface-200 hover:text-ink"
+        className="grid size-11 place-items-center rounded-xl2 text-ink-mute transition hover:bg-surface-200 hover:text-ink sm:size-9"
       >
         <Pencil size={15} aria-hidden strokeWidth={1.5} />
       </button>
@@ -127,7 +127,7 @@ function Row({ vendor }: { vendor: Vendor }) {
         <button
           type="submit" title={archived ? c.unarchive : c.archive}
           aria-label={`${archived ? c.unarchive : c.archive} ${vendor.name}`}
-          className="rounded-xl2 p-1.5 text-ink-mute transition hover:bg-surface-200 hover:text-ink"
+          className="grid size-11 place-items-center rounded-xl2 text-ink-mute transition hover:bg-surface-200 hover:text-ink sm:size-9"
         >
           {archived
             ? <ArchiveRestore size={15} aria-hidden strokeWidth={1.5} />
@@ -193,7 +193,7 @@ export function VendorDirectory({ vendors }: { vendors: Vendor[] }) {
           {query && (
             <button
               type="button" onClick={() => setQuery('')} aria-label={c.cancel}
-              className="absolute top-1/2 left-3 -translate-y-1/2 rounded-xl2 p-1.5 text-ink-mute transition hover:bg-surface-200 hover:text-ink"
+              className="absolute top-1/2 left-1.5 grid size-10 -translate-y-1/2 place-items-center rounded-xl2 text-ink-mute transition hover:bg-surface-200 hover:text-ink"
             >
               <X size={15} strokeWidth={1.5} aria-hidden />
             </button>

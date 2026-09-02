@@ -132,7 +132,7 @@ function Row({ member, clientId }: { member: CrewMember; clientId: string }) {
         <button
           type="button" onClick={() => setEditing(true)} title={c.edit}
           aria-label={`${c.edit} ${member.name}`}
-          className="rounded-xl2 p-1.5 text-ink-mute transition hover:bg-surface-200 hover:text-ink"
+          className="grid size-11 place-items-center rounded-xl2 text-ink-mute transition hover:bg-surface-200 hover:text-ink sm:size-9"
         >
           <Pencil size={15} aria-hidden strokeWidth={1.5} />
         </button>
@@ -141,7 +141,7 @@ function Row({ member, clientId }: { member: CrewMember; clientId: string }) {
           <input type="hidden" name="client_id" value={clientId} />
           <button
             type="submit" title={c.remove} aria-label={`${c.remove} ${member.name}`}
-            className="rounded-xl2 p-1.5 text-ink-mute transition hover:bg-bad-wash hover:text-bad"
+            className="grid size-11 place-items-center rounded-xl2 text-ink-mute transition hover:bg-bad-wash hover:text-bad sm:size-9"
           >
             <Trash2 size={15} aria-hidden strokeWidth={1.5} />
           </button>
@@ -195,7 +195,7 @@ export function CrewPanel({ clientId, crew }: { clientId: string; crew: CrewMemb
         <button
           type="button"
           onClick={() => setAdding((v) => !v)}
-          className="inline-flex items-center gap-1.5 rounded-xl2 border border-line-strong bg-card px-4 py-2 text-[13.5px] font-medium text-ink transition hover:border-accent/40 hover:text-accent"
+          className="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl2 border border-line-strong bg-card px-4 text-[13.5px] font-medium text-ink transition hover:border-accent/40 hover:text-accent sm:min-h-0 sm:py-2"
         >
           <Plus size={15} aria-hidden strokeWidth={1.5} />
           {adding ? c.close : c.add}
