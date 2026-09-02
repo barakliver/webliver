@@ -53,7 +53,9 @@ function Number_({ label, hint, value, onChange, min, max, step = 1, suffix }: {
           aria-label={label}
           className="h-11 flex-1 accent-accent"
         />
-        <span className="w-[74px] shrink-0 text-left font-display text-[17px] font-light tabular-nums text-ink">
+        {/* dir="ltr", because "10%" in an rtl run renders as "% 10". The
+            number and its unit are one token and read left to right. */}
+        <span dir="ltr" className="w-[74px] shrink-0 text-left font-display text-[17px] font-light tabular-nums text-ink">
           {value}{suffix ? ` ${suffix}` : ''}
         </span>
       </div>

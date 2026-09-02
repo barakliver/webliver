@@ -145,7 +145,11 @@ export function CashPanel({ cash }: { cash: Cash }) {
     <section className="card">
       <h2 className="font-display text-[19px] font-light text-ink">{c.cash.title}</h2>
       <p className="mt-1 text-[13.5px] text-ink-soft">{c.cash.sub}</p>
-      <div className="mt-4 grid gap-3 sm:grid-cols-3">
+      {/* Three across only where three six-figure amounts in the display face
+          actually fit. At tablet widths the columns fall to ~180px each and
+          the numerals collide, which on a money panel reads as one wrong
+          number rather than as three cramped ones. */}
+      <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         <Figure label={c.cash.collected} value=<Money value={cash.collected} /> tone="ok" />
         <Figure label={c.cash.due} value=<Money value={cash.due} /> href="/app/clients" />
         <Figure

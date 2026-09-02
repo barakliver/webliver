@@ -283,3 +283,126 @@ export const fixtureVendors: Vendor[] = [
   { id: 'v2', name: 'אלון מזרחי', category: 'מוזיקה', contact_name: '', phone: '0525555555', email: '', area: 'כל הארץ', notes: '', archived_at: null },
   { id: 'v3', name: 'פרח לבן', category: 'עיצוב', contact_name: 'נטע', phone: '', email: 'neta@example.com', area: 'שרון', notes: '', archived_at: '2026-01-01T00:00:00Z' },
 ];
+
+/* ── The screens added in the second sweep ─────────────────────────────── */
+
+import type { Anniversary } from '@/components/app/Anniversaries';
+import type { EventSummary } from '@/lib/eventSummary';
+import type { Funnel, SourceRow, Response, Cash } from '@/lib/analytics';
+import type { ReferralRow } from '@/components/app/Referrals';
+import type { Template } from '@/components/app/WorkflowTemplates';
+import type { MeetingLog } from '@/components/app/MeetingDrawer';
+import type { Line, Caller } from '@/lib/dayof';
+
+export const fixtureAnniversaries: Anniversary[] = [
+  {
+    id: 'an1', clientId: FIXTURE_CLIENT, milestone: 'week', dueOn: day(4),
+    eventDate: day(-361), couple: 'רותם ועידו', daysAway: 4,
+    emails: ['rotem@example.com'],
+  },
+  {
+    id: 'an2', clientId: '00000000-0000-4000-8000-000000000002', milestone: 'month', dueOn: day(19),
+    eventDate: day(-346), couple: 'שיר ותומר', daysAway: 19, emails: [],
+  },
+];
+
+export const fixtureEventSummary: EventSummary = {
+  guests: { total: 214, confirmed: 141, pending: 58, declined: 15, seats: 132 },
+  money: { paid: 96000, owed: 64000, overdue: 12000 },
+  tasksOpen: 9,
+  dayLines: 34,
+  contracts: { total: 6, signed: 4 },
+  next: [
+    { id: 'n1', kind: 'payment', title: 'מקדמה לאולם, פעימה שנייה', due: day(-2), amount: 12000 },
+    { id: 'n2', kind: 'task', title: 'סגירת תפריט סופי מול הקייטרינג', due: day(1) },
+    { id: 'n3', kind: 'task', title: 'אישור נוסח הזמנה לדפוס', due: day(3) },
+    { id: 'n4', kind: 'payment', title: 'צלם, תשלום שני', due: day(6), amount: 7000 },
+  ],
+};
+
+export const fixtureFunnel: Funnel = {
+  total: 38,
+  steps: [
+    { key: 'leads', count: 38, rate: null },
+    { key: 'contacted', count: 29, rate: 76.3 },
+    { key: 'meeting', count: 14, rate: 48.3 },
+    { key: 'won', count: 8, rate: 57.1 },
+  ],
+};
+
+export const fixtureSources: SourceRow[] = [
+  { source: 'site', leads: 17, won: 4, rate: 23.5 },
+  { source: 'ai_concierge', leads: 9, won: 2, rate: 22.2 },
+  { source: 'referral', leads: 8, won: 2, rate: 25 },
+  { source: 'unknown', leads: 4, won: 0, rate: 0 },
+];
+
+export const fixtureResponse: Response = { medianHours: 3, answered: 31, waiting: 4 };
+
+export const fixtureCash: Cash = { collected: 312000, due: 148000, overdue: 19000, overdueCount: 2 };
+
+export const fixtureReferrals: ReferralRow[] = [
+  {
+    producer_id: 'p1', brand: 'הפקות הצפון', referral_code: 'north1', referred_by: null,
+    referred_brand: null, invited_total: 3, clients_total: 12,
+  },
+  {
+    producer_id: 'p2', brand: 'אירועי שקד', referral_code: 'shaked', referred_by: 'p1',
+    referred_brand: 'הפקות הצפון', invited_total: 0, clients_total: 5,
+  },
+];
+
+export const fixtureTemplates: Template[] = [
+  {
+    id: 'tp1', name: 'חתונה, שנה מראש', kind: 'wedding', created_at: hoursAgo(2000),
+    steps: [
+      { title: 'פגישת היכרות וסגירת חוזה', offset_days: -365, owner: 'producer' },
+      { title: 'סגירת אולם ותאריך', offset_days: -300, owner: 'producer' },
+      { title: 'בחירת צלם ולהקה', offset_days: -240, owner: 'client', note: 'שווה לראות אותם באירוע חי' },
+      { title: 'הזמנות לדפוס', offset_days: -90, owner: 'client' },
+      { title: 'ספירת אורחים סופית', offset_days: -14, owner: 'producer' },
+    ],
+  },
+  {
+    id: 'tp2', name: 'אירוע עסקי, רבעון מראש', kind: 'corporate', created_at: hoursAgo(900),
+    steps: [
+      { title: 'אישור תקציב מול הנהלה', offset_days: -90, owner: 'client' },
+      { title: 'סגירת מקום ותאריך', offset_days: -75, owner: 'producer' },
+      { title: 'תוכן ולוח זמנים', offset_days: -30, owner: 'producer' },
+    ],
+  },
+];
+
+export const fixtureMeetings: MeetingLog[] = [
+  {
+    id: 'mt1', kind: 'production', title: 'פגישת הפקה', held_on: day(-12),
+    answers: { guests_final: 214, arrive_from: '19:00', chuppah_at: '20:30' },
+    summary: 'עוברים על הלוז המלא. החופה הוקדמה לחצי שמונה בגלל השקיעה, והוחלט על קבלת פנים בחוץ.',
+    summary_by: 'person', visible_to_client: true, updated_at: hoursAgo(280),
+  },
+  {
+    id: 'mt2', kind: 'tasting', title: 'טעימות', held_on: null,
+    answers: {}, summary: '', summary_by: 'none', visible_to_client: false, updated_at: hoursAgo(4),
+  },
+];
+
+/* The cockpit's evening: the event is "today", one line done, one running
+   over, a key moment ahead, and the night crossing midnight. */
+export const fixtureDayLines: Line[] = [
+  { id: 'dl1', at_time: '17:00', title: 'הגעת ספקים ופריקה', duration_min: 90, done_at: hoursAgo(2), key_moment: false },
+  { id: 'dl2', at_time: '19:00', title: 'קבלת פנים', duration_min: 90, done_at: null, key_moment: false },
+  { id: 'dl3', at_time: '20:30', title: 'חופה', duration_min: 35, done_at: null, key_moment: true },
+  { id: 'dl4', at_time: '21:30', title: 'ישיבה לארוחה', duration_min: 60, done_at: null, key_moment: false },
+  { id: 'dl5', at_time: '23:00', title: 'רחבה', duration_min: 120, done_at: null, key_moment: false },
+  { id: 'dl6', at_time: '01:00', title: 'סיום ופינוי', duration_min: 60, done_at: null, key_moment: false },
+];
+
+export const fixtureDayCrew: Caller[] = [
+  { id: 'cc1', name: 'עמית שלו', role: 'מנהל שטח', phone: '+972521111111', call_time: '15:00', kind: 'crew', arrived_at: hoursAgo(3) },
+  { id: 'cc2', name: 'דנה בר', role: 'מלווה זוג', phone: '+972522222222', call_time: '18:00', kind: 'crew', arrived_at: null },
+];
+
+export const fixtureDayVendors: Caller[] = [
+  { id: 'cv1', name: 'הגברה ותאורה, צליל', role: 'הגברה', phone: '+972533333333', call_time: '16:00', kind: 'vendor', arrived_at: null },
+  { id: 'cv2', name: 'קייטרינג השדה', role: 'קייטרינג', phone: '+972544444444', call_time: '16:30', kind: 'vendor', arrived_at: hoursAgo(1) },
+];

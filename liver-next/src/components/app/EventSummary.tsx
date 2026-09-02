@@ -93,7 +93,11 @@ export function EventSummary({ clientId, summary }: { clientId: string; summary:
                       ? <CheckSquare size={16} strokeWidth={1.5} />
                       : <Coins size={16} strokeWidth={1.5} />}
                   </span>
-                  <span className="min-w-0 flex-1 text-[14.5px] text-ink">{item.title}</span>
+                  {/* A floor, not min-w-0: in a wrapping row a fully shrinkable
+                      title absorbs the whole squeeze one word per line before
+                      the metadata ever wraps. Below the floor the date and the
+                      button move to the next line instead. */}
+                  <span className="min-w-[160px] flex-1 text-[14.5px] text-ink">{item.title}</span>
                   {item.amount !== undefined && item.amount > 0 && (
                     <Money value={item.amount} className="text-[13.5px] tabular-nums text-ink-soft" />
                   )}

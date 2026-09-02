@@ -60,7 +60,7 @@ export function Anniversaries({ items }: { items: Anniversary[] }) {
               {a.emails.length > 0 && (
                 <a
                   href={greeting(a)}
-                  className="btn-quiet inline-flex items-center gap-1.5 px-2 py-1 text-[13px]"
+                  className="btn-quiet inline-flex min-h-[44px] items-center gap-1.5 px-2 text-[13px] sm:min-h-0 sm:py-1"
                 >
                   <Mail size={14} aria-hidden strokeWidth={1.5} />
                   {c.greet}
@@ -68,7 +68,13 @@ export function Anniversaries({ items }: { items: Anniversary[] }) {
               )}
               <form action={cancelAnniversary}>
                 <input type="hidden" name="id" value={a.id} />
-                <button type="submit" className="btn-quiet px-2 py-1" aria-label={c.anniversaryCancel}>
+                {/* 44px on a phone, back to quiet on a pointer. A dismiss the
+                    size of its glyph is a dismiss that cancels the row above. */}
+                <button
+                  type="submit"
+                  className="btn-quiet grid size-11 place-items-center p-0 sm:size-8"
+                  aria-label={c.anniversaryCancel}
+                >
                   <X size={14} aria-hidden strokeWidth={1.5} />
                 </button>
               </form>

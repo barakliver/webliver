@@ -26,6 +26,19 @@ import { VendorDirectory } from '@/components/app/VendorDirectory';
 import { GuideBookView } from '@/components/app/GuideBook';
 import { BeginHere } from '@/components/app/BeginHere';
 import { producerGuide, clientGuideFor, guideUiFor } from '@/content/guide';
+import { Anniversaries } from '@/components/app/Anniversaries';
+import { BarCalculator } from '@/components/app/BarCalculator';
+import { EventSummary } from '@/components/app/EventSummary';
+import { FunnelChart, Sources, CashPanel, ResponsePanel } from '@/components/app/Insights';
+import { Referrals } from '@/components/app/Referrals';
+import { WorkflowTemplates } from '@/components/app/WorkflowTemplates';
+import { MeetingDrawer } from '@/components/app/MeetingDrawer';
+import { DayOfCockpit } from '@/components/app/DayOfCockpit';
+import { CallsPanel } from '@/components/app/CallsPanel';
+import { InviteBox } from '@/components/app/InviteBox';
+import { NewClientForm } from '@/components/app/NewClientForm';
+import { NewLeadForm } from '@/components/app/NewLeadForm';
+import { CalendarFeed } from '@/components/app/CalendarFeed';
 import {
   FIXTURE_CLIENT, FIXTURE_VIEWER,
   fixtureTasks, fixturePayments, fixtureBudget, fixtureGuests, fixtureTables,
@@ -33,6 +46,9 @@ import {
   fixtureSongs, fixtureKit, fixturePeople, fixtureBoard, fixtureShopItems,
   fixtureStatus, fixtureAttention, fixtureOrders, fixtureShelf, fixtureCrew,
   fixtureLeads, fixtureCalls, fixtureVendors,
+  fixtureAnniversaries, fixtureEventSummary, fixtureFunnel, fixtureSources,
+  fixtureResponse, fixtureCash, fixtureReferrals, fixtureTemplates,
+  fixtureMeetings, fixtureDayLines, fixtureDayCrew, fixtureDayVendors,
 } from '@/content/fixtures';
 
 /**
@@ -184,6 +200,66 @@ export default async function DesignPage() {
 
         <Panel name="ArchiveShelf" note="one year, two closed events">
           <ArchiveShelf shelf={fixtureShelf} />
+        </Panel>
+
+        <Panel name="EventSummary" note="the top of an event's file: tiles, then the nearest moves">
+          <EventSummary clientId={client} summary={fixtureEventSummary} />
+        </Panel>
+
+        <Panel name="DayOfCockpit" note="the evening itself: one line done, a key moment ahead, past midnight">
+          <DayOfCockpit
+            clientId={client} eventDate={new Date().toISOString().slice(0, 10)}
+            lines={fixtureDayLines} crew={fixtureDayCrew} vendors={fixtureDayVendors}
+          />
+        </Panel>
+
+        <Panel name="BarCalculator" note="live arithmetic; nothing here saves">
+          <BarCalculator guestEstimate={220} confirmedGuests={141} />
+        </Panel>
+
+        <Panel name="MeetingDrawer" note="one meeting written up, one not yet held">
+          <MeetingDrawer clientId={client} logs={fixtureMeetings} />
+        </Panel>
+
+        <Panel name="WorkflowTemplates" note="two templates, steps counted back from the day">
+          <WorkflowTemplates templates={fixtureTemplates} />
+        </Panel>
+
+        <Panel name="Insights" note="funnel, sources, cash and response, stacked as the real page stacks them">
+          <div className="space-y-5">
+            <FunnelChart funnel={fixtureFunnel} />
+            <Sources rows={fixtureSources} />
+            <CashPanel cash={fixtureCash} />
+            <ResponsePanel r={fixtureResponse} />
+          </div>
+        </Panel>
+
+        <Panel name="Anniversaries" note="a year after: one greeting due this week">
+          <Anniversaries items={fixtureAnniversaries} />
+        </Panel>
+
+        <Panel name="Referrals" note="who brought whom; counts and brands only">
+          <Referrals rows={fixtureReferrals} siteUrl="https://example.com" mine="north1" />
+        </Panel>
+
+        <Panel name="CallsPanel" note="the follow-up queue across all leads">
+          <CallsPanel calls={fixtureCalls} leads={fixtureLeads.map((l) => ({ id: l.id, name: l.full_name }))} />
+        </Panel>
+
+        <Panel name="InviteBox" note="one address attached, room for one more">
+          <InviteBox clientId={client} invites={[{ id: 'iv1', email: 'noa@example.com', profile_id: 'p' }]} />
+        </Panel>
+
+        <Panel name="NewClientForm" note="the door every event enters through">
+          <NewClientForm />
+        </Panel>
+
+        <Panel name="NewLeadForm" note="a lead typed in from a phone call">
+          <NewLeadForm />
+        </Panel>
+
+        <Panel name="CalendarFeed" note="the subscription link; creating one needs a session">
+          <CalendarFeed />
         </Panel>
 
         <Panel name="BeginHere" note="a fresh producer's overview: the first steps instead of 'all clear'">

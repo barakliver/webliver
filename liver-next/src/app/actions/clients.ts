@@ -187,7 +187,7 @@ export async function updateClientDetails(_prev: ActionResult | null, form: Form
 }
 
 /** Authorises an address on a workspace and tells that person it is there.
- *  The cap of two and the role rebinding are both enforced in the database;
+ *  The cap of three and the role rebinding are both enforced in the database;
  *  a failed email must never undo an invitation that was already recorded. */
 export async function inviteToClient(_prev: ActionResult | null, form: FormData): Promise<ActionResult> {
   const clientId = String(form.get('client_id') ?? '');

@@ -117,7 +117,11 @@ export function MeetingDrawer({ clientId, logs }: { clientId: string; logs: Meet
                     <form action={deleteMeeting} onSubmit={(e) => { if (!confirm(c.removeAsk)) e.preventDefault(); }}>
                       <input type="hidden" name="id" value={log.id} />
                       <input type="hidden" name="client_id" value={clientId} />
-                      <button type="submit" className="btn-quiet px-2 py-1" aria-label={c.remove}>
+                      <button
+                        type="submit"
+                        className="btn-quiet grid size-11 place-items-center p-0 sm:size-8"
+                        aria-label={c.remove}
+                      >
                         <Trash2 size={14} aria-hidden strokeWidth={1.5} />
                       </button>
                     </form>
