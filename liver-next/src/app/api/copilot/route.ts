@@ -70,7 +70,10 @@ export async function POST(req: Request) {
     return say(OFF, { off: true });
   }
 
-  const verdict = checkLimit(`account:${account.id}`);
+  /* The producer's own lane. Sharing the public one meant a morning of
+     drafting emails could leave a couple on the website told the assistant
+     was busy. */
+  const verdict = checkLimit(account.id, 'producer');
   if (!verdict.ok) return say(BUSY, { limited: true, retryInSec: verdict.retryInSec });
 
   let body: unknown;

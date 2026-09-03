@@ -205,7 +205,7 @@ export async function POST(req: Request) {
     return say('העוזר הדיגיטלי לא פעיל כרגע. אפשר לכתוב לנו בוואטסאפ ונחזור אליכם.', { off: true });
   }
 
-  const verdict = checkLimit(visitorKeyFrom(req.headers));
+  const verdict = checkLimit(visitorKeyFrom(req.headers), 'public');
   if (!verdict.ok) {
     return say(
       verdict.reason === 'visitor'
