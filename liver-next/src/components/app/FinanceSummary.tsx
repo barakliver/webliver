@@ -7,6 +7,7 @@ import { setBudgetTarget, type MoneyResult } from '@/app/actions/money';
 import { useCopy } from '@/components/app/CopyProvider';
 import { Money } from '@/components/Ltr';
 import { cn } from '@/lib/utils';
+import { summarise } from '@/lib/finance';
 import type { BudgetItem } from './BudgetPanel';
 import type { Payment } from './PaymentsPanel';
 
@@ -48,12 +49,11 @@ export function FinanceSummary({ clientId, viewer, target, items, payments }: {
     null,
   );
 
-  const committed = items.reduce((a, i) => a + (Number(i.agreed ?? i.estimate) || 0), 0);
-  const paid = payments.filter((p) => p.paid).reduce((a, p) => a + (Number(p.amount) || 0), 0);
-  const remaining = Math.max(committed - paid, 0);
-  const variance = target === null ? null : target - committed;
-  const paidPct = committed > 0 ? Math.min(100, Math.round((paid / committed) * 100)) : 0;
-  const pendingPct = committed > 0 ? Math.max(0, 100 - paidPct) : 0;
+  /* The arithmetic lives in one tested module rather than here, so the
+     figures the couple reads and the figures the assistant quotes are the
+     same figures. */
+  const { committed, paid, remaining, variance, underTarget, paidPct, pendingPct } =
+    summarise(items, payments, target);
 
   const tiles: { key: string; icon: LucideIcon; kicker: string; value: React.ReactNode; sub?: string; tone?: string }[] = [
     {
@@ -94,7 +94,7 @@ export function FinanceSummary({ clientId, viewer, target, items, payments }: {
           </p>
           {target !== null && (
             <p className="mt-1 text-[13px] tabular-nums text-ink-soft" dir="ltr">
-              <Money value={target} /> − <Money value={committed} /> = <Money value={Math.abs(variance ?? 0)} />{(variance ?? 0) < 0 ? ' ⚠' : ''}
+              <Money value={target} /> − <Money value={committed} /> = <Money value={Math.abs(variance ?? 0)} />{underTarget === false ? ' ⚠' : ''}
             </p>
           )}
         </div>
@@ -120,27 +120,27 @@ export function FinanceSummary({ clientId, viewer, target, items, payments }: {
             'rounded-xl2 border p-4',
             variance === null
               ? 'border-line bg-surface-100'
-              : variance >= 0 ? 'border-ok/30 bg-ok-wash' : 'border-bad/30 bg-bad-wash',
+              : underTarget ? 'border-ok/30 bg-ok-wash' : 'border-bad/30 bg-bad-wash',
           )}
         >
           <p className="inline-flex items-center gap-1.5 text-[11.5px] tracking-[.12em] text-ink-mute">
-            {variance !== null && variance < 0
+            {underTarget === false
               ? <TriangleAlert size={13} strokeWidth={1.5} aria-hidden />
               : <ShieldCheck size={13} strokeWidth={1.5} aria-hidden />}
-            {variance === null ? c.variance : variance >= 0 ? c.surplus : c.overrun}
+            {variance === null ? c.variance : underTarget ? c.surplus : c.overrun}
           </p>
           <p className={cn(
             'mt-2 font-display text-[24px] font-semibold leading-none tabular-nums',
-            variance === null ? 'text-ink-mute' : variance >= 0 ? 'text-ok' : 'text-bad',
+            variance === null ? 'text-ink-mute' : underTarget ? 'text-ok' : 'text-bad',
           )}>
             {variance === null ? <span className="text-[16px]">{c.setTargetFirst}</span> : <Money value={Math.abs(variance)} />}
           </p>
           {variance !== null && (
             <span className={cn(
               'mt-2 inline-block rounded-xl2 px-2 py-0.5 text-[11.5px] font-medium',
-              variance >= 0 ? 'bg-ok/10 text-ok' : 'bg-bad/10 text-bad',
+              underTarget ? 'bg-ok/10 text-ok' : 'bg-bad/10 text-bad',
             )}>
-              {variance >= 0 ? c.underBadge : c.overBadge}
+              {underTarget ? c.underBadge : c.overBadge}
             </span>
           )}
         </div>

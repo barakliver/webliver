@@ -3,6 +3,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { SOP } from '@/content/sop';
 import { producerGuide, type GuideBook } from '@/content/guide';
 import { categoryLabel, stateLabel } from '@/content/production';
+import { summarise } from '@/lib/finance';
 
 /**
  * What the producer's assistant knows, and how it finds out.
@@ -80,7 +81,7 @@ export async function eventContext(sb: SupabaseClient, clientId: string | null):
 
   const { data: client } = await sb
     .from('clients')
-    .select('display_name,kind,event_date,venue,guest_estimate')
+    .select('display_name,kind,event_date,venue,guest_estimate,budget_target')
     .eq('id', clientId)
     .maybeSingle();
   if (!client) return null;
@@ -105,10 +106,16 @@ export async function eventContext(sb: SupabaseClient, clientId: string | null):
 
   const shekels = new Intl.NumberFormat('he-IL', { style: 'currency', currency: 'ILS', maximumFractionDigits: 0 });
   const money = (n: unknown) => (typeof n === 'number' ? shekels.format(n) : '');
+  /* The same five figures the couple's screen shows, from the same module.
+     Without them the assistant answered "are we over budget" from the
+     estimate column alone, which is a different question. */
+  const fin = summarise(
+    budget as { estimate: number; agreed: number | null }[],
+    payments as { amount: number; paid: boolean }[],
+    client.budget_target === null || client.budget_target === undefined ? null : Number(client.budget_target),
+  );
   const est = budget.reduce((s, b) => s + (Number(b.estimate) || 0), 0);
-  const agreed = budget.reduce((s, b) => s + (Number(b.agreed) || 0), 0);
   const owed = payments.filter((p) => !p.paid).reduce((s, p) => s + (Number(p.amount) || 0), 0);
-  const paid = payments.filter((p) => p.paid).reduce((s, p) => s + (Number(p.amount) || 0), 0);
   const attending = guests.filter((g) => g.status === 'attending').reduce((s, g) => s + (Number(g.party_size) || 1), 0);
   const declined = guests.filter((g) => g.status === 'declined').length;
   const silent = guests.filter((g) => g.status !== 'attending' && g.status !== 'declined').length;
@@ -124,10 +131,14 @@ export async function eventContext(sb: SupabaseClient, clientId: string | null):
     ...tasks.map((t) => `- ${t.title}${t.due_on ? ` · עד ${t.due_on}` : ''}${t.owner ? ` · ${t.owner}` : ''}`),
     tasks.length === 0 ? '- אין' : '',
     '',
-    `תשלומים: שולם ${money(paid)}, פתוח ${money(owed)}`,
+    `תשלומים: שולם ${money(fin.paid)}, פתוח ${money(owed)}`,
     ...payments.filter((p) => !p.paid).map((p) => `- ${p.title}: ${money(Number(p.amount))}${p.due_on ? ` · עד ${p.due_on}` : ''}`),
     '',
-    budget.length > 0 ? `תקציב: אומדן ${money(est)}, סוכם ${money(agreed)}` : '',
+    budget.length > 0 ? `תקציב: אומדן ${money(est)}, התחייבויות ${money(fin.committed)}` : '',
+    fin.target === null
+      ? 'תקציב יעד: לא נקבע. אם שואלים על חריגה, אמור שאין תקרה מוגדרת.'
+      : `תקציב יעד: ${money(fin.target)}. ${fin.underTarget ? `מרווח ביטחון ${money(fin.variance ?? 0)}` : `חריגה של ${money(Math.abs(fin.variance ?? 0))}`}`,
+    `יתרה לתשלום: ${money(fin.remaining)}`,
     ...budget.slice(0, 20).map((b) => `- ${b.label || b.category}: אומדן ${money(Number(b.estimate))}${b.agreed ? `, סוכם ${money(Number(b.agreed))}` : ''}`),
     '',
     `ספקים באירוע (${vendors.length}):`,
