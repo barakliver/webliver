@@ -1990,6 +1990,8 @@ export const noticeCopy = {
     contract: 'חוזה',
     file: 'קובץ',
     order: 'הזמנה',
+    anniversary: 'יום נישואים',
+    meeting: 'פגישה',
     ticket: 'דיווח',
   },
 } as const;

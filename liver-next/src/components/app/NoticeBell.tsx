@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import {
-  Bell, Check, CheckCheck, CheckCircle2, FileText, KeyRound, LifeBuoy, Mail,
+  Bell, CalendarClock, Check, CheckCheck, CheckCircle2, FileText, Heart, KeyRound, LifeBuoy, Mail,
   MessagesSquare, PenLine, ShoppingBag, Target, Wallet, X,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
@@ -21,7 +21,8 @@ export type Notice = {
    a colour we did not choose, and read as decoration next to Hebrew text. */
 const ICONS: Record<string, LucideIcon> = {
   lead: Target, rsvp: Mail, task: CheckCircle2, payment: Wallet,
-  invite: KeyRound, message: MessagesSquare, contract: PenLine, file: FileText, order: ShoppingBag, ticket: LifeBuoy,
+  invite: KeyRound, message: MessagesSquare, contract: PenLine, file: FileText, order: ShoppingBag,
+  anniversary: Heart, meeting: CalendarClock, ticket: LifeBuoy,
 };
 
 const c = noticeCopy;
