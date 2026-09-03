@@ -1,13 +1,18 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { CalendarDays, MessageCircle } from 'lucide-react';
 import { supabasePublic } from '@/lib/supabase/public';
+import { normalizePhone } from '@/lib/phone';
 import { currentLocale } from '@/lib/serverLocale';
 import { producerEntryFor } from '@/content/ui';
 import { accentByKey, accentVars } from '@/content/brand';
 
 export const dynamic = 'force-dynamic';
 
-type Brand = { brand: string; tagline: string | null; accent: string | null; logo_url: string | null };
+type Brand = {
+  brand: string; tagline: string | null; accent: string | null; logo_url: string | null;
+  whatsapp: string | null; booking_url: string | null;
+};
 
 const SLUG = /^[a-z0-9][a-z0-9-]{1,30}[a-z0-9]$/;
 
@@ -75,10 +80,16 @@ export default async function ProducerEntryPage({ params }: { params: Promise<{ 
     );
   }
 
+  /* The producer's own ways in, when they filled them in on the branding
+     screen. A visitor who landed here from a group message may not be a
+     couple yet; the page is the producer's card as much as their door. */
+  const wa = normalizePhone(b.whatsapp);
+  const booking = (b.booking_url ?? '').trim();
+
   return (
     <main
       id="main"
-      className="flex min-h-dvh items-center justify-center px-5 py-14"
+      className="brand-scope flex min-h-dvh items-center justify-center px-5 py-14"
       style={accentVars(accentByKey(b.accent)) as React.CSSProperties}
     >
       <div className="w-full max-w-md text-center">
@@ -92,7 +103,21 @@ export default async function ProducerEntryPage({ params }: { params: Promise<{ 
         <hr className="rule-gold mx-auto mt-8 w-24" />
         <p className="eyebrow mt-8">{c.eyebrow}</p>
         <p className="measure mx-auto mt-3 text-[15.5px] leading-relaxed text-ink-soft">{c.sub}</p>
-        <Link href="/login" className="btn-primary mt-8">{c.enter}</Link>
+        <div className="mt-8 flex flex-wrap justify-center gap-2.5">
+          <Link href="/login" className="btn-primary">{c.enter}</Link>
+          {wa && (
+            <a href={`https://wa.me/${wa.replace('+', '')}`} target="_blank" rel="noopener noreferrer" className="btn-ghost">
+              <MessageCircle size={16} strokeWidth={1.5} aria-hidden />
+              {c.whatsapp}
+            </a>
+          )}
+          {booking && (
+            <a href={booking} target="_blank" rel="noopener noreferrer" className="btn-ghost">
+              <CalendarDays size={16} strokeWidth={1.5} aria-hidden />
+              {c.booking}
+            </a>
+          )}
+        </div>
       </div>
     </main>
   );

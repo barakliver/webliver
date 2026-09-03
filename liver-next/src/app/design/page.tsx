@@ -58,6 +58,7 @@ import { GuestSiteCard } from '@/components/app/GuestSiteCard';
 import { guestSiteFor } from '@/content/ui';
 import { AppShell } from '@/components/app/AppShell';
 import { ProducerLinkCard } from '@/components/app/ProducerLinkCard';
+import { BrandEditor } from '@/components/app/BrandEditor';
 import { accentByKey } from '@/content/brand';
 import type { Account } from '@/lib/auth';
 import ConsoleLoading from '@/app/app/loading';
@@ -324,6 +325,16 @@ export default async function DesignPage() {
           <GuestSiteCard clientId={client} token="0123456789abcdef0123456789abcdef" on note="חניה חופשית בכניסה לחורשה." />
         </Panel>
 
+        <Panel name="BrandEditor" note="the branding screen; type a dot into the short name and watch it answer">
+          <BrandEditor
+            rootDomain=""
+            fields={{
+              brandName: 'הפקות הצפון', tagline: 'הפקת אירועים', accent: 'slate', whatsapp: '',
+              bookingUrl: '', slug: 'eden.haimov.events', domain: null, logoUrl: null,
+            }}
+          />
+        </Panel>
+
         <Panel name="ProducerLinkCard" note="the link a producer sends couples: their front door on the platform's address">
           <div className="grid max-w-3xl gap-4">
             <ProducerLinkCard slug="north" />
@@ -345,9 +356,14 @@ export default async function DesignPage() {
               notices={[
                 { id: 'n1', kind: 'lead', title: 'פנייה חדשה מהאתר', body: 'רוני ועומר', href: '/app/leads', read_at: null, created_at: new Date().toISOString() },
               ] as never}
-              brand={{ name: 'הפקות הצפון', tagline: 'הפקת אירועים', logoUrl: null, whatsapp: '', bookingUrl: '', accent: accentByKey('slate'), isPlatform: false }}
+              brand={{ name: 'הפקות הצפון', tagline: 'הפקת אירועים', logoUrl: null, whatsapp: '', bookingUrl: '', accent: accentByKey('teal'), isPlatform: false }}
             >
-              <div className="skeleton h-40 w-full" />
+              <div className="flex flex-wrap items-center gap-3">
+                <button type="button" className="btn-primary">שמירה</button>
+                <button type="button" className="btn-ghost">ביטול</button>
+                <span className="eyebrow">האקסנט של המפיק, על הכפתור ועל הקיקר</span>
+              </div>
+              <div className="skeleton mt-6 h-32 w-full" />
             </AppShell>
           </div>
         </Panel>

@@ -81,7 +81,7 @@ export function AppShell({
        working screen rather than a keepsake, and the extra light is what keeps
        a table of forty rows from reading as heavy. */
     <div
-      className={cn('min-h-dvh', account.role === 'client' ? 'bg-surface' : 'bg-surface-100')}
+      className={cn('brand-scope min-h-dvh', account.role === 'client' ? 'bg-surface' : 'bg-surface-100')}
       style={brandStyle(brand)}
     >
       <div className="lg:flex">

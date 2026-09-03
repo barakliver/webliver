@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState, useState } from 'react';
+import { useActionState, useEffect, useState } from 'react';
 import { Check } from 'lucide-react';
 import { appCopy } from '@/content/site';
 import { ACCENTS, accentByKey, accentVars } from '@/content/brand';
@@ -38,6 +38,28 @@ export function BrandEditor({ fields, rootDomain }: { fields: BrandFields; rootD
   const [accent, setAccent] = useState(fields.accent);
   const [name, setName] = useState(fields.brandName);
   const [tagline, setTagline] = useState(fields.tagline);
+
+  /* The short name in the address, held here so the screen can answer while
+     it is typed. The browser's own answer to a dot in this field is "match
+     the requested format", which tells nobody what the format is; a producer
+     typed their whole domain into it and was stuck. So the field says what
+     it takes, shows the address it will become, and when the value carries a
+     character it cannot, offers the nearest one that works. */
+  const [slug, setSlug] = useState(fields.slug ?? '');
+  const [origin, setOrigin] = useState('');
+  useEffect(() => { setOrigin(window.location.origin); }, []);
+  const SLUG_OK = /^[a-z0-9][a-z0-9-]{1,30}[a-z0-9]$/;
+  const cleaned = slug.trim().toLowerCase();
+  const suggestion = cleaned
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .replace(/-{2,}/g, '-')
+    .slice(0, 32);
+  const slugState: 'empty' | 'ok' | 'short' | 'bad' =
+    cleaned === '' ? 'empty'
+    : SLUG_OK.test(cleaned) ? 'ok'
+    : suggestion.length < 3 ? 'short'
+    : 'bad';
 
   const chosen = accentByKey(accent);
 
@@ -143,14 +165,43 @@ export function BrandEditor({ fields, rootDomain }: { fields: BrandFields; rootD
 
         <div>
           <label className="label" htmlFor="slug">{c.slug}</label>
-          <input id="slug" name="slug" className="field" dir="ltr"
-                 defaultValue={fields.slug ?? ''} maxLength={32}
-                 pattern="[a-z0-9][a-z0-9\-]{1,30}[a-z0-9]" />
-          {rootDomain && (
-            <p className="mt-1 text-[12.5px] text-ink-mute" dir="ltr">
-              <span dir="rtl">{c.slugHint}</span>
-              {`${fields.slug || 'name'}.${rootDomain}`}
+          <input
+            id="slug" name="slug" className="field" dir="ltr"
+            value={slug} onChange={(e) => setSlug(e.target.value)}
+            maxLength={32} autoComplete="off" spellCheck={false}
+            placeholder="eden-haimov"
+            aria-describedby="slug-hint"
+            aria-invalid={slugState === 'bad' || slugState === 'short' ? true : undefined}
+          />
+          <p id="slug-hint" className="mt-1.5 text-[12.5px] leading-relaxed text-ink-mute">{c.slugHint}</p>
+
+          {slugState === 'ok' && (
+            <p className="mt-2 text-[13px] text-ink-soft">
+              {c.slugPreview}{' '}
+              <span dir="ltr" className="font-mono text-[12.5px] text-ink">{`${origin || ''}/p/${cleaned}`}</span>
+              {rootDomain && (
+                <>
+                  {' · '}
+                  <span dir="ltr" className="font-mono text-[12.5px] text-ink">{`${cleaned}.${rootDomain}`}</span>
+                </>
+              )}
             </p>
+          )}
+          {slugState === 'bad' && (
+            <p role="alert" className="mt-2 flex flex-wrap items-center gap-2 text-[13px] text-bad">
+              {c.slugBad}
+              <span dir="ltr" className="font-mono text-[12.5px] text-ink">{suggestion}</span>
+              <button
+                type="button"
+                onClick={() => setSlug(suggestion)}
+                className="btn-quiet min-h-[36px] px-2 text-[13px]"
+              >
+                {c.slugUse}
+              </button>
+            </p>
+          )}
+          {slugState === 'short' && (
+            <p role="alert" className="mt-2 text-[13px] text-bad">{c.slugShort}</p>
           )}
         </div>
 

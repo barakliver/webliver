@@ -371,6 +371,15 @@
            disabled:pointer-events-none disabled:opacity-50;
   }
   .btn-primary { @apply btn bg-ink text-surface hover:bg-ink-soft; }
+  /* Inside a producer's own branding the primary button takes their accent.
+     The branding screen's preview has always painted it that way, and a
+     producer who picked deep turquoise and saved saw the same dark buttons
+     as before: the accent reached the eyebrows and the hairlines and not the
+     one control they were looking at. The rule is scoped to the branded
+     shells rather than global, so the public site keeps its ink. Every base
+     tone in the accent list clears 4.5:1 with the surface ink on it. */
+  .brand-scope .btn-primary { background: rgb(var(--accent-rgb)); }
+  .brand-scope .btn-primary:hover { background: rgb(var(--accent-bright-rgb)); }
   .btn-ghost   { @apply btn border border-ink bg-transparent text-ink hover:bg-ink hover:text-surface; }
   .btn-quiet   { @apply btn px-3 text-accent hover:text-ink; }
 

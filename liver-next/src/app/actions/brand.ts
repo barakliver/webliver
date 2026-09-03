@@ -29,7 +29,7 @@ export async function saveBrand(_prev: BrandResult | null, form: FormData): Prom
   const slug = String(form.get('slug') ?? '').trim().toLowerCase();
 
   if (slug && !/^[a-z0-9][a-z0-9-]{1,30}[a-z0-9]$/.test(slug)) {
-    return { ok: false, error: 'אותיות באנגלית קטנות, ספרות ומקפים בלבד.' };
+    return { ok: false, error: 'השם הקצר בכתובת: אותיות באנגלית קטנות, ספרות ומקפים בלבד, בלי נקודות ורווחים. למשל eden-haimov.' };
   }
 
   const sb = await supabaseServer();

@@ -815,10 +815,14 @@ export const appCopy = {
     whatsapp: 'וואטסאפ',
     booking: 'קישור לתיאום פגישה',
     address: 'כתובת באינטרנט',
-    slug: 'תת דומיין',
-    slugHint: 'אותיות באנגלית, ספרות ומקפים. כך זה ייראה: ',
-    domain: 'דומיין משלך',
-    domainHint: 'רק רישום. חיבור ה-DNS עצמו הוא פעולה נפרדת שנעשה בנפרד ובכוונה.',
+    slug: 'השם הקצר שלכם בכתובת',
+    slugHint: 'אותיות באנגלית קטנות, ספרות ומקפים בלבד. בלי נקודות, בלי רווחים, בלי עברית. למשל: eden-haimov',
+    slugPreview: 'הכתובת שתשלחו לזוגות תהיה:',
+    slugBad: 'יש כאן תו שלא מתאים לכתובת. אפשר להשתמש בגרסה הזאת במקום:',
+    slugUse: 'להשתמש בה',
+    slugShort: 'קצר מדי. לפחות שלושה תווים.',
+    domain: 'דומיין משלכם (לא חובה)',
+    domainHint: 'רק למי שכבר יש דומיין שקנה בעצמו. לרוב המפיקים השם הקצר למעלה מספיק. חיבור ה-DNS הוא פעולה נפרדת.',
     /* The link a producer sends couples, carrying their brand and not the
        platform's. Needs only the slug above; no domain, no DNS. */
     shareTitle: 'הקישור שלך לזוגות',
@@ -1400,6 +1404,8 @@ export const producerEntryCopy = {
   eyebrow: 'האזור האישי',
   enter: 'כניסה לאזור האישי',
   sub: 'הכניסה עם הכתובת שאליה נשלחה ההזמנה, בקוד חד פעמי. אין סיסמה.',
+  whatsapp: 'הודעה בוואטסאפ',
+  booking: 'קביעת פגישה',
   gone: 'הדף לא נמצא',
   goneBody: 'הקישור לא נמצא. אפשר לפנות למי ששלח אותו.',
 } as const;

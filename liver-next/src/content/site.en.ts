@@ -558,6 +558,8 @@ export const producerEntryCopyEn: ProducerEntryCopy = {
   eyebrow: 'Your personal area',
   enter: 'Sign in',
   sub: 'Sign in with the address the invitation was sent to, with a one-time code. No password.',
+  whatsapp: 'Message on WhatsApp',
+  booking: 'Book a meeting',
   gone: 'Page not found',
   goneBody: 'The link was not found. You can reach whoever sent it.',
 };
