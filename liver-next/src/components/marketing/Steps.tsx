@@ -19,7 +19,7 @@ const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
 export function Steps({ site }: { site: SiteCopy }) {
   return (
     <section id="journey" className="section shell">
-      <h2 className="font-display text-display font-semibold text-ink">{site.journey.title}</h2>
+      <h2 className="font-display text-display font-bold text-editorial">{site.journey.title}</h2>
 
       <ol className="mt-10 list-none p-0">
         {site.journey.steps.map((step, i) => (

@@ -75,6 +75,7 @@ export function FinanceSummary({ clientId, viewer, target, items, payments }: {
         </div>
         <button
           type="button" onClick={() => setExplain((v) => !v)} aria-expanded={explain}
+          title={c.formula}
           className="btn-quiet inline-flex min-h-[38px] items-center gap-1.5 px-2.5 text-[13.5px]"
         >
           <Info size={15} strokeWidth={1.5} aria-hidden />
