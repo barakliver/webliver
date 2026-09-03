@@ -132,9 +132,10 @@ export function MobileTabBar({ items, extra }: {
   return (
     <>
       {open && (
-        {/* Above the floating buttons, which sit at exactly the height of the
-            sheet's last row and were covering the way out. */}
-        <div className="fixed inset-0 z-[60] lg:hidden">
+        /* Above the floating buttons, which sit at exactly the height of the
+           sheet's last row and were covering the way out; below the
+           accessibility panel, which must win over everything. */
+        <div className="fixed inset-0 z-[65] lg:hidden">
           <button
             type="button"
             aria-label={appCopy.nav.close}
