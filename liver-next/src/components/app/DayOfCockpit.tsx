@@ -113,7 +113,7 @@ export function DayOfCockpit({
 
       <section className="card">
         <div className="flex items-baseline justify-between gap-3">
-          <h2 className="font-display text-[19px] font-light text-ink">{c.schedule}</h2>
+          <h2 className="font-display text-[19px] font-semibold text-ink">{c.schedule}</h2>
           <span className="text-[12.5px] text-ink-mute">{c.openCount(open)}</span>
         </div>
 
@@ -135,7 +135,7 @@ function Headline({ label, placed, fallback, tone }: {
       <div className="text-[12.5px] font-semibold text-ink-mute">{label}</div>
       {placed ? (
         <>
-          <div className="mt-1 font-display text-[22px] font-light leading-tight text-ink">
+          <div className="mt-1 font-display text-[22px] font-semibold leading-tight text-ink">
             {placed.line.title}
           </div>
           <div className="mt-1 text-[14px] text-ink-soft">
@@ -206,7 +206,7 @@ function People({ sheet, clientId }: { sheet: Caller[]; clientId: string }) {
   if (sheet.length === 0) {
     return (
       <section className="card">
-        <h2 className="font-display text-[19px] font-light text-ink">{c.people.title}</h2>
+        <h2 className="font-display text-[19px] font-semibold text-ink">{c.people.title}</h2>
         <p className="mt-2 text-[15px] text-ink-mute">{c.people.empty}</p>
       </section>
     );
@@ -214,7 +214,7 @@ function People({ sheet, clientId }: { sheet: Caller[]; clientId: string }) {
 
   return (
     <section className="card">
-      <h2 className="font-display text-[19px] font-light text-ink">{c.people.title}</h2>
+      <h2 className="font-display text-[19px] font-semibold text-ink">{c.people.title}</h2>
       <p className="mt-1 text-[13.5px] text-ink-soft">{c.people.sub}</p>
 
       <ul className="mt-4 list-none space-y-2 p-0">
@@ -316,7 +316,7 @@ function Countdown({ placed, onDismiss }: { placed: Placed; onDismiss: () => voi
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="min-w-0">
           <div className="text-[12.5px] font-semibold text-warn">{c.alert.inMinutes(mins)}</div>
-          <div className="mt-0.5 font-display text-[22px] font-light leading-tight text-ink">
+          <div className="mt-0.5 font-display text-[22px] font-semibold leading-tight text-ink">
             {placed.line.title}
           </div>
           <div className="mt-0.5 text-[13.5px] text-ink-soft tabular-nums">{hhmm(placed.line.at_time)}</div>
@@ -379,7 +379,7 @@ function Broadcast({ sheet, late }: { sheet: Caller[]; late: Caller[] }) {
           >
             <div className="flex items-start justify-between gap-3">
               <div>
-                <h2 className="font-display text-[19px] font-light text-ink">{c.broadcast.title}</h2>
+                <h2 className="font-display text-[19px] font-semibold text-ink">{c.broadcast.title}</h2>
                 <p className="mt-1 text-[13px] text-ink-soft">{c.broadcast.sub}</p>
               </div>
               <button

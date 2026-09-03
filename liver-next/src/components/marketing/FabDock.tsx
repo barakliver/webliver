@@ -74,7 +74,7 @@ export function FabDock({ site, kinds }: { site: SiteCopy; kinds: EventKinds }) 
           <div role="dialog" aria-modal="true" aria-label={site.fab.lead}
                className="max-h-[88svh] w-full max-w-lg animate-sheet overflow-y-auto rounded-t-sheet glass-strong p-6 sm:rounded-sheet sm:p-8">
             <div className="mb-5 flex items-start justify-between gap-4">
-              <h2 className="font-display text-title font-light text-ink">{site.lead.title}</h2>
+              <h2 className="font-display text-title font-semibold text-ink">{site.lead.title}</h2>
               <button type="button" onClick={() => setSheet(null)} aria-label="סגירה"
                       className="rounded-xl2 p-2 text-ink-mute transition hover:bg-card hover:text-ink">✕</button>
             </div>

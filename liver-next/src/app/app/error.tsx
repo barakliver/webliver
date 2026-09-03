@@ -16,7 +16,7 @@ export default function AppError({ error, reset }: { error: Error & { digest?: s
 
   return (
     <div className="card measure text-center">
-      <h1 className="font-display text-title font-light text-ink">משהו נפל בעמוד הזה</h1>
+      <h1 className="font-display text-title font-semibold text-ink">משהו נפל בעמוד הזה</h1>
       <p className="mt-3 text-[15.5px] text-ink-soft">
         התקלה אצלנו, לא אצלכם, ושום דבר שהזנתם לא נמחק. אפשר לנסות לטעון שוב.
       </p>

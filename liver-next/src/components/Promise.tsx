@@ -37,7 +37,7 @@ export function PromiseLine({ className = '', tone = 'accent', text = PROMISE }:
   return (
     <p className={cn('flex items-center justify-center gap-3', className)}>
       <span aria-hidden className={cn('h-px w-8 bg-gradient-to-l sm:w-12', rule)} />
-      <span className={cn('text-[12.5px] font-medium tracking-[.16em] whitespace-nowrap', ink)}>
+      <span className={cn('font-serif text-[13px] font-medium tracking-[.16em] whitespace-nowrap', ink)}>
         {text}
       </span>
       <span aria-hidden className={cn('h-px w-8 bg-gradient-to-r sm:w-12', rule)} />

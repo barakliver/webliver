@@ -101,7 +101,7 @@ export function PhoneStage({
       <span
         aria-hidden
         className="pointer-events-none absolute left-1/2 top-1/2 -z-10 -translate-x-1/2 -translate-y-1/2
-                   select-none whitespace-nowrap font-display font-light leading-none text-ink"
+                   select-none whitespace-nowrap font-display font-semibold leading-none text-ink"
         style={{ fontSize: 'clamp(220px, 38vw, 520px)', opacity: 0.045 }}
       >
         200
@@ -110,7 +110,7 @@ export function PhoneStage({
       <div className="shell grid items-center gap-14 lg:grid-cols-[1fr_auto] lg:gap-20">
         <div>
           <p className="eyebrow">{kicker}</p>
-          <h2 className="mt-4 max-w-[14ch] font-display text-display font-light text-ink">{title}</h2>
+          <h2 className="mt-4 max-w-[14ch] font-display text-display font-semibold text-ink">{title}</h2>
           <Prose lines={body} className="mt-5 leading-relaxed" />
         </div>
 
@@ -146,7 +146,7 @@ function PortalScreen({ screen }: {
       style={{ borderRadius: '44px' }}
     >
       <p className="text-[11.5px] tracking-[.14em] text-ink-mute">{screen.couple}</p>
-      <p className="mt-6 font-display text-[86px] font-light leading-none text-ink">
+      <p className="mt-6 font-display text-[86px] font-semibold leading-none text-ink">
         <Ltr>200</Ltr>
       </p>
       <p className="mt-1 text-[13.5px] text-ink-soft">{screen.days}</p>
@@ -155,7 +155,7 @@ function PortalScreen({ screen }: {
         {rows.map(([label, value]) => (
           <li key={label} className="flex items-baseline justify-between border-b border-line py-3 last:border-0">
             <span className="text-[14px] text-ink-soft">{label}</span>
-            <span className="font-display text-[17px] font-light text-ink">{value}</span>
+            <span className="font-display text-[17px] font-semibold text-ink">{value}</span>
           </li>
         ))}
       </ul>

@@ -111,7 +111,7 @@ function Row({ member, clientId }: { member: CrewMember; clientId: string }) {
   return (
     <li className="flex gap-4 rounded-xl2 border border-line px-4 py-3.5 transition hover:border-line-strong">
       <div className="w-[58px] shrink-0 text-center" dir="ltr">
-        <span className={`font-display text-[16px] font-light tabular-nums ${member.call_time ? 'text-ink' : 'text-ink-mute'}`}>
+        <span className={`font-display text-[16px] font-semibold tabular-nums ${member.call_time ? 'text-ink' : 'text-ink-mute'}`}>
           {member.call_time ? hhmm(member.call_time) : '·'}
         </span>
       </div>
@@ -186,7 +186,7 @@ export function CrewPanel({ clientId, crew }: { clientId: string; crew: CrewMemb
     <section className="card">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="inline-flex items-center gap-2 font-display text-[18px] font-light text-ink">
+          <h2 className="inline-flex items-center gap-2 font-display text-[18px] font-semibold text-ink">
             <Users size={18} aria-hidden strokeWidth={1.5} />
             {c.title}
           </h2>

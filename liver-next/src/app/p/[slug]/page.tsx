@@ -80,7 +80,7 @@ export default async function ProducerEntryPage({ params }: { params: Promise<{ 
     return (
       <main id="main" className="flex min-h-dvh items-center justify-center px-5 py-14">
         <div className="card w-full max-w-md text-center">
-          <h1 className="font-display text-title font-light text-ink">{c.gone}</h1>
+          <h1 className="font-display text-title font-semibold text-ink">{c.gone}</h1>
           <p className="mt-3 text-[15.5px] leading-relaxed text-ink-soft">{c.goneBody}</p>
         </div>
       </main>
@@ -111,7 +111,7 @@ export default async function ProducerEntryPage({ params }: { params: Promise<{ 
           // eslint-disable-next-line @next/next/no-img-element
           <img src={b.logo_url} alt={b.brand} className="mx-auto h-14 w-auto max-w-[220px] object-contain" />
         ) : (
-          <p className="font-display text-[34px] font-light leading-tight text-ink">{b.brand}</p>
+          <p className="font-display text-[34px] font-semibold leading-tight text-ink">{b.brand}</p>
         )}
         {b.tagline && <p className="mt-2 text-[14.5px] text-ink-mute">{b.tagline}</p>}
         <hr className="rule-gold mx-auto mt-8 w-24" />

@@ -30,7 +30,7 @@ export function NewClientForm() {
   return (
     <form action={action} className="card space-y-5" noValidate>
       <div>
-        <h2 className="font-display text-[19px] font-light text-ink">{c.title}</h2>
+        <h2 className="font-display text-[19px] font-semibold text-ink">{c.title}</h2>
         <p className="mt-1 text-[14px] text-ink-soft">{c.sub}</p>
       </div>
 

@@ -70,7 +70,7 @@ export function BrandEditor({ fields, rootDomain }: { fields: BrandFields; rootD
         <div className="text-[12.5px] font-semibold text-ink-mute">{c.preview}</div>
         <div className="mt-3 rounded-xl2 border border-line bg-surface p-4">
           <div className="flex items-center justify-between gap-3 border-b border-line pb-3">
-            <span className="font-display text-[17px] font-light text-ink">
+            <span className="font-display text-[17px] font-semibold text-ink">
               {name || c.namePh}
             </span>
             <span className="chip" style={{ borderColor: chosen.line, color: chosen.base }}>
@@ -161,7 +161,7 @@ export function BrandEditor({ fields, rootDomain }: { fields: BrandFields; rootD
 
       {/* ── your address ───────────────────────────────────────────────── */}
       <section className="card space-y-4">
-        <h2 className="font-display text-[17px] font-light text-ink">{c.address}</h2>
+        <h2 className="font-display text-[17px] font-semibold text-ink">{c.address}</h2>
 
         <div>
           <label className="label" htmlFor="slug">{c.slug}</label>

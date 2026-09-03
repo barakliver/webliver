@@ -180,7 +180,7 @@ function Row({
       {/* Left to right inside a right-to-left page, because a clock reads that
           way in every language. */}
       <div className="w-[62px] shrink-0 text-center" dir="ltr">
-        <div className="font-display text-[17px] font-light tabular-nums text-ink">{hhmm(item.at_time)}</div>
+        <div className="font-display text-[17px] font-semibold tabular-nums text-ink">{hhmm(item.at_time)}</div>
         {span.minutes !== null && (
           <div className={`mt-0.5 text-[11.5px] tabular-nums ${span.stated ? 'text-accent' : 'text-ink-mute'}`}>
             {span.stated ? humanSpan(span.minutes) : `↓ ${humanSpan(span.minutes)}`}
@@ -284,7 +284,7 @@ function Templates({ clientId }: { clientId: string }) {
 
   return (
     <div className="mt-5 rounded-xl2 border border-dashed border-line-strong bg-surface-100 p-5">
-      <h3 className="inline-flex items-center gap-2 font-display text-[16px] font-light text-ink">
+      <h3 className="inline-flex items-center gap-2 font-display text-[16px] font-semibold text-ink">
         <Wand2 size={16} aria-hidden strokeWidth={1.5} />
         {c.templateTitle}
       </h3>
@@ -364,7 +364,7 @@ export function DaySchedule({ clientId, items, labelA, labelB, viewer = 'produce
     <section className="card">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="inline-flex items-center gap-2 font-display text-[18px] font-light text-ink">
+          <h2 className="inline-flex items-center gap-2 font-display text-[18px] font-semibold text-ink">
             <Clock size={18} aria-hidden strokeWidth={1.5} />
             {c.title}
           </h2>

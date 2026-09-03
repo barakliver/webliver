@@ -38,7 +38,7 @@ const ICONS: Record<BrandAsset, LucideIcon> = { logo: Sparkles, icon: Smartphone
 export function BrandAssets({ urls }: { urls: BrandAssetUrls }) {
   return (
     <section className="card">
-      <h2 className="font-display text-[17px] font-light text-ink">{c.title}</h2>
+      <h2 className="font-display text-[17px] font-semibold text-ink">{c.title}</h2>
       <p className="mt-1.5 max-w-2xl text-[14px] leading-relaxed text-ink-soft">{c.sub}</p>
       <div className="mt-5 grid gap-4 lg:grid-cols-3">
         <Asset kind="logo" url={urls.logo} />

@@ -34,7 +34,7 @@ export function Portfolio({ locale }: { locale: Locale }) {
                 as a grid; the serif is what turns them back into a portfolio. */}
             <figcaption className="flex items-baseline gap-2.5 px-1 pb-1.5 pt-3.5">
               <span aria-hidden className="h-px w-4 shrink-0 self-center bg-accent-line/70" />
-              <span className="font-display text-[16.5px] font-light text-ink">{shot.caption}</span>
+              <span className="font-display text-[16.5px] font-semibold text-ink">{shot.caption}</span>
             </figcaption>
           </figure>
         </li>

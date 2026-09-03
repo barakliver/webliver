@@ -4,6 +4,7 @@ import { formatDate, daysUntil } from '@/lib/dates';
 import { TaskList } from '@/components/app/TaskList';
 import { PaymentsPanel } from '@/components/app/PaymentsPanel';
 import { BudgetPanel } from '@/components/app/BudgetPanel';
+import { FinanceSummary } from '@/components/app/FinanceSummary';
 import { WinningBoard } from '@/components/app/WinningBoard';
 import { GuestList } from '@/components/app/GuestList';
 import { SeatingPlan } from '@/components/app/SeatingPlan';
@@ -47,13 +48,13 @@ export function PortalWorkspace({
           {c.venue ? ` · ${c.venue}` : ''}
         </p>
 
-        <h2 className="mt-3 font-display text-display font-light leading-tight text-ink">
+        <h2 className="mt-3 font-display text-display font-semibold leading-tight text-ink">
           {c.display_name}
         </h2>
 
         {left !== null && left >= 0 && (
           <div className="mt-8">
-            <p className="font-display text-[72px] font-light leading-none text-ink sm:text-[104px]">
+            <p className="font-display text-[72px] font-semibold leading-none text-ink sm:text-[104px]">
               <Ltr>{left.toLocaleString('en-US')}</Ltr>
             </p>
             <p className="mt-2 text-[14px] text-ink-mute">{ui.portal.daysLeft}</p>
@@ -82,6 +83,15 @@ export function PortalWorkspace({
             usually the first thing the couple wants to do. */}
         {c.guest_site_on && c.guest_token && <GuestSiteLink token={c.guest_token} />}
         <TaskList clientId={c.id} tasks={data.tasksFor(c.id)} viewer="client" viewerId={viewerId} />
+        {/* The working shown before the lists, and only once there is a
+            budget to show: without lines the five figures are five zeros. */}
+        {data.can(c.id, 'budget') && budget.length > 0 && (
+          <FinanceSummary
+            clientId={c.id} viewer="client"
+            target={c.budget_target === null || c.budget_target === undefined ? null : Number(c.budget_target)}
+            items={budget} payments={data.paymentsFor(c.id)}
+          />
+        )}
         <PaymentsPanel clientId={c.id} payments={data.paymentsFor(c.id)} viewer="client" />
         {/* Gated modules. A closed one is absent rather than greyed out: a
             locked panel advertising something the couple was not sold is a

@@ -43,7 +43,7 @@ export function GuestSiteView({ site, token, c, locale }: {
       <div className="mx-auto w-full max-w-xl">
         <header className="text-center">
           <p className="eyebrow">{c.eyebrow}</p>
-          <h1 className="mt-4 font-display text-display-xl font-light leading-tight text-ink">
+          <h1 className="mt-4 font-display text-display-xl font-semibold leading-tight text-ink">
             {site.event_name}
           </h1>
           <p className="mt-5 text-[16.5px] text-ink-soft">
@@ -60,13 +60,13 @@ export function GuestSiteView({ site, token, c, locale }: {
             <div className="mt-9">
               {left > 0 ? (
                 <>
-                  <p className="font-display text-[88px] font-light leading-none text-ink sm:text-[112px]">
+                  <p className="font-display text-[88px] font-semibold leading-none text-ink sm:text-[112px]">
                     <Ltr>{left.toLocaleString('en-US')}</Ltr>
                   </p>
                   <p className="mt-2 text-[14px] tracking-[.06em] text-ink-mute">{c.daysLeft}</p>
                 </>
               ) : left === 0 ? (
-                <p className="font-display text-[40px] font-light leading-none text-accent-bright">{c.today}</p>
+                <p className="font-display text-[40px] font-semibold leading-none text-accent-bright">{c.today}</p>
               ) : (
                 <p className="text-[15.5px] text-ink-soft">{c.passed}</p>
               )}
@@ -113,7 +113,7 @@ export function GuestSiteView({ site, token, c, locale }: {
             <ul className="mx-auto mt-5 max-w-sm list-none divide-y divide-line border-y border-line p-0">
               {site.moments.map((m, i) => (
                 <li key={i} className="flex items-baseline gap-5 py-3 text-[16px]">
-                  <span className="w-[52px] shrink-0 font-display text-[18px] font-light tabular-nums text-ink" dir="ltr">
+                  <span className="w-[52px] shrink-0 font-display text-[18px] font-semibold tabular-nums text-ink" dir="ltr">
                     {hhmm(m.at)}
                   </span>
                   <span className="text-ink">{m.title}</span>
@@ -135,7 +135,7 @@ export function GuestSiteView({ site, token, c, locale }: {
 
         {/* ── the reply ─────────────────────────────────────────────────── */}
         <section className="card mt-12">
-          <h2 className="font-display text-[22px] font-light text-ink">{c.rsvpTitle}</h2>
+          <h2 className="font-display text-[22px] font-semibold text-ink">{c.rsvpTitle}</h2>
           <p className="mt-2 text-[14.5px] leading-relaxed text-ink-soft">{c.rsvpSub}</p>
           <div className="mt-5">
             <FindInvite

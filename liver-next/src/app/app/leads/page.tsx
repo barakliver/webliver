@@ -16,7 +16,7 @@ export default async function LeadsPage() {
 
   const [{ data: leads }, { data: calls }] = await Promise.all([
     sb.from('leads')
-      .select('id,full_name,email,phone,kind,event_date,guest_count,message,note,status,source,created_at')
+      .select('id,full_name,email,phone,kind,event_date,guest_count,message,note,status,source,created_at,location')
       .order('created_at', { ascending: false }).limit(200),
     sb.from('sales_calls').select('id,lead_id,title,remind_on,done')
       .order('remind_on', { ascending: true, nullsFirst: false }),

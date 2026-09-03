@@ -26,7 +26,8 @@ const ALIASES = {
   email:  ['email', 'emailaddress', 'mail', 'אימייל', 'מייל', 'דואראלקטרוני'],
   date:   ['eventdate', 'date', 'weddingdate', 'preferreddate', 'תאריך', 'תאריךהאירוע'],
   guests: ['guestcount', 'guests', 'numberofguests', 'guestsestimate', 'attendees', 'אורחים', 'כמותאורחים', 'מספרמוזמנים'],
-  msg:    ['message', 'notes', 'note', 'comments', 'comment', 'details', 'freetext', 'הודעה', 'הערות', 'פרטים'],
+  loc: ['location', 'region', 'area', 'city', 'venue', 'event_location', 'מיקום', 'אזור', 'עיר', 'אולם'],
+  msg: ['message', 'notes', 'note', 'comments', 'comment', 'details', 'freetext', 'הודעה', 'הערות', 'פרטים'],
   kind:   ['kind', 'eventtype', 'type', 'סוגאירוע', 'סוג'],
   source: ['source', 'platform', 'utmsource', 'channel', 'leadsource', 'מקור'],
   id:     ['externalid', 'leadid', 'leadgenid', 'id', 'entryid', 'submissionid'],
@@ -116,6 +117,7 @@ export type IngestedLead = {
   event_date: string | null;
   guest_count: number | null;
   message: string;
+  location: string;
   source: string;
   external_id: string | null;
 };
@@ -194,6 +196,7 @@ export function readLead(body: unknown, fallbackSource: string): IngestedLead {
     event_date: parseLooseDate(pick(bag, ALIASES.date)),
     guest_count: parseLooseCount(pick(bag, ALIASES.guests)),
     message: pick(bag, ALIASES.msg).slice(0, 4000),
+    location: pick(bag, ALIASES.loc).slice(0, 120),
     source,
     /* Namespaced by source, because two platforms numbering their leads from
        one would otherwise collide and the second platform's lead would be

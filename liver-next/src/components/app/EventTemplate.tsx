@@ -94,7 +94,7 @@ export function EventTemplate({ clientId }: { clientId: string }) {
     <section className="card">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="font-display text-[18px] font-light text-ink">{c.title}</h2>
+          <h2 className="font-display text-[18px] font-semibold text-ink">{c.title}</h2>
           <p className="mt-1 max-w-prose2 text-[14px] leading-relaxed text-ink-soft">{c.sub}</p>
         </div>
         <button type="button" className="btn-quiet text-[13.5px]" onClick={() => setOpen(false)}>{c.close}</button>

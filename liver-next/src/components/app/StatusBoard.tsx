@@ -27,7 +27,7 @@ function Countdown({ days }: { days: number | null }) {
   if (days < 0) {
     return (
       <div className="flex flex-col items-center justify-center rounded-xl2 bg-surface-200 px-3 py-2 text-center">
-        <span className="font-display text-[15px] font-light leading-none text-ink-soft">{c.passed}</span>
+        <span className="font-display text-[15px] font-semibold leading-none text-ink-soft">{c.passed}</span>
         <span className="mt-1 text-[11.5px] leading-tight text-ink-mute">
           {Math.abs(days)} {c.daysAgo}
         </span>
@@ -89,7 +89,7 @@ function Row({ s }: { s: ClientStatus }) {
 
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-            <h3 className="font-display text-[18.5px] font-light text-ink">{s.name}</h3>
+            <h3 className="font-display text-[18.5px] font-semibold text-ink">{s.name}</h3>
             <p className="text-[13.5px] text-ink-mute">
               {formatDate(dateFmt, s.eventDate, c.noDate)}
               {s.venue ? ` · ${s.venue}` : ''}

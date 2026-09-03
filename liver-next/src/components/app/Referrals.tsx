@@ -45,7 +45,7 @@ export function Referrals({ rows, siteUrl, mine }: {
 
   return (
     <section className="card">
-      <h2 className="font-display text-[17px] font-light text-ink">{c.title}</h2>
+      <h2 className="font-display text-[17px] font-semibold text-ink">{c.title}</h2>
       <p className="mt-1 text-[13.5px] text-ink-soft">{c.sub}</p>
 
       {link && (

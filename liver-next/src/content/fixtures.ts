@@ -278,7 +278,7 @@ export const fixtureCrew: CrewMember[] = [
 export const fixtureLeads: Lead[] = [
   {
     id: 'l1', full_name: 'רוני ועומר', email: 'roni@example.com', phone: '0521111111',
-    kind: 'wedding', event_date: day(300), guest_count: 250,
+    kind: 'wedding', event_date: day(300), guest_count: 250, location: 'שרון',
     message: 'מתחתנים בקיץ הבא, מחפשים הפקה מלאה לחתונת שטח באזור המרכז.',
     note: '', status: 'new', created_at: hoursAgo(6), source: 'site',
   },

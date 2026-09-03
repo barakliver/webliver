@@ -47,7 +47,7 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
     <section className="card">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="font-display text-[18px] font-light text-ink">{c.budTitle}</h2>
+          <h2 className="font-display text-[18px] font-semibold text-ink">{c.budTitle}</h2>
           <p className="mt-1 text-[14px] text-ink-soft">{c.budSub}</p>
         </div>
 
@@ -121,7 +121,7 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
                     it is the one that gets the size; the estimate sits under it
                     as what it was before somebody negotiated. */}
                 <div className="shrink-0 text-left">
-                  <p className="font-display text-[16px] font-light tabular-nums text-ink">
+                  <p className="font-display text-[16px] font-semibold tabular-nums text-ink">
                     <Money value={i.agreed === null ? Number(i.estimate) : Number(i.agreed)} />
                   </p>
                   {i.agreed !== null && Number(i.agreed) !== Number(i.estimate) && (

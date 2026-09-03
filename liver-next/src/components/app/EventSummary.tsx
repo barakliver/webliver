@@ -74,7 +74,7 @@ export function EventSummary({ clientId, summary }: { clientId: string; summary:
       )}
 
       <div className="card">
-        <h2 className="font-display text-[18px] font-light text-ink">{c.nextUp}</h2>
+        <h2 className="font-display text-[18px] font-semibold text-ink">{c.nextUp}</h2>
         {next.length === 0 ? (
           <p className="mt-3 text-[14.5px] text-ink-mute">{c.nextUpNone}</p>
         ) : (

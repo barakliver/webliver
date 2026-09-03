@@ -19,6 +19,7 @@ import { InviteBox, type Invite } from '@/components/app/InviteBox';
 import { TaskList, type Task } from '@/components/app/TaskList';
 import { PaymentsPanel, type Payment } from '@/components/app/PaymentsPanel';
 import { BudgetPanel, type BudgetItem } from '@/components/app/BudgetPanel';
+import { FinanceSummary } from '@/components/app/FinanceSummary';
 import { WinningBoard } from '@/components/app/WinningBoard';
 import { GuestList, type Guest } from '@/components/app/GuestList';
 import { GuestSiteCard } from '@/components/app/GuestSiteCard';
@@ -68,7 +69,7 @@ export default async function ClientPage({
   const sb = await supabaseServer();
   const { data: client } = await sb
     .from('clients')
-    .select('id,display_name,kind,event_date,venue,guest_estimate,budget_visible,track_a_label,track_b_label,guest_token,guest_site_on,guest_note')
+    .select('id,display_name,kind,event_date,venue,guest_estimate,budget_visible,budget_target,track_a_label,track_b_label,guest_token,guest_site_on,guest_note')
     .eq('id', id)
     .maybeSingle();
 
@@ -127,6 +128,7 @@ export default async function ClientPage({
 type Client = {
   id: string; display_name: string; kind: string; event_date: string | null;
   venue: string | null; guest_estimate: number | null; budget_visible: boolean | null;
+  budget_target: number | null;
   guest_token: string | null; guest_site_on: boolean | null; guest_note: string | null;
   track_a_label: string; track_b_label: string;
 };
@@ -261,6 +263,12 @@ async function Section({ tab, client, viewerId }: { tab: EventTab; client: Clien
     ]);
     return (
       <div className="space-y-6">
+        {/* The five figures first, then the two lists they are made of. */}
+        <FinanceSummary
+          clientId={id} viewer="producer"
+          target={client.budget_target === null ? null : Number(client.budget_target)}
+          items={budget} payments={payments}
+        />
         <PaymentsPanel clientId={id} payments={payments} viewer="producer" />
         <BudgetPanel clientId={id} items={budget} viewer="producer" visible={!!client.budget_visible} />
       </div>

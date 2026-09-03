@@ -107,3 +107,28 @@ export async function toggleBudgetVisible(form: FormData): Promise<void> {
   await sb.from('clients').update({ budget_visible: !visible }).eq('id', clientId);
   touch(clientId);
 }
+
+/** The one figure on the money screen that is typed rather than derived: the
+ *  ceiling the couple and the producer agreed on. Blank clears it, so a
+ *  target that was never real can be taken back. */
+export async function setBudgetTarget(_prev: MoneyResult | null, form: FormData): Promise<MoneyResult> {
+  const clientId = String(form.get('client_id') ?? '');
+  const raw = String(form.get('budget_target') ?? '').trim();
+  if (!clientId) return { ok: false, error: 'חסר מזהה אירוע' };
+
+  let target: number | null = null;
+  if (raw) {
+    const n = Number(raw.replace(/[^\d.]/g, ''));
+    if (!Number.isFinite(n) || n < 0) return { ok: false, error: 'תקציב היעד צריך להיות מספר' };
+    target = Math.round(n);
+  }
+
+  const sb = await supabaseServer();
+  const { error } = await sb.from('clients').update({ budget_target: target }).eq('id', clientId);
+  if (error) {
+    console.error('[money] target failed', error);
+    return { ok: false, error: 'לא הצלחנו לשמור את תקציב היעד' };
+  }
+  touch(clientId);
+  return { ok: true };
+}

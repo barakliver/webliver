@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from 'react';
 import { formatDate } from '@/lib/dates';
+import { MapPin } from 'lucide-react';
 import { useFormStatus } from 'react-dom';
 import { setLeadStatus, setLeadNote, bookCall, convertLead, type LeadActionResult } from '@/app/actions/leads';
 import { leadsCopy, appCopy, EVENT_KINDS } from '@/content/site';
@@ -12,6 +13,7 @@ export type Lead = {
   guest_count: number | null; message: string; note: string;
   status: keyof typeof leadsCopy.statuses; created_at: string;
   source: string;
+  location?: string;
 };
 export type Call = { id: string; lead_id: string | null; title: string; remind_on: string | null; done: boolean };
 
@@ -58,6 +60,14 @@ export function LeadRow({ lead, calls }: { lead: Lead; calls: Call[] }) {
             {lead.guest_count ? ` · ${lead.guest_count}` : ''}
             {lead.source ? ` · ${sourceLabel(lead.source)}` : ''}
           </p>
+          {/* Where, on its own line and in ink: it is the first thing the
+              producer looks for, and it decides whether to pick up the phone. */}
+          {lead.location && (
+            <p className="mt-1 inline-flex items-center gap-1 text-[13px] text-ink">
+              <MapPin size={13} strokeWidth={1.5} aria-hidden className="text-accent" />
+              {lead.location}
+            </p>
+          )}
         </div>
 
         {openCalls.length > 0 && (

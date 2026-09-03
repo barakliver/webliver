@@ -19,7 +19,7 @@ const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
 export function Steps({ site }: { site: SiteCopy }) {
   return (
     <section id="journey" className="section shell">
-      <h2 className="font-display text-display font-light text-ink">{site.journey.title}</h2>
+      <h2 className="font-display text-display font-semibold text-ink">{site.journey.title}</h2>
 
       <ol className="mt-10 list-none p-0">
         {site.journey.steps.map((step, i) => (
@@ -29,7 +29,7 @@ export function Steps({ site }: { site: SiteCopy }) {
           >
             <span
               aria-hidden
-              className="w-8 shrink-0 font-display text-[19px] font-light tracking-[.06em] text-accent-bright sm:w-12 sm:text-[22px]"
+              className="w-8 shrink-0 font-display text-[19px] font-semibold tracking-[.06em] text-accent-bright sm:w-12 sm:text-[22px]"
             >
               {ROMAN[i] ?? i + 1}
             </span>

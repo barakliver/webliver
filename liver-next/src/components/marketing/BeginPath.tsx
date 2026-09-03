@@ -40,12 +40,12 @@ export function BeginPath({ site }: { site: SiteCopy }) {
                     an ordered list, is not told "one one". */}
                 <span
                   aria-hidden
-                  className="font-display text-[40px] font-light leading-none text-accent-bright transition-colors group-hover:text-accent sm:text-[52px]"
+                  className="font-display text-[40px] font-semibold leading-none text-accent-bright transition-colors group-hover:text-accent sm:text-[52px]"
                 >
                   {i + 1}
                 </span>
                 <span className="min-w-0 sm:mt-3 sm:block">
-                  <span className="block font-display text-[20px] font-light leading-snug text-ink transition-colors group-hover:text-accent sm:text-[22px]">
+                  <span className="block font-display text-[20px] font-semibold leading-snug text-ink transition-colors group-hover:text-accent sm:text-[22px]">
                     {step.title}
                   </span>
                   <span className="mt-1 block text-[14px] leading-relaxed text-ink-soft">

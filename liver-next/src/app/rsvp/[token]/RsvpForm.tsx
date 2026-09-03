@@ -34,7 +34,7 @@ export function RsvpForm({ token, initial, copy }: {
     return (
       <div className="card text-center" role="status">
         <div aria-hidden className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-accent-wash text-[22px]">✓</div>
-        <h2 className="mt-4 font-display text-title font-light text-ink">
+        <h2 className="mt-4 font-display text-title font-semibold text-ink">
           {state.status === 'attending' ? c.okComing : c.okNotComing}
         </h2>
         <p className="mt-2 text-[15.5px] text-ink-soft">

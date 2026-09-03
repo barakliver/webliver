@@ -73,7 +73,7 @@ export function Shop({ producerId, items, copy: c }: {
   if (done !== null) {
     return (
       <div className="card mx-auto max-w-xl text-center">
-        <h2 className="font-display text-[26px] font-light text-ink">{c.thanksTitle}</h2>
+        <h2 className="font-display text-[26px] font-semibold text-ink">{c.thanksTitle}</h2>
         <p className="mt-3 text-[15px] text-ink-soft">{c.thanks}</p>
         <p className="mt-2 font-display text-[24px] text-accent"><Ltr>{done}</Ltr></p>
         <button type="button" onClick={() => setDone(null)} className="btn-quiet mt-5 text-[14.5px]">
@@ -102,7 +102,7 @@ export function Shop({ producerId, items, copy: c }: {
                 <p className="text-[11.5px] tracking-[.14em] text-ink-mute">
                   {i.kind === 'service' ? c.kindService : c.kindProduct}
                 </p>
-                <h3 className="mt-1.5 font-display text-[20px] font-light text-ink">{i.name}</h3>
+                <h3 className="mt-1.5 font-display text-[20px] font-semibold text-ink">{i.name}</h3>
                 {i.blurb && <p className="mt-1.5 text-[14px] text-ink-soft">{i.blurb}</p>}
                 {i.body && <p className="mt-2 whitespace-pre-line text-[13.5px] text-ink-mute">{i.body}</p>}
 
@@ -149,7 +149,7 @@ export function Shop({ producerId, items, copy: c }: {
             className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-t-sheet border border-line bg-card p-5 sm:rounded-sheet"
           >
             <div className="flex items-center justify-between gap-3">
-              <h2 className="font-display text-[22px] font-light text-ink">{c.cart}</h2>
+              <h2 className="font-display text-[22px] font-semibold text-ink">{c.cart}</h2>
               <button type="button" onClick={() => setOpen(false)} className="btn-quiet px-2 py-1" aria-label={c.cancel}>
                 <X size={18} aria-hidden strokeWidth={1.5} />
               </button>

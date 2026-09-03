@@ -45,7 +45,7 @@ export function PortalSummary({ rows, label }: { rows: SummaryRow[]; label: stri
             >
               <span className="text-[15.5px] text-ink">{r.label}</span>
               <span className="flex items-center gap-3">
-                <span className="font-display text-[22px] font-light text-ink">{r.value}</span>
+                <span className="font-display text-[22px] font-semibold text-ink">{r.value}</span>
                 {/* Points the way the language runs. In a right-to-left page
                     a chevron aimed right is aimed backwards. */}
                 <ChevronLeft size={16} strokeWidth={1.5} className="chev-onward text-ink-mute" aria-hidden />

@@ -65,6 +65,7 @@ import { IssueReporter } from '@/components/app/IssueReporter';
 import { VendorImport } from '@/components/app/VendorImport';
 import { ProducerCopilot } from '@/components/app/ProducerCopilot';
 import { QuickJump } from '@/components/app/QuickJump';
+import { FinanceSummary } from '@/components/app/FinanceSummary';
 import { accentByKey } from '@/content/brand';
 import type { Account } from '@/lib/auth';
 import ConsoleLoading from '@/app/app/loading';
@@ -114,7 +115,7 @@ function Panel({ name, note, children }: { name: string; note?: string; children
   return (
     <section className="mt-14 first:mt-0">
       <div className="mb-4 flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b border-line pb-2">
-        <h2 className="font-display text-[17px] font-light text-ink">{name}</h2>
+        <h2 className="font-display text-[17px] font-semibold text-ink">{name}</h2>
         {note && <p className="text-[12.5px] text-ink-mute">{note}</p>}
       </div>
       {children}
@@ -133,7 +134,7 @@ export default async function DesignPage() {
     <CopyProvider value={ui}>
       <main id="main" className="shell py-10">
         <p className="eyebrow">design harness</p>
-        <h1 className="mt-3 font-display text-display font-light text-ink">
+        <h1 className="mt-3 font-display text-display font-semibold text-ink">
           {locale === 'en' ? 'Every panel, no database' : 'כל הפאנלים, בלי מסד נתונים'}
         </h1>
         <p className="measure mt-3 text-[14.5px] text-ink-soft">
@@ -152,6 +153,14 @@ export default async function DesignPage() {
 
         <Panel name="PaymentsPanel · client" note="one paid, one overdue, one ahead">
           <PaymentsPanel clientId={client} payments={fixturePayments} viewer="client" />
+        </Panel>
+
+        <Panel name="FinanceSummary · producer" note="the five figures and the working; a target is set and the event is inside it">
+          <FinanceSummary clientId={client} viewer="producer" target={260000} items={fixtureBudget} payments={fixturePayments} />
+        </Panel>
+
+        <Panel name="FinanceSummary · client, over budget" note="the same figures seen by the couple, with the overrun badge">
+          <FinanceSummary clientId={client} viewer="client" target={60000} items={fixtureBudget} payments={fixturePayments} />
         </Panel>
 
         <Panel name="BudgetPanel · producer" note="an agreed figure, two still open">

@@ -79,6 +79,7 @@ async function saveEnquiry(input: Record<string, unknown>): Promise<string> {
       p_message: str('message'),
       p_source: 'ai_concierge',
       p_external_id: null,
+      p_location: str('location').slice(0, 120),
     });
     if (error) {
       console.error('[concierge] could not save the enquiry', error);

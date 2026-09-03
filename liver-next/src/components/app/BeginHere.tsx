@@ -23,7 +23,7 @@ export function BeginHere() {
       <ol className="mt-5 list-none space-y-4 p-0">
         {producerGuide.start.steps.map((step, i) => (
           <li key={step.title} className="flex items-baseline gap-3.5">
-            <span aria-hidden className="font-display text-[26px] font-light leading-none text-accent-bright">
+            <span aria-hidden className="font-display text-[26px] font-semibold leading-none text-accent-bright">
               {i + 1}
             </span>
             <span className="min-w-0">

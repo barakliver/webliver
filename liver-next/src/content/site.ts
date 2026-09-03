@@ -39,7 +39,10 @@ export type SiteCopy = {
   budget: { title: string; sub: string; closing: string };
   lead: {
     title: string; sub: string;
-    fields: { name: string; phone: string; email: string; kind: string; date: string; guests: string; message: string };
+    fields: { name: string; phone: string; email: string; kind: string; date: string; guests: string; message: string; location: string };
+    locationFree: string; locationPh: string; locationNeed: string;
+    /* Six labels, in the reader's language, for the six regions in REGIONS. */
+    regions: readonly [string, string, string, string, string, string];
     submit: string; sending: string; okTitle: string; okBody: string;
   };
   fab: { whatsapp: string; booking: string; bookingNote: string; lead: string; whatsappMessage: string };
@@ -192,7 +195,12 @@ export const site: SiteCopy = {
       date: 'תאריך משוער',
       guests: 'כמות אורחים',
       message: 'משהו שחשוב שנדע',
+      location: 'מיקום האירוע / אזור מבוקש',
     },
+    locationFree: 'או שם האולם, אם כבר נבחר',
+    locationPh: 'שם האולם או כתובת, אם יש',
+    locationNeed: 'נא לבחור אזור או לכתוב איפה האירוע',
+    regions: ['מרכז', 'שרון', 'צפון', 'דרום', 'ירושלים והסביבה', 'שטח / פתוח'],
     submit: 'שליחה',
     sending: 'שולח',
     okTitle: 'תודה, קיבלנו',
@@ -219,6 +227,11 @@ export const site: SiteCopy = {
 
   footer: 'הפקת אירועים. כל הזכויות שמורות.',
 };
+
+/* The six regions the first call is decided at. The value is what the lead
+   stores, in Hebrew, whichever language the visitor read the chip in; the
+   labels live in each language's `lead.regions` by the same index. */
+export const REGIONS = ['מרכז', 'שרון', 'צפון', 'דרום', 'ירושלים והסביבה', 'שטח / פתוח'] as const;
 
 export const EVENT_KINDS = [
   { value: 'wedding',   label: 'חתונה' },
@@ -1312,6 +1325,36 @@ export const appCopy = {
     budDiff: 'הפרש',
     budUnder: 'מתחת לאומדן',
     budOver: 'מעל האומדן',
+
+    /* The five figures and the sentence that explains them. */
+    finance: {
+      title: 'תמונת הכסף',
+      sub: 'חמישה מספרים, ואיך הגענו אליהם.',
+      how: 'איך זה מחושב',
+      formula: 'איך מחושב התקציב? סך כל עלויות הספקים המאושרות פחות המקדמות ששולמו = יתרת תשלום עד ליום האירוע. מרווח הביטחון הוא תקציב היעד פחות ההתחייבויות.',
+      target: 'תקציב יעד כולל',
+      targetSub: 'התקרה שסיכמתם יחד',
+      noTarget: 'לא נקבע',
+      committed: 'סה״כ התחייבויות וחוזים',
+      committedSub: 'כל סעיף במחיר שנסגר, או באומדן עד שייסגר',
+      paid: 'שולם בפועל / מקדמות',
+      paidSub: 'מה שכבר יצא מהחשבון',
+      remaining: 'יתרה לתשלום',
+      remainingSub: 'התחייבויות פחות מה ששולם',
+      variance: 'מרווח ביטחון / חריגה',
+      surplus: 'מרווח ביטחון',
+      overrun: 'חריגה מהתקציב',
+      underBadge: 'בתוך התקציב',
+      overBadge: 'מעל התקציב',
+      setTargetFirst: 'קבעו תקציב יעד',
+      paidShare: 'שולם',
+      pendingShare: 'ממתין לתשלום',
+      setTarget: 'קביעת תקציב יעד',
+      editTarget: 'שינוי תקציב היעד',
+      save: 'שמירה',
+      saving: 'שומר',
+      cancel: 'ביטול',
+    },
     budShow: 'הזוג רואה את התקציב',
     budHidden: 'מוסתר מהזוג',
     budVisible: 'גלוי לזוג',
@@ -1631,6 +1674,10 @@ export const leadsCopy = {
   addMessage: 'מה נאמר',
   addMessagePh: 'חתונה באוגוסט, שמעו עלינו מחברים',
   addHow: 'איך הגיעו אלינו',
+  addLocation: 'מיקום האירוע',
+  addLocationFree: 'או שם האולם',
+  addLocationPh: 'שם האולם או כתובת, אם ידוע',
+  location: 'מיקום',
   addSave: 'שמירה',
   addSaving: 'שומר',
   addCancel: 'ביטול',

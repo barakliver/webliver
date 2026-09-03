@@ -47,7 +47,7 @@ export function ArchiveShelf({ shelf }: { shelf: Shelf[] }) {
               aria-expanded={on}
               className="flex w-full items-center justify-between gap-3 px-5 py-4 text-start"
             >
-              <span className="font-display text-[20px] font-light text-ink">
+              <span className="font-display text-[20px] font-semibold text-ink">
                 {folder.year ? c.yearLabel(folder.year) : c.noYear}
               </span>
               <span className="flex items-center gap-3">

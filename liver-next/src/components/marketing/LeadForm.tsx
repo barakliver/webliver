@@ -3,8 +3,9 @@
 import { useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { submitLead, type LeadResult } from '@/app/actions/lead';
-import { MIN_EVENT_DATE, MAX_GUESTS, type SiteCopy } from '@/content/site';
+import { MIN_EVENT_DATE, MAX_GUESTS, REGIONS, type SiteCopy } from '@/content/site';
 import type { EventKinds } from '@/content/ui';
+import { RegionPicker } from '@/components/RegionPicker';
 
 function Submit({ label, busy }: { label: string; busy: string }) {
   const { pending } = useFormStatus();
@@ -27,7 +28,7 @@ export function LeadForm({ compact = false, site, kinds }: {
     return (
       <div className="card text-center" role="status">
         <div aria-hidden className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-accent-wash text-[22px]">✓</div>
-        <h3 className="mt-4 font-display text-title font-light text-ink">{site.lead.okTitle}</h3>
+        <h3 className="mt-4 font-display text-title font-semibold text-ink">{site.lead.okTitle}</h3>
         <p className="mt-2 text-[16px] text-ink-soft">{site.lead.okBody}</p>
       </div>
     );
@@ -76,6 +77,15 @@ export function LeadForm({ compact = false, site, kinds }: {
           <input id="lf-guests" name="guest_count" type="number" min={1} max={MAX_GUESTS} inputMode="numeric" className="field" aria-invalid={invalid('guest_count')} />
         </div>
       </div>
+
+      {/* Where, before what else. It is the first thing the producer asks and
+          the one that decides whether the call happens at all. */}
+      <RegionPicker
+        id="lf-location" name="location" required
+        regions={REGIONS.map((value, i) => ({ value, label: site.lead.regions[i] }))}
+        label={site.lead.fields.location} freeLabel={site.lead.locationFree} freePh={site.lead.locationPh}
+        invalid={!!invalid('location')}
+      />
 
       <div>
         <label className="label" htmlFor="lf-msg">{site.lead.fields.message}</label>

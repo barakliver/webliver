@@ -76,7 +76,7 @@ export function CodeInput({ name, label, length }: {
           aria-label={label}
           value={plain}
           onChange={(e) => setPlain(e.target.value.replace(/\D/g, '').slice(0, 12))}
-          className="field mt-1.5 w-full text-center font-display text-[26px] font-light tracking-[0.4em] tabular-nums"
+          className="field mt-1.5 w-full text-center font-display text-[26px] font-semibold tracking-[0.4em] tabular-nums"
         />
       ) : (
         /* Left to right inside a right-to-left page, because a number reads
@@ -99,7 +99,7 @@ export function CodeInput({ name, label, length }: {
                  that the fill and the focus ring are gone. */
               className={[
                 'rounded-xl2 border-0 border-b bg-transparent p-0 text-center tabular-nums',
-                'font-display font-light text-ink outline-none',
+                'font-display font-semibold text-ink outline-none',
                 'transition-colors duration-300 ease-out',
                 d ? 'border-b-2 border-accent-line' : 'border-b border-line-strong',
                 'focus:border-b-2 focus:border-accent',

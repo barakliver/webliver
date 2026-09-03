@@ -30,7 +30,7 @@ export function Nav({ site = fallback, locale = DEFAULT_LOCALE }: {
        asking for it. */
     <nav className="glass sticky top-0 z-30 border-b border-line">
       <div className="shell flex h-16 items-center justify-between gap-4">
-        <Link href="/" className="inline-flex min-h-[44px] items-center font-display text-[17px] font-light tracking-tight text-ink">
+        <Link href="/" className="inline-flex min-h-[44px] items-center font-display text-[17px] font-semibold tracking-tight text-ink">
           {site.brand}
         </Link>
         <div className="hidden items-center gap-1 md:flex">

@@ -81,11 +81,11 @@ export default async function OverviewPage() {
                 <CalendarHeart size={16} strokeWidth={1.5} aria-hidden />
                 <span className="eyebrow">{c.nextEvent}</span>
               </div>
-              <p className="mt-3 font-display text-[24px] font-light leading-tight text-ink">
+              <p className="mt-3 font-display text-[24px] font-semibold leading-tight text-ink">
                 {next.name}
               </p>
               <p className="mt-1 text-[14px] text-ink-soft">{next.date}</p>
-              <p className="mt-4 font-display text-[32px] font-light leading-none text-ink">
+              <p className="mt-4 font-display text-[32px] font-semibold leading-none text-ink">
                 {c.inDays(next.days)}
               </p>
             </Link>

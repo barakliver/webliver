@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Heebo, Frank_Ruhl_Libre } from 'next/font/google';
+import { Heebo, Frank_Ruhl_Libre, Assistant } from 'next/font/google';
 import { site } from '@/content/site';
 import { siteEn } from '@/content/site.en';
 import { brandForHost } from '@/lib/branding';
@@ -13,9 +13,11 @@ import { a11yFor } from '@/content/ui';
 import { cookies } from 'next/headers';
 import { LOCALE_COOKIE, dirOf, readLocale } from '@/lib/locale';
 
-/* Two families, which is what his own design document specifies.
+/* Three families now: Assistant for the headings (below), Frank Ruhl Libre
+   for the promise line, Heebo for the body. The two earlier moves are worth
+   keeping in the record, because each one was a ruling.
 
-   This line has moved twice, and the history is worth keeping. The Lux
+   This line has moved twice before, and the history is worth keeping. The Lux
    direction set every heading in Frank Ruhl Libre; the `Event Platform.dc.html`
    handoff set everything in Heebo, and for a while that file was treated as the
    authority and the serif came out. Then he ruled on it himself: the font he
@@ -39,6 +41,17 @@ const heebo = Heebo({
 const frank = Frank_Ruhl_Libre({
   subsets: ['hebrew', 'latin'], variable: '--font-frank',
   display: 'swap', weight: ['300', '400', '500'],
+});
+
+/* The third face, and the one the headings now wear. Assistant is a Hebrew
+   sans cut for editorial use: wide counters, a real 800 weight, and Latin
+   that sits at the same height as the Hebrew rather than above it. Headings
+   moved here from the serif at his request for a modern editorial feel; the
+   serif keeps the promise line, which is a signature and not a heading, and
+   Heebo keeps everything read at 13 to 16px. */
+const assistant = Assistant({
+  subsets: ['hebrew', 'latin'], variable: '--font-assistant',
+  display: 'swap', weight: ['300', '400', '600', '700', '800'],
 });
 
 /* Generated per request rather than exported flat, because the name and the
@@ -162,7 +175,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const dir = dirOf(locale);
 
   return (
-    <html lang={locale} dir={dir} className={`${heebo.variable} ${frank.variable}`}>
+    <html lang={locale} dir={dir} className={`${heebo.variable} ${frank.variable} ${assistant.variable}`}>
       <head>
         {/* Written by hand rather than through `metadata.manifest`, for one
             attribute: a manifest is fetched without cookies unless the link

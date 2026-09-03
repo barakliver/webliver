@@ -50,7 +50,7 @@ export default async function SignPage({ params }: { params: Promise<{ token: st
   return (
     <main id="main" className="flex min-h-dvh items-center justify-center px-5 py-14">
       <div className="w-full max-w-2xl">
-        <p className="text-center font-display text-[19px] font-light text-ink">
+        <p className="text-center font-display text-[19px] font-semibold text-ink">
           {deal?.brand || site.brand}
         </p>
         <PromiseLine className="mb-7 mt-2" />
@@ -60,14 +60,14 @@ export default async function SignPage({ params }: { params: Promise<{ token: st
              page that distinguished "signed already" from "never existed"
              would confirm a guess to whoever was guessing. */
           <div className="card text-center">
-            <h1 className="font-display text-title font-light text-ink">{c.badLink}</h1>
+            <h1 className="font-display text-title font-semibold text-ink">{c.badLink}</h1>
             <p className="mt-3 text-[15.5px] leading-relaxed text-ink-soft">{c.badLinkBody}</p>
           </div>
         ) : (
           <>
             <header className="mb-5 text-center">
               <p className="eyebrow">{c.eyebrow}</p>
-              <h1 className="mt-2 font-display text-title font-light text-ink">{deal.title}</h1>
+              <h1 className="mt-2 font-display text-title font-semibold text-ink">{deal.title}</h1>
               {(deal.party_name || deal.party_role) && (
                 <p className="mt-1.5 text-[14.5px] text-ink-soft">
                   {[deal.party_name, deal.party_role].filter(Boolean).join(' · ')}
@@ -79,7 +79,7 @@ export default async function SignPage({ params }: { params: Promise<{ token: st
               {deal.amount !== null && (
                 <div className="flex items-baseline justify-between gap-4 border-b border-line pb-4">
                   <span className="text-[14px] text-ink-soft">{c.amount}</span>
-                  <span className="font-display text-[24px] font-light tabular-nums text-ink">
+                  <span className="font-display text-[24px] font-semibold tabular-nums text-ink">
                     <Money value={Number(deal.amount)} />
                   </span>
                 </div>

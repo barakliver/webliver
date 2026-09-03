@@ -120,7 +120,7 @@ export function GuestList({ clientId, guests }: { clientId: string; guests: Gues
 
   return (
     <section className="card">
-      <h2 className="font-display text-[18px] font-light text-ink">{c.title}</h2>
+      <h2 className="font-display text-[18px] font-semibold text-ink">{c.title}</h2>
       <p className="mt-1 text-[14px] text-ink-soft">{c.sub}</p>
 
       <div className="mt-6 grid gap-x-8 gap-y-8 grid-cols-2 sm:grid-cols-4">

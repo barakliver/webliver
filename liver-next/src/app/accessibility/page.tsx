@@ -28,7 +28,7 @@ export default async function Page() {
   return (
     <main id="main" className="shell max-w-prose2 py-16 sm:py-24">
       <p className="eyebrow">{site.brand}</p>
-      <h1 className="mt-4 font-display text-display font-light text-ink">{c.title}</h1>
+      <h1 className="mt-4 font-display text-display font-semibold text-ink">{c.title}</h1>
       <p className="measure mt-4 text-[16.5px] leading-relaxed text-ink-soft">{c.sub}</p>
 
       <hr className="rule-gold my-10" />
@@ -79,7 +79,7 @@ export default async function Page() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="mt-10 first:mt-0">
-      <h2 className="font-display text-title font-light text-ink">{title}</h2>
+      <h2 className="font-display text-title font-semibold text-ink">{title}</h2>
       <div className="measure mt-4 text-[15.5px] leading-relaxed text-ink-soft">{children}</div>
     </section>
   );

@@ -37,7 +37,7 @@ export function FunnelChart({ funnel }: { funnel: Funnel }) {
   const top = Math.max(funnel.total, 1);
   return (
     <section className="card">
-      <h2 className="font-display text-[19px] font-light text-ink">{c.funnel.title}</h2>
+      <h2 className="font-display text-[19px] font-semibold text-ink">{c.funnel.title}</h2>
       <p className="mt-1 text-[13.5px] text-ink-soft">{c.funnel.sub}</p>
 
       <ul className="mt-5 list-none space-y-3 p-0">
@@ -86,7 +86,7 @@ export function Sources({ rows }: { rows: SourceRow[] }) {
   if (rows.length === 0) return null;
   return (
     <section className="card">
-      <h2 className="font-display text-[19px] font-light text-ink">{c.sources.title}</h2>
+      <h2 className="font-display text-[19px] font-semibold text-ink">{c.sources.title}</h2>
       <p className="mt-1 text-[13.5px] text-ink-soft">{c.sources.sub}</p>
 
       <div className="mt-4 overflow-x-auto">
@@ -143,7 +143,7 @@ function Figure({ label, value, tone = 'ink', note, href }: {
 export function CashPanel({ cash }: { cash: Cash }) {
   return (
     <section className="card">
-      <h2 className="font-display text-[19px] font-light text-ink">{c.cash.title}</h2>
+      <h2 className="font-display text-[19px] font-semibold text-ink">{c.cash.title}</h2>
       <p className="mt-1 text-[13.5px] text-ink-soft">{c.cash.sub}</p>
       {/* Three across only where three six-figure amounts in the display face
           actually fit. At tablet widths the columns fall to ~180px each and
@@ -167,7 +167,7 @@ export function CashPanel({ cash }: { cash: Cash }) {
 export function ResponsePanel({ r }: { r: Response }) {
   return (
     <section className="card">
-      <h2 className="font-display text-[19px] font-light text-ink">{c.response.title}</h2>
+      <h2 className="font-display text-[19px] font-semibold text-ink">{c.response.title}</h2>
       <p className="mt-1 text-[13.5px] text-ink-soft">{c.response.sub}</p>
       <div className="mt-4 grid gap-3 sm:grid-cols-3">
         <Figure
@@ -193,7 +193,7 @@ export function Health({ signed, overdue, waiting }: {
   const clear = overdue === 0 && waiting === 0;
   return (
     <section className="card">
-      <h2 className="font-display text-[19px] font-light text-ink">{c.health.title}</h2>
+      <h2 className="font-display text-[19px] font-semibold text-ink">{c.health.title}</h2>
       <div className="mt-4 grid gap-3 sm:grid-cols-3">
         <Figure
           label={c.health.signed}

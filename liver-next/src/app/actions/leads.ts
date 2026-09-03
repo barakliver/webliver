@@ -48,6 +48,7 @@ export async function recordLead(_prev: LeadActionResult | null, form: FormData)
     p_guest_count: Number.isFinite(guests) && guests > 0 ? Math.min(guests, 1500) : null,
     p_message: v('message'),
     p_source: v('source') || 'phone',
+    p_location: v('location').slice(0, 120),
   });
 
   if (error) {

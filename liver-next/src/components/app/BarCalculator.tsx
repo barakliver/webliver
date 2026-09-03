@@ -55,7 +55,7 @@ function Number_({ label, hint, value, onChange, min, max, step = 1, suffix }: {
         />
         {/* dir="ltr", because "10%" in an rtl run renders as "% 10". The
             number and its unit are one token and read left to right. */}
-        <span dir="ltr" className="w-[74px] shrink-0 text-left font-display text-[17px] font-light tabular-nums text-ink">
+        <span dir="ltr" className="w-[74px] shrink-0 text-left font-display text-[17px] font-semibold tabular-nums text-ink">
           {value}{suffix ? ` ${suffix}` : ''}
         </span>
       </div>
@@ -119,7 +119,7 @@ export function BarCalculator({ guestEstimate, confirmedGuests }: {
       `}</style>
 
       <div className="no-print">
-        <h2 className="inline-flex items-center gap-2 font-display text-[18px] font-light text-ink">
+        <h2 className="inline-flex items-center gap-2 font-display text-[18px] font-semibold text-ink">
           <Martini size={18} aria-hidden strokeWidth={1.5} />
           {c.title}
         </h2>
@@ -141,7 +141,7 @@ export function BarCalculator({ guestEstimate, confirmedGuests }: {
 
       <div className="bar-print mt-8">
         <div className="flex flex-wrap items-baseline justify-between gap-3 border-b border-line pb-3">
-          <h3 className="font-display text-[18px] font-light text-ink">{c.planTitle}</h3>
+          <h3 className="font-display text-[18px] font-semibold text-ink">{c.planTitle}</h3>
           <p className="text-[13px] tabular-nums text-ink-mute">
             {plan.litres} {c.litresOut}
             {style !== 'barak' && ` · ${plan.servings} ${c.servingsOut}`}
@@ -157,7 +157,7 @@ export function BarCalculator({ guestEstimate, confirmedGuests }: {
           {lines.map((l) => (
             <li key={l.key} className="flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b border-line py-2.5 last:border-0">
               <span className="min-w-0 flex-1 text-[15px] text-ink">{c.items[l.key]}</span>
-              <span className="font-display text-[16px] font-light tabular-nums text-ink">
+              <span className="font-display text-[16px] font-semibold tabular-nums text-ink">
                 {l.key === 'beer' && beerPacks ? plan.beerSixPacks : l.qty}{' '}
                 <span className="text-[13px] font-normal text-ink-mute">
                   {l.key === 'beer' && beerPacks ? c.beerAsPacks : c.units[l.key]}

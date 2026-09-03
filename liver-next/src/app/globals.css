@@ -170,7 +170,11 @@
        the whole shell. Neither is possible to fix from inside a component. */
     -webkit-tap-highlight-color: transparent;
     color: theme('colors.ink.DEFAULT');
-    font-feature-settings: 'kern' 1;
+    /* Hebrew body text at 1.5 reads as cramped: no ascenders to make air.
+       1.65 on everything, and the paragraph rule below adds more. */
+    line-height: 1.65;
+    font-feature-settings: 'kern' 1, 'liga' 1;
+    font-optical-sizing: auto;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
@@ -182,6 +186,25 @@
     letter-spacing: -.03em;
     text-wrap: balance;
   }
+
+  /* The editorial gradient on a title: ink at the start, softening to the
+     secondary ink by the end of the line. Built from the tokens rather than
+     a literal slate, so a producer's palette and the contrast checker both
+     still apply. The light variant is for titles on the dark band. */
+  .text-editorial {
+    background-image: linear-gradient(to left, rgb(var(--ink-rgb)) 0%, rgb(var(--ink-rgb)) 45%, rgb(var(--ink-soft-rgb)) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  [dir='ltr'] .text-editorial { background-image: linear-gradient(to right, rgb(var(--ink-rgb)) 0%, rgb(var(--ink-rgb)) 45%, rgb(var(--ink-soft-rgb)) 100%); }
+  .text-editorial-light {
+    background-image: linear-gradient(to left, rgb(var(--surface-rgb)) 0%, rgb(var(--surface-rgb)) 50%, rgb(var(--surface-rgb) / .72) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  [dir='ltr'] .text-editorial-light { background-image: linear-gradient(to right, rgb(var(--surface-rgb)) 0%, rgb(var(--surface-rgb)) 50%, rgb(var(--surface-rgb) / .72) 100%); }
 
   /* Hebrew has no ascenders or descenders to speak of, so lines pack tighter
      than Latin at the same leading and read as cramped. A little more air. */

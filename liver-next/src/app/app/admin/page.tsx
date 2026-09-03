@@ -105,7 +105,7 @@ function Producer({ p }: { p: ProducerRow }) {
     <li className="card">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
-          <h3 className="flex flex-wrap items-center gap-2 font-display text-[17.5px] font-light text-ink">
+          <h3 className="flex flex-wrap items-center gap-2 font-display text-[17.5px] font-semibold text-ink">
             {p.brand}
             {p.isRoot && (
               <span className="inline-flex items-center gap-1 rounded-xl2 bg-accent-wash px-2.5 py-0.5 text-[12px] font-medium text-accent">
@@ -198,7 +198,7 @@ export default async function AdminPage() {
             because a list of bugs under a list of producers is two lists. */}
         <section className="card flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="inline-flex items-center gap-2 font-display text-[17px] font-light text-ink">
+            <h2 className="inline-flex items-center gap-2 font-display text-[17px] font-semibold text-ink">
               <LifeBuoy size={17} strokeWidth={1.5} aria-hidden />
               {ticketCopy.admin.title}
             </h2>
@@ -212,7 +212,7 @@ export default async function AdminPage() {
         {/* The screen says out loud what it cannot show. An empty list where a
             list used to be reads as a bug; a paragraph reads as a decision. */}
         <section className="card">
-          <h2 className="flex items-center gap-2 font-display text-[17px] font-light text-ink">
+          <h2 className="flex items-center gap-2 font-display text-[17px] font-semibold text-ink">
             <Lock size={16} aria-hidden strokeWidth={1.5} />
             {c.privacy.title}
           </h2>

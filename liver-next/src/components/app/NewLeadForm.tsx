@@ -3,7 +3,8 @@
 import { useActionState, useEffect, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { recordLead, type LeadActionResult } from '@/app/actions/leads';
-import { leadsCopy as c, LEAD_SOURCES, EVENT_KINDS, MIN_EVENT_DATE, MAX_GUESTS } from '@/content/site';
+import { leadsCopy as c, LEAD_SOURCES, EVENT_KINDS, MIN_EVENT_DATE, MAX_GUESTS, REGIONS } from '@/content/site';
+import { RegionPicker } from '@/components/RegionPicker';
 
 function Submit() {
   const { pending } = useFormStatus();
@@ -46,7 +47,7 @@ export function NewLeadForm() {
   return (
     <form action={action} className="card mt-4 space-y-5" noValidate>
       <div>
-        <h2 className="font-display text-[19px] font-light text-ink">{c.addTitle}</h2>
+        <h2 className="font-display text-[19px] font-semibold text-ink">{c.addTitle}</h2>
         <p className="mt-1 text-[14px] text-ink-soft">{c.addSub}</p>
       </div>
 
@@ -93,6 +94,14 @@ export function NewLeadForm() {
           </select>
         </div>
       </div>
+
+      {/* Optional here: whoever is typing is often still on the phone and may
+          not have asked yet. */}
+      <RegionPicker
+        id="nl-location" name="location"
+        regions={REGIONS.map((value) => ({ value, label: value }))}
+        label={c.addLocation} freeLabel={c.addLocationFree} freePh={c.addLocationPh}
+      />
 
       <div>
         <label className="label" htmlFor="nl-message">{c.addMessage}</label>

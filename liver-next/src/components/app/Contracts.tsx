@@ -150,7 +150,7 @@ function Row({ contract: k, clientId, viewer }: {
     <li className="rounded-xl2 border border-line p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
-          <h3 className="font-display text-[17px] font-light text-ink">{k.title || c.untitled}</h3>
+          <h3 className="font-display text-[17px] font-semibold text-ink">{k.title || c.untitled}</h3>
           {k.amount !== null && <p className="mt-0.5 text-[14px] text-ink-soft tabular-nums"><Money value={k.amount} /></p>}
         </div>
         <span className={`rounded-xl2 px-2.5 py-1 text-[12.5px] font-medium ${TONE[k.status]}`}>
@@ -241,7 +241,7 @@ export function Contracts({ clientId, contracts, viewer }: {
     <section className="card">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="flex items-center gap-2 font-display text-[18px] font-light text-ink">
+          <h2 className="flex items-center gap-2 font-display text-[18px] font-semibold text-ink">
             <FileSignature size={18} aria-hidden strokeWidth={1.5} />
             {c.title}
           </h2>

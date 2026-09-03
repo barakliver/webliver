@@ -125,7 +125,7 @@ function Table({ table, seated, taken, dim, active, onOpen, drop }: {
           <Chair key={i} i={i} of={table.seats} taken={i < taken} name={occupant[i] ?? c.seatFree} />
         ))}
         <span className="pointer-events-none flex flex-col items-center gap-0.5 px-4 text-center">
-          <span className="font-display text-[15px] font-light leading-tight text-ink">{table.name}</span>
+          <span className="font-display text-[15px] font-semibold leading-tight text-ink">{table.name}</span>
           <span className="text-[12.5px] tabular-nums text-ink-mute">
             <Ratio of={taken} total={table.seats} />
           </span>
@@ -191,7 +191,7 @@ export function SeatingPlan({ clientId, tables, guests }: {
 
   return (
     <section className="card">
-      <h2 className="font-display text-[18px] font-light text-ink">🪑 {c.title}</h2>
+      <h2 className="font-display text-[18px] font-semibold text-ink">🪑 {c.title}</h2>
       <p className="mt-1 text-[14px] text-ink-soft">{c.sub}</p>
       <p className="mt-1 text-[13px] text-ink-mute">{c.dragHint}</p>
 
@@ -299,7 +299,7 @@ export function SeatingPlan({ clientId, tables, guests }: {
                 }`}
               >
                 <div className="flex items-start justify-between gap-2">
-                  <h3 className="font-display text-[16px] font-light text-ink">{t.name}</h3>
+                  <h3 className="font-display text-[16px] font-semibold text-ink">{t.name}</h3>
                   <span className={`rounded-xl2 px-2.5 py-0.5 text-[12px] ${
                     free === 0 ? 'bg-ok-wash text-ok' : 'bg-surface-200 text-ink-mute'
                   }`}>

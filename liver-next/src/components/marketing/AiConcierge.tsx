@@ -157,7 +157,7 @@ export function AiConcierge({ copy: c }: { copy: ConciergeCopy }) {
         >
           <header className="flex items-start justify-between gap-3 border-b border-line px-5 py-4">
             <div>
-              <h2 className="font-display text-[16.5px] font-light text-ink">{c.title}</h2>
+              <h2 className="font-display text-[16.5px] font-semibold text-ink">{c.title}</h2>
               <p className="mt-0.5 text-[12.5px] text-ink-mute">{c.sub}</p>
             </div>
             <button

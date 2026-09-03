@@ -141,7 +141,7 @@ export function BudgetSimulator({ copy: c, closing, bookLabel }: {
           {/* "עד" rather than a dash. A range written with a dash reads
               ambiguously in a right-to-left line, where the eye cannot tell
               which end it started from; the word cannot be read backwards. */}
-          <p className="font-display text-display font-light text-ink">
+          <p className="font-display text-display font-semibold text-ink">
             <span className="tabular-nums">{ilsRounded(r.low)}</span>
             <span className="mx-2 text-[0.6em] font-normal text-ink-mute">{c.to}</span>
             <span className="tabular-nums">{ilsRounded(r.high)}</span>

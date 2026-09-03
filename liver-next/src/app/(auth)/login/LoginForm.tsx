@@ -112,7 +112,7 @@ export function LoginForm({ next, prefill, reason, referral, copy, legal }: {
   return (
     <form action={askAction} className="card space-y-5" noValidate>
       <div>
-        <h1 className="font-display text-title font-light text-ink">{copy.title}</h1>
+        <h1 className="font-display text-title font-semibold text-ink">{copy.title}</h1>
         <p className="mt-2 text-[15px] text-ink-soft">{copy.sub}</p>
       </div>
 
@@ -259,7 +259,7 @@ function CodeStep({
   return (
     <form action={action} className="card space-y-5" noValidate>
       <div>
-        <h1 className="font-display text-title font-light text-ink">{copy.codeTitle}</h1>
+        <h1 className="font-display text-title font-semibold text-ink">{copy.codeTitle}</h1>
         <p className="mt-2 text-[15px] text-ink-soft">
           {channel === 'phone' ? copy.codeSentPhone : copy.codeSentEmail}{' '}
           <b className="text-ink" dir="ltr">{sent.display ?? sent.contact}</b>

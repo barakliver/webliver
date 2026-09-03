@@ -45,7 +45,7 @@ export function GuideBookView({ book, c }: { book: Book; c: GuideUi }) {
         <ol className="mt-5 grid list-none gap-x-8 gap-y-4 p-0 sm:grid-cols-2 lg:grid-cols-3">
           {book.start.steps.map((step, i) => (
             <li key={step.title} className="flex items-baseline gap-3.5">
-              <span aria-hidden className="font-display text-[34px] font-light leading-none text-accent-bright">
+              <span aria-hidden className="font-display text-[34px] font-semibold leading-none text-accent-bright">
                 {i + 1}
               </span>
               <span className="min-w-0">
@@ -106,7 +106,7 @@ export function GuideBookView({ book, c }: { book: Book; c: GuideUi }) {
           {book.chapters.map((chapter) => (
             <section key={chapter.id} id={chapter.id}>
               <header className="border-b-2 border-ink pb-3">
-                <h3 className="inline-flex items-center gap-2 font-display text-[21px] font-light text-ink">
+                <h3 className="inline-flex items-center gap-2 font-display text-[21px] font-semibold text-ink">
                   <CircleHelp size={18} aria-hidden strokeWidth={1.5} />
                   {chapter.title}
                 </h3>

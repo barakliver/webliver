@@ -32,7 +32,7 @@ export function WorkflowTemplates({ templates }: { templates: Template[] }) {
     <section className="card">
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <div>
-          <h2 className="font-display text-[22px] font-light text-ink">{c.title}</h2>
+          <h2 className="font-display text-[22px] font-semibold text-ink">{c.title}</h2>
           <p className="mt-1 text-[13.5px] text-ink-mute">{c.sub}</p>
         </div>
         {!adding && (

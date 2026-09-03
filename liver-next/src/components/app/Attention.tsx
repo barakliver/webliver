@@ -21,7 +21,7 @@ export function AttentionList({ items }: { items: AttentionItem[] }) {
           <CircleCheck size={22} strokeWidth={1.5} aria-hidden />
         </span>
         <div>
-          <p className="font-display text-[19px] font-light text-ink">{c.clear}</p>
+          <p className="font-display text-[19px] font-semibold text-ink">{c.clear}</p>
           <p className="text-[14px] text-ink-soft">{c.clearSub}</p>
         </div>
       </div>

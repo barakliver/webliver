@@ -34,6 +34,7 @@ const row = (k: string, v: string) =>
 export type LeadPayload = {
   full_name: string; email: string; phone: string;
   kind: string; event_date: string; guest_count: string; message: string;
+  location?: string;
 };
 
 export function adminLeadEmail(l: LeadPayload) {
@@ -43,6 +44,7 @@ export function adminLeadEmail(l: LeadPayload) {
     <table style="width:100%;font-size:14.5px;border-collapse:collapse">
       ${row('שם', l.full_name)}${row('טלפון', l.phone)}${row('אימייל', l.email)}
       ${row('סוג האירוע', l.kind === 'corporate' ? 'אירוע עסקי' : 'חתונה')}
+      ${l.location ? `<tr><td style="padding:5px 0;color:#6b7686;width:120px">מיקום</td><td style="padding:5px 0;color:#0b1220;font-weight:600">${l.location}</td></tr>` : ''}
       ${row('תאריך', l.event_date)}${row('אורחים', l.guest_count)}
       ${row('הודעה', l.message)}
     </table>`);
@@ -66,6 +68,7 @@ export function adminLeadWhatsApp(l: LeadPayload) {
     l.phone ? `טלפון: ${l.phone}` : '',
     l.email ? `אימייל: ${l.email}` : '',
     `סוג: ${l.kind === 'corporate' ? 'אירוע עסקי' : 'חתונה'}`,
+    l.location ? `מיקום: ${l.location}` : '',
     l.event_date ? `תאריך: ${l.event_date}` : '',
     l.guest_count ? `אורחים: ${l.guest_count}` : '',
     l.message ? `הודעה: ${l.message}` : '',

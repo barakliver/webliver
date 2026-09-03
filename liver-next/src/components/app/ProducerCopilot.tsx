@@ -138,7 +138,7 @@ export function ProducerCopilot({ brandName }: { brandName: string }) {
         >
           <header className="flex items-start justify-between gap-3 border-b border-line px-5 py-4">
             <div className="min-w-0">
-              <h2 className="inline-flex items-center gap-2 font-display text-[16.5px] font-light text-ink">
+              <h2 className="inline-flex items-center gap-2 font-display text-[16.5px] font-semibold text-ink">
                 <Sparkles size={15} strokeWidth={1.5} aria-hidden className="text-accent" />
                 {c.title}
               </h2>

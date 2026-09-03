@@ -121,7 +121,7 @@ export default async function RunsheetPage({
 
       <div className="runsheet-print">
         <header className="border-b-2 border-ink pb-4">
-          <h1 className="font-display text-[27px] font-light text-ink">{client.display_name}</h1>
+          <h1 className="font-display text-[27px] font-semibold text-ink">{client.display_name}</h1>
           <p className="mt-1.5 text-[15px] text-ink-soft">
             {formatDate(dateFmt, client.event_date, c.noDate)}
             {client.venue ? ` · ${client.venue}` : ''}
@@ -149,7 +149,7 @@ export default async function RunsheetPage({
                   {/* Left to right inside a right-to-left page, because a clock
                       reads that way in every language. */}
                   <span className="w-[62px] shrink-0 text-center" dir="ltr">
-                    <span className="block font-display text-[17px] font-light tabular-nums text-ink">
+                    <span className="block font-display text-[17px] font-semibold tabular-nums text-ink">
                       {hhmm(i.at_time)}
                     </span>
                     {span.minutes !== null && (

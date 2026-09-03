@@ -14,6 +14,7 @@ import type { Contract as ContractRow } from '@/components/app/Contracts';
 export type Workspace = {
   id: string; display_name: string; event_date: string | null;
   venue: string; guest_estimate: number | null; budget_visible: boolean;
+  budget_target: number | null;
   track_a_label: string; track_b_label: string;
   /** The guests' page: its address, and whether it is switched on. The
    *  couple gets the link to paste into their invitations; nothing else about
@@ -41,7 +42,7 @@ export type PortalData = {
 };
 
 const WORKSPACE_COLS =
-  'id,display_name,event_date,venue,guest_estimate,budget_visible,track_a_label,track_b_label,guest_token,guest_site_on';
+  'id,display_name,event_date,venue,guest_estimate,budget_visible,budget_target,track_a_label,track_b_label,guest_token,guest_site_on';
 
 type WithClient<T> = T & { client_id: string };
 const by = <T,>(rows: WithClient<T>[] | null | undefined, id: string): T[] =>

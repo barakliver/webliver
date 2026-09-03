@@ -10,7 +10,7 @@ import { MIN_EVENT_DATE, MAX_GUESTS } from '@/content/site';
 
 export type LeadResult =
   | { ok: true }
-  | { ok: false; error: string; field?: 'full_name' | 'phone' | 'email' | 'event_date' | 'guest_count' };
+  | { ok: false; error: string; field?: 'full_name' | 'phone' | 'email' | 'event_date' | 'guest_count' | 'location' };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -27,10 +27,14 @@ export async function submitLead(_prev: LeadResult | null, form: FormData): Prom
     event_date: v('event_date'),
     guest_count: v('guest_count'),
     message: v('message'),
+    location: v('location').slice(0, 120),
   };
 
   if (payload.full_name.length < 2) return { ok: false, error: 'נא למלא שם מלא', field: 'full_name' };
   if (!payload.phone && !payload.email) return { ok: false, error: 'נא להשאיר טלפון או אימייל', field: 'phone' };
+  /* Where is required on the public form. It is the question the first call
+     is spent on, and a tap on a chip answers it. */
+  if (!payload.location) return { ok: false, error: 'נא לבחור אזור או לכתוב איפה האירוע', field: 'location' };
   if (payload.email && !EMAIL_RE.test(payload.email)) return { ok: false, error: 'כתובת האימייל לא תקינה', field: 'email' };
 
   if (payload.event_date) {
@@ -63,6 +67,7 @@ export async function submitLead(_prev: LeadResult | null, form: FormData): Prom
       p_event_date: payload.event_date || null,
       p_guest_count: guests,
       p_message: payload.message,
+      p_location: payload.location,
     });
     if (error) throw new Error(`${error.code ?? ''} ${error.message}`.trim());
   } catch (e) {

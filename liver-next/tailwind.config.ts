@@ -124,9 +124,13 @@ const config: Config = {
          Heebo for body, and he pointed at that document by name. Heebo stays
          in the stack behind the serif so a glyph Frank lacks falls to the
          face beside it rather than to the system. */
+      /* Three families now. The headings moved from the serif to Assistant,
+         a Hebrew editorial sans, at his request; the serif stays as `serif`
+         for the promise line alone, and Heebo stays on the body. */
       fontFamily: {
         sans:    ['var(--font-heebo)', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif'],
-        display: ['var(--font-frank)', 'var(--font-heebo)', 'Georgia', 'serif'],
+        display: ['var(--font-assistant)', 'var(--font-heebo)', '-apple-system', 'system-ui', 'sans-serif'],
+        serif:   ['var(--font-frank)', 'Georgia', 'serif'],
       },
       fontSize: {
         /* Tracked open again, the values the serif era used, recovered from
@@ -134,12 +138,16 @@ const config: Config = {
            up without air; the negative tracking below these in the history was
            right for Heebo and wrong for this face, and each swap of the display
            family has to carry its tracking with it. */
-        'display-xl': ['clamp(42px,7.4vw,104px)', { lineHeight: '1.04', letterSpacing: '.01em' }],
-        'display':    ['clamp(30px,5vw,46px)',    { lineHeight: '1.12', letterSpacing: '.015em' }],
-        'title':      ['clamp(22px,2.4vw,32px)',  { lineHeight: '1.2',  letterSpacing: '.02em' }],
+        /* Tracked tight again, because the display face is a bold sans now
+           and a bold sans opens up without it. The serif era's positive
+           values are two commits back in this file's history, as before:
+           each swap of the display family carries its tracking with it. */
+        'display-xl': ['clamp(42px,7.4vw,104px)', { lineHeight: '1.02', letterSpacing: '-.03em' }],
+        'display':    ['clamp(30px,5vw,46px)',    { lineHeight: '1.08', letterSpacing: '-.025em' }],
+        'title':      ['clamp(22px,2.4vw,32px)',  { lineHeight: '1.16', letterSpacing: '-.02em' }],
         /* The numbers the screens are built around. */
-        'metric':     ['62px', { lineHeight: '1',    letterSpacing: '.01em' }],
-        'metric-sm':  ['42px', { lineHeight: '1.05', letterSpacing: '.01em' }],
+        'metric':     ['62px', { lineHeight: '1',    letterSpacing: '-.02em' }],
+        'metric-sm':  ['42px', { lineHeight: '1.05', letterSpacing: '-.015em' }],
       },
       letterSpacing: {
         /* A kicker is the one thing tracked open rather than tight. */

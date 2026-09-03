@@ -80,7 +80,7 @@ export function SopBook() {
           {SOP.map((chapter) => (
             <section key={chapter.id} id={chapter.id} className="sop-chapter">
               <header className="border-b-2 border-ink pb-3">
-                <h2 className="inline-flex items-center gap-2 font-display text-[24px] font-light text-ink">
+                <h2 className="inline-flex items-center gap-2 font-display text-[24px] font-semibold text-ink">
                   <BookOpen size={20} aria-hidden strokeWidth={1.5} className="no-print" />
                   {chapter.title}
                 </h2>
@@ -90,7 +90,7 @@ export function SopBook() {
               <div className="mt-7 space-y-8">
                 {chapter.sections.map((section) => (
                   <article key={section.id} className="sop-section">
-                    <h3 className="font-display text-[18px] font-light text-ink">{section.title}</h3>
+                    <h3 className="font-display text-[18px] font-semibold text-ink">{section.title}</h3>
                     <p className="mt-1 max-w-2xl text-[13.5px] leading-relaxed text-ink-mute">{section.sub}</p>
 
                     <ul className="mt-4 space-y-2.5">

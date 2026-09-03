@@ -68,7 +68,7 @@ export function EventDetails({ event }: { event: EventCore }) {
     return (
       <section className="card">
         <form action={action} noValidate>
-          <h2 className="font-display text-[18px] font-light text-ink">{c.edit}</h2>
+          <h2 className="font-display text-[18px] font-semibold text-ink">{c.edit}</h2>
           <input type="hidden" name="client_id" value={event.id} />
 
           {state && !state.ok && state.error && (
@@ -123,7 +123,7 @@ export function EventDetails({ event }: { event: EventCore }) {
   return (
     <section className="card">
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <h2 className="font-display text-[18px] font-light text-ink">{c.details}</h2>
+        <h2 className="font-display text-[18px] font-semibold text-ink">{c.details}</h2>
         <button
           type="button"
           onClick={() => setEditing(true)}
@@ -151,11 +151,11 @@ export function EventDetails({ event }: { event: EventCore }) {
         <div className="mt-5 flex items-baseline gap-2.5">
           {left > 1 ? (
             <>
-              <span className="font-display text-[40px] font-light leading-none text-ink tabular-nums">{left}</span>
+              <span className="font-display text-[40px] font-semibold leading-none text-ink tabular-nums">{left}</span>
               <span className="text-[15px] text-ink-mute">{c.daysLeft}</span>
             </>
           ) : (
-            <span className="font-display text-[24px] font-light leading-none text-ink">
+            <span className="font-display text-[24px] font-semibold leading-none text-ink">
               {left === 0 ? c.today : left === 1 ? c.tomorrow : `${c.passed} ${c.daysAgo(-left)}`}
             </span>
           )}

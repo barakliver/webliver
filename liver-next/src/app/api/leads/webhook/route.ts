@@ -138,6 +138,7 @@ export async function POST(req: Request) {
     p_message: lead.message,
     p_source: lead.source,
     p_external_id: lead.external_id,
+    p_location: lead.location,
   });
 
   if (error) {

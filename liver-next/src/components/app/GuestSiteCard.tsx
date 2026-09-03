@@ -50,7 +50,7 @@ export function GuestSiteCard({ clientId, token, on, note }: {
     <section className="card">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="inline-flex items-center gap-2 font-display text-[18px] font-light text-ink">
+          <h2 className="inline-flex items-center gap-2 font-display text-[18px] font-semibold text-ink">
             <Globe size={18} aria-hidden strokeWidth={1.5} />
             {c.title}
           </h2>

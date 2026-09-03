@@ -130,7 +130,7 @@ export function StoreProducts({ producerId, products }: {
     <section className="card">
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <div>
-          <h2 className="font-display text-[22px] font-light text-ink">{c.tabProducts}</h2>
+          <h2 className="font-display text-[22px] font-semibold text-ink">{c.tabProducts}</h2>
           <p className="mt-1 text-[13.5px] text-ink-mute">{c.dragHint}</p>
         </div>
         {!adding && (
