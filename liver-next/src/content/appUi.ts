@@ -1,8 +1,10 @@
 import type { Locale } from '../lib/locale.ts';
 import {
   appCopy, guestsCopy, seatingCopy, dayCopy, threadCopy, partyCopy, contractCopy, eventFileCopy,
+  noticeCopy, ticketCopy,
 } from './site.ts';
 import {
+  noticeCopyEn, ticketCopyEn,
   portalEn, filesEn, sheetsEn, tasksEn, moneyEn, boardEn,
   guestsEn, seatingEn, dayEn, threadEn, partyEn, contractEn, eventFileEn,
 } from './app.en.ts';
@@ -48,6 +50,11 @@ export type ThreadCopy = Wide<typeof threadCopy>;
 export type PartyCopy = Wide<typeof partyCopy>;
 export type ContractCopy = Wide<typeof contractCopy>;
 export type EventFileCopy = Wide<typeof eventFileCopy>;
+/* The two pieces of chrome a couple meets on every screen: the bell and the
+   bug button. They sit in the shell rather than in a panel, so they travel as
+   props from the layout rather than through the provider. */
+export type NoticeCopy = Wide<typeof noticeCopy>;
+export type TicketCopy = Wide<typeof ticketCopy>;
 
 /** Everything the couple's screens read, resolved together. One object rather
  *  than thirteen lookups, because it travels as one value through one context
@@ -83,3 +90,6 @@ const APP_UI_EN: AppUi = {
 };
 
 export const appUiFor = (l: Locale): AppUi => (l === 'en' ? APP_UI_EN : APP_UI_HE);
+
+export const noticeFor = (l: Locale): NoticeCopy => (l === 'en' ? noticeCopyEn : noticeCopy);
+export const ticketFor = (l: Locale): TicketCopy => (l === 'en' ? ticketCopyEn : ticketCopy);

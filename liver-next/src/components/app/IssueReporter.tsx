@@ -6,12 +6,13 @@ import { Bug, Check, ImagePlus, X } from 'lucide-react';
 import { Sheet } from '@/components/app/Sheet';
 import { supabaseBrowser } from '@/lib/supabase/client';
 import { fileTicket } from '@/app/actions/tickets';
-import { ticketCopy as c } from '@/content/site';
+import { ticketCopy } from '@/content/site';
+import type { TicketCopy } from '@/content/appUi';
 import { cn } from '@/lib/utils';
 
 const MAX_SHOT = 5 * 1024 * 1024;
-type Category = keyof typeof c.categories;
-const CATEGORIES = Object.keys(c.categories) as Category[];
+type Category = keyof typeof ticketCopy.categories;
+const CATEGORIES = Object.keys(ticketCopy.categories) as Category[];
 
 /**
  * Saying the platform is wrong, from wherever it went wrong.
@@ -27,7 +28,8 @@ const CATEGORIES = Object.keys(c.categories) as Category[];
  * shared folder, for the same reason: a picture of a screen is bigger than a
  * server action wants to carry.
  */
-export function IssueReporter({ userId, compact }: { userId: string; compact?: boolean }) {
+export function IssueReporter({ userId, compact, copy }: { userId: string; compact?: boolean; copy?: TicketCopy }) {
+  const c = copy ?? ticketCopy;
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [category, setCategory] = useState<Category>('visual');

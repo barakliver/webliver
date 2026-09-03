@@ -10,6 +10,8 @@ import { Avatar } from './Avatar';
 import { IssueReporter } from './IssueReporter';
 import { ProducerCopilot } from './ProducerCopilot';
 import { cn } from '@/lib/utils';
+import { noticeFor, ticketFor } from '@/content/appUi';
+import type { Locale } from '@/lib/locale';
 
 /** The couple's two labels in the couple's language. The producer's console
  *  stays Hebrew, so only these two travel as a prop. */
@@ -67,12 +69,17 @@ function Brand({ brand }: { brand: Brand }) {
 }
 
 export function AppShell({
-  account, notices, brand, clientNav, children,
+  account, notices, brand, clientNav, locale = 'he', children,
 }: {
   account: Account; notices: Notice[]; brand: Brand;
-  clientNav?: ClientNavLabels; children: React.ReactNode;
+  clientNav?: ClientNavLabels; locale?: Locale; children: React.ReactNode;
 }) {
   const items = navFor(account, clientNav);
+  /* The chrome in the couple's language. A couple reading English got a
+     Hebrew bell and a Hebrew bug sheet, on a screen that was otherwise
+     theirs; the producer's console stays Hebrew and passes nothing. */
+  const notice = noticeFor(locale);
+  const ticket = ticketFor(locale);
   /* A producer still waiting for approval has no events to ask about and
      the route would refuse them anyway; no button is better than a button
      that answers with an apology. */
@@ -154,8 +161,8 @@ export function AppShell({
             <div className="shell flex h-14 items-center justify-between gap-4 sm:h-16">
               <Brand brand={brand} />
               <div className="flex items-center gap-1">
-                <IssueReporter userId={account.id} compact />
-                <NoticeBell notices={notices} />
+                <IssueReporter userId={account.id} compact copy={ticket} />
+                <NoticeBell notices={notices} copy={notice} />
                 <Link
                   href="/app/me"
                   className="ms-1 transition-opacity hover:opacity-80"
@@ -185,8 +192,8 @@ export function AppShell({
               page shows through as it scrolls under. */}
           <header className="glass sticky top-0 z-40 hidden border-b border-line lg:block">
             <div className="mx-auto flex h-14 w-full max-w-content items-center justify-end gap-1 px-8">
-              <IssueReporter userId={account.id} />
-              <NoticeBell notices={notices} />
+              <IssueReporter userId={account.id} copy={ticket} />
+              <NoticeBell notices={notices} copy={notice} />
             </div>
           </header>
 

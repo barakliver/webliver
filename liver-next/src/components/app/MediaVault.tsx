@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
-import { ChevronLeft, ChevronRight, Download, Maximize2, Settings2, Tag, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Download, ImageOff, Maximize2, Settings2, Tag, X } from 'lucide-react';
 import { deleteFile, tagFile } from '@/app/actions/files';
 import { MEDIA_TAGS, type MediaTag } from '@/lib/fileTypes';
 import { useCopy } from '@/components/app/CopyProvider';
@@ -11,6 +11,10 @@ import { Ltr } from '@/components/Ltr';
 import type { EventFile } from './EventFiles';
 
 type Filter = 'all' | MediaTag | 'untagged';
+
+/* A phone's own format, which no browser draws. The file is kept and can be
+   downloaded; the tile says what it is instead of showing a broken image. */
+const undrawable = (mime: string) => /image\/hei[cf]/.test(mime);
 
 /**
  * The pictures of one event, sorted by the four words people use for them.
@@ -125,9 +129,20 @@ export function MediaVault({ clientId, photos, viewer }: {
                 className="block w-full text-start"
                 aria-label={`${c.open}: ${f.note || f.name}`}
               >
-                {/* a plain img: these are signed one-off URLs, not a fixed asset path */}
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={f.url} alt={f.note || f.name} loading="lazy" className="aspect-[4/3] w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]" />
+                {undrawable(f.mime) ? (
+                  <span className="grid aspect-[4/3] w-full place-items-center bg-surface-200 text-ink-mute">
+                    <span className="flex flex-col items-center gap-1.5 px-3 text-center">
+                      <ImageOff size={22} strokeWidth={1.5} aria-hidden />
+                      <span className="text-[11.5px] leading-snug">HEIC</span>
+                    </span>
+                  </span>
+                ) : (
+                  <>
+                    {/* a plain img: these are signed one-off URLs, not a fixed asset path */}
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={f.url} alt={f.note || f.name} loading="lazy" className="aspect-[4/3] w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]" />
+                  </>
+                )}
                 <span className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 bg-gradient-to-t from-ink/60 to-transparent p-2.5 text-surface opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
                   <span className="truncate text-[12px]">{f.note || f.name}</span>
                   <Maximize2 size={14} strokeWidth={1.5} aria-hidden className="shrink-0" />
@@ -233,12 +248,28 @@ function Lightbox({ items, index, onIndex, onClose, onRetag }: {
       </div>
 
       <div className="relative flex min-h-0 flex-1 items-center justify-center px-4 sm:px-16">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={f.url} alt={f.note || f.name}
-          className="max-h-full max-w-full rounded-card-sm object-contain shadow-pop"
-          onClick={(e) => e.stopPropagation()}
-        />
+        {undrawable(f.mime) ? (
+          <div className="flex flex-col items-center gap-3 rounded-card-sm bg-surface/10 px-8 py-10 text-surface" onClick={(e) => e.stopPropagation()}>
+            <ImageOff size={32} strokeWidth={1.5} aria-hidden />
+            <p className="text-[14px]"><Ltr>{f.name}</Ltr></p>
+            <a
+              href={`${f.url}${f.url.includes('?') ? '&' : '?'}download=${encodeURIComponent(f.name)}`}
+              className="inline-flex min-h-[40px] items-center gap-2 rounded-xl2 border border-surface/30 px-4 text-[13.5px]"
+            >
+              <Download size={15} strokeWidth={1.5} aria-hidden />
+              {ui.files.download}
+            </a>
+          </div>
+        ) : (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={f.url} alt={f.note || f.name}
+              className="max-h-full max-w-full rounded-card-sm object-contain shadow-pop"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </>
+        )}
         {many && (
           <>
             <button

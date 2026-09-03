@@ -1191,7 +1191,7 @@ export const appCopy = {
       bar: 'בר',
       money: 'כסף',
       docs: 'מסמכים',
-      files: 'קבצים',
+      files: 'קבצים ותמונות',
       meetings: 'פגישות',
       messages: 'הודעות',
       board: 'השראה',

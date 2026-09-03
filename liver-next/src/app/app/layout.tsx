@@ -9,6 +9,7 @@ import { currentLocale } from '@/lib/serverLocale';
 import { appUiFor } from '@/content/appUi';
 import { guideUiFor } from '@/content/guide';
 import type { Notice } from '@/components/app/NoticeBell';
+import type { Locale } from '@/lib/locale';
 
 export const dynamic = 'force-dynamic';
 
@@ -69,13 +70,14 @@ export default async function AppLayout({ children }: { children: React.ReactNod
      screens they name rather than written again: the portal's own title and
      the book's own title, so the menu and the page always agree. */
   let clientNav: ClientNavLabels | undefined;
+  let locale: Locale = 'he';
   if (account.role === 'client') {
-    const locale = await currentLocale();
+    locale = await currentLocale();
     clientNav = { portal: appUiFor(locale).portal.title, guide: guideUiFor(locale).pageTitle };
   }
 
   return (
-    <AppShell account={account} notices={(data ?? []) as Notice[]} brand={brand} clientNav={clientNav}>
+    <AppShell account={account} notices={(data ?? []) as Notice[]} brand={brand} clientNav={clientNav} locale={locale}>
       {children}
       <Live sources={[{ table: 'notifications' }]} />
     </AppShell>

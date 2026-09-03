@@ -9,6 +9,7 @@ import {
 import type { LucideIcon } from 'lucide-react';
 import { markRead, markAllRead } from '@/app/actions/notifications';
 import { noticeCopy } from '@/content/site';
+import type { NoticeCopy } from '@/content/appUi';
 import { cn } from '@/lib/utils';
 
 export type Notice = {
@@ -25,9 +26,7 @@ const ICONS: Record<string, LucideIcon> = {
   anniversary: Heart, meeting: CalendarClock, ticket: LifeBuoy,
 };
 
-const c = noticeCopy;
-
-const rel = (iso: string) => {
+const rel = (c: NoticeCopy, iso: string) => {
   const mins = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
   if (mins < 1) return c.now;
   if (mins < 60) return c.minutes.replace('{n}', String(mins));
@@ -47,7 +46,10 @@ const rel = (iso: string) => {
  * On a phone the list rises from the bottom as a sheet, where a thumb is.
  * On a desk it drops from the bell. Same list, same markup, two positions.
  */
-export function NoticeBell({ notices }: { notices: Notice[] }) {
+export function NoticeBell({ notices, copy }: { notices: Notice[]; copy?: NoticeCopy }) {
+  /* The couple's language arrives from the layout; the producer's console is
+     Hebrew and passes nothing. */
+  const c = copy ?? noticeCopy;
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const [, start] = useTransition();
@@ -165,7 +167,7 @@ export function NoticeBell({ notices }: { notices: Notice[] }) {
                           <p className="mt-1 text-[12px] text-ink-mute">
                             <span>{c.kinds[n.kind] ?? n.kind}</span>
                             <span> · </span>
-                            <span>{rel(n.created_at)}</span>
+                            <span>{rel(c, n.created_at)}</span>
                           </p>
                         </button>
                         {fresh && (
