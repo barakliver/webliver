@@ -9,6 +9,7 @@ import { SidebarNav, MobileTabBar, type NavItem } from './AppNav';
 import { Avatar } from './Avatar';
 import { IssueReporter } from './IssueReporter';
 import { ProducerCopilot } from './ProducerCopilot';
+import { QuickJump, type JumpEvent } from './QuickJump';
 import { cn } from '@/lib/utils';
 import { noticeFor, ticketFor } from '@/content/appUi';
 import type { Locale } from '@/lib/locale';
@@ -69,10 +70,13 @@ function Brand({ brand }: { brand: Brand }) {
 }
 
 export function AppShell({
-  account, notices, brand, clientNav, locale = 'he', children,
+  account, notices, brand, clientNav, locale = 'he', events = [], children,
 }: {
   account: Account; notices: Notice[]; brand: Brand;
-  clientNav?: ClientNavLabels; locale?: Locale; children: React.ReactNode;
+  clientNav?: ClientNavLabels; locale?: Locale;
+  /** The producer's live events, for the search box. Empty for a couple. */
+  events?: JumpEvent[];
+  children: React.ReactNode;
 }) {
   const items = navFor(account, clientNav);
   /* The chrome in the couple's language. A couple reading English got a
@@ -160,27 +164,19 @@ export function AppShell({
           >
             <div className="shell flex h-14 items-center justify-between gap-4 sm:h-16">
               <Brand brand={brand} />
-              <div className="flex items-center gap-1">
-                <IssueReporter userId={account.id} compact copy={ticket} />
+              {/* Three controls and the face. The bug button and the way out
+                  moved into the "more" sheet: five icons across a phone
+                  header is a row nobody can tell apart. */}
+              <div className="flex items-center gap-0.5">
+                {isProducer && <QuickJump screens={items} events={events} compact />}
                 <NoticeBell notices={notices} copy={notice} />
                 <Link
                   href="/app/me"
-                  className="ms-1 transition-opacity hover:opacity-80"
+                  className="ms-1.5 transition-opacity hover:opacity-80"
                   aria-label={appCopy.profile.title}
                 >
                   <Avatar name={account.fullName || account.email} src={account.avatarUrl} size={32} />
                 </Link>
-                <form action={signOut}>
-                  <button
-                    type="submit"
-                    aria-label={appCopy.signOut}
-                    title={appCopy.signOut}
-                    className="inline-flex min-h-[40px] min-w-[40px] items-center justify-center
-                               text-ink-soft transition-colors hover:text-ink"
-                  >
-                    <LogOut size={16} strokeWidth={1.5} aria-hidden />
-                  </button>
-                </form>
               </div>
             </div>
           </header>
@@ -192,6 +188,7 @@ export function AppShell({
               page shows through as it scrolls under. */}
           <header className="glass sticky top-0 z-40 hidden border-b border-line lg:block">
             <div className="mx-auto flex h-14 w-full max-w-content items-center justify-end gap-1 px-8">
+              {isProducer && <QuickJump screens={items} events={events} />}
               <IssueReporter userId={account.id} copy={ticket} />
               <NoticeBell notices={notices} copy={notice} />
             </div>
@@ -208,7 +205,23 @@ export function AppShell({
         </div>
       </div>
 
-      <MobileTabBar items={items} />
+      <MobileTabBar
+        items={items}
+        extra={(
+          <>
+            <IssueReporter userId={account.id} row copy={ticket} />
+            <form action={signOut}>
+              <button
+                type="submit"
+                className="flex min-h-[52px] w-full items-center gap-3 px-1 text-start text-[15px] text-ink-soft transition-colors duration-300 hover:text-ink"
+              >
+                <LogOut size={20} strokeWidth={1.5} aria-hidden />
+                {appCopy.signOut}
+              </button>
+            </form>
+          </>
+        )}
+      />
 
       {/* The producer's own assistant. Not for a couple: their concierge is
           the producer, and a second voice in their area would be the

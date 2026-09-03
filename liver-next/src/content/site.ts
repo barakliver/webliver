@@ -2045,6 +2045,18 @@ export const ticketCopy = {
 /* The producer's own assistant, inside the console. Different animal from the
    concierge on the public site: that one talks to strangers about a wedding,
    this one talks to the producer about their week. */
+/* The search box every desk app has. Screens and events, two keystrokes. */
+export const jumpCopy = {
+  open: 'חיפוש מהיר',
+  title: 'לאן?',
+  placeholder: 'שם של אירוע או מסך',
+  screens: 'מסכים',
+  events: 'אירועים',
+  none: 'לא נמצא. אפשר לנסות חלק מהשם.',
+  close: 'סגירה',
+  hint: 'חצים לבחירה, Enter לפתיחה, Esc לסגירה.',
+} as const;
+
 export const copilotCopy = {
   open: 'עוזר מפיק',
   close: 'סגירה',

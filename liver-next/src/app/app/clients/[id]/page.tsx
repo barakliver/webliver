@@ -40,7 +40,7 @@ import { Thread } from '@/components/app/Thread';
 export const dynamic = 'force-dynamic';
 
 const link =
-  'inline-flex min-h-[40px] items-center gap-2 rounded-xl2 border border-line-strong bg-card px-4 text-[14px] font-medium text-ink transition hover:border-accent/40 hover:text-accent';
+  'inline-flex min-h-[40px] shrink-0 items-center gap-2 whitespace-nowrap rounded-xl2 border border-line-strong bg-card px-4 text-[14px] font-medium text-ink transition hover:border-accent/40 hover:text-accent';
 
 /**
  * One event, as its producer works on it.
@@ -80,7 +80,10 @@ export default async function ClientPage({
     <>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <Link href="/app/clients" className="btn-quiet inline-block px-0 text-[14px]">← {c.back}</Link>
-        <div className="flex flex-wrap items-center gap-2">
+        {/* One row that scrolls on a phone rather than five buttons on three
+            lines above the title. The last one is visibly cut off, which is
+            what tells a thumb there is more. */}
+        <div className="-mx-4 flex w-[calc(100%+2rem)] items-center gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:w-auto sm:flex-wrap sm:px-0 sm:pb-0">
           <a href={`/app/clients/${client.id}/event.ics`} className={link}>
             <CalendarPlus size={16} aria-hidden strokeWidth={1.5} />
             {appCopy.calendar.addEvent}

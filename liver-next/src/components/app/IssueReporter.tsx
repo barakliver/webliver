@@ -28,7 +28,12 @@ const CATEGORIES = Object.keys(ticketCopy.categories) as Category[];
  * shared folder, for the same reason: a picture of a screen is bigger than a
  * server action wants to carry.
  */
-export function IssueReporter({ userId, compact, copy }: { userId: string; compact?: boolean; copy?: TicketCopy }) {
+export function IssueReporter({ userId, compact, row, copy }: {
+  userId: string; compact?: boolean;
+  /** A full-width row with the label, for the phone's "more" sheet. */
+  row?: boolean;
+  copy?: TicketCopy;
+}) {
   const c = copy ?? ticketCopy;
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -83,18 +88,29 @@ export function IssueReporter({ userId, compact, copy }: { userId: string; compa
 
   return (
     <>
-      <button
-        type="button"
-        onClick={() => { reset(); setOpen(true); }}
-        aria-label={c.open}
-        title={c.open}
-        className={cn(
-          'grid place-items-center rounded-xl2 text-ink-mute transition-colors hover:bg-surface-200 hover:text-ink',
-          compact ? 'min-h-[40px] min-w-[40px]' : 'size-9',
-        )}
-      >
-        <Bug size={compact ? 17 : 16} strokeWidth={1.5} aria-hidden />
-      </button>
+      {row ? (
+        <button
+          type="button"
+          onClick={() => { reset(); setOpen(true); }}
+          className="flex min-h-[52px] w-full items-center gap-3 border-b border-line px-1 text-start text-[15px] text-ink-soft transition-colors duration-300 hover:text-ink"
+        >
+          <Bug size={20} strokeWidth={1.5} aria-hidden />
+          {c.open}
+        </button>
+      ) : (
+        <button
+          type="button"
+          onClick={() => { reset(); setOpen(true); }}
+          aria-label={c.open}
+          title={c.open}
+          className={cn(
+            'grid place-items-center rounded-xl2 text-ink-mute transition-colors hover:bg-surface-200 hover:text-ink',
+            compact ? 'min-h-[40px] min-w-[40px]' : 'size-9',
+          )}
+        >
+          <Bug size={compact ? 17 : 16} strokeWidth={1.5} aria-hidden />
+        </button>
+      )}
 
       <Sheet open={open} onClose={() => setOpen(false)} title={c.title} sub={c.sub}>
         {state === 'sent' ? (

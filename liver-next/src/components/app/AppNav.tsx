@@ -101,7 +101,11 @@ export function SidebarNav({ items }: { items: NavItem[] }) {
  *  further away and legible when they get there. */
 const PRIMARY = 4;
 
-export function MobileTabBar({ items }: { items: NavItem[] }) {
+export function MobileTabBar({ items, extra }: {
+  items: NavItem[];
+  /** Rows under the overflow list: the things that were crowding the header. */
+  extra?: React.ReactNode;
+}) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
@@ -118,14 +122,19 @@ export function MobileTabBar({ items }: { items: NavItem[] }) {
 
   if (items.length < 2) return null;
 
+  /* The sheet exists whenever there is something to put in it: the screens
+     past the fourth, or the rows the header no longer carries. */
   const overflow = items.length > PRIMARY ? items.slice(PRIMARY) : [];
   const tabs = overflow.length > 0 ? items.slice(0, PRIMARY) : items;
+  const hasSheet = overflow.length > 0 || !!extra;
   const inOverflow = overflow.some((i) => isCurrent(pathname, i.href));
 
   return (
     <>
       {open && (
-        <div className="fixed inset-0 z-40 lg:hidden">
+        {/* Above the floating buttons, which sit at exactly the height of the
+            sheet's last row and were covering the way out. */}
+        <div className="fixed inset-0 z-[60] lg:hidden">
           <button
             type="button"
             aria-label={appCopy.nav.close}
@@ -178,6 +187,7 @@ export function MobileTabBar({ items }: { items: NavItem[] }) {
                 );
               })}
             </ul>
+            {extra && <div className="mt-1">{extra}</div>}
           </div>
         </div>
       )}
@@ -223,7 +233,7 @@ export function MobileTabBar({ items }: { items: NavItem[] }) {
             );
           })}
 
-          {overflow.length > 0 && (
+          {hasSheet && (
             <li className="flex-1">
               <button
                 type="button"

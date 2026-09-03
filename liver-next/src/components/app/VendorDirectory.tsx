@@ -286,8 +286,22 @@ export function VendorDirectory({ vendors }: { vendors: Vendor[] }) {
       )}
 
       {shown.length === 0 ? (
-        <div className="card text-center text-[15px] text-ink-mute">
-          {vendors.length === 0 ? c.dirNone : c.noResults}
+        <div className="card text-center">
+          <p className="text-[15px] text-ink-mute">{vendors.length === 0 ? c.dirNone : c.noResults}</p>
+          {/* An empty book offers the two ways to fill it, so the first visit
+              is not a sentence and a search box. */}
+          {vendors.length === 0 && !adding && !importing && (
+            <div className="mt-4 flex flex-wrap justify-center gap-2">
+              <button type="button" onClick={() => setAdding(true)} className="btn-primary">
+                <Plus size={16} aria-hidden strokeWidth={1.5} />
+                {c.dirAdd}
+              </button>
+              <button type="button" onClick={() => setImporting(true)} className="btn-ghost">
+                <FileSpreadsheet size={16} aria-hidden strokeWidth={1.5} />
+                {c.import.open}
+              </button>
+            </div>
+          )}
         </div>
       ) : (
         <>

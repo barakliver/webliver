@@ -9,6 +9,7 @@ import { currentLocale } from '@/lib/serverLocale';
 import { appUiFor } from '@/content/appUi';
 import { guideUiFor } from '@/content/guide';
 import type { Notice } from '@/components/app/NoticeBell';
+import type { JumpEvent } from '@/components/app/QuickJump';
 import type { Locale } from '@/lib/locale';
 
 export const dynamic = 'force-dynamic';
@@ -66,6 +67,20 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   const brand = await brandFor(account);
 
+  /* The producer's live events, for the search box in the top bar. Three
+     columns, no archive, scoped by row level security to their own. A couple
+     gets none: their one event is the portal. */
+  let events: JumpEvent[] = [];
+  if (account.role !== 'client') {
+    const { data: rows } = await sb
+      .from('clients')
+      .select('id,display_name,event_date')
+      .is('archived_at', null)
+      .order('event_date', { ascending: true, nullsFirst: false })
+      .limit(300);
+    events = (rows ?? []).map((r) => ({ id: r.id, name: r.display_name, date: r.event_date }));
+  }
+
   /* The couple's two menu labels, in the couple's language. Reused from the
      screens they name rather than written again: the portal's own title and
      the book's own title, so the menu and the page always agree. */
@@ -77,7 +92,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <AppShell account={account} notices={(data ?? []) as Notice[]} brand={brand} clientNav={clientNav} locale={locale}>
+    <AppShell account={account} notices={(data ?? []) as Notice[]} brand={brand} clientNav={clientNav} locale={locale} events={events}>
       {children}
       <Live sources={[{ table: 'notifications' }]} />
     </AppShell>

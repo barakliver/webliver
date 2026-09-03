@@ -64,6 +64,7 @@ import { NoticeBell } from '@/components/app/NoticeBell';
 import { IssueReporter } from '@/components/app/IssueReporter';
 import { VendorImport } from '@/components/app/VendorImport';
 import { ProducerCopilot } from '@/components/app/ProducerCopilot';
+import { QuickJump } from '@/components/app/QuickJump';
 import { accentByKey } from '@/content/brand';
 import type { Account } from '@/lib/auth';
 import ConsoleLoading from '@/app/app/loading';
@@ -383,6 +384,24 @@ export default async function DesignPage() {
 
         <Panel name="VendorImport" note="the sheet importer before a file is chosen: template, drop zone">
           <VendorImport existingNames={['סטודיו לביא']} />
+        </Panel>
+
+        <Panel name="QuickJump" note="the search box from the top bar; ⌘K opens it anywhere on this page">
+          <div className="flex justify-end rounded-xl2 border border-line bg-card p-3">
+            <QuickJump
+              screens={[
+                { href: '/app', label: 'סקירה', icon: 'overview' },
+                { href: '/app/leads', label: 'לידים', icon: 'leads' },
+                { href: '/app/clients', label: 'אירועים', icon: 'clients' },
+                { href: '/app/vendors', label: 'ספקים', icon: 'vendors' },
+              ]}
+              events={[
+                { id: FIXTURE_CLIENT, name: 'נועה ואיתי', date: '2026-10-18' },
+                { id: '00000000-0000-4000-8000-000000000002', name: 'רוני ועומר', date: '2026-11-05' },
+                { id: '00000000-0000-4000-8000-000000000003', name: 'כנס שנתי, טבע', date: null },
+              ]}
+            />
+          </div>
         </Panel>
 
         <Panel name="NoticeBell" note="the bell with three unread; open it">
