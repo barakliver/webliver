@@ -7,6 +7,10 @@ import { appCopy } from '@/content/site';
 import { PageHead, Empty } from '@/components/app/PageHead';
 import { Live } from '@/components/app/Live';
 import { CalendarFeed } from '@/components/app/CalendarFeed';
+import { HebrewCalendar } from '@/components/app/HebrewCalendar';
+import { LabelToolbar } from '@/components/app/LabelToolbar';
+import { loadLabels } from '@/lib/labels';
+import { IssueReporter } from '@/components/app/IssueReporter';
 import { Money, ils } from '@/components/Ltr';
 
 export const metadata = { title: appCopy.calendar.title };
@@ -24,9 +28,9 @@ const TONE: Record<CalItem['kind'], string> = {
 };
 
 export default async function CalendarPage() {
-  await requireLiveProducer();
+  const account = await requireLiveProducer();
   const sb = await supabaseServer();
-  const all = await getCalendar(sb);
+  const [all, tags] = await Promise.all([getCalendar(sb), loadLabels(sb, 'event_tag')]);
 
   /* Forward-looking by default. What happened last month is on the event's own
      screen; a diary is for what is coming. */
@@ -45,6 +49,13 @@ export default async function CalendarPage() {
     <>
       <PageHead title={c.title} sub={c.sub} />
 
+      {/* Which evenings are available at all, before the diary of what is
+          already booked. It is the question a date gets asked first. */}
+      <div className="mb-7 space-y-6">
+        <HebrewCalendar from={today} />
+        <LabelToolbar kind="event_tag" labels={tags} />
+      </div>
+
       <div className="mb-7 space-y-3">
         {/* The file first, because it is the thing that works with no setup at
             all, and the subscription under it for the people who want the
@@ -54,6 +65,7 @@ export default async function CalendarPage() {
           {c.subscribe}
         </a>
         <CalendarFeed />
+        <IssueReporter userId={account.id} row context={c.title} />
       </div>
 
       {items.length === 0 ? (

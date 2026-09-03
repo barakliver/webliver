@@ -33,7 +33,7 @@ export type Party = {
   season: Season;
 };
 
-export type BarStyle = 'barak' | 'classic' | 'spirits' | 'wine' | 'beer' | 'light';
+export type BarStyle = 'house' | 'classic' | 'spirits' | 'wine' | 'beer' | 'light';
 
 /**
  * The producer's own rule, from his spreadsheet, kept exactly as he uses it.
@@ -72,7 +72,7 @@ const LATER_HOUR_DRINKS = 1;
 
 /** What the crowd reaches for, as a share of all alcoholic drinks. These are
  *  starting points to be argued with, not measurements. */
-const MIX: Record<Exclude<BarStyle, 'barak'>, { spirits: number; wine: number; beer: number }> = {
+const MIX: Record<Exclude<BarStyle, 'house'>, { spirits: number; wine: number; beer: number }> = {
   classic: { spirits: 0.40, wine: 0.30, beer: 0.30 },
   spirits: { spirits: 0.65, wine: 0.15, beer: 0.20 },
   wine:    { spirits: 0.15, wine: 0.60, beer: 0.25 },
@@ -141,7 +141,7 @@ export function planBar(crowd: Crowd, party: Party): BarPlan {
 
   const hours = Math.max(0, party.hours);
 
-  if (party.style === 'barak') return byLitres(guests, children, drinkers, hours, party.season);
+  if (party.style === 'house') return byLitres(guests, children, drinkers, hours, party.season);
   /* The first hour is charged at the higher rate and only once, which is why
      this is not hours × a single number. */
   const perDrinker = hours <= 0 ? 0

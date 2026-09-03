@@ -66,6 +66,8 @@ import { VendorImport } from '@/components/app/VendorImport';
 import { ProducerCopilot } from '@/components/app/ProducerCopilot';
 import { QuickJump } from '@/components/app/QuickJump';
 import { FinanceSummary } from '@/components/app/FinanceSummary';
+import { HebrewCalendar } from '@/components/app/HebrewCalendar';
+import { LabelToolbar } from '@/components/app/LabelToolbar';
 import { accentByKey } from '@/content/brand';
 import type { Account } from '@/lib/auth';
 import ConsoleLoading from '@/app/app/loading';
@@ -393,6 +395,37 @@ export default async function DesignPage() {
 
         <Panel name="VendorImport" note="the sheet importer before a file is chosen: template, drop zone">
           <VendorImport existingNames={['סטודיו לביא']} />
+        </Panel>
+
+        <Panel name="HebrewCalendar" note="the Three Weeks of 5786: seventeen Tammuz closes it, and Saturday nights stay open">
+          <HebrewCalendar from="2026-06-28" />
+        </Panel>
+
+        <Panel name="HebrewCalendar · the Omer" note="closed from Pesach, one clear night at Lag BaOmer, then the Sephardi custom">
+          <HebrewCalendar from="2026-04-26" />
+        </Panel>
+
+        <Panel name="LabelToolbar · colours" note="the producer's own diary colours; press a name to rename or recolour">
+          <LabelToolbar
+            kind="event_tag"
+            labels={[
+              { id: 't1', kind: 'event_tag', label: 'חתונות פעילות', color: '#2F6F5E', sort_order: 1 },
+              { id: 't2', kind: 'event_tag', label: 'פגישות זוג', color: '#7C5CBF', sort_order: 2 },
+              { id: 't3', kind: 'event_tag', label: 'טעימות וסיורים', color: '#C2762B', sort_order: 3 },
+              { id: 't4', kind: 'event_tag', label: 'תשלומים דחופים', color: '#2563EB', sort_order: 4 },
+            ]}
+          />
+        </Panel>
+
+        <Panel name="LabelToolbar · channels" note="the six the platform ships, dashed, beside two the producer added">
+          <LabelToolbar
+            kind="lead_channel"
+            labels={[
+              { id: 'c1', kind: 'lead_channel', label: 'טיקטוק', color: '#B03A5B', sort_order: 1 },
+              { id: 'c2', kind: 'lead_channel', label: 'המלצה ממעצב', color: '#0E7490', sort_order: 2 },
+            ]}
+            builtIn={['שיחת טלפון', 'וואטסאפ', 'אינסטגרם', 'פייסבוק', 'המלצה', 'הגיעו אלינו']}
+          />
         </Panel>
 
         <Panel name="QuickJump" note="the search box from the top bar; ⌘K opens it anywhere on this page">

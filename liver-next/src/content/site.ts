@@ -1890,7 +1890,7 @@ export const barCopy = {
   style: 'אופי השתייה',
   season: 'עונה',
   styles: {
-    barak: 'החישוב שלי',
+    house: 'החישוב שלי',
     classic: 'מעורב',
     spirits: 'חזק',
     wine: 'יין',
@@ -1903,7 +1903,7 @@ export const barCopy = {
   drinkersOut: 'שותים',
   servingsOut: 'מנות משקה',
   litresOut: 'ליטר אלכוהול',
-  barakNote: 'לפי הכלל שלך: ליטר לכל תשעה אנשים, בפיצול הקבוע שלך. שעות הבר לא משנות את הכמות בשיטה הזאת, כי הן כבר בתוך המספר.',
+  houseNote: 'לפי הכלל שלך: ליטר לכל תשעה אנשים, בפיצול הקבוע שלך. שעות הבר לא משנות את הכמות בשיטה הזאת, כי הן כבר בתוך המספר.',
   items: {
     vodka: 'וודקה', whiskey: 'וויסקי', gin: 'ג׳ין', other: 'ליקרים ואחר',
     campari: 'קמפרי', tequila: 'טקילה', rum: 'רום',
@@ -2063,6 +2063,10 @@ export const ticketCopy = {
   screenshotHint: 'לא חובה. תמונה עד 5MB.',
   screenshotRemove: 'הסרה',
   auto: 'נצרף אוטומטית את כתובת המסך והדפדפן, כדי שנוכל לשחזר.',
+  /* Named when the report is opened from inside a particular panel, so the
+     answer does not start with "which screen?". */
+  inContext: 'דיווח על: {what}',
+  openHere: 'משהו לא בסדר כאן?',
   submit: 'שליחת הדיווח',
   sending: 'שולח',
   sent: 'קיבלנו. נחזור אליכם.',
@@ -2093,6 +2097,76 @@ export const ticketCopy = {
    concierge on the public site: that one talks to strangers about a wedding,
    this one talks to the producer about their week. */
 /* The search box every desk app has. Screens and events, two keystrokes. */
+/* The Hebrew calendar, as a producer needs it: which nights a wedding can
+   stand on. Planning guidance, and the screen says so. */
+export const hebrewCalCopy = {
+  title: 'לוח עברי ומועדים',
+  sub: 'אילו ערבים פנויים לחתונה בשלושים הימים הקרובים, ואילו סגורים לפי ההלכה.',
+  next30: '30 יום',
+  next60: '60 יום',
+  clear: 'פנוי',
+  check: 'לבדוק',
+  blocked: 'מוגבל לחתונה כהלכה',
+  clearLegend: 'ערב פנוי',
+  checkLegend: 'תלוי במנהג',
+  blockedLegend: 'לא מקיימים חתונה',
+  today: 'היום',
+  hebrewOn: 'בערב נכנס',
+  none: 'אין ימים בטווח הזה.',
+  /* Said plainly, and not buried. The producer is not a rabbi and neither is
+     this screen. */
+  disclaimer: 'זו עזרה לתכנון ולא פסיקה. המנהגים משתנים בין עדות ובין קהילות, ובכל תאריך גבולי סוגרים מול הרב של הזוג.',
+  custom: 'המנהג שמוצג כאן הוא המנהג האשכנזי הרווח בארץ. במנהג הספרדי ספירת העומר נמשכת עד ל״ד בעומר.',
+  reasons: {
+    shabbat: 'שבת',
+    erevShabbat: 'ערב שבת',
+    roshHashana: 'ראש השנה',
+    yomKippur: 'יום כיפור',
+    sukkot: 'סוכות',
+    cholHamoed: 'חול המועד',
+    shminiAtzeret: 'שמיני עצרת ושמחת תורה',
+    pesach: 'פסח',
+    shavuot: 'שבועות',
+    erevChag: 'ערב חג',
+    threeWeeks: 'בין המצרים',
+    nineDays: 'תשעת הימים',
+    tishaBav: 'תשעה באב',
+    omer: 'ימי העומר',
+    omerSephardi: 'עומר, במנהג הספרדי',
+    lagBaomer: 'ל״ג בעומר',
+    fast: 'צום',
+    purim: 'פורים',
+    roshChodesh: 'ראש חודש',
+  },
+} as const;
+
+/* The producer's own colours and their own channels. One toolbar, two uses. */
+export const labelCopy = {
+  tagsTitle: 'הצבעים שלי',
+  tagsSub: 'מה כל צבע אומר ביומן שלכם. אפשר לשנות שם, צבע, ולהוסיף משלכם.',
+  channelsTitle: 'ערוצי הפניות שלי',
+  channelsSub: 'איך פניות מגיעות אליכם. מה שתוסיפו כאן יופיע בטופס רישום פנייה ובדוח הערוצים.',
+  add: 'הוספה',
+  addPh: 'שם התגית',
+  addChannelPh: 'שם הערוץ',
+  save: 'שמירה',
+  saving: 'שומר',
+  rename: 'שינוי שם',
+  color: 'צבע',
+  remove: 'מחיקה',
+  none: 'עוד לא הוגדרו.',
+  noneChannels: 'עוד לא הוספתם ערוץ משלכם. שישה ערוצים מובנים כבר קיימים.',
+  builtIn: 'מובנה',
+  taken: 'כבר קיים אצלכם שם כזה.',
+  failed: 'לא הצלחנו לשמור. נסו שוב.',
+  tooLong: 'שם ארוך מדי. עד 40 תווים.',
+  needName: 'נא לכתוב שם.',
+  close: 'סגירה',
+  eventTag: 'תגית לאירוע',
+  eventTagNone: 'בלי תגית',
+  legend: 'מקרא',
+} as const;
+
 export const jumpCopy = {
   open: 'חיפוש מהיר',
   title: 'לאן?',

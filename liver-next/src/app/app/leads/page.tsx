@@ -6,14 +6,19 @@ import { PageHead, Empty } from '@/components/app/PageHead';
 import { LeadRow, type Lead, type Call } from '@/components/app/LeadRow';
 import { CallsPanel } from '@/components/app/CallsPanel';
 import { NewLeadForm } from '@/components/app/NewLeadForm';
+import { LabelToolbar } from '@/components/app/LabelToolbar';
+import { loadLabels } from '@/lib/labels';
+import { IssueReporter } from '@/components/app/IssueReporter';
+import { LEAD_SOURCES } from '@/content/site';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: appCopy.leads.title };
 
 export default async function LeadsPage() {
-  await requireLiveProducer();
+  const account = await requireLiveProducer();
   const sb = await supabaseServer();
 
+  const channels = await loadLabels(sb, 'lead_channel');
   const [{ data: leads }, { data: calls }] = await Promise.all([
     sb.from('leads')
       .select('id,full_name,email,phone,kind,event_date,guest_count,message,note,status,source,created_at,location')
@@ -37,9 +42,23 @@ export default async function LeadsPage() {
       {/* Ahead of the list on purpose. The enquiry a producer is holding in
           their head, still on the phone, is the one at risk of never being
           written down at all. */}
-      <NewLeadForm />
+      <NewLeadForm channels={channels.map((ch) => ({ value: ch.label, label: ch.label }))} />
+
+      {/* The producer's own channels, edited where the funnel is read. A
+          channel nobody can add is a funnel that measures our guesses. */}
+      <div className="my-6">
+        <LabelToolbar
+          kind="lead_channel"
+          labels={channels}
+          builtIn={LEAD_SOURCES.map((s) => s.label)}
+        />
+      </div>
 
       <CallsPanel calls={allCalls} leads={rows.map((l) => ({ id: l.id, name: l.full_name }))} />
+
+      <div className="mb-4 flex justify-end">
+        <IssueReporter userId={account.id} context={appCopy.leads.title} />
+      </div>
 
       {rows.length === 0 ? (
         <Empty text={appCopy.leads.empty} />

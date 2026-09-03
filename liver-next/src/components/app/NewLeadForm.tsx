@@ -27,7 +27,10 @@ function Submit() {
  * is often still on the phone, and a form that insists on a date and a guest
  * count from somebody who has neither yet is a form that gets abandoned.
  */
-export function NewLeadForm() {
+export function NewLeadForm({ channels = [] }: {
+  /** The producer's own channels, appended to the six the platform ships. */
+  channels?: { value: string; label: string }[];
+}) {
   const [open, setOpen] = useState(false);
   const [state, action] = useActionState<LeadActionResult | null, FormData>(recordLead, null);
 
@@ -91,6 +94,7 @@ export function NewLeadForm() {
           <label className="label" htmlFor="nl-source">{c.addHow}</label>
           <select id="nl-source" name="source" defaultValue="phone" className="field">
             {LEAD_SOURCES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
+            {channels.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
           </select>
         </div>
       </div>

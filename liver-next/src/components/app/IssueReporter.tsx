@@ -28,10 +28,13 @@ const CATEGORIES = Object.keys(ticketCopy.categories) as Category[];
  * shared folder, for the same reason: a picture of a screen is bigger than a
  * server action wants to carry.
  */
-export function IssueReporter({ userId, compact, row, copy }: {
+export function IssueReporter({ userId, compact, row, context, copy }: {
   userId: string; compact?: boolean;
   /** A full-width row with the label, for the phone's "more" sheet. */
   row?: boolean;
+  /** The panel this was opened from, named in the report so the answer does
+   *  not have to begin by asking which screen. */
+  context?: string;
   copy?: TicketCopy;
 }) {
   const c = copy ?? ticketCopy;
@@ -72,7 +75,10 @@ export function IssueReporter({ userId, compact, row, copy }: {
     }
 
     const r = await fileTicket({
-      category, body: body.trim(),
+      category,
+      /* The panel is prepended rather than typed: a report that says only
+         "this is broken" costs a round trip to find out where. */
+      body: context ? `[${context}] ${body.trim()}` : body.trim(),
       route: pathname ?? '',
       agent: `${navigator.userAgent} · ${window.innerWidth}×${window.innerHeight}${window.matchMedia('(display-mode: standalone)').matches ? ' · installed' : ''}`,
       screenshotPath: screenshotPath || undefined,
@@ -88,7 +94,17 @@ export function IssueReporter({ userId, compact, row, copy }: {
 
   return (
     <>
-      {row ? (
+      {context && !row && !compact ? (
+        <button
+          type="button"
+          onClick={() => { reset(); setOpen(true); }}
+          aria-label={`${c.open}: ${context}`}
+          title={c.openHere}
+          className="grid size-7 place-items-center rounded-lg text-ink-mute/70 transition-colors hover:bg-surface-200 hover:text-ink"
+        >
+          <Bug size={16} strokeWidth={1.5} aria-hidden />
+        </button>
+      ) : row ? (
         <button
           type="button"
           onClick={() => { reset(); setOpen(true); }}
@@ -138,6 +154,12 @@ export function IssueReporter({ userId, compact, row, copy }: {
                 </button>
               ))}
             </div>
+
+            {context && (
+              <p className="mt-4 rounded-xl2 border border-line bg-surface-100 px-3 py-2 text-[12.5px] text-ink-soft">
+                {c.inContext.replace('{what}', context)}
+              </p>
+            )}
 
             <label className="label mt-5" htmlFor="ticket-body">{c.body}</label>
             <textarea

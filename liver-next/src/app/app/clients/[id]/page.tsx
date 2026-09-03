@@ -8,6 +8,7 @@ import { Live } from '@/components/app/Live';
 import { workspaceSources } from '@/lib/liveSources';
 import { PageHead } from '@/components/app/PageHead';
 import { EventTabs, readTab, type EventTab } from '@/components/app/EventTabs';
+import { IssueReporter } from '@/components/app/IssueReporter';
 import { EventDetails } from '@/components/app/EventDetails';
 import { EventSummary } from '@/components/app/EventSummary';
 import { EventTemplate } from '@/components/app/EventTemplate';
@@ -116,7 +117,16 @@ export default async function ClientPage({
       </div>
 
       <PageHead title={client.display_name} />
-      <EventTabs clientId={client.id} active={tab} />
+      <div className="flex items-start gap-2">
+        <div className="min-w-0 flex-1">
+          <EventTabs clientId={client.id} active={tab} />
+        </div>
+        {/* Named by the open tab, so a report from the money tab arrives
+            saying so rather than costing a round trip to find out. */}
+        <div className="mt-1 shrink-0">
+          <IssueReporter userId={account.id} context={`${client.display_name} · ${appCopy.clientPage.tabs[tab]}`} />
+        </div>
+      </div>
 
       <Section tab={tab} client={client} viewerId={account.id} />
 

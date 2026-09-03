@@ -95,13 +95,13 @@ test('his own rule: a litre for every nine people', () => {
   /* From his spreadsheet: 300 guests, no children, comes to 33.3 litres. That
      number is the one he has bought against, so it is the one to match. */
   const p = planBar({ guests: 300, childrenPct: 0, drinkersPct: 70 },
-    { hours: 5, style: 'barak', season: 'summer' });
+    { hours: 5, style: 'house', season: 'summer' });
   assert.equal(p.litres, 33.3);
 });
 
 test('his split is his, in litres', () => {
   const p = planBar({ guests: 270, childrenPct: 0, drinkersPct: 70 },
-    { hours: 5, style: 'barak', season: 'summer' });
+    { hours: 5, style: 'house', season: 'summer' });
   /* 30 litres: beer and wine 9 each, vodka/campari/tequila 3 each,
      whiskey and rum 1.5 each. Beer at a third of a litre a bottle. */
   assert.equal(p.litres, 30);
@@ -117,8 +117,8 @@ test('his rule does not care how long the bar is open', () => {
   /* Which is the point of it: the hours are already inside the number he
      buys against. The serving model is the one that answers that question. */
   const crowd = { guests: 200, childrenPct: 5, drinkersPct: 70 };
-  const short = planBar(crowd, { hours: 3, style: 'barak', season: 'mild' });
-  const long = planBar(crowd, { hours: 9, style: 'barak', season: 'mild' });
+  const short = planBar(crowd, { hours: 3, style: 'house', season: 'mild' });
+  const long = planBar(crowd, { hours: 9, style: 'house', season: 'mild' });
   assert.equal(short.litres, long.litres);
   /* Soft drinks still do, because thirst is not the same thing as drink. */
   assert.ok(long.softLitres > short.softLitres);
@@ -126,9 +126,9 @@ test('his rule does not care how long the bar is open', () => {
 
 test('children are outside his litres', () => {
   const none = planBar({ guests: 300, childrenPct: 0, drinkersPct: 70 },
-    { hours: 5, style: 'barak', season: 'mild' });
+    { hours: 5, style: 'house', season: 'mild' });
   const some = planBar({ guests: 300, childrenPct: 20, drinkersPct: 70 },
-    { hours: 5, style: 'barak', season: 'mild' });
+    { hours: 5, style: 'house', season: 'mild' });
   assert.ok(some.litres < none.litres);
   /* And still drink: soft is per guest. */
   assert.equal(some.softLitres, none.softLitres);
@@ -149,7 +149,7 @@ test('six-packs are the same beer, not a second answer', () => {
   /* A supplier quote and a shop shelf are both priced by the six-pack, so the
      screen offers the other reading. What it must never do is compute it
      separately: two answers to "how much beer" is worse than an awkward unit. */
-  for (const style of ['barak', 'classic', 'spirits', 'beer'] as const) {
+  for (const style of ['house', 'classic', 'spirits', 'beer'] as const) {
     const p = planBar(wedding, { ...evening, style });
     assert.equal(p.beerSixPacks, Math.ceil(p.bottles.beer / 6), style);
   }
@@ -161,7 +161,7 @@ test('a bar that is not open buys no six-packs either', () => {
 });
 
 test('rounding goes up, because five sixths of a pack cannot be bought', () => {
-  const p = planBar({ guests: 100, childrenPct: 0, drinkersPct: 100 }, { ...evening, style: 'barak' });
+  const p = planBar({ guests: 100, childrenPct: 0, drinkersPct: 100 }, { ...evening, style: 'house' });
   assert.ok(p.beerSixPacks * 6 >= p.bottles.beer);
   assert.ok((p.beerSixPacks - 1) * 6 < p.bottles.beer);
 });

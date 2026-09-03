@@ -7,7 +7,7 @@ import { barCopy as c } from '@/content/site';
 import { Money } from '@/components/Ltr';
 
 
-const STYLES: BarStyle[] = ['barak', 'classic', 'spirits', 'wine', 'beer', 'light'];
+const STYLES: BarStyle[] = ['house', 'classic', 'spirits', 'wine', 'beer', 'light'];
 const SEASONS: Season[] = ['summer', 'mild', 'winter'];
 
 function Choice<T extends string>({ label, hint, value, options, labels, onChange }: {
@@ -89,7 +89,7 @@ export function BarCalculator({ guestEstimate, confirmedGuests }: {
   const [childrenPct, setChildrenPct] = useState(10);
   const [drinkersPct, setDrinkersPct] = useState(70);
   const [hours, setHours] = useState(5);
-  const [style, setStyle] = useState<BarStyle>('barak');
+  const [style, setStyle] = useState<BarStyle>('house');
   const [season, setSeason] = useState<Season>('summer');
   const [prices, setPrices] = useState<Prices>(DEFAULT_PRICES);
   const [showPrices, setShowPrices] = useState(false);
@@ -131,7 +131,7 @@ export function BarCalculator({ guestEstimate, confirmedGuests }: {
           <Number_ label={c.drinkers} hint={c.drinkersHint} value={drinkersPct} onChange={setDrinkersPct} min={0} max={100} suffix="%" />
           {/* Hidden under his own rule rather than shown and ignored. A control
               that visibly does nothing is worse than one that is not there. */}
-          {style !== 'barak' && (
+          {style !== 'house' && (
             <Number_ label={c.hours} hint={c.hoursHint} value={hours} onChange={setHours} min={1} max={12} />
           )}
           <Choice label={c.style} value={style} options={STYLES} labels={c.styles} onChange={setStyle} />
@@ -144,13 +144,13 @@ export function BarCalculator({ guestEstimate, confirmedGuests }: {
           <h3 className="font-display text-[18px] font-semibold text-ink">{c.planTitle}</h3>
           <p className="text-[13px] tabular-nums text-ink-mute">
             {plan.litres} {c.litresOut}
-            {style !== 'barak' && ` · ${plan.servings} ${c.servingsOut}`}
+            {style !== 'house' && ` · ${plan.servings} ${c.servingsOut}`}
             {` · ${plan.drinkers} ${c.drinkersOut}`}
           </p>
         </div>
 
-        {style === 'barak' && (
-          <p className="mt-3 text-[13px] leading-relaxed text-ink-mute">{c.barakNote}</p>
+        {style === 'house' && (
+          <p className="mt-3 text-[13px] leading-relaxed text-ink-mute">{c.houseNote}</p>
         )}
 
         <ul className="mt-4 space-y-2">

@@ -494,6 +494,8 @@ export const ticketCopyEn: TicketCopy = {
   screenshotHint: 'Optional. An image up to 5MB.',
   screenshotRemove: 'Remove',
   auto: 'The screen address and your browser are attached automatically, so we can reproduce it.',
+  inContext: 'Reporting on: {what}',
+  openHere: 'Something wrong here?',
   submit: 'Send the report',
   sending: 'Sending',
   sent: 'Received. We will get back to you.',

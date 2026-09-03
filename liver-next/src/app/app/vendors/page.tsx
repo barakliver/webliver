@@ -5,6 +5,7 @@ import { Live } from '@/components/app/Live';
 import { VendorDirectory, type Vendor } from '@/components/app/VendorDirectory';
 import { safeRows } from '@/lib/safe';
 import { vendorCopy } from '@/content/site';
+import { IssueReporter } from '@/components/app/IssueReporter';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: vendorCopy.dirTitle };
@@ -13,7 +14,7 @@ export const metadata = { title: vendorCopy.dirTitle };
  *  Row level security scopes it to the signed-in producer, so there is nothing
  *  to filter here beyond what the screen wants to show. */
 export default async function VendorsPage() {
-  await requireLiveProducer();
+  const account = await requireLiveProducer();
   const sb = await supabaseServer();
 
   const vendors = await safeRows<Vendor>('vendors', sb
@@ -23,7 +24,12 @@ export default async function VendorsPage() {
 
   return (
     <>
-      <PageHead title={vendorCopy.dirTitle} sub={vendorCopy.dirSub} />
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <PageHead title={vendorCopy.dirTitle} sub={vendorCopy.dirSub} />
+        </div>
+        <IssueReporter userId={account.id} context={vendorCopy.dirTitle} />
+      </div>
       <VendorDirectory vendors={vendors} />
       <Live sources={[{ table: 'vendors' }]} />
     </>
