@@ -125,7 +125,7 @@ export async function convertLead(form: FormData): Promise<void> {
   const sb = await supabaseServer();
   const { data: lead } = await sb
     .from('leads')
-    .select('id,full_name,kind,event_date,guest_count')
+    .select('id,full_name,kind,event_date,guest_count,location')
     .eq('id', id)
     .maybeSingle();
   if (!lead) return;
@@ -138,6 +138,13 @@ export async function convertLead(form: FormData): Promise<void> {
       kind: lead.kind,
       event_date: lead.event_date,
       guest_estimate: lead.guest_count,
+      /* Where the event is, carried across. It was being dropped here: the
+         visitor answered the first question the producer asks, the producer
+         pressed convert, and the answer was gone from the event that came
+         out. A region rather than a venue is still worth more on the file
+         than an empty field, and the producer overwrites it with the hall
+         the day one is booked. */
+      venue: lead.location || null,
     })
     .select('id')
     .single();

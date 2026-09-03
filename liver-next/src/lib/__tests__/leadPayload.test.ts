@@ -93,3 +93,32 @@ test('a payload with nothing in it yields nothing, rather than guesses', () => {
   const lead = readLead({ hello: 'world' }, 'webhook');
   assert.deepEqual([lead.full_name, lead.phone, lead.email], ['', '', '']);
 });
+
+test('where the event is, from whatever the sender called the field', () => {
+  /* Every form builder names this differently, and the ad platforms name it
+     in Hebrew. A region on the lead is the answer to the first question the
+     producer asks, so it is worth reading from all of them. */
+  for (const [key, value] of [
+    ['location', 'צפון'],
+    ['region', 'שרון'],
+    ['city', 'חיפה'],
+    ['venue', 'אחוזת דקל'],
+    ['אזור', 'ירושלים והסביבה'],
+    ['אולם', 'הגן של רוני'],
+  ] as const) {
+    const lead = readLead({ full_name: 'רוני', phone: '0521111111', [key]: value }, 'site');
+    assert.equal(lead.location, value, `the "${key}" field was not read as the location`);
+  }
+});
+
+test('a delivery with no location is empty rather than undefined', () => {
+  /* The column is `not null default ''`, so an undefined here would be
+     written as null and refused by the table. */
+  const lead = readLead({ full_name: 'רוני', phone: '0521111111' }, 'site');
+  assert.equal(lead.location, '');
+});
+
+test('a location longer than the column is cut, not refused', () => {
+  const lead = readLead({ full_name: 'רוני', phone: '0521111111', location: 'א'.repeat(400) }, 'site');
+  assert.equal(lead.location.length, 120);
+});
