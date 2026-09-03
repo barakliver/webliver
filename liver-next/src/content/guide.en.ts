@@ -119,6 +119,14 @@ export const clientGuideEn: GuideBook = {
       sub: 'The things you will do here again and again.',
       entries: [
         {
+          q: 'How do we keep the photographs in order?',
+          steps: [
+            'Before uploading, pick a word: venue, design, inspiration or suppliers. Everything you add now carries it.',
+            'In the grid, the strip of words at the top filters. Tapping a picture opens it large, and the arrows walk through the set.',
+            'Manage opens a word picker beside each picture, and a remove button on the ones you added.',
+          ],
+        },
+        {
           q: 'How do I mark a task as done?',
           steps: [
             'In the task list, tick the box beside the task.',

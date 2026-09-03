@@ -4,7 +4,9 @@ import { useRef, useState, useTransition } from 'react';
 import { Download, FileText, Image as ImageIcon, Film, Music, Table2, Upload, X } from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase/client';
 import { registerFile, deleteFile, noteFile } from '@/app/actions/files';
-import { fileAllowed, guessMime, humanSize, MAX_FILE_BYTES } from '@/lib/fileTypes';
+import { fileAllowed, guessMime, humanSize, MAX_FILE_BYTES, MEDIA_TAGS } from '@/lib/fileTypes';
+import { MediaVault } from './MediaVault';
+import { cn } from '@/lib/utils';
 import { useCopy } from '@/components/app/CopyProvider';
 import { longDate } from '@/lib/appDates';
 import { Ltr } from '@/components/Ltr';
@@ -13,6 +15,8 @@ export type EventFile = {
   id: string;
   name: string;
   note: string;
+  /** One of the four media tags, or empty. Only pictures carry one. */
+  tag: string;
   mime: string;
   size_bytes: number;
   created_at: string;
@@ -61,6 +65,10 @@ export function EventFiles({ clientId, files, viewer }: {
   const [busy, setBusy] = useState<string[]>([]);
   const [error, setError] = useState('');
   const [over, setOver] = useState(false);
+  /* The word the next pictures go under. Chosen before the upload rather
+     than after, because sixty untagged pictures is the state this exists
+     to prevent, and a tag applied afterwards to each is sixty taps. */
+  const [tag, setTag] = useState('');
   const [, start] = useTransition();
 
   const send = async (chosen: FileList | File[]) => {
@@ -93,6 +101,7 @@ export function EventFiles({ clientId, files, viewer }: {
 
       const res = await registerFile({
         clientId, path, name: file.name, mime, size: file.size,
+        tag: isImage(mime) ? tag : '',
       });
       if (!res.ok) failed = res.error ?? c.failed;
     }
@@ -136,6 +145,21 @@ export function EventFiles({ clientId, files, viewer }: {
         <p className="mt-3 text-[13.5px] text-ink-soft">{c.drop}</p>
         <p className="mt-1 text-[12.5px] text-ink-mute">{c.dropHint}</p>
 
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-1.5">
+          <span className="me-1 text-[12.5px] text-ink-mute">{c.media.tagForUpload}</span>
+          {MEDIA_TAGS.map((t) => (
+            <button
+              key={t} type="button" onClick={() => setTag(tag === t ? '' : t)} aria-pressed={tag === t}
+              className={cn(
+                'inline-flex min-h-[34px] items-center rounded-xl2 border px-3 text-[12.5px] transition-colors',
+                tag === t ? 'border-ink bg-ink text-surface' : 'border-line bg-card text-ink-soft hover:border-line-strong hover:text-ink',
+              )}
+            >
+              {c.media.tags[t]}
+            </button>
+          ))}
+        </div>
+
         {busy.length > 0 && (
           <ul className="mt-3 space-y-1" aria-live="polite">
             {busy.map((n) => (
@@ -156,21 +180,7 @@ export function EventFiles({ clientId, files, viewer }: {
       ) : (
         <div className="mt-6 space-y-6">
           {photos.length > 0 && (
-            <div>
-              <p className="text-[11.5px] tracking-[.14em] text-ink-mute">{c.photos}</p>
-              <ul className="mt-3 grid gap-3 sm:grid-cols-3 lg:grid-cols-4">
-                {photos.map((f) => (
-                  <li key={f.id} className="overflow-hidden rounded-card-sm border border-line bg-surface-100">
-                    <a href={f.url} target="_blank" rel="noreferrer" className="block">
-                      {/* a plain img: these are signed one-off URLs, not a fixed asset path */}
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={f.url} alt={f.note || f.name} className="h-36 w-full object-cover" loading="lazy" />
-                    </a>
-                    <Row file={f} clientId={clientId} viewer={viewer} start={start} compact />
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <MediaVault clientId={clientId} photos={photos} viewer={viewer} />
           )}
 
           {docs.length > 0 && (

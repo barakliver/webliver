@@ -1,14 +1,45 @@
-import { requireAccount } from '@/lib/auth';
+import type { Metadata, Viewport } from 'next';
+import { requireAccount, currentAccount } from '@/lib/auth';
 import { supabaseServer } from '@/lib/supabase/server';
 import { Live } from '@/components/app/Live';
 import { AppShell, type ClientNavLabels } from '@/components/app/AppShell';
 import { brandFor } from '@/lib/branding';
+import { PAGE_GROUND } from '@/content/brand';
 import { currentLocale } from '@/lib/serverLocale';
 import { appUiFor } from '@/content/appUi';
 import { guideUiFor } from '@/content/guide';
 import type { Notice } from '@/components/app/NoticeBell';
 
 export const dynamic = 'force-dynamic';
+
+/**
+ * The tab, the icon and the status bar follow the signed-in person's brand.
+ *
+ * The root layout brands these by host, which is right for a visitor. Inside
+ * the app the person is known, and a producer who opened the console from the
+ * platform's own address is still inside their own business: their icon in
+ * the tab, their wash behind the clock. Nested metadata merges over the root's,
+ * so only the fields that change are named here.
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const brand = await brandFor(await currentAccount());
+  if (brand.isPlatform) return {};
+  const icon = brand.iconUrl ?? '/icon-192.png';
+  return {
+    appleWebApp: { capable: true, title: brand.name, statusBarStyle: 'black-translucent' },
+    icons: { icon, apple: icon },
+  };
+}
+
+export async function generateViewport(): Promise<Viewport> {
+  const brand = await brandFor(await currentAccount());
+  return {
+    themeColor: brand.isPlatform ? PAGE_GROUND : brand.accent.wash,
+    width: 'device-width',
+    initialScale: 1,
+    viewportFit: 'cover',
+  };
+}
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const account = await requireAccount();

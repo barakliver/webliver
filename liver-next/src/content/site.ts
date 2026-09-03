@@ -810,6 +810,39 @@ export const appCopy = {
     logoChoose: 'בחירת לוגו',
     logoReplace: 'החלפת לוגו',
     logoRemove: 'הסרת הלוגו',
+
+    /* The three pictures a brand is made of, and what each one has to be.
+       The rules are said on the screen, next to the button, because a logo
+       that arrives as a 40 pixel JPG with a white box around it is not a
+       mistake anybody makes twice once they have been told. */
+    assets: {
+      title: 'הקבצים של המותג',
+      sub: 'הלוגו, האייקון של האפליקציה ותמונת הפתיחה. שלושתם מופיעים אצל הזוגות שלכם ובשום מקום אחר.',
+      choose: 'בחירת קובץ',
+      replace: 'החלפה',
+      remove: 'הסרה',
+      uploading: 'מעלה',
+      uploaded: 'נשמר',
+      empty: 'עוד לא הועלה',
+      tooBig: 'הקובץ גדול מדי.',
+      badType: 'סוג הקובץ הזה לא מתאים כאן.',
+      failed: 'ההעלאה נכשלה. נסו שוב.',
+      logo: {
+        title: 'לוגו',
+        where: 'מופיע בראש המסך של הזוגות, במיילים ובדף הכניסה שלכם.',
+        rules: ['PNG או SVG על רקע שקוף', 'לפחות 512 על 512 פיקסלים', 'ריבועי, או רחב כמו באנר', 'עד 2MB'],
+      },
+      icon: {
+        title: 'אייקון האפליקציה',
+        where: 'האייקון שמופיע במסך הבית כשמתקינים את האפליקציה בטלפון.',
+        rules: ['PNG ריבועי, 512 על 512 פיקסלים', 'בלי שקיפות ובלי שוליים ריקים', 'צורה פשוטה שנקראת גם בגודל 60 פיקסלים', 'עד 1MB'],
+      },
+      cover: {
+        title: 'תמונת פתיחה',
+        where: 'הכרטיס שוואטסאפ מצייר לקישור שלכם, ורקע דף הכניסה.',
+        rules: ['JPG או WebP', '1920 על 1080 פיקסלים, יחס 16:9', 'תמונה אמיתית מאירוע, בלי טקסט עליה', 'עד 5MB'],
+      },
+    },
     accent: 'צבע מוביל',
     accentHint: 'הצבעים כאן נבדקו לקריאוּת מול הרקע והטקסט. לכן זו רשימה ולא בורר צבעים חופשי.',
     whatsapp: 'וואטסאפ',
@@ -1327,6 +1360,31 @@ export const appCopy = {
     tooBig: 'הקובץ גדול מדי. עד 50MB.',
     badType: 'סוג הקובץ הזה לא נתמך',
     failed: 'ההעלאה נכשלה. נסו שוב.',
+
+    /* The pictures, sorted by the four words people use for them. */
+    media: {
+      title: 'תמונות',
+      sub: 'הלוקיישן, העיצוב, ההשראה והספקים. כל תמונה מתויגת, אז מוצאים אותה גם אחרי שישים תמונות.',
+      tagForUpload: 'תיוג לתמונות שמעלים עכשיו',
+      all: 'הכל',
+      untagged: 'ללא תיוג',
+      tags: {
+        venue: 'לוקיישן',
+        design: 'עיצוב',
+        inspiration: 'השראה',
+        vendors: 'ספקים',
+      },
+      count: '{n} תמונות',
+      one: 'תמונה אחת',
+      none: 'עוד אין תמונות בתיוג הזה.',
+      open: 'הגדלה',
+      close: 'סגירה',
+      prev: 'הקודמת',
+      next: 'הבאה',
+      retag: 'שינוי תיוג',
+      manage: 'ניהול',
+      done: 'סיום',
+    },
   },
 
   portal: {
@@ -1671,6 +1729,49 @@ export const vendorCopy = {
   count: (n: number) => `${n} ספקים`,
   noResults: 'לא נמצא ספק מתאים.',
   allCategories: 'כל התחומים',
+  agreedPrice: 'מחיר מוסכם',
+  depositPaid: 'מקדמה ששולמה',
+
+  /* The spreadsheet every producer already keeps, brought in whole. */
+  import: {
+    open: 'ייבוא מאקסל',
+    title: 'ייבוא ספקים מאקסל',
+    sub: 'קובץ אקסל או CSV עם עמודות: שם ספק, קטגוריה, טלפון, מייל, מחיר מוסכם, מקדמה ששולמה, הערות. השורה הראשונה היא הכותרות.',
+    template: 'הורדת תבנית',
+    templateName: 'ספקים-תבנית.xlsx',
+    choose: 'בחירת קובץ',
+    drop: 'גוררים לכאן קובץ xlsx, xls או csv',
+    reading: 'קורא את הקובץ',
+    unreadable: 'לא הצלחנו לקרוא את הקובץ. נסו לשמור אותו מחדש כ-xlsx.',
+    noRows: 'לא נמצאו שורות עם שם ספק.',
+    mapping: 'התאמת עמודות',
+    mappingSub: 'זיהינו את העמודות לפי הכותרות. אפשר לתקן כאן לפני הייבוא.',
+    skip: 'לא לייבא',
+    preview: 'מה ייכנס',
+    previewMore: 'ועוד {n} שורות',
+    rowsFound: '{n} ספקים בקובץ',
+    willAdd: '{n} חדשים',
+    willUpdate: '{n} קיימים יעודכנו',
+    run: 'ייבוא',
+    running: 'מייבא',
+    done: 'הייבוא הושלם',
+    added: 'נוספו',
+    updated: 'עודכנו',
+    skipped: 'דולגו',
+    failed: 'הייבוא נכשל. נסו שוב.',
+    cancel: 'ביטול',
+    columns: {
+      name: 'שם ספק',
+      category: 'קטגוריה',
+      phone: 'טלפון',
+      email: 'מייל',
+      agreed_price: 'מחיר מוסכם',
+      deposit_paid: 'מקדמה ששולמה',
+      notes: 'הערות',
+      contact_name: 'איש קשר',
+      area: 'אזור',
+    },
+  },
 } as const;
 
 export const installCopy = {
@@ -1869,8 +1970,16 @@ export const siteEditorCopy = {
 export const noticeCopy = {
   title: 'עדכונים',
   none: 'אין עדכונים חדשים.',
-  markAll: 'סימון הכל כנקרא',
+  noneSub: 'כשמשהו יקרה באחד האירועים, הוא יופיע כאן.',
+  markAll: 'סמן הכל כנקרא',
+  markOne: 'סימון כנקרא',
   open: 'פתיחה',
+  close: 'סגירה',
+  unread: 'לא נקראו',
+  now: 'עכשיו',
+  minutes: 'לפני {n} דק׳',
+  hours: 'לפני {n} שע׳',
+  days: 'לפני {n} ימים',
   kinds: {
     lead: 'פנייה',
     rsvp: 'אישור הגעה',
@@ -1878,7 +1987,82 @@ export const noticeCopy = {
     payment: 'תשלום',
     invite: 'גישה',
     message: 'הודעה',
+    contract: 'חוזה',
+    file: 'קובץ',
+    ticket: 'דיווח',
   },
+} as const;
+
+/* Saying something is wrong, to the people who run the platform rather than
+   to the producer. Nameless on purpose: whoever reads it, the screen belongs
+   to the producer's brand. */
+export const ticketCopy = {
+  open: 'דיווח על תקלה',
+  title: 'דיווח על תקלה',
+  sub: 'משהו לא עובד כמו שצריך? ספרו לנו מה קרה ונטפל.',
+  category: 'סוג התקלה',
+  categories: {
+    visual: 'באג ויזואלי',
+    auth: 'תקלת התחברות',
+    data: 'שגיאת נתונים',
+    other: 'אחר',
+  },
+  body: 'מה קרה',
+  bodyPh: 'מה ניסיתם לעשות, מה ציפיתם שיקרה, ומה קרה בפועל',
+  screenshot: 'צילום מסך',
+  screenshotHint: 'לא חובה. תמונה עד 5MB.',
+  screenshotRemove: 'הסרה',
+  auto: 'נצרף אוטומטית את כתובת המסך והדפדפן, כדי שנוכל לשחזר.',
+  submit: 'שליחת הדיווח',
+  sending: 'שולח',
+  sent: 'קיבלנו. נחזור אליכם.',
+  sentSub: 'הדיווח נשמר ונשלח לצוות. אם נצטרך עוד פרטים, נכתוב לכתובת שאתם מחוברים איתה.',
+  empty: 'נא לכתוב מה קרה',
+  tooBig: 'צילום המסך גדול מדי. עד 5MB.',
+  badType: 'צילום מסך צריך להיות תמונה.',
+  failed: 'לא הצלחנו לשלוח. נסו שוב.',
+  close: 'סגירה',
+  /* The root account's list. */
+  admin: {
+    title: 'דיווחי תקלות',
+    sub: 'מה שמשתמשים דיווחו מתוך המערכת. פתוחים קודם.',
+    none: 'אין דיווחים פתוחים.',
+    open: 'פתוח',
+    closed: 'טופל',
+    markClosed: 'סימון כטופל',
+    reopen: 'פתיחה מחדש',
+    route: 'מסך',
+    agent: 'דפדפן',
+    screenshot: 'צילום מסך',
+    reporter: 'דווח על ידי',
+    showClosed: 'הצגת מה שטופל',
+  },
+} as const;
+
+/* The producer's own assistant, inside the console. Different animal from the
+   concierge on the public site: that one talks to strangers about a wedding,
+   this one talks to the producer about their week. */
+export const copilotCopy = {
+  open: 'עוזר מפיק',
+  close: 'סגירה',
+  title: 'עוזר מפיק',
+  sub: 'מכיר את האירוע הפתוח, את הלוז ואת ספר ההפעלה.',
+  context: 'בהקשר',
+  noContext: 'כל האירועים',
+  greeting: 'אפשר לבקש ממני ניסוח למייל לספק, עדכון לזוג בוואטסאפ, סדר יום לפגישה, או לשאול מה נשאר לעשות לפני האירוע.',
+  starters: [
+    'מה נשאר לעשות חודש לפני האירוע?',
+    'נסח לי מייל לספק עם שעת הגעה',
+    'עדכון קצר לזוג על הלוז',
+    'סדר יום לפגישת תיאום',
+  ],
+  placeholder: 'מה צריך?',
+  send: 'שליחה',
+  thinking: 'רגע',
+  copy: 'העתקה',
+  copied: 'הועתק',
+  wentWrong: 'משהו נתקע אצלי. נסו שוב בעוד רגע.',
+  disclaimer: 'טיוטות לעריכה. לפני ששולחים, קוראים.',
 } as const;
 
 export const threadCopy = {

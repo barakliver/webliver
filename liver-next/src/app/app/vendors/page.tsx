@@ -18,7 +18,7 @@ export default async function VendorsPage() {
 
   const vendors = await safeRows<Vendor>('vendors', sb
     .from('vendors')
-    .select('id,name,category,contact_name,phone,email,area,notes,archived_at')
+    .select('id,name,category,contact_name,phone,email,area,notes,archived_at,agreed_price,deposit_paid')
     .order('name'));
 
   return (

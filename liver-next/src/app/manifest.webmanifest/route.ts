@@ -1,22 +1,24 @@
 import { NextResponse } from 'next/server';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { brandForHost } from '@/lib/branding';
+import { brandFor } from '@/lib/branding';
+import { currentAccount } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
 /**
- * The installed app carries the producer's name, not the platform's.
+ * The installed app carries the producer's name and icon, not the platform's.
  *
  * A white-labelled workspace whose icon on the home screen says somebody
- * else's business is not white-labelled. The browser fetches this at install
- * time with the Host header set, which is the one moment the tenant is known
- * without a session, so the same host lookup the pages use decides what the
- * app is called.
+ * else's business is not white-labelled. The link in the document head asks
+ * for this with credentials, so the request arrives with the session cookie
+ * and the same lookup the shell uses decides whose app this is: a signed-in
+ * producer's own, a couple's producer's, or the host's tenant when nobody is
+ * signed in.
  *
- * Everything else comes from the file on disk. Duplicating the icon list, the
- * shortcuts and the screenshots here would mean two manifests drifting apart,
- * and the one that broke would be the one nobody looks at.
+ * Everything else comes from the file on disk. Duplicating the shortcuts and
+ * the screenshots here would mean two manifests drifting apart, and the one
+ * that broke would be the one nobody looks at.
  */
 export async function GET() {
   const file = path.join(process.cwd(), 'public', 'manifest.json');
@@ -33,7 +35,7 @@ export async function GET() {
   }
 
   try {
-    const brand = await brandForHost();
+    const brand = await brandFor(await currentAccount());
     if (!brand.isPlatform && brand.name) {
       base.name = brand.tagline ? `${brand.name} · ${brand.tagline}` : brand.name;
       /* Twelve characters is roughly what a home screen shows before it
@@ -43,6 +45,21 @@ export async function GET() {
       base.description = brand.tagline || base.description;
       base.theme_color = brand.accent.wash;
       base.background_color = brand.accent.wash;
+
+      /* The producer's own icon, when they uploaded one. Offered as both the
+         plain and the maskable icon: the rule on the branding screen asks for
+         a square with no empty margin, which is what a maskable icon needs. A
+         producer without one keeps the platform's icons rather than none,
+         because an install with no icon is the browser's grey letter. */
+      if (brand.iconUrl) {
+        base.icons = [
+          { src: brand.iconUrl, sizes: '512x512', type: 'image/png', purpose: 'any' },
+          { src: brand.iconUrl, sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+        ];
+        /* The screenshots are the platform's own screens. On a tenant's app
+           they would show another business's name in the install sheet. */
+        delete base.screenshots;
+      }
     }
   } catch (e) {
     /* Branding is an improvement to the manifest, never a precondition for
@@ -53,7 +70,8 @@ export async function GET() {
   return NextResponse.json(base, {
     headers: {
       'content-type': 'application/manifest+json; charset=utf-8',
-      'cache-control': 'public, max-age=300',
+      /* Private, because it now depends on who is asking. */
+      'cache-control': 'private, max-age=300',
     },
   });
 }

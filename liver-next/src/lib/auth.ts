@@ -20,6 +20,7 @@ export type Account = {
        every screen that draws a header. */
     accent: string; logoUrl: string | null; tagline: string;
     whatsapp: string; slug: string | null; domain: string | null;
+    iconUrl: string | null; coverUrl: string | null;
   } | null;
   /** workspaces this account may open: owned ones for a producer, invited ones
    *  for a couple. The root admin sees every workspace. */
@@ -50,7 +51,7 @@ export async function currentAccount(): Promise<Account | null> {
 
   const { data: producer } = await sb
     .from('producers')
-    .select('id,brand_name,status,accent,logo_url,tagline,whatsapp,slug,domain')
+    .select('id,brand_name,status,accent,logo_url,tagline,whatsapp,slug,domain,icon_url,cover_url')
     .eq('owner_id', user.id)
     .order('created_at')
     .limit(1)
@@ -75,6 +76,8 @@ export async function currentAccount(): Promise<Account | null> {
           whatsapp: producer.whatsapp ?? '',
           slug: producer.slug ?? null,
           domain: producer.domain ?? null,
+          iconUrl: producer.icon_url ?? null,
+          coverUrl: producer.cover_url ?? null,
         }
       : null,
     clientIds: (clients ?? []).map((c) => c.id),

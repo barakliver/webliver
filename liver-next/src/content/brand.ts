@@ -26,6 +26,11 @@
  *   light   on the dark ground only, where the ratios invert
  */
 
+/** The page's own ground, which the browser chrome continues on the
+ *  platform's address. Left behind by a palette change once already, which
+ *  is what a stale hex in a second file looks like; now there is one. */
+export const PAGE_GROUND = '#F3F6FA';
+
 export type Accent = {
   key: string;
   label: string;

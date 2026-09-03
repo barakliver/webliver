@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
-import { fileAllowed, MAX_FILE_BYTES } from '@/lib/fileTypes';
+import { fileAllowed, isMediaTag, MAX_FILE_BYTES } from '@/lib/fileTypes';
 
 export type FileResult = { ok: boolean; error?: string };
 
@@ -29,12 +29,15 @@ const refresh = (clientId: string) => {
  * object and read it back through their own screen.
  */
 export async function registerFile(input: {
-  clientId: string; path: string; name: string; mime: string; size: number; note?: string;
+  clientId: string; path: string; name: string; mime: string; size: number; note?: string; tag?: string;
 }): Promise<FileResult> {
   const { clientId, path, mime } = input;
   const name = String(input.name ?? '').trim().slice(0, 200);
   const note = String(input.note ?? '').trim().slice(0, 300);
   const size = Number(input.size) || 0;
+  /* An unknown tag is no tag, not a refusal: the picture matters more than
+     the word on it, and the word can be changed from the grid. */
+  const tag = isMediaTag(String(input.tag ?? '')) ? String(input.tag) : '';
 
   if (!clientId || !path || !name) return { ok: false, error: 'חסרים פרטים על הקובץ' };
   if (!path.startsWith(`${clientId}/`) || path.includes('..')) {
@@ -49,7 +52,7 @@ export async function registerFile(input: {
   if (!uid) return { ok: false, error: 'צריך להתחבר' };
 
   const { error } = await sb.from('client_files').insert({
-    client_id: clientId, uploaded_by: uid, name, path, mime, size_bytes: size, note,
+    client_id: clientId, uploaded_by: uid, name, path, mime, size_bytes: size, note, tag,
   });
 
   /* A file in the bucket with no row is a file nobody can see or remove, so it
@@ -91,4 +94,22 @@ export async function noteFile(form: FormData): Promise<void> {
   const sb = await supabaseServer();
   await sb.from('client_files').update({ note }).eq('id', id);
   refresh(clientId);
+}
+
+/** The tag moves as freely as the note, and for the same reason: which of
+ *  the four words a picture belongs under is a thing people get wrong on the
+ *  way in and right on the way past. */
+export async function tagFile(input: { fileId: string; clientId: string; tag: string }): Promise<FileResult> {
+  const { fileId, clientId } = input;
+  if (!fileId) return { ok: false, error: 'חסר מזהה קובץ' };
+  const tag = isMediaTag(input.tag) ? input.tag : '';
+
+  const sb = await supabaseServer();
+  const { error } = await sb.from('client_files').update({ tag }).eq('id', fileId);
+  if (error) {
+    console.error('[files] retag failed', error);
+    return { ok: false, error: 'לא הצלחנו לשמור את התיוג' };
+  }
+  refresh(clientId);
+  return { ok: true };
 }

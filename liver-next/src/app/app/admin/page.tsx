@@ -1,9 +1,10 @@
 import { formatDate } from '@/lib/dates';
-import { Check, Ban, RotateCcw, ShieldCheck, Lock } from 'lucide-react';
+import { Check, Ban, RotateCcw, ShieldCheck, Lock, LifeBuoy } from 'lucide-react';
+import Link from 'next/link';
 import { requireRoot, ROOT_ADMIN_EMAIL } from '@/lib/auth';
 import { getConsole, type ProducerRow, type Stats } from '@/lib/directory';
 import { setProducerStatus } from '@/app/actions/admin';
-import { appCopy } from '@/content/site';
+import { appCopy, ticketCopy } from '@/content/site';
 import { PageHead, Empty } from '@/components/app/PageHead';
 import { Referrals, type ReferralRow } from '@/components/app/Referrals';
 import { supabaseServer } from '@/lib/supabase/server';
@@ -192,6 +193,19 @@ export default async function AdminPage() {
         </section>
 
         <Referrals rows={referrals} siteUrl={publicEnv.siteUrl} mine={mine} />
+
+        {/* What people reported from inside the platform. Its own screen,
+            because a list of bugs under a list of producers is two lists. */}
+        <section className="card flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="inline-flex items-center gap-2 font-display text-[17px] font-light text-ink">
+              <LifeBuoy size={17} strokeWidth={1.5} aria-hidden />
+              {ticketCopy.admin.title}
+            </h2>
+            <p className="mt-1 text-[13.5px] text-ink-soft">{ticketCopy.admin.sub}</p>
+          </div>
+          <Link href="/app/admin/tickets" className="btn-ghost min-h-[38px] px-3.5 text-[13.5px]">{ticketCopy.admin.title}</Link>
+        </section>
 
         <FeatureFlags flags={flags} />
 

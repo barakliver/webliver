@@ -61,3 +61,9 @@ export function humanSize(bytes: number): string {
   if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
+
+/* The four words a picture in the shared folder can carry. Keys, not labels:
+   the Hebrew and the English for each live with the rest of the copy. */
+export const MEDIA_TAGS = ['venue', 'design', 'inspiration', 'vendors'] as const;
+export type MediaTag = (typeof MEDIA_TAGS)[number];
+export const isMediaTag = (v: string): v is MediaTag => (MEDIA_TAGS as readonly string[]).includes(v);

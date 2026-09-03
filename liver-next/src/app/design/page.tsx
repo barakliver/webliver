@@ -42,7 +42,7 @@ import { CalendarFeed } from '@/components/app/CalendarFeed';
 import {
   FIXTURE_CLIENT, FIXTURE_VIEWER,
   fixtureTasks, fixturePayments, fixtureBudget, fixtureGuests, fixtureTables,
-  fixtureSeatGuests, fixtureDay, fixtureMessages, fixtureContracts, fixtureFiles,
+  fixtureSeatGuests, fixtureDay, fixtureMessages, fixtureContracts, fixtureFiles, fixtureMedia,
   fixtureSongs, fixtureKit, fixturePeople, fixtureBoard, fixtureShopItems,
   fixtureStatus, fixtureAttention, fixtureOrders, fixtureShelf, fixtureCrew,
   fixtureLeads, fixtureCalls, fixtureVendors,
@@ -59,6 +59,11 @@ import { guestSiteFor } from '@/content/ui';
 import { AppShell } from '@/components/app/AppShell';
 import { ProducerLinkCard } from '@/components/app/ProducerLinkCard';
 import { BrandEditor } from '@/components/app/BrandEditor';
+import { BrandAssets } from '@/components/app/BrandAssets';
+import { NoticeBell } from '@/components/app/NoticeBell';
+import { IssueReporter } from '@/components/app/IssueReporter';
+import { VendorImport } from '@/components/app/VendorImport';
+import { ProducerCopilot } from '@/components/app/ProducerCopilot';
 import { accentByKey } from '@/content/brand';
 import type { Account } from '@/lib/auth';
 import ConsoleLoading from '@/app/app/loading';
@@ -350,13 +355,13 @@ export default async function DesignPage() {
                 role: 'super_admin', clientIds: [],
                 producer: {
                   id: 'p1', brandName: 'הפקות הצפון', status: 'approved', accent: 'slate', logoUrl: null,
-                  tagline: 'הפקת אירועים', whatsapp: '', slug: null, domain: null,
+                  tagline: 'הפקת אירועים', whatsapp: '', slug: null, domain: null, iconUrl: null, coverUrl: null,
                 },
               } as Account}
               notices={[
                 { id: 'n1', kind: 'lead', title: 'פנייה חדשה מהאתר', body: 'רוני ועומר', href: '/app/leads', read_at: null, created_at: new Date().toISOString() },
               ] as never}
-              brand={{ name: 'הפקות הצפון', tagline: 'הפקת אירועים', logoUrl: null, whatsapp: '', bookingUrl: '', accent: accentByKey('teal'), isPlatform: false }}
+              brand={{ name: 'הפקות הצפון', tagline: 'הפקת אירועים', logoUrl: null, iconUrl: null, coverUrl: null, whatsapp: '', bookingUrl: '', accent: accentByKey('teal'), isPlatform: false }}
             >
               <div className="flex flex-wrap items-center gap-3">
                 <button type="button" className="btn-primary">שמירה</button>
@@ -366,6 +371,40 @@ export default async function DesignPage() {
               <div className="skeleton mt-6 h-32 w-full" />
             </AppShell>
           </div>
+        </Panel>
+
+        <Panel name="BrandAssets" note="the three pictures, each with its rules beside the button; one already uploaded">
+          <BrandAssets urls={{ logo: null, icon: fixtureMedia[1].url, cover: fixtureMedia[0].url }} />
+        </Panel>
+
+        <Panel name="MediaVault · producer" note="the shared folder with pictures: four tags, one untagged, manage mode and the lightbox">
+          <EventFiles clientId={client} files={[...fixtureMedia, ...fixtureFiles]} viewer="producer" />
+        </Panel>
+
+        <Panel name="VendorImport" note="the sheet importer before a file is chosen: template, drop zone">
+          <VendorImport existingNames={['סטודיו לביא']} />
+        </Panel>
+
+        <Panel name="NoticeBell" note="the bell with three unread; open it">
+          <div className="flex justify-end rounded-xl2 border border-line bg-card p-3">
+            <NoticeBell notices={[
+              { id: 'n1', kind: 'lead', title: 'פנייה חדשה מהאתר', body: 'רוני ועומר, חתונה ביוני', href: '/app/leads', read_at: null, created_at: new Date(Date.now() - 4 * 60_000).toISOString() },
+              { id: 'n2', kind: 'rsvp', title: 'אישור הגעה', body: 'משפחת כהן, 4 מגיעים', href: '/app/clients', read_at: null, created_at: new Date(Date.now() - 3 * 3_600_000).toISOString() },
+              { id: 'n3', kind: 'ticket', title: 'עדן חיימוב', body: 'הכפתור של השמירה לא מגיב במסך המיתוג', href: '/app/admin/tickets', read_at: null, created_at: new Date(Date.now() - 26 * 3_600_000).toISOString() },
+              { id: 'n4', kind: 'payment', title: 'תשלום התקבל', body: 'מקדמה, נועה ואיתי', href: '/app/clients', read_at: new Date().toISOString(), created_at: new Date(Date.now() - 3 * 86_400_000).toISOString() },
+            ]} />
+          </div>
+        </Panel>
+
+        <Panel name="IssueReporter" note="the bug button; the sheet it opens captures the route and the browser itself">
+          <div className="flex justify-end rounded-xl2 border border-line bg-card p-3">
+            <IssueReporter userId={FIXTURE_VIEWER} />
+          </div>
+        </Panel>
+
+        <Panel name="ProducerCopilot" note="the floating assistant; the button sits fixed at the end edge of this page">
+          <ProducerCopilot brandName="הפקות הצפון" />
+          <p className="text-[13px] text-ink-mute">הכפתור צף בפינת המסך. פותחים אותו ומקבלים את הפתיח וארבע ההצעות; שליחה דורשת מפתח API.</p>
         </Panel>
 
         <Panel name="Loading · console" note="what a tap on the navigation shows before the server answers">

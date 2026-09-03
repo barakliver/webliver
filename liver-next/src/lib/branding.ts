@@ -26,6 +26,12 @@ export type Brand = {
   name: string;
   tagline: string;
   logoUrl: string | null;
+  /** The square icon an installed app shows. Null falls back to the
+   *  platform's, which is the one thing a white label should not do, so the
+   *  branding screen asks for it by name. */
+  iconUrl: string | null;
+  /** A wide photograph for the front door and the share card. */
+  coverUrl: string | null;
   whatsapp: string;
   bookingUrl: string;
   accent: Accent;
@@ -38,6 +44,8 @@ const PLATFORM: Brand = {
   name: site.brand,
   tagline: '',
   logoUrl: null,
+  iconUrl: null,
+  coverUrl: null,
   whatsapp: '',
   bookingUrl: '',
   accent: accentByKey('slate'),
@@ -49,6 +57,8 @@ type Row = {
   tagline?: string | null;
   accent?: string | null;
   logo_url?: string | null;
+  icon_url?: string | null;
+  cover_url?: string | null;
   whatsapp?: string | null;
   booking_url?: string | null;
 };
@@ -57,6 +67,8 @@ const shape = (r: Row): Brand => ({
   name: r.brand || site.brand,
   tagline: r.tagline || '',
   logoUrl: r.logo_url || null,
+  iconUrl: r.icon_url || null,
+  coverUrl: r.cover_url || null,
   whatsapp: r.whatsapp || '',
   bookingUrl: r.booking_url || '',
   accent: accentByKey(r.accent),
@@ -76,6 +88,8 @@ export async function brandFor(account: Account | null): Promise<Brand> {
       name: account.producer.brandName || site.brand,
       tagline: account.producer.tagline,
       logoUrl: account.producer.logoUrl,
+      iconUrl: account.producer.iconUrl,
+      coverUrl: account.producer.coverUrl,
       whatsapp: account.producer.whatsapp,
       bookingUrl: '',
       accent: accentByKey(account.producer.accent),

@@ -6415,3 +6415,289 @@ revoke all on function public.guest_site(text) from public;
 revoke all on function public.guest_find(text, text) from public;
 grant execute on function public.guest_site(text) to anon, authenticated;
 grant execute on function public.guest_find(text, text) to anon, authenticated;
+
+-- ============================================================================
+--  0046 — the producer's own mark on the home screen
+-- ============================================================================
+--  The installed app carried the producer's name and the platform's icon. A
+--  home screen is the one place a brand is looked at forty times a day, and an
+--  icon that belongs to somebody else's business undoes every other line of
+--  the white label.
+--
+--  Three pictures, one bucket. The logo (already a column, never uploadable
+--  from the branding screen until now), the app icon the phone shows, and a
+--  cover the front door and the share card can carry. Public for read, since
+--  every one of them is drawn on a page a stranger may open; writable by the
+--  producer who owns the folder and nobody else.
+-- ============================================================================
+
+alter table public.producers add column if not exists icon_url  text;
+alter table public.producers add column if not exists cover_url text;
+
+comment on column public.producers.icon_url is
+  'The square icon an installed app shows. A public URL in the brand bucket.';
+comment on column public.producers.cover_url is
+  'A wide photograph for the front door and the share card. Public URL.';
+
+
+-- ── the bucket ──────────────────────────────────────────────────────────────
+--  Laid out as <producer_id>/<file>, the same shape as avatars: the folder is
+--  the owner. storage_owner_id() reads the first segment as a uuid and answers
+--  null for anything else, and owns_producer(null) is false, so a file dropped
+--  at the root of the bucket belongs to nobody and cannot be written.
+insert into storage.buckets (id, name, public)
+values ('brand', 'brand', true)
+on conflict (id) do update set public = true;
+
+drop policy if exists brand_objects_read on storage.objects;
+create policy brand_objects_read on storage.objects for select
+  using (bucket_id = 'brand');
+
+drop policy if exists brand_objects_write on storage.objects;
+create policy brand_objects_write on storage.objects for insert
+  with check (bucket_id = 'brand' and public.owns_producer(public.storage_owner_id(name)));
+
+drop policy if exists brand_objects_update on storage.objects;
+create policy brand_objects_update on storage.objects for update
+  using (bucket_id = 'brand' and public.owns_producer(public.storage_owner_id(name)));
+
+drop policy if exists brand_objects_delete on storage.objects;
+create policy brand_objects_delete on storage.objects for delete
+  using (bucket_id = 'brand' and public.owns_producer(public.storage_owner_id(name)));
+
+
+-- ── the two lookups learn the two new pictures ──────────────────────────────
+--  A function's return shape cannot be changed in place, so both are dropped
+--  and written again with the same body plus two columns. Everything that
+--  called them reads by name, so the extra columns cost nobody anything.
+drop function if exists public.producer_by_host(text);
+create or replace function public.producer_by_host(p_host text)
+returns table (
+  brand text, tagline text, accent text, logo_url text, whatsapp text, booking_url text,
+  icon_url text, cover_url text
+)
+language sql stable security definer set search_path = public as $$
+  select
+    coalesce(nullif(pr.brand_name, ''), nullif(pr.contact_name, ''), ''),
+    pr.tagline,
+    pr.accent,
+    pr.logo_url,
+    pr.whatsapp,
+    pr.booking_url,
+    pr.icon_url,
+    pr.cover_url
+  from public.producers pr
+  where pr.status = 'approved'
+    and (
+      pr.domain = lower(btrim(p_host))
+      or pr.slug = split_part(lower(btrim(p_host)), '.', 1)
+    )
+  order by (pr.domain = lower(btrim(p_host))) desc
+  limit 1
+$$;
+
+revoke all on function public.producer_by_host(text) from public;
+grant execute on function public.producer_by_host(text) to anon, authenticated, service_role;
+
+drop function if exists public.my_workspace_brand();
+create or replace function public.my_workspace_brand()
+returns table (
+  brand text, tagline text, accent text, logo_url text, whatsapp text, booking_url text,
+  icon_url text, cover_url text
+)
+language sql stable security definer set search_path = public as $$
+  select
+    coalesce(nullif(pr.brand_name, ''), nullif(pr.contact_name, ''), ''),
+    pr.tagline,
+    pr.accent,
+    pr.logo_url,
+    pr.whatsapp,
+    pr.booking_url,
+    pr.icon_url,
+    pr.cover_url
+  from public.clients c
+  join public.producers pr on pr.id = c.producer_id
+  where public.can_read_client(c.id)
+    and c.archived_at is null
+  order by c.event_date asc nulls last
+  limit 1
+$$;
+
+revoke all on function public.my_workspace_brand() from public;
+grant execute on function public.my_workspace_brand() to authenticated;
+
+-- ============================================================================
+--  0047 — a tag on every picture
+-- ============================================================================
+--  The shared folder took photographs from the first day and showed them as
+--  one grid. By the third site visit that grid is sixty pictures with no
+--  order: the hall, the florist's samples, a screenshot of somebody else's
+--  wedding, a supplier's price list photographed off a desk. Four words sort
+--  all of it, and the same four words are what the producer says out loud
+--  when asked what a picture is.
+--
+--  A column rather than a table. A file has one tag or none; a join table
+--  would let it have three, and then the question "where is the picture of
+--  the hall" has three answers.
+-- ============================================================================
+
+alter table public.client_files add column if not exists tag text not null default '';
+
+do $$ begin
+  alter table public.client_files add constraint client_files_tag_known
+    check (tag in ('', 'venue', 'design', 'inspiration', 'vendors'));
+exception when duplicate_object then null; end $$;
+
+comment on column public.client_files.tag is
+  'One of venue, design, inspiration, vendors, or empty. The keys are fixed; '
+  'the words for them live in src/content/site.ts.';
+
+/* The tag is the second thing worth changing after the fact, next to the
+   note. The provenance trigger from 0039 lists the columns it freezes and this
+   is not one of them, so the existing update policy already lets it move. */
+create index if not exists client_files_tag_idx
+  on public.client_files (client_id, tag);
+
+-- ============================================================================
+--  0048 — what the supplier costs
+-- ============================================================================
+--  The directory held who a supplier is and how to reach them, and nothing
+--  about money. The spreadsheet every producer already keeps holds exactly
+--  two more columns: the price agreed and the deposit already paid. Importing
+--  that sheet without those two would drop the half the producer opens it for.
+--
+--  On the directory rather than the event, because that is where the sheet
+--  keeps them: the florist's usual price, the retainer she asks for. An
+--  event's own figures stay in budget_items, where they always were.
+-- ============================================================================
+
+alter table public.vendors add column if not exists agreed_price numeric(12,2);
+alter table public.vendors add column if not exists deposit_paid numeric(12,2);
+
+do $$ begin
+  alter table public.vendors add constraint vendors_money_sane
+    check (
+      (agreed_price is null or agreed_price >= 0)
+      and (deposit_paid is null or deposit_paid >= 0)
+    );
+exception when duplicate_object then null; end $$;
+
+comment on column public.vendors.agreed_price is
+  'The usual agreed price, in shekels. Null when it was never written down.';
+comment on column public.vendors.deposit_paid is
+  'The deposit already paid against that price, in shekels.';
+
+-- ============================================================================
+--  0049 — saying something is wrong
+-- ============================================================================
+--  A couple could already tell their producer that something looked off; it
+--  lands as a message on the event. Nobody could tell the platform. A button
+--  that did not open, a screen that came up blank, a number that did not add
+--  up: all of it went to WhatsApp, or nowhere.
+--
+--  One table, written by whoever is signed in, read by the person who wrote
+--  it and by the root account that answers it. The screenshot goes to a
+--  private bucket under the reporter's own folder, and the mail that goes out
+--  carries a signed link to it rather than the file.
+-- ============================================================================
+
+alter type notice_kind add value if not exists 'ticket';
+
+create table if not exists public.support_tickets (
+  id              uuid primary key default gen_random_uuid(),
+  reporter_id     uuid references public.profiles(id) on delete set null,
+  producer_id     uuid references public.producers(id) on delete set null,
+  category        text not null default 'other',
+  body            text not null,
+  route           text not null default '',
+  agent           text not null default '',
+  screenshot_path text,
+  status          text not null default 'open',
+  created_at      timestamptz not null default now(),
+  resolved_at     timestamptz,
+  constraint support_tickets_category check (category in ('visual', 'auth', 'data', 'other')),
+  constraint support_tickets_status   check (status in ('open', 'closed')),
+  constraint support_tickets_body_len check (char_length(btrim(body)) between 2 and 2000),
+  constraint support_tickets_route_len check (char_length(route) <= 300),
+  constraint support_tickets_agent_len check (char_length(agent) <= 400)
+);
+
+create index if not exists support_tickets_open_idx
+  on public.support_tickets (status, created_at desc);
+
+alter table public.support_tickets enable row level security;
+
+/* Signing your own name. A ticket filed as somebody else is a ticket the
+   answer goes to the wrong person about. */
+drop policy if exists support_tickets_write on public.support_tickets;
+create policy support_tickets_write on public.support_tickets for insert
+  with check (reporter_id = auth.uid());
+
+drop policy if exists support_tickets_read on public.support_tickets;
+create policy support_tickets_read on public.support_tickets for select
+  using (reporter_id = auth.uid() or public.is_super_admin());
+
+/* Only the account that answers tickets may close one. */
+drop policy if exists support_tickets_update on public.support_tickets;
+create policy support_tickets_update on public.support_tickets for update
+  using (public.is_super_admin())
+  with check (public.is_super_admin());
+
+grant all on public.support_tickets to authenticated, service_role;
+
+
+-- ── the screenshot ──────────────────────────────────────────────────────────
+--  Private. The folder is the reporter, the same rule the avatars use, and the
+--  root account may read any of them because it is the one that looks.
+insert into storage.buckets (id, name, public)
+values ('support', 'support', false)
+on conflict (id) do update set public = false;
+
+drop policy if exists support_objects_read on storage.objects;
+create policy support_objects_read on storage.objects for select
+  using (
+    bucket_id = 'support'
+    and (public.storage_owner_id(name) = auth.uid() or public.is_super_admin())
+  );
+
+drop policy if exists support_objects_write on storage.objects;
+create policy support_objects_write on storage.objects for insert
+  with check (bucket_id = 'support' and public.storage_owner_id(name) = auth.uid());
+
+drop policy if exists support_objects_delete on storage.objects;
+create policy support_objects_delete on storage.objects for delete
+  using (
+    bucket_id = 'support'
+    and (public.storage_owner_id(name) = auth.uid() or public.is_super_admin())
+  );
+
+
+-- ── the bell rings for the account that answers ─────────────────────────────
+--  Mail can be missed; the bell inside the console cannot, and it is where the
+--  root account already is. The reporter is not told they reported.
+create or replace function public.notify_new_ticket() returns trigger
+language plpgsql security definer set search_path = public as $$
+declare
+  root_id uuid;
+  author  text;
+begin
+  select p.id into root_id
+    from public.profiles p
+   where lower(p.email) = public.root_admin_email()
+   limit 1;
+
+  if root_id is null or root_id = new.reporter_id then
+    return new;
+  end if;
+
+  select coalesce(nullif(btrim(p.full_name), ''), p.email) into author
+    from public.profiles p where p.id = new.reporter_id;
+
+  perform public.notify(root_id, 'ticket', coalesce(author, 'דיווח חדש'),
+                        left(new.body, 120), '/app/admin/tickets');
+  return new;
+end $$;
+
+drop trigger if exists support_tickets_notify on public.support_tickets;
+create trigger support_tickets_notify after insert on public.support_tickets
+  for each row execute function public.notify_new_ticket();

@@ -7,6 +7,8 @@ import type { Account } from '@/lib/auth';
 import { NoticeBell, type Notice } from './NoticeBell';
 import { SidebarNav, MobileTabBar, type NavItem } from './AppNav';
 import { Avatar } from './Avatar';
+import { IssueReporter } from './IssueReporter';
+import { ProducerCopilot } from './ProducerCopilot';
 import { cn } from '@/lib/utils';
 
 /** The couple's two labels in the couple's language. The producer's console
@@ -71,6 +73,7 @@ export function AppShell({
   clientNav?: ClientNavLabels; children: React.ReactNode;
 }) {
   const items = navFor(account, clientNav);
+  const isProducer = account.role !== 'client';
 
   return (
     /* The accent is repainted here rather than in a stylesheet: one style
@@ -95,12 +98,11 @@ export function AppShell({
 
             {/* The account, directly under the mark. It sat at the foot of
                 the rail, pinned to the bottom of the viewport, which on a
-                laptop put the name, the bell and the way out behind the
-                floating accessibility button and the last few pixels of the
-                window: the one row that says who is signed in and how many
-                things are waiting was the row nobody could see. Up here it is
-                always in view, and the rail scrolls rather than clips when a
-                screen is short. */}
+                laptop put the name and the way out behind the floating
+                accessibility button and the last few pixels of the window.
+                Up here it is always in view, and the rail scrolls rather
+                than clips when a screen is short. The bell moved to the top
+                bar, where every app keeps one. */}
             <div className="mt-5 flex min-w-0 items-center gap-2">
               <Link
                 href="/app/me"
@@ -111,7 +113,6 @@ export function AppShell({
                   {account.fullName || account.email}
                 </span>
               </Link>
-              <NoticeBell notices={notices} />
               <form action={signOut}>
                 <button
                   type="submit"
@@ -134,8 +135,8 @@ export function AppShell({
         <div className="flex min-w-0 flex-1 flex-col">
           {/* ── the phone's header ──────────────────────────────────────
               Below the rail's width the navigation is the bottom bar, so
-              this carries only the mark and the two controls that have
-              nowhere else to be.
+              this carries only the mark and the controls that have nowhere
+              else to be.
 
               The top inset is the whole reason this looks wrong installed.
               The viewport is set to `cover` so the page can reach the edges,
@@ -149,11 +150,12 @@ export function AppShell({
           >
             <div className="shell flex h-14 items-center justify-between gap-4 sm:h-16">
               <Brand brand={brand} />
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1">
+                <IssueReporter userId={account.id} compact />
                 <NoticeBell notices={notices} />
                 <Link
                   href="/app/me"
-                  className="transition-opacity hover:opacity-80"
+                  className="ms-1 transition-opacity hover:opacity-80"
                   aria-label={appCopy.profile.title}
                 >
                   <Avatar name={account.fullName || account.email} src={account.avatarUrl} size={32} />
@@ -173,6 +175,18 @@ export function AppShell({
             </div>
           </header>
 
+          {/* ── the desk's top bar ──────────────────────────────────────
+              A thin strip over the content with the two things wanted from
+              any screen: what happened, and a way to say something is wrong.
+              At the end edge, where every app keeps them, and glass so the
+              page shows through as it scrolls under. */}
+          <header className="glass sticky top-0 z-40 hidden border-b border-line lg:block">
+            <div className="mx-auto flex h-14 w-full max-w-content items-center justify-end gap-1 px-8">
+              <IssueReporter userId={account.id} />
+              <NoticeBell notices={notices} />
+            </div>
+          </header>
+
           {/* pb leaves room for the bottom bar plus the home indicator, and
               stops doing so at the width where the bottom bar goes away. */}
           <main
@@ -185,6 +199,11 @@ export function AppShell({
       </div>
 
       <MobileTabBar items={items} />
+
+      {/* The producer's own assistant. Not for a couple: their concierge is
+          the producer, and a second voice in their area would be the
+          platform speaking, which it must not. */}
+      {isProducer && <ProducerCopilot brandName={brand.name} />}
     </div>
   );
 }

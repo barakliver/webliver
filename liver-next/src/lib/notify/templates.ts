@@ -142,3 +142,34 @@ export function clientInviteEmail(opts: {
     </p>` : ''}`, opts.brand);
 }
 
+
+/** The alert that a report from inside the platform sends to the account
+ *  that answers them. Everything the reporter could not be asked to gather
+ *  is already here: which screen, which browser, which business. */
+export function supportTicketEmail(t: {
+  id: string; category: string; body: string; route: string; agent: string;
+  reporter: string; email: string; role: string; producer: string;
+  screenshotUrl: string; consoleUrl: string;
+}) {
+  const category: Record<string, string> = {
+    visual: 'באג ויזואלי', auth: 'תקלת התחברות', data: 'שגיאת נתונים', other: 'אחר',
+  };
+  const esc = (v: string) => v.replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch] ?? ch));
+  return shell(`
+    <h2 style="margin:0 0 4px;font-size:20px;color:#0b1220">דיווח על תקלה</h2>
+    <p style="margin:0 0 16px;color:#6b7686;font-size:14px">${esc(category[t.category] ?? t.category)}</p>
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.8;color:#0b1220;white-space:pre-wrap">${esc(t.body)}</p>
+    <table style="width:100%;font-size:14px;border-collapse:collapse">
+      ${row('דווח על ידי', esc(t.reporter))}${row('אימייל', esc(t.email))}${row('תפקיד', esc(t.role))}
+      ${row('עסק', esc(t.producer))}
+      ${row('מסך', `<span dir="ltr">${esc(t.route)}</span>`)}
+      ${row('דפדפן', `<span dir="ltr" style="font-size:12.5px">${esc(t.agent)}</span>`)}
+      ${t.screenshotUrl ? row('צילום מסך', `<a href="${t.screenshotUrl}" style="color:#a3814f">פתיחה</a>`) : ''}
+    </table>
+    <a href="${t.consoleUrl}"
+       style="display:inline-block;margin-top:18px;background:#0e1620;color:#fff;text-decoration:none;
+              border-radius:999px;padding:12px 24px;font-size:14px;font-weight:600">
+      לרשימת הדיווחים
+    </a>
+    <p style="margin:14px 0 0;font-size:12px;color:#9aa4b2" dir="ltr">${esc(t.id)}</p>`);
+}

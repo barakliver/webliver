@@ -2,7 +2,9 @@
 
 import { useActionState, useMemo, useState } from 'react';
 import { useFormStatus } from 'react-dom';
-import { Archive, ArchiveRestore, Pencil, Plus, Search, X } from 'lucide-react';
+import { Archive, ArchiveRestore, FileSpreadsheet, Pencil, Plus, Search, X } from 'lucide-react';
+import { VendorImport } from './VendorImport';
+import { Ltr } from '@/components/Ltr';
 import { addVendor, updateVendor, setVendorArchived, type VendorResult } from '@/app/actions/vendors';
 import { VENDOR_CATEGORIES, categoryLabel } from '@/content/production';
 import { vendorCopy as c } from '@/content/site';
@@ -10,7 +12,10 @@ import { vendorCopy as c } from '@/content/site';
 export type Vendor = {
   id: string; name: string; category: string; contact_name: string;
   phone: string; email: string; area: string; notes: string; archived_at: string | null;
+  agreed_price: number | null; deposit_paid: number | null;
 };
+
+const shekels = new Intl.NumberFormat('he-IL', { style: 'currency', currency: 'ILS', maximumFractionDigits: 0 });
 
 function Save() {
   const { pending } = useFormStatus();
@@ -56,6 +61,16 @@ function Fields({ vendor }: { vendor?: Vendor }) {
         <div>
           <label className="label">{c.area}</label>
           <input name="area" defaultValue={vendor?.area} autoComplete="off" className="field" />
+        </div>
+      </div>
+      <div className="mt-3 grid gap-3 sm:grid-cols-2">
+        <div>
+          <label className="label">{c.agreedPrice}</label>
+          <input name="agreed_price" type="number" inputMode="decimal" min={0} step="1" dir="ltr" defaultValue={vendor?.agreed_price ?? ''} className="field" />
+        </div>
+        <div>
+          <label className="label">{c.depositPaid}</label>
+          <input name="deposit_paid" type="number" inputMode="decimal" min={0} step="1" dir="ltr" defaultValue={vendor?.deposit_paid ?? ''} className="field" />
         </div>
       </div>
       <div className="mt-3">
@@ -106,6 +121,12 @@ function Row({ vendor }: { vendor: Vendor }) {
           {vendor.contact_name && <span>{vendor.contact_name}</span>}
           {vendor.phone && <a href={`tel:${vendor.phone}`} dir="ltr" className="hover:text-accent">{vendor.phone}</a>}
           {vendor.area && <span>{vendor.area}</span>}
+          {vendor.agreed_price !== null && (
+            <span>{c.agreedPrice} <Ltr>{shekels.format(vendor.agreed_price)}</Ltr></span>
+          )}
+          {vendor.deposit_paid !== null && vendor.deposit_paid > 0 && (
+            <span>{c.depositPaid} <Ltr>{shekels.format(vendor.deposit_paid)}</Ltr></span>
+          )}
         </div>
         {vendor.notes && <p className="mt-1 text-[13px] text-ink-soft">{vendor.notes}</p>}
       </div>
@@ -148,6 +169,7 @@ function Row({ vendor }: { vendor: Vendor }) {
  */
 export function VendorDirectory({ vendors }: { vendors: Vendor[] }) {
   const [adding, setAdding] = useState(false);
+  const [importing, setImporting] = useState(false);
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('');
   const [showArchived, setShowArchived] = useState(false);
@@ -209,13 +231,27 @@ export function VendorDirectory({ vendors }: { vendors: Vendor[] }) {
         </select>
 
         <button
-          type="button" onClick={() => setAdding((v) => !v)}
+          type="button" onClick={() => { setImporting((v) => !v); setAdding(false); }}
+          aria-pressed={importing}
+          className="btn-ghost whitespace-nowrap"
+        >
+          <FileSpreadsheet size={16} aria-hidden strokeWidth={1.5} />
+          {importing ? c.close : c.import.open}
+        </button>
+        <button
+          type="button" onClick={() => { setAdding((v) => !v); setImporting(false); }}
           className="btn-primary whitespace-nowrap"
         >
           <Plus size={16} aria-hidden strokeWidth={1.5} />
           {adding ? c.close : c.dirAdd}
         </button>
       </div>
+
+      {importing && (
+        <div className="mb-6">
+          <VendorImport existingNames={vendors.map((v) => v.name)} onDone={() => setImporting(false)} />
+        </div>
+      )}
 
       {archivedCount > 0 && (
         <nav className="mb-5 inline-flex rounded-xl2 border border-line bg-surface-100 p-1 text-[14px]">

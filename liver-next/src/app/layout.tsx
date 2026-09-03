@@ -3,6 +3,7 @@ import { Heebo, Frank_Ruhl_Libre } from 'next/font/google';
 import { site } from '@/content/site';
 import { siteEn } from '@/content/site.en';
 import { brandForHost } from '@/lib/branding';
+import { PAGE_GROUND } from '@/content/brand';
 import { publicEnv } from '@/lib/env';
 import { ServiceWorker } from '@/components/app/ServiceWorker';
 import { VersionWatch } from '@/components/app/VersionWatch';
@@ -66,14 +67,17 @@ export async function generateMetadata(): Promise<Metadata> {
   const brand = await brandForHost();
   if (!brand.isPlatform) {
     const title = brand.tagline ? `${brand.name} | ${brand.tagline}` : brand.name;
+    /* The producer's own icon on the tab and on the home screen, when they
+       uploaded one. A png is asked for on the branding screen, and iOS reads
+       nothing else for apple-touch-icon. */
+    const icon = brand.iconUrl ?? '/icon-192.png';
     return {
       metadataBase: new URL(publicEnv.siteUrl),
       title: { default: title, template: `%s | ${brand.name}` },
       description,
-      manifest: '/manifest.webmanifest',
       appleWebApp: { capable: true, title: brand.name, statusBarStyle: 'black-translucent' },
       other: { 'apple-mobile-web-app-capable': 'yes' },
-      icons: { icon: '/icon-192.png', apple: '/icon-192.png' },
+      icons: { icon, apple: icon },
       /* No og.jpg here: that file is the platform owner's photograph with his
          name set into it. A share card with the wrong producer's face is worse
          than a share card with no image. */
@@ -93,7 +97,6 @@ export async function generateMetadata(): Promise<Metadata> {
     metadataBase: new URL(publicEnv.siteUrl),
     title: { default: `${c.brand} | ${c.tagline}`, template: `%s | ${c.brand}` },
     description,
-    manifest: '/manifest.webmanifest',
     appleWebApp: { capable: true, title: 'Liver', statusBarStyle: 'black-translucent' },
     /* `appleWebApp.capable` emits the standard `mobile-web-app-capable` and, in
        this version, not the legacy Apple one. Older iOS reads only the legacy
@@ -133,17 +136,21 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export const viewport: Viewport = {
-  /* The app's own ground, so the browser chrome and the status bar continue
-     the page rather than framing it. Left behind by the palette change once
-     already, which is what a stale hex in a second file looks like. */
-  themeColor: '#F3F6FA',
-  width: 'device-width',
-  initialScale: 1,
-  /* cover lets env(safe-area-inset-*) report real values; globals.css spends
-     them, otherwise an installed app draws its header under the clock */
-  viewportFit: 'cover',
-};
+export async function generateViewport(): Promise<Viewport> {
+  /* On a tenant's host the browser chrome takes the tenant's wash, so the
+     status bar continues their page rather than framing it in the platform's
+     colour. Same short-circuit as the metadata: no database read on the
+     platform's own address. */
+  const brand = await brandForHost();
+  return {
+    themeColor: brand.isPlatform ? PAGE_GROUND : brand.accent.wash,
+    width: 'device-width',
+    initialScale: 1,
+    /* cover lets env(safe-area-inset-*) report real values; globals.css spends
+       them, otherwise an installed app draws its header under the clock */
+    viewportFit: 'cover',
+  };
+}
 
 /* The one place the page's language and direction are decided. `dir` is an
    attribute on `<html>`, so nothing further down can flip it and everything
@@ -156,6 +163,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   return (
     <html lang={locale} dir={dir} className={`${heebo.variable} ${frank.variable}`}>
+      <head>
+        {/* Written by hand rather than through `metadata.manifest`, for one
+            attribute: a manifest is fetched without cookies unless the link
+            says `use-credentials`, and the manifest route needs the session
+            to know whose app is being installed. Without it every producer
+            installing from the platform's address got the platform's name on
+            their home screen, whatever the shell said. */}
+        <link rel="manifest" href="/manifest.webmanifest" crossOrigin="use-credentials" />
+      </head>
       <body className="font-sans antialiased a11y-zoom">
         {/* Pinned to the start edge rather than the right one, so it lands in
             the corner a reader of this language is already looking at. */}

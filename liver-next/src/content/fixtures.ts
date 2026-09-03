@@ -118,8 +118,24 @@ export const fixtureContracts: Contract[] = [
 ];
 
 export const fixtureFiles: EventFile[] = [
-  { id: 'f1', name: 'הזמנה-סופית.pdf', note: 'הגרסה שיצאה לדפוס', mime: 'application/pdf', size_bytes: 840_000, created_at: hoursAgo(70), uploader: 'נועה', mine: true, url: '#' },
-  { id: 'f2', name: 'תוכנית-אולם.xlsx', note: '', mime: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', size_bytes: 62_000, created_at: hoursAgo(30), uploader: 'ברק ליור', mine: false, url: '#' },
+  { id: 'f1', name: 'הזמנה-סופית.pdf', note: 'הגרסה שיצאה לדפוס', tag: '', mime: 'application/pdf', size_bytes: 840_000, created_at: hoursAgo(70), uploader: 'נועה', mine: true, url: '#' },
+  { id: 'f2', name: 'תוכנית-אולם.xlsx', note: '', tag: '', mime: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', size_bytes: 62_000, created_at: hoursAgo(30), uploader: 'ברק ליור', mine: false, url: '#' },
+];
+
+/* Pictures for the vault: inline SVG data addresses, so the harness needs no
+   bucket and no network. Four tags and one untagged, which is what a real
+   folder looks like after a site visit. */
+const swatch = (a: string, b: string) =>
+  `data:image/svg+xml;utf8,${encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs><rect width="400" height="300" fill="url(#g)"/></svg>`,
+  )}`;
+
+export const fixtureMedia: EventFile[] = [
+  { id: 'm1', name: 'האולם-מהכניסה.jpg', note: 'הכניסה הראשית, שעת שקיעה', tag: 'venue', mime: 'image/jpeg', size_bytes: 2_400_000, created_at: hoursAgo(90), uploader: 'ברק ליור', mine: false, url: swatch('#c9b79c', '#7a6a55') },
+  { id: 'm2', name: 'שולחן-ראשי.jpg', note: '', tag: 'design', mime: 'image/jpeg', size_bytes: 1_900_000, created_at: hoursAgo(80), uploader: 'נועה', mine: true, url: swatch('#e8dccb', '#b89b7a') },
+  { id: 'm3', name: 'חופה-השראה.png', note: 'משהו בכיוון הזה, בלי הפרחים הכחולים', tag: 'inspiration', mime: 'image/png', size_bytes: 980_000, created_at: hoursAgo(60), uploader: 'נועה', mine: true, url: swatch('#d9e2dc', '#6f8a7c') },
+  { id: 'm4', name: 'הצעת-מחיר-פרחים.jpg', note: '', tag: 'vendors', mime: 'image/jpeg', size_bytes: 1_200_000, created_at: hoursAgo(40), uploader: 'ברק ליור', mine: false, url: swatch('#f0e6e0', '#a07c74') },
+  { id: 'm5', name: 'IMG_4412.jpg', note: '', tag: '', mime: 'image/jpeg', size_bytes: 3_100_000, created_at: hoursAgo(5), uploader: 'נועה', mine: true, url: swatch('#e6e9ee', '#7d8794') },
 ];
 
 export const fixtureSongs: Song[] = [
@@ -279,9 +295,9 @@ export const fixtureCalls: Call[] = [
 ];
 
 export const fixtureVendors: Vendor[] = [
-  { id: 'v1', name: 'סטודיו לביא', category: 'צילום', contact_name: 'אורי לביא', phone: '0544444444', email: 'uri@example.com', area: 'מרכז', notes: 'עובדים איתו קבוע', archived_at: null },
-  { id: 'v2', name: 'אלון מזרחי', category: 'מוזיקה', contact_name: '', phone: '0525555555', email: '', area: 'כל הארץ', notes: '', archived_at: null },
-  { id: 'v3', name: 'פרח לבן', category: 'עיצוב', contact_name: 'נטע', phone: '', email: 'neta@example.com', area: 'שרון', notes: '', archived_at: '2026-01-01T00:00:00Z' },
+  { id: 'v1', name: 'סטודיו לביא', category: 'צילום', contact_name: 'אורי לביא', phone: '0544444444', email: 'uri@example.com', area: 'מרכז', notes: 'עובדים איתו קבוע', archived_at: null, agreed_price: 14000, deposit_paid: 4000 },
+  { id: 'v2', name: 'אלון מזרחי', category: 'מוזיקה', contact_name: '', phone: '0525555555', email: '', area: 'כל הארץ', notes: '', archived_at: null, agreed_price: null, deposit_paid: null },
+  { id: 'v3', name: 'פרח לבן', category: 'עיצוב', contact_name: 'נטע', phone: '', email: 'neta@example.com', area: 'שרון', notes: '', archived_at: '2026-01-01T00:00:00Z', agreed_price: 6500, deposit_paid: 0 },
 ];
 
 /* ── The screens added in the second sweep ─────────────────────────────── */

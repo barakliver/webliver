@@ -19,10 +19,21 @@ function touchEvent(clientId: string) {
 
 /* ── the producer's directory ───────────────────────────────────────────── */
 
+/** A shekel figure from a form field: blank is null, anything that is not a
+ *  non-negative number is null too, rather than a refusal over a stray comma. */
+function money(raw: FormDataEntryValue | null): number | null {
+  const s = String(raw ?? '').replace(/[^\d.]/g, '');
+  if (!s) return null;
+  const n = Number(s);
+  return Number.isFinite(n) && n >= 0 ? Math.round(n * 100) / 100 : null;
+}
+
 function directoryFields(form: FormData) {
   const name = String(form.get('name') ?? '').trim();
   if (name.length < 2) return 'נא למלא שם ספק';
   return {
+    agreed_price: money(form.get('agreed_price')),
+    deposit_paid: money(form.get('deposit_paid')),
     name: name.slice(0, 120),
     category: String(form.get('category') ?? '').trim().slice(0, 40),
     contact_name: String(form.get('contact_name') ?? '').trim().slice(0, 120),

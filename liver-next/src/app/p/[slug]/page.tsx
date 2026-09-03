@@ -12,6 +12,7 @@ export const dynamic = 'force-dynamic';
 type Brand = {
   brand: string; tagline: string | null; accent: string | null; logo_url: string | null;
   whatsapp: string | null; booking_url: string | null;
+  icon_url: string | null; cover_url: string | null;
 };
 
 const SLUG = /^[a-z0-9][a-z0-9-]{1,30}[a-z0-9]$/;
@@ -51,15 +52,21 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!b) return { title: { absolute: c.gone }, robots: { index: false, follow: false } };
 
   const title = b.tagline ? `${b.brand} | ${b.tagline}` : b.brand;
-  /* The producer's own mark as the card's image when they uploaded one;
-     otherwise no image at all rather than the platform's. */
-  const images = b.logo_url ? [{ url: b.logo_url }] : [];
+  /* The cover as the card's image when they uploaded one, the mark when they
+     uploaded only that; otherwise no image at all rather than the platform's.
+     A wide photograph gets the large card, a logo the small one: a logo
+     stretched across a WhatsApp preview is the look of a business that did
+     not check. */
+  const image = b.cover_url ?? b.logo_url;
+  const images = image ? [{ url: image }] : [];
+  const icon = b.icon_url ?? undefined;
   return {
     title: { absolute: title },
     description: c.sub,
     robots: { index: false, follow: true },
+    icons: icon ? { icon, apple: icon } : undefined,
     openGraph: { type: 'website', siteName: b.brand, title, description: c.sub, images },
-    twitter: { card: 'summary', title, description: c.sub, images: images.map((i) => i.url) },
+    twitter: { card: b.cover_url ? 'summary_large_image' : 'summary', title, description: c.sub, images: images.map((i) => i.url) },
   };
 }
 
@@ -93,6 +100,13 @@ export default async function ProducerEntryPage({ params }: { params: Promise<{ 
       style={accentVars(accentByKey(b.accent)) as React.CSSProperties}
     >
       <div className="w-full max-w-md text-center">
+        {b.cover_url && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={b.cover_url} alt=""
+            className="mb-8 aspect-video w-full rounded-card-sm object-cover shadow-pop"
+          />
+        )}
         {b.logo_url ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={b.logo_url} alt={b.brand} className="mx-auto h-14 w-auto max-w-[220px] object-contain" />

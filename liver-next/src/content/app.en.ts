@@ -67,6 +67,30 @@ export const filesEn: FilesCopy = {
   tooBig: 'That file is too large. Up to 50MB.',
   badType: 'That file type is not supported',
   failed: 'The upload failed. Please try again.',
+
+  media: {
+    title: 'Photographs',
+    sub: 'The venue, the design, the inspiration and the suppliers. Every picture carries a tag, so it can still be found after the sixtieth.',
+    tagForUpload: 'Tag for the pictures you are adding now',
+    all: 'All',
+    untagged: 'Untagged',
+    tags: {
+      venue: 'Venue',
+      design: 'Design',
+      inspiration: 'Inspiration',
+      vendors: 'Suppliers',
+    },
+    count: '{n} photographs',
+    one: 'One photograph',
+    none: 'No photographs under this tag yet.',
+    open: 'Enlarge',
+    close: 'Close',
+    prev: 'Previous',
+    next: 'Next',
+    retag: 'Change tag',
+    manage: 'Manage',
+    done: 'Done',
+  },
 };
 
 export const sheetsEn: SheetsCopy = {

@@ -3,12 +3,12 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { EventFile } from '@/components/app/EventFiles';
 
 type Row = {
-  id: string; client_id: string; name: string; note: string;
+  id: string; client_id: string; name: string; note: string; tag: string;
   mime: string; size_bytes: number; created_at: string;
   uploaded_by: string | null; path: string;
 };
 
-const COLS = 'id,client_id,name,note,mime,size_bytes,created_at,uploaded_by,path';
+const COLS = 'id,client_id,name,note,tag,mime,size_bytes,created_at,uploaded_by,path';
 
 /**
  * The shared folder for one or more events, ready to render.
@@ -79,6 +79,7 @@ export async function loadFiles(
       id: r.id,
       name: r.name,
       note: r.note,
+      tag: r.tag ?? '',
       mime: r.mime,
       size_bytes: Number(r.size_bytes) || 0,
       created_at: r.created_at,
