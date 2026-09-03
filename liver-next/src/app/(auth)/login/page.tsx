@@ -15,7 +15,21 @@ import { HashSession } from './HashSession';
    wedding producer can land on a sign-in form for an account they do not
    have, which answers no question they asked. */
 export async function generateMetadata(): Promise<Metadata> {
-  return { title: authFor(await currentLocale()).title, robots: { index: false, follow: true } };
+  const a = authFor(await currentLocale());
+  /* The card a shared link draws. Every producer on the platform sends this
+     door to their couples, and every signed-in route redirects a stranger -
+     including WhatsApp's scraper - to it. Inherited from the root it carried
+     the platform owner's name and photograph, which on a white label is
+     the one thing a producer's couple must never receive. So the door is
+     neutral: what it is, no whose. `absolute` keeps the root's "| brand"
+     template off the title as well. */
+  return {
+    title: { absolute: a.title },
+    description: a.sub,
+    robots: { index: false, follow: true },
+    openGraph: { type: 'website', title: a.title, description: a.sub },
+    twitter: { card: 'summary', title: a.title, description: a.sub },
+  };
 }
 
 export default async function LoginPage({

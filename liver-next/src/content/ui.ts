@@ -1,11 +1,11 @@
 import type { Locale } from '../lib/locale.ts';
 import {
   auth, privacyCopy, termsCopy, a11yCopy, installCopy, storeCopy, rsvpCopy, budgetSimCopy,
-  conciergeCopy, guestSiteCopy, EVENT_KINDS,
+  conciergeCopy, guestSiteCopy, producerEntryCopy, EVENT_KINDS,
 } from './site.ts';
 import {
   authEn, privacyCopyEn, termsCopyEn, a11yCopyEn, installCopyEn, storeCopyEn, rsvpCopyEn,
-  budgetSimCopyEn, conciergeCopyEn, guestSiteCopyEn, EVENT_KINDS_EN,
+  budgetSimCopyEn, conciergeCopyEn, guestSiteCopyEn, producerEntryCopyEn, EVENT_KINDS_EN,
 } from './site.en.ts';
 
 /**
@@ -65,6 +65,7 @@ export type ShopCopy = Wide<Pick<typeof storeCopy, (typeof SHOP_KEYS)[number]>>;
 const shopHe = Object.fromEntries(SHOP_KEYS.map((k) => [k, storeCopy[k]])) as ShopCopy;
 export type RsvpCopy = Wide<typeof rsvpCopy>;
 export type GuestSiteCopy = Wide<typeof guestSiteCopy>;
+export type ProducerEntryCopy = Wide<typeof producerEntryCopy>;
 export type BudgetSimCopy = Wide<typeof budgetSimCopy>;
 export type ConciergeCopy = Wide<typeof conciergeCopy>;
 export type EventKinds = Wide<typeof EVENT_KINDS>;
@@ -79,6 +80,7 @@ export const installFor = (l: Locale): InstallCopy => (l === 'en' ? installCopyE
 export const storeFor = (l: Locale): ShopCopy => (l === 'en' ? storeCopyEn : shopHe);
 export const rsvpFor = (l: Locale): RsvpCopy => (l === 'en' ? rsvpCopyEn : rsvpCopy);
 export const guestSiteFor = (l: Locale): GuestSiteCopy => (l === 'en' ? guestSiteCopyEn : guestSiteCopy);
+export const producerEntryFor = (l: Locale): ProducerEntryCopy => (l === 'en' ? producerEntryCopyEn : producerEntryCopy);
 export const budgetSimFor = (l: Locale): BudgetSimCopy => (l === 'en' ? budgetSimCopyEn : budgetSimCopy);
 export const conciergeFor = (l: Locale): ConciergeCopy => (l === 'en' ? conciergeCopyEn : conciergeCopy);
 export const eventKindsFor = (l: Locale): EventKinds => (l === 'en' ? EVENT_KINDS_EN : EVENT_KINDS);

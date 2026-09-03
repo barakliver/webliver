@@ -819,6 +819,15 @@ export const appCopy = {
     slugHint: 'אותיות באנגלית, ספרות ומקפים. כך זה ייראה: ',
     domain: 'דומיין משלך',
     domainHint: 'רק רישום. חיבור ה-DNS עצמו הוא פעולה נפרדת שנעשה בנפרד ובכוונה.',
+    /* The link a producer sends couples, carrying their brand and not the
+       platform's. Needs only the slug above; no domain, no DNS. */
+    shareTitle: 'הקישור שלך לזוגות',
+    shareSub: 'שלחו את הקישור הזה, לא את הכתובת של האתר. הכרטיס שוואטסאפ מצייר לו נושא את השם והלוגו שלכם בלבד, ומשם הזוג נכנס לאזור האישי.',
+    shareNoSlug: 'קבעו תת דומיין למעלה ושמרו, והקישור יופיע כאן.',
+    shareCopy: 'העתקה',
+    shareCopied: 'הועתק',
+    shareWhatsapp: 'שליחה בוואטסאפ',
+    shareText: 'שלום, זה הקישור לאזור האישי שלכם:',
     preview: 'תצוגה מקדימה',
     save: 'שמירה',
     saving: 'שומר…',
@@ -1383,6 +1392,16 @@ export const guestSiteCopy = {
   producedBy: 'הפקה',
   gone: 'הדף לא זמין',
   goneBody: 'הקישור לא נמצא, או שהדף עדיין לא פורסם. אפשר לפנות לזוג.',
+} as const;
+
+/* A producer's own front door on the platform's address: the page their
+   couples open from a shared link, carrying only the producer's brand. */
+export const producerEntryCopy = {
+  eyebrow: 'האזור האישי',
+  enter: 'כניסה לאזור האישי',
+  sub: 'הכניסה עם הכתובת שאליה נשלחה ההזמנה, בקוד חד פעמי. אין סיסמה.',
+  gone: 'הדף לא נמצא',
+  goneBody: 'הקישור לא נמצא. אפשר לפנות למי ששלח אותו.',
 } as const;
 
 export const rsvpCopy = {

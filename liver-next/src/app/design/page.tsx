@@ -57,6 +57,7 @@ import { GuestSiteLink } from '@/components/app/GuestSiteLink';
 import { GuestSiteCard } from '@/components/app/GuestSiteCard';
 import { guestSiteFor } from '@/content/ui';
 import { AppShell } from '@/components/app/AppShell';
+import { ProducerLinkCard } from '@/components/app/ProducerLinkCard';
 import { accentByKey } from '@/content/brand';
 import type { Account } from '@/lib/auth';
 import ConsoleLoading from '@/app/app/loading';
@@ -321,6 +322,13 @@ export default async function DesignPage() {
 
         <Panel name="GuestSiteCard · producer" note="the switch on the guests tab, with the note and the link">
           <GuestSiteCard clientId={client} token="0123456789abcdef0123456789abcdef" on note="חניה חופשית בכניסה לחורשה." />
+        </Panel>
+
+        <Panel name="ProducerLinkCard" note="the link a producer sends couples: their front door on the platform's address">
+          <div className="grid max-w-3xl gap-4">
+            <ProducerLinkCard slug="north" />
+            <ProducerLinkCard slug={null} />
+          </div>
         </Panel>
 
         <Panel name="AppShell · producer" note="the rail: account row under the mark, never behind the floating button">

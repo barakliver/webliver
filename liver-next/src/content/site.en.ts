@@ -1,7 +1,7 @@
 import type { SiteCopy } from './site.ts';
 import type {
   AuthCopy, PrivacyCopy, TermsCopy, A11yCopy, InstallCopy, ShopCopy, RsvpCopy,
-  GuestSiteCopy, BudgetSimCopy, ConciergeCopy, EventKinds,
+  GuestSiteCopy, ProducerEntryCopy, BudgetSimCopy, ConciergeCopy, EventKinds,
 } from './ui.ts';
 
 /**
@@ -552,6 +552,14 @@ export const storeCopyEn: ShopCopy = {
   thanks: 'We saved the order and we will get back to you. Your order number is:',
   again: 'Another order',
   failed: 'We could not send the order. Please try again.',
+};
+
+export const producerEntryCopyEn: ProducerEntryCopy = {
+  eyebrow: 'Your personal area',
+  enter: 'Sign in',
+  sub: 'Sign in with the address the invitation was sent to, with a one-time code. No password.',
+  gone: 'Page not found',
+  goneBody: 'The link was not found. You can reach whoever sent it.',
 };
 
 export const guestSiteCopyEn: GuestSiteCopy = {
