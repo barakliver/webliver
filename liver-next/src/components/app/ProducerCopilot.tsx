@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { Check, Copy, Send, Sparkles, X } from 'lucide-react';
+import { Check, Copy, MessageCircle, Send, Sparkles, X } from 'lucide-react';
 import { copilotCopy as c } from '@/content/site';
 import { readNdjson, isNdjson } from '@/lib/ndjsonClient';
 import { cn } from '@/lib/utils';
@@ -180,16 +180,29 @@ export function ProducerCopilot({ brandName }: { brandName: string }) {
                 <div key={i} className="group me-2">
                   <p className="whitespace-pre-line text-[14px] leading-relaxed text-ink">{t.content}</p>
                   {!(busy && i === turns.length - 1) && (
-                    <button
-                      type="button" onClick={() => void copy(i, t.content)}
-                      className={cn(
-                        'mt-1.5 inline-flex min-h-[32px] items-center gap-1.5 rounded-xl2 px-2 text-[12px] transition',
-                        copied === i ? 'text-ok' : 'text-ink-mute hover:bg-surface-200 hover:text-ink',
-                      )}
-                    >
-                      {copied === i ? <Check size={13} strokeWidth={1.5} aria-hidden /> : <Copy size={13} strokeWidth={1.5} aria-hidden />}
-                      {copied === i ? c.copied : c.copy}
-                    </button>
+                    <div className="mt-1.5 flex flex-wrap items-center gap-1">
+                      <button
+                        type="button" onClick={() => void copy(i, t.content)}
+                        className={cn(
+                          'inline-flex min-h-[32px] items-center gap-1.5 rounded-xl2 px-2 text-[12px] transition',
+                          copied === i ? 'text-ok' : 'text-ink-mute hover:bg-surface-200 hover:text-ink',
+                        )}
+                      >
+                        {copied === i ? <Check size={13} strokeWidth={1.5} aria-hidden /> : <Copy size={13} strokeWidth={1.5} aria-hidden />}
+                        {copied === i ? c.copied : c.copy}
+                      </button>
+                      {/* Most drafts are going to WhatsApp anyway. One tap opens
+                          it with the text in the box and no recipient chosen,
+                          which is the right order: read, choose, send. */}
+                      <a
+                        href={`https://wa.me/?text=${encodeURIComponent(t.content)}`}
+                        target="_blank" rel="noopener noreferrer"
+                        className="inline-flex min-h-[32px] items-center gap-1.5 rounded-xl2 px-2 text-[12px] text-ink-mute transition hover:bg-surface-200 hover:text-ink"
+                      >
+                        <MessageCircle size={13} strokeWidth={1.5} aria-hidden />
+                        {c.whatsapp}
+                      </a>
+                    </div>
                   )}
                 </div>
               )

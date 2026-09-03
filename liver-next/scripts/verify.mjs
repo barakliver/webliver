@@ -251,6 +251,40 @@ async function main() {
   }
   /* The operating book sits behind sign in; a stranger is sent to the door. */
   await page('/app/guide', 'the operating book answers', { expect: [200, 307] });
+  /* So does the list of reports, which is the root account's alone. */
+  await page('/app/admin/tickets', 'the tickets list is behind the door', { expect: [307] });
+
+  /* The manifest is asked for with credentials, or the installed app carries
+     the platform's name on a producer's phone. The attribute is the whole
+     fix, so it is the thing checked. */
+  const front = await page('/', 'the home page answers', { expect: [200] });
+  if (front) {
+    const html = await front.text();
+    const link = /<link[^>]+rel="manifest"[^>]*>/i.exec(html)?.[0] ?? '';
+    record(/crossorigin="use-credentials"/i.test(link), 'the manifest link carries credentials', link.slice(0, 80));
+  }
+  const manifest = await page('/manifest.webmanifest', 'the manifest answers', { expect: [200] });
+  if (manifest) {
+    try {
+      const m = await manifest.json();
+      record(Array.isArray(m.icons) && m.icons.length > 0 && typeof m.name === 'string', 'the manifest has a name and icons');
+    } catch (e) {
+      record(false, 'the manifest has a name and icons', e.message);
+    }
+  }
+
+  /* The producer's assistant reads events through a session. A stranger must
+     be refused before the route so much as looks at the body. */
+  try {
+    const res = await fetch(`${base}/api/copilot`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ messages: [{ role: 'user', content: 'בדיקה' }] }),
+    });
+    record(res.status === 403, 'the copilot refuses a stranger', `→ ${res.status}`);
+  } catch (e) {
+    record(false, 'the copilot refuses a stranger', e.message);
+  }
 
   /* Linked from every invitation, so it has to work for somebody who has
      never signed in and may never sign in on the device they are holding. */

@@ -1989,6 +1989,7 @@ export const noticeCopy = {
     message: 'הודעה',
     contract: 'חוזה',
     file: 'קובץ',
+    order: 'הזמנה',
     ticket: 'דיווח',
   },
 } as const;
@@ -2061,6 +2062,7 @@ export const copilotCopy = {
   thinking: 'רגע',
   copy: 'העתקה',
   copied: 'הועתק',
+  whatsapp: 'שליחה בוואטסאפ',
   wentWrong: 'משהו נתקע אצלי. נסו שוב בעוד רגע.',
   disclaimer: 'טיוטות לעריכה. לפני ששולחים, קוראים.',
 } as const;

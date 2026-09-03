@@ -3,7 +3,7 @@ import { LogOut } from 'lucide-react';
 import { signOut } from '@/app/actions/auth';
 import { appCopy } from '@/content/site';
 import { brandStyle, type Brand } from '@/lib/branding';
-import type { Account } from '@/lib/auth';
+import { isLive, type Account } from '@/lib/auth';
 import { NoticeBell, type Notice } from './NoticeBell';
 import { SidebarNav, MobileTabBar, type NavItem } from './AppNav';
 import { Avatar } from './Avatar';
@@ -73,7 +73,10 @@ export function AppShell({
   clientNav?: ClientNavLabels; children: React.ReactNode;
 }) {
   const items = navFor(account, clientNav);
-  const isProducer = account.role !== 'client';
+  /* A producer still waiting for approval has no events to ask about and
+     the route would refuse them anyway; no button is better than a button
+     that answers with an apology. */
+  const isProducer = account.role !== 'client' && isLive(account);
 
   return (
     /* The accent is repainted here rather than in a stylesheet: one style
