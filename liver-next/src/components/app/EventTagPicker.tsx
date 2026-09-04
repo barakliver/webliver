@@ -4,6 +4,7 @@ import { useTransition } from 'react';
 import { Tag } from 'lucide-react';
 import { setEventLabel, type ProducerLabel } from '@/app/actions/labels';
 import { labelCopy as c } from '@/content/site';
+import { labelOn } from '@/content/palette';
 import { cn } from '@/lib/utils';
 
 /**
@@ -53,9 +54,13 @@ export function EventTagPicker({ clientId, labels, current }: {
             aria-pressed={on} disabled={pending}
             className={cn(
               'inline-flex min-h-[32px] items-center gap-1.5 rounded-xl2 border px-2.5 text-[12.5px] transition-colors',
-              on ? 'border-transparent text-surface' : 'border-line bg-card text-ink-soft hover:border-line-strong hover:text-ink',
+              on ? 'border-transparent' : 'border-line bg-card text-ink-soft hover:border-line-strong hover:text-ink',
             )}
-            style={on ? { background: l.color } : undefined}
+            /* The label colour is measured against the chosen swatch rather
+               than assumed. Nine of the ten take the light ink and the orange
+               does not; it was reading 3.23:1, on the one control whose whole
+               job is being recognised at a glance. */
+            style={on ? { background: l.color, color: labelOn(l.color) } : undefined}
           >
             {!on && <span aria-hidden className="size-2 rounded-full" style={{ background: l.color }} />}
             {l.label}

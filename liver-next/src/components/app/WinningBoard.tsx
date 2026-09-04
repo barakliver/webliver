@@ -71,11 +71,14 @@ export function WinningBoard({ clientId, images, viewer }: {
         '--line': 'rgba(250,247,242,.12)',
         '--line-strong': 'rgba(250,247,242,.22)',
         '--line-control': 'rgba(250,247,242,.45)',
+        /* Without this the inputs on this band were a light grey box with
+           near-white text in it. The audit measured 1.44:1. */
+        '--field-bg': 'rgba(250,247,242,.10)',
         '--surface-rgb': '14 12 10',
         '--surface-100-rgb': '21 17 14',
         '--surface-200-rgb': '42 36 29',
-        '--accent-rgb': 'var(--accent-light-rgb, 216 188 138)',
-        '--accent-bright-rgb': 'var(--accent-light-rgb, 216 188 138)',
+        '--accent-rgb': 'var(--accent-light-rgb, 223 196 155)',
+        '--accent-bright-rgb': 'var(--accent-light-rgb, 223 196 155)',
       } as React.CSSProperties}
     >
       <p className="text-[11.5px] tracking-[.14em] text-accent-light">{c.eyebrow}</p>

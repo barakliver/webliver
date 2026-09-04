@@ -99,7 +99,7 @@ const config: Config = {
            and never carries meaning on its own. `wash` is a background only
            ever sat on by `accent`. */
         accent: {
-          DEFAULT: 'rgb(var(--accent-rgb, 140 99 56) / <alpha-value>)',
+          DEFAULT: 'rgb(var(--accent-rgb, 138 97 54) / <alpha-value>)',
           bright:  'rgb(var(--accent-bright-rgb, 162 118 74) / <alpha-value>)',
           line:    'rgb(var(--accent-line-rgb, 199 154 99) / <alpha-value>)',
           /* Translucent by definition, so it stays whole and takes no

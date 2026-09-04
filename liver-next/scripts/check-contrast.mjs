@@ -38,7 +38,7 @@ const c = {
   dark: '#181410',
   line: 'rgba(23,21,18,.10)', lineStrong: 'rgba(23,21,18,.18)',
   lineControl: 'rgba(23,21,18,.60)',
-  accent: '#8C6338',               /* the brand, and safe as words   */
+  accent: '#8A6136',               /* the brand, and safe as words   */
   accentBright: '#A2764A',         /* large numerals only, 3:1 bar   */
   accentLine: '#C79A63',           /* words on the dark ground       */
   accentLight: '#DFC49B',
@@ -74,6 +74,11 @@ const checks = [
   ['accent as words, on ground',   c.accent,     c.surface,     4.5],
   ['accent as words, on bright',   c.accent,     c.card,        4.5],
   ['accent on its own wash',       c.accent,     c.accentWash,  4.5],
+  /* The step up. This pairing was missing and the accessibility audit found
+     what the gap let through: a timestamp in the accent inside a message
+     bubble, which is drawn on this ground, at 4.47:1. Every ground a tone can
+     land on has to be listed, or the list is an opinion rather than a check. */
+  ['accent on the step up',        c.accent,     c.surface200,  4.5],
   ['bright accent, numerals only', c.accentBright, c.surface200, 3.0],
   ['good, on its wash',            c.ok,         c.okWash,      4.5],
   ['waiting, on its wash',         c.warn,       c.warnWash,    4.5],

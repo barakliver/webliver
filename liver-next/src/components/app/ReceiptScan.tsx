@@ -135,6 +135,12 @@ export function ReceiptScan({ clientId, formId }: { clientId: string; formId: st
            is the right thing on both without asking which one this is. */
         capture="environment"
         className="sr-only"
+        /* The button below is the control; this is the mechanism behind it.
+           Left reachable it is a second, unnamed stop on the way through the
+           form, which a screen reader announces as "button" and nothing else.
+           Hidden and untabbable, there is one control for one action. */
+        tabIndex={-1}
+        aria-hidden="true"
         onChange={(e) => { const f = e.target.files?.[0]; if (f) void read(f); }}
       />
       <div className="flex flex-wrap items-center gap-3">

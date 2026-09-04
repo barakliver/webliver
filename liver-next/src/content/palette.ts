@@ -38,3 +38,41 @@ export const safeColor = (raw: string): string => {
   const hex = String(raw ?? '').trim().toLowerCase();
   return KNOWN.has(hex) ? hex.toUpperCase() : '#475569';
 };
+
+/* The two label colours, which are the palette's own ink and ground. Written
+   out rather than read from a token because this runs where CSS custom
+   properties do not exist: it decides a value, it does not paint one. */
+const LABEL_LIGHT = '#F7F4EE';
+const LABEL_DARK = '#171512';
+
+const channel = (c: number) => {
+  const v = c / 255;
+  return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+};
+
+const luminance = (hex: string): number => {
+  const n = Number.parseInt(hex.replace('#', ''), 16);
+  return 0.2126 * channel((n >> 16) & 255)
+    + 0.7152 * channel((n >> 8) & 255)
+    + 0.0722 * channel(n & 255);
+};
+
+const contrast = (a: string, b: string): number => {
+  const [hi, lo] = [luminance(a), luminance(b)].sort((p, q) => q - p);
+  return (hi + 0.05) / (lo + 0.05);
+};
+
+/**
+ * What to write on a swatch.
+ *
+ * The tag chip used the light ink on every colour, on the assumption that a
+ * producer's chosen colour is dark. Nine of the ten are; the orange is not,
+ * and the accessibility audit found exactly that chip at 3.23:1 — a label
+ * somebody has to lean in to read, on the one control whose whole job is
+ * being recognised at a glance.
+ *
+ * Measured rather than listed, so a colour added to the shortlist tomorrow
+ * gets the right answer without anybody remembering this exists.
+ */
+export const labelOn = (hex: string): string =>
+  contrast(LABEL_LIGHT, hex) >= contrast(LABEL_DARK, hex) ? LABEL_LIGHT : LABEL_DARK;

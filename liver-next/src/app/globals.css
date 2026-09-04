@@ -94,13 +94,21 @@
     /* .46 reads 2.97:1 on this ground, just under the 3 a control edge needs.
        The warm palette cleared it at .48; a cooler, lighter ground does not. */
     --line-control: rgba(23, 21, 18, .60);
+    /* The inside of an input. A token rather than a literal because one
+       section of this product inverts the whole palette for a dark band, and
+       a hardcoded white here meant a near-white label inside a light grey box
+       on that band: 1.44:1, which is not dim, it is gone. */
+    --field-bg: rgb(255 255 255 / .8);
 
     /* The gold is the one thing both designs share, and it moves only as far
        as the cooler ground makes it. Re-solved against #F1F5F9 rather than
        carried over: the handoff's #B08D57 reads 2.78:1 there. */
-    --accent-rgb: 140 99 56;         /* #8C6338, 4.83:1 on the ground and
-                                        4.60:1 on its own wash, which is the
-                                        darkest ground it sits on */
+    /* #8A6136. One step down from the #8C6338 the brief named, because that
+       value read 4.48:1 on the step up — the ground a message bubble is drawn
+       on — and the accessibility audit found a timestamp sitting there. This
+       clears 4.5 on all four grounds the accent can land on: the page, the
+       card, the step up, and its own wash. */
+    --accent-rgb: 138 97 54;
     --accent-bright-rgb: 162 118 74; /* #A2764A, 3.39:1 for large numerals */
     --accent-line-rgb: 199 154 99;   /* #C79A63, 6.78:1 as words on the dark */
     --accent-light-rgb: 223 196 155; /* #DFC49B, on the dark ground only     */
@@ -438,13 +446,15 @@
     @apply min-h-[44px] w-full rounded-control border border-line-strong
            px-4 py-2.5 text-[15px] text-ink placeholder:text-ink-mute
            focus:border-accent focus:outline-none;
-    background: rgb(255 255 255 / .8);
+    background: var(--field-bg);
     transition: border-color .2s cubic-bezier(.16, 1, .3, 1),
                 box-shadow .2s cubic-bezier(.16, 1, .3, 1);
   }
   /* Focus is a ring rather than a thicker border, so the control does not
      change size when it is entered and the line below it does not jump. */
-  .field:focus { box-shadow: 0 0 0 3px rgba(15, 23, 42, .08); }
+  /* Derived from the ink rather than written out, so it followed the
+     palette when the ink did. It was still the old slate. */
+  .field:focus { box-shadow: 0 0 0 3px rgb(var(--ink-rgb) / .08); }
   .label { @apply mb-1.5 block text-[13.5px] font-medium text-ink-soft; }
 
   /* Status reads without colour too: every chip carries a word. */

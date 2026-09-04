@@ -140,7 +140,7 @@ function checkBuiltCss() {
      passes for the wrong reason is worse than one that fails. */
   record(/--surface-rgb:\s*247 244 238/.test(css), 'the warm ground is in the build');
   record(/--ink-rgb:\s*23 21 18/.test(css), 'the warm ink is in the build');
-  record(/--accent-rgb:\s*140 99 56/.test(css), 'the brand gold is in the build');
+  record(/--accent-rgb:\s*138 97 54/.test(css), 'the brand gold is in the build');
   /* And the slate it replaced. The workspace ran on Tailwind's own greys while
      the public site was warm, so signing in changed the temperature of the
      brand; if either of these is back, so is that. */
