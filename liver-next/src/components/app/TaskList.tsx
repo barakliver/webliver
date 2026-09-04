@@ -10,6 +10,7 @@ import { useCopy } from '@/components/app/CopyProvider';
 import { shortDate } from '@/lib/appDates';
 import { isPastDue } from '@/lib/clock';
 import { EyeOff } from 'lucide-react';
+import { PlanOffer } from '@/components/app/PlanOffer';
 
 export type Task = {
   /** False keeps it on the producer's side. The couple never receives these
@@ -166,7 +167,13 @@ export function TaskList({ clientId, tasks, viewer, viewerId }: {
       )}
 
       {tasks.length === 0 ? (
-        <p className="mt-6 text-[14.5px] text-ink-mute">{c.none}</p>
+        /* The producer gets the offer to build a plan; the couple gets the
+           sentence. Twenty-eight production steps are not theirs to start,
+           and half of them are things they would rather not know had to be
+           chased. */
+        viewer === 'producer'
+          ? <PlanOffer clientId={clientId} />
+          : <p className="mt-6 text-[14.5px] text-ink-mute">{c.none}</p>
       ) : (
         <>
           <h3 className="mt-7 text-[13px] font-semibold text-accent">{c.open} · {open.length}</h3>
