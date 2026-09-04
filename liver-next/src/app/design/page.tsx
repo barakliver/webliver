@@ -453,6 +453,12 @@ export default async function DesignPage() {
                 { href: '/app/clients', label: 'אירועים', icon: 'clients' },
                 { href: '/app/vendors', label: 'ספקים', icon: 'vendors' },
               ]}
+              records={[
+                { kind: 'lead', id: 'l1', name: 'שירה ואורי', note: '050-1234567', href: '/app/leads#lead-l1' },
+                { kind: 'lead', id: 'l2', name: 'משפחת אזולאי', note: '052-7654321', href: '/app/leads#lead-l2' },
+                { kind: 'vendor', id: 'v1', name: 'קייטרינג הדר', note: 'קייטרינג', href: '/app/vendors#vendor-v1' },
+                { kind: 'vendor', id: 'v2', name: 'תאורת שדה', note: 'תאורה והגברה', href: '/app/vendors#vendor-v2' },
+              ]}
               events={[
                 /* One finished event, to show that it sorts below the ones that
                    have not happened yet rather than above them. */

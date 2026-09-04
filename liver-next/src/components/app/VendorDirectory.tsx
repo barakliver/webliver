@@ -111,7 +111,7 @@ function Row({ vendor }: { vendor: Vendor }) {
   const archived = !!vendor.archived_at;
 
   return (
-    <li className={`flex flex-wrap items-center gap-3 rounded-xl2 border px-4 py-3.5 ${
+    <li id={`vendor-${vendor.id}`} className={`scroll-mt-24 flex flex-wrap items-center gap-3 rounded-xl2 border px-4 py-3.5 ${
       archived ? 'border-line bg-surface-100' : 'border-line'
     }`}>
       <div className="min-w-0 flex-1">

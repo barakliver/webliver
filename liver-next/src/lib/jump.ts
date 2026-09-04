@@ -15,6 +15,25 @@
  */
 
 export type JumpEvent = { id: string; name: string; date: string | null };
+
+/**
+ * Everything else the search can reach.
+ *
+ * Leads and suppliers have no screen of their own, so a hit on one is an
+ * anchor on the list that holds it. That is why `href` is carried rather than
+ * built here: the shape of the address is a fact about those screens, and a
+ * second copy of it here would be a second place to be wrong the day either
+ * gets a page of its own.
+ */
+export type JumpRecord = {
+  kind: 'lead' | 'vendor';
+  id: string;
+  name: string;
+  /** The one line of context that tells two similar names apart: a phone
+   *  number on a lead, a category on a supplier. */
+  note?: string;
+  href: string;
+};
 export type JumpSection<T extends string = string> = { tab: T; label: string };
 
 /** Words in any order, each contained in the name. "נועה אית" finds

@@ -2,18 +2,18 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { CalendarDays, CornerDownLeft, HeartHandshake, History, Layers, Search, X } from 'lucide-react';
+import { CalendarDays, CornerDownLeft, HeartHandshake, History, Layers, Search, Target, Truck, X } from 'lucide-react';
 import { appCopy, jumpCopy as c } from '@/content/site';
-import { byRelevance as rank, matchesWords, splitQuery, type JumpEvent } from '@/lib/jump';
+import { byRelevance as rank, matchesWords, splitQuery, type JumpEvent, type JumpRecord } from '@/lib/jump';
 import { EVENT_TABS } from './EventTabs';
 import type { NavItem } from './AppNav';
 import { cn } from '@/lib/utils';
 import { EVENT_ZONE } from '@/lib/clock';
 
-export type { JumpEvent };
+export type { JumpEvent, JumpRecord };
 
 type Hit = {
-  kind: 'recent' | 'section' | 'event' | 'screen';
+  kind: 'recent' | 'section' | 'event' | 'lead' | 'vendor' | 'screen';
   label: string;
   href: string;
   /** The date on an event, the section name on a section. */
@@ -74,8 +74,12 @@ const noteRecent = (id: string) => {
  * A word is read as a section only when it names no event, so a couple whose
  * name happens to be a section keeps their name.
  */
-export function QuickJump({ screens, events, compact }: {
-  screens: NavItem[]; events: JumpEvent[]; compact?: boolean;
+export function QuickJump({ screens, events, records = [], compact }: {
+  screens: NavItem[]; events: JumpEvent[];
+  /* Leads and suppliers. Neither has a screen of its own, so each carries the
+     anchor that lands on its row. */
+  records?: JumpRecord[];
+  compact?: boolean;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -143,13 +147,25 @@ export function QuickJump({ screens, events, compact }: {
     }
 
     const eventHits = named.slice(0, section ? 4 : 12).map((e) => asEvent(e, 'event'));
+
+    /* Leads and suppliers, matched on the name and on the line of context
+       beside it — a producer types a phone number as readily as a name, and a
+       category as readily as a company. Only when no section was asked for:
+       "כסף" means a tab, and offering a supplier whose notes contain the word
+       would bury the thing that was actually meant. */
+    const recordHits: Hit[] = section ? [] : records
+      .filter((r) => matchesWords(nameWords, `${r.name} ${r.note ?? ''}`))
+      .slice(0, 10)
+      .map((r) => ({ kind: r.kind, id: undefined, label: r.name, href: r.href, note: r.note }));
+
     const screenHits = screens
       .filter((s) => matchesWords(words, s.label))
       .map<Hit>((s) => ({ kind: 'screen', label: s.label, href: s.href }));
 
-    /* What was typed for comes first. */
-    return [...sectionHits, ...eventHits, ...screenHits];
-  }, [query, screens, events, byRelevance, byId, recentIds, openId]);
+    /* What was typed for comes first, and an event outranks a supplier: the
+       name of a couple is what this product is organised around. */
+    return [...sectionHits, ...eventHits, ...recordHits, ...screenHits];
+  }, [query, screens, events, records, byRelevance, byId, recentIds, openId]);
 
   const go = useCallback((h: Hit | undefined) => {
     if (!h) return;
@@ -191,7 +207,8 @@ export function QuickJump({ screens, events, compact }: {
   };
 
   const heading: Record<Hit['kind'], string> = {
-    recent: c.recent, section: c.sections, event: c.events, screen: c.screens,
+    recent: c.recent, section: c.sections, event: c.events,
+    lead: c.leads, vendor: c.vendors, screen: c.screens,
   };
 
   return (
@@ -279,12 +296,21 @@ export function QuickJump({ screens, events, compact }: {
                       {h.kind === 'recent' && <History size={16} strokeWidth={1.5} aria-hidden className="shrink-0 text-ink-mute" />}
                       {h.kind === 'section' && <Layers size={16} strokeWidth={1.5} aria-hidden className="shrink-0 text-accent" />}
                       {h.kind === 'event' && <HeartHandshake size={16} strokeWidth={1.5} aria-hidden className="shrink-0 text-accent" />}
+                      {h.kind === 'lead' && <Target size={16} strokeWidth={1.5} aria-hidden className="shrink-0 text-ink-mute" />}
+                      {h.kind === 'vendor' && <Truck size={16} strokeWidth={1.5} aria-hidden className="shrink-0 text-ink-mute" />}
                       {h.kind === 'screen' && <CalendarDays size={16} strokeWidth={1.5} aria-hidden className="shrink-0 text-ink-mute opacity-0" />}
 
                       <span className="min-w-0 flex-1 truncate">{h.label}</span>
 
                       {h.note && h.kind !== 'section' && (
-                        <span className="shrink-0 text-[12.5px] tabular-nums text-ink-mute">{h.note}</span>
+                        <span className={cn(
+                          'shrink-0 text-[12.5px] text-ink-mute',
+                          /* A date lines up in a column; a phone number or a
+                             category is prose and reads worse in figures. */
+                          h.kind === 'event' || h.kind === 'recent' ? 'tabular-nums' : '',
+                        )}>
+                          {h.note}
+                        </span>
                       )}
                       {on && <CornerDownLeft size={14} strokeWidth={1.5} aria-hidden className="shrink-0 text-ink-mute" />}
                     </button>

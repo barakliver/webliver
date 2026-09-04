@@ -10,6 +10,7 @@ import { appUiFor } from '@/content/appUi';
 import { guideUiFor } from '@/content/guide';
 import type { Notice } from '@/components/app/NoticeBell';
 import type { JumpEvent } from '@/components/app/QuickJump';
+import type { JumpRecord } from '@/lib/jump';
 import type { Locale } from '@/lib/locale';
 
 export const dynamic = 'force-dynamic';
@@ -71,6 +72,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
      columns, no archive, scoped by row level security to their own. A couple
      gets none: their one event is the portal. */
   let events: JumpEvent[] = [];
+  let records: JumpRecord[] = [];
   if (account.role !== 'client') {
     const { data: rows } = await sb
       .from('clients')
@@ -79,6 +81,29 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       .order('event_date', { ascending: true, nullsFirst: false })
       .limit(300);
     events = (rows ?? []).map((r) => ({ id: r.id, name: r.display_name, date: r.event_date }));
+
+    /* The two lists a producer types a name into and used to get nothing back.
+       Both are fenced by policy to their own rows, both are capped, and both
+       are read in the same round trip as the events above rather than on a
+       keystroke: the search is a filter over what the shell already has, not
+       a query per letter. */
+    const [leadRows, vendorRows] = await Promise.all([
+      sb.from('leads').select('id,full_name,phone,status')
+        .neq('status', 'lost').order('created_at', { ascending: false }).limit(300),
+      sb.from('vendors').select('id,name,category')
+        .is('archived_at', null).order('name').limit(300),
+    ]);
+
+    records = [
+      ...(leadRows.data ?? []).map((r): JumpRecord => ({
+        kind: 'lead', id: r.id, name: r.full_name,
+        note: r.phone || undefined, href: `/app/leads#lead-${r.id}`,
+      })),
+      ...(vendorRows.data ?? []).map((r): JumpRecord => ({
+        kind: 'vendor', id: r.id, name: r.name,
+        note: r.category || undefined, href: `/app/vendors#vendor-${r.id}`,
+      })),
+    ];
   }
 
   /* The couple's two menu labels, in the couple's language. Reused from the
@@ -92,7 +117,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <AppShell account={account} notices={(data ?? []) as Notice[]} brand={brand} clientNav={clientNav} locale={locale} events={events}>
+    <AppShell account={account} notices={(data ?? []) as Notice[]} brand={brand} clientNav={clientNav} locale={locale} events={events} records={records}>
       {children}
       <Live sources={[{ table: 'notifications' }]} />
     </AppShell>

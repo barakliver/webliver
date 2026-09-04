@@ -10,6 +10,7 @@ import { Avatar } from './Avatar';
 import { IssueReporter } from './IssueReporter';
 import { ProducerCopilot } from './ProducerCopilot';
 import { QuickJump, type JumpEvent } from './QuickJump';
+import type { JumpRecord } from '@/lib/jump';
 import { cn } from '@/lib/utils';
 import { noticeFor, ticketFor } from '@/content/appUi';
 import type { Locale } from '@/lib/locale';
@@ -75,12 +76,13 @@ function Brand({ brand }: { brand: Brand }) {
 }
 
 export function AppShell({
-  account, notices, brand, clientNav, locale = 'he', events = [], children,
+  account, notices, brand, clientNav, locale = 'he', events = [], records = [], children,
 }: {
   account: Account; notices: Notice[]; brand: Brand;
   clientNav?: ClientNavLabels; locale?: Locale;
   /** The producer's live events, for the search box. Empty for a couple. */
   events?: JumpEvent[];
+  records?: JumpRecord[];
   children: React.ReactNode;
 }) {
   const items = navFor(account, clientNav);
@@ -173,7 +175,7 @@ export function AppShell({
                   moved into the "more" sheet: five icons across a phone
                   header is a row nobody can tell apart. */}
               <div className="flex items-center gap-0.5">
-                {isProducer && <QuickJump screens={items} events={events} compact />}
+                {isProducer && <QuickJump screens={items} events={events} records={records} compact />}
                 <NoticeBell notices={notices} copy={notice} />
                 <Link
                   href="/app/me"
@@ -193,7 +195,7 @@ export function AppShell({
               page shows through as it scrolls under. */}
           <header className="glass sticky top-0 z-40 hidden border-b border-line lg:block">
             <div className="mx-auto flex h-14 w-full max-w-content items-center justify-end gap-1 px-8">
-              {isProducer && <QuickJump screens={items} events={events} />}
+              {isProducer && <QuickJump screens={items} events={events} records={records} />}
               <IssueReporter userId={account.id} copy={ticket} />
               <NoticeBell notices={notices} copy={notice} />
             </div>

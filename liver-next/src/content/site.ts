@@ -2265,9 +2265,11 @@ export const knowledgeCopy = {
 export const jumpCopy = {
   open: 'חיפוש מהיר',
   title: 'לאן?',
-  placeholder: 'שם של אירוע, מסך או מקטע',
+  placeholder: 'שם של אירוע, ליד, ספק או מסך',
   screens: 'מסכים',
   events: 'אירועים',
+  leads: 'לידים',
+  vendors: 'ספקים',
   recent: 'אחרונים',
   sections: 'מקטע בתוך אירוע',
   none: 'לא נמצא. אפשר לנסות חלק מהשם.',

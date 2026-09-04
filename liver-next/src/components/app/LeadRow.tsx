@@ -43,7 +43,11 @@ export function LeadRow({ lead, calls }: { lead: Lead; calls: Call[] }) {
   const openCalls = calls.filter((x) => !x.done);
 
   return (
-    <li className="rounded-xl2 border border-line">
+    /* Addressable. Neither leads nor suppliers have a screen of their own, so
+       the only way the quick search can land on one is an anchor on its row;
+       `scroll-mt` keeps it clear of the sticky bar it would otherwise land
+       underneath. */
+    <li id={`lead-${lead.id}`} className="scroll-mt-24 rounded-xl2 border border-line">
       <div className="flex flex-wrap items-center gap-3 p-4">
         {/* A floor, not just `min-w-0`. In a wrapping row a fully shrinkable
             flex-1 child absorbs all the squeeze before anything wraps, so at
