@@ -56,7 +56,7 @@ export async function saveTemplate(input: {
 
   if (error) return { ok: false, error: 'לא הצלחנו לשמור את התבנית' };
 
-  revalidatePath('/app/sop');
+  revalidatePath('/app/knowledge');
   return { ok: true };
 }
 
@@ -65,7 +65,7 @@ export async function deleteTemplate(form: FormData): Promise<void> {
   if (!id) return;
   const sb = await supabaseServer();
   await sb.from('producer_workflow_templates').delete().eq('id', id);
-  revalidatePath('/app/sop');
+  revalidatePath('/app/knowledge');
 }
 
 /**
@@ -120,6 +120,6 @@ export async function seedMeetingTemplate(): Promise<WorkflowResult> {
 
   if (error) return { ok: false, error: 'לא הצלחנו ליצור את התבנית' };
 
-  revalidatePath('/app/sop');
+  revalidatePath('/app/knowledge');
   return { ok: true, added: MEETING_TEMPLATES.length };
 }

@@ -945,6 +945,9 @@ export const appCopy = {
     vendors: 'ספקים',
     store: 'חנות',
     sop: 'מדריכים',
+    /* One entry where there were two. The playbook and the system's own
+       guides sat side by side and neither name said which was which. */
+    knowledge: 'ידע',
     guide: 'ספר ההפעלה',
     site: 'האתר',
     admin: 'ניהול מערכת',
@@ -2239,6 +2242,24 @@ export const labelCopy = {
   eventTag: 'תגית לאירוע',
   eventTagNone: 'בלי תגית',
   legend: 'מקרא',
+} as const;
+
+/**
+ * One place to look things up.
+ *
+ * The menu had two entries for knowledge, side by side, and neither name said
+ * which kind it held: "מדריכים" was how to use this system and "ספר ההפעלה"
+ * was how to run an event on open ground. A producer looking for either had to
+ * guess, and the cost of guessing wrong was opening the other one.
+ */
+export const knowledgeCopy = {
+  title: 'ידע',
+  sub: 'איך עובדים במערכת, איך מפיקים אירוע, ומה שכבר בנית לעצמך.',
+  shelves: {
+    book: 'הפעלת המערכת',
+    playbook: 'ספר ההפקה',
+    templates: 'התבניות שלך',
+  },
 } as const;
 
 export const jumpCopy = {

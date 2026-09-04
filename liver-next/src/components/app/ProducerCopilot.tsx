@@ -39,7 +39,9 @@ export function ProducerCopilot({ brandName }: { brandName: string }) {
 
   /* The guide page carries the concierge in the same corner. One assistant
      per corner. */
-  const hidden = pathname?.startsWith('/app/guide');
+  /* The assistant stays out of the way where the answer is already on the
+     screen: the couple's book, and the producer's own knowledge shelf. */
+  const hidden = pathname?.startsWith('/app/guide') || pathname?.startsWith('/app/knowledge');
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };

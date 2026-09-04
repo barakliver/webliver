@@ -1,3 +1,4 @@
+import { redirect } from 'next/navigation';
 import type { Metadata } from 'next';
 import { requireAccount } from '@/lib/auth';
 import { currentLocale } from '@/lib/serverLocale';
@@ -33,6 +34,11 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function GuidePage() {
   const account = await requireAccount();
   const isClient = account.role === 'client';
+  /* A producer's help now lives on the knowledge shelf with the playbook and
+     their own templates. The couple stays here: this is the only help they
+     have, and routing them through a screen with a producer's playbook behind
+     a tab would be offering them a door they must not open. */
+  if (!isClient) redirect('/app/knowledge');
 
   /* The producer's console is Hebrew; only a couple reads this in English. */
   const locale = isClient ? await currentLocale() : 'he';

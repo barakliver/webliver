@@ -27,17 +27,22 @@ function navFor(a: Account, clientNav?: ClientNavLabels): NavItem[] {
       { href: '/app/guide', label: clientNav?.guide ?? appCopy.nav.guide, icon: 'guide' },
     ];
   }
+  /* Ordered by how often a producer opens them, not by when each was built.
+     The first four are the phone's bottom bar and the rest go behind "more",
+     so the order here is a decision about a thumb rather than a list.
+
+     Two entries left. The playbook and the guides were adjacent and neither
+     name said which kind of knowledge it held, so they are one shelf now. */
   const items: NavItem[] = [
-    { href: '/app',         label: appCopy.nav.overview, icon: 'overview' },
-    { href: '/app/leads',   label: appCopy.nav.leads,    icon: 'leads' },
-    { href: '/app/clients', label: appCopy.nav.clients,  icon: 'clients' },
-    { href: '/app/calendar', label: appCopy.nav.calendar, icon: 'calendar' },
-    { href: '/app/insights', label: appCopy.nav.insights, icon: 'insights' },
-    { href: '/app/vendors', label: appCopy.nav.vendors,  icon: 'vendors' },
-    { href: '/app/store',   label: appCopy.nav.store,    icon: 'store' },
-    { href: '/app/sop',     label: appCopy.nav.sop,      icon: 'sop' },
-    { href: '/app/guide',   label: appCopy.nav.guide,    icon: 'guide' },
-    { href: '/app/brand',   label: appCopy.nav.brand,    icon: 'brand' },
+    { href: '/app',          label: appCopy.nav.overview,  icon: 'overview' },
+    { href: '/app/clients',  label: appCopy.nav.clients,   icon: 'clients' },
+    { href: '/app/leads',    label: appCopy.nav.leads,     icon: 'leads' },
+    { href: '/app/calendar', label: appCopy.nav.calendar,  icon: 'calendar' },
+    { href: '/app/insights', label: appCopy.nav.insights,  icon: 'insights' },
+    { href: '/app/vendors',  label: appCopy.nav.vendors,   icon: 'vendors' },
+    { href: '/app/knowledge', label: appCopy.nav.knowledge, icon: 'sop' },
+    { href: '/app/store',    label: appCopy.nav.store,     icon: 'store' },
+    { href: '/app/brand',    label: appCopy.nav.brand,     icon: 'brand' },
   ];
   if (a.role === 'super_admin') {
     /* The public site is one site and it belongs to the account the enquiry
