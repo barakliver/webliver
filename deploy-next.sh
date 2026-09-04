@@ -23,9 +23,19 @@ cd "$REPO"
 # their deploy is broken without telling them what to go back to is a worse
 # message than saying nothing.
 PREV_SHA="$(git rev-parse --short HEAD 2>/dev/null || echo unknown)"
-git fetch origin "$BRANCH"
-git checkout "$BRANCH"
-git pull origin "$BRANCH"
+
+# REF pins this run to one commit or tag instead of the branch head, which is
+# what the unattended agent needs: it decided some minutes ago which release it
+# was deploying, and the branch may have moved since. Run by hand with no REF
+# it behaves exactly as it always did.
+if [ -n "${REF:-}" ]; then
+  git fetch origin "$BRANCH" --tags --force
+  git checkout --detach "$REF"
+else
+  git fetch origin "$BRANCH"
+  git checkout "$BRANCH"
+  git pull origin "$BRANCH"
+fi
 
 # ── the build needs more memory than this droplet has spare ────────────────
 # 1GB with MySQL and PHP-FPM already resident is not enough for next build;
