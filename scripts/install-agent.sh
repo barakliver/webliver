@@ -142,6 +142,24 @@ Persistent=true
 WantedBy=timers.target
 EOF
 
+# ── somewhere to go back to ─────────────────────────────────────────────────
+# The first automatic release is the one with nothing behind it. The agent
+# rolls back to whatever it last put live, and on its first run that is
+# nothing, so a first release that failed its checks would sit there broken
+# with no way back — the one moment the safety net has a hole in it.
+#
+# Whatever is checked out on this machine right now is, by definition, the
+# thing that has been serving the site. Recording its commit closes the hole:
+# the agent hands that to git checkout exactly as it would a tag, so the first
+# release can fall back to the version that was working an hour ago.
+STATE_DIR=/var/lib/liver-agent
+mkdir -p "$STATE_DIR"
+if [ ! -s "$STATE_DIR/deployed" ]; then
+  LIVE="$(git -C "$REPO" rev-parse HEAD)"
+  printf '%s' "$LIVE" > "$STATE_DIR/deployed"
+  echo "→ the version serving now (${LIVE:0:7}) is the rollback point for the first release"
+fi
+
 systemctl daemon-reload
 systemctl enable --now liver-agent.timer
 
