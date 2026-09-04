@@ -60,6 +60,51 @@ fi
 
 [ "$missing" -eq 1 ] && exit 1
 
+# ── prove the backup actually works, before trusting it ─────────────────────
+# The agent's whole promise — that an automatic update cannot destroy data — is
+# one pg_dump. So it is run here, for real, while somebody is watching.
+#
+# The failure this catches: pg_dump refuses point blank to dump a server newer
+# than itself, and Ubuntu ships whatever client its release froze on while
+# Supabase moved on. That mismatch does not show up until the first release,
+# at which point the agent correctly refuses to deploy and the reason is a line
+# in a log nobody is reading.
+echo "→ testing the backup against the real database"
+DB_URL="$(grep -E '^DATABASE_URL=' "$ENVFILE" | cut -d= -f2-)"
+if pg_dump --schema-only --no-owner --no-privileges "$DB_URL" >/dev/null 2>/tmp/pgdump-test.err; then
+  echo "  backup works  (pg_dump $(pg_dump --version | awk '{print $3}'))"
+else
+  echo
+  echo "  the backup did NOT work, and the agent will refuse to deploy without one."
+  echo
+  sed 's/^/      /' /tmp/pgdump-test.err
+  echo
+  if grep -qi 'server version\|aborting' /tmp/pgdump-test.err; then
+    cat <<'EOF'
+  This is the version mismatch: the installed pg_dump is older than the
+  database server, and it will not dump forwards. Install a current client:
+
+      install -d /usr/share/postgresql-common/pgdg
+      curl -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc \
+        https://www.postgresql.org/media/keys/ACCC4CF8.asc
+      echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] \
+https://apt.postgresql.org/pub/repos/apt $(. /etc/os-release && echo $VERSION_CODENAME)-pgdg main" \
+        > /etc/apt/sources.list.d/pgdg.list
+      apt-get update -qq && apt-get install -y postgresql-client-17
+
+  then run this installer again.
+EOF
+  else
+    echo "  Check DATABASE_URL in $ENVFILE — most often it is the wrong host,"
+    echo "  or the password was pasted with the [YOUR-PASSWORD] placeholder left in."
+  fi
+  rm -f /tmp/pgdump-test.err
+  echo
+  echo "  the timer was NOT enabled. Nothing on the server changed."
+  exit 1
+fi
+rm -f /tmp/pgdump-test.err
+
 echo "→ writing the service"
 cat > /etc/systemd/system/liver-agent.service <<EOF
 [Unit]

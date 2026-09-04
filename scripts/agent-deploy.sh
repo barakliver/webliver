@@ -47,8 +47,16 @@ STATE_DIR="${STATE_DIR:-/var/lib/liver-agent}"
 BACKUP_DIR="${BACKUP_DIR:-$STATE_DIR/backups}"
 DEPLOYED="$STATE_DIR/deployed"     # the tag that is live
 PREVIOUS="$STATE_DIR/previous"     # the tag before it, for going back
+GAVEUP="$STATE_DIR/gave-up"        # a tag that failed twice and will not be tried again
+TRIED="$STATE_DIR/tried"           # "<tag> <count>", how many goes this one has had
 LOG="$STATE_DIR/agent.log"
 LOCK="$STATE_DIR/lock"
+
+# How many times a tag that fails is worth trying again. A deploy can fail
+# because npm could not reach the network for ninety seconds, which is worth
+# one more go; it can also fail because the code is broken, which is not worth
+# another go every five minutes forever. Two attempts separates those.
+TRIES="${TRIES:-2}"
 
 # Tags that mean "put this live". Anything else is just a tag.
 PATTERN="${PATTERN:-release-*}"
@@ -89,6 +97,14 @@ else
   fi
   if [ -f "$DEPLOYED" ] && [ "$(cat "$DEPLOYED")" = "$TAG" ]; then
     exit 0   # already live, and quietly
+  fi
+  # A tag this agent has already given up on. Without this the loop is:
+  # deploy fails, roll back, the tag is still the newest one, wake up five
+  # minutes later and do the whole thing again — a pg_dump of the entire
+  # database and an email, every five minutes, until somebody notices. The
+  # release that failed is not going to start working on its own.
+  if [ -f "$GAVEUP" ] && [ "$(cat "$GAVEUP")" = "$TAG" ]; then
+    exit 0   # already said so, in the log, when it happened
   fi
   TARGET="$TAG"
 fi
@@ -161,7 +177,17 @@ say "schema applied"
 # ── the code ────────────────────────────────────────────────────────────────
 OLD_TAG="$(cat "$DEPLOYED" 2>/dev/null || echo '')"
 
-say "deploying $TAG"
+# Which go this is. Counted before the attempt rather than after, so a run that
+# is killed halfway — the machine runs out of memory during a build, which on a
+# gigabyte is the likeliest way this ever dies — still counts as a go.
+ATTEMPT=1
+if [ -f "$TRIED" ]; then
+  read -r PREV_TAG PREV_N < "$TRIED" || true
+  [ "${PREV_TAG:-}" = "$TAG" ] && ATTEMPT=$(( ${PREV_N:-0} + 1 ))
+fi
+printf '%s %s\n' "$TAG" "$ATTEMPT" > "$TRIED"
+
+say "deploying $TAG (attempt $ATTEMPT of $TRIES)"
 if REF="$TARGET" bash "$REPO/deploy-next.sh" >>"$LOG" 2>&1; then
   say "deployed and every screen draws something"
   [ -n "$OLD_TAG" ] && printf '%s' "$OLD_TAG" > "$PREVIOUS"
@@ -186,6 +212,15 @@ else
   else
     say "no previous release to go back to. The site needs a person."
     RESULT="broken"
+  fi
+
+  if [ "$ATTEMPT" -ge "$TRIES" ]; then
+    printf '%s' "$TAG" > "$GAVEUP"
+    say "giving up on $TAG after $ATTEMPT attempts. It will not be tried again."
+    say "      Fix it, tag the fix as a new release, and the agent picks that up."
+    say "      To make it try this one again: rm $GAVEUP"
+  else
+    say "will try $TAG once more on the next run"
   fi
 fi
 
