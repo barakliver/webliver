@@ -183,3 +183,69 @@ export function signedShare(contracts: ContractRow[], clientCount: number): { si
   const signed = new Set(contracts.filter((c) => c.signed_at).map((c) => c.client_id)).size;
   return { signed, of: clientCount };
 }
+
+export type ConvertedRow = { lead_id: string | null; created_at: string };
+
+/** What became of the enquiries: how many turned into events, and how long
+ *  they took to. */
+export type Conversion = {
+  /** Enquiries in the period. */
+  leads: number;
+  /** Of them, the ones an event was actually built from. */
+  converted: number;
+  /** As a percentage, rounded. Null when there were no enquiries, because
+   *  zero out of zero is not zero per cent, it is not a rate at all. */
+  rate: number | null;
+  /** Days from enquiry to event, at the middle of the set. Null when nothing
+   *  converted. */
+  medianDays: number | null;
+};
+
+/**
+ * The step the funnel could not see.
+ *
+ * `funnelOf` reads the status column, so a lead marked won counts as won —
+ * which is a producer's opinion, recorded by hand, on a screen with a
+ * dropdown. Whether an event actually exists is a different question, and
+ * until events carried a reference back to the enquiry there was no way to
+ * ask it. A lead marked won that produced no event is the single most
+ * expensive thing to be wrong about on this screen.
+ *
+ * The median rather than the mean, because one enquiry that sat for a year
+ * before somebody finally booked drags an average somewhere no real enquiry
+ * has ever been.
+ */
+export function conversionOf(leads: LeadRow[], clients: ConvertedRow[]): Conversion {
+  const fromLead = new Map<string, string>();
+  for (const c of clients) {
+    if (!c.lead_id) continue;
+    /* The earliest event per lead. A lead converted twice is a bug elsewhere,
+       and counting it twice here would hide that bug behind a better number. */
+    const seen = fromLead.get(c.lead_id);
+    if (!seen || c.created_at < seen) fromLead.set(c.lead_id, c.created_at);
+  }
+
+  const days: number[] = [];
+  let converted = 0;
+  for (const l of leads) {
+    const at = fromLead.get(l.id);
+    if (!at) continue;
+    converted++;
+    const gap = Math.round((new Date(at).getTime() - new Date(l.created_at).getTime()) / 86_400_000);
+    /* An event dated before the enquiry it came from is a clock or an import,
+       not a negative wait. */
+    if (Number.isFinite(gap) && gap >= 0) days.push(gap);
+  }
+
+  days.sort((a, b) => a - b);
+  const mid = days.length === 0 ? null
+    : days.length % 2 === 1 ? days[(days.length - 1) / 2]
+    : Math.round((days[days.length / 2 - 1] + days[days.length / 2]) / 2);
+
+  return {
+    leads: leads.length,
+    converted,
+    rate: leads.length === 0 ? null : Math.round((converted / leads.length) * 100),
+    medianDays: mid,
+  };
+}

@@ -21,6 +21,13 @@ export type EventCore = {
   event_date: string | null;
   venue: string | null;
   guest_estimate: number | null;
+  /* Carried from the enquiry. Present on an event that came from a lead and
+     empty on one the producer opened directly, which is a real case rather
+     than missing data — so the rows below appear rather than reading as
+     blanks somebody forgot to fill in. */
+  contact_email?: string;
+  contact_phone?: string;
+  brief?: string;
 };
 
 function Save() {
@@ -170,7 +177,36 @@ export function EventDetails({ event }: { event: EventCore }) {
         </Line>
         <Line label={appCopy.newClient.venue}>{event.venue || c.at.none}</Line>
         <Line label={appCopy.newClient.guests}>{event.guest_estimate ?? c.at.none}</Line>
+
+        {/* The number the producer actually calls, as something they can press
+            rather than something they have to select and copy. This was on the
+            leads screen and nowhere else, so the first thing anybody did after
+            converting an enquiry was go back to look it up. */}
+        {event.contact_phone && (
+          <Line label={c.contact.phone}>
+            <a href={`tel:${event.contact_phone.replace(/[^\d+]/g, '')}`} className="text-accent hover:underline" dir="ltr">
+              {event.contact_phone}
+            </a>
+          </Line>
+        )}
+        {event.contact_email && (
+          <Line label={c.contact.email}>
+            <a href={`mailto:${event.contact_email}`} className="text-accent hover:underline" dir="ltr">
+              {event.contact_email}
+            </a>
+          </Line>
+        )}
       </dl>
+
+      {/* What they wrote when they enquired, kept verbatim. It is the only
+          thing on this file in the couple's own words, and it answers the
+          question the producer is about to ask them again. */}
+      {event.brief && (
+        <div className="mt-6 border-t border-line pt-5">
+          <p className="label">{c.contact.brief}</p>
+          <p className="whitespace-pre-line text-[14.5px] leading-relaxed text-ink-soft">{event.brief}</p>
+        </div>
+      )}
     </section>
   );
 }

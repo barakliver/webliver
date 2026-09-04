@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { appCopy } from '@/content/site';
+import type { Conversion } from '@/lib/analytics';
 import type { Funnel, SourceRow, Response, Cash } from '@/lib/analytics';
 import { Money, Ratio, ils } from '@/components/Ltr';
 import { Metric } from '@/components/app/Metric';
@@ -225,6 +226,45 @@ export function Health({ signed, overdue, waiting }: {
           {overdue > 0 && <Link href="/app/clients" className="btn-ghost">{c.health.toClients}</Link>}
         </div>
       )}
+    </section>
+  );
+}
+
+/**
+ * What became of the enquiries.
+ *
+ * Sits beside the funnel and answers a different question. The funnel reads
+ * the status column, so a lead counts as won because somebody chose "won" in
+ * a dropdown; this counts the ones an event was actually built from, which is
+ * only answerable now that an event carries a reference back to its enquiry.
+ * The gap between the two numbers is the interesting one.
+ */
+export function ConversionPanel({ r }: { r: Conversion }) {
+  const cc = c.conversion;
+  if (r.rate === null) {
+    return (
+      <section className="card">
+        <h2 className="font-display text-[19px] font-semibold text-ink">{cc.title}</h2>
+        <p className="mt-3 text-[14.5px] text-ink-soft">{cc.none}</p>
+      </section>
+    );
+  }
+  return (
+    <section className="card">
+      <h2 className="font-display text-[19px] font-semibold text-ink">{cc.title}</h2>
+      <p className="mt-1 text-[13.5px] text-ink-mute">{cc.sub}</p>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <Figure
+          label={cc.rate}
+          value={<Ratio of={r.converted} total={r.leads} />}
+          href="/app/leads"
+        />
+        <Figure
+          label={cc.wait}
+          value={r.medianDays === null ? '·' : cc.days.replace('{n}', String(r.medianDays))}
+        />
+      </div>
+      <p className="mt-3 text-[13px] text-ink-mute">{cc.count.replace('{n}', String(r.leads))}</p>
     </section>
   );
 }

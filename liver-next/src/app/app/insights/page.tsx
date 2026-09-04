@@ -3,9 +3,9 @@ import { supabaseServer } from '@/lib/supabase/server';
 import { appCopy } from '@/content/site';
 import { PageHead, Empty } from '@/components/app/PageHead';
 import { IssueReporter } from '@/components/app/IssueReporter';
-import { FunnelChart, Sources, ResponsePanel, CashPanel, Health } from '@/components/app/Insights';
+import { FunnelChart, Sources, ResponsePanel, CashPanel, Health, ConversionPanel } from '@/components/app/Insights';
 import {
-  funnelOf, bySource, responseTime, cashOf, overdueTasks, signedShare,
+  funnelOf, bySource, responseTime, cashOf, overdueTasks, signedShare, conversionOf,
   type LeadRow, type CallRow, type PaymentRow, type TaskRow, type ContractRow,
 } from '@/lib/analytics';
 
@@ -25,7 +25,7 @@ export default async function InsightsPage() {
     sb.from('payments').select('amount,due_on,paid').limit(2000),
     sb.from('tasks').select('due_on,done').limit(4000),
     sb.from('contracts').select('client_id,signed_at').limit(1000),
-    sb.from('clients').select('id').limit(1000),
+    sb.from('clients').select('id,lead_id,created_at').limit(1000),
   ]);
 
   const leadRows = (leads.data ?? []) as LeadRow[];
@@ -50,6 +50,10 @@ export default async function InsightsPage() {
   const cash = cashOf((payments.data ?? []) as PaymentRow[]);
   const overdue = overdueTasks((tasks.data ?? []) as TaskRow[]);
   const signed = signedShare((contracts.data ?? []) as ContractRow[], clientCount);
+  /* Counted from events that exist rather than from a status somebody set
+     by hand, which is the one number on this screen the funnel above it
+     cannot give. */
+  const conversion = conversionOf(leadRows, (clients.data ?? []) as { lead_id: string | null; created_at: string }[]);
 
   return (
     <>
@@ -62,6 +66,7 @@ export default async function InsightsPage() {
         <Health signed={signed} overdue={overdue} waiting={response.waiting} />
         <CashPanel cash={cash} />
         <FunnelChart funnel={funnel} />
+        <ConversionPanel r={conversion} />
         <ResponsePanel r={response} />
         <Sources rows={bySource(leadRows)} />
       </div>

@@ -72,7 +72,7 @@ export default async function ClientPage({
   const sb = await supabaseServer();
   const { data: client } = await sb
     .from('clients')
-    .select('id,display_name,kind,event_date,venue,guest_estimate,budget_visible,budget_target,label_id,track_a_label,track_b_label,guest_token,guest_site_on,guest_note')
+    .select('id,display_name,kind,event_date,venue,guest_estimate,budget_visible,budget_target,label_id,track_a_label,track_b_label,guest_token,guest_site_on,guest_note,contact_email,contact_phone,brief')
     .eq('id', id)
     .maybeSingle();
 

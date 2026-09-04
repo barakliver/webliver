@@ -695,6 +695,20 @@ export const appCopy = {
   },
 
   insights: {
+    /* What became of the enquiries. Separate from the funnel above it, and
+       deliberately so: the funnel reads the status column, which is a
+       producer's own opinion typed into a dropdown, and this counts events
+       that exist. A lead marked won that never became an event is the most
+       expensive thing on this screen to be wrong about. */
+    conversion: {
+      title: 'מה יצא מהפניות',
+      sub: 'נספר לפי אירועים שנפתחו בפועל, לא לפי סטטוס שסומן ביד.',
+      rate: 'הפכו לאירוע',
+      count: 'מתוך {n} פניות',
+      wait: 'זמן עד סגירה',
+      days: '{n} ימים',
+      none: 'עוד אין מספיק פניות כדי לומר משהו.',
+    },
     title: 'נתונים',
     sub: 'איפה העסק עומד באמת, ולא איך הוא מרגיש.',
     empty: 'עוד אין מספיק נתונים כדי להראות כאן משהו אמיתי. אחרי כמה לידים ואירועים המסך הזה מתמלא לבד.',
@@ -1220,6 +1234,15 @@ export const appCopy = {
     editSaving: 'שומר',
     editCancel: 'ביטול',
     noDateYet: 'עוד לא נקבע תאריך',
+    /* What came across from the enquiry. These rows only appear when there is
+       something in them: an event the producer opened himself has no lead
+       behind it, and a row reading "none" three times looks like data that
+       went missing rather than data that never existed. */
+    contact: {
+      phone: 'טלפון',
+      email: 'אימייל',
+      brief: 'מה שנכתב בפנייה',
+    },
     setDate: 'קביעת תאריך',
     daysLeft: 'ימים לאירוע',
     today: 'האירוע היום',

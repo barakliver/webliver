@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  funnelOf, bySource, responseTime, cashOf, overdueTasks, signedShare,
+  funnelOf, bySource, responseTime, cashOf, overdueTasks, signedShare, conversionOf,
   type LeadRow, type CallRow,
 } from '../analytics.ts';
 import { appCopy } from '../../content/site.ts';
@@ -222,4 +222,82 @@ test('every funnel step has a label in the Hebrew copy', () => {
     assert.ok(label.length > 0, `funnel step "${step.key}" has an empty label`);
     assert.match(label, /[֐-׿]/, `funnel step "${step.key}" is not Hebrew`);
   }
+});
+
+// ── what became of the enquiries ────────────────────────────────────────────
+
+const enquiry = (id: string, created_at: string, status = 'new') =>
+  ({ id, status, source: 'site', created_at });
+
+test('conversion counts events that exist, not leads somebody marked won', () => {
+  /* The whole reason this function exists. Three leads are marked won; one of
+     them never became an event, which is the most expensive thing on this
+     screen to be wrong about. */
+  const leads = [
+    enquiry('a', '2026-01-01T00:00:00Z', 'won'),
+    enquiry('b', '2026-01-01T00:00:00Z', 'won'),
+    enquiry('c', '2026-01-01T00:00:00Z', 'won'),
+    enquiry('d', '2026-01-01T00:00:00Z', 'lost'),
+  ];
+  const clients = [
+    { lead_id: 'a', created_at: '2026-01-11T00:00:00Z' },
+    { lead_id: 'b', created_at: '2026-01-05T00:00:00Z' },
+  ];
+  const r = conversionOf(leads, clients);
+  assert.equal(r.leads, 4);
+  assert.equal(r.converted, 2);
+  assert.equal(r.rate, 50);
+});
+
+test('the wait is the middle one, not the average', () => {
+  /* One enquiry that sat for a year drags a mean somewhere no real enquiry
+     has been. */
+  const leads = ['a', 'b', 'c'].map((id) => enquiry(id, '2026-01-01T00:00:00Z'));
+  const clients = [
+    { lead_id: 'a', created_at: '2026-01-03T00:00:00Z' },
+    { lead_id: 'b', created_at: '2026-01-05T00:00:00Z' },
+    { lead_id: 'c', created_at: '2027-01-01T00:00:00Z' },
+  ];
+  assert.equal(conversionOf(leads, clients).medianDays, 4);
+});
+
+test('an even number of waits takes the middle pair', () => {
+  const leads = ['a', 'b'].map((id) => enquiry(id, '2026-01-01T00:00:00Z'));
+  const clients = [
+    { lead_id: 'a', created_at: '2026-01-03T00:00:00Z' },
+    { lead_id: 'b', created_at: '2026-01-09T00:00:00Z' },
+  ];
+  assert.equal(conversionOf(leads, clients).medianDays, 5);
+});
+
+test('an event opened without an enquiry is not a conversion', () => {
+  const r = conversionOf([enquiry('a', '2026-01-01T00:00:00Z')], [
+    { lead_id: null, created_at: '2026-01-02T00:00:00Z' },
+  ]);
+  assert.equal(r.converted, 0);
+  assert.equal(r.rate, 0);
+  assert.equal(r.medianDays, null);
+});
+
+test('one lead converted twice counts once, and by the earlier event', () => {
+  const r = conversionOf([enquiry('a', '2026-01-01T00:00:00Z')], [
+    { lead_id: 'a', created_at: '2026-01-20T00:00:00Z' },
+    { lead_id: 'a', created_at: '2026-01-04T00:00:00Z' },
+  ]);
+  assert.equal(r.converted, 1);
+  assert.equal(r.medianDays, 3);
+});
+
+test('no enquiries is not a rate of zero per cent', () => {
+  const r = conversionOf([], []);
+  assert.equal(r.rate, null);
+  assert.equal(r.medianDays, null);
+});
+
+test('an event dated before its own enquiry does not become a negative wait', () => {
+  const r = conversionOf([enquiry('a', '2026-02-01T00:00:00Z')], [
+    { lead_id: 'a', created_at: '2026-01-01T00:00:00Z' },
+  ]);
+  assert.equal(r.converted, 1);
+  assert.equal(r.medianDays, null);
 });
