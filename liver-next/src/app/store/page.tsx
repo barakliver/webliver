@@ -60,7 +60,7 @@ export default async function StorePage() {
 
   return (
     <>
-      <Nav site={site} locale={locale} />
+      <Nav site={site} locale={locale} shop={items.length > 0} />
       <main id="main">
         <Section id="shop" title={c.shopTitle} level={1}>
           <p className="mb-8 text-[15.5px] text-ink-soft">{c.shopSub}</p>

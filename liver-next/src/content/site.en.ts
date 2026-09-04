@@ -2,6 +2,7 @@ import type { SiteCopy } from './site.ts';
 import type {
   AuthCopy, PrivacyCopy, TermsCopy, A11yCopy, InstallCopy, ShopCopy, RsvpCopy,
   GuestSiteCopy, ProducerEntryCopy, BudgetSimCopy, ConciergeCopy, EventKinds,
+  NotFoundCopy, SiteErrorCopy,
 } from './ui.ts';
 
 /**
@@ -113,7 +114,7 @@ export const siteEn: SiteCopy = {
       'The online course is the method we work by, stage after stage, from the budget to the day itself.',
       'You produce it yourselves. You are not by yourselves.',
     ],
-    cta: 'See the online course',
+    cta: 'Ask about the online course',
   },
 
   closing: {
@@ -495,6 +496,30 @@ export const a11yCopyEn: A11yCopy = {
     updated: 'Last updated',
     back: 'Back to the home page',
   },
+};
+
+export const notFoundCopyEn: NotFoundCopy = {
+  code: '404',
+  title: 'That address does not lead anywhere',
+  body: 'The link may have been sent incomplete, or the page may have moved since. Nothing has been lost.',
+  home: 'Home page',
+  contact: 'Talk to us',
+  signIn: 'Your own area',
+  help: 'If you arrived from a link somebody sent you, it is worth asking them for it again. Links to an event are personal and they expire.',
+  workspace: {
+    title: 'That event is not here',
+    body: 'It may have been archived, or the link may point at an event that was deleted.',
+    back: 'Back to events',
+  },
+};
+
+export const siteErrorCopyEn: SiteErrorCopy = {
+  title: 'Something broke at our end',
+  body: 'The fault is on our side, not yours. Try again, and if it keeps happening we are here.',
+  retry: 'Try again',
+  home: 'Home page',
+  whatsapp: 'Message us on WhatsApp',
+  ref: 'Fault code',
 };
 
 export const installCopyEn: InstallCopy = {

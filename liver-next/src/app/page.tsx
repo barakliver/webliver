@@ -21,6 +21,7 @@ import { AiConcierge } from '@/components/marketing/AiConcierge';
 import { SiteFooter } from '@/components/marketing/SiteFooter';
 import { StructuredData } from '@/components/marketing/StructuredData';
 import { budgetSimFor, conciergeFor, eventKindsFor } from '@/content/ui';
+import { storeHasItems } from '@/lib/store';
 
 /* Rendered per request, because the language is read from a cookie and a page
    built once cannot be in two languages.
@@ -40,12 +41,14 @@ export const metadata = { alternates: { canonical: '/' }, openGraph: { url: '/' 
 
 export default async function HomePage() {
   const locale = readLocale((await cookies()).get(LOCALE_COOKIE)?.value);
-  const site = await getSiteCopy(supabasePublic(), locale);
+  const sb = supabasePublic();
+  const site = await getSiteCopy(sb, locale);
+  const shop = await storeHasItems(sb);
 
   return (
     <>
       <StructuredData site={site} />
-      <Nav site={site} locale={locale} />
+      <Nav site={site} locale={locale} shop={shop} />
       <main id="main">
         <Hero site={site} />
 

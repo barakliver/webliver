@@ -1,11 +1,12 @@
 import type { Locale } from '../lib/locale.ts';
 import {
   auth, privacyCopy, termsCopy, a11yCopy, installCopy, storeCopy, rsvpCopy, budgetSimCopy,
-  conciergeCopy, guestSiteCopy, producerEntryCopy, EVENT_KINDS,
+  conciergeCopy, guestSiteCopy, producerEntryCopy, EVENT_KINDS, notFoundCopy, siteErrorCopy,
 } from './site.ts';
 import {
   authEn, privacyCopyEn, termsCopyEn, a11yCopyEn, installCopyEn, storeCopyEn, rsvpCopyEn,
   budgetSimCopyEn, conciergeCopyEn, guestSiteCopyEn, producerEntryCopyEn, EVENT_KINDS_EN,
+  notFoundCopyEn, siteErrorCopyEn,
 } from './site.en.ts';
 
 /**
@@ -43,6 +44,8 @@ export type PrivacyCopy = Wide<typeof privacyCopy>;
 export type TermsCopy = Wide<typeof termsCopy>;
 export type A11yCopy = Wide<typeof a11yCopy>;
 export type InstallCopy = Wide<typeof installCopy>;
+export type NotFoundCopy = Wide<typeof notFoundCopy>;
+export type SiteErrorCopy = Wide<typeof siteErrorCopy>;
 /* The shopfront only. `storeCopy` also carries the producer's own screens for
    editing the catalogue and dragging orders between columns, and translating
    those would be work nobody reads: there is one producer and he works in
@@ -81,6 +84,8 @@ export const storeFor = (l: Locale): ShopCopy => (l === 'en' ? storeCopyEn : sho
 export const rsvpFor = (l: Locale): RsvpCopy => (l === 'en' ? rsvpCopyEn : rsvpCopy);
 export const guestSiteFor = (l: Locale): GuestSiteCopy => (l === 'en' ? guestSiteCopyEn : guestSiteCopy);
 export const producerEntryFor = (l: Locale): ProducerEntryCopy => (l === 'en' ? producerEntryCopyEn : producerEntryCopy);
+export const notFoundFor = (l: Locale): NotFoundCopy => (l === 'en' ? notFoundCopyEn : notFoundCopy);
+export const siteErrorFor = (l: Locale): SiteErrorCopy => (l === 'en' ? siteErrorCopyEn : siteErrorCopy);
 export const budgetSimFor = (l: Locale): BudgetSimCopy => (l === 'en' ? budgetSimCopyEn : budgetSimCopy);
 export const conciergeFor = (l: Locale): ConciergeCopy => (l === 'en' ? conciergeCopyEn : conciergeCopy);
 export const eventKindsFor = (l: Locale): EventKinds => (l === 'en' ? EVENT_KINDS_EN : EVENT_KINDS);

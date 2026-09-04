@@ -165,7 +165,12 @@ export const site: SiteCopy = {
       'הקורס הדיגיטלי הוא השיטה שאנחנו עובדים לפיה, שלב אחר שלב, מהתקציב ועד יום האירוע עצמו.',
       'אתם מפיקים לבד. אתם לא לבדכם.',
     ],
-    cta: 'לקורס הדיגיטלי',
+    /* The label names where pressing it goes, which is this page's contact
+       form. It used to read "to the digital course" and scroll to that same
+       form, which is a promise the site cannot keep: there is no course page
+       to arrive at. When one exists with its own address, its own outline and
+       a way to enrol, this becomes a link to it and the wording goes back. */
+    cta: 'לשמוע על הקורס',
   },
 
   closing: {
@@ -1819,6 +1824,52 @@ export const vendorCopy = {
       area: 'אזור',
     },
   },
+} as const;
+
+/**
+ * The page that is not there.
+ *
+ * A 404 on a wedding site is almost never somebody typing badly. It is a link
+ * from an old message, a share that lost its last characters, or an
+ * invitation somebody forwarded twice. So it does not scold and it does not
+ * shrug: it says the address did not lead anywhere, and offers the three
+ * places a person who landed here actually wanted.
+ */
+export const notFoundCopy = {
+  code: '404',
+  title: 'הכתובת הזאת לא מובילה לשום מקום',
+  body: 'יכול להיות שהקישור נשלח חלקי, או שהעמוד זז מאז. שום דבר לא אבד.',
+  home: 'לעמוד הבית',
+  contact: 'לדבר איתנו',
+  signIn: 'לאזור האישי',
+  help: 'אם הגעתם לכאן מקישור שקיבלתם, שווה לבקש אותו שוב מהשולח. קישורים לאירוע הם אישיים ויש להם תוקף.',
+  /* The same situation for somebody already signed in, which is a different
+     situation. A producer who opened a stale link to an event does not want
+     the home page and does not want to be offered our phone number; they want
+     the list they came from. Sending them to the public notice was offering a
+     customer service desk to somebody standing inside the building. */
+  workspace: {
+    title: 'האירוע הזה לא נמצא',
+    body: 'יכול להיות שהוא הועבר לארכיון, או שהקישור מצביע על אירוע שנמחק.',
+    back: 'חזרה לאירועים',
+  },
+} as const;
+
+/**
+ * Something on the public site threw.
+ *
+ * Separate from the workspace's own boundary because the reader is different:
+ * a visitor has no account to go back to and no reason to trust that anything
+ * was saved. What they need is the way to reach a person, which is why the
+ * two buttons here are the home page and the phone.
+ */
+export const siteErrorCopy = {
+  title: 'משהו נפל אצלנו',
+  body: 'התקלה בצד שלנו ולא בצד שלכם. אפשר לנסות שוב, ואם זה חוזר, אנחנו זמינים.',
+  retry: 'לנסות שוב',
+  home: 'לעמוד הבית',
+  whatsapp: 'לכתוב לנו בוואטסאפ',
+  ref: 'קוד לתקלה',
 } as const;
 
 export const installCopy = {

@@ -7,17 +7,23 @@ import { DEFAULT_LOCALE, type Locale } from '@/lib/locale';
    page is the thing that knows which language is being read and whether any of
    the wording has been edited. Importing it directly is how a nav ends up in
    Hebrew on an English page. */
-export function Nav({ site = fallback, locale = DEFAULT_LOCALE }: {
+export function Nav({ site = fallback, locale = DEFAULT_LOCALE, shop }: {
   site?: SiteCopy; locale?: Locale;
-} = {}) {
+  /* Whether there is anything in the shop. Required rather than defaulted, so
+     a new page that renders this bar has to decide rather than inherit an
+     answer that is wrong most of the time. */
+  shop: boolean;
+}) {
   const links = [
     ['#philosophy', site.nav.philosophy],
     ['#journey', site.nav.journey],
     ['#about', site.nav.about],
     ['#budget', site.nav.budget],
     /* A route rather than a hash: the shop is its own page, and a link that
-       scrolls to nothing on every other page is worse than no link. */
-    ['/store', site.nav.shop],
+       scrolls to nothing on every other page is worse than no link. It only
+       appears when there is something to sell — a link in the main navigation
+       that leads to an empty room reads as a business that stopped halfway. */
+    ...(shop ? [['/store', site.nav.shop] as const] : []),
   ] as const;
 
   return (
