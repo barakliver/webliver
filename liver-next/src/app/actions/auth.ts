@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { normalizePhone, displayPhone } from '@/lib/phone';
+import { logFailure } from '@/lib/log';
 
 /**
  * One door.
@@ -110,7 +111,9 @@ export async function requestCode(_prev: AuthResult | null, form: FormData): Pro
      advice in both cases: one needs configuration, the other needs an hour. */
   if (error) {
     const status = (error as { status?: number }).status;
-    console.error('[auth] signInWithOtp failed', { channel: who.channel, status, message: error.message });
+    logFailure('auth', 'signInWithOtp failed', {
+      at: '/login', role: 'anon', doing: 'send-code', kind: who.channel, code: status ?? 0,
+    });
 
     if (status === 429 || /rate limit|only request this after|for security purposes/i.test(error.message)) {
       return { ok: false, channel: who.channel, error: 'נשלחו יותר מדי בקשות. המתינו רגע ונסו שוב.' };
