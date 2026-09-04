@@ -2170,12 +2170,15 @@ export const labelCopy = {
 export const jumpCopy = {
   open: 'חיפוש מהיר',
   title: 'לאן?',
-  placeholder: 'שם של אירוע או מסך',
+  placeholder: 'שם של אירוע, מסך או מקטע',
   screens: 'מסכים',
   events: 'אירועים',
+  recent: 'אחרונים',
+  sections: 'מקטע בתוך אירוע',
   none: 'לא נמצא. אפשר לנסות חלק מהשם.',
   close: 'סגירה',
   hint: 'חצים לבחירה, Enter לפתיחה, Esc לסגירה.',
+  hintTwo: 'שם אירוע יחד עם שם מקטע פותח ישר את המקטע.',
 } as const;
 
 export const copilotCopy = {

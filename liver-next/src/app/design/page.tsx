@@ -444,7 +444,7 @@ export default async function DesignPage() {
           />
         </Panel>
 
-        <Panel name="QuickJump" note="the search box from the top bar; ⌘K opens it anywhere on this page">
+        <Panel name="QuickJump" note='⌘K opens it. Empty: recents, menu, then what is coming. Typed: try "רוני כסף", or "משימות" on its own'>
           <div className="flex justify-end rounded-xl2 border border-line bg-card p-3">
             <QuickJump
               screens={[
@@ -454,6 +454,9 @@ export default async function DesignPage() {
                 { href: '/app/vendors', label: 'ספקים', icon: 'vendors' },
               ]}
               events={[
+                /* One finished event, to show that it sorts below the ones that
+                   have not happened yet rather than above them. */
+                { id: '00000000-0000-4000-8000-000000000004', name: 'הילה ויונתן', date: '2025-08-30' },
                 { id: FIXTURE_CLIENT, name: 'נועה ואיתי', date: '2026-10-18' },
                 { id: '00000000-0000-4000-8000-000000000002', name: 'רוני ועומר', date: '2026-11-05' },
                 { id: '00000000-0000-4000-8000-000000000003', name: 'כנס שנתי, טבע', date: null },
