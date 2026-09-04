@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { summarise } from '../finance.ts';
+import { summarise, ledgerOf } from '../finance.ts';
 
 /**
  * The one calculation the couple is asked to trust.
@@ -86,4 +86,93 @@ test('the two shares of the bar always add to a hundred', () => {
     const f = summarise([line(committed, committed)], [pay(paid)], null);
     assert.equal(f.paidPct + f.pendingPct, 100, `${paid} of ${committed} left a gap in the bar`);
   }
+});
+
+/* ── the producer's side ──────────────────────────────────────────────────
+ *
+ * The couple's ledger above answers "are we inside our number". This one
+ * answers "is there anything left of this event after everybody is paid",
+ * which is a question the product could not previously ask on any screen.
+ */
+
+const crew = (fee: number | string | null) => ({ fee });
+
+test('an event with nothing in it has no margin rather than a margin of zero', () => {
+  /* Zero per cent is a claim about a business. Null is the absence of one,
+     and a new event has not earned the right to either. */
+  const l = ledgerOf([], [], []);
+  assert.equal(l.billed, 0);
+  assert.equal(l.costs, 0);
+  assert.equal(l.margin, 0);
+  assert.equal(l.marginPct, null);
+});
+
+test('the margin is what is left after suppliers and crew', () => {
+  const l = ledgerOf(
+    [pay(100000), pay(50000, false)],
+    [line(40000), line(30000, 25000)],
+    [crew(5000), crew(3000)],
+  );
+  assert.equal(l.billed, 150000);
+  assert.equal(l.suppliers, 65000, 'the agreed price wins over the estimate');
+  assert.equal(l.crew, 8000);
+  assert.equal(l.costs, 73000);
+  assert.equal(l.margin, 77000);
+  assert.equal(l.marginPct, 51);
+});
+
+test('billed drives the margin and received drives the cash', () => {
+  /* An invoice that has not been paid yet is still revenue that was agreed.
+     Conflating the two makes a business read as broke in the month before a
+     wedding and rich in the month after, on the same event. */
+  const l = ledgerOf([pay(80000, false), pay(20000)], [line(30000)], []);
+  assert.equal(l.billed, 100000);
+  assert.equal(l.received, 20000);
+  assert.equal(l.outstanding, 80000);
+  assert.equal(l.margin, 70000, 'the unpaid invoice still counts as revenue');
+});
+
+test('a loss is reported as a loss', () => {
+  /* The single most useful thing this can say, and the one a rounded-up or
+     floored figure would hide until it was too late to fix. */
+  const l = ledgerOf([pay(50000)], [line(60000)], [crew(4000)]);
+  assert.equal(l.margin, -14000);
+  assert.ok(l.marginPct !== null && l.marginPct < 0, `${l.marginPct}`);
+});
+
+test('a crew list with no fees agreed yet costs nothing, not NaN', () => {
+  /* Half a crew list is names before it is fees, and a null must not turn the
+     whole ledger into a NaN on the screen a producer checks before signing. */
+  const l = ledgerOf([pay(10000)], [], [crew(null), crew(2000), crew(null)]);
+  assert.equal(l.crew, 2000);
+  assert.equal(l.margin, 8000);
+});
+
+test('numbers that arrive from the database as strings still add up', () => {
+  /* Every numeric column comes back as a string over the wire, and string
+     concatenation instead of addition is the failure that looks like a
+     plausible number rather than an error. */
+  const l = ledgerOf([pay('100000')], [line('0', '30000')], [crew('5000')]);
+  assert.equal(l.billed, 100000);
+  assert.equal(l.costs, 35000);
+  assert.equal(l.margin, 65000);
+});
+
+test('costs booked before anything is billed are flagged, not treated as a loss', () => {
+  /* The ordinary case: suppliers are signed months before the final invoice
+     goes out. The margin is arithmetically a loss and saying so plainly would
+     be alarming and wrong, so the shape of it is reported instead. */
+  const l = ledgerOf([], [line(20000)], []);
+  assert.equal(l.costsWithoutBilling, true);
+  assert.equal(l.marginPct, null);
+
+  const normal = ledgerOf([pay(50000)], [line(20000)], []);
+  assert.equal(normal.costsWithoutBilling, false);
+});
+
+test('overpayment does not make what is owed negative', () => {
+  /* Same rule as the couple's ledger: an overpayment is a bookkeeping
+     question rather than a negative number to put on a screen. */
+  const l = ledgerOf([pay(10000)], [], []);
+  assert.equal(l.outstanding, 0);
 });

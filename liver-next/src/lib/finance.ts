@@ -77,3 +77,87 @@ export function summarise(
     pendingPct: committed > 0 ? 100 - paidPct : 0,
   };
 }
+
+/* ── the producer's side of the same event ─────────────────────────────────
+ *
+ * `summarise` above is the couple's ledger, and it is coherent: their budget
+ * is what the wedding costs, and their payments are what they have put
+ * against it. Both of those figures are about one relationship.
+ *
+ * The producer is standing between two relationships. Money arrives from the
+ * couple and money leaves to suppliers and crew, and until now those two
+ * halves never met anywhere in this product. The couple's payments are a
+ * table; the crew's fees are a column on another table that nothing sums; the
+ * suppliers' prices are budget lines. So the one question a producer running
+ * a business actually has — what is left of this event after everyone is paid
+ * — could not be asked, on any screen, in any form.
+ *
+ * This is that question, worked out in the same place as the couple's so the
+ * two can never be derived differently, and producer-only for the obvious
+ * reason: what a producer keeps is not a line on the couple's screen.
+ */
+
+/** What a crew member costs for the evening. Null is a real value: plenty of
+ *  people are on a crew list before anybody has agreed a fee. */
+export type CrewLine = { fee: number | string | null };
+
+export type Ledger = {
+  /** Everything the couple has agreed to pay, whether it has arrived or not. */
+  billed: number;
+  /** What has actually arrived. */
+  received: number;
+  /** Billed minus received: what is still owed to the producer. */
+  outstanding: number;
+  /** Suppliers, at the agreed price or the estimate until agreed. */
+  suppliers: number;
+  /** The crew's fees. Nulls contribute nothing rather than breaking the sum. */
+  crew: number;
+  /** Everything leaving: suppliers plus crew. */
+  costs: number;
+  /** What is left of the event. Negative is a real answer and is shown as
+   *  one: an event being run at a loss is exactly what a producer needs to
+   *  find out while there is still time to do something about it. */
+  margin: number;
+  /** Margin as a share of what is billed, rounded. Null when nothing is
+   *  billed yet, which is not the same as a margin of zero per cent. */
+  marginPct: number | null;
+  /** True when a cost is recorded that nobody has been billed for yet. The
+   *  common cause is real: suppliers get booked before the couple's final
+   *  invoice is raised. It is a flag rather than a warning for that reason. */
+  costsWithoutBilling: boolean;
+};
+
+/**
+ * The producer's position on one event.
+ *
+ * Billed rather than received drives the margin, because an unpaid invoice is
+ * still revenue that was agreed — while `outstanding` keeps the cash question
+ * separate and answerable. Conflating the two is how a business reads itself
+ * as broke in the month before a wedding and rich in the month after.
+ */
+export function ledgerOf(
+  payments: readonly PaidLine[],
+  items: readonly CostLine[],
+  crewLines: readonly CrewLine[],
+): Ledger {
+  const billed = payments.reduce((a, p) => a + num(p.amount), 0);
+  const received = payments.reduce((a, p) => (p.paid ? a + num(p.amount) : a), 0);
+
+  const suppliers = items.reduce((a, i) => a + num(i.agreed ?? i.estimate), 0);
+  const crew = crewLines.reduce((a, m) => a + num(m.fee), 0);
+  const costs = suppliers + crew;
+
+  const margin = billed - costs;
+
+  return {
+    billed,
+    received,
+    outstanding: Math.max(billed - received, 0),
+    suppliers,
+    crew,
+    costs,
+    margin,
+    marginPct: billed > 0 ? Math.round((margin / billed) * 100) : null,
+    costsWithoutBilling: costs > 0 && billed === 0,
+  };
+}

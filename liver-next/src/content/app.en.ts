@@ -151,6 +151,21 @@ export const tasksEn: TasksCopy = {
 };
 
 export const moneyEn: MoneyCopy = {
+  ledger: {
+    title: 'What is left',
+    sub: 'What comes in, what goes out, and what remains. Only you see this.',
+    billed: 'Billed to the couple',
+    received: 'Received',
+    outstanding: 'Still owed',
+    suppliers: 'Suppliers',
+    crew: 'Crew',
+    costs: 'Total out',
+    margin: 'Remaining',
+    marginPct: '{n}% of billing',
+    loss: 'This event is running at a loss',
+    early: 'There are costs recorded and nothing billed yet. That is the normal state before the final invoice goes out, so there is no bottom line here yet.',
+    none: 'No figures on this event yet.',
+  },
   payTitle: 'Payments',
   paySubProducer: 'What the couple has paid and what is still open. They see this, and only you mark something paid.',
   paySubClient: 'What has been paid and what is still open.',

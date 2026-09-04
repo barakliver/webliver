@@ -23,6 +23,7 @@ import { TaskList, type Task } from '@/components/app/TaskList';
 import { PaymentsPanel, type Payment } from '@/components/app/PaymentsPanel';
 import { BudgetPanel, type BudgetItem } from '@/components/app/BudgetPanel';
 import { FinanceSummary } from '@/components/app/FinanceSummary';
+import { ProducerLedger } from '@/components/app/ProducerLedger';
 import { WinningBoard } from '@/components/app/WinningBoard';
 import { GuestList, type Guest } from '@/components/app/GuestList';
 import { GuestSiteCard } from '@/components/app/GuestSiteCard';
@@ -285,12 +286,16 @@ async function Section({ tab, client, viewerId }: { tab: EventTab; client: Clien
   }
 
   if (tab === 'money') {
-    const [payments, budget] = await Promise.all([
+    const [payments, budget, crewFees] = await Promise.all([
       safeRows<Payment>('payments', sb.from('payments')
         .select('id,title,amount,due_on,paid,paid_on').eq('client_id', id)
         .order('paid').order('due_on', { ascending: true, nullsFirst: false })),
       safeRows<BudgetItem>('budget', sb.from('budget_items')
         .select('id,category,label,estimate,agreed,vendor').eq('client_id', id).order('created_at')),
+      /* Fees only. The names belong on the crew screen; what this needs is a
+         column that until now nothing anywhere had ever added up. */
+      safeRows<{ fee: number | string | null }>('crew fees', sb.from('crew')
+        .select('fee').eq('client_id', id)),
     ]);
     return (
       <div className="space-y-6">
@@ -300,6 +305,10 @@ async function Section({ tab, client, viewerId }: { tab: EventTab; client: Clien
           target={client.budget_target === null ? null : Number(client.budget_target)}
           items={budget} payments={payments}
         />
+        {/* The couple's five figures above; the producer's bottom line here.
+            Two ledgers on purpose, from one module, so they cannot be derived
+            differently — and only this one is ever rendered for the couple. */}
+        <ProducerLedger c={appCopy.money.ledger} payments={payments} items={budget} crew={crewFees} />
         <PaymentsPanel clientId={id} payments={payments} viewer="producer" />
         <BudgetPanel clientId={id} items={budget} viewer="producer" visible={!!client.budget_visible} />
       </div>

@@ -1410,6 +1410,21 @@ export const appCopy = {
     budOver: 'מעל האומדן',
 
     /* The five figures and the sentence that explains them. */
+    ledger: {
+      title: 'השורה התחתונה',
+      sub: 'מה נכנס, מה יוצא, ומה נשאר. רק אתם רואים את זה.',
+      billed: 'חויב לזוג',
+      received: 'התקבל',
+      outstanding: 'טרם התקבל',
+      suppliers: 'ספקים',
+      crew: 'צוות',
+      costs: 'סך היוצא',
+      margin: 'נשאר',
+      marginPct: '{n}% מהחיוב',
+      loss: 'האירוע הזה בהפסד',
+      early: 'יש עלויות רשומות ועוד לא חויב כלום. זה המצב הרגיל לפני שיוצאת החשבונית האחרונה, ולכן אין כאן עדיין שורה תחתונה.',
+      none: 'אין עדיין מספרים באירוע הזה.',
+    },
     finance: {
       title: 'תמונת הכסף',
       sub: 'חמישה מספרים, ואיך הגענו אליהם.',
