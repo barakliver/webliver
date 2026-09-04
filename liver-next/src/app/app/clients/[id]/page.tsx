@@ -1,4 +1,4 @@
-import { CalendarPlus, Eye, Hash, ListOrdered, Radio } from 'lucide-react';
+import { CalendarPlus, Eye, Hash, ListOrdered, Radio, BookOpen } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { requireLiveProducer } from '@/lib/auth';
@@ -104,6 +104,13 @@ export default async function ClientPage({
           <Link href={`/app/clients/${client.id}/sheet`} className={link}>
             <Hash size={16} aria-hidden strokeWidth={1.5} />
             {appCopy.numbers.open}
+          </Link>
+          {/* Everything at once, for the folder. The other sheets each answer
+              one question; this one is the whole file, for the afternoon when
+              there are no tabs and no signal. */}
+          <Link href={`/app/clients/${client.id}/book`} className={link}>
+            <BookOpen size={16} aria-hidden strokeWidth={1.5} />
+            {appCopy.book.title}
           </Link>
           {/* The same evening, read on the evening. The printed sheet is for
               planning it; this one is for standing in the hall with it. */}

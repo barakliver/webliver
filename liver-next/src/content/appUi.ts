@@ -5,7 +5,7 @@ import {
 } from './site.ts';
 import {
   noticeCopyEn, ticketCopyEn,
-  portalEn, filesEn, sheetsEn, tasksEn, moneyEn, boardEn,
+  portalEn, filesEn, sheetsEn, tasksEn, moneyEn, boardEn, bookEn,
   guestsEn, seatingEn, dayEn, threadEn, partyEn, contractEn, eventFileEn,
 } from './app.en.ts';
 
@@ -41,6 +41,7 @@ export type PortalCopy = Wide<typeof appCopy.portal>;
 export type FilesCopy = Wide<typeof appCopy.files>;
 export type SheetsCopy = Wide<typeof appCopy.sheets>;
 export type TasksCopy = Wide<typeof appCopy.tasks>;
+export type BookCopy = Wide<typeof appCopy.book>;
 export type MoneyCopy = Wide<typeof appCopy.money>;
 export type BoardCopy = Wide<typeof appCopy.board>;
 export type GuestsCopy = Wide<typeof guestsCopy>;
@@ -65,7 +66,7 @@ export type AppUi = {
      Hebrew month inside an otherwise English panel. */
   locale: Locale;
   portal: PortalCopy; files: FilesCopy; sheets: SheetsCopy;
-  tasks: TasksCopy; money: MoneyCopy; board: BoardCopy;
+  tasks: TasksCopy; money: MoneyCopy; board: BoardCopy; book: BookCopy;
   guests: GuestsCopy; seating: SeatingCopy; day: DayCopy;
   thread: ThreadCopy; party: PartyCopy; contract: ContractCopy;
   eventFile: EventFileCopy;
@@ -74,7 +75,7 @@ export type AppUi = {
 export const APP_UI_HE: AppUi = {
   locale: 'he',
   portal: appCopy.portal, files: appCopy.files, sheets: appCopy.sheets,
-  tasks: appCopy.tasks, money: appCopy.money, board: appCopy.board,
+  tasks: appCopy.tasks, money: appCopy.money, board: appCopy.board, book: appCopy.book,
   guests: guestsCopy, seating: seatingCopy, day: dayCopy,
   thread: threadCopy, party: partyCopy, contract: contractCopy,
   eventFile: eventFileCopy,
@@ -83,7 +84,7 @@ export const APP_UI_HE: AppUi = {
 const APP_UI_EN: AppUi = {
   locale: 'en',
   portal: portalEn, files: filesEn, sheets: sheetsEn,
-  tasks: tasksEn, money: moneyEn, board: boardEn,
+  tasks: tasksEn, money: moneyEn, board: boardEn, book: bookEn,
   guests: guestsEn, seating: seatingEn, day: dayEn,
   thread: threadEn, party: partyEn, contract: contractEn,
   eventFile: eventFileEn,

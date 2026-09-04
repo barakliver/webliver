@@ -1,4 +1,4 @@
-import type { NoticeCopy, TicketCopy } from './appUi.ts';
+import type { NoticeCopy, TicketCopy, BookCopy } from './appUi.ts';
 import type {
   PortalCopy, FilesCopy, SheetsCopy, TasksCopy, MoneyCopy, BoardCopy,
   GuestsCopy, SeatingCopy, DayCopy, ThreadCopy, PartyCopy, ContractCopy, EventFileCopy,
@@ -524,5 +524,47 @@ export const ticketCopyEn: TicketCopy = {
     screenshot: 'Screenshot',
     reporter: 'Reported by',
     showClosed: 'Show resolved',
+  },
+};
+
+export const bookEn: BookCopy = {
+  title: 'Production book',
+  sub: 'The whole event on one document, for printing and for the folder.',
+  print: 'Print',
+  back: 'Back to the event',
+  noDate: 'No date',
+  countdown: 'To go',
+  days: '{n} days',
+  today: 'Today',
+  daysAgo: '{n} days ago',
+  stage: 'Stage',
+  behind: '{n} behind',
+  ahead: '{n} ahead',
+  heads: 'Covers',
+  suppliers: 'Suppliers',
+  reachCouple: 'Reach the couple',
+  arrivals: 'Who arrives when',
+  noArrivals: 'No call times set yet.',
+  runningOrder: 'Running order',
+  noOrder: 'No running order yet.',
+  noSuppliers: 'No suppliers yet.',
+  uncategorised: 'Uncategorised',
+  vendorStatus: { shortlist: 'Shortlist', booked: 'Booked', cancelled: 'Cancelled' },
+  guests: 'Guests',
+  invited: 'Invited',
+  coming: 'Coming',
+  declined: 'Not coming',
+  pending: 'No reply',
+  diets: 'Dietary',
+  open: 'Still open',
+  noOpen: 'Nothing left open.',
+  noDue: 'No date',
+  money: 'Money',
+  paid: 'Paid',
+  owed: 'Outstanding',
+  printedOn: 'Printed',
+  phase: {
+    foundation: 'Foundations', bookings: 'Bookings', experience: 'Guest experience',
+    guests: 'Guest operations', final: 'Final coordination', dayOf: 'The day', after: 'After',
   },
 };
