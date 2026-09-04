@@ -88,8 +88,12 @@ export async function POST(req: Request) {
     : null;
 
   const sb = await supabaseServer();
-  const event = await eventContext(sb, clientId).catch((e) => { console.error('[copilot] context failed', e); return null; });
-  const eventName = event ? event.split('\n')[0].replace(/^אירוע: /, '').replace(/ \(.*\)$/, '') : null;
+  const ctx = await eventContext(sb, clientId).catch((e) => { console.error('[copilot] context failed', e); return null; });
+  const event = ctx?.text ?? null;
+  const eventName = ctx?.read.name ?? null;
+  /* Sent with the first line so the panel can say what the answer was built
+     from before the answer arrives. */
+  const read = ctx?.read.saw ?? null;
 
   const today = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE, weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(new Date());
   const brand = account.producer?.brandName || 'ההפקה';
@@ -116,7 +120,7 @@ export async function POST(req: Request) {
     try {
       const final = await stream.finalMessage();
       const text = final.content.filter((b): b is Anthropic.TextBlock => b.type === 'text').map((b) => b.text).join('').trim();
-      return say(text || NO_WORDS, { event: eventName });
+      return say(text || NO_WORDS, { event: eventName, read });
     } catch (e) {
       logFailure(e);
       return say(BROKE, { failed: true });
@@ -128,7 +132,7 @@ export async function POST(req: Request) {
     async start(controller) {
       const line = (o: unknown) => controller.enqueue(encoder.encode(`${JSON.stringify(o)}\n`));
       let any = false;
-      line({ event: eventName });
+      line({ event: eventName, read });
       try {
         for await (const ev of stream) {
           if (ev.type === 'content_block_delta' && ev.delta.type === 'text_delta' && ev.delta.text) {

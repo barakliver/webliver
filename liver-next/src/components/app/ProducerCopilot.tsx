@@ -30,6 +30,10 @@ export function ProducerCopilot({ brandName }: { brandName: string }) {
   const [draft, setDraft] = useState('');
   const [busy, setBusy] = useState(false);
   const [eventName, setEventName] = useState<string | null>(null);
+  /* What the answer was built from. Shown rather than implied: an assistant
+     that reads somebody's event and does not say what it read is asking to be
+     trusted on the strength of sounding confident. */
+  const [read, setRead] = useState<{ key: string; n: number }[] | null>(null);
   const [copied, setCopied] = useState<number | null>(null);
 
   const listRef = useRef<HTMLDivElement>(null);
@@ -58,7 +62,7 @@ export function ProducerCopilot({ brandName }: { brandName: string }) {
 
   /* A new event opened is a new conversation: a draft about the last couple
      has no business under this one's name. */
-  useEffect(() => { setTurns([]); setEventName(null); }, [clientId]);
+  useEffect(() => { setTurns([]); setEventName(null); setRead(null); }, [clientId]);
 
   const send = async (text0?: string) => {
     const text = (text0 ?? draft).trim();
@@ -86,8 +90,11 @@ export function ProducerCopilot({ brandName }: { brandName: string }) {
       });
 
       if (!isNdjson(res)) {
-        const data = (await res.json().catch(() => ({}))) as { reply?: string; event?: string | null };
+        const data = (await res.json().catch(() => ({}))) as {
+          reply?: string; event?: string | null; read?: { key: string; n: number }[] | null;
+        };
         if (typeof data.event === 'string') setEventName(data.event);
+        if (Array.isArray(data.read)) setRead(data.read);
         show(data.reply || c.wentWrong);
         return;
       }
@@ -95,6 +102,7 @@ export function ProducerCopilot({ brandName }: { brandName: string }) {
       let answer = '';
       await readNdjson(res, (ev) => {
         if (typeof ev.event === 'string' || ev.event === null) setEventName((ev.event as string | null) ?? null);
+        if (Array.isArray(ev.read)) setRead(ev.read as { key: string; n: number }[]);
         if (typeof ev.delta === 'string' && ev.delta) { answer += ev.delta; show(answer); }
       });
       if (!answer) show(c.wentWrong);
@@ -147,6 +155,14 @@ export function ProducerCopilot({ brandName }: { brandName: string }) {
               <p className="mt-0.5 truncate text-[12.5px] text-ink-mute">
                 {eventName ? `${c.context}: ${eventName}` : clientId ? c.sub : `${c.context}: ${c.noContext}`}
               </p>
+              {/* Counts, never rows. Listing the guest list to prove it had
+                  read the guest list would be the leak it is meant to settle. */}
+              {read && read.length > 0 && (
+                <p className="mt-1 truncate text-[11.5px] text-ink-mute" title={c.read}>
+                  {c.read}:{' '}
+                  {read.map((r) => `${r.n} ${c.reads[r.key as keyof typeof c.reads] ?? r.key}`).join(' · ')}
+                </p>
+              )}
             </div>
             <button
               type="button" onClick={() => setOpen(false)} aria-label={c.close}

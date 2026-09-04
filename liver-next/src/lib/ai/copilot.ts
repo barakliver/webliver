@@ -4,6 +4,8 @@ import { SOP } from '@/content/sop';
 import { producerGuide, type GuideBook } from '@/content/guide';
 import { categoryLabel, stateLabel } from '@/content/production';
 import { summarise } from '@/lib/finance';
+import { standingOf } from '@/lib/phase';
+import { phaseCopy } from '@/content/site';
 
 /**
  * What the producer's assistant knows, and how it finds out.
@@ -86,7 +88,22 @@ type Ctx = {
 /** The moving half: the event the producer has open, as a few lines of
  *  facts. Every read is allowed to fail on its own; a missing table costs
  *  the assistant one paragraph of context, not the answer. */
-export async function eventContext(sb: SupabaseClient, clientId: string | null): Promise<string | null> {
+export type EventRead = {
+  /** The event's own name, for the header. */
+  name: string;
+  /** What was actually read, as counts. Shown to the producer so an answer
+   *  can be judged against what it was allowed to see rather than taken on
+   *  trust — and counts rather than rows, because a panel that listed the
+   *  guest list to prove it had read the guest list would be the leak it was
+   *  trying to reassure somebody about. */
+  saw: { key: string; n: number }[];
+  /** Where the event stands, so "what is left" has a real answer rather than
+   *  a generic checklist. */
+  phase: string;
+  behind: number;
+};
+
+export async function eventContext(sb: SupabaseClient, clientId: string | null): Promise<{ text: string; read: EventRead } | null> {
   if (!clientId || !/^[0-9a-f-]{36}$/i.test(clientId)) return null;
 
   const { data: client } = await sb
@@ -130,8 +147,24 @@ export async function eventContext(sb: SupabaseClient, clientId: string | null):
   const declined = guests.filter((g) => g.status === 'declined').length;
   const silent = guests.filter((g) => g.status !== 'attending' && g.status !== 'declined').length;
 
+  /* Where this event actually stands, by the same rule the producer's own
+     overview uses. Without it, "what is left before the event" was answered
+     from the calendar alone, which is the generic checklist any book could
+     give; with it the answer knows that this event has no supplier booked
+     three weeks out. */
+  const standing = standingOf({
+    daysToEvent: daysLeft,
+    hasVenue: Boolean(client.venue),
+    hasBudgetTarget: client.budget_target !== null && client.budget_target !== undefined,
+    vendorsBooked: vendors.filter((v) => v.status === 'booked').length,
+    guestsInvited: guests.length,
+    guestsAnswered: guests.filter((g) => g.status === 'attending' || g.status === 'declined').length,
+    scheduleItems: day.length,
+  });
+
   const lines: string[] = [
     `אירוע: ${client.display_name} (${client.kind === 'corporate' ? 'אירוע עסקי' : 'חתונה'})`,
+    `שלב: ${phaseCopy.names[standing.phase]}${standing.behind > 0 ? ` (מפגר ב-${standing.behind} שלבים אחרי ${phaseCopy.names[standing.expected]})` : ''}`,
     client.event_date ? `תאריך: ${client.event_date}${daysLeft !== null ? ` (בעוד ${daysLeft} ימים)` : ''}` : 'תאריך: עוד לא נקבע',
     client.venue ? `מקום: ${client.venue}` : '',
     client.guest_estimate ? `אומדן אורחים: ${client.guest_estimate}` : '',
@@ -159,7 +192,24 @@ export async function eventContext(sb: SupabaseClient, clientId: string | null):
     ...day.slice(0, 30).map((d) => `- ${String(d.at_time).slice(0, 5)} ${d.title}${d.key_moment ? ' (רגע מפתח)' : ''}`),
   ];
 
-  return lines.filter((l, i, arr) => !(l === '' && arr[i - 1] === '')).join('\n');
+  return {
+    text: lines.filter((l, i, arr) => !(l === '' && arr[i - 1] === '')).join('\n'),
+    read: {
+      name: client.display_name,
+      /* Only what was actually there. A row reading "0 suppliers" is noise on
+         an event that has not got to suppliers yet. */
+      saw: [
+        { key: 'tasks', n: tasks.length },
+        { key: 'payments', n: payments.length },
+        { key: 'vendors', n: vendors.length },
+        { key: 'budget', n: budget.length },
+        { key: 'guests', n: guests.length },
+        { key: 'schedule', n: day.length },
+      ].filter((r) => r.n > 0),
+      phase: standing.phase,
+      behind: standing.behind,
+    },
+  };
 }
 
 /** The per-request half of the prompt: who is asking, what day it is, and

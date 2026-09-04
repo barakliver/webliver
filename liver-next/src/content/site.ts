@@ -2072,7 +2072,9 @@ export const conciergeCopy = {
   starters: ['איך התהליך עובד?', 'מה כלול בהפקה?', 'אנחנו רוצים חתונה בשטח'],
   placeholder: 'מה תרצו לדעת',
   send: 'שליחה',
-  thinking: 'רגע',
+  /* Not "רגע". The assistant's own instructions forbid it every filler word
+     of waiting, and the panel around it was saying one. */
+  thinking: 'כותב',
   wentWrong: 'משהו נתקע אצלי. אפשר לכתוב לנו בוואטסאפ ונחזור אליכם.',
   disclaimer: 'תשובות כלליות. מחיר וזמינות נסגרים בפגישה.',
 } as const;
@@ -2307,12 +2309,33 @@ export const copilotCopy = {
   context: 'בהקשר',
   noContext: 'כל האירועים',
   greeting: 'אפשר לבקש ממני ניסוח למייל לספק, עדכון לזוג בוואטסאפ, סדר יום לפגישה, או לשאול מה נשאר לעשות לפני האירוע.',
+  /* Named jobs rather than an empty box. A blank field with a cursor in it is
+     a test somebody has to pass before the tool does anything, and the answer
+     to "what can this do" should be readable rather than guessable. Grouped
+     the way the work is: what to write, what to check, what to prepare. */
   starters: [
-    'מה נשאר לעשות חודש לפני האירוע?',
-    'נסח לי מייל לספק עם שעת הגעה',
+    'נסח מייל לספק עם שעת הגעה',
     'עדכון קצר לזוג על הלוז',
+    'מה נשאר לעשות לפני האירוע?',
+    'אילו אישורים עוד חסרים לי מספקים?',
+    'אילו תשלומים פתוחים ומתי',
+    'סכם לי משימות באיחור',
     'סדר יום לפגישת תיאום',
+    'שאלון לפגישת טעימות',
+    'תדריך קצר לצוות ליום האירוע',
   ],
+  /* What the answer was built from. Counts rather than rows: a panel that
+     listed the guest list to prove it had read the guest list would be the
+     leak it was trying to reassure somebody about. */
+  read: 'קראתי',
+  reads: {
+    tasks: 'משימות',
+    payments: 'תשלומים',
+    vendors: 'ספקים',
+    budget: 'שורות תקציב',
+    guests: 'אורחים',
+    schedule: 'שורות לוז',
+  },
   placeholder: 'מה צריך?',
   send: 'שליחה',
   thinking: 'רגע',
