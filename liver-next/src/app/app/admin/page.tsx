@@ -6,6 +6,7 @@ import { getConsole, type ProducerRow, type Stats } from '@/lib/directory';
 import { setProducerStatus } from '@/app/actions/admin';
 import { appCopy, ticketCopy } from '@/content/site';
 import { PageHead, Empty } from '@/components/app/PageHead';
+import { IssueReporter } from '@/components/app/IssueReporter';
 import { Referrals, type ReferralRow } from '@/components/app/Referrals';
 import { supabaseServer } from '@/lib/supabase/server';
 import { safeRows } from '@/lib/safe';
@@ -164,7 +165,9 @@ export default async function AdminPage() {
 
   return (
     <>
-      <PageHead title={c.title} sub={c.sub} />
+      <PageHead title={c.title} sub={c.sub}
+        report={<IssueReporter userId={account.id} context={c.title} />}
+      />
 
       <div className="space-y-8">
         {stats ? <Telemetry s={stats} /> : <Empty text={c.statsFailed} />}

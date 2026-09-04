@@ -2,6 +2,7 @@ import { requireLiveProducer } from '@/lib/auth';
 import { supabaseServer } from '@/lib/supabase/server';
 import { appCopy } from '@/content/site';
 import { PageHead, Empty } from '@/components/app/PageHead';
+import { IssueReporter } from '@/components/app/IssueReporter';
 import { FunnelChart, Sources, ResponsePanel, CashPanel, Health } from '@/components/app/Insights';
 import {
   funnelOf, bySource, responseTime, cashOf, overdueTasks, signedShare,
@@ -12,7 +13,7 @@ export const dynamic = 'force-dynamic';
 export const metadata = { title: appCopy.insights.title };
 
 export default async function InsightsPage() {
-  await requireLiveProducer();
+  const account = await requireLiveProducer();
   const sb = await supabaseServer();
 
   /* Every one of these is already fenced by policy to the signed-in producer's
@@ -36,7 +37,9 @@ export default async function InsightsPage() {
   if (leadRows.length === 0 && clientCount === 0) {
     return (
       <>
-        <PageHead title={appCopy.insights.title} sub={appCopy.insights.sub} />
+        <PageHead title={appCopy.insights.title} sub={appCopy.insights.sub}
+        report={<IssueReporter userId={account.id} context={appCopy.insights.title} />}
+      />
         <Empty text={appCopy.insights.empty} />
       </>
     );

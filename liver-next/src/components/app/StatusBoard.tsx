@@ -89,7 +89,10 @@ function Row({ s }: { s: ClientStatus }) {
 
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-            <h3 className="font-display text-[18.5px] font-semibold text-ink">{s.name}</h3>
+            <h3 className="inline-flex items-center gap-2 font-display text-[18.5px] font-semibold text-ink">
+              {s.color && <span aria-hidden className="size-2.5 shrink-0 rounded-full" style={{ background: s.color }} />}
+              {s.name}
+            </h3>
             <p className="text-[13.5px] text-ink-mute">
               {formatDate(dateFmt, s.eventDate, c.noDate)}
               {s.venue ? ` · ${s.venue}` : ''}

@@ -47,7 +47,10 @@ export default async function CalendarPage() {
 
   return (
     <>
-      <PageHead title={c.title} sub={c.sub} />
+      <PageHead
+        title={c.title} sub={c.sub}
+        report={<IssueReporter userId={account.id} context={c.title} />}
+      />
 
       {/* Which evenings are available at all, before the diary of what is
           already booked. It is the question a date gets asked first. */}
@@ -65,7 +68,6 @@ export default async function CalendarPage() {
           {c.subscribe}
         </a>
         <CalendarFeed />
-        <IssueReporter userId={account.id} row context={c.title} />
       </div>
 
       {items.length === 0 ? (
@@ -94,7 +96,13 @@ export default async function CalendarPage() {
                                 href={i.href}
                                 className={`flex items-center gap-3 rounded-xl2 px-3 py-2.5 transition hover:brightness-[0.98] ${TONE[i.kind]}`}
                               >
-                                <Icon size={16} aria-hidden strokeWidth={1.5} className="shrink-0" />
+                                {/* The producer's own colour, when they gave
+                                    this event one. A hairline rather than a
+                                    fill: the row already carries a tone for
+                                    what kind of thing it is. */}
+                                {i.color
+                                  ? <span aria-hidden className="size-2.5 shrink-0 rounded-full" style={{ background: i.color }} />
+                                  : <Icon size={16} aria-hidden strokeWidth={1.5} className="shrink-0" />}
                                 <span className="min-w-0 flex-1">
                                   <span className={`block truncate text-[15px] ${i.done ? 'line-through opacity-60' : ''}`}>
                                     {i.title}

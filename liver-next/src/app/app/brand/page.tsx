@@ -2,6 +2,7 @@ import { requireLiveProducer } from '@/lib/auth';
 import { appCopy } from '@/content/site';
 import { platformRoot } from '@/lib/tenant';
 import { PageHead } from '@/components/app/PageHead';
+import { IssueReporter } from '@/components/app/IssueReporter';
 import { BrandEditor } from '@/components/app/BrandEditor';
 import { ProducerLinkCard } from '@/components/app/ProducerLinkCard';
 import { BrandAssets } from '@/components/app/BrandAssets';
@@ -15,7 +16,9 @@ export default async function BrandPage() {
 
   return (
     <>
-      <PageHead title={appCopy.brand.title} sub={appCopy.brand.sub} />
+      <PageHead title={appCopy.brand.title} sub={appCopy.brand.sub}
+        report={<IssueReporter userId={account.id} context={appCopy.brand.title} />}
+      />
       {/* First on the screen, above the editor: the reason most producers
           open this page after the first week is to get the link they send. */}
       <div className="mb-6 space-y-6">

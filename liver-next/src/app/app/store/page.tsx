@@ -1,6 +1,7 @@
 import { requireLiveProducer } from '@/lib/auth';
 import { supabaseServer } from '@/lib/supabase/server';
 import { PageHead } from '@/components/app/PageHead';
+import { IssueReporter } from '@/components/app/IssueReporter';
 import { Live } from '@/components/app/Live';
 import { safeRows } from '@/lib/safe';
 import { StoreProducts, type Product } from '@/components/app/StoreProducts';
@@ -33,7 +34,9 @@ export default async function StorePage() {
 
   return (
     <>
-      <PageHead title={storeCopy.title} sub={storeCopy.sub} />
+      <PageHead title={storeCopy.title} sub={storeCopy.sub}
+        report={<IssueReporter userId={account.id} context={storeCopy.title} />}
+      />
       <div className="space-y-6">
         <StoreProducts
           producerId={account.producer?.id ?? ''}

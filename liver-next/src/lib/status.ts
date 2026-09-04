@@ -32,6 +32,18 @@ export type ClientStatus = {
   money: { owed: number; overdue: number };
   /** True once the date has passed and the producer has not closed it. */
   needsClosing: boolean;
+  /** The producer's own colour for this event, when they gave it one. */
+  color: string | null;
+};
+
+/* Supabase embeds a to-one relation as an object, but the generated types
+   describe it as an array where the key is not provably unique. Reading both
+   shapes is one line and costs nothing; guessing wrong is a colour that
+   silently never appears. */
+const embeddedColor = (v: unknown): string | null => {
+  const row = Array.isArray(v) ? v[0] : v;
+  const color = (row as { color?: unknown } | null | undefined)?.color;
+  return typeof color === 'string' ? color : null;
 };
 
 const DAY = 86_400_000;
@@ -47,13 +59,15 @@ export async function getBoard(opts: { archived?: boolean } = {}): Promise<Clien
 
   let q = sb
     .from('clients')
-    .select('id,display_name,kind,event_date,venue,guest_estimate,archived_at');
+    .select('id,display_name,kind,event_date,venue,guest_estimate,archived_at,producer_labels(color)');
   q = opts.archived ? q.not('archived_at', 'is', null) : q.is('archived_at', null);
 
   const { data } = await q.order('event_date', { ascending: true, nullsFirst: false });
   const rows = (data ?? []) as {
     id: string; display_name: string; kind: string; event_date: string | null;
     venue: string; guest_estimate: number | null; archived_at: string | null;
+    /* Embedded through the foreign key rather than fetched per row. */
+    producer_labels: unknown;
   }[];
   if (rows.length === 0) return [];
 
@@ -139,6 +153,7 @@ export async function getBoard(opts: { archived?: boolean } = {}): Promise<Clien
       guests: { invited: myGuests.length, attending },
       money: { owed, overdue },
       needsClosing,
+      color: embeddedColor(r.producer_labels),
     };
   });
 }

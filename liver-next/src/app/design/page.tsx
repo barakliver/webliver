@@ -68,6 +68,7 @@ import { QuickJump } from '@/components/app/QuickJump';
 import { FinanceSummary } from '@/components/app/FinanceSummary';
 import { HebrewCalendar } from '@/components/app/HebrewCalendar';
 import { LabelToolbar } from '@/components/app/LabelToolbar';
+import { EventTagPicker } from '@/components/app/EventTagPicker';
 import { accentByKey } from '@/content/brand';
 import type { Account } from '@/lib/auth';
 import ConsoleLoading from '@/app/app/loading';
@@ -403,6 +404,21 @@ export default async function DesignPage() {
 
         <Panel name="HebrewCalendar · the Omer" note="closed from Pesach, one clear night at Lag BaOmer, then the Sephardi custom">
           <HebrewCalendar from="2026-04-26" />
+        </Panel>
+
+        <Panel name="EventTagPicker" note="the other end of the colours: one is on, pressing it again clears it">
+          <div className="card">
+            <EventTagPicker
+              clientId={FIXTURE_CLIENT}
+              current="t3"
+              labels={[
+                { id: 't1', kind: 'event_tag', label: 'חתונות פעילות', color: '#2F6F5E', sort_order: 1 },
+                { id: 't2', kind: 'event_tag', label: 'פגישות זוג', color: '#7C5CBF', sort_order: 2 },
+                { id: 't3', kind: 'event_tag', label: 'טעימות וסיורים', color: '#C2762B', sort_order: 3 },
+                { id: 't4', kind: 'event_tag', label: 'תשלומים דחופים', color: '#2563EB', sort_order: 4 },
+              ]}
+            />
+          </div>
         </Panel>
 
         <Panel name="LabelToolbar · colours" note="the producer's own diary colours; press a name to rename or recolour">

@@ -9,6 +9,8 @@ import { workspaceSources } from '@/lib/liveSources';
 import { PageHead } from '@/components/app/PageHead';
 import { EventTabs, readTab, type EventTab } from '@/components/app/EventTabs';
 import { IssueReporter } from '@/components/app/IssueReporter';
+import { EventTagPicker } from '@/components/app/EventTagPicker';
+import { loadLabels } from '@/lib/labels';
 import { EventDetails } from '@/components/app/EventDetails';
 import { EventSummary } from '@/components/app/EventSummary';
 import { EventTemplate } from '@/components/app/EventTemplate';
@@ -70,11 +72,14 @@ export default async function ClientPage({
   const sb = await supabaseServer();
   const { data: client } = await sb
     .from('clients')
-    .select('id,display_name,kind,event_date,venue,guest_estimate,budget_visible,budget_target,track_a_label,track_b_label,guest_token,guest_site_on,guest_note')
+    .select('id,display_name,kind,event_date,venue,guest_estimate,budget_visible,budget_target,label_id,track_a_label,track_b_label,guest_token,guest_site_on,guest_note')
     .eq('id', id)
     .maybeSingle();
 
   if (!client) notFound();
+
+  /* The producer's own colours, so this event can be given one. */
+  const tags = await loadLabels(sb, 'event_tag');
 
   const c = appCopy.clientPage;
 
@@ -117,6 +122,12 @@ export default async function ClientPage({
       </div>
 
       <PageHead title={client.display_name} />
+
+      {/* Above the tabs and outside them: which kind of thing this event is
+          does not belong to any one section of its file. */}
+      <div className="-mt-4 mb-5">
+        <EventTagPicker clientId={client.id} labels={tags} current={client.label_id ?? null} />
+      </div>
       <div className="flex items-start gap-2">
         <div className="min-w-0 flex-1">
           <EventTabs clientId={client.id} active={tab} />
@@ -139,6 +150,7 @@ type Client = {
   id: string; display_name: string; kind: string; event_date: string | null;
   venue: string | null; guest_estimate: number | null; budget_visible: boolean | null;
   budget_target: number | null;
+  label_id: string | null;
   guest_token: string | null; guest_site_on: boolean | null; guest_note: string | null;
   track_a_label: string; track_b_label: string;
 };

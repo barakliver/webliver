@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { requireLiveProducer } from '@/lib/auth';
 import { appCopy, archiveCopy } from '@/content/site';
 import { PageHead, Empty } from '@/components/app/PageHead';
+import { IssueReporter } from '@/components/app/IssueReporter';
 import { NewClientForm } from '@/components/app/NewClientForm';
 import { StatusBoard } from '@/components/app/StatusBoard';
 import { Live } from '@/components/app/Live';
@@ -14,7 +15,7 @@ const c = appCopy.statusBoard;
 export default async function ClientsPage({
   searchParams,
 }: { searchParams: Promise<{ show?: string }> }) {
-  await requireLiveProducer();
+  const account = await requireLiveProducer();
   const { show } = await searchParams;
   const archived = show === 'done';
 
@@ -32,6 +33,7 @@ export default async function ClientsPage({
               ? `${openGaps} ${openGaps === 1 ? 'פער פתוח' : 'פערים פתוחים'} על פני ${items.length} ${items.length === 1 ? 'אירוע' : 'אירועים'}`
               : appCopy.clients.sub
         }
+        report={<IssueReporter userId={account.id} context={appCopy.clients.title} />}
       />
 
       {/* Two lists, not a filter menu: live work and closed files are different

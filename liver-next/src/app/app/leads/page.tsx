@@ -37,7 +37,10 @@ export default async function LeadsPage() {
 
   return (
     <>
-      <PageHead title={appCopy.leads.title} sub={appCopy.leads.sub} />
+      <PageHead
+        title={appCopy.leads.title} sub={appCopy.leads.sub}
+        report={<IssueReporter userId={account.id} context={appCopy.leads.title} />}
+      />
 
       {/* Ahead of the list on purpose. The enquiry a producer is holding in
           their head, still on the phone, is the one at risk of never being
@@ -56,9 +59,6 @@ export default async function LeadsPage() {
 
       <CallsPanel calls={allCalls} leads={rows.map((l) => ({ id: l.id, name: l.full_name }))} />
 
-      <div className="mb-4 flex justify-end">
-        <IssueReporter userId={account.id} context={appCopy.leads.title} />
-      </div>
 
       {rows.length === 0 ? (
         <Empty text={appCopy.leads.empty} />

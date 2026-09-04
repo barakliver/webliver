@@ -1,4 +1,5 @@
 import { PageHead } from '@/components/app/PageHead';
+import { IssueReporter } from '@/components/app/IssueReporter';
 import { PrintButton } from '@/components/app/PrintButton';
 import { SopBook } from '@/components/app/SopBook';
 import { requireLiveProducer } from '@/lib/auth';
@@ -24,7 +25,7 @@ export const metadata = { title: sopCopy.title };
 export const dynamic = 'force-dynamic';
 
 export default async function SopPage() {
-  await requireLiveProducer();
+  const account = await requireLiveProducer();
 
   /* The playbook is how this business works and never changes per producer;
      the templates are how *this* producer works and are theirs alone. They sit
@@ -58,7 +59,9 @@ export default async function SopPage() {
       </div>
 
       <div className="sop-print">
-        <PageHead title={sopCopy.title} sub={`${sopCopy.sub} ${sopCopy.itemsCount(sopItemCount)}.`} />
+        <PageHead title={sopCopy.title} sub={`${sopCopy.sub} ${sopCopy.itemsCount(sopItemCount)}.`}
+        report={<IssueReporter userId={account.id} context={sopCopy.title} />}
+      />
         <SopBook />
       </div>
     </>

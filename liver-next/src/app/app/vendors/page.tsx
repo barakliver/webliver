@@ -24,12 +24,10 @@ export default async function VendorsPage() {
 
   return (
     <>
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0 flex-1">
-          <PageHead title={vendorCopy.dirTitle} sub={vendorCopy.dirSub} />
-        </div>
-        <IssueReporter userId={account.id} context={vendorCopy.dirTitle} />
-      </div>
+      <PageHead
+        title={vendorCopy.dirTitle} sub={vendorCopy.dirSub}
+        report={<IssueReporter userId={account.id} context={vendorCopy.dirTitle} />}
+      />
       <VendorDirectory vendors={vendors} />
       <Live sources={[{ table: 'vendors' }]} />
     </>
