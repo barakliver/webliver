@@ -29,27 +29,41 @@
 
        Tones that are translucent by definition stay whole further down. An
        opacity modifier on a hairline is a mistake either way. */
-    /* Cool, not warm. This is the palette of `Event Platform.dc.html`, the
-       first of the two designs in this repo: navy-black over slate greys with
-       the same gold on top. `Event Platform Lux.dc.html` is the warm one and
-       LUX_DIRECTION.md declares it the successor, so the two documents
-       disagree; the instruction that settles it is the later one, and it asks
-       for the cooler of the two.
+    /* Warm, not cool. The workspace ran on Tailwind's slate — #0F172A over
+       #F1F5F9 — while the public site the same people arrive from is warm, so
+       signing in changed the temperature of the brand. That is the one thing a
+       white-labelled product cannot afford: the two halves stop reading as one
+       business.
 
-       Structure is unchanged. Hairlines instead of cards, square buttons, the
-       serif on every figure: that is the Lux direction and it stands. Only
-       the temperature moves. */
-    --ink-rgb: 15 23 42;             /* #0F172A, 16.30:1 on the ground */
-    --ink-soft-rgb: 71 85 105;       /* #475569,  6.92:1 */
-    --ink-mid-rgb: 100 116 139;      /* #64748B,  4.34:1, large text only */
-    --ink-mute-rgb: 90 104 125;      /* #5A687D. Solved against #E2E8F0, the
-                                        darkest ground a kicker sits on: 4.59:1
-                                        there and 5.17:1 on the page itself. */
+       Two documents in this repo disagreed about this and the instruction that
+       settles it is always the later one. `LUX_DIRECTION.md` named the warm
+       design the successor; an instruction after it asked for the cooler of
+       the two, and this comment used to say so. The instruction after *that*
+       supplied these values by name and asked that the app and the public
+       brand feel related. So the temperature moves back.
 
-    --surface-rgb: 241 245 249;      /* #F1F5F9 */
-    --surface-100-rgb: 248 250 252;  /* #F8FAFC */
-    --surface-200-rgb: 226 232 240;  /* #E2E8F0 */
-    --dark-rgb: 15 23 42;            /* #0F172A */
+       Structure is untouched, as it was last time. Hairlines instead of cards,
+       square buttons, the serif on every figure: that is the Lux direction and
+       it stands. Every value below was re-solved against the new ground rather
+       than carried across, and all twenty-six pairings in check-contrast pass;
+       a warm palette that quietly loses a ratio is not a nicer design, it is
+       an unreadable one. */
+    --ink-rgb: 23 21 18;             /* #171512, 16.60:1 on the ground */
+    --ink-soft-rgb: 101 93 84;       /* #655D54,  5.89:1 */
+    --ink-mid-rgb: 139 129 119;      /* #8B8177,  3.48:1, large text only */
+    --ink-mute-rgb: 110 101 91;      /* #6E655B. Solved against #F0EBE4, the
+                                        darkest ground a kicker sits on: 4.82:1
+                                        there and 5.20:1 on the page itself. */
+
+    --surface-rgb: 247 244 238;      /* #F7F4EE */
+    --surface-100-rgb: 252 250 247;  /* #FCFAF7 */
+    --surface-200-rgb: 240 235 228;  /* #F0EBE4 */
+    /* Lifted off the ink rather than equal to it, but only barely. The dark
+       band is a surface somebody reads a paragraph on, and it also carries
+       each producer's own accent as words: the six white-label accents are
+       checked against it, and the palest of them needs the ground this dark
+       to clear 4.5. A warmer, lighter band failed three of the six. */
+    --dark-rgb: 24 20 16;            /* #181410 */
 
     /* The whole-colour forms, derived. Anything that needs a colour rather
        than a Tailwind class reads these: a gradient stop, `accent-color`, an
@@ -64,13 +78,13 @@
     --surface-200: rgb(var(--surface-200-rgb));
     --dark: rgb(var(--dark-rgb));
 
-    --line: rgba(15, 23, 42, .10);
-    --line-strong: rgba(15, 23, 42, .18);
+    --line: rgba(23, 21, 18, .10);
+    --line-strong: rgba(23, 21, 18, .18);
     /* The design source's own two: a panel edge and the glass it edges. Not
        derived from the ink like the separators above, because these are the
        slate line colour itself rather than a percentage of the text. */
-    --line-soft: rgba(226, 232, 240, .6);
-    --surface-glass: rgba(255, 255, 255, .78);
+    --line-soft: rgba(240, 235, 228, .6);
+    --surface-glass: rgba(255, 253, 252, .78);
     /* The visible edge of a control, which is a different job from separating
        two rows. The handoff's hairlines read 1.2:1 and 1.4:1 against ivory,
        which is right for a separator and wrong for the only thing telling
@@ -79,16 +93,17 @@
        the lightest value that clears it. */
     /* .46 reads 2.97:1 on this ground, just under the 3 a control edge needs.
        The warm palette cleared it at .48; a cooler, lighter ground does not. */
-    --line-control: rgba(15, 23, 42, .60);
+    --line-control: rgba(23, 21, 18, .60);
 
     /* The gold is the one thing both designs share, and it moves only as far
        as the cooler ground makes it. Re-solved against #F1F5F9 rather than
        carried over: the handoff's #B08D57 reads 2.78:1 there. */
-    --accent-rgb: 130 104 64;        /* #826840, 4.50:1 on its own wash,
-                                        which is the darkest ground it sits on */
-    --accent-bright-rgb: 158 127 78; /* #9E7F4E, 3.04:1 for large numerals */
-    --accent-line-rgb: 176 141 87;   /* the handoff's gold, decoration     */
-    --accent-light-rgb: 216 188 138; /* on the dark ground only            */
+    --accent-rgb: 140 99 56;         /* #8C6338, 4.83:1 on the ground and
+                                        4.60:1 on its own wash, which is the
+                                        darkest ground it sits on */
+    --accent-bright-rgb: 162 118 74; /* #A2764A, 3.39:1 for large numerals */
+    --accent-line-rgb: 199 154 99;   /* #C79A63, 6.78:1 as words on the dark */
+    --accent-light-rgb: 223 196 155; /* #DFC49B, on the dark ground only     */
 
     --accent: rgb(var(--accent-rgb));
     --accent-bright: rgb(var(--accent-bright-rgb));
@@ -163,7 +178,11 @@
        slightly different flat fill; the gradient is what gives the glass
        something to be glass over. */
     background-color: theme('colors.surface.DEFAULT');
-    background-image: radial-gradient(120% 80% at 80% 0%, #fff 0%, #f8fafc 45%, #eef2f7 100%);
+    /* Warm all the way through. This line kept the page cool after every
+       token above it went warm: the type and the gold were ivory and the
+       ground behind them was still slate, which reads as a colour bug
+       rather than a palette. A hex here answers to nothing. */
+    background-image: radial-gradient(120% 80% at 80% 0%, #fffdfc 0%, #fcfaf7 45%, #f2ede4 100%);
     background-attachment: fixed;
     /* Installed, this is an app rather than a page: a tap should not flash a
        grey rectangle, and a scroll that reaches the end should not rubber band

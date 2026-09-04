@@ -10,6 +10,7 @@ import { DayOfCockpit } from '@/components/app/DayOfCockpit';
 import { Live } from '@/components/app/Live';
 import type { Line, Caller } from '@/lib/dayof';
 import { EVENT_ZONE } from '@/lib/clock';
+import { IssueReporter } from '@/components/app/IssueReporter';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: appCopy.dayOf.title };
@@ -27,7 +28,7 @@ const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE, weekday
  * that boundary would quietly be lost.
  */
 export default async function DayOfPage({ params }: { params: Promise<{ id: string }> }) {
-  await requireLiveProducer();
+  const account = await requireLiveProducer();
   const { id } = await params;
   const sb = await supabaseServer();
 
@@ -70,6 +71,7 @@ export default async function DayOfPage({ params }: { params: Promise<{ id: stri
       <PageHead
         title={appCopy.dayOf.title}
         sub={[client.display_name, when, client.venue].filter(Boolean).join(' · ')}
+        report={<IssueReporter userId={account.id} context={appCopy.dayOf.title} />}
       />
 
       {lines.length === 0 && crewRows.length === 0 && vendorRows.length === 0 ? (

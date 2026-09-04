@@ -31,18 +31,20 @@ const ratio = (a, b) => {
    marked values are darker than the design's own, because the design's fail
    the text they are used for on this ground. */
 const c = {
-  ink: '#0F172A', inkSoft: '#475569', inkMid: '#64748B',
-  inkMute: '#5A687D',              /* #64748B reads 4.34:1 at 11px */
-  surface: '#F1F5F9', surface100: '#F8FAFC', surface200: '#E2E8F0',
-  card: '#F8FAFC',
-  dark: '#0F172A',
-  line: 'rgba(15,23,42,.10)', lineStrong: 'rgba(15,23,42,.18)',
-  lineControl: 'rgba(15,23,42,.60)',
-  accent: '#826840',               /* #B08D57 → 2.78:1 as words here */
-  accentBright: '#9E7F4E',         /* large numerals only, 3:1 bar   */
-  accentLine: '#B08D57',           /* decoration, no bar             */
-  accentLight: '#D8BC8A',
-  accentWash: '#ECEEEE',
+  ink: '#171512', inkSoft: '#655D54', inkMid: '#8B8177',
+  inkMute: '#6E655B',              /* #8B8177 reads 3.48:1, too pale at 11px */
+  surface: '#F7F4EE', surface100: '#FCFAF7', surface200: '#F0EBE4',
+  card: '#FCFAF7',
+  dark: '#181410',
+  line: 'rgba(23,21,18,.10)', lineStrong: 'rgba(23,21,18,.18)',
+  lineControl: 'rgba(23,21,18,.60)',
+  accent: '#8C6338',               /* the brand, and safe as words   */
+  accentBright: '#A2764A',         /* large numerals only, 3:1 bar   */
+  accentLine: '#C79A63',           /* words on the dark ground       */
+  accentLight: '#DFC49B',
+  /* Not a literal: the wash is the line gold at 7% over the ground, so it
+     moves whenever either does. Written out, it drifts from what ships. */
+  accentWash: '#F4EEE4',
   ok: '#3D6B4A', okWash: '#E6EFE8',
   warn: '#8A5A17', warnWash: '#F3EEE2',
   bad: '#96322A', badWash: '#F4E8E5',

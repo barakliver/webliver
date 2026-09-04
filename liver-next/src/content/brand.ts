@@ -12,10 +12,10 @@
  * rather than one hue. scripts/check-contrast.mjs iterates this file and fails
  * the build rather than shipping a tone somebody cannot read.
  *
- * The whole set was recomputed when the ground changed from cool white to
- * ivory. A tone that clears 4.5:1 on #F3F6FA does not automatically clear it
- * on #FAF7F2, and quietly carrying the old numbers over is how a palette stops
- * meaning anything.
+ * The whole set is recomputed whenever the ground moves. A tone that clears
+ * 4.5:1 on one ground does not automatically clear it on another, and quietly
+ * carrying the old numbers over is how a palette stops meaning anything — the
+ * move back to warm took clay under the bar and the checker caught it.
  *
  * Four roles:
  *   base    safe for words at any size. Solved against its own wash, which is
@@ -27,9 +27,11 @@
  */
 
 /** The page's own ground, which the browser chrome continues on the
- *  platform's address. Left behind by a palette change once already, which
- *  is what a stale hex in a second file looks like; now there is one. */
-export const PAGE_GROUND = '#F3F6FA';
+ *  platform's address, and which every accent above is solved against. Left
+ *  behind by a palette change twice now — the second time it was still naming
+ *  a slate ground while the page had gone warm, so the six white-label tones
+ *  were being checked against a colour nobody could see any more. */
+export const PAGE_GROUND = '#F7F4EE';
 
 export type Accent = {
   key: string;
@@ -63,7 +65,11 @@ export const ACCENTS: Accent[] = [
   {
     key: 'clay',
     label: 'טרקוטה',
-    base:   '#9B5B3D',
+    /* 4.70:1 on its own wash. It was #9B5B3D, which solved to 4.499 — under
+       the bar by a thousandth, and it had been sitting there passing on a
+       rounded display. The warmer ground made the wash lighter and the
+       rounding stopped hiding it. */
+    base:   '#985839',
     bright: '#C2724D',
     line:   '#C0714C',
     light:  '#C0714C',

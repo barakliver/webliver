@@ -8,6 +8,8 @@ import { conciergeFor } from '@/content/ui';
 import {
   producerGuide, clientGuide, clientGuideFor, guideUi, guideUiFor,
 } from '@/content/guide';
+import { IssueReporter } from '@/components/app/IssueReporter';
+import { ticketFor } from '@/content/appUi';
 
 export const dynamic = 'force-dynamic';
 
@@ -39,7 +41,9 @@ export default async function GuidePage() {
 
   return (
     <>
-      <PageHead title={c.pageTitle} sub={c.pageSub} />
+      <PageHead title={c.pageTitle} sub={c.pageSub}
+        report={<IssueReporter userId={account.id} context={c.pageTitle} copy={ticketFor(locale)} />}
+      />
 
       <GuideBookView book={book} c={c} />
 

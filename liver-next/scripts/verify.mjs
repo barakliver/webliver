@@ -138,9 +138,14 @@ function checkBuiltCss() {
      with its alpha folded in — so the check reported the ink present in a
      build that no longer contained it anywhere as a colour. A check that
      passes for the wrong reason is worse than one that fails. */
-  record(/--surface-rgb:\s*241 245 249/.test(css), 'the ground is in the build');
-  record(/--ink-rgb:\s*15 23 42/.test(css), 'the ink is in the build');
-  record(/--accent-rgb:\s*130 104 64/.test(css), 'the measured gold is in the build');
+  record(/--surface-rgb:\s*247 244 238/.test(css), 'the warm ground is in the build');
+  record(/--ink-rgb:\s*23 21 18/.test(css), 'the warm ink is in the build');
+  record(/--accent-rgb:\s*140 99 56/.test(css), 'the brand gold is in the build');
+  /* And the slate it replaced. The workspace ran on Tailwind's own greys while
+     the public site was warm, so signing in changed the temperature of the
+     brand; if either of these is back, so is that. */
+  record(!has('#f1f5f9') && !/--surface-rgb:\s*241 245 249/.test(css), 'the slate ground is gone');
+  record(!/--ink-rgb:\s*15 23 42/.test(css), 'the slate ink is gone');
 
   /* And the two palettes it replaced. The ground is slate again, deliberately,
      but these are the *first* app's values and neither belongs in a build of

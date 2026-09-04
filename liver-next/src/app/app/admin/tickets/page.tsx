@@ -9,6 +9,7 @@ import { setTicketStatus } from '@/app/actions/tickets';
 import { ticketCopy, appCopy } from '@/content/site';
 import { Ltr } from '@/components/Ltr';
 import { EVENT_ZONE } from '@/lib/clock';
+import { IssueReporter } from '@/components/app/IssueReporter';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: ticketCopy.admin.title };
@@ -27,7 +28,7 @@ type Ticket = {
  * closed ones are the record and the open ones are the work.
  */
 export default async function TicketsPage({ searchParams }: { searchParams: Promise<{ all?: string }> }) {
-  await requireRoot();
+  const account = await requireRoot();
   const showClosed = (await searchParams).all === '1';
   const sb = await supabaseServer();
 
@@ -57,7 +58,9 @@ export default async function TicketsPage({ searchParams }: { searchParams: Prom
       <div className="mb-4">
         <Link href="/app/admin" className="btn-quiet inline-block px-0 text-[14px]">← {appCopy.admin.title}</Link>
       </div>
-      <PageHead title={c.title} sub={c.sub} />
+      <PageHead title={c.title} sub={c.sub}
+        report={<IssueReporter userId={account.id} context={c.title} />}
+      />
 
       <div className="mb-5">
         <Link

@@ -5,6 +5,7 @@ import { PageHead, Empty } from '@/components/app/PageHead';
 import { loadShelf } from '@/lib/archive';
 import { ArchiveShelf } from '@/components/app/ArchiveShelf';
 import { archiveCopy as c } from '@/content/site';
+import { IssueReporter } from '@/components/app/IssueReporter';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: c.title };
@@ -23,7 +24,7 @@ export const metadata = { title: c.title };
  * row has been renamed twice.
  */
 export default async function ArchivePage() {
-  await requireLiveProducer();
+  const account = await requireLiveProducer();
   const sb = await supabaseServer();
   const shelf = await loadShelf(sb);
 
@@ -35,7 +36,9 @@ export default async function ArchivePage() {
         </Link>
       </div>
 
-      <PageHead title={c.title} sub={c.sub} />
+      <PageHead title={c.title} sub={c.sub}
+        report={<IssueReporter userId={account.id} context={c.title} />}
+      />
 
       {shelf.length === 0
         ? <Empty text={c.empty} />

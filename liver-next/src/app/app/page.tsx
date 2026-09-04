@@ -13,6 +13,7 @@ import { Anniversaries } from '@/components/app/Anniversaries';
 import { supabaseServer } from '@/lib/supabase/server';
 import { loadAnniversaries } from '@/lib/workflow';
 import { BeginHere } from '@/components/app/BeginHere';
+import { IssueReporter } from '@/components/app/IssueReporter';
 
 export const metadata = { title: appCopy.nav.overview };
 
@@ -47,6 +48,7 @@ export default async function OverviewPage() {
             ? `${items.length} ${items.length === 1 ? 'דבר מחכה' : 'דברים מחכים'} להחלטה שלך`
             : c.clearSub
         }
+        report={<IssueReporter userId={account.id} context={appCopy.overview.greeting} />}
       />
 
       <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr] lg:gap-8">

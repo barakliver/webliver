@@ -121,7 +121,9 @@ export default async function ClientPage({
         </div>
       </div>
 
-      <PageHead title={client.display_name} />
+      <PageHead title={client.display_name}
+        report={<IssueReporter userId={account.id} context={appCopy.clientPage.tabs[tab]} />}
+      />
 
       {/* Above the tabs and outside them: which kind of thing this event is
           does not belong to any one section of its file. */}

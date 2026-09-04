@@ -5,6 +5,7 @@ import { SiteEditor } from '@/components/app/SiteEditor';
 import { EDITABLE, EDITABLE_KEYS, defaultAt } from '@/content/editable';
 import { siteEditorCopy } from '@/content/site';
 import { safeRows } from '@/lib/safe';
+import { IssueReporter } from '@/components/app/IssueReporter';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: siteEditorCopy.title };
@@ -18,7 +19,7 @@ export const metadata = { title: siteEditorCopy.title };
  * button can promise something specific.
  */
 export default async function SiteEditorPage() {
-  await requireLiveProducer();
+  const account = await requireLiveProducer();
   const sb = await supabaseServer();
 
   const rows = await safeRows<{ key: string; value: string }>('site copy', sb
@@ -37,7 +38,9 @@ export default async function SiteEditorPage() {
 
   return (
     <>
-      <PageHead title={siteEditorCopy.title} sub={siteEditorCopy.sub} />
+      <PageHead title={siteEditorCopy.title} sub={siteEditorCopy.sub}
+        report={<IssueReporter userId={account.id} context={siteEditorCopy.title} />}
+      />
       <SiteEditor values={values} overridden={overridden} />
       <p className="mt-8 text-[13px] text-ink-mute">{siteEditorCopy.note}</p>
     </>

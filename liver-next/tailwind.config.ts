@@ -99,14 +99,14 @@ const config: Config = {
            and never carries meaning on its own. `wash` is a background only
            ever sat on by `accent`. */
         accent: {
-          DEFAULT: 'rgb(var(--accent-rgb, 130 104 64) / <alpha-value>)',
-          bright:  'rgb(var(--accent-bright-rgb, 158 127 78) / <alpha-value>)',
-          line:    'rgb(var(--accent-line-rgb, 176 141 87) / <alpha-value>)',
+          DEFAULT: 'rgb(var(--accent-rgb, 140 99 56) / <alpha-value>)',
+          bright:  'rgb(var(--accent-bright-rgb, 162 118 74) / <alpha-value>)',
+          line:    'rgb(var(--accent-line-rgb, 199 154 99) / <alpha-value>)',
           /* Translucent by definition, so it stays whole and takes no
              opacity modifier. `bg-accent-wash/60` would compile to nothing. */
-          wash:    'var(--accent-wash, rgba(176,141,87,.07))',
+          wash:    'var(--accent-wash, rgba(199,154,99,.07))',
           /* on the dark ground only */
-          light:   'rgb(var(--accent-light-rgb, 216 188 138) / <alpha-value>)',
+          light:   'rgb(var(--accent-light-rgb, 223 196 155) / <alpha-value>)',
         },
 
         /* State, deliberately nowhere near the accent. On a gold system a gold

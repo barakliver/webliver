@@ -53,7 +53,9 @@ export default async function InsightsPage() {
 
   return (
     <>
-      <PageHead title={appCopy.insights.title} sub={appCopy.insights.sub} />
+      <PageHead title={appCopy.insights.title} sub={appCopy.insights.sub}
+        report={<IssueReporter userId={account.id} context={appCopy.insights.title} />}
+      />
 
       {/* What needs doing today comes before what happened this quarter. */}
       <div className="space-y-5">

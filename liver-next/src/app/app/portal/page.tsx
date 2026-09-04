@@ -18,6 +18,8 @@ import { PortalActions } from '@/components/app/PortalActions';
 import { fileReport } from '@/app/actions/report';
 import { brandFor } from '@/lib/branding';
 import { Ltr } from '@/components/Ltr';
+import { IssueReporter } from '@/components/app/IssueReporter';
+import { ticketFor } from '@/content/appUi';
 
 export async function generateMetadata() {
   return { title: appUiFor(await currentLocale()).portal.title };
@@ -30,7 +32,8 @@ export default async function PortalPage() {
   /* The couple's own language. Everything below reads its words from here, and
      the panels read theirs from the provider, so one cookie decides the whole
      screen instead of half of it. */
-  const ui = appUiFor(await currentLocale());
+  const locale = await currentLocale();
+  const ui = appUiFor(locale);
 
   /* asClient is true even though this reader *is* the client: it costs nothing
      here, and it means the gate is exercised on the path people actually use
@@ -55,7 +58,9 @@ export default async function PortalPage() {
   if (data.workspaces.length === 0) {
     return (
       <>
-        <PageHead title={ui.portal.title} sub={ui.portal.sub} />
+        <PageHead title={ui.portal.title} sub={ui.portal.sub}
+          report={<IssueReporter userId={account.id} context={ui.portal.title} copy={ticketFor(locale)} />}
+        />
         <Empty text={ui.portal.empty} />
         {/* Almost every empty area is an address mismatch rather than an event
             that has not been opened. Since Google made signing in with the
@@ -79,7 +84,9 @@ export default async function PortalPage() {
      renders exactly what it rendered before. */
   return (
     <CopyProvider value={ui}>
-      <PageHead title={ui.portal.title} sub={ui.portal.sub} />
+      <PageHead title={ui.portal.title} sub={ui.portal.sub}
+          report={<IssueReporter userId={account.id} context={ui.portal.title} copy={ticketFor(locale)} />}
+        />
       <div className="space-y-6">
         {data.workspaces.map((w) => (
           <div key={w.id} className="space-y-6">
