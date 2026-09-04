@@ -1,10 +1,10 @@
 import type { Locale } from '../lib/locale.ts';
 import {
-  auth, privacyCopy, termsCopy, a11yCopy, installCopy, storeCopy, rsvpCopy, budgetSimCopy,
+  auth, privacyCopy, termsCopy, eventOsCopy, a11yCopy, installCopy, storeCopy, rsvpCopy, budgetSimCopy,
   conciergeCopy, guestSiteCopy, producerEntryCopy, EVENT_KINDS, notFoundCopy, siteErrorCopy,
 } from './site.ts';
 import {
-  authEn, privacyCopyEn, termsCopyEn, a11yCopyEn, installCopyEn, storeCopyEn, rsvpCopyEn,
+  authEn, privacyCopyEn, termsCopyEn, eventOsCopyEn, a11yCopyEn, installCopyEn, storeCopyEn, rsvpCopyEn,
   budgetSimCopyEn, conciergeCopyEn, guestSiteCopyEn, producerEntryCopyEn, EVENT_KINDS_EN,
   notFoundCopyEn, siteErrorCopyEn,
 } from './site.en.ts';
@@ -42,6 +42,7 @@ type Wide<T> =
 export type AuthCopy = Wide<typeof auth>;
 export type PrivacyCopy = Wide<typeof privacyCopy>;
 export type TermsCopy = Wide<typeof termsCopy>;
+export type EventOsCopy = Wide<typeof eventOsCopy>;
 export type A11yCopy = Wide<typeof a11yCopy>;
 export type InstallCopy = Wide<typeof installCopy>;
 export type NotFoundCopy = Wide<typeof notFoundCopy>;
@@ -78,6 +79,7 @@ export type EventKinds = Wide<typeof EVENT_KINDS>;
 export const authFor = (l: Locale): AuthCopy => (l === 'en' ? authEn : auth);
 export const privacyFor = (l: Locale): PrivacyCopy => (l === 'en' ? privacyCopyEn : privacyCopy);
 export const termsFor = (l: Locale): TermsCopy => (l === 'en' ? termsCopyEn : termsCopy);
+export const eventOsFor = (l: Locale): EventOsCopy => (l === 'en' ? eventOsCopyEn : eventOsCopy);
 export const a11yFor = (l: Locale): A11yCopy => (l === 'en' ? a11yCopyEn : a11yCopy);
 export const installFor = (l: Locale): InstallCopy => (l === 'en' ? installCopyEn : installCopy);
 export const storeFor = (l: Locale): ShopCopy => (l === 'en' ? storeCopyEn : shopHe);

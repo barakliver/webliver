@@ -44,7 +44,7 @@ const base = arg('url', process.env.VERIFY_URL ?? 'http://localhost:3000');
 /* Public routes and the harness. Everything behind the sign-in redirects for a
    browser with no session, and the harness covers the components those screens
    are built from. */
-const ROUTES = ['/design', '/', '/login', '/store', '/privacy', '/install'];
+const ROUTES = ['/design', '/', '/eventos', '/login', '/store', '/privacy', '/install'];
 
 /* WCAG 2.2 at AA, which is the bar the release standard names. `best-practice`
    is deliberately absent: it is advice rather than the standard, and mixing

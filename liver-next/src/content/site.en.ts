@@ -2,8 +2,7 @@ import type { SiteCopy } from './site.ts';
 import type {
   AuthCopy, PrivacyCopy, TermsCopy, A11yCopy, InstallCopy, ShopCopy, RsvpCopy,
   GuestSiteCopy, ProducerEntryCopy, BudgetSimCopy, ConciergeCopy, EventKinds,
-  NotFoundCopy, SiteErrorCopy,
-} from './ui.ts';
+  NotFoundCopy, SiteErrorCopy, EventOsCopy } from './ui.ts';
 
 /**
  * The public site in English.
@@ -700,4 +699,65 @@ export const conciergeCopyEn: ConciergeCopy = {
   thinking: 'One moment',
   wentWrong: 'Something jammed on my side. You can write to us on WhatsApp and we will get back to you.',
   disclaimer: 'General answers. Price and availability are settled at the meeting.',
+};
+
+export const eventOsCopyEn: EventOsCopy = {
+  metaTitle: 'EventOS · an operating system for event producers',
+  metaSub: 'One file per wedding, with the couple inside it, instead of a spreadsheet, a folder and a WhatsApp thread.',
+
+  eyebrow: 'For event producers',
+  title: 'The spreadsheet, the folder and the thread, in one place',
+  sub: 'One file per event, with the couple in it. Built out of real production work rather than out of a slide deck.',
+  cta: 'Open an account',
+  ctaNote: 'Opening an account is a request. We approve by hand, and answer the same day.',
+
+  problemTitle: 'Where it breaks today',
+  problem: [
+    'The head count is in a spreadsheet, the replies are in WhatsApp, and the seating plan is in somebody\u2019s head.',
+    'The couple asks what has been booked, and answering means opening three places.',
+    'On the day the running order is printed in the morning and changes at three.',
+    'And afterwards, what happened at last year\u2019s wedding is a search through a downloads folder.',
+  ],
+
+  getTitle: 'What is inside',
+  getSub: 'Every one of these opens on the day you sign in, not next quarter.',
+  get: [
+    {
+      title: 'A plan that dates itself',
+      body: 'Twenty-eight steps laid backwards from the event date, from signing a venue to the files a month afterwards. Editable from the first minute, because it is a rhythm to argue with.',
+    },
+    {
+      title: 'Where the event actually stands',
+      body: 'Not a countdown. Two weddings ninety days out, one with a venue and a caterer and a band and one with only a date, show up as two different things, because they are two different things.',
+    },
+    {
+      title: 'Guests, replies and seating',
+      body: 'A personal link for each invitation, replies that count themselves, dietary needs in their own column, and a covers figure you can order food against.',
+    },
+    {
+      title: 'Suppliers, crew and call times',
+      body: 'Who is booked and who is on the list, what it costs and what has been paid, and who arrives when. One clock for everybody.',
+    },
+    {
+      title: 'The day-of console',
+      body: 'The live running order on a phone, contacts beside every line, and a tap to mark what has happened. The screen stays awake all evening.',
+    },
+    {
+      title: 'Documents that print',
+      body: 'A running order for the crew, a numbers sheet for suppliers, and a full production book for the folder. All of it signed with your business.',
+    },
+  ],
+
+  coupleTitle: 'And the couple gets their own area',
+  coupleBody: 'Not a copy of your screen. What has been booked, what is left for them to do, files, messages and payments. They stop asking on WhatsApp because the answer is already with them.',
+
+  whiteTitle: 'It looks like your business',
+  whiteBody: 'Your name, your colour, your logo, and your own domain if you want one. Nothing the couple sees mentions us. The documents that come out of the printer are signed with your name, not ours.',
+
+  startTitle: 'How it starts',
+  start: [
+    { title: 'Open an account', body: 'An email address, no password. A one-time code comes to you.' },
+    { title: 'We approve it', body: 'By hand, the same day. Nobody should open a production workspace by accident.' },
+    { title: 'Open a first event', body: 'A name, a date, a venue. The plan builds itself from there, and you edit it.' },
+  ],
 };
