@@ -83,7 +83,17 @@ export function QuickJump({ screens, events, compact }: {
   const [index, setIndex] = useState(0);
   const [recentIds, setRecentIds] = useState<string[]>([]);
   const input = useRef<HTMLInputElement>(null);
-  const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform);
+
+  /* Which key to name in the hint, decided after mounting rather than while
+     rendering.
+     Reading `navigator` during render is a server and client branch: the
+     server has no navigator and renders "Ctrl K", a Mac renders "⌘K", and
+     React throws the hydration error and regenerates the tree — on every
+     screen, because this sits in the top bar of all of them. Starting from
+     the same answer the server gave and correcting it in an effect costs one
+     extra paint of two characters and makes the two renders agree. */
+  const [isMac, setIsMac] = useState(false);
+  useEffect(() => { setIsMac(/Mac|iPhone|iPad/.test(navigator.platform)); }, []);
 
   /** The event on screen, if the producer is standing in one. */
   const openId = useMemo(() => /^\/app\/clients\/([0-9a-f-]{36})/i.exec(pathname ?? '')?.[1] ?? null, [pathname]);
