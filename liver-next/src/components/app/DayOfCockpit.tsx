@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Check, Phone, MessageCircle, Undo2, Megaphone, UserCheck, X } from 'lucide-react';
+import { useScreenAwake } from '@/lib/awake';
+import { Check, Megaphone, MessageCircle, Phone, Sun, Undo2, UserCheck, X } from 'lucide-react';
 import { appCopy } from '@/content/site';
 import { markDayItem } from '@/app/actions/day';
 import { markArrival } from '@/app/actions/arrivals';
@@ -43,6 +44,7 @@ export function DayOfCockpit({
   vendors: Caller[];
 }) {
   const [now, setNow] = useState<Date | null>(null);
+  /* Declared after `live` is known, below. */
 
   useEffect(() => {
     setNow(new Date());
@@ -54,6 +56,11 @@ export function DayOfCockpit({
   }, []);
 
   const live = now !== null && isToday(eventDate, now);
+  /* The screen stays on while the evening is running, and only then. This is
+     the one screen here somebody holds rather than reads: a phone that sleeps
+     after thirty seconds has to be woken, unlocked and scrolled back to where
+     it was, one-handed, every time they glance at it. */
+  const awake = useScreenAwake(live);
   const placed = placeLines(lines, now ?? new Date(0), live);
   const { now: current, next } = focus(placed);
   const sheet = callSheet(crew, vendors);
@@ -76,6 +83,16 @@ export function DayOfCockpit({
 
       {now !== null && !live && (
         <p className="card text-[14px] text-ink-soft">{c.notToday}</p>
+      )}
+
+      {/* Said rather than done silently. A screen that refuses to sleep is a
+          battery going down, and somebody who has not been told why will
+          assume the app is broken rather than that it is helping. */}
+      {awake && (
+        <p className="flex items-center gap-2 text-[12.5px] text-ink-mute">
+          <Sun size={14} strokeWidth={1.5} aria-hidden />
+          {c.awake}
+        </p>
       )}
 
       {live && sheet.length > 0 && (

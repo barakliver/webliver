@@ -766,6 +766,10 @@ export const appCopy = {
   },
 
   dayOf: {
+    /* Shown while the screen is being held awake, because a battery going
+       down with no explanation reads as a broken app rather than a helpful
+       one. */
+    awake: 'המסך יישאר דלוק כל עוד המסך הזה פתוח.',
     title: 'חמ״ל האירוע',
     sub: 'מה קורה עכשיו, מה הבא בתור, ומי אמור להיות כאן.',
     open: 'פתיחת חמ״ל',
