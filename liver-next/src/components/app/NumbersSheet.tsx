@@ -2,6 +2,7 @@ import { appCopy } from '@/content/site';
 import { DIETS } from '@/content/lists';
 import { formatDate } from '@/lib/dates';
 import { hhmm, inDayOrder } from '@/lib/runsheet';
+import { EVENT_ZONE } from '@/lib/clock';
 
 const c = appCopy.numbers;
 
@@ -13,7 +14,7 @@ export type SheetTable = { id: string; name: string; seats: number };
 export type SheetMoment = { id: string; at_time: string; title: string; key_moment: boolean | null };
 export type SheetArrival = { id: string; name: string; role: string; call_time: string | null };
 
-const dateFmt = new Intl.DateTimeFormat('he-IL', {
+const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE,
   weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
 });
 

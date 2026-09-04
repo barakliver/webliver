@@ -12,11 +12,12 @@ import {
 } from '@/lib/dayof';
 import { normalizePhone, displayPhone } from '@/lib/phone';
 import { cn } from '@/lib/utils';
+import { EVENT_ZONE } from '@/lib/clock';
 
 const c = appCopy.dayOf;
 
 const timeOf = (iso: string) =>
-  new Date(iso).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' });
+  new Date(iso).toLocaleTimeString('he-IL', { timeZone: EVENT_ZONE, hour: '2-digit', minute: '2-digit' });
 
 /**
  * The evening, on the producer's phone.

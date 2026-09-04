@@ -6,10 +6,11 @@ import { CalendarPlus, Pencil } from 'lucide-react';
 import { updateClientDetails, type ActionResult } from '@/app/actions/clients';
 import { appCopy, EVENT_KINDS, MIN_EVENT_DATE, MAX_GUESTS } from '@/content/site';
 import { formatDate, daysUntil } from '@/lib/dates';
+import { EVENT_ZONE } from '@/lib/clock';
 
 const c = appCopy.clientPage;
 
-const dateFmt = new Intl.DateTimeFormat('he-IL', {
+const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE,
   weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
 });
 

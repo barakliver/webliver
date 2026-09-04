@@ -8,6 +8,7 @@ import { appCopy } from '@/content/site';
 import { AUDIENCES } from '@/content/lists';
 import { PrintButton } from '@/components/app/PrintButton';
 import { hhmm, inDayOrder, spanOf, humanSpan, crossesMidnight } from '@/lib/runsheet';
+import { EVENT_ZONE } from '@/lib/clock';
 
 export const metadata = { title: appCopy.runsheet.title };
 
@@ -16,7 +17,7 @@ type Item = {
   audience: string[]; owner: string; duration_min: number | null;
 };
 
-const dateFmt = new Intl.DateTimeFormat('he-IL', {
+const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE,
   weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
 });
 
@@ -177,7 +178,7 @@ export default async function RunsheetPage({
         )}
 
         <p className="mt-8 text-[12.5px] text-ink-mute">
-          {client.display_name} · {c.printedOn} {new Date().toLocaleDateString('he-IL')}
+          {client.display_name} · {c.printedOn} {new Date().toLocaleDateString('he-IL', { timeZone: EVENT_ZONE })}
         </p>
       </div>
     </>

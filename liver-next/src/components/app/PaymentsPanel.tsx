@@ -1,5 +1,7 @@
 'use client';
 
+import { isPastDue } from '@/lib/clock';
+
 import { useActionState } from 'react';
 import { formatDate } from '@/lib/dates';
 import { useFormStatus } from 'react-dom';
@@ -15,13 +17,9 @@ export type Payment = {
 };
 
 
-function isOverdue(due: string | null): boolean {
-  if (!due) return false;
-  const now = new Date();
-  const today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
-  const d = new Date(due);
-  return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) < today;
-}
+/** Late where the event is, so one instalment cannot read as overdue on the
+ *  producer's phone and on time on the server that rendered the same row. */
+const isOverdue = (due: string | null): boolean => isPastDue(due);
 
 function Add() {
   const ui = useCopy();

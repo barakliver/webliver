@@ -9,11 +9,12 @@ import { PageHead, Empty } from '@/components/app/PageHead';
 import { DayOfCockpit } from '@/components/app/DayOfCockpit';
 import { Live } from '@/components/app/Live';
 import type { Line, Caller } from '@/lib/dayof';
+import { EVENT_ZONE } from '@/lib/clock';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: appCopy.dayOf.title };
 
-const dateFmt = new Intl.DateTimeFormat('he-IL', { weekday: 'long', day: 'numeric', month: 'long' });
+const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE, weekday: 'long', day: 'numeric', month: 'long' });
 
 /**
  * The evening itself.

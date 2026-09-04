@@ -7,6 +7,7 @@ import { MEETING_TEMPLATES, meetingTemplate, type Field, type MeetingTemplate } 
 import { completeness } from '@/lib/ai/meeting';
 import { meetingCopy as c } from '@/content/site';
 import { Ltr } from '@/components/Ltr';
+import { EVENT_ZONE } from '@/lib/clock';
 
 export type MeetingLog = {
   id: string;
@@ -20,7 +21,7 @@ export type MeetingLog = {
   updated_at: string;
 };
 
-const dateFmt = new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'long', year: 'numeric' });
+const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE, day: 'numeric', month: 'long', year: 'numeric' });
 
 /**
  * The four meetings, as a form that matches the conversation.

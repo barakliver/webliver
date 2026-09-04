@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { cancelAnniversary } from '@/app/actions/archive';
 import { archiveCopy as c } from '@/content/site';
 import { Ltr } from '@/components/Ltr';
+import { EVENT_ZONE } from '@/lib/clock';
 
 export type Anniversary = {
   id: string;
@@ -17,7 +18,7 @@ export type Anniversary = {
   emails: string[];
 };
 
-const dateFmt = new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'long', year: 'numeric' });
+const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE, day: 'numeric', month: 'long', year: 'numeric' });
 
 /**
  * The first anniversary, on the screen a producer opens in the morning.

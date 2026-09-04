@@ -7,6 +7,7 @@ import { brandForHost } from '@/lib/branding';
 import { rsvpFor } from '@/content/ui';
 import { currentLocale } from '@/lib/serverLocale';
 import { RsvpForm } from './RsvpForm';
+import { EVENT_ZONE } from '@/lib/clock';
 
 export const dynamic = 'force-dynamic';
 /* A guest list is nobody's business but the couple's, and an invitation link
@@ -22,7 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
    wrapped in an ltr isolate: `15 באוקטובר 2025` comes out as
    `באוקטובר 2025 15` the moment it is. */
 const dateFmtFor = (locale: string) => new Intl.DateTimeFormat(locale === 'en' ? 'en-GB' : 'he-IL', {
-  weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+  timeZone: EVENT_ZONE, weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
 });
 
 type Lookup = {

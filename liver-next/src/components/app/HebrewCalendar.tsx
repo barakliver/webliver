@@ -5,6 +5,7 @@ import { CalendarCheck, CircleAlert, Info, ShieldAlert } from 'lucide-react';
 import { ruleRange, hebrewLabel, type DayRuling, type Verdict } from '@/lib/hebrewDate';
 import { hebrewCalCopy as c } from '@/content/site';
 import { cn } from '@/lib/utils';
+import { EVENT_ZONE } from '@/lib/clock';
 
 /**
  * Which evenings a wedding can stand on.
@@ -102,7 +103,7 @@ function Legend({ tone, label, n }: { tone: Verdict; label: string; n: number })
   );
 }
 
-const dayFmt = new Intl.DateTimeFormat('he-IL', { weekday: 'short', day: 'numeric', month: 'short' });
+const dayFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE, weekday: 'short', day: 'numeric', month: 'short' });
 
 function Row({ day, today }: { day: DayRuling; today: boolean }) {
   const tone = TONE[day.verdict];

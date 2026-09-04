@@ -8,6 +8,7 @@ import { Sortable, Handle } from '@/components/app/Sortable';
 import { templateCopy } from '@/content/site';
 import { useCopy } from '@/components/app/CopyProvider';
 import { shortDate } from '@/lib/appDates';
+import { isPastDue } from '@/lib/clock';
 import { EyeOff } from 'lucide-react';
 
 export type Task = {
@@ -23,15 +24,12 @@ export type Task = {
 };
 
 
-/** Compared on calendar dates, so a task due today is never shown as late
- *  merely because it is the evening. */
-function isOverdue(due: string | null): boolean {
-  if (!due) return false;
-  const now = new Date();
-  const today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
-  const d = new Date(due);
-  return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) < today;
-}
+/** Compared on calendar dates where the event is, so a task due today is
+ *  never shown as late merely because it is the evening — and so the server
+ *  and the phone reach the same verdict. Reading "today" off whichever
+ *  machine was asking meant a server in UTC called a row on time while the
+ *  producer's phone called it overdue, and React threw the page away. */
+const isOverdue = (due: string | null): boolean => isPastDue(due);
 
 function AddButton() {
   const ui = useCopy();

@@ -5,6 +5,7 @@ import { GripVertical } from 'lucide-react';
 import { setOrderStatus, noteOrder, type OrderState } from '@/app/actions/store';
 import { storeCopy as c } from '@/content/site';
 import { Money, Ltr } from '@/components/Ltr';
+import { EVENT_ZONE } from '@/lib/clock';
 
 export type OrderLine = { id: string; name: string; qty: number; price: number; line: number };
 
@@ -30,7 +31,7 @@ const TONE: Record<OrderState, string> = {
   refunded: 'text-ink-mute',
 };
 
-const dateFmt = new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'short' });
+const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE, day: 'numeric', month: 'short' });
 
 /**
  * Orders as four columns somebody moves cards between.

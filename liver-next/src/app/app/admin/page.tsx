@@ -14,12 +14,13 @@ import { publicEnv } from '@/lib/env';
 import { FeatureFlags } from '@/components/app/FeatureFlags';
 import { MetricBlock } from '@/components/app/Metric';
 import { Live } from '@/components/app/Live';
+import { EVENT_ZONE } from '@/lib/clock';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: appCopy.admin.title };
 
 const c = appCopy.admin;
-const dateFmt = new Intl.DateTimeFormat('he-IL', { day: '2-digit', month: '2-digit', year: 'numeric' });
+const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE, day: '2-digit', month: '2-digit', year: 'numeric' });
 
 const STATUS_TONE: Record<ProducerRow['status'], string> = {
   approved:  'bg-ok-wash text-ok',

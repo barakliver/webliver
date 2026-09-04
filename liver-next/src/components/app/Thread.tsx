@@ -7,6 +7,7 @@ import { sendMessage, deleteMessage, markThreadRead, type MessageResult } from '
 import { Avatar } from '@/components/app/Avatar';
 import { useCopy } from '@/components/app/CopyProvider';
 import { clock, dayMonth } from '@/lib/appDates';
+import { dateInZone, daysBetween, todayInZone } from '@/lib/clock';
 import type { ThreadCopy } from '@/content/appUi';
 
 export type Message = {
@@ -20,17 +21,18 @@ export type Message = {
 
 
 /** "Today" and "yesterday" are what people actually say, and a date is only
- *  useful once it is far enough away to have stopped being either. */
+ *  useful once it is far enough away to have stopped being either.
+ *
+ *  Both days are read where the event is rather than on the machine asking,
+ *  so the server and the phone name the same day. They used to each use their
+ *  own clock, and after nine at night the server still said yesterday while
+ *  the phone already said today — two renders that disagreed, on the screen
+ *  people check last thing at night. */
 function dayLabel(iso: string, c: ThreadCopy, dayFmt: Intl.DateTimeFormat): string {
-  const d = new Date(iso);
-  const today = new Date();
-  const days = Math.round(
-    (Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()) -
-     Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())) / 86_400_000
-  );
+  const days = daysBetween(dateInZone(iso), todayInZone());
   if (days === 0) return c.today;
   if (days === 1) return c.yesterday;
-  return dayFmt.format(d);
+  return dayFmt.format(new Date(iso));
 }
 
 function Send_({ }: Record<string, never>) {

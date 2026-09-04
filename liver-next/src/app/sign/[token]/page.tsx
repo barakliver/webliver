@@ -4,6 +4,7 @@ import { site, signCopy as c } from '@/content/site';
 import { PromiseLine } from '@/components/Promise';
 import { Money } from '@/components/Ltr';
 import { SignForm } from './SignForm';
+import { EVENT_ZONE } from '@/lib/clock';
 
 /**
  * An agreement, opened by somebody with no account.
@@ -27,7 +28,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false, nocache: true },
 };
 
-const dateFmt = new Intl.DateTimeFormat('he-IL', {
+const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE,
   day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit',
 });
 

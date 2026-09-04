@@ -6,8 +6,9 @@ import { ChevronDown, MapPin, Users } from 'lucide-react';
 import type { Shelf, ArchivedEvent } from '@/lib/archive';
 import { archiveCopy as c } from '@/content/site';
 import { Money, Ltr } from '@/components/Ltr';
+import { EVENT_ZONE } from '@/lib/clock';
 
-const dateFmt = new Intl.DateTimeFormat('he-IL', {
+const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE,
   day: 'numeric', month: 'long', year: 'numeric',
 });
 

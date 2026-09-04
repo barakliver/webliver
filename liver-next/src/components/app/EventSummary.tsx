@@ -6,10 +6,11 @@ import { appCopy } from '@/content/site';
 import type { EventSummary as Summary } from '@/lib/eventSummary';
 import { formatDate, isOverdue } from '@/lib/dates';
 import { Metric } from '@/components/app/Metric';
+import { EVENT_ZONE } from '@/lib/clock';
 
 const c = appCopy.clientPage;
 
-const dateFmt = new Intl.DateTimeFormat('he-IL', { day: '2-digit', month: '2-digit' });
+const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE, day: '2-digit', month: '2-digit' });
 
 function Tile({ label, value, tone = 'plain', sub }: {
   label: string; value: ReactNode; sub?: ReactNode; tone?: 'plain' | 'warn' | 'good';

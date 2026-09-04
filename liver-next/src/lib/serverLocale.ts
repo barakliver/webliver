@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers';
 import { LOCALE_COOKIE, readLocale, type Locale } from './locale';
+import { EVENT_ZONE } from './clock.ts';
 
 /**
  * The language this request is being read in.
@@ -22,6 +23,6 @@ export async function currentLocale(): Promise<Locale> {
  *  is a small tell that the page was translated rather than written. */
 export function dateFormat(locale: Locale): Intl.DateTimeFormat {
   return new Intl.DateTimeFormat(locale === 'en' ? 'en-GB' : 'he-IL', {
-    day: '2-digit', month: '2-digit', year: 'numeric',
+    timeZone: EVENT_ZONE, day: '2-digit', month: '2-digit', year: 'numeric',
   });
 }

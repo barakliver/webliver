@@ -15,6 +15,8 @@
  * is information; a missing page is a bug report.
  */
 
+import { dateInZone, daysBetween, todayInZone } from './clock.ts';
+
 /** A real Date, or null. Never throws, whatever it is handed. */
 export function parseDate(value: string | number | Date | null | undefined): Date | null {
   if (value === null || value === undefined || value === '') return null;
@@ -53,9 +55,12 @@ export function formatDate(
 export function daysUntil(value: string | null | undefined, from: Date = new Date()): number | null {
   const d = parseDate(value);
   if (!d) return null;
-  const today = Date.UTC(from.getFullYear(), from.getMonth(), from.getDate());
-  const then = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
-  return Math.round((then - today) / 86_400_000);
+  /* Both ends are read as calendar days where the event is, not on the
+     machine doing the asking. These feed five screens that render on the
+     server and again in the browser, the guest page among them, and a server
+     in UTC counting against a phone in Israel produced two different numbers
+     of days for the same wedding after nine at night. */
+  return daysBetween(todayInZone(from), dateInZone(value as string | number | Date));
 }
 
 /** True when a due date is before today. Compared on calendar dates, so

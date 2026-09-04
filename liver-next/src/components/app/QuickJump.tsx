@@ -8,6 +8,7 @@ import { byRelevance as rank, matchesWords, splitQuery, type JumpEvent } from '@
 import { EVENT_TABS } from './EventTabs';
 import type { NavItem } from './AppNav';
 import { cn } from '@/lib/utils';
+import { EVENT_ZONE } from '@/lib/clock';
 
 export type { JumpEvent };
 
@@ -21,7 +22,7 @@ type Hit = {
   id?: string;
 };
 
-const dateFmt = new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'short' });
+const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE, day: 'numeric', month: 'short' });
 const tabLabel = appCopy.clientPage.tabs;
 const SECTIONS = EVENT_TABS.map((tab) => ({ tab, label: tabLabel[tab] }));
 

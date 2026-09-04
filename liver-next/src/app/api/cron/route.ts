@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase/admin';
 import { optional } from '@/lib/env';
+import { EVENT_ZONE } from '@/lib/clock';
 
 /**
  * The nightly sweep: close what the calendar has closed, and send the
@@ -34,7 +35,7 @@ const WHEN: Record<string, string> = {
   day: 'מחר',
 };
 
-const dateFmt = new Intl.DateTimeFormat('he-IL', {
+const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE,
   day: 'numeric', month: 'long', year: 'numeric',
 });
 

@@ -14,6 +14,7 @@
  * and only one of them can be argued with.
  */
 
+import { isPastDue } from './clock.ts';
 export type LeadRow = {
   id: string;
   status: 'new' | 'contacted' | 'meeting' | 'won' | 'lost' | string;
@@ -152,13 +153,11 @@ function median(xs: number[]): number | null {
 export type Cash = { collected: number; due: number; overdue: number; overdueCount: number };
 
 export function cashOf(payments: PaymentRow[], today = new Date()): Cash {
-  const todayKey = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
-  const isLate = (due: string | null) => {
-    if (!due) return false;
-    const d = new Date(due);
-    const t = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
-    return !Number.isNaN(t) && t < todayKey;
-  };
+  /* Late where the event is, which is the same question the instalment row
+     on the event's own screen asks. They used to answer it from two different
+     clocks, so the headline count of overdue payments could disagree with the
+     rows a producer saw when they went looking for them. */
+  const isLate = (due: string | null) => isPastDue(due, today);
 
   const amount = (p: PaymentRow) => Number(p.amount) || 0;
   const unpaid = payments.filter((p) => !p.paid);
@@ -175,13 +174,7 @@ export function cashOf(payments: PaymentRow[], today = new Date()): Cash {
 /** Work that has slipped. Counted rather than listed, because the list already
  *  exists on every event's own screen and a second copy of it would go stale. */
 export function overdueTasks(tasks: TaskRow[], today = new Date()): number {
-  const key = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
-  return tasks.filter((t) => {
-    if (t.done || !t.due_on) return false;
-    const d = new Date(t.due_on);
-    const at = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
-    return !Number.isNaN(at) && at < key;
-  }).length;
+  return tasks.filter((t) => !t.done && isPastDue(t.due_on, today)).length;
 }
 
 /** How many of the events on the books have a signed agreement behind them.

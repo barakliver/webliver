@@ -6,6 +6,7 @@ import { MapPin } from 'lucide-react';
 import { useFormStatus } from 'react-dom';
 import { setLeadStatus, setLeadNote, bookCall, convertLead, type LeadActionResult } from '@/app/actions/leads';
 import { leadsCopy, appCopy, EVENT_KINDS } from '@/content/site';
+import { EVENT_ZONE } from '@/lib/clock';
 
 export type Lead = {
   id: string; full_name: string; email: string; phone: string;
@@ -17,7 +18,7 @@ export type Lead = {
 };
 export type Call = { id: string; lead_id: string | null; title: string; remind_on: string | null; done: boolean };
 
-const dateFmt = new Intl.DateTimeFormat('he-IL', { day: '2-digit', month: '2-digit', year: '2-digit' });
+const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE, day: '2-digit', month: '2-digit', year: '2-digit' });
 const show = (d: string | null) => formatDate(dateFmt, d, '·');
 
 /** A channel nobody has named yet is shown as it was stored rather than

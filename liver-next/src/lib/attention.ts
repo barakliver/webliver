@@ -1,5 +1,6 @@
 import 'server-only';
 import { supabaseServer } from '@/lib/supabase/server';
+import { EVENT_ZONE } from './clock.ts';
 
 /* ── What actually needs a person ──────────────────────────────────────────
    The brief is explicit: "three things need your decision this week", not
@@ -38,7 +39,7 @@ function daysUntil(iso: string, today: number) {
 }
 
 function heDate(iso: string) {
-  return new Date(iso + 'T00:00:00').toLocaleDateString('he-IL', {
+  return new Date(iso + 'T00:00:00').toLocaleDateString('he-IL', { timeZone: EVENT_ZONE,
     day: 'numeric', month: 'short', year: 'numeric',
   });
 }

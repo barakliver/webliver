@@ -1,19 +1,22 @@
 'use client';
 
+import { dateInZone, todayInZone } from '@/lib/clock';
+
 import { completeCall } from '@/app/actions/leads';
 import { formatDate } from '@/lib/dates';
 import { leadsCopy } from '@/content/site';
 import type { Call } from './LeadRow';
+import { EVENT_ZONE } from '@/lib/clock';
 
-const dateFmt = new Intl.DateTimeFormat('he-IL', { day: '2-digit', month: '2-digit', year: '2-digit' });
+const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE, day: '2-digit', month: '2-digit', year: '2-digit' });
 
-/** Compared on calendar dates so a reminder due today never reads as late. */
+/** Compared on calendar dates where the event is, so a reminder due today
+ *  never reads as late and the server and the browser agree which day that
+ *  is. */
 function dueState(d: string | null): 'late' | 'today' | 'ahead' {
   if (!d) return 'ahead';
-  const now = new Date();
-  const today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
-  const t = new Date(d);
-  const when = Date.UTC(t.getUTCFullYear(), t.getUTCMonth(), t.getUTCDate());
+  const when = dateInZone(d);
+  const today = todayInZone();
   return when < today ? 'late' : when === today ? 'today' : 'ahead';
 }
 

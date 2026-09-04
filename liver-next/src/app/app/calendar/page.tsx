@@ -12,13 +12,14 @@ import { LabelToolbar } from '@/components/app/LabelToolbar';
 import { loadLabels } from '@/lib/labels';
 import { IssueReporter } from '@/components/app/IssueReporter';
 import { Money, ils } from '@/components/Ltr';
+import { EVENT_ZONE } from '@/lib/clock';
 
 export const metadata = { title: appCopy.calendar.title };
 
 const c = appCopy.calendar;
 
-const monthFmt = new Intl.DateTimeFormat('he-IL', { month: 'long', year: 'numeric' });
-const dayFmt = new Intl.DateTimeFormat('he-IL', { weekday: 'long', day: 'numeric', month: 'long' });
+const monthFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE, month: 'long', year: 'numeric' });
+const dayFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE, weekday: 'long', day: 'numeric', month: 'long' });
 
 const ICON = { event: CalendarHeart, task: CheckCircle2, payment: Wallet };
 const TONE: Record<CalItem['kind'], string> = {

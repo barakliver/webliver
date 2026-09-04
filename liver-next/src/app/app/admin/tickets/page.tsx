@@ -8,12 +8,13 @@ import { Live } from '@/components/app/Live';
 import { setTicketStatus } from '@/app/actions/tickets';
 import { ticketCopy, appCopy } from '@/content/site';
 import { Ltr } from '@/components/Ltr';
+import { EVENT_ZONE } from '@/lib/clock';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: ticketCopy.admin.title };
 
 const c = ticketCopy.admin;
-const dateFmt = new Intl.DateTimeFormat('he-IL', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE, day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 
 type Ticket = {
   id: string; reporter_id: string | null; category: string; body: string; route: string;

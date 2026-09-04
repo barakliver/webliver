@@ -5,6 +5,7 @@ import { currentAccount, isLive } from '@/lib/auth';
 import { COPILOT_SYSTEM, eventContext, situation } from '@/lib/ai/copilot';
 import { checkLimit } from '@/lib/ai/limit';
 import { optional } from '@/lib/env';
+import { EVENT_ZONE } from '@/lib/clock';
 
 /**
  * The producer's assistant.
@@ -90,7 +91,7 @@ export async function POST(req: Request) {
   const event = await eventContext(sb, clientId).catch((e) => { console.error('[copilot] context failed', e); return null; });
   const eventName = event ? event.split('\n')[0].replace(/^אירוע: /, '').replace(/ \(.*\)$/, '') : null;
 
-  const today = new Intl.DateTimeFormat('he-IL', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(new Date());
+  const today = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE, weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(new Date());
   const brand = account.producer?.brandName || 'ההפקה';
 
   const client = new Anthropic({ apiKey: key });
