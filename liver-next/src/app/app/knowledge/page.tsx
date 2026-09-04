@@ -67,16 +67,14 @@ export default async function KnowledgePage({
           travels to a field with no signal. The rules below are the ones that
           made it print as a document rather than as a screenshot of a screen,
           and they moved here with it. */}
+      {/* The one print rule that is this page's alone: a chapter of the
+          playbook starts on a fresh sheet, so the folder can be read a
+          chapter at a time. Everything else comes from the shared .print-doc
+          rules in globals.css. */}
       <style>{`
         @media print {
-          body > * { display: none !important; }
-          body > .sop-print { display: block !important; }
-          .no-print { display: none !important; }
-          .sop-print { padding: 0; color: #000; background: #fff; }
           .sop-chapter { break-before: page; }
           .sop-chapter:first-child { break-before: auto; }
-          .sop-item, .sop-section { break-inside: avoid; }
-          @page { margin: 16mm 14mm; }
         }
       `}</style>
 
@@ -133,7 +131,7 @@ export default async function KnowledgePage({
       )}
 
       {shelf === 'playbook' && (
-        <div className="sop-print">
+        <div className="print-doc">
           <p className="mb-6 max-w-2xl text-[14.5px] leading-relaxed text-ink-soft">
             {sopCopy.sub} {sopCopy.itemsCount(sopItemCount)}.
           </p>

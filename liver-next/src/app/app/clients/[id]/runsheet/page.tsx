@@ -78,20 +78,6 @@ export default async function RunsheetPage({
 
   return (
     <>
-      <style>{`
-        @media print {
-          /* Everything the app puts around the page goes; what is left is the
-             document. Backgrounds are dropped too — a run sheet is read on
-             white paper under venue lighting, not on a screen. */
-          body > * { display: none !important; }
-          body > .runsheet-print { display: block !important; }
-          .no-print { display: none !important; }
-          .runsheet-print { padding: 0; color: #000; background: #fff; }
-          .runsheet-row { break-inside: avoid; }
-          @page { margin: 16mm 14mm; }
-        }
-      `}</style>
-
       <div className="no-print mb-6 flex flex-wrap items-center justify-between gap-3">
         <Link href={`/app/clients/${id}`} className="btn-quiet inline-flex items-center gap-1.5 px-0 text-[14px]">
           <ArrowRight size={16} aria-hidden strokeWidth={1.5} />
@@ -120,7 +106,7 @@ export default async function RunsheetPage({
         })}
       </nav>
 
-      <div className="runsheet-print">
+      <div className="print-doc">
         <header className="border-b-2 border-ink pb-4">
           <h1 className="font-display text-[27px] font-semibold text-ink">{client.display_name}</h1>
           <p className="mt-1.5 text-[15px] text-ink-soft">
@@ -146,7 +132,7 @@ export default async function RunsheetPage({
             {items.map((i, index) => {
               const span = spanOf(items, index);
               return (
-                <li key={i.id} className="runsheet-row flex gap-5 border-b border-line py-3.5 last:border-0">
+                <li key={i.id} className="print-block flex gap-5 border-b border-line py-3.5 last:border-0">
                   {/* Left to right inside a right-to-left page, because a clock
                       reads that way in every language. */}
                   <span className="w-[62px] shrink-0 text-center" dir="ltr">

@@ -634,3 +634,44 @@
   }
   button:disabled, [role='button'][aria-disabled='true'] { cursor: not-allowed; }
 }
+
+/* ── Printing a document that lives inside the app ──────────────────────────
+   Every printable page in this product is a screen first: the run sheet, the
+   suppliers' numbers sheet and the production book all render inside the app
+   shell, with navigation and a header around them.
+
+   The obvious way to print one is `body > * { display: none }` and then show
+   the document again. That was what these pages did, and it printed a blank
+   page every time. The document is not a child of body — it sits several
+   levels down inside the shell — so the rule hid the shell, and hiding an
+   ancestor takes the document with it however visible the document itself is
+   declared to be. Nothing caught it because a print stylesheet is invisible
+   until somebody is standing at a printer.
+
+   visibility instead of display, because visibility is inherited and can be
+   turned back on further down the tree, and then the document is lifted out
+   of the layout so it begins at the top of the paper rather than wherever the
+   hidden chrome had pushed it.
+
+   Mark the document `print-doc` and anything that must not be broken across
+   two pages `print-block`. */
+@media print {
+  body * { visibility: hidden !important; }
+  .print-doc, .print-doc * { visibility: visible !important; }
+
+  .print-doc {
+    position: absolute;
+    top: 0;
+    inset-inline-start: 0;
+    width: 100%;
+    padding: 0;
+    /* Ink on paper, whatever the screen was doing. */
+    color: #000;
+    background: #fff;
+  }
+
+  .no-print { display: none !important; }
+  .print-block { break-inside: avoid; }
+
+  @page { margin: 16mm 14mm; }
+}

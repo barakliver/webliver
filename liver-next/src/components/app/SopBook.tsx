@@ -89,13 +89,13 @@ export function SopBook() {
 
               <div className="mt-7 space-y-8">
                 {chapter.sections.map((section) => (
-                  <article key={section.id} className="sop-section">
+                  <article key={section.id} className="print-block">
                     <h3 className="font-display text-[18px] font-semibold text-ink">{section.title}</h3>
                     <p className="mt-1 max-w-2xl text-[13.5px] leading-relaxed text-ink-mute">{section.sub}</p>
 
                     <ul className="mt-4 space-y-2.5">
                       {section.items.map((item, i) => (
-                        <li key={i} className="sop-item flex gap-3.5 rounded-xl2 border border-line px-4 py-3.5">
+                        <li key={i} className="print-block flex gap-3.5 rounded-xl2 border border-line px-4 py-3.5">
                           {/* A rule of thumb reads as a rule when it is
                               numbered. These are ordered by how a day runs, so
                               the number carries something true. */}

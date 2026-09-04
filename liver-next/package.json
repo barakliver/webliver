@@ -21,7 +21,8 @@
     "hydration": "node scripts/check-hydration.mjs",
     "verify": "node scripts/verify.mjs",
     "db": "bash scripts/db-test.sh",
-    "check": "npm run typecheck && npm run test && npm run classes && npm run bidi && npm run contrast && npm run sqlcheck && npm run dates && npm run screens && npm run rls"
+    "check": "npm run typecheck && npm run test && npm run classes && npm run bidi && npm run contrast && npm run sqlcheck && npm run dates && npm run screens && npm run rls && npm run print",
+    "print": "node scripts/check-print.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.120.0",

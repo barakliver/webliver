@@ -72,17 +72,6 @@ export default async function NumbersSheetPage({ params }: { params: Promise<{ i
 
   return (
     <>
-      <style>{`
-        @media print {
-          body > * { display: none !important; }
-          body > .sheet-print { display: block !important; }
-          .no-print { display: none !important; }
-          .sheet-print { padding: 0; color: #000; background: #fff; }
-          .sheet-block { break-inside: avoid; }
-          @page { margin: 16mm 14mm; }
-        }
-      `}</style>
-
       <div className="no-print mb-6 flex flex-wrap items-center justify-between gap-3">
         <Link href={`/app/clients/${id}`} className="btn-quiet inline-flex items-center gap-1.5 px-0 text-[14px]">
           <ArrowRight size={16} aria-hidden strokeWidth={1.5} />

@@ -76,7 +76,7 @@ export function NumbersSheet({ client, guests, tables, day, arrivals: arrivalsIn
   );
 
   return (
-    <div className="sheet-print">
+    <div className="print-doc">
       <header className="border-b-2 border-ink pb-4">
         <h1 className="font-display text-[27px] font-light text-ink">{client.display_name}</h1>
         <p className="mt-1.5 text-[15px] text-ink-soft">
@@ -87,7 +87,7 @@ export function NumbersSheet({ client, guests, tables, day, arrivals: arrivalsIn
       </header>
 
       {/* ── how many ──────────────────────────────────────────────────── */}
-      <section className="sheet-block mt-8">
+      <section className="print-block mt-8">
         <h2 className="font-display text-[19px] font-light text-ink">{c.counts}</h2>
         <div className="mt-4 grid grid-cols-2 gap-x-8 gap-y-6 sm:grid-cols-4">
           <Stat label={c.heads} value={heads} />
@@ -98,7 +98,7 @@ export function NumbersSheet({ client, guests, tables, day, arrivals: arrivalsIn
       </section>
 
       {/* ── the meals ─────────────────────────────────────────────────── */}
-      <section className="sheet-block mt-9">
+      <section className="print-block mt-9">
         <h2 className="font-display text-[19px] font-light text-ink">{c.diet}</h2>
         {heads === 0 ? (
           <p className="mt-3 text-[14.5px] text-ink-mute">{c.dietNone}</p>
@@ -129,7 +129,7 @@ export function NumbersSheet({ client, guests, tables, day, arrivals: arrivalsIn
               const seated = byTable.get(t.id) ?? [];
               const seats = seated.reduce((n, g) => n + Number(g.party_size || 0), 0);
               return (
-                <div key={t.id} className="sheet-block rounded-xl2 border border-line p-4">
+                <div key={t.id} className="print-block rounded-xl2 border border-line p-4">
                   <p className="flex items-baseline justify-between gap-3">
                     <span className="text-[15px] font-medium text-ink">{t.name}</span>
                     <span className="text-[12.5px] tabular-nums text-ink-mute">
@@ -145,7 +145,7 @@ export function NumbersSheet({ client, guests, tables, day, arrivals: arrivalsIn
               );
             })}
             {unseated.length > 0 && (
-              <div className="sheet-block rounded-xl2 border border-dashed border-line-strong p-4">
+              <div className="print-block rounded-xl2 border border-dashed border-line-strong p-4">
                 <p className="text-[15px] font-medium text-ink">{c.unseated}</p>
                 <p className="mt-2 text-[13.5px] leading-relaxed text-ink-soft">
                   {unseated.map(withParty).join(' · ')}
@@ -158,7 +158,7 @@ export function NumbersSheet({ client, guests, tables, day, arrivals: arrivalsIn
 
       {/* ── when ──────────────────────────────────────────────────────── */}
       <div className="mt-9 grid gap-9 sm:grid-cols-2">
-        <section className="sheet-block">
+        <section className="print-block">
           <h2 className="font-display text-[19px] font-light text-ink">{c.schedule}</h2>
           {moments.length === 0 ? (
             <p className="mt-3 text-[14.5px] text-ink-mute">{c.scheduleNone}</p>
@@ -174,7 +174,7 @@ export function NumbersSheet({ client, guests, tables, day, arrivals: arrivalsIn
           )}
         </section>
 
-        <section className="sheet-block">
+        <section className="print-block">
           <h2 className="font-display text-[19px] font-light text-ink">{c.arrivals}</h2>
           {arrivals.length === 0 ? (
             <p className="mt-3 text-[14.5px] text-ink-mute">{c.arrivalsNone}</p>

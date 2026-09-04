@@ -108,16 +108,6 @@ export function BarCalculator({ guestEstimate, confirmedGuests }: {
 
   return (
     <section className="card">
-      <style>{`
-        @media print {
-          body > * { display: none !important; }
-          body > .bar-print { display: block !important; }
-          .no-print { display: none !important; }
-          .bar-print { padding: 0; color: #000; background: #fff; }
-          @page { margin: 16mm 14mm; }
-        }
-      `}</style>
-
       <div className="no-print">
         <h2 className="inline-flex items-center gap-2 font-display text-[18px] font-semibold text-ink">
           <Martini size={18} aria-hidden strokeWidth={1.5} />
@@ -139,7 +129,7 @@ export function BarCalculator({ guestEstimate, confirmedGuests }: {
         </div>
       </div>
 
-      <div className="bar-print mt-8">
+      <div className="print-doc mt-8">
         <div className="flex flex-wrap items-baseline justify-between gap-3 border-b border-line pb-3">
           <h3 className="font-display text-[18px] font-semibold text-ink">{c.planTitle}</h3>
           <p className="text-[13px] tabular-nums text-ink-mute">
