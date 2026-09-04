@@ -5,11 +5,24 @@
 #  Runs every five minutes on the droplet, does nothing almost every time, and
 #  once in a while notices a release has been marked and puts it live.
 #
-#  It deploys a TAG, never a branch. Work in progress is pushed to
-#  design-overhaul all day and none of it goes anywhere; a release happens when
-#  a tag matching `release-*` appears, and that tag is a deliberate act. The
-#  agent deploys the newest one it has not deployed yet, at that exact commit,
-#  which is not necessarily the head of the branch by the time it wakes up.
+#  It deploys a MARKER, never the working branch. Work in progress is pushed
+#  to design-overhaul all day and none of it goes anywhere; a release happens
+#  when the marker is moved to the commit that should be live, and moving it
+#  is a separate deliberate act. The agent deploys that exact commit, which is
+#  not necessarily the head of the branch by the time it wakes up.
+#
+#  The marker is the branch `release`, and failing that the newest `release-*`
+#  tag. Two spellings of one idea, for one practical reason: the assistant
+#  that writes the code can push a branch and cannot push a tag, so a tag-only
+#  marker meant every release still needed a person at a keyboard — which is
+#  the thing this agent exists to stop needing. The branch wins where both
+#  exist, because two markers each claiming to be current is how an unattended
+#  thing deploys the wrong commit in the middle of the night.
+#
+#  Whatever the marker points at must be a commit that came through
+#  design-overhaul. That is checked, not assumed: the branch is where every
+#  test and every checker this project has actually runs, and a release that
+#  skipped it has been checked by nothing.
 #
 #  What it does, in order, and why that order:
 #
@@ -33,7 +46,7 @@
 #
 #      bash /root/webliver/scripts/agent-deploy.sh          # what the timer runs
 #      bash /root/webliver/scripts/agent-deploy.sh --dry    # decide, do nothing
-#      bash /root/webliver/scripts/agent-deploy.sh --now    # ignore the tag, deploy the branch
+#      bash /root/webliver/scripts/agent-deploy.sh --now    # ignore the marker, deploy the branch head
 # ============================================================================
 set -euo pipefail
 
@@ -61,6 +74,17 @@ TRIES="${TRIES:-2}"
 # Tags that mean "put this live". Anything else is just a tag.
 PATTERN="${PATTERN:-release-*}"
 
+# The other way to say "put this live": a branch that points at the commit to
+# release. It exists because the assistant that writes the code can push a
+# branch and cannot push a tag — the environment it runs in refuses tag refs —
+# so a tag-only marker meant every release needed a person at a keyboard, which
+# is the thing this whole agent was built to stop needing.
+#
+# Same two-stage shape either way. Work lands on design-overhaul all day and
+# goes nowhere; moving this branch is the separate, deliberate act that
+# releases it. Whoever moves it, moves it on purpose.
+MARKER="${MARKER:-release}"
+
 DRY=0; FORCE_BRANCH=0
 for a in "$@"; do
   case "$a" in
@@ -85,6 +109,10 @@ cd "$REPO"
 
 # ── what, if anything, to deploy ────────────────────────────────────────────
 git fetch --quiet origin "$BRANCH" --tags --force
+# Separately, and allowed to fail: the marker branch does not exist until
+# somebody makes the first release with it, and a missing ref must not take
+# the agent down with it.
+git fetch --quiet origin "$MARKER" 2>/dev/null || true
 
 if [ "$FORCE_BRANCH" -eq 1 ]; then
   TARGET="origin/$BRANCH"
@@ -96,9 +124,28 @@ if [ "$FORCE_BRANCH" -eq 1 ]; then
   TAG="$(git rev-parse "$TARGET")"
   say "forced: deploying the head of $BRANCH (${TAG:0:7}) rather than a release tag"
 else
-  TAG="$(git tag -l "$PATTERN" --sort=-creatordate | head -1)"
+  # The marker branch first, a release tag second. Not a race between them:
+  # once the marker exists it is the only thing consulted, because two markers
+  # both claiming to be current is how an unattended thing deploys the wrong
+  # commit at three in the morning.
+  if git rev-parse --quiet --verify "refs/remotes/origin/$MARKER" >/dev/null; then
+    TAG="$(git rev-parse "origin/$MARKER")"
+
+    # The marker must point at something that came through the working branch.
+    # Without this, anything that can push the marker can put arbitrary code
+    # live without it ever having been on design-overhaul — and the branch is
+    # where every check this project has actually runs.
+    if ! git merge-base --is-ancestor "$TAG" "origin/$BRANCH"; then
+      say "FAIL  $MARKER points at ${TAG:0:7}, which is not on $BRANCH. Refusing."
+      say "      A release has to be a commit that came through the branch."
+      exit 1
+    fi
+  else
+    TAG="$(git tag -l "$PATTERN" --sort=-creatordate | head -1)"
+  fi
+
   if [ -z "$TAG" ]; then
-    say "no release tag exists yet; nothing to do"
+    say "nothing marked for release yet; nothing to do"
     exit 0
   fi
   if [ -f "$DEPLOYED" ] && [ "$(cat "$DEPLOYED")" = "$TAG" ]; then
@@ -115,7 +162,11 @@ else
   TARGET="$TAG"
 fi
 
-SHA="$(git rev-parse --short "$TARGET")"
+# ^{commit} because an annotated tag resolves to the tag object, not to what it
+# points at — so without it the log prints a hash that appears nowhere in the
+# history, which is a confusing thing to hand somebody who is reading the log
+# precisely because something went wrong.
+SHA="$(git rev-parse --short "$TARGET^{commit}")"
 say "release $TAG ($SHA) is not live yet"
 
 if [ "$DRY" -eq 1 ]; then
