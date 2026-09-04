@@ -42,15 +42,28 @@ if ! grep -qE '^DATABASE_URL=' "$ENVFILE" 2>/dev/null; then
   DATABASE_URL is not in the environment file, and the agent cannot apply a
   schema without it. It is the one thing nobody can add for you.
 
-  Supabase → Project Settings → Database → Connection string → URI.
-  It looks like:
+  Supabase → Project Settings → Database → Connection string.
+
+  Take the SESSION POOLER one, on port 5432. Not port 6543: that is the
+  transaction pooler, it does not carry the statements pg_dump needs, and a
+  backup is the whole reason this is being asked for. It looks like:
 
       postgresql://postgres.abcdefgh:PASSWORD@aws-0-eu-central-1.pooler.supabase.com:5432/postgres
 
-  Then:
+  Supabase prints it with [YOUR-PASSWORD] where the password goes. That has
+  to be replaced with the real one, brackets and all.
 
-      echo 'DATABASE_URL=postgresql://…' >> /etc/liver-next.env
+  Then — printf rather than echo, and note the leading newline. If the file
+  does not already end in one, echo joins this onto the end of the last line
+  and quietly corrupts whichever key was sitting there:
+
+      printf '\nDATABASE_URL=postgresql://…\n' >> /etc/liver-next.env
       chmod 600 /etc/liver-next.env
+
+  Single quotes, so the shell leaves the password alone whatever is in it.
+  Check it landed as its own line without printing the secret:
+
+      grep -c '^DATABASE_URL=' /etc/liver-next.env      # should say 1
 
   and run this installer again.
 
