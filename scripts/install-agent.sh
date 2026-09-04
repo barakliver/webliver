@@ -57,8 +57,12 @@ if ! grep -qE '^DATABASE_URL=' "$ENVFILE" 2>/dev/null; then
   does not already end in one, echo joins this onto the end of the last line
   and quietly corrupts whichever key was sitting there:
 
-      printf '\nDATABASE_URL=postgresql://…\n' >> /etc/liver-next.env
+      printf '\nDATABASE_URL=PASTE_THE_WHOLE_URI_HERE\n' >> /etc/liver-next.env
       chmod 600 /etc/liver-next.env
+
+  PASTE_THE_WHOLE_URI_HERE is not part of the command. Replace those words,
+  and nothing else on the line, with the string Supabase gave you — it starts
+  postgresql:// and ends /postgres.
 
   Single quotes, so the shell leaves the password alone whatever is in it.
   Check it landed as its own line without printing the secret:
@@ -82,8 +86,37 @@ fi
 # Supabase moved on. That mismatch does not show up until the first release,
 # at which point the agent correctly refuses to deploy and the reason is a line
 # in a log nobody is reading.
-echo "→ testing the backup against the real database"
 DB_URL="$(grep -E '^DATABASE_URL=' "$ENVFILE" | cut -d= -f2-)"
+
+# Before the network is involved at all: is this a connection string, or is it
+# the shape of one with the placeholder still in it? Both fail, but they fail
+# with completely different errors — a leftover placeholder comes back as
+# "could not translate host name", which reads like a DNS problem and sends
+# somebody to check their network for something that was never a network
+# problem. Naming it here costs one case statement.
+bad=""
+case "$DB_URL" in
+  *…*)                     bad="it still contains the … from the example — that was a placeholder, not part of the string" ;;
+  *'[YOUR-PASSWORD]'*)     bad="it still contains [YOUR-PASSWORD] — Supabase prints that where your real password goes" ;;
+  *PASTE_THE_WHOLE_URI*)   bad="it still contains PASTE_THE_WHOLE_URI_HERE, which was the placeholder, not the value" ;;
+  postgres://*|postgresql://*) ;;
+  *)                       bad="it does not start with postgresql://" ;;
+esac
+
+if [ -n "$bad" ]; then
+  echo
+  echo "  DATABASE_URL is in $ENVFILE, but $bad."
+  echo
+  echo "  Replace that one line — this deletes it and writes a new one:"
+  echo
+  echo "      sed -i '/^DATABASE_URL=/d' $ENVFILE"
+  echo "      printf '\\nDATABASE_URL=<the string from Supabase>\\n' >> $ENVFILE"
+  echo
+  echo "  the timer was NOT enabled. Nothing on the server changed."
+  exit 1
+fi
+
+echo "→ testing the backup against the real database"
 if pg_dump --schema-only --no-owner --no-privileges "$DB_URL" >/dev/null 2>/tmp/pgdump-test.err; then
   echo "  backup works  (pg_dump $(pg_dump --version | awk '{print $3}'))"
 else
