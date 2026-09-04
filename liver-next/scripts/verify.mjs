@@ -42,6 +42,65 @@ async function page(path, label, { expect = [200, 307, 308] } = {}) {
   }
 }
 
+/**
+ * Did the page actually draw anything?
+ *
+ * This is the check that was missing, and its absence is why a deploy could
+ * report sixty-two passes while six screens were blank. Every check above asks
+ * the server for a status code, and a shell whose main region rendered nothing
+ * answers 200 with a perfectly healthy header, menu and footer wrapped around
+ * an empty hole. The status code is the server's opinion of itself.
+ *
+ * So: find the main region and count what is inside it once the tags are gone.
+ * A screen that has been reduced to its chrome has a nearly empty one. The
+ * threshold is deliberately low — enough to catch nothing at all rather than
+ * to have views about how wordy a page should be.
+ *
+ * A redirect is not a failure here for the same reason it is not above: every
+ * screen behind the sign-in is supposed to turn a stranger away.
+ */
+function mainText(html) {
+  const m = /<main\b[^>]*>([\s\S]*?)<\/main>/i.exec(html);
+  if (!m) return null;
+  return m[1]
+    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&[a-z]+;|&#\d+;/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+const MIN_MAIN = 40;
+
+async function renders(path, label) {
+  let res;
+  try {
+    res = await fetch(base + path, { redirect: 'manual' });
+  } catch (e) {
+    return record(false, label, `${path} → ${e.message}`);
+  }
+
+  if (res.status === 307 || res.status === 308) {
+    return record(true, label, `${path} → ${res.status}, sent to the door`);
+  }
+  if (res.status !== 200) {
+    return record(false, label, `${path} → ${res.status}`);
+  }
+
+  const body = mainText(await res.text());
+  if (body === null) {
+    return record(false, label, `${path} → 200 but no <main> at all`);
+  }
+  record(
+    body.length >= MIN_MAIN,
+    label,
+    body.length >= MIN_MAIN
+      ? `${path} → ${body.length} characters drawn`
+      : `${path} → 200 with an empty main region (${body.length} characters)`,
+  );
+}
+
 // ── the build on disk is the one we think it is ─────────────────────────────
 // The palette lives in the compiled CSS. If the previous one is still in there,
 // the running build predates the palette change, whatever the page looks like
@@ -434,6 +493,41 @@ async function main() {
        bucket, this is the line that notices. */
     record(/\.from\((["'])files\1\)/.test(js),
       'it uploads into the bucket rather than through the server');
+  }
+
+  /* Every primary route, asked the question a status code cannot answer.
+     These are the exact screens that were reported blank, plus the public
+     pages a visitor lands on first. Behind the sign-in they redirect, which
+     passes; what would fail is a 200 with nothing drawn inside it. */
+  for (const [path, label] of [
+    ['/', 'the home page draws something'],
+    ['/store', 'the shop draws something'],
+    ['/login', 'sign in draws something'],
+    ['/privacy', 'the privacy policy draws something'],
+    ['/terms', 'the terms draw something'],
+    ['/accessibility', 'the accessibility statement draws something'],
+    ['/install', 'the install guide draws something'],
+    ['/app', 'the workspace draws something'],
+    ['/app/insights', 'insights draws something'],
+    ['/app/store', 'the shop screen draws something'],
+    ['/app/sop', 'the operating book draws something'],
+    ['/app/guide', 'the guides draw something'],
+    ['/app/brand', 'branding draws something'],
+    ['/app/me', 'the profile draws something'],
+    ['/app/leads', 'leads draws something'],
+    ['/app/calendar', 'the diary draws something'],
+    ['/app/vendors', 'suppliers draws something'],
+  ]) {
+    await renders(path, label);
+  }
+
+  /* An address that matches nothing has to be a page rather than the
+     framework's own notice, and it has to say so with a 404 — a soft 404 that
+     answers 200 is how a dead link stays in a search index. */
+  const missing = await page('/no-such-page-exists', 'a wrong address answers 404', { expect: [404] });
+  if (missing) {
+    const html = await missing.text();
+    record(html.includes('הכתובת הזאת לא מובילה לשום מקום'), 'and it is our own notice, in Hebrew');
   }
 
   const width = Math.max(...results.map((r) => r.label.length));

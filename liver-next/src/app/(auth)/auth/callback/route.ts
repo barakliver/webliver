@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { supabaseServer } from '@/lib/supabase/server';
 import { publicEnv } from '@/lib/env';
+import { logFailure } from '@/lib/log';
 
 /**
  * Where a one click sign-in link lands.
@@ -83,7 +84,9 @@ export async function GET(request: Request) {
      "the link did not work" into a sentence. */
   const refused = url.searchParams.get('error_description') ?? url.searchParams.get('error');
   if (refused) {
-    console.error('[auth] the mail provider refused the link', { reason: refused });
+    logFailure('auth', 'the mail provider refused the link', {
+      at: '/auth/callback', role: 'anon', doing: 'verify-link', reason: 'provider-refused',
+    });
     return backToLogin('expired');
   }
 
@@ -101,7 +104,9 @@ export async function GET(request: Request) {
   if (code) {
     const { error } = await sb.auth.exchangeCodeForSession(code);
     if (error) {
-      console.error('[auth] code exchange failed', { message: error.message });
+      logFailure('auth', 'code exchange failed', {
+        at: '/auth/callback', role: 'anon', doing: 'exchange-code', reason: 'rejected',
+      });
       return backToLogin('expired');
     }
     return NextResponse.redirect(new URL(next, origin));
@@ -113,7 +118,9 @@ export async function GET(request: Request) {
       type: type === 'invite' ? 'invite' : 'magiclink',
     });
     if (error) {
-      console.error('[auth] one click sign-in failed', { message: error.message });
+      logFailure('auth', 'one click sign-in failed', {
+        at: '/auth/callback', role: 'anon', doing: 'verify-otp', reason: 'rejected', kind: type,
+      });
       return backToLogin('expired');
     }
     return NextResponse.redirect(new URL(next, origin));
@@ -124,12 +131,14 @@ export async function GET(request: Request) {
      that leaves the credential in the URL fragment — and a fragment never
      reaches a server. Naming it here is the difference between an operator
      fixing one setting and an operator reading this file. */
-  console.error(
-    '[auth] a sign-in link arrived carrying neither token_hash nor code. '
-    + 'Check Authentication → Emails → Magic Link: the template needs '
-    + '{{ .Token }} for the six digit code this app asks for, or a link to '
-    + '/auth/callback?token_hash={{ .TokenHash }}&type=magiclink.',
-    { params: [...url.searchParams.keys()] },
-  );
+  /* The parameter names are logged, never their values: the whole point of
+     this branch is that a credential may be in the URL. */
+  logFailure('auth', 'a sign-in link carried neither token_hash nor code. Check '
+    + 'Authentication → Emails → Magic Link: the template needs {{ .Token }} for the '
+    + 'six digit code this app asks for, or a link to '
+    + '/auth/callback?token_hash={{ .TokenHash }}&type=magiclink', {
+    at: '/auth/callback', role: 'anon', doing: 'verify-link', reason: 'no-credential',
+    count: [...url.searchParams.keys()].length,
+  });
   return backToLogin('missing');
 }

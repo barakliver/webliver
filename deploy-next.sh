@@ -18,6 +18,11 @@ HOST="${HOST:-app.liverproductions.com}"
 PORT="${PORT:-3000}"
 
 cd "$REPO"
+# What is serving right now, captured before the pull moves us off it. It is
+# the only thing that makes the check at the end actionable: telling somebody
+# their deploy is broken without telling them what to go back to is a worse
+# message than saying nothing.
+PREV_SHA="$(git rev-parse --short HEAD 2>/dev/null || echo unknown)"
 git fetch origin "$BRANCH"
 git checkout "$BRANCH"
 git pull origin "$BRANCH"
@@ -56,7 +61,11 @@ if [ ! -s "$ENVFILE" ]; then
   echo "  NEXT_PUBLIC_SUPABASE_URL=https://YOUR-PROJECT.supabase.co"
   echo "  NEXT_PUBLIC_SUPABASE_ANON_KEY=your-publishable-key"
   echo "  NEXT_PUBLIC_SITE_URL=https://$HOST"
-  echo "  NEXT_PUBLIC_WHATSAPP_NUMBER=972500000000"
+  echo "  # the real number, digits only, with the country code and no plus."
+  echo "  # leave it out entirely rather than inventing one: the code has the"
+  echo "  # business's own number as its default, and a placeholder here would"
+  echo "  # override it with a WhatsApp button that reaches nobody."
+  echo "  # NEXT_PUBLIC_WHATSAPP_NUMBER="
   echo "  NEXT_PUBLIC_BOOKING_URL="
   echo "  EOF"
   echo
@@ -145,6 +154,21 @@ for _ in $(seq 1 30); do
   sleep 2
 done
 
+# ── does every screen actually draw something ──────────────────────────────
+# A server that answers is not a server that works. The check this replaces
+# asked for a status code, and a shell whose main region rendered nothing
+# answers 200 with a healthy header, menu and footer around an empty hole —
+# which is how six screens were blank through a deploy that reported sixty-two
+# passes. verify.mjs now reads inside the main region of every primary route.
+VERIFIED=0
+if [ "$ok" -eq 1 ]; then
+  echo
+  echo "→ checking that every screen draws something"
+  if VERIFY_URL="http://127.0.0.1:$PORT" node "$APP/scripts/verify.mjs"; then
+    VERIFIED=1
+  fi
+fi
+
 echo
 echo "commit:  $(cd "$REPO" && git rev-parse --short HEAD)"
 if [ "$ok" -eq 1 ]; then
@@ -157,10 +181,23 @@ if [ "$ok" -eq 1 ]; then
     echo "    type A    name app    value ${MYIP:-164.92.132.64}"
     echo "then run this script again."
   fi
-  echo "OK"
+  if [ "$VERIFIED" -eq 1 ]; then
+    echo "OK"
+  else
+    echo
+    echo "the app is up, but the check above found screens that do not draw."
+    echo "this build is live and it is not right. go back to the one that was:"
+    echo
+    echo "    cd $REPO && git checkout $PREV_SHA -- liver-next && bash $REPO/deploy-next.sh"
+    echo
+    echo "then send the FAIL lines above, they name the exact screens."
+    exit 1
+  fi
 else
   echo "the app did not answer on port $PORT"
   echo "logs:  journalctl -u liver-next -n 40 --no-pager"
+  echo
+  echo "the build that was serving before this one:  $PREV_SHA"
   exit 1
 fi
 exit 0
