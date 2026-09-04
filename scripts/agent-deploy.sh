@@ -88,7 +88,13 @@ git fetch --quiet origin "$BRANCH" --tags --force
 
 if [ "$FORCE_BRANCH" -eq 1 ]; then
   TARGET="origin/$BRANCH"
-  TAG="(branch head, forced by hand)"
+  # The commit, not a description of it. This name is written down as the
+  # thing that is live, and the next release hands it to git checkout to go
+  # back to — so a friendly label here ("branch head, forced by hand") is a
+  # rollback that fails at the only moment it is needed. It is shown to a
+  # person as well, which is why the short form is spelled out in the log.
+  TAG="$(git rev-parse "$TARGET")"
+  say "forced: deploying the head of $BRANCH (${TAG:0:7}) rather than a release tag"
 else
   TAG="$(git tag -l "$PATTERN" --sort=-creatordate | head -1)"
   if [ -z "$TAG" ]; then
