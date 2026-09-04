@@ -1,6 +1,8 @@
 import 'server-only';
 import { supabaseServer } from '@/lib/supabase/server';
 import { EVENT_ZONE } from './clock.ts';
+import { standingOf } from './phase.ts';
+import { phaseCopy } from '@/content/site';
 
 /* ── What actually needs a person ──────────────────────────────────────────
    The brief is explicit: "three things need your decision this week", not
@@ -16,7 +18,7 @@ export type Urgency = 'now' | 'soon';
 
 export type AttentionItem = {
   id: string;
-  kind: 'lead' | 'task' | 'payment' | 'gap';
+  kind: 'lead' | 'task' | 'payment' | 'gap' | 'behind';
   title: string;
   detail: string;
   href: string;
@@ -75,12 +77,31 @@ export async function getOverview(): Promise<Overview> {
        make the closing meaningless — the archived tab still carries the row,
        its balance included, so nothing is lost, only quietened. */
     sb.from('clients')
-      .select('id,display_name,event_date,venue,guest_estimate')
+      .select('id,display_name,event_date,venue,guest_estimate,budget_target')
       .is('archived_at', null)
       .order('event_date', { ascending: true }),
   ]);
 
   const clients = clientsQ.data ?? [];
+
+  /* What an event has actually got done, counted rather than listed. Three
+     reads to answer one question for every live event at once, which is
+     cheaper than the same question asked per row on the screen. */
+  const [vendorsQ, guestsQ, scheduleQ] = await Promise.all([
+    sb.from('event_vendors').select('client_id,status').eq('status', 'booked').limit(4000),
+    sb.from('guests_rsvp').select('client_id,status').limit(6000),
+    sb.from('day_schedule').select('client_id').limit(4000),
+  ]);
+
+  const tally = (rows: { client_id: string }[] | null) => {
+    const m = new Map<string, number>();
+    for (const r of rows ?? []) m.set(r.client_id, (m.get(r.client_id) ?? 0) + 1);
+    return m;
+  };
+  const booked = tally(vendorsQ.data);
+  const lines = tally(scheduleQ.data);
+  const invited = tally(guestsQ.data);
+  const answered = tally((guestsQ.data ?? []).filter((g) => g.status === 'attending' || g.status === 'declined'));
   const nameOf = new Map(clients.map((c) => [c.id, c.display_name]));
 
   /* Tasks and payments are fetched across every event, so they have to be
@@ -123,6 +144,35 @@ export async function getOverview(): Promise<Overview> {
       href: `/app/clients/${t.client_id}`,
       urgency: d <= 0 ? 'now' : 'soon',
       rank: d,
+    });
+  }
+
+  /* An event that is behind is a decision waiting, which is what this list is
+     for, so it goes here rather than into a widget of its own. Only the events
+     that are actually behind produce a row: an event on schedule, or ahead of
+     it, has nothing to say and saying it anyway is how a list of decisions
+     turns back into a list of counts. */
+  for (const c of clients) {
+    const standing = standingOf({
+      daysToEvent: c.event_date ? daysUntil(c.event_date, today) : null,
+      hasVenue: Boolean(c.venue),
+      hasBudgetTarget: c.budget_target !== null && c.budget_target !== undefined,
+      vendorsBooked: booked.get(c.id) ?? 0,
+      guestsInvited: invited.get(c.id) ?? 0,
+      guestsAnswered: answered.get(c.id) ?? 0,
+      scheduleItems: lines.get(c.id) ?? 0,
+    });
+    if (standing.behind < 1) continue;
+
+    items.push({
+      id: `behind-${c.id}`,
+      kind: 'behind',
+      title: c.display_name,
+      detail: `${phaseCopy.expected} ${phaseCopy.names[standing.expected]} · ${phaseCopy.actually} ${phaseCopy.names[standing.phase]}`,
+      href: `/app/clients/${c.id}`,
+      /* Two phases adrift is a conversation this week; one is a nudge. */
+      urgency: standing.behind >= 2 ? 'now' : 'soon',
+      rank: -standing.behind,
     });
   }
 

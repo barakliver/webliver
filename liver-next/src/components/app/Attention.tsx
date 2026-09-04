@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Target, CircleCheck, CreditCard, TriangleAlert, ChevronLeft } from 'lucide-react';
+import { CalendarClock, ChevronLeft, CircleCheck, CreditCard, Target, TriangleAlert } from 'lucide-react';
 import type { AttentionItem } from '@/lib/attention';
 import { appCopy } from '@/content/site';
 import { cn } from '@/lib/utils';
@@ -9,6 +9,9 @@ const ICON = {
   task:    CircleCheck,
   payment: CreditCard,
   gap:     TriangleAlert,
+  /* An event whose work has fallen behind where the date says it should be.
+     A clock rather than another warning triangle: it is late, not wrong. */
+  behind:  CalendarClock,
 } as const;
 
 const c = appCopy.overview2;

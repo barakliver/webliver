@@ -2252,6 +2252,27 @@ export const labelCopy = {
  * was how to run an event on open ground. A producer looking for either had to
  * guess, and the cost of guessing wrong was opening the other one.
  */
+/**
+ * Where an event is, in words.
+ *
+ * The names are the producer's own vocabulary rather than a progress bar's,
+ * because a phase is a kind of work and not a percentage: "closing suppliers"
+ * says what to do next and "62%" does not.
+ */
+export const phaseCopy = {
+  expected: 'אמור להיות ב',
+  actually: 'בפועל ב',
+  names: {
+    foundation: 'בסיס: תאריך, מקום ותקציב',
+    bookings:   'סגירת ספקים',
+    experience: 'עיצוב החוויה',
+    guests:     'אורחים והזמנות',
+    final:      'תיאום אחרון',
+    dayOf:      'יום האירוע',
+    after:      'סגירה אחרי האירוע',
+  },
+} as const;
+
 export const knowledgeCopy = {
   title: 'ידע',
   sub: 'איך עובדים במערכת, איך מפיקים אירוע, ומה שכבר בנית לעצמך.',
