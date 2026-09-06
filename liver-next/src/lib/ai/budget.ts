@@ -32,7 +32,7 @@
  * actually run. Same reason `fileTypes.ts` sits apart from its action.
  */
 
-export type Lane = 'public' | 'producer';
+export type Lane = 'public' | 'producer' | 'couple';
 
 const RULES: Record<Lane, { perCaller: number; windowMs: number; perDay: number }> = {
   /* A stranger, rate limited by an address that costs nothing to change. The
@@ -41,6 +41,12 @@ const RULES: Record<Lane, { perCaller: number; windowMs: number; perDay: number 
   /* A signed-in, approved producer. Higher on both counts: they are drafting
      real work, and an account is a much better key than an address. */
   producer: { perCaller: 60, windowMs: 10 * 60_000, perDay: 600 },
+  /* A couple in their own area. Signed in, so the key is as good as the
+     producer's — but they are asking about one wedding rather than working
+     through a day of them, and the invoice belongs to their producer rather
+     than to them. Between the two, and closer to the stranger, because the
+     shape of the use is a handful of questions rather than a shift. */
+  couple:   { perCaller: 25, windowMs: 10 * 60_000, perDay: 500 },
 };
 
 type Bucket = { count: number; resetAt: number };
@@ -49,6 +55,7 @@ const callers = new Map<string, Bucket>();
 const days: Record<Lane, Bucket> = {
   public:   { count: 0, resetAt: Date.now() + 86_400_000 },
   producer: { count: 0, resetAt: Date.now() + 86_400_000 },
+  couple:   { count: 0, resetAt: Date.now() + 86_400_000 },
 };
 
 /** Dropped on the way in, so a long-running process does not hold a row for
