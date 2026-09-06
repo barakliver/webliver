@@ -59,6 +59,48 @@ export function eventInstant(dateIso: string, timeHhmm: string, tz = EVENT_TZ): 
   return wallToUtc(+dm[1], +dm[2], +dm[3], +tm[1], +tm[2], tz);
 }
 
+/**
+ * The instant a run-sheet line actually happens, on an evening that may run
+ * past midnight.
+ *
+ * A line is stored as a clock and the event as a date, so the obvious pairing
+ * of the two puts the 03:00 pack-down at three in the morning *of* the wedding
+ * day — sixteen hours before a five o'clock chuppah rather than ten hours
+ * after it. On the eight-in-the-morning-to-three-at-night template this
+ * product ships, that is most of the end of the night landing at the very
+ * start of the day in somebody's phone.
+ *
+ * `wraps` says whether this particular schedule runs past midnight, judged
+ * from its own lines rather than assumed, so an evening that finishes at 23:30
+ * is untouched.
+ *
+ * The next day is reached by moving the calendar date and converting again,
+ * not by adding twenty-four hours to the instant. Israel changes its clocks,
+ * and on those two nights a year adding a fixed number of hours moves the wall
+ * time by one — which is exactly the night somebody would be reading a run
+ * sheet off their phone.
+ */
+export function lineInstant(
+  dateIso: string, timeHhmm: string, wraps: boolean, tz = EVENT_TZ
+): Date | null {
+  const tm = /^(\d{2}):(\d{2})/.exec(timeHhmm || '');
+  if (!tm) return null;
+
+  const small = wraps && Number(tm[1]) * 60 + Number(tm[2]) < SMALL_HOURS;
+  return eventInstant(small ? dayAfter(dateIso) : dateIso, timeHhmm, tz);
+}
+
+/** Anything before this, on a schedule that wraps, belongs to the next date. */
+const SMALL_HOURS = 6 * 60;
+
+/** The calendar date after this one. Noon UTC as the pivot so the arithmetic
+ *  cannot be moved across a day boundary by a daylight-saving shift. */
+function dayAfter(dateIso: string): string {
+  const d = new Date(`${dateIso}T12:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + 1);
+  return d.toISOString().slice(0, 10);
+}
+
 /** UTC stamp in the form iCalendar wants: 20260901T160000Z */
 export const stamp = (d: Date): string =>
   d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');

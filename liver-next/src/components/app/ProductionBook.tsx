@@ -2,6 +2,7 @@ import { Money } from '@/components/Ltr';
 import { formatDate } from '@/lib/dates';
 import { longDate, shortDate } from '@/lib/appDates';
 import { EVENT_ZONE } from '@/lib/clock';
+import { crossesMidnight, eventMinutes } from '@/lib/runsheet';
 import type { Locale } from '@/lib/locale';
 import type { BookCopy } from '@/content/appUi';
 
@@ -124,10 +125,17 @@ export function ProductionBook(props: BookProps) {
 
   /* One clock for everyone who has to be somewhere at a time, because on the
      day nobody cares which table a person was stored in. */
-  const arrivals = [
+  const arrivals: { id: string; name: string; role: string; phone: string; at: string }[] = [
     ...crew.filter((m) => m.call_time).map((m) => ({ id: m.id, name: m.name, role: m.role, phone: m.phone, at: m.call_time! })),
     ...vendors.filter((v) => v.call_time).map((v) => ({ id: v.id, name: v.name, role: v.category, phone: v.phone, at: v.call_time! })),
-  ].sort((a, b) => a.at.localeCompare(b.at));
+  ];
+
+  /* The same midnight problem as the running order, on a different column. A
+     lighting crew called at 23:30 to strike and a florist called at 07:00 to
+     set up belong at opposite ends of this list, and comparing the strings
+     puts the florist first. */
+  const arrivalWraps = crossesMidnight(arrivals.map((a) => a.at));
+  arrivals.sort((a, b) => eventMinutes(a.at, arrivalWraps) - eventMinutes(b.at, arrivalWraps));
 
   return (
     <div className="print-doc mx-auto max-w-[860px] text-ink">

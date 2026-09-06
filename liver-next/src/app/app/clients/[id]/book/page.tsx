@@ -10,6 +10,7 @@ import { appUiFor } from '@/content/appUi';
 import { currentLocale } from '@/lib/serverLocale';
 import { daysBetween, todayInZone } from '@/lib/clock';
 import { standingOf } from '@/lib/phase';
+import { inDayOrder } from '@/lib/runsheet';
 import { PrintButton } from '@/components/app/PrintButton';
 import {
   ProductionBook, type BookVendor, type BookCrew, type BookMoment,
@@ -83,6 +84,13 @@ export default async function ProductionBookPage({ params }: { params: Promise<{
     }
   }
 
+  /* Sorted the way the evening runs rather than the way the clock sorts.
+     `order by at_time` is alphabetical, so a wedding that ends at 01:00 prints
+     the pack-down as the first line of the running order — which nobody
+     reports as a bug, they simply stop trusting the document. The run sheet
+     learned this the hard way already; the book had to be told. */
+  const runningOrder = inDayOrder(moments);
+
   const daysToEvent = client.event_date
     ? daysBetween(todayInZone(), client.event_date)
     : null;
@@ -126,7 +134,7 @@ export default async function ProductionBookPage({ params }: { params: Promise<{
         }}
         vendors={vendors}
         crew={crew}
-        moments={moments}
+        moments={runningOrder}
         tasks={tasks}
         payments={payments}
       />

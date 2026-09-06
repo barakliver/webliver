@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { requireAccount } from '@/lib/auth';
 import { supabaseServer } from '@/lib/supabase/server';
-import { buildIcs, eventInstant, type IcsEvent } from '@/lib/ics';
+import { buildIcs, eventInstant, lineInstant, type IcsEvent } from '@/lib/ics';
+import { crossesMidnight } from '@/lib/runsheet';
 import { PLATFORM_HOST } from '@/lib/env';
 
 /** One event, plus its run sheet, for the couple's own calendar.
@@ -35,9 +36,18 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
   });
 
   /* Each run-sheet line as its own half-hour entry, so the day reads as a
-     sequence on the phone rather than one long block with a note attached. */
+     sequence on the phone rather than one long block with a note attached.
+
+     Whether this particular evening runs past midnight is decided once, from
+     its own lines. Without it every line was dated to the wedding day, which
+     put the three-in-the-morning pack-down fourteen hours before the chuppah
+     — and the template this product ships runs eight in the morning to three
+     at night, so most of the end of the night landed at the start of the
+     day. */
+  const wraps = crossesMidnight((day ?? []).map((l) => String(l.at_time)));
+
   for (const line of day ?? []) {
-    const at = eventInstant(client.event_date, String(line.at_time).slice(0, 5));
+    const at = lineInstant(client.event_date, String(line.at_time).slice(0, 5), wraps);
     if (!at) continue;
     events.push({
       uid: `day-${line.id}@${PLATFORM_HOST}`,
