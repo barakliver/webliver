@@ -66,6 +66,8 @@ import { VendorImport } from '@/components/app/VendorImport';
 import { ProducerCopilot } from '@/components/app/ProducerCopilot';
 import { QuickJump } from '@/components/app/QuickJump';
 import { FinanceSummary } from '@/components/app/FinanceSummary';
+import { ProducerLedger } from '@/components/app/ProducerLedger';
+import { appCopy } from '@/content/site';
 import { HebrewCalendar } from '@/components/app/HebrewCalendar';
 import { LabelToolbar } from '@/components/app/LabelToolbar';
 import { EventTagPicker } from '@/components/app/EventTagPicker';
@@ -164,6 +166,49 @@ export default async function DesignPage() {
 
         <Panel name="FinanceSummary · client, over budget" note="the same figures seen by the couple, with the overrun badge">
           <FinanceSummary clientId={client} viewer="client" target={60000} items={fixtureBudget} payments={fixturePayments} />
+        </Panel>
+
+        {/* The producer's bottom line, in the three states worth looking at:
+            healthy, a loss, and the ordinary month-three shape where costs
+            exist and nothing has been billed. */}
+        <Panel name="ProducerLedger · healthy" note="billed, received, costs and what is left">
+          <ProducerLedger
+            c={appCopy.money.ledger}
+            /* Billed above the costs, which is what a healthy event looks
+               like. The first version of this panel reused fixturePayments,
+               whose total is a fraction of the budget fixture, so the panel
+               labelled "healthy" rendered a hundred-and-fourteen per cent
+               loss — a harness that lies about which state it is showing is
+               worse than no harness. */
+            payments={[
+              { amount: 190000, paid: true },
+              { amount: 110000, paid: false },
+            ]}
+            items={fixtureBudget}
+            crew={[{ fee: 5000 }, { fee: 3200 }, { fee: null }]}
+          />
+        </Panel>
+
+        <Panel name="ProducerLedger · at a loss" note="the figure worth having on exactly the events where it is unwelcome">
+          <ProducerLedger
+            c={appCopy.money.ledger}
+            payments={[{ amount: 42000, paid: true }]}
+            items={fixtureBudget}
+            crew={[{ fee: 5000 }]}
+          />
+        </Panel>
+
+        <Panel name="ProducerLedger · costs before billing" note="the normal shape three months out, which must not read as a loss">
+          <ProducerLedger
+            c={appCopy.money.ledger}
+            payments={[]}
+            items={fixtureBudget}
+            crew={[{ fee: 5000 }]}
+          />
+        </Panel>
+
+        <Panel name="ProducerLedger · nothing yet" note="a brand new event">
+          <ProducerLedger c={appCopy.money.ledger} payments={[]} items={[]} crew={[]} />
         </Panel>
 
         <Panel name="BudgetPanel · producer" note="an agreed figure, two still open">

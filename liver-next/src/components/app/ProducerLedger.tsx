@@ -1,5 +1,5 @@
 import { TriangleAlert } from 'lucide-react';
-import { Money } from '@/components/Ltr';
+import { Money, Ltr } from '@/components/Ltr';
 import { ledgerOf, type PaidLine, type CostLine, type CrewLine } from '@/lib/finance';
 import type { MoneyCopy } from '@/content/appUi';
 
@@ -66,9 +66,14 @@ export function ProducerLedger({ c, payments, items, crew }: {
                   <b className={l.margin < 0 ? 'text-[20px] text-bad' : 'text-[20px] text-ink'}>
                     <Money value={l.margin} />
                   </b>
+                  {/* The number is isolated and the words are not. A bare
+                      "-114%" inside a Hebrew phrase puts the minus at the wrong
+                      end, and on a figure whose whole meaning is its sign that
+                      is not a detail. */}
                   {l.marginPct !== null && (
                     <span className="text-[13px] text-ink-soft">
-                      {c.marginPct.replace('{n}', String(l.marginPct))}
+                      <Ltr>{`${l.marginPct}%`}</Ltr>{' '}
+                      {c.marginPct.replace('{n}%', '').trim()}
                     </span>
                   )}
                 </span>

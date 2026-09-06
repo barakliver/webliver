@@ -53,10 +53,12 @@ export function Money({ value, className }: { value: number | null | undefined; 
   return <Ltr className={className}>{ils(value)}</Ltr>;
 }
 
-/** The string on its own, for the places that need text rather than an element:
- *  a title attribute, an aria-label, a CSV cell, an email body. */
-export const ils = (value: number | null | undefined): string =>
-  '₪' + Math.round(Number(value) || 0).toLocaleString('en-US');
+/** The string on its own, for the places that need text rather than an
+ *  element: a title attribute, an aria-label, a CSV cell, an email body.
+ *  Defined in lib/money.ts so it can be tested, and re-exported here because
+ *  every existing caller imports it from this file. */
+import { ils } from '@/lib/money';
+export { ils };
 
 /** `218 / 340`, isolated. Written out rather than left to a template literal
  *  at each call site, because the spaces around the slash are part of why it

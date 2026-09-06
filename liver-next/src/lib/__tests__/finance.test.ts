@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { summarise, ledgerOf } from '../finance.ts';
+import { ils } from '../money.ts';
 
 /**
  * The one calculation the couple is asked to trust.
@@ -175,4 +176,20 @@ test('overpayment does not make what is owed negative', () => {
      question rather than a negative number to put on a screen. */
   const l = ledgerOf([pay(10000)], [], []);
   assert.equal(l.outstanding, 0);
+});
+
+/* ── how the figures are written down ────────────────────────────────────── */
+
+test('a negative amount puts the sign before the currency, not inside it', () => {
+  /* Found by looking at the ledger rather than by reading it: the first
+     render showed the loss as ₪-125,500, with the minus between the shekel
+     sign and the digits. It had never mattered because nothing in the product
+     could be negative until the producer's bottom line existed. */
+  assert.equal(ils(-125500), '-₪125,500');
+  assert.equal(ils(125500), '₪125,500');
+  assert.equal(ils(0), '₪0');
+  assert.equal(ils(null), '₪0');
+  /* Rounding happens before the sign is chosen, so a value that rounds to
+     zero is not written as minus zero. */
+  assert.equal(ils(-0.4), '₪0');
 });

@@ -35,8 +35,15 @@ const walk = (dir) => {
 walk(src);
 
 /* The helper's own file defines the wrapping, and a route that emits a
-   calendar or a CSV is not rendering in a browser at all. */
+   calendar or a CSV is not rendering in a browser at all.
+
+   Tests are exempt for the same reason rather than a weaker one: this rule is
+   about what reaches somebody's screen, and a test never renders. The test
+   that pins how a negative amount is written has to contain the written form
+   to assert against, and lib/money.ts is where the wrapping is decided now. */
 const exempt = (path) => /components[\\/]Ltr\.tsx$/.test(path)
+  || /lib[\\/]money\.ts$/.test(path)
+  || /__tests__[\\/]/.test(path)
   || /\.(ics|csv)[\\/]route\.tsx?$/.test(path)
   || /[\\/]route\.ts$/.test(path);
 
