@@ -41,12 +41,14 @@ cat <<'EOF'
   transaction pooler, it does not carry the statements pg_dump needs, and the
   backup is the whole reason this is being asked for.
 
-  Replace [YOUR-PASSWORD] with the real password before pasting.
-  It starts postgresql:// and ends /postgres.
+  Replace [YOUR-PASSWORD] in it with the real password, and paste the WHOLE
+  line. Not the password on its own — the whole thing, which looks like:
+
+      postgresql://postgres.abcdefgh:THEPASSWORD@aws-0-eu-central-1.pooler.supabase.com:5432/postgres
 
 EOF
 
-printf '  paste it here, then Enter: '
+printf '  paste the whole connection string, then Enter:\n  '
 IFS= read -r URI
 echo
 
@@ -61,11 +63,31 @@ case "$URI" in
   *PASTE_THE_WHOLE_URI*) bad="it is the placeholder rather than the value" ;;
   *'<'*|*'>'*)           bad="it still has the angle brackets from an example around it" ;;
   postgresql://*|postgres://*) ;;
-  *)                     bad="it does not start with postgresql://" ;;
+  *'://'*)               bad="it does not start with postgresql://" ;;
+  # No scheme and no host: this is the password by itself. It is the likeliest
+  # wrong thing to type at a prompt that has just finished talking about the
+  # password, and saying "it does not start with postgresql://" to somebody who
+  # pasted a password is a true sentence that explains nothing.
+  *)                     bad="that looks like the password on its own, not the whole string" ;;
 esac
 
 if [ -n "$bad" ]; then
   echo "  Not written: $bad."
+  case "$bad" in
+    *'on its own'*)
+      echo
+      echo "  The whole line is wanted, with the password already inside it:"
+      echo
+      echo "      postgresql://postgres.xxxx:THEPASSWORD@aws-0-...pooler.supabase.com:5432/postgres"
+      echo
+      echo "  Supabase → the Connect button at the top → Session pooler."
+      echo
+      echo "  And since a password typed on its own at a prompt tends to end up"
+      echo "  somewhere it should not — a screenshot, a scrollback, a support"
+      echo "  thread — reset it before using it: Database settings → Reset"
+      echo "  database password → Generate a password."
+      ;;
+  esac
   echo "  Nothing in $ENVFILE was changed. Run this again with the real string."
   exit 1
 fi
