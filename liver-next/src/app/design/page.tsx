@@ -10,6 +10,8 @@ import { GuestList } from '@/components/app/GuestList';
 import { SeatingPlan } from '@/components/app/SeatingPlan';
 import { DaySchedule } from '@/components/app/DaySchedule';
 import { RunSheet } from '@/components/app/RunSheet';
+import { PlanOffer } from '@/components/app/PlanOffer';
+import { ProductionBook } from '@/components/app/ProductionBook';
 import { Thread } from '@/components/app/Thread';
 import { Contracts } from '@/components/app/Contracts';
 import { EventFiles } from '@/components/app/EventFiles';
@@ -228,6 +230,46 @@ export default async function DesignPage() {
             because it is a component now: it used to be markup inside a page
             that needed an account and a database, which is why nobody had
             ever looked at it. */}
+        {/* The offer that replaces "no tasks yet" on a producer's first
+            event. Written, shipped, and until now never looked at. */}
+        <Panel name="PlanOffer" note="what an empty task list says to somebody who has never used this">
+          <PlanOffer clientId={client} />
+        </Panel>
+
+        {/* The whole event on one document, printed. The other two print
+            documents are here; this one was not, which is why nobody had seen
+            it come out of a printer either. */}
+        <Panel name="ProductionBook · printed" note="the folder copy: cover, arrivals, running order, suppliers, guests, money">
+          <ProductionBook
+            c={appUiFor('he').book}
+            locale="he"
+            client={{
+              display_name: 'נועה ואיתי', event_date: '2026-09-04', venue: 'אחוזת הכפר',
+              contact_phone: '052-555-0100', contact_email: 'noa@example.com',
+            }}
+            brand={{ name: 'ברק ליור', tagline: 'הפקת אירועים' }}
+            standing={{ phase: 'guests', expected: 'final', behind: 1, ahead: 0 }}
+            daysToEvent={12}
+            guests={{
+              invited: 180, coming: 142, declined: 21, pending: 17, heads: 168,
+              diets: [{ label: 'צמחוני', count: 14 }, { label: 'ללא גלוטן', count: 3 }],
+            }}
+            vendors={[
+              { id: 'v1', name: 'קייטרינג הגן', category: 'קייטרינג', phone: '052-555-1234', status: 'booked', call_time: '15:00' },
+              { id: 'v2', name: 'אבי כהן', category: 'צילום', phone: '054-555-8877', status: 'booked', call_time: '17:30' },
+              { id: 'v3', name: 'אור ותאורה', category: 'תאורה', phone: '050-555-4412', status: 'shortlist', call_time: null },
+            ]}
+            crew={[{ id: 'k1', name: 'רותי', role: 'מפיקה בשטח', phone: '053-555-2020', call_time: '14:00' }]}
+            moments={fixtureDay.map((d) => ({
+              id: d.id, at_time: d.at_time, title: d.title, note: d.note ?? '', owner: d.owner ?? '',
+            }))}
+            tasks={fixtureTasks.map((t) => ({ id: t.id, title: t.title, due_on: t.due_on, done: t.done }))}
+            payments={fixturePayments.map((p, i) => ({
+              id: String(i), title: p.title, amount: Number(p.amount), due_on: p.due_on, paid: p.paid,
+            }))}
+          />
+        </Panel>
+
         <Panel name="RunSheet · printed" note="the page somebody holds at eleven at night: big clock, tick boxes, numbers">
           <RunSheet
             c={appCopy.runsheet}
