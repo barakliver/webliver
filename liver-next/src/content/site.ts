@@ -118,7 +118,10 @@ export const site: SiteCopy = {
   stage: {
     couple: 'נועה ואיתי',
     days: 'ימים לאירוע',
-    rows: ['תקציב', 'אישורי הגעה', 'כספת השראה', 'חמ״ל ספקים'],
+    /* The same four labels the real portal shows. A marketing mock-up that
+       promises different words from the product is a small lie that a visitor
+       discovers on their first day. */
+    rows: ['תקציב', 'אישורי הגעה', 'השראה', 'ספקים'],
   },
 
   journey: {
@@ -641,7 +644,7 @@ export const a11yCopy = {
     ],
     limitsTitle: 'מגבלות ידועות',
     limits:
-      'קבצים שהועלו על ידי משתמשים, כמו תמונות שזוג מוסיף לכספת ההשראה, אינם בשליטתנו '
+      'קבצים שהועלו על ידי משתמשים, כמו תמונות שזוג מוסיף ללוח ההשראה, אינם בשליטתנו '
       + 'ועשויים להגיע ללא טקסט חלופי.',
     contactTitle: 'פנייה בנושא נגישות',
     contact:
@@ -1469,7 +1472,7 @@ export const appCopy = {
   board: {
     /* The word above the title. It was a hard-coded English "BRIDE MODE",
        which assumed both a language and a bride. */
-    eyebrow: 'כספת השראה',
+    eyebrow: 'השראה',
     title: 'לוח ניצחון',
     subClient: 'התמונות שגרמו לכם להגיד "זה זה". כל מה שנאסף כאן עובר איתנו לספקים.',
     subProducer: 'התמונות שהזוג אסף. תצוגה בלבד, הם מנהלים את הלוח מהאזור שלהם.',
@@ -1569,8 +1572,21 @@ export const appCopy = {
     summary: 'סקירה מהירה',
     rowBudget: 'תקציב',
     rowRsvp: 'אישורי הגעה',
-    rowBoard: 'כספת השראה',
-    rowVendors: 'חמ״ל ספקים',
+    /* Two labels rewritten after this screen was rendered for the first time
+       and read as a couple would read it.
+
+       "חמ״ל ספקים" is an operations room. It is good, characterful language on
+       a producer's own screen and it is the machinery talking on their
+       client's: a couple planning their wedding does not have a war room, they
+       have suppliers. "כספת" is a safe, which is a strange place to keep the
+       pictures you liked.
+
+       The English beside them already said "Suppliers" and "Inspiration". The
+       guard that holds the two languages together checks that they have the
+       same shape, which they did — nothing checks that they are speaking in
+       the same register, and nothing can. */
+    rowBoard: 'השראה',
+    rowVendors: 'ספקים',
   },
 } as const;
 

@@ -10,6 +10,7 @@ import { GuestList } from '@/components/app/GuestList';
 import { SeatingPlan } from '@/components/app/SeatingPlan';
 import { DaySchedule } from '@/components/app/DaySchedule';
 import { RunSheet } from '@/components/app/RunSheet';
+import { PortalWorkspace } from '@/components/app/PortalWorkspace';
 import { PlanOffer } from '@/components/app/PlanOffer';
 import { ProductionBook } from '@/components/app/ProductionBook';
 import { Thread } from '@/components/app/Thread';
@@ -267,6 +268,40 @@ export default async function DesignPage() {
             payments={fixturePayments.map((p, i) => ({
               id: String(i), title: p.title, amount: Number(p.amount), due_on: p.due_on, paid: p.paid,
             }))}
+          />
+        </Panel>
+
+        {/* The screen a producer's clients actually see, and the last one
+            in this product nobody had ever rendered. Assembled from the same
+            fixtures the panels below use, so what appears here is what the
+            couple gets. */}
+        <Panel name="PortalWorkspace · the couple" note="what a couple opens: the countdown, the four numbers, then the panels">
+          <PortalWorkspace
+            ui={appUiFor('he')}
+            viewerId="fixture-viewer"
+            workspace={{
+              id: client, display_name: 'נועה ואיתי',
+              /* Deliberately in the future. The first version of this fixture
+                 dated the wedding two days in the past, which hid the
+                 countdown — the one thing the component's own comment calls
+                 the largest thing on the couple's screen — and made a working
+                 feature look missing. */
+              event_date: '2026-12-05',
+              venue: 'אחוזת הכפר', guest_estimate: 180, budget_visible: true,
+              budget_target: 260000, track_a_label: 'נועה', track_b_label: 'איתי',
+              guest_token: 'demo-token', guest_site_on: true,
+            }}
+            data={{
+              workspaces: [],
+              can: () => true,
+              tasksFor: () => fixtureTasks,
+              paymentsFor: () => fixturePayments,
+              budgetFor: () => fixtureBudget,
+              guestsFor: () => fixtureGuests,
+              tablesFor: () => fixtureTables,
+              dayFor: () => fixtureDay,
+              boardFor: () => [],
+            }}
           />
         </Panel>
 
