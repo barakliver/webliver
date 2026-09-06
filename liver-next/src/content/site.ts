@@ -2175,6 +2175,32 @@ export const conciergeCopy = {
   disclaimer: 'תשובות כלליות. מחיר וזמינות נסגרים בפגישה.',
 } as const;
 
+/**
+ * The couple's own assistant, in their area.
+ *
+ * Every word here is spoken by the producer, so none of it may sound like a
+ * product. It has no name, it does not introduce itself, and the title is what
+ * it answers rather than what it is: "questions about the wedding", not
+ * "digital assistant". A couple opening this is asking their producer
+ * something at eleven at night, and the panel should read that way.
+ *
+ * The openers are the three things couples actually ask, in their words: what
+ * is left for us, how many replied, when is the next payment.
+ */
+export const companionCopy = {
+  title: 'שאלות על החתונה',
+  sub: 'תשובות מתוך הפרטים של האירוע שלכם',
+  open: 'פתיחת שיחה',
+  close: 'סגירה',
+  greeting: 'אפשר לשאול אותי מה נשאר לכם לעשות, כמה אישרו הגעה, מתי התשלום הבא ומה סדר הערב.',
+  starters: ['מה נשאר לנו לעשות?', 'כמה אישרו הגעה?', 'מתי התשלום הבא?'],
+  placeholder: 'מה תרצו לדעת',
+  send: 'שליחה',
+  thinking: 'כותב',
+  wentWrong: 'משהו נתקע לי כרגע. כתבו לנו ונחזור אליכם.',
+  disclaimer: 'התשובות מתוך פרטי האירוע שלכם. שינויים עוברים דרכנו.',
+} as const;
+
 export const siteEditorCopy = {
   title: 'עריכת האתר',
   sub: 'הטקסטים באתר הציבורי. שינוי נשמר ומתפרסם מיד, בלי פריסה.',

@@ -1,10 +1,10 @@
 import type { Locale } from '../lib/locale.ts';
 import {
   appCopy, guestsCopy, seatingCopy, dayCopy, threadCopy, partyCopy, contractCopy, eventFileCopy,
-  noticeCopy, ticketCopy,
+  noticeCopy, ticketCopy, companionCopy,
 } from './site.ts';
 import {
-  noticeCopyEn, ticketCopyEn,
+  noticeCopyEn, ticketCopyEn, companionCopyEn,
   portalEn, filesEn, sheetsEn, tasksEn, moneyEn, boardEn, bookEn,
   guestsEn, seatingEn, dayEn, threadEn, partyEn, contractEn, eventFileEn,
 } from './app.en.ts';
@@ -56,6 +56,9 @@ export type EventFileCopy = Wide<typeof eventFileCopy>;
    props from the layout rather than through the provider. */
 export type NoticeCopy = Wide<typeof noticeCopy>;
 export type TicketCopy = Wide<typeof ticketCopy>;
+/* The couple's assistant, which sits in the shell for the same reason those
+   two do: it is on every screen of their area rather than inside one panel. */
+export type CompanionCopy = Wide<typeof companionCopy>;
 
 /** Everything the couple's screens read, resolved together. One object rather
  *  than thirteen lookups, because it travels as one value through one context
@@ -99,3 +102,4 @@ export const appUiFor = (l: Locale): AppUi => (l === 'en' ? APP_UI_EN : APP_UI_H
 
 export const noticeFor = (l: Locale): NoticeCopy => (l === 'en' ? noticeCopyEn : noticeCopy);
 export const ticketFor = (l: Locale): TicketCopy => (l === 'en' ? ticketCopyEn : ticketCopy);
+export const companionFor = (l: Locale): CompanionCopy => (l === 'en' ? companionCopyEn : companionCopy);

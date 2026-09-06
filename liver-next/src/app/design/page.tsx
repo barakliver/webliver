@@ -555,6 +555,26 @@ export default async function DesignPage() {
           </div>
         </Panel>
 
+        {/* The other side of the same shell, which nobody had ever looked at.
+            Two destinations rather than nine, a quieter ground, and the
+            couple's own assistant in the corner — their producer's voice,
+            never the platform's. Its copy follows the page's language. */}
+        <Panel name="AppShell · couple" note="the couple's chrome: two destinations, and their own assistant in the corner">
+          <div className="overflow-hidden rounded-xl2 border border-line">
+            <AppShell
+              account={{
+                id: FIXTURE_VIEWER, email: 'couple@example.com', fullName: 'נועה ואיתי', avatarUrl: null,
+                role: 'client', producer: null,
+              } as Account}
+              notices={[] as never}
+              locale={locale}
+              brand={{ name: 'הפקות הצפון', tagline: 'הפקת אירועים', logoUrl: null, iconUrl: null, coverUrl: null, whatsapp: '', bookingUrl: '', accent: accentByKey('teal'), isPlatform: false }}
+            >
+              <div className="skeleton h-32 w-full" />
+            </AppShell>
+          </div>
+        </Panel>
+
         <Panel name="BrandAssets" note="the three pictures, each with its rules beside the button; one already uploaded">
           <BrandAssets urls={{ logo: null, icon: fixtureMedia[1].url, cover: fixtureMedia[0].url }} />
         </Panel>
@@ -657,9 +677,16 @@ export default async function DesignPage() {
           </div>
         </Panel>
 
-        <Panel name="ProducerCopilot" note="the floating assistant; the button sits fixed at the end edge of this page">
-          <ProducerCopilot brandName="הפקות הצפון" />
-          <p className="text-[13px] text-ink-mute">הכפתור צף בפינת המסך. פותחים אותו ומקבלים את הפתיח וארבע ההצעות; שליחה דורשת מפתח API.</p>
+        {/* The chat dock, worn by the assistant with the most on it: an event
+            in the header, what the answer was read from, and a copy row under
+            every answer. The couple's is the same panel with fewer props, and
+            it is mounted by the couple's shell below.
+
+            One of these rather than two. The producer's shell above mounts its
+            own, and a second copy of a fixed button lands on the first pixel
+            for pixel, so the one underneath could not be pressed at all. */}
+        <Panel name="ProducerCopilot" note="the shared chat dock, fully dressed; its button floats in the corner">
+          <p className="text-[13px] text-ink-mute">הכפתור צף בפינת המסך, ומגיע מהמעטפת של המפיק שלמעלה. פותחים אותו ומקבלים את הפתיח וההצעות; תשובה אמיתית דורשת מפתח API.</p>
         </Panel>
 
         <Panel name="Loading · console" note="what a tap on the navigation shows before the server answers">

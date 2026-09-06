@@ -1,4 +1,4 @@
-import type { NoticeCopy, TicketCopy, BookCopy } from './appUi.ts';
+import type { NoticeCopy, TicketCopy, BookCopy, CompanionCopy } from './appUi.ts';
 import type {
   PortalCopy, FilesCopy, SheetsCopy, TasksCopy, MoneyCopy, BoardCopy,
   GuestsCopy, SeatingCopy, DayCopy, ThreadCopy, PartyCopy, ContractCopy, EventFileCopy,
@@ -467,6 +467,23 @@ export const eventFileEn: EventFileCopy = {
     saved: 'Saved',
     emptyHint: 'Empty. You can fill it in here, or ask the couple to fill it in from their own area.',
   },
+};
+
+/* Their producer's voice in English. Same rule as the Hebrew: nothing here
+   may sound like a product, so the title is what it answers rather than what
+   it is. */
+export const companionCopyEn: CompanionCopy = {
+  title: 'Questions about the wedding',
+  sub: 'Answers from your own event details',
+  open: 'Open a conversation',
+  close: 'Close',
+  greeting: 'Ask me what is left for you to do, how many have replied, when the next payment is due, and how the evening runs.',
+  starters: ['What is left for us?', 'How many have replied?', 'When is the next payment?'],
+  placeholder: 'What would you like to know',
+  send: 'Send',
+  thinking: 'Writing',
+  wentWrong: 'Something went wrong at my end. Write to us and we will come back to you.',
+  disclaimer: 'Answers come from your event details. Changes go through us.',
 };
 
 export const noticeCopyEn: NoticeCopy = {

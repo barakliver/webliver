@@ -9,10 +9,11 @@ import { SidebarNav, MobileTabBar, type NavItem } from './AppNav';
 import { Avatar } from './Avatar';
 import { IssueReporter } from './IssueReporter';
 import { ProducerCopilot } from './ProducerCopilot';
+import { CoupleCompanion } from './CoupleCompanion';
 import { QuickJump, type JumpEvent } from './QuickJump';
 import type { JumpRecord } from '@/lib/jump';
 import { cn } from '@/lib/utils';
-import { noticeFor, ticketFor } from '@/content/appUi';
+import { companionFor, noticeFor, ticketFor } from '@/content/appUi';
 import type { Locale } from '@/lib/locale';
 
 /** The couple's two labels in the couple's language. The producer's console
@@ -230,10 +231,19 @@ export function AppShell({
         )}
       />
 
-      {/* The producer's own assistant. Not for a couple: their concierge is
-          the producer, and a second voice in their area would be the
-          platform speaking, which it must not. */}
+      {/* One assistant per person, and they are not the same assistant.
+          The producer's knows the whole business and can be asked to draft
+          things. The couple's knows one event, answers only what their own
+          producer has chosen to show them, and speaks in that producer's
+          name — because in their area there is no other identity, and a
+          second voice there would be the platform talking. */}
       {isProducer && <ProducerCopilot brandName={brand.name} />}
+      {/* A couple, and only a couple. Written as its own condition rather
+          than as the other half of the one above, because that "else" also
+          catches a producer still waiting for approval — and the couple's
+          route refuses anybody who is not a client, so they would get a
+          button that apologises every time it is pressed. */}
+      {account.role === 'client' && <CoupleCompanion copy={companionFor(locale)} />}
     </div>
   );
 }
