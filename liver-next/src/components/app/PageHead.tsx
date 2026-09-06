@@ -1,3 +1,4 @@
+import { LoadTrouble } from '@/components/app/LoadTrouble';
 /**
  * Every screen's first two lines, and the controls that belong beside them.
  *
@@ -17,6 +18,13 @@ export function PageHead({ title, sub, actions, report }: {
   report?: React.ReactNode;
 }) {
   return (
+    <>
+      {/* Above the title rather than beside it. A screen that did not fully
+          load is a fact about everything below, not a note attached to one
+          panel — and it renders nothing at all on the ordinary morning, which
+          is almost every morning. */}
+      <LoadTrouble />
+
     <div className="mb-8 flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
       <div className="min-w-0 flex-1">
         <h1 className="inline-flex items-center gap-2 font-display text-title font-bold text-editorial">
@@ -31,6 +39,7 @@ export function PageHead({ title, sub, actions, report }: {
         </div>
       )}
     </div>
+    </>
   );
 }
 

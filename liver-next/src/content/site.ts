@@ -653,6 +653,9 @@ export const a11yCopy = {
 
 export const appCopy = {
   signOut: 'יציאה',
+  /* Shown above any screen where a read failed, so an empty list stops
+     reading as a fact about the event. */
+  loadTrouble: 'חלק מהמידע במסך הזה לא נטען. יכול להיות שחסרים דברים, אז אל תסתמכו על רשימה ריקה עד שתרעננו.',
   overview2: {
     clear: 'הכל מטופל',
     clearSub: 'אין כרגע שום דבר שממתין להחלטה שלך.',

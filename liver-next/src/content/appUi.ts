@@ -65,6 +65,9 @@ export type AppUi = {
      format a date or a time and a formatter locked to he-IL would print a
      Hebrew month inside an otherwise English panel. */
   locale: Locale;
+  /* Shown above a screen where a read failed, so an empty list stops
+     reading as a fact about the event. */
+  loadTrouble: string;
   portal: PortalCopy; files: FilesCopy; sheets: SheetsCopy;
   tasks: TasksCopy; money: MoneyCopy; board: BoardCopy; book: BookCopy;
   guests: GuestsCopy; seating: SeatingCopy; day: DayCopy;
@@ -74,6 +77,7 @@ export type AppUi = {
 
 export const APP_UI_HE: AppUi = {
   locale: 'he',
+  loadTrouble: appCopy.loadTrouble,
   portal: appCopy.portal, files: appCopy.files, sheets: appCopy.sheets,
   tasks: appCopy.tasks, money: appCopy.money, board: appCopy.board, book: appCopy.book,
   guests: guestsCopy, seating: seatingCopy, day: dayCopy,
@@ -83,6 +87,7 @@ export const APP_UI_HE: AppUi = {
 
 const APP_UI_EN: AppUi = {
   locale: 'en',
+  loadTrouble: 'Some of this screen did not load. Things may be missing, so do not trust an empty list until you refresh.',
   portal: portalEn, files: filesEn, sheets: sheetsEn,
   tasks: tasksEn, money: moneyEn, board: boardEn, book: bookEn,
   guests: guestsEn, seating: seatingEn, day: dayEn,
