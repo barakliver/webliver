@@ -1134,6 +1134,10 @@ export const appCopy = {
     open: 'לוז ליום האירוע',
     owner: 'אחראי',
     pastMidnight: '(אחרי חצות)',
+    /* The call list, on the same sheet as the evening it belongs to. At
+       23:40 the question is never who the caterer is. */
+    contacts: 'טלפונים',
+    noContacts: 'לא נרשמו מספרי טלפון לצוות ולספקים של האירוע הזה.',
   },
 
   /* The one page a supplier actually asks for: how many, what, and when.

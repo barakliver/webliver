@@ -9,6 +9,7 @@ import { BudgetPanel } from '@/components/app/BudgetPanel';
 import { GuestList } from '@/components/app/GuestList';
 import { SeatingPlan } from '@/components/app/SeatingPlan';
 import { DaySchedule } from '@/components/app/DaySchedule';
+import { RunSheet } from '@/components/app/RunSheet';
 import { Thread } from '@/components/app/Thread';
 import { Contracts } from '@/components/app/Contracts';
 import { EventFiles } from '@/components/app/EventFiles';
@@ -221,6 +222,32 @@ export default async function DesignPage() {
 
         <Panel name="SeatingPlan" note="two tables filled, one guest unseated">
           <SeatingPlan clientId={client} tables={fixtureTables} guests={fixtureSeatGuests} />
+        </Panel>
+
+        {/* The document that gets carried, printed. Reachable here at all
+            because it is a component now: it used to be markup inside a page
+            that needed an account and a database, which is why nobody had
+            ever looked at it. */}
+        <Panel name="RunSheet · printed" note="the page somebody holds at eleven at night: big clock, tick boxes, numbers">
+          <RunSheet
+            c={appCopy.runsheet}
+            client={{ display_name: 'נועה ואיתי', venue: 'אחוזת הכפר' }}
+            brand={{ name: 'ברק ליור', tagline: 'הפקת אירועים' }}
+            lines={fixtureDay.map((d) => ({
+              id: d.id, at_time: d.at_time, title: d.title,
+              note: d.note ?? '', owner: d.owner ?? '', audience: d.audience ?? [],
+            }))}
+            contacts={[
+              { id: 'c1', name: 'רונית לוי', role: 'קייטרינג', phone: '052-555-1234', at: '15:00' },
+              { id: 'c2', name: 'אבי כהן', role: 'צילום', phone: '054-555-8877', at: '17:30' },
+              { id: 'c3', name: 'דנה שגב', role: 'תאורה', phone: '050-555-4412', at: '23:30' },
+              { id: 'c4', name: 'יוסי מור', role: 'הגברה', phone: '053-555-9090', at: null },
+            ]}
+            staffVisible
+            dateLabel="שבת, 4 בספטמבר 2026"
+            audienceLabel={(v) => v}
+            printedLabel="4.9.2026"
+          />
         </Panel>
 
         <Panel name="DaySchedule · producer" note="three tracks, key moments, past midnight">
