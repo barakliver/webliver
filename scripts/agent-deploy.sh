@@ -182,9 +182,18 @@ DB_URL="$(grep -E '^DATABASE_URL=' "$ENVFILE" 2>/dev/null | cut -d= -f2- || true
 
 if [ -z "$DB_URL" ]; then
   say "FAIL  DATABASE_URL is not in $ENVFILE, so the schema cannot be applied."
-  say "      Supabase → Project Settings → Database → Connection string (URI)."
+  say "      Run: bash $REPO/scripts/set-db-url.sh"
   say "      Without it this agent would deploy code against yesterday's"
   say "      schema, which is the one failure it exists to prevent. Stopping."
+  exit 1
+fi
+
+# The line above took the first match, so a second one is being ignored — and
+# an unattended thing quietly using the older of two connection strings is
+# worth stopping for rather than guessing about.
+if [ "$(grep -cE '^DATABASE_URL=' "$ENVFILE" 2>/dev/null || true)" -gt 1 ]; then
+  say "FAIL  $ENVFILE has more than one DATABASE_URL line, and the first wins."
+  say "      Run: bash $REPO/scripts/set-db-url.sh   (it replaces all of them)"
   exit 1
 fi
 

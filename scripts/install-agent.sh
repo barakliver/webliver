@@ -39,40 +39,41 @@ if ! command -v psql >/dev/null 2>&1; then
   apt-get update -qq && apt-get install -y -qq postgresql-client
 fi
 
-if ! grep -qE '^DATABASE_URL=' "$ENVFILE" 2>/dev/null; then
+LINES="$(grep -cE '^DATABASE_URL=' "$ENVFILE" 2>/dev/null || true)"
+
+if [ "${LINES:-0}" -eq 0 ]; then
   cat <<'EOF'
 
   DATABASE_URL is not in the environment file, and the agent cannot apply a
   schema without it. It is the one thing nobody can add for you.
 
-  Supabase → Project Settings → Database → Connection string.
+  There is a command that asks for it and writes it, so that nothing in the
+  command itself has to be edited:
 
-  Take the SESSION POOLER one, on port 5432. Not port 6543: that is the
-  transaction pooler, it does not carry the statements pg_dump needs, and a
-  backup is the whole reason this is being asked for. It looks like:
+      bash /root/webliver/scripts/set-db-url.sh
 
-      postgresql://postgres.abcdefgh:PASSWORD@aws-0-eu-central-1.pooler.supabase.com:5432/postgres
+  Then run this installer again.
 
-  Supabase prints it with [YOUR-PASSWORD] where the password goes. That has
-  to be replaced with the real one, brackets and all.
+EOF
+  missing=1
+fi
 
-  Then — printf rather than echo, and note the leading newline. If the file
-  does not already end in one, echo joins this onto the end of the last line
-  and quietly corrupts whichever key was sitting there:
+# ── more than one of them ───────────────────────────────────────────────────
+# This one cost a whole round. Everything that reads this file does
+# `grep '^DATABASE_URL=' | cut -d= -f2-`, which takes the FIRST match — so a
+# corrected line appended under a broken one changes nothing, and the error
+# message stays word for word identical however many times it is fixed. The
+# obvious reading of that is that the fix did not save.
+if [ "${LINES:-0}" -gt 1 ]; then
+  cat <<EOF
 
-      printf '\nDATABASE_URL=PASTE_THE_WHOLE_URI_HERE\n' >> /etc/liver-next.env
-      chmod 600 /etc/liver-next.env
+  There are $LINES DATABASE_URL lines in $ENVFILE, and everything that reads
+  this file uses the first one. So whichever you added most recently is being
+  ignored, and fixing it again by adding another will not change that.
 
-  PASTE_THE_WHOLE_URI_HERE is not part of the command. Replace those words,
-  and nothing else on the line, with the string Supabase gave you — it starts
-  postgresql:// and ends /postgres.
+  This replaces all of them with one:
 
-  Single quotes, so the shell leaves the password alone whatever is in it.
-  Check it landed as its own line without printing the secret:
-
-      grep -c '^DATABASE_URL=' /etc/liver-next.env      # should say 1
-
-  and run this installer again.
+      bash /root/webliver/scripts/set-db-url.sh
 
 EOF
   missing=1
@@ -110,10 +111,10 @@ if [ -n "$bad" ]; then
   echo
   echo "  DATABASE_URL is in $ENVFILE, but $bad."
   echo
-  echo "  Replace that one line — this deletes it and writes a new one:"
+  echo "  This asks for the string and replaces the line — nothing in the"
+  echo "  command has to be edited, which is how the wrong thing got in there:"
   echo
-  echo "      sed -i '/^DATABASE_URL=/d' $ENVFILE"
-  echo "      printf '\\nDATABASE_URL=<the string from Supabase>\\n' >> $ENVFILE"
+  echo "      bash $REPO/scripts/set-db-url.sh"
   echo
   echo "  the timer was NOT enabled. Nothing on the server changed."
   exit 1
