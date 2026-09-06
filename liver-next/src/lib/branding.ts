@@ -1,4 +1,5 @@
 import 'server-only';
+import { cache } from 'react';
 import { headers } from 'next/headers';
 import { supabaseServer } from '@/lib/supabase/server';
 import { supabasePublic } from '@/lib/supabase/public';
@@ -117,7 +118,15 @@ export async function brandFor(account: Account | null): Promise<Brand> {
  * public pages out of static rendering, and the answer does not depend on who
  * is asking — only on which host they asked.
  */
-export async function brandForHost(): Promise<Brand> {
+/**
+ * Memoised for one render, because a single page asks three times.
+ *
+ * The root layout resolves the brand in generateMetadata and again in its own
+ * body, and then the page asks a third time — none of them able to know the
+ * others already had. Each call was a round trip to look up the same host.
+ * One render, one answer; a new request asks again.
+ */
+export const brandForHost = cache(async function brandForHost(): Promise<Brand> {
   const tenant = await hostTenant();
   if (!tenant) return PLATFORM;
 
@@ -136,7 +145,7 @@ export async function brandForHost(): Promise<Brand> {
     console.error('[brand] host lookup threw', e);
     return PLATFORM;
   }
-}
+})
 
 /** The custom properties that repaint the accent, as a style attribute. */
 export const brandStyle = (b: Brand) => accentVars(b.accent) as React.CSSProperties;
