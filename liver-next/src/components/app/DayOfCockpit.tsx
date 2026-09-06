@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useActionState, useEffect, useState } from 'react';
 import { useScreenAwake } from '@/lib/awake';
-import { Check, Megaphone, MessageCircle, Phone, Sun, Undo2, UserCheck, X } from 'lucide-react';
+import { Check, Loader2, Megaphone, MessageCircle, Phone, Sun, Undo2, UserCheck, X } from 'lucide-react';
 import { appCopy } from '@/content/site';
-import { markDayItem } from '@/app/actions/day';
-import { markArrival } from '@/app/actions/arrivals';
+import { markDayItem, type DayResult } from '@/app/actions/day';
+import { markArrival, type ArrivalResult } from '@/app/actions/arrivals';
 import { hhmm, humanSpan } from '@/lib/runsheet';
 import {
   placeLines, focus, relative, callSheet, dueSoon, isToday, pendingAlert, missing, headcount,
@@ -170,35 +170,51 @@ function Headline({ label, placed, fallback, tone }: {
 }
 
 /** One line, sized for a thumb. The tick is the whole row's business, so it is
- *  a 44px control and not a checkbox somebody has to aim at in the dark. */
+ *  a 44px control and not a checkbox somebody has to aim at in the dark.
+ *
+ *  Three states rather than one, and the two new ones are the point. A tap on
+ *  a hall's wifi takes seconds, and for those seconds the old row looked
+ *  exactly like a row that had been ignored — so the tap gets an immediate
+ *  answer ("שומר") that is honest rather than optimistic: a tick drawn green
+ *  before the server agreed is the same lie in a nicer colour, and this is the
+ *  screen where somebody walks away on the strength of it. And a write that
+ *  failed says so and stays saying so, until it is tried again. */
 function Row({ p, clientId }: { p: Placed; clientId: string }) {
   const done = p.state === 'done';
   const late = p.state === 'late';
   const isNow = p.state === 'now';
 
+  const [tick, tickAction, ticking] = useActionState<DayResult | null, FormData>(markDayItem, null);
+  const failed = tick?.ok === false;
+
   return (
     <li
       className={cn(
         'flex items-start gap-3 rounded-xl2 border p-3 transition-colors',
-        isNow ? 'border-accent bg-accent-wash'
+        failed ? 'border-bad bg-bad-wash'
+          : isNow ? 'border-accent bg-accent-wash'
           : late ? 'border-bad/30 bg-bad-wash'
           : done ? 'border-line bg-surface-100'
           : 'border-line bg-card',
       )}
     >
-      <form action={markDayItem}>
+      <form action={tickAction}>
         <input type="hidden" name="item_id" value={p.line.id} />
         <input type="hidden" name="client_id" value={clientId} />
         <input type="hidden" name="undo" value={done ? '1' : '0'} />
         <button
           type="submit"
+          disabled={ticking}
           aria-label={done ? c.untick : c.tick}
           className={cn(
             'grid h-11 w-11 place-items-center rounded-full border transition-colors',
             done ? 'border-ok bg-ok text-surface' : 'border-line-strong text-ink-mute hover:text-ink',
           )}
         >
-          {done ? <Undo2 size={18} strokeWidth={1.5} aria-hidden /> : <Check size={18} strokeWidth={1.5} aria-hidden />}
+          {ticking
+            ? <Loader2 size={18} strokeWidth={1.5} aria-hidden className="animate-spin" />
+            : done ? <Undo2 size={18} strokeWidth={1.5} aria-hidden />
+            : <Check size={18} strokeWidth={1.5} aria-hidden />}
         </button>
       </form>
 
@@ -214,6 +230,13 @@ function Row({ p, clientId }: { p: Placed; clientId: string }) {
         </div>
         {done && p.line.done_at && (
           <div className="mt-0.5 text-[12.5px] text-ink-mute">{c.doneAt(timeOf(p.line.done_at))}</div>
+        )}
+        {/* Announced as well as drawn, and it stays until the next attempt.
+            A message that fades is one somebody glancing at a phone between
+            two conversations will never once see. */}
+        {ticking && <div className="mt-0.5 text-[12.5px] text-ink-mute">{c.saving}</div>}
+        {failed && (
+          <div role="status" className="mt-1 text-[13px] font-medium text-bad">{c.notSaved}</div>
         )}
       </div>
     </li>
@@ -236,80 +259,100 @@ function People({ sheet, clientId }: { sheet: Caller[]; clientId: string }) {
       <p className="mt-1 text-[13.5px] text-ink-soft">{c.people.sub}</p>
 
       <ul className="mt-4 list-none space-y-2 p-0">
-        {sheet.map((person) => {
-          const e164 = normalizePhone(person.phone);
-          const here = !!person.arrived_at;
-          return (
-            <li
-              key={`${person.kind}-${person.id}`}
-              className={cn(
-                'rounded-xl2 border p-3 transition-colors',
-                here ? 'border-ok/30 bg-ok-wash' : 'border-line',
-              )}
-            >
-              <div className="flex items-start gap-3">
-                {/* The check-in, first and thumb-sized. Between four and six
-                    this is the only control on the screen anybody touches. */}
-                <form action={markArrival}>
-                  <input type="hidden" name="kind" value={person.kind} />
-                  <input type="hidden" name="id" value={person.id} />
-                  <input type="hidden" name="client_id" value={clientId} />
-                  <input type="hidden" name="undo" value={here ? '1' : '0'} />
-                  <button
-                    type="submit"
-                    aria-label={here ? c.people.undo : c.people.here}
-                    className={cn(
-                      'grid h-11 w-11 place-items-center rounded-full border transition-colors',
-                      here ? 'border-ok bg-ok text-surface' : 'border-line-strong text-ink-mute hover:text-ink',
-                    )}
-                  >
-                    {here ? <Undo2 size={18} strokeWidth={1.5} aria-hidden /> : <UserCheck size={18} strokeWidth={1.5} aria-hidden />}
-                  </button>
-                </form>
-
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-                    <span className="text-[15px] font-semibold tabular-nums text-ink">
-                      {person.call_time ? hhmm(person.call_time) : c.people.noTime}
-                    </span>
-                    <span className="text-[15px] text-ink">{person.name}</span>
-                    <span className="chip-mute">{person.kind === 'crew' ? c.people.crew : c.people.vendor}</span>
-                    {person.role && <span className="text-[13.5px] text-ink-soft">{person.role}</span>}
-                    {here && <span className="chip-ok">{c.people.arrived}</span>}
-                  </div>
-
-                  {here && person.arrived_at && (
-                    <div className="mt-0.5 text-[12.5px] text-ink-mute">
-                      {c.people.arrivedAt(timeOf(person.arrived_at))}
-                    </div>
-                  )}
-
-                  {e164 && (
-                    /* Two ways to reach one person, because on the evening one
-                       of them is always the wrong one: a supplier mid-set does
-                       not pick up, and a driver on the road does not read. */
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      <a href={`tel:${e164}`} className="btn-ghost px-4 text-[14px]">
-                        <Phone size={16} strokeWidth={1.5} aria-hidden /> {c.people.call}
-                        <span className="text-ink-mute tabular-nums">{displayPhone(e164)}</span>
-                      </a>
-                      <a
-                        href={`https://wa.me/${e164.replace('+', '')}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="btn-ghost px-4 text-[14px]"
-                      >
-                        <MessageCircle size={16} strokeWidth={1.5} aria-hidden /> {c.people.whatsapp}
-                      </a>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </li>
-          );
-        })}
+        {sheet.map((person) => (
+          <PersonRow key={`${person.kind}-${person.id}`} person={person} clientId={clientId} />
+        ))}
       </ul>
     </section>
+  );
+}
+
+/** Its own component rather than a block inside the loop, because the check-in
+ *  now holds state — whether this person's write is in flight, and whether it
+ *  failed — and one row's failure belongs to that row and to nobody else. */
+function PersonRow({ person, clientId }: { person: Caller; clientId: string }) {
+  const e164 = normalizePhone(person.phone);
+  const here = !!person.arrived_at;
+
+  const [mark, markAction, marking] = useActionState<ArrivalResult | null, FormData>(markArrival, null);
+  const failed = mark?.ok === false;
+
+  return (
+    <li
+      className={cn(
+        'rounded-xl2 border p-3 transition-colors',
+        failed ? 'border-bad bg-bad-wash' : here ? 'border-ok/30 bg-ok-wash' : 'border-line',
+      )}
+    >
+      <div className="flex items-start gap-3">
+        {/* The check-in, first and thumb-sized. Between four and six this is
+            the only control on the screen anybody touches. */}
+        <form action={markAction}>
+          <input type="hidden" name="kind" value={person.kind} />
+          <input type="hidden" name="id" value={person.id} />
+          <input type="hidden" name="client_id" value={clientId} />
+          <input type="hidden" name="undo" value={here ? '1' : '0'} />
+          <button
+            type="submit"
+            disabled={marking}
+            aria-label={here ? c.people.undo : c.people.here}
+            className={cn(
+              'grid h-11 w-11 place-items-center rounded-full border transition-colors',
+              here ? 'border-ok bg-ok text-surface' : 'border-line-strong text-ink-mute hover:text-ink',
+            )}
+          >
+            {marking
+              ? <Loader2 size={18} strokeWidth={1.5} aria-hidden className="animate-spin" />
+              : here ? <Undo2 size={18} strokeWidth={1.5} aria-hidden />
+              : <UserCheck size={18} strokeWidth={1.5} aria-hidden />}
+          </button>
+        </form>
+
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+            <span className="text-[15px] font-semibold tabular-nums text-ink">
+              {person.call_time ? hhmm(person.call_time) : c.people.noTime}
+            </span>
+            <span className="text-[15px] text-ink">{person.name}</span>
+            <span className="chip-mute">{person.kind === 'crew' ? c.people.crew : c.people.vendor}</span>
+            {person.role && <span className="text-[13.5px] text-ink-soft">{person.role}</span>}
+            {here && <span className="chip-ok">{c.people.arrived}</span>}
+          </div>
+
+          {here && person.arrived_at && (
+            <div className="mt-0.5 text-[12.5px] text-ink-mute">
+              {c.people.arrivedAt(timeOf(person.arrived_at))}
+            </div>
+          )}
+
+          {/* The headcount above is built from these, so a check-in that did
+              not save is a number the producer is about to act on. */}
+          {failed && (
+            <div role="status" className="mt-1 text-[13px] font-medium text-bad">{c.people.notSaved}</div>
+          )}
+
+          {e164 && (
+            /* Two ways to reach one person, because on the evening one of them
+               is always the wrong one: a supplier mid-set does not pick up,
+               and a driver on the road does not read. */
+            <div className="mt-2 flex flex-wrap gap-2">
+              <a href={`tel:${e164}`} className="btn-ghost px-4 text-[14px]">
+                <Phone size={16} strokeWidth={1.5} aria-hidden /> {c.people.call}
+                <span className="text-ink-mute tabular-nums">{displayPhone(e164)}</span>
+              </a>
+              <a
+                href={`https://wa.me/${e164.replace('+', '')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-ghost px-4 text-[14px]"
+              >
+                <MessageCircle size={16} strokeWidth={1.5} aria-hidden /> {c.people.whatsapp}
+              </a>
+            </div>
+          )}
+        </div>
+      </div>
+    </li>
   );
 }
 

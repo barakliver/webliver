@@ -791,6 +791,11 @@ export const appCopy = {
     tick: 'סימון כבוצע',
     untick: 'ביטול הסימון',
     doneAt: (t: string) => `סומן ב-${t}`,
+    /* Said out loud, because the alternative is the row going back to how it
+       was with no explanation. In a hall, on the hall's wifi, that reads as an
+       app that ignored the tap. */
+    saving: 'שומר',
+    notSaved: 'לא נשמר. אפשר לנסות שוב.',
     schedule: 'כל הלוז',
     openCount: (n: number) => (n === 1 ? 'שורה אחת פתוחה' : `${n} שורות פתוחות`),
 
@@ -808,6 +813,7 @@ export const appCopy = {
       arrived: 'כאן',
       arrivedAt: (t: string) => `הגיע ב-${t}`,
       undo: 'ביטול',
+      notSaved: 'לא נשמר. אפשר לנסות שוב.',
       missing: 'טרם הגיעו',
       headcount: (here: number, of: number) => `${here} מתוך ${of} כאן`,
     },

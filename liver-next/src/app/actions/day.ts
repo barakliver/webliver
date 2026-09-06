@@ -192,12 +192,28 @@ export async function renameTracks(_prev: DayResult | null, form: FormData): Pro
  * Untick is a real operation and not an oversight. A tick during a wedding is
  * made one-handed while walking, and the first thing anybody does after
  * hitting the wrong row is look for the way back.
+ *
+ * It answers, where it used to return nothing.
+ *
+ * That was the worst silence left in this product, and it was in the worst
+ * possible place. The old version logged the failure to a server log nobody is
+ * reading at half past eleven at night, revalidated anyway, and let the row
+ * come back exactly as it went: unticked, unexplained. A hall's wifi is the
+ * one network this screen is guaranteed to be on, so the failure is not
+ * hypothetical — it is the expected case — and the producer's reading of it is
+ * "I pressed it and nothing happened", which is indistinguishable from a
+ * broken app and is answered by pressing it again.
+ *
+ * So the result comes back and the screen says so. And the revalidation now
+ * happens only when something actually changed: refreshing the page around a
+ * write that failed is what made the row snap back into place and take the
+ * evidence with it.
  */
-export async function markDayItem(form: FormData): Promise<void> {
+export async function markDayItem(_prev: DayResult | null, form: FormData): Promise<DayResult> {
   const id = String(form.get('item_id') ?? '');
   const clientId = String(form.get('client_id') ?? '');
   const undo = String(form.get('undo') ?? '') === '1';
-  if (!id || !clientId) return;
+  if (!id || !clientId) return { ok: false, error: 'חסר מזהה שורה' };
 
   const sb = await supabaseServer();
   const { error } = await sb
@@ -205,8 +221,13 @@ export async function markDayItem(form: FormData): Promise<void> {
     .update({ done_at: undo ? null : new Date().toISOString() })
     .eq('id', id);
 
-  if (error) console.error('[day] tick failed', error);
+  if (error) {
+    console.error('[day] tick failed', error);
+    return { ok: false, error: 'לא נשמר' };
+  }
+
   touch(clientId);
+  return { ok: true };
 }
 
 /**

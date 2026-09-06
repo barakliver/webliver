@@ -168,6 +168,26 @@ function checkBuiltCss() {
 
   record(has('--line-control'), 'control edges have their own token');
 
+  /* Printing, which is the one thing in this product that no check could see.
+     Four documents — the run sheet, the numbers sheet, the production book and
+     the offer — printed a blank page for as long as they had existed, and
+     every check passed the whole time: a page that prints nothing answers 200,
+     draws hundreds of characters and looks perfect on a screen. The stylesheet
+     is invisible until somebody is standing at a printer, which is the worst
+     possible time to find out.
+
+     `check-print.mjs` guards the source. These guard the build, which is the
+     thing the browser is actually handed. */
+  record(/\.print-doc/.test(css), 'the printable documents kept their class');
+  record(
+    !/body\s*>\s*\*\s*\{[^}]*display\s*:\s*none/.test(css),
+    'nothing hides the page it is being asked to print',
+  );
+  record(
+    /@media\s+print/.test(css) && /visibility\s*:\s*hidden/.test(css),
+    'printing hides by visibility, so a document nested in the shell survives',
+  );
+
   /* The face, which is the one thing about this design that cannot be checked
      by looking at a screenshot on a phone. This assertion has flipped once:
      the handoff file set everything in Heebo and for a while this checker
@@ -350,6 +370,22 @@ async function main() {
     record(false, 'the copilot refuses a stranger', e.message);
   }
 
+  /* The couple's assistant, which is stricter than the producer's: it answers
+     couples and nobody else, so a stranger and a producer both get the same
+     refusal. Checked from out here because the gate is the whole feature — an
+     assistant that answered without a session would be reading somebody's
+     wedding to whoever asked. */
+  try {
+    const res = await fetch(`${base}/api/companion`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ messages: [{ role: 'user', content: 'בדיקה' }] }),
+    });
+    record(res.status === 403, "the couple's assistant refuses a stranger", `→ ${res.status}`);
+  } catch (e) {
+    record(false, "the couple's assistant refuses a stranger", e.message);
+  }
+
   /* Linked from every invitation, so it has to work for somebody who has
      never signed in and may never sign in on the device they are holding. */
   await page('/auth/callback?email=a%40b.co', 'a spent link lands somewhere useful', { expect: [307, 308] });
@@ -507,6 +543,9 @@ async function main() {
   for (const [path, label] of [
     ['/', 'the home page draws something'],
     ['/store', 'the shop draws something'],
+    /* The page this platform is sold from. Public, and the only screen here
+       whose reader is another producer rather than a couple. */
+    ['/eventos', 'the platform page draws something'],
     ['/login', 'sign in draws something'],
     ['/privacy', 'the privacy policy draws something'],
     ['/terms', 'the terms draw something'],
