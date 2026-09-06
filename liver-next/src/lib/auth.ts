@@ -1,4 +1,5 @@
 import 'server-only';
+import { cache } from 'react';
 import { redirect } from 'next/navigation';
 import { supabaseServer } from '@/lib/supabase/server';
 
@@ -22,14 +23,28 @@ export type Account = {
     whatsapp: string; slug: string | null; domain: string | null;
     iconUrl: string | null; coverUrl: string | null;
   } | null;
-  /** workspaces this account may open: owned ones for a producer, invited ones
-   *  for a couple. The root admin sees every workspace. */
-  clientIds: string[];
 };
 
-/** The signed-in account, or null. Reads through row level security, so the
- *  answer is the database's, not the browser's. */
-export async function currentAccount(): Promise<Account | null> {
+/**
+ * The signed-in account, or null. Reads through row level security, so the
+ * answer is the database's, not the browser's.
+ *
+ * Memoised for the length of one render, which is what `cache` from React
+ * does and what the Next documentation prescribes for exactly this function.
+ * It is not an optimisation looking for a problem: rendering one signed-in
+ * screen called this four times before this line existed — generateMetadata
+ * and generateViewport each resolve the brand from it, the app layout needs
+ * the account, and then the page's own guard asks again — and each call is
+ * three round trips to a database on the other side of a network, for the
+ * session, the profile and the producer. Twelve where three will do, on
+ * every screen, on a machine with a gigabyte of memory.
+ *
+ * The memo lives for one render pass and no longer. A server action is a
+ * separate pass and asks again, so nothing here can serve a role or an
+ * approval status that was changed a moment ago — which matters, because the
+ * value being cached is the one every authorisation decision is made from.
+ */
+export const currentAccount = cache(async function currentAccount(): Promise<Account | null> {
   const sb = await supabaseServer();
   const { data: { user } } = await sb.auth.getUser();
   if (!user) return null;
@@ -57,8 +72,6 @@ export async function currentAccount(): Promise<Account | null> {
     .limit(1)
     .maybeSingle();
 
-  const { data: clients } = await sb.from('clients').select('id');
-
   return {
     id: user.id,
     email: profile?.email ?? user.email ?? '',
@@ -80,9 +93,8 @@ export async function currentAccount(): Promise<Account | null> {
           coverUrl: producer.cover_url ?? null,
         }
       : null,
-    clientIds: (clients ?? []).map((c) => c.id),
   };
-}
+})
 
 export async function requireAccount(): Promise<Account> {
   const a = await currentAccount();

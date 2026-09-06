@@ -365,7 +365,7 @@ export default async function DesignPage() {
             <AppShell
               account={{
                 id: FIXTURE_VIEWER, email: 'producer@example.com', fullName: 'הפקות הצפון', avatarUrl: null,
-                role: 'super_admin', clientIds: [],
+                role: 'super_admin',
                 producer: {
                   id: 'p1', brandName: 'הפקות הצפון', status: 'approved', accent: 'slate', logoUrl: null,
                   tagline: 'הפקת אירועים', whatsapp: '', slug: null, domain: null, iconUrl: null, coverUrl: null,
