@@ -76,6 +76,34 @@ case "$URI" in
             exit 1 ;;
 esac
 
+# ── a password with punctuation in it ───────────────────────────────────────
+# The password lives inside a URI, so @ / : ? # % in it are not characters,
+# they are syntax. An @ in the password gives the string two of them and the
+# host is then read from the wrong side of the last one: it connects to
+# nothing, or to something unexpected, with an error that says nothing about
+# the password. Nobody guesses this from the message.
+#
+# Not repaired automatically. Percent-encoding somebody's password on their
+# behalf and being wrong about it is a worse failure than refusing, and the
+# real fix is thirty seconds long: reset the password and let Supabase
+# generate one, which is letters and digits only.
+if [ "$(printf '%s' "$URI" | tr -cd '@' | wc -c)" -gt 1 ]; then
+  echo "  Not written: there is more than one @ in that string, which almost"
+  echo "  always means the password itself contains one. Inside a URI that is"
+  echo "  syntax rather than a character, and the host is then read from the"
+  echo "  wrong place."
+  echo
+  echo "  Supabase → Project Settings → Database → Reset database password,"
+  echo "  and press Generate a password. Those are letters and digits only."
+  exit 1
+fi
+
+case "$URI" in
+  *' '*) echo "  Not written: there is a space in that string, so part of it is missing"
+         echo "  or something extra came along with the paste."
+         exit 1 ;;
+esac
+
 # One line, not two. Every reader of this file takes the first match.
 sed -i '/^DATABASE_URL=/d' "$ENVFILE"
 printf '\nDATABASE_URL=%s\n' "$URI" >> "$ENVFILE"
