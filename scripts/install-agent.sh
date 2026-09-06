@@ -4,9 +4,12 @@
 #
 #      bash /root/webliver/scripts/install-agent.sh
 #
-#  After this, pushing a tag named `release-something` puts that commit live
-#  within five minutes, and nothing else does. Pushing to the branch all day
-#  changes nothing.
+#  After this, moving the `release` branch onto a commit puts that commit live
+#  within five minutes, and nothing else does. Pushing to design-overhaul all
+#  day changes nothing. A tag named `release-something` still works and is read
+#  only when the branch does not exist — the branch is the marker, because the
+#  assistant that writes the code can push a branch and cannot push a tag, and
+#  a tag-only marker meant every release still needed a person at a keyboard.
 #
 #  A timer rather than a webhook. A webhook needs an open port, a shared
 #  secret, and something listening on a machine with a gigabyte of memory; a
@@ -212,8 +215,8 @@ systemctl enable --now liver-agent.timer
 echo
 echo "the agent is running."
 echo
-echo "  it checks every five minutes and does nothing unless a tag matching"
-echo "  release-* points at a commit it has not deployed yet."
+echo "  it checks every five minutes and does nothing unless the release branch"
+echo "  points at a commit it has not deployed yet."
 echo
 echo "  watch it:   journalctl -u liver-agent -f"
 echo "  its log:    tail -f /var/lib/liver-agent/agent.log"
