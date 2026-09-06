@@ -57,6 +57,8 @@ import {
 } from '@/content/fixtures';
 import { NumbersSheet } from '@/components/app/NumbersSheet';
 import { GuestSiteView } from '@/components/guest/GuestSiteView';
+import { RsvpForm } from '@/app/rsvp/[token]/RsvpForm';
+import { rsvpFor } from '@/content/ui';
 import { GuestSiteLink } from '@/components/app/GuestSiteLink';
 import { GuestSiteCard } from '@/components/app/GuestSiteCard';
 import { guestSiteFor } from '@/content/ui';
@@ -459,6 +461,24 @@ export default async function DesignPage() {
             day={fixtureSheetMoments}
             arrivals={fixtureSheetArrivals}
             brand={{ name: 'הפקות הצפון', tagline: 'הפקת אירועים' }}
+          />
+        </Panel>
+
+        {/* The one thing a guest is ever asked to fill in. Two hundred people
+            per wedding touch this and nobody had rendered it. */}
+        <Panel name="RsvpForm · not yet answered" note="the choice, then the questions that only make sense after it">
+          <RsvpForm
+            token="demo"
+            initial={{ status: '', partySize: 1, diet: 'none', note: '', responded: false }}
+            copy={rsvpFor('he')}
+          />
+        </Panel>
+
+        <Panel name="RsvpForm · already replied" note="a guest coming back to change their answer">
+          <RsvpForm
+            token="demo"
+            initial={{ status: 'attending', partySize: 3, diet: 'vegan', note: 'נגיע קצת אחרי החופה', responded: true }}
+            copy={rsvpFor('he')}
           />
         </Panel>
 

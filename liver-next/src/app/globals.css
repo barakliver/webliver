@@ -243,6 +243,18 @@
     outline-offset: 2px;
     border-radius: 8px;
   }
+
+  /* A choice whose real control is visually hidden.
+     The RSVP card is a styled <label> wrapping an sr-only radio, which is the
+     right way to build it — the radio carries the state and the semantics, and
+     the card carries the design. It also means the focus ring lands on a one
+     pixel box nobody can see: measured at 1×1 with a 2px outline, on the only
+     control every guest at a wedding has to use. The ring is put back on the
+     thing that is actually on the screen. */
+  label:has(> input.sr-only:focus-visible) {
+    outline: 2px solid theme('colors.accent.DEFAULT');
+    outline-offset: 2px;
+  }
 }
 
 @layer components {
