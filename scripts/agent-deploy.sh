@@ -32,12 +32,19 @@
 #    2. Backs up the database before touching the schema. This is the step
 #       that exists because somebody said, in capitals, that a version update
 #       must never destroy their data.
-#    3. Applies the schema, then the code. That order is what makes a rollback
-#       possible at all: setup.sql only ever adds — every statement in it is
-#       `if not exists` or catches `duplicate_object` — so a newer schema
-#       under older code is a schema with columns nobody reads yet, which is
-#       harmless. The reverse is not: older schema under newer code is a
-#       screen asking for a column that is not there.
+#    3. Levels the schema with sync.sql, then applies whatever migrations the
+#       release itself adds, then the code. Levelling on every release rather
+#       than only applying what is new is the lesson of a live database that
+#       had silently never had migration 0036: opening an event failed for
+#       weeks and nothing named the missing piece. sync.sql is every
+#       migration's DDL and none of their data statements, so it can add a
+#       column or restore a policy and cannot change a row — asserted by
+#       `npm run check` against a real Postgres holding a real wedding.
+#
+#       Schema before code, always. Both files only ever add, so a newer
+#       schema under older code is a schema with columns nobody reads yet,
+#       which is harmless. The reverse is not: older schema under newer code
+#       is a screen asking for a column that is not there.
 #    4. Checks that every screen still draws something, and if it does not,
 #       puts the previous release back without being asked.
 #
@@ -251,6 +258,36 @@ find "$BACKUP_DIR" -name 'before-*.sql.gz' -mtime +14 -delete 2>/dev/null || tru
 OLD_TAG="$(cat "$DEPLOYED" 2>/dev/null || echo '')"
 MIGDIR="liver-next/supabase/migrations"
 
+# ── first, level the schema ─────────────────────────────────────────────────
+# sync.sql is every migration's DDL and none of their data statements. Running
+# it here, on every release, is what stops a database quietly drifting behind
+# the code — which is not a hypothetical: 0036 had never been applied to the
+# live database, opening an event failed with a row level security refusal for
+# weeks, and nothing anywhere named the missing migration. Applying only what a
+# release adds cannot repair that, because the gap predates the release.
+#
+# It is safe to run over live data, and that is asserted rather than believed:
+# `npm run check` stands a real Postgres up, puts a wedding in it with its
+# payment, its schedule and a lead, runs this file over it twice, and compares
+# every value including the guest token. Three separate mutations of the file
+# were put back to prove the test can fail.
+#
+# It only ever adds. A missing column, a policy that was never applied, a
+# function replaced with its current version.
+if [ -f "$APP/supabase/sync.sql" ]; then
+  say "levelling the schema"
+  if ! psql --quiet --no-psqlrc -v ON_ERROR_STOP=1 "$DB_URL" -f "$APP/supabase/sync.sql" >>"$LOG" 2>&1; then
+    say "FAIL  the schema could not be levelled. Nothing was deployed."
+    say "      No row is changed by that file, so the data is as it was."
+    say "      See $LOG."
+    git -C "$REPO" checkout --quiet "$BRANCH" || true
+    exit 1
+  fi
+  say "schema levelled"
+else
+  say "note: this release predates sync.sql, so the schema was not levelled"
+fi
+
 if [ -z "$OLD_TAG" ] || ! git -C "$REPO" cat-file -e "${OLD_TAG}^{commit}" 2>/dev/null; then
   # No record of what is live means no way to work out what is new. Applying
   # the whole history instead is what this change exists to stop doing, so
@@ -274,10 +311,12 @@ else
 fi
 
 if [ -z "$NEW_MIGS" ]; then
-  say "no new migrations in this release; the schema is left alone"
+  say "no new migrations in this release; the levelling above was all of it"
 else
   COUNT="$(printf '%s\n' "$NEW_MIGS" | grep -c . || true)"
-  say "applying $COUNT new migration(s)"
+  # Their DDL is already in from sync.sql; this is for the one-time data
+  # each of them carries — a backfill, a seeded row — which sync.sql strips.
+  say "applying $COUNT new migration(s) for the data they carry"
   # In order. They are numbered, and a later one can depend on an earlier one.
   while read -r f; do
     [ -n "$f" ] || continue
