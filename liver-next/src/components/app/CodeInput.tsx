@@ -98,7 +98,11 @@ export function CodeInput({ name, label, length }: {
                  cell holds a digit, which is the only feedback there is now
                  that the fill and the focus ring are gone. */
               className={[
-                'rounded-xl2 border-0 border-b bg-transparent p-0 text-center tabular-nums',
+                /* No radius. It is a rule under a digit, and a 14px corner on
+                   a 38px cell with only a bottom border draws a shallow bowl
+                   rather than a line — which is what it had been drawing since
+                   this stopped being a box and nobody had looked at it. */
+                'border-0 border-b bg-transparent p-0 text-center tabular-nums',
                 'font-display font-semibold text-ink outline-none',
                 'transition-colors duration-300 ease-out',
                 d ? 'border-b-2 border-accent-line' : 'border-b border-line-strong',

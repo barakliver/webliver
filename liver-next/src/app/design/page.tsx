@@ -84,6 +84,24 @@ import { LabelToolbar } from '@/components/app/LabelToolbar';
 import { EventTagPicker } from '@/components/app/EventTagPicker';
 import { accentByKey } from '@/content/brand';
 import type { Account } from '@/lib/auth';
+import { PortalSummary, summaryRows } from '@/components/app/PortalSummary';
+import { PortalActions } from '@/components/app/PortalActions';
+import { EventTabs } from '@/components/app/EventTabs';
+import { EventDetails } from '@/components/app/EventDetails';
+import { EventVendors } from '@/components/app/EventVendors';
+import { FeatureFlags } from '@/components/app/FeatureFlags';
+import { SiteEditor } from '@/components/app/SiteEditor';
+import { SopBook } from '@/components/app/SopBook';
+import { MediaVault } from '@/components/app/MediaVault';
+import { StoreProducts } from '@/components/app/StoreProducts';
+import { GuestImport } from '@/components/app/GuestImport';
+import { ReceiptScan } from '@/components/app/ReceiptScan';
+import { CodeInput } from '@/components/app/CodeInput';
+import { SignLink } from '@/components/app/SignLink';
+import { ApplyTemplate } from '@/components/app/ApplyTemplate';
+import { EventTemplate } from '@/components/app/EventTemplate';
+import { CoupleCompanion } from '@/components/app/CoupleCompanion';
+import { companionFor } from '@/content/appUi';
 import ConsoleLoading from '@/app/app/loading';
 import EventLoading from '@/app/app/clients/[id]/loading';
 import PortalLoading from '@/app/app/portal/loading';
@@ -771,6 +789,132 @@ export default async function DesignPage() {
 
         <Panel name="GuideBook · producer" note="the console's book, Hebrew only like the console">
           <GuideBookView book={producerGuide} c={guideUiFor('he')} />
+        </Panel>
+
+        {/* ── the panels that had never been looked at ─────────────────────
+            Two thirds of this file's components were here and a third were
+            not, and nothing said so. Every bug this harness has ever caught
+            was in something somebody thought to add; the ones nobody thought
+            to add were the ones nobody could see. */}
+
+        <Panel name="PortalSummary" note="the four numbers a couple opens the app for, one closed module hidden">
+          <div className="max-w-2xl">
+            <PortalSummary
+              label={ui.portal.title}
+              rows={summaryRows({
+                budget: 148000, attending: 96, invited: 180, saved: 12, vendors: 7,
+                can: (key) => key !== 'seating',
+                c: ui.portal,
+              })}
+            />
+          </div>
+        </Panel>
+
+        <Panel name="EventTabs" note="fourteen sections on a phone: one row that scrolls, cut off on purpose">
+          <EventTabs clientId={client} active="prep" counts={{ tasks: 4, guests: 180, money: 2 }} />
+        </Panel>
+
+        <Panel name="EventDetails" note="the event's own facts, with the enquiry's contact carried across">
+          <EventDetails event={{
+            id: client, display_name: 'נועה ואיתי', kind: 'wedding',
+            event_date: '2026-12-05', venue: 'אחוזת הכפר', guest_estimate: 180,
+            contact_email: 'noa@example.com', contact_phone: '0521234567',
+          }} />
+        </Panel>
+
+        <Panel name="EventVendors" note="the suppliers on one event, and the directory they are picked from">
+          <EventVendors
+            clientId={client}
+            vendors={[
+              { id: 'ev1', vendor_id: 'v1', name: 'סטודיו לביא', category: 'צילום', phone: '0521111111', status: 'booked', call_time: '15:30', notes: 'מגיע עם שני צלמים' },
+              { id: 'ev2', vendor_id: null, name: 'להקת שדות', category: 'מוזיקה', phone: '0522222222', status: 'shortlist', call_time: null, notes: '' },
+            ]}
+            directory={fixtureVendors.map((v) => ({ id: v.id, name: v.name, category: v.category, phone: v.phone }))}
+          />
+        </Panel>
+
+        <Panel name="ApplyTemplate" note="a template onto an event that has a date, so the offsets mean something">
+          <div className="max-w-xl"><ApplyTemplate clientId={client} templates={fixtureTemplates} hasDate /></div>
+        </Panel>
+
+        <Panel name="EventTemplate" note="saving this event's own plan back as a template">
+          <div className="max-w-xl"><EventTemplate clientId={client} /></div>
+        </Panel>
+
+        <Panel name="GuestImport" note="a guest list pasted out of somebody's mother's Word document">
+          <div className="max-w-2xl"><GuestImport clientId={client} /></div>
+        </Panel>
+
+        <Panel name="MediaVault · client" note="the same pictures the couple sees: no manage mode, no delete">
+          <MediaVault clientId={client} photos={fixtureMedia} viewer="client" />
+        </Panel>
+
+        <Panel name="ReceiptScan" note="a photograph of a receipt becoming a budget line">
+          <div className="max-w-md"><ReceiptScan clientId={client} formId="design-receipt" /></div>
+        </Panel>
+
+        <Panel name="SignLink" note="the link that lets one side sign without an account">
+          <div className="max-w-md">
+            <SignLink contractId="00000000-0000-4000-8000-0000000000c1" clientId={client} party="נועה" />
+          </div>
+        </Panel>
+
+        <Panel name="CodeInput" note="six boxes for a sign-in code, one caret, paste lands in all of them">
+          <div className="max-w-sm"><CodeInput name="code" label="הקוד שנשלח" length={6} /></div>
+        </Panel>
+
+        <Panel name="FeatureFlags" note="which modules each kind of couple may open; two axes, not one switch">
+          <div className="max-w-xl">
+            <FeatureFlags flags={[
+              { key: 'budget', label: 'תקציב', diy: true, managed: true },
+              { key: 'guests', label: 'אורחים ו-RSVP', diy: true, managed: true },
+              { key: 'messages', label: 'הודעות עם המפיק', diy: false, managed: true },
+              { key: 'prep', label: 'פנים והשראה', diy: true, managed: true },
+            ]} />
+          </div>
+        </Panel>
+
+        <Panel name="SiteEditor" note="the public site's words, with one field already overridden">
+          <div className="max-w-2xl">
+            <SiteEditor
+              values={{ 'hero.title': 'הפקות ליאור', 'hero.sub': 'אירועים שנזכרים', 'contact.phone': '050-0000000' }}
+              overridden={new Set(['hero.sub'])}
+            />
+          </div>
+        </Panel>
+
+        <Panel name="StoreProducts" note="what the producer sells, one item switched off">
+          <StoreProducts
+            producerId="00000000-0000-4000-8000-00000000000f"
+            products={[
+              { id: 'p1', name: 'ליווי מלא', blurb: 'מהפגישה הראשונה עד הבוקר שאחרי', body: '', price: 24000, kind: 'service', image_path: '', active: true },
+              { id: 'p2', name: 'יום האירוע בלבד', blurb: 'ניהול שטח מ-08:00', body: '', price: 9000, kind: 'service', image_path: '', active: false },
+            ]}
+          />
+        </Panel>
+
+        <Panel name="SopBook" note="the operating book with its own search, opened from the console">
+          <div className="max-w-2xl"><SopBook /></div>
+        </Panel>
+
+        {/* Both of these are `position: fixed` on a real screen. A transform
+            makes this box their containing block, so they sit inside the
+            panel here instead of floating over the whole harness — the same
+            pixels, somewhere they can be looked at. */}
+        <Panel name="PortalActions · CoupleCompanion" note="the three things that float over the couple's area, contained so they can be seen">
+          <div className="relative h-[26rem] overflow-hidden rounded-xl2 border border-line bg-surface [transform:translate(0)]">
+            <PortalActions
+              producerName="הפקות ליאור"
+              phone="0500000000"
+              whatsapp="0500000000"
+              bookingUrl="https://example.com/booking"
+              onReport={async () => {
+                'use server';
+                return { ok: true };
+              }}
+            />
+            <CoupleCompanion copy={companionFor(locale)} />
+          </div>
         </Panel>
       </main>
     </CopyProvider>

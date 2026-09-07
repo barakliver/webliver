@@ -146,6 +146,68 @@ for (const route of ROUTES) {
 }
 await narrow.close();
 
+/**
+ * And the other rule nobody notices by looking: can a keyboard see where it is?
+ *
+ * Axe does not test this. It checks that a focus style exists somewhere in the
+ * stylesheet, not that the pixels change — so a rule that switches the
+ * indicator off and puts an invisible one back passes every automated check
+ * there is. That is exactly what had happened: `.field` carried
+ * `focus:outline-none` and replaced the ring with 8% ink, which measures
+ * 1.18:1 against the page, so the focus indicator on every text field in this
+ * product was a one pixel border changing colour.
+ *
+ * So this measures the computed indicator on a real focused control: an
+ * outline that is at least 2px of a colour you can actually see, or a border
+ * or shadow that changed when focus arrived. Anything less is reported.
+ */
+const RING = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+for (const route of ROUTES) {
+  const page = await RING.newPage();
+  try {
+    await page.goto(base + route, { waitUntil: 'networkidle', timeout: 90_000 });
+    await page.waitForTimeout(400);
+    const blind = await page.evaluate(() => {
+      const seen = [];
+      /* One of each kind rather than every control on the page: the indicator
+         comes from a handful of shared rules, and a hundred readings of the
+         same rule is a slow check that says one thing. */
+      for (const sel of ['a[href]', 'button', 'input:not([type=hidden])', 'select', 'textarea']) {
+        const el = document.querySelector(sel);
+        if (!el || el.offsetParent === null) continue;
+        const before = getComputedStyle(el);
+        const was = { outline: before.outlineWidth, border: before.borderColor, shadow: before.boxShadow };
+        el.focus();
+        if (el !== document.activeElement) continue;
+        const now = getComputedStyle(el);
+        const alpha = (c) => {
+          const m = /rgba?\(([^)]+)\)/.exec(c || '');
+          if (!m) return 1;
+          const parts = m[1].split(/[\s,\/]+/).filter(Boolean);
+          return parts.length > 3 ? Number(parts[3]) : 1;
+        };
+        const ring = parseFloat(now.outlineWidth) >= 2
+          && now.outlineStyle !== 'none'
+          && alpha(now.outlineColor) > 0.5;
+        const moved = now.borderColor !== was.border || now.boxShadow !== was.shadow;
+        if (!ring && !moved) {
+          seen.push(`${sel} — outline ${now.outlineWidth} ${now.outlineStyle} ${now.outlineColor}`);
+        }
+      }
+      return seen;
+    });
+    for (const node of blind) {
+      findings.push({
+        route, id: 'a focused control shows nothing', impact: 'serious',
+        help: 'a keyboard cannot see where it is: no visible outline and nothing else changed on focus',
+        nodes: [node],
+      });
+    }
+  } catch { /* already reported above */ }
+  await page.close();
+}
+await RING.close();
+
 await browser.close();
 
 const RANK = { critical: 0, serious: 1, moderate: 2, minor: 3, unknown: 4 };
@@ -154,7 +216,7 @@ findings.sort((a, b) => (RANK[a.impact] ?? 9) - (RANK[b.impact] ?? 9));
 /* The rules nothing can check, named so a clean run does not read as a claim
    that the whole standard was met. */
 const BY_HAND = [
-  'tab through every screen: focus order follows the reading order',
+  'tab through every screen: focus order follows the reading order (the ring itself is measured above)',
   'close a dialog: focus returns to the control that opened it',
   'zoom to 200 per cent: nothing is cut off (the 360px pass above only covers width)',
   'a screen reader in Hebrew: names announce, and mixed Latin text reads in the right direction',
