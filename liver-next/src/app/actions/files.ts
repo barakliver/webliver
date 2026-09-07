@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { fileAllowed, isMediaTag, MAX_FILE_BYTES } from '@/lib/fileTypes';
+import { noteFailure } from '@/lib/flash';
 
 export type FileResult = { ok: boolean; error?: string };
 
@@ -92,7 +93,11 @@ export async function noteFile(form: FormData): Promise<void> {
   if (!id) return;
 
   const sb = await supabaseServer();
-  await sb.from('client_files').update({ note }).eq('id', id);
+  const { error } = await sb.from('client_files').update({ note }).eq('id', id);
+  if (error) {
+    console.error('[files] noteFile failed', error);
+    await noteFailure('לא הצלחנו לעדכן. אפשר לנסות שוב.');
+  }
   refresh(clientId);
 }
 

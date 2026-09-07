@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { DIETS } from '@/content/lists';
 import { readGuestCsv, dedupe, MAX_GUESTS_IMPORT, type ImportReport } from '@/lib/guestImport';
+import { noteFailure } from '@/lib/flash';
 
 export type GuestResult = { ok: boolean; error?: string; added?: number };
 
@@ -52,7 +53,11 @@ export async function deleteGuest(form: FormData): Promise<void> {
   const clientId = String(form.get('client_id') ?? '');
   if (!id) return;
   const sb = await supabaseServer();
-  await sb.from('guests_rsvp').delete().eq('id', id);
+  const { error } = await sb.from('guests_rsvp').delete().eq('id', id);
+  if (error) {
+    console.error('[guests] deleteGuest failed', error);
+    await noteFailure('האורח לא נמחק. אפשר לנסות שוב.');
+  }
   touch(clientId);
 }
 
@@ -66,7 +71,7 @@ export async function setGuestStatus(form: FormData): Promise<void> {
   if (!id || !['pending', 'attending', 'declined'].includes(status)) return;
 
   const sb = await supabaseServer();
-  await sb
+  const { error } = await sb
     .from('guests_rsvp')
     .update({
       status,
@@ -74,6 +79,10 @@ export async function setGuestStatus(form: FormData): Promise<void> {
       responded_at: status === 'pending' ? null : new Date().toISOString(),
     })
     .eq('id', id);
+  if (error) {
+    console.error('[guests] setGuestStatus failed', error);
+    await noteFailure('הסטטוס לא נשמר. אפשר לנסות שוב.');
+  }
   touch(clientId);
 }
 

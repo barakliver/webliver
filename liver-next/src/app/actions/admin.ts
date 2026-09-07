@@ -1,10 +1,9 @@
 'use server';
 
-import { noteFailure } from '@/lib/flash';
-
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { currentAccount } from '@/lib/auth';
+import { noteFailure } from '@/lib/flash';
 
 const ALLOWED = ['approved', 'rejected', 'suspended', 'pending'] as const;
 type Status = (typeof ALLOWED)[number];
@@ -22,7 +21,11 @@ export async function setProducerStatus(formData: FormData): Promise<void> {
   if (!account || account.role !== 'super_admin') return;
 
   const sb = await supabaseServer();
-  await sb.from('producers').update({ status }).eq('id', id);
+  const { error } = await sb.from('producers').update({ status }).eq('id', id);
+  if (error) {
+    console.error('[admin] setProducerStatus failed', error);
+    await noteFailure('הסטטוס לא נשמר. אפשר לנסות שוב.');
+  }
 
   revalidatePath('/app/admin');
 }

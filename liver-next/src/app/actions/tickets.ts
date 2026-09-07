@@ -1,13 +1,12 @@
 'use server';
 
-import { noteFailure } from '@/lib/flash';
-
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { currentAccount, ROOT_ADMIN_EMAIL } from '@/lib/auth';
 import { sendMail } from '@/lib/notify/mail';
 import { supportTicketEmail } from '@/lib/notify/templates';
 import { publicEnv } from '@/lib/env';
+import { noteFailure } from '@/lib/flash';
 
 export type TicketResult = { ok: boolean; error?: string };
 

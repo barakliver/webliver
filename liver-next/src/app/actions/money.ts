@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
+import { noteFailure } from '@/lib/flash';
 
 export type MoneyResult = { ok: boolean; error?: string };
 
@@ -47,7 +48,11 @@ export async function togglePaid(form: FormData): Promise<void> {
   const sb = await supabaseServer();
   /* paid_on is set and cleared by the database, so it can never drift out of
      step with the flag no matter which screen wrote it */
-  await sb.from('payments').update({ paid: !paid }).eq('id', id);
+  const { error } = await sb.from('payments').update({ paid: !paid }).eq('id', id);
+  if (error) {
+    console.error('[money] togglePaid failed', error);
+    await noteFailure('התשלום לא סומן. אפשר לנסות שוב.');
+  }
   touch(clientId);
 }
 
@@ -56,7 +61,11 @@ export async function deletePayment(form: FormData): Promise<void> {
   const clientId = String(form.get('client_id') ?? '');
   if (!id) return;
   const sb = await supabaseServer();
-  await sb.from('payments').delete().eq('id', id);
+  const { error } = await sb.from('payments').delete().eq('id', id);
+  if (error) {
+    console.error('[money] deletePayment failed', error);
+    await noteFailure('התשלום לא נמחק. אפשר לנסות שוב.');
+  }
   touch(clientId);
 }
 
@@ -93,7 +102,11 @@ export async function deleteBudgetItem(form: FormData): Promise<void> {
   const clientId = String(form.get('client_id') ?? '');
   if (!id) return;
   const sb = await supabaseServer();
-  await sb.from('budget_items').delete().eq('id', id);
+  const { error } = await sb.from('budget_items').delete().eq('id', id);
+  if (error) {
+    console.error('[money] deleteBudgetItem failed', error);
+    await noteFailure('השורה לא נמחקה. אפשר לנסות שוב.');
+  }
   touch(clientId);
 }
 
@@ -104,7 +117,11 @@ export async function toggleBudgetVisible(form: FormData): Promise<void> {
   const visible = String(form.get('visible') ?? '') === 'true';
   if (!clientId) return;
   const sb = await supabaseServer();
-  await sb.from('clients').update({ budget_visible: !visible }).eq('id', clientId);
+  const { error } = await sb.from('clients').update({ budget_visible: !visible }).eq('id', clientId);
+  if (error) {
+    console.error('[money] toggleBudgetVisible failed', error);
+    await noteFailure('לא הצלחנו לשנות מי רואה את התקציב. אפשר לנסות שוב.');
+  }
   touch(clientId);
 }
 

@@ -1,12 +1,11 @@
 'use server';
 
-import { noteFailure } from '@/lib/flash';
-
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { currentAccount } from '@/lib/auth';
 import { safeColor } from '@/content/palette';
 import { labelCopy as c } from '@/content/site';
+import { noteFailure } from '@/lib/flash';
 
 export type LabelResult = { ok: boolean; error?: string };
 export type LabelKind = 'event_tag' | 'lead_channel';

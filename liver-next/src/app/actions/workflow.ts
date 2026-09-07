@@ -5,6 +5,7 @@ import { supabaseServer } from '@/lib/supabase/server';
 import { requireLiveProducer } from '@/lib/auth';
 import { MEETING_TEMPLATES } from '@/content/meetings';
 import { FIRST_PLAN } from '@/content/plan';
+import { noteFailure } from '@/lib/flash';
 
 export type WorkflowResult = { ok: boolean; error?: string; added?: number };
 
@@ -79,7 +80,11 @@ export async function deleteTemplate(form: FormData): Promise<void> {
   const id = String(form.get('id') ?? '');
   if (!id) return;
   const sb = await supabaseServer();
-  await sb.from('producer_workflow_templates').delete().eq('id', id);
+  const { error } = await sb.from('producer_workflow_templates').delete().eq('id', id);
+  if (error) {
+    console.error('[workflow] deleteTemplate failed', error);
+    await noteFailure('לא הצלחנו למחוק. אפשר לנסות שוב.');
+  }
   revalidatePath('/app/knowledge');
 }
 

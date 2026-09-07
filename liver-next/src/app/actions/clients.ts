@@ -1,7 +1,5 @@
 'use server';
 
-import { noteFailure } from '@/lib/flash';
-
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { supabaseServer } from '@/lib/supabase/server';
@@ -13,6 +11,7 @@ import { publicEnv } from '@/lib/env';
 import { MIN_EVENT_DATE, MAX_GUESTS } from '@/content/site';
 import { STANDING_CHECKLIST } from '@/content/eventFile';
 import { explainRefusal } from '@/lib/rls';
+import { noteFailure } from '@/lib/flash';
 
 export type ActionResult = { ok: boolean; error?: string; id?: string };
 
@@ -265,7 +264,11 @@ export async function revokeInvite(form: FormData): Promise<void> {
   if (!id) return;
 
   const sb = await supabaseServer();
-  await sb.from('client_authorized_emails').delete().eq('id', id);
+  const { error } = await sb.from('client_authorized_emails').delete().eq('id', id);
+  if (error) {
+    console.error('[clients] revokeInvite failed', error);
+    await noteFailure('ההזמנה לא בוטלה. הכתובת עדיין מורשית. אפשר לנסות שוב.');
+  }
   revalidatePath(`/app/clients/${clientId}`);
 }
 

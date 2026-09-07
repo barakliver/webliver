@@ -3,6 +3,8 @@
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { MUSIC_MOMENTS, EQUIPMENT_CHECK, COUPLE_DETAIL_FIELDS } from '@/content/eventFile';
+import { noteFailure, saidFor } from '@/lib/flash';
+import { currentLocale } from '@/lib/serverLocale';
 
 export type FileResult = { ok: boolean; error?: string };
 
@@ -32,7 +34,7 @@ export async function saveSong(form: FormData): Promise<void> {
   if (!clientId || !MUSIC_MOMENTS.includes(moment)) return;
 
   const sb = await supabaseServer();
-  await sb.from('event_music').upsert(
+  const { error } = await sb.from('event_music').upsert(
     {
       client_id: clientId,
       moment,
@@ -42,6 +44,10 @@ export async function saveSong(form: FormData): Promise<void> {
     },
     { onConflict: 'client_id,moment' }
   );
+  if (error) {
+    console.error('[eventFile] saveSong failed', error);
+    await noteFailure(saidFor(await currentLocale()).notSaved);
+  }
 
   refresh(clientId);
 }
@@ -59,10 +65,14 @@ export async function setEquipment(form: FormData): Promise<void> {
   const sorted = state === 'sorted';
 
   const sb = await supabaseServer();
-  await sb.from('event_equipment').upsert(
+  const { error } = await sb.from('event_equipment').upsert(
     { client_id: clientId, item, needed, sorted },
     { onConflict: 'client_id,item' }
   );
+  if (error) {
+    console.error('[eventFile] setEquipment failed', error);
+    await noteFailure(saidFor(await currentLocale()).notSaved);
+  }
 
   refresh(clientId);
 }
@@ -79,7 +89,7 @@ export async function saveCouple(form: FormData): Promise<void> {
   }
 
   const sb = await supabaseServer();
-  await sb.from('couple_details').upsert(
+  const { error } = await sb.from('couple_details').upsert(
     {
       client_id: clientId,
       person,
@@ -88,6 +98,10 @@ export async function saveCouple(form: FormData): Promise<void> {
     },
     { onConflict: 'client_id,person' }
   );
+  if (error) {
+    console.error('[eventFile] saveCouple failed', error);
+    await noteFailure(saidFor(await currentLocale()).notSaved);
+  }
 
   refresh(clientId);
 }

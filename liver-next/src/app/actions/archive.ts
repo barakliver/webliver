@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
+import { noteFailure } from '@/lib/flash';
 
 /* Closing and reopening are not here.
  *
@@ -19,8 +20,12 @@ export async function cancelAnniversary(form: FormData): Promise<void> {
   const id = String(form.get('id') ?? '');
   if (!id) return;
   const sb = await supabaseServer();
-  await sb.from('anniversary_reminders')
+  const { error } = await sb.from('anniversary_reminders')
     .update({ cancelled_at: new Date().toISOString() })
     .eq('id', id);
+  if (error) {
+    console.error('[archive] cancelAnniversary failed', error);
+    await noteFailure('לא הצלחנו לעדכן. אפשר לנסות שוב.');
+  }
   revalidatePath('/app');
 }

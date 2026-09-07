@@ -1,11 +1,10 @@
 'use server';
 
-import { noteFailure } from '@/lib/flash';
-
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { TRACKS, AUDIENCES, type Track } from '@/content/lists';
 import { templateById } from '@/content/runsheets';
+import { noteFailure } from '@/lib/flash';
 
 export type DayResult = { ok: boolean; error?: string };
 
@@ -112,7 +111,11 @@ export async function deleteDayItem(form: FormData): Promise<void> {
   const clientId = String(form.get('client_id') ?? '');
   if (!id) return;
   const sb = await supabaseServer();
-  await sb.from('day_schedule').delete().eq('id', id);
+  const { error } = await sb.from('day_schedule').delete().eq('id', id);
+  if (error) {
+    console.error('[day] deleteDayItem failed', error);
+    await noteFailure('לא הצלחנו למחוק. אפשר לנסות שוב.');
+  }
   touch(clientId);
 }
 

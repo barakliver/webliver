@@ -73,6 +73,9 @@ export async function addVip(_prev: PrepResult | null, form: FormData): Promise<
   });
   if (error) {
     console.error('[prep] vip insert failed', error);
+    /* A picture in the bucket with no row is a picture nobody can see and
+       nobody can remove. It goes with the row that failed. */
+    if (photo) await sb.storage.from('files').remove([photo]);
     return { ok: false, error: FAILED };
   }
 
@@ -85,10 +88,18 @@ export async function removeVip(form: FormData): Promise<void> {
   const clientId = String(form.get('client_id') ?? '');
   if (!id) return;
   const sb = await supabaseServer();
+  const { data: row } = await sb.from('event_vips').select('photo_url').eq('id', id).maybeSingle();
+
   const { error } = await sb.from('event_vips').delete().eq('id', id);
   if (error) {
     console.error('[prep] vip delete failed', error);
     await noteFailure((await said()).notRemoved);
+  } else if (row?.photo_url) {
+    /* Only once the row is actually gone, so a refused delete cannot leave a
+       row pointing at a picture that is no longer there. A photograph of
+       somebody's grandmother that survives its own deletion is the kind of
+       thing this product does not get to be casual about. */
+    await sb.storage.from('files').remove([row.photo_url]);
   }
   touch(clientId);
 }
@@ -112,6 +123,7 @@ export async function addLook(_prev: PrepResult | null, form: FormData): Promise
   });
   if (error) {
     console.error('[prep] look insert failed', error);
+    if (image) await sb.storage.from('files').remove([image]);
     return { ok: false, error: FAILED };
   }
 
@@ -124,10 +136,14 @@ export async function removeLook(form: FormData): Promise<void> {
   const clientId = String(form.get('client_id') ?? '');
   if (!id) return;
   const sb = await supabaseServer();
+  const { data: row } = await sb.from('event_looks').select('image_url').eq('id', id).maybeSingle();
+
   const { error } = await sb.from('event_looks').delete().eq('id', id);
   if (error) {
     console.error('[prep] look delete failed', error);
     await noteFailure((await said()).notRemoved);
+  } else if (row?.image_url) {
+    await sb.storage.from('files').remove([row.image_url]);
   }
   touch(clientId);
 }

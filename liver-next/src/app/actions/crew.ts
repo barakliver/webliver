@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
+import { noteFailure } from '@/lib/flash';
 
 export type CrewResult = { ok: boolean; error?: string };
 
@@ -74,6 +75,10 @@ export async function removeCrew(form: FormData): Promise<void> {
   const clientId = String(form.get('client_id') ?? '');
   if (!id) return;
   const sb = await supabaseServer();
-  await sb.from('crew').delete().eq('id', id);
+  const { error } = await sb.from('crew').delete().eq('id', id);
+  if (error) {
+    console.error('[crew] removeCrew failed', error);
+    await noteFailure('לא הצלחנו למחוק. אפשר לנסות שוב.');
+  }
   touch(clientId);
 }

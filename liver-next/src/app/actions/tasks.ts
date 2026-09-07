@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { currentAccount } from '@/lib/auth';
+import { noteFailure } from '@/lib/flash';
 
 export type TaskResult = { ok: boolean; error?: string };
 
@@ -46,7 +47,11 @@ export async function toggleTask(form: FormData): Promise<void> {
   if (!id) return;
 
   const sb = await supabaseServer();
-  await sb.from('tasks').update({ done: !done }).eq('id', id);
+  const { error } = await sb.from('tasks').update({ done: !done }).eq('id', id);
+  if (error) {
+    console.error('[tasks] toggleTask failed', error);
+    await noteFailure('לא הצלחנו לעדכן. אפשר לנסות שוב.');
+  }
 
   revalidatePath(`/app/clients/${clientId}`);
   revalidatePath('/app/portal');
@@ -61,7 +66,11 @@ export async function deleteTask(form: FormData): Promise<void> {
   if (!id) return;
 
   const sb = await supabaseServer();
-  await sb.from('tasks').delete().eq('id', id);
+  const { error } = await sb.from('tasks').delete().eq('id', id);
+  if (error) {
+    console.error('[tasks] deleteTask failed', error);
+    await noteFailure('לא הצלחנו למחוק. אפשר לנסות שוב.');
+  }
 
   revalidatePath(`/app/clients/${clientId}`);
   revalidatePath('/app/portal');

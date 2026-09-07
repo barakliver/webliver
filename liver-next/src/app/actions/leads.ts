@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { supabaseServer } from '@/lib/supabase/server';
 import { currentAccount } from '@/lib/auth';
+import { noteFailure } from '@/lib/flash';
 
 export type LeadActionResult = { ok: boolean; error?: string };
 
@@ -66,7 +67,11 @@ export async function setLeadStatus(form: FormData): Promise<void> {
   if (!id || !STATUSES.includes(status as (typeof STATUSES)[number])) return;
 
   const sb = await supabaseServer();
-  await sb.from('leads').update({ status }).eq('id', id);
+  const { error } = await sb.from('leads').update({ status }).eq('id', id);
+  if (error) {
+    console.error('[leads] setLeadStatus failed', error);
+    await noteFailure('לא הצלחנו לעדכן. אפשר לנסות שוב.');
+  }
   touch();
 }
 
@@ -74,7 +79,11 @@ export async function setLeadNote(form: FormData): Promise<void> {
   const id = String(form.get('lead_id') ?? '');
   if (!id) return;
   const sb = await supabaseServer();
-  await sb.from('leads').update({ note: String(form.get('note') ?? '').slice(0, 500) }).eq('id', id);
+  const { error } = await sb.from('leads').update({ note: String(form.get('note') ?? '').slice(0, 500) }).eq('id', id);
+  if (error) {
+    console.error('[leads] setLeadNote failed', error);
+    await noteFailure('לא הצלחנו לעדכן. אפשר לנסות שוב.');
+  }
   touch();
 }
 
@@ -108,7 +117,11 @@ export async function completeCall(form: FormData): Promise<void> {
   const done = String(form.get('done') ?? '') === 'true';
   if (!id) return;
   const sb = await supabaseServer();
-  await sb.from('sales_calls').update({ done: !done }).eq('id', id);
+  const { error } = await sb.from('sales_calls').update({ done: !done }).eq('id', id);
+  if (error) {
+    console.error('[leads] completeCall failed', error);
+    await noteFailure('לא הצלחנו לעדכן. אפשר לנסות שוב.');
+  }
   touch();
 }
 

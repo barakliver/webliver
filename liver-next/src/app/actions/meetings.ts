@@ -1,7 +1,5 @@
 'use server';
 
-import { noteFailure } from '@/lib/flash';
-
 import { revalidatePath } from 'next/cache';
 import Anthropic from '@anthropic-ai/sdk';
 import { supabaseServer } from '@/lib/supabase/server';
@@ -10,6 +8,7 @@ import { meetingTemplate } from '@/content/meetings';
 import {
   cleanAnswers, writeSummary, summaryPrompt, readModelSummary, joinSummary,
 } from '@/lib/ai/meeting';
+import { noteFailure } from '@/lib/flash';
 
 export type MeetingResult = { ok: boolean; error?: string; id?: string; summary?: string };
 

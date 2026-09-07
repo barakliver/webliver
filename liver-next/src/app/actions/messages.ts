@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { currentAccount } from '@/lib/auth';
+import { noteFailure } from '@/lib/flash';
 
 export type MessageResult = { ok: boolean; error?: string };
 
@@ -43,7 +44,11 @@ export async function deleteMessage(form: FormData): Promise<void> {
   if (!id) return;
 
   const sb = await supabaseServer();
-  await sb.from('messages').delete().eq('id', id);
+  const { error } = await sb.from('messages').delete().eq('id', id);
+  if (error) {
+    console.error('[messages] deleteMessage failed', error);
+    await noteFailure('לא הצלחנו למחוק. אפשר לנסות שוב.');
+  }
   touch(clientId);
 }
 
@@ -52,5 +57,11 @@ export async function deleteMessage(form: FormData): Promise<void> {
 export async function markThreadRead(clientId: string): Promise<void> {
   if (!clientId) return;
   const sb = await supabaseServer();
-  await sb.rpc('mark_thread_read', { p_client: clientId });
+  const { error } = await sb.rpc('mark_thread_read', { p_client: clientId });
+  if (error) {
+    /* Logged, not announced. This fires on its own when a screen opens rather
+       than because somebody pressed anything, and a red line about a read
+       receipt is a worse screen than a receipt that quietly did not stick. */
+    console.error('[messages] markThreadRead failed', error);
+  }
 }

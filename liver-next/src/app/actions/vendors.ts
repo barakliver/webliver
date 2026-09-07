@@ -1,11 +1,10 @@
 'use server';
 
-import { noteFailure } from '@/lib/flash';
-
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { currentAccount } from '@/lib/auth';
 import { VENDOR_STATES, type VendorState } from '@/content/production';
+import { noteFailure } from '@/lib/flash';
 
 export type VendorResult = { ok: boolean; error?: string; id?: string };
 
@@ -104,7 +103,11 @@ export async function setVendorArchived(form: FormData): Promise<void> {
   if (!id) return;
 
   const sb = await supabaseServer();
-  await sb.from('vendors').update({ archived_at: archived ? new Date().toISOString() : null }).eq('id', id);
+  const { error } = await sb.from('vendors').update({ archived_at: archived ? new Date().toISOString() : null }).eq('id', id);
+  if (error) {
+    console.error('[vendors] setVendorArchived failed', error);
+    await noteFailure('לא הצלחנו לעדכן. אפשר לנסות שוב.');
+  }
   touchDirectory();
 }
 
@@ -166,7 +169,11 @@ export async function setEventVendorStatus(form: FormData): Promise<void> {
   if (!id || !KNOWN_STATES.has(status)) return;
 
   const sb = await supabaseServer();
-  await sb.from('event_vendors').update({ status }).eq('id', id);
+  const { error } = await sb.from('event_vendors').update({ status }).eq('id', id);
+  if (error) {
+    console.error('[vendors] setEventVendorStatus failed', error);
+    await noteFailure('לא הצלחנו לעדכן. אפשר לנסות שוב.');
+  }
   touchEvent(clientId);
 }
 
@@ -175,7 +182,11 @@ export async function removeEventVendor(form: FormData): Promise<void> {
   const clientId = String(form.get('client_id') ?? '');
   if (!id) return;
   const sb = await supabaseServer();
-  await sb.from('event_vendors').delete().eq('id', id);
+  const { error } = await sb.from('event_vendors').delete().eq('id', id);
+  if (error) {
+    console.error('[vendors] removeEventVendor failed', error);
+    await noteFailure('לא הצלחנו למחוק. אפשר לנסות שוב.');
+  }
   touchEvent(clientId);
 }
 

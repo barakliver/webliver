@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { requireLiveProducer } from '@/lib/auth';
+import { noteFailure } from '@/lib/flash';
 
 export type StoreResult = { ok: boolean; error?: string };
 
@@ -69,7 +70,11 @@ export async function toggleProduct(form: FormData): Promise<void> {
   const active = String(form.get('active') ?? '') === 'true';
   if (!id) return;
   const sb = await supabaseServer();
-  await sb.from('products').update({ active }).eq('id', id);
+  const { error } = await sb.from('products').update({ active }).eq('id', id);
+  if (error) {
+    console.error('[store] toggleProduct failed', error);
+    await noteFailure('לא הצלחנו לעדכן. אפשר לנסות שוב.');
+  }
   refresh();
 }
 
@@ -77,7 +82,15 @@ export async function deleteProduct(form: FormData): Promise<void> {
   const id = String(form.get('id') ?? '');
   if (!id) return;
   const sb = await supabaseServer();
-  await sb.from('products').delete().eq('id', id);
+  const { data: row } = await sb.from('products').select('image_path').eq('id', id).maybeSingle();
+
+  const { error } = await sb.from('products').delete().eq('id', id);
+  if (error) {
+    console.error('[store] product delete failed', error);
+    await noteFailure('לא הצלחנו למחוק את המוצר. אפשר לנסות שוב.');
+  } else if (row?.image_path) {
+    await sb.storage.from('store').remove([row.image_path]);
+  }
   refresh();
 }
 
@@ -120,6 +133,10 @@ export async function noteOrder(form: FormData): Promise<void> {
   const note = String(form.get('note') ?? '').trim().slice(0, 2000);
   if (!id) return;
   const sb = await supabaseServer();
-  await sb.from('orders').update({ note }).eq('id', id);
+  const { error } = await sb.from('orders').update({ note }).eq('id', id);
+  if (error) {
+    console.error('[store] noteOrder failed', error);
+    await noteFailure('לא הצלחנו לעדכן. אפשר לנסות שוב.');
+  }
   refresh();
 }

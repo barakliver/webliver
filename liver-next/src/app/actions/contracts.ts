@@ -1,10 +1,9 @@
 'use server';
 
-import { noteFailure } from '@/lib/flash';
-
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { publicEnv } from '@/lib/env';
+import { noteFailure } from '@/lib/flash';
 
 export type ContractResult = { ok: boolean; error?: string; id?: string };
 
@@ -73,9 +72,13 @@ export async function sendContract(form: FormData): Promise<void> {
   if (!id) return;
 
   const sb = await supabaseServer();
-  await sb.from('contracts')
+  const { error } = await sb.from('contracts')
     .update({ status: 'sent', sent_at: new Date().toISOString() })
     .eq('id', id).eq('status', 'draft');
+  if (error) {
+    console.error('[contracts] sendContract failed', error);
+    await noteFailure('החוזה לא נשלח. אפשר לנסות שוב.');
+  }
   touch(clientId);
 }
 
@@ -100,7 +103,11 @@ export async function voidContract(form: FormData): Promise<void> {
   const clientId = String(form.get('client_id') ?? '');
   if (!id) return;
   const sb = await supabaseServer();
-  await sb.from('contracts').update({ status: 'void' }).eq('id', id);
+  const { error } = await sb.from('contracts').update({ status: 'void' }).eq('id', id);
+  if (error) {
+    console.error('[contracts] voidContract failed', error);
+    await noteFailure('החוזה לא בוטל. אפשר לנסות שוב.');
+  }
   touch(clientId);
 }
 
@@ -110,7 +117,18 @@ export async function deleteContract(form: FormData): Promise<void> {
   if (!id) return;
   const sb = await supabaseServer();
   /* A signed one is refused by the database; this only ever removes a draft. */
-  await sb.from('contracts').delete().eq('id', id);
+  const { data: row } = await sb.from('contracts').select('file_path').eq('id', id).maybeSingle();
+
+  const { error } = await sb.from('contracts').delete().eq('id', id);
+  if (error) {
+    console.error('[contracts] delete failed', error);
+    await noteFailure('לא הצלחנו למחוק את החוזה. אפשר לנסות שוב.');
+  } else if (row?.file_path) {
+    /* The attached agreement, not only its row. It carries names and a price,
+       and a document that outlives the record pointing at it is a document
+       nobody knows is there. */
+    await sb.storage.from('contracts').remove([row.file_path]);
+  }
   touch(clientId);
 }
 

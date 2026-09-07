@@ -1,11 +1,10 @@
 'use server';
 
-import { noteFailure } from '@/lib/flash';
-
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { currentAccount } from '@/lib/auth';
 import { ACCENTS } from '@/content/brand';
+import { noteFailure } from '@/lib/flash';
 
 export type BrandResult = { ok: boolean; error?: string };
 
