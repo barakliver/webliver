@@ -85,6 +85,16 @@ import { EventTagPicker } from '@/components/app/EventTagPicker';
 import { accentByKey } from '@/content/brand';
 import type { Account } from '@/lib/auth';
 import { PortalSummary, summaryRows } from '@/components/app/PortalSummary';
+import { Metric, MetricRows, MetricBlock } from '@/components/app/Metric';
+import { PageHead, Empty } from '@/components/app/PageHead';
+import { TroubleLine } from '@/components/app/LoadTrouble';
+import { Avatar } from '@/components/app/Avatar';
+import { ArchiveButton } from '@/components/app/ArchiveButton';
+import { PrintButton } from '@/components/app/PrintButton';
+import { RegionPicker } from '@/components/RegionPicker';
+import { PromiseLine } from '@/components/Promise';
+import { Ltr, Money, Ratio } from '@/components/Ltr';
+import { REGIONS } from '@/content/site';
 import { PortalActions } from '@/components/app/PortalActions';
 import { EventTabs } from '@/components/app/EventTabs';
 import { EventDetails } from '@/components/app/EventDetails';
@@ -901,6 +911,84 @@ export default async function DesignPage() {
             makes this box their containing block, so they sit inside the
             panel here instead of floating over the whole harness — the same
             pixels, somewhere they can be looked at. */}
+        <Panel name="Metric" note="one figure at both sizes, the five tones, and a block with rows under it">
+          <div className="space-y-6">
+            <div className="flex flex-wrap items-end gap-10">
+              <Metric size="lead" kicker="נכנס החודש" value={<Money value={148000} />} sub="שלושה תשלומים" />
+              <Metric kicker="אישרו הגעה" value={<Ratio of={96} total={180} />} tone="ok" />
+              <Metric kicker="באיחור" value={2} tone="bad" sub={<Money value={19000} />} href="#" label="לפירוט" />
+              <Metric kicker="קרוב לתאריך" value={5} tone="warn" />
+              <Metric kicker="בטיוטה" value={3} tone="accent" />
+            </div>
+            <MetricBlock
+              kicker="תקציב האירוע" value={<Money value={148000} />} sub={<>מתוך <Money value={160000} /></>}
+              rows={[
+                { label: 'שולם', value: <Money value={92000} />, tone: 'ok' },
+                { label: 'פתוח', value: <Money value={37000} /> },
+                { label: 'באיחור', value: <Money value={19000} />, tone: 'bad' },
+              ]}
+            />
+            <MetricRows rows={[
+              { label: 'מוזיקה', value: <Money value={12000} /> },
+              { label: 'צילום', value: <Money value={18500} /> },
+              { label: 'עיצוב', value: <Money value={9000} />, tone: 'accent' },
+            ]} />
+          </div>
+        </Panel>
+
+        {/* The header every screen in the workspace wears, and the sentence
+            under an empty one. Both were shipped on nineteen screens and had
+            never been looked at on their own. */}
+        <Panel name="PageHead · Empty" note="a screen's first two lines, then what a screen with nothing in it says">
+          <div className="max-w-2xl">
+            <PageHead title="ספקים" sub="מי סוגר את מה, ומתי הם מגיעים." />
+            <Empty text="עוד לא הוספתם ספק לאירוע הזה." />
+          </div>
+        </Panel>
+
+        {/* The line above a screen where a read failed. It renders on almost
+            no morning, which is exactly why it had never been seen: the state
+            it exists for is the one nobody can reproduce on purpose. */}
+        <Panel name="LoadTrouble" note="what sits above a screen whose data half arrived">
+          <div className="max-w-2xl"><TroubleLine text={ui.loadTrouble} /></div>
+        </Panel>
+
+        <Panel name="Avatar" note="initials when there is no picture, which is almost always">
+          <div className="flex items-center gap-4">
+            <Avatar name="נועה בן דוד" />
+            <Avatar name="איתי" size={48} />
+            <Avatar name="Sarah Cohen" size={28} />
+            <Avatar name="" size={36} />
+          </div>
+        </Panel>
+
+        <Panel name="ArchiveButton" note="both directions: an open event, and one already put away">
+          <div className="flex flex-wrap gap-3">
+            <ArchiveButton clientId={client} archived={false} />
+            <ArchiveButton clientId={client} archived />
+            <ArchiveButton clientId={client} archived={false} highlight />
+            <PrintButton label="הדפסה" />
+          </div>
+        </Panel>
+
+        <Panel name="RegionPicker" note="six chips and a free field, because the seventh region always exists">
+          <div className="max-w-md">
+            <RegionPicker
+              name="region" regions={REGIONS.map((r) => ({ value: r, label: r }))}
+              label="איפה האירוע" freeLabel="מקום אחר" freePh="לכתוב איפה"
+            />
+          </div>
+        </Panel>
+
+        <Panel name="Ltr · Money · Ratio · PromiseLine" note="a number inside a Hebrew sentence, which is where bidi goes wrong">
+          <div className="max-w-xl space-y-2 text-[15px] text-ink">
+            <p>נכנסו <Money value={148000} /> מתוך התקציב.</p>
+            <p>אישרו הגעה <Ratio of={96} total={180} />.</p>
+            <p>הטלפון של הצלם הוא <Ltr>052-111-1111</Ltr> והמייל <Ltr>studio@example.com</Ltr>.</p>
+            <PromiseLine />
+          </div>
+        </Panel>
+
         <Panel name="PortalActions · CoupleCompanion" note="the three things that float over the couple's area, contained so they can be seen">
           <div className="relative h-[26rem] overflow-hidden rounded-xl2 border border-line bg-surface [transform:translate(0)]">
             <PortalActions

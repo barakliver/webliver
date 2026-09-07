@@ -30,14 +30,26 @@ export async function LoadTrouble() {
   if (failed.length === 0) return null;
 
   const ui = appUiFor(await currentLocale());
+  return <TroubleLine text={ui.loadTrouble} />;
+}
 
+/**
+ * The same line, without the reason it appears.
+ *
+ * Split out so it can be rendered somewhere other than a failing screen. This
+ * is a state that shows on almost no morning, which is precisely why nobody
+ * had ever looked at it: it cannot be produced on purpose from the outside,
+ * and a marker that reaches into the failure store to force it would make
+ * every other panel on the page claim it had failed too.
+ */
+export function TroubleLine({ text }: { text: string }) {
   return (
     <p
       role="status"
       className="mb-5 flex items-start gap-2.5 rounded-xl2 border border-warn/30 bg-warn-wash px-4 py-3 text-[14px] leading-relaxed text-ink"
     >
       <TriangleAlert size={17} strokeWidth={1.5} aria-hidden className="mt-0.5 shrink-0 text-warn" />
-      <span>{ui.loadTrouble}</span>
+      <span>{text}</span>
     </p>
   );
 }
