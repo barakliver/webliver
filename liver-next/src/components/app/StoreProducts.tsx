@@ -60,7 +60,13 @@ function Form({ producerId, product, onDone }: {
       contentType: file.type || 'image/jpeg', upsert: false,
     });
     setBusy(false);
-    if (!error) setPath(key);
+    if (error) return;
+    /* The one it replaces, unless that one is the picture already saved on
+       this product — that belongs to a row and is removed when the row is. */
+    if (path && path !== product?.image_path) {
+      void sb.storage.from('store').remove([path]).catch(() => {});
+    }
+    setPath(key);
   };
 
   return (

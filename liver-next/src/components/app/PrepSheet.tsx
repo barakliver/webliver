@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState, useRef, useState } from 'react';
+import { useActionState, useEffect, useRef, useState } from 'react';
 import { Camera, Loader2, Plus, Scissors, Share2, Trash2, X } from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase/client';
 import { addVip, removeVip, addLook, removeLook, mintShare, revokeShare, type PrepResult } from '@/app/actions/prep';
@@ -87,11 +87,32 @@ function usePhoto(clientId: string, c: PrepCopy) {
   const [error, setError] = useState('');
   const input = useRef<HTMLInputElement>(null);
 
+  /* The picture that is no longer wanted, so it can be taken out of the bucket
+     rather than left there. Held in a ref because it is not drawn. */
+  const dropped = useRef<string>('');
+
+  const forget = (key: string) => {
+    if (!key) return;
+    dropped.current = key;
+    /* Best effort, and deliberately not awaited: the person is choosing
+       another photograph and should not wait for the last one to be swept up.
+       The storage policy allows it because the path starts with their own
+       event's folder. */
+    void supabaseBrowser().storage.from('files').remove([key]).catch(() => {});
+  };
+
   const pick = async (file: File | undefined) => {
     if (!file) return;
     setError('');
     if (file.size > MAX_BYTES) { setError(c.tooBig); return; }
+
+    /* Shown before it is uploaded, not after. A photograph off a phone is
+       several megabytes and the upload is the slow part, so waiting meant a
+       spinner in a 64px box and no sign that the right picture had been
+       chosen until it was already sent. */
+    setPreview(URL.createObjectURL(file));
     setBusy(true);
+
     const ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 6);
     /* The event first, because that is the segment the storage policy reads
        to decide who may write here. */
@@ -99,22 +120,45 @@ function usePhoto(clientId: string, c: PrepCopy) {
     const { error: up } = await supabaseBrowser().storage.from('files')
       .upload(key, file, { contentType: file.type || 'image/jpeg', upsert: false });
     setBusy(false);
-    if (up) { setError(c.uploadFailed); return; }
+
+    if (up) {
+      /* The picture goes with the upload that failed. Leaving it on screen
+         would say the photograph is attached when nothing was stored. */
+      setPreview('');
+      setError(c.uploadFailed);
+      return;
+    }
+    /* Changing your mind is the ordinary case, and every change used to leave
+       the previous upload in the bucket with nothing pointing at it. */
+    forget(path);
     setPath(key);
-    setPreview(URL.createObjectURL(file));
   };
 
-  const clear = () => {
+  /* After the row is saved. The picture now belongs to a row, so it is let go
+     of rather than removed. */
+  const taken = () => {
     setPath(''); setPreview(''); setError('');
     if (input.current) input.current.value = '';
   };
 
-  return { path, preview, busy, error, input, pick, clear };
+  /* Before any row is saved: somebody picked a photograph and then did not
+     want it. */
+  const discard = () => {
+    forget(path);
+    taken();
+  };
+
+  return { path, preview, busy, error, input, pick, taken, discard };
 }
 
 function Faces({ c, clientId, vips }: { c: PrepCopy; clientId: string; vips: Vip[] }) {
   const [state, action, pending] = useActionState<PrepResult | null, FormData>(addVip, null);
   const photo = usePhoto(clientId, c);
+
+  /* React empties the fields after the action, but the chosen photograph is
+     state rather than a field, so it stayed — and the next person added, with
+     no photograph of their own, silently got the last one's face. */
+  useEffect(() => { if (state?.ok) photo.taken(); }, [state]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <section className="card">
@@ -183,6 +227,8 @@ function Faces({ c, clientId, vips }: { c: PrepCopy; clientId: string; vips: Vip
 function Looks({ c, clientId, looks }: { c: PrepCopy; clientId: string; looks: Look[] }) {
   const [state, action, pending] = useActionState<PrepResult | null, FormData>(addLook, null);
   const photo = usePhoto(clientId, c);
+
+  useEffect(() => { if (state?.ok) photo.taken(); }, [state]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <section className="card">
@@ -331,17 +377,35 @@ function PhotoButton({ c, photo, icon: Icon = Camera }: {
         ref={photo.input} type="file" accept="image/*" className="sr-only" id={`photo-${Icon.name}`}
         onChange={(e) => void photo.pick(e.target.files?.[0])}
       />
-      <label
-        htmlFor={`photo-${Icon.name}`}
-        className="grid size-16 cursor-pointer place-items-center overflow-hidden rounded-xl2 border border-dashed border-line-strong text-ink-mute transition hover:border-accent/50 hover:text-accent"
-      >
-        {photo.busy ? <Loader2 size={18} strokeWidth={1.5} aria-hidden className="animate-spin" />
-          : photo.preview
+      <div className="relative">
+        <label
+          htmlFor={`photo-${Icon.name}`}
+          className="relative grid size-16 cursor-pointer place-items-center overflow-hidden rounded-xl2 border border-dashed border-line-strong text-ink-mute transition hover:border-accent/50 hover:text-accent"
+        >
+          {/* The picture under the spinner rather than instead of it. Showing
+              the spinner alone was the same "nothing happened" screen the
+              early preview was meant to fix: for the whole of a slow upload
+              there was no sign the right photograph had been chosen. */}
+          {photo.preview
             /* eslint-disable-next-line @next/next/no-img-element */
-            ? <img src={photo.preview} alt="" className="size-full object-cover" />
-            : <Icon size={18} strokeWidth={1.5} aria-hidden />}
-        <span className="sr-only">{c.photo}</span>
-      </label>
+            ? <img src={photo.preview} alt="" className={`size-full object-cover ${photo.busy ? 'opacity-40' : ''}`} />
+            : !photo.busy && <Icon size={18} strokeWidth={1.5} aria-hidden />}
+          {photo.busy && (
+            <Loader2 size={18} strokeWidth={1.5} aria-hidden className="absolute animate-spin text-ink" />
+          )}
+          <span className="sr-only">{c.photo}</span>
+        </label>
+        {/* There was no way to undo a choice at all: the only route out of a
+            wrong photograph was to pick another one. */}
+        {photo.preview && !photo.busy && (
+          <button
+            type="button" onClick={photo.discard} aria-label={c.remove}
+            className="absolute -end-1.5 -top-1.5 grid size-6 place-items-center rounded-full border border-line bg-surface text-ink-mute transition hover:text-bad"
+          >
+            <X size={12} strokeWidth={1.5} aria-hidden />
+          </button>
+        )}
+      </div>
     </div>
   );
 }

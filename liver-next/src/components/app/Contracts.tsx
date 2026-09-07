@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState, useState } from 'react';
+import { useActionState, useEffect, useState } from 'react';
 import { formatDate } from '@/lib/dates';
 import { useFormStatus } from 'react-dom';
 import { FileSignature, Send, Check, Ban, Trash2, Paperclip, ShieldAlert } from 'lucide-react';
@@ -56,6 +56,12 @@ function Draft({ clientId }: { clientId: string }) {
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
 
+  /* This form stays on the screen after it saves, and the attached file is
+     state rather than a field — so React emptied the title and the amount and
+     left the document, and the next agreement drafted here went out carrying
+     the previous one's PDF. */
+  useEffect(() => { if (state?.ok) setPath(''); }, [state]);
+
   /* Straight from the browser to storage rather than through the server: a
      contract PDF is routinely several megabytes, and pushing it through a
      server action doubles the transfer for no gain. The first path segment is
@@ -70,6 +76,10 @@ function Draft({ clientId }: { clientId: string }) {
     const { error } = await sb.storage.from('contracts').upload(key, file, { upsert: false });
     setUploading(false);
     if (error) { setUploadError(c.uploadFailed); return; }
+    /* Choosing a different document is the ordinary case, and each change used
+       to leave the last one in the bucket with nothing pointing at it. Not
+       awaited: nobody should wait for a sweep to attach a file. */
+    if (path) void sb.storage.from('contracts').remove([path]).catch(() => {});
     setPath(key);
   };
 
