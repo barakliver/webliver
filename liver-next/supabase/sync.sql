@@ -1,10 +1,15 @@
 -- ============================================================================
---  Liver productions - full first-time setup
+--  Liver productions - bring an existing database up to date
 --
---  Paste this whole file into the Supabase SQL Editor and press Run. It is
---  every migration in order, so there is nothing to get wrong about which
---  runs first, and it is safe to run again when new migrations are added.
---  It is also safe to run over a database left half-built by a failed run.
+--  Paste this whole file into the Supabase SQL Editor and press Run.
+--
+--  It is every migration's SCHEMA, in order, and none of the one-time data
+--  migrations. It can add a missing column, restore a policy that was never
+--  applied, or replace a function with its current version. It cannot delete,
+--  insert or update a single row.
+--
+--  Safe to run as often as you like. Use setup.sql instead only when building
+--  a brand new database from nothing.
 -- ============================================================================
 
 -- ============================================================================
@@ -410,9 +415,7 @@ create policy site_settings_all on public.site_settings for all
   with check (public.owns_producer(producer_id) or public.is_super_admin());
 
 -- ── storage for moodboard images ────────────────────────────────────────────
-insert into storage.buckets (id, name, public)
-values ('moodboards','moodboards', true)
-on conflict (id) do nothing;
+-- [sync] one-time data migration removed: insert into storage.buckets (id, name, public)
 
 drop policy if exists moodboard_objects_read on storage.objects;
 create policy moodboard_objects_read on storage.objects for select
@@ -747,9 +750,7 @@ create trigger payments_stamp_date before insert or update on public.payments
 --  workspace and access can be decided by the same rule as everything else.
 -- ============================================================================
 
-insert into storage.buckets (id, name, public)
-values ('moodboards', 'moodboards', false)
-on conflict (id) do update set public = false;
+-- [sync] one-time data migration removed: insert into storage.buckets (id, name, public)
 
 -- the first path segment is the workspace this file belongs to
 create or replace function public.storage_client_id(object_name text) returns uuid
@@ -1088,9 +1089,7 @@ create trigger leads_attribute before insert on public.leads
   for each row execute function public.attribute_lead();
 
 -- leads already sitting unattributed belong to the site that collected them
-update public.leads
-   set producer_id = public.public_site_producer()
- where producer_id is null;
+-- [sync] one-time data migration removed: update public.leads
 
 -- ── the follow up ───────────────────────────────────────────────────────────
 --  A producer books the call from the lead, so the workspace is implied
@@ -1306,51 +1305,20 @@ create trigger cae_notify after insert or update on public.client_authorized_ema
 --
 -- Runs on every setup, and is a no-op once every account has a profile.
 
-insert into public.profiles (id, email, full_name, role)
-select
-  u.id,
-  lower(u.email),
-  coalesce(u.raw_user_meta_data->>'full_name', ''),
-  case when lower(u.email) = public.root_admin_email() then 'super_admin'::app_role
-       else 'producer'::app_role end
-from auth.users u
-where u.email is not null
-  and not exists (select 1 from public.profiles p where p.id = u.id);
+-- [sync] one-time data migration removed: insert into public.profiles (id, email, full_name, role)
 
 -- The same rule applied to rows that already exist: the root address always
 -- holds super_admin, and nobody else ever does. guard_super_admin already
 -- refuses the second half on write; this repairs anything written before it.
-update public.profiles
-   set role = 'super_admin'::app_role
- where lower(email) = public.root_admin_email()
-   and role <> 'super_admin';
+-- [sync] one-time data migration removed: update public.profiles
 
-update public.profiles
-   set role = 'producer'::app_role
- where role = 'super_admin'
-   and lower(email) <> public.root_admin_email();
+-- [sync] one-time data migration removed: update public.profiles
 
 -- A producer needs a producers row to have a workspace to sign in to.
-insert into public.producers (owner_id, brand_name, contact_name, contact_email, status)
-select
-  p.id,
-  coalesce(nullif(u.raw_user_meta_data->>'brand_name', ''), p.full_name, ''),
-  p.full_name,
-  p.email,
-  case when p.role = 'super_admin' then 'approved'::producer_state
-       else 'pending'::producer_state end
-from public.profiles p
-join auth.users u on u.id = p.id
-where p.role in ('super_admin', 'producer')
-  and not exists (select 1 from public.producers pr where pr.owner_id = p.id);
+-- [sync] one-time data migration removed: insert into public.producers (owner_id, brand_name, contact_
 
 -- The root admin is approved by definition; nobody is above them to approve it.
-update public.producers pr
-   set status = 'approved'::producer_state
-  from public.profiles p
- where p.id = pr.owner_id
-   and p.role = 'super_admin'
-   and pr.status <> 'approved';
+-- [sync] one-time data migration removed: update public.producers pr
 
 -- ============================================================================
 --  0012 — profile pictures
@@ -1372,9 +1340,7 @@ update public.producers pr
 alter table public.profiles
   add column if not exists avatar_url text;
 
-insert into storage.buckets (id, name, public)
-values ('avatars', 'avatars', true)
-on conflict (id) do update set public = true;
+-- [sync] one-time data migration removed: insert into storage.buckets (id, name, public)
 
 -- the first path segment is the account that owns the file
 create or replace function public.storage_owner_id(object_name text) returns uuid
@@ -1519,12 +1485,7 @@ grant execute on function public.submit_lead(text, text, text, text, date, integ
 --  read "barak liver" — the Google profile name, in lowercase Latin, on a
 --  Hebrew right-to-left product. Set it to the actual brand, but only where it
 --  was inherited rather than chosen, so a name typed on purpose survives.
-update public.producers pr
-   set brand_name = 'ברק ליור'
-  from public.profiles p
- where p.id = pr.owner_id
-   and lower(p.email) = public.root_admin_email()
-   and (btrim(pr.brand_name) = '' or pr.brand_name = p.full_name);
+-- [sync] one-time data migration removed: update public.producers pr
 
 -- ============================================================================
 --  0014 — three defects found by auditing the invitation path end to end
@@ -1603,12 +1564,7 @@ create trigger cae_bind before insert on public.client_authorized_emails
   for each row execute function public.bind_authorized_email();
 
 -- clear the ones already sitting in the queue
-delete from public.producers pr
- using public.profiles p
- where p.id = pr.owner_id
-   and p.role = 'client'
-   and pr.status <> 'approved'
-   and not exists (select 1 from public.clients c where c.producer_id = pr.id);
+-- [sync] one-time data migration removed: delete from public.producers pr
 
 
 -- ── 3. the schema assumed grants it never made ──────────────────────────────
@@ -2198,9 +2154,7 @@ create trigger contracts_notify after update on public.contracts
 
 
 -- ── the attached document ───────────────────────────────────────────────────
-insert into storage.buckets (id, name, public)
-values ('contracts', 'contracts', false)
-on conflict (id) do nothing;
+-- [sync] one-time data migration removed: insert into storage.buckets (id, name, public)
 
 drop policy if exists contract_objects_read on storage.objects;
 create policy contract_objects_read on storage.objects for select
@@ -2363,7 +2317,7 @@ alter table public.profiles add column if not exists phone text;
    a duplicate key error. Found by signing two people up by phone in a test,
    which is the only way this shows. */
 alter table public.profiles alter column email drop not null;
-update public.profiles set email = null where btrim(coalesce(email, '')) = '';
+-- [sync] one-time data migration removed: update public.profiles set email = null where btrim(coalesce
 
 drop index if exists profiles_email_key;
 create unique index if not exists profiles_email_key
@@ -2541,9 +2495,7 @@ create trigger cae_bind before insert on public.client_authorized_emails
 
 
 -- ── existing numbers get the same shape ─────────────────────────────────────
-update public.client_authorized_emails
-   set phone = public.normalize_phone(phone)
- where phone is not null and phone <> public.normalize_phone(phone);
+-- [sync] one-time data migration removed: update public.client_authorized_emails
 
 
 -- ── a name for somebody who has no address ──────────────────────────────────
@@ -3999,17 +3951,7 @@ grant execute on function public.transfer_client(uuid, uuid) to authenticated;
 --  Seeded so the console has something to show on the first open rather than
 --  an empty screen that looks broken. Everything starts open: a feature is
 --  switched off deliberately, never by having been forgotten here.
-insert into public.feature_flags (key, label, diy, managed) values
-  ('budget',    'תקציב',            true,  true),
-  ('guests',    'אורחים ו-RSVP',    true,  true),
-  ('seating',   'סידור הושבה',      true,  true),
-  ('moodboard', 'לוח השראה',        true,  true),
-  ('runsheet',  'לוז יום האירוע',   true,  true),
-  ('bar',       'מחשבון בר',        true,  true),
-  ('messages',  'הודעות עם המפיק',  false, true),
-  ('contracts', 'חוזים',            false, true),
-  ('files',     'קבצים ותמונות',    true,  true)
-on conflict (key) do nothing;
+-- [sync] one-time data migration removed: insert into public.feature_flags (key, label, diy, managed) 
 
 -- ============================================================================
 --  0031 — a producer's own identity, and the host that leads to it
@@ -4476,23 +4418,10 @@ $$;
 -- ── repair ──────────────────────────────────────────────────────────────────
 --  Insert only. No existing profile is overwritten, no role is downgraded and
 --  no row is deleted, so this cannot cost anybody anything they already have.
-insert into public.profiles (id, email, full_name, role)
-select
-  u.id,
-  lower(u.email),
-  coalesce(u.raw_user_meta_data ->> 'full_name', ''),
-  case when lower(u.email) = public.root_admin_email()
-       then 'super_admin'::app_role else 'producer'::app_role end
-from auth.users u
-where u.email is not null
-  and not exists (select 1 from public.profiles p where p.id = u.id)
-on conflict do nothing;
+-- [sync] one-time data migration removed: insert into public.profiles (id, email, full_name, role)
 
 --  And the one row whose role is not a matter of opinion.
-update public.profiles
-   set role = 'super_admin'
- where lower(email) = public.root_admin_email()
-   and role <> 'super_admin';
+-- [sync] one-time data migration removed: update public.profiles
 
 -- ============================================================================
 --  0036 — a new event could not be read back, so it could not be created
@@ -4881,9 +4810,7 @@ alter type notice_kind add value if not exists 'file';
 --  is not a uuid folder, and can_read_client() answers false rather than
 --  raising for a null id — so a file dropped at the root of the bucket belongs
 --  to nobody and is reachable by nobody.
-insert into storage.buckets (id, name, public)
-values ('files', 'files', false)
-on conflict (id) do update set public = false;
+-- [sync] one-time data migration removed: insert into storage.buckets (id, name, public)
 
 drop policy if exists client_files_objects_read on storage.objects;
 create policy client_files_objects_read on storage.objects for select
@@ -5099,9 +5026,7 @@ grant insert, update, delete on public.products to authenticated, service_role;
 --  of something for sale on a page anybody may read. A signed link would
 --  expire in the middle of somebody browsing, and there is nothing to protect.
 --  Writing is still the producer's own folder only.
-insert into storage.buckets (id, name, public)
-values ('store', 'store', true)
-on conflict (id) do update set public = true;
+-- [sync] one-time data migration removed: insert into storage.buckets (id, name, public)
 
 /* The first path segment is the producer, which is the same shape the other
    buckets use — but producer_id rather than client_id, so it gets its own
@@ -5427,8 +5352,7 @@ drop trigger if exists producers_referral_code on public.producers;
 create trigger producers_referral_code before insert on public.producers
   for each row execute function public.stamp_referral_code();
 
-update public.producers set referral_code = public.new_referral_code()
- where referral_code is null;
+-- [sync] one-time data migration removed: update public.producers set referral_code = public.new_refer
 
 /* Claiming one. Runs as the producer signing up, takes a code rather than an
    id, and refuses to point a producer at themselves — which is the only way
@@ -6355,9 +6279,7 @@ alter table public.clients
 /* Every existing event gets an address now, switched off. Minting on demand
    would mean a page whose URL changes the first time it is switched on, and
    a link already pasted somewhere would then point at nothing. */
-update public.clients
-   set guest_token = encode(gen_random_bytes(16), 'hex')
- where guest_token is null;
+-- [sync] one-time data migration removed: update public.clients
 
 create unique index if not exists clients_guest_token_idx on public.clients (guest_token);
 
@@ -6471,9 +6393,7 @@ comment on column public.producers.cover_url is
 --  the owner. storage_owner_id() reads the first segment as a uuid and answers
 --  null for anything else, and owns_producer(null) is false, so a file dropped
 --  at the root of the bucket belongs to nobody and cannot be written.
-insert into storage.buckets (id, name, public)
-values ('brand', 'brand', true)
-on conflict (id) do update set public = true;
+-- [sync] one-time data migration removed: insert into storage.buckets (id, name, public)
 
 drop policy if exists brand_objects_read on storage.objects;
 create policy brand_objects_read on storage.objects for select
@@ -6675,9 +6595,7 @@ grant all on public.support_tickets to authenticated, service_role;
 -- ── the screenshot ──────────────────────────────────────────────────────────
 --  Private. The folder is the reporter, the same rule the avatars use, and the
 --  root account may read any of them because it is the one that looks.
-insert into storage.buckets (id, name, public)
-values ('support', 'support', false)
-on conflict (id) do update set public = false;
+-- [sync] one-time data migration removed: insert into storage.buckets (id, name, public)
 
 drop policy if exists support_objects_read on storage.objects;
 create policy support_objects_read on storage.objects for select
@@ -7208,15 +7126,4 @@ comment on column public.budget_items.vendor_id is
 -- Guessing harder would be worse than leaving it. A budget line pointed at the
 -- wrong supplier is a number attributed to somebody who is not owed it, and
 -- unlike an unlinked line, nothing about it looks wrong on the screen.
-update public.budget_items b
-   set vendor_id = v.id
-  from public.event_vendors v
- where b.vendor_id is null
-   and btrim(b.vendor) <> ''
-   and v.client_id = b.client_id
-   and lower(btrim(v.name)) = lower(btrim(b.vendor))
-   and (
-     select count(*) from public.event_vendors v2
-      where v2.client_id = b.client_id
-        and lower(btrim(v2.name)) = lower(btrim(b.vendor))
-   ) = 1;
+-- [sync] one-time data migration removed: update public.budget_items b

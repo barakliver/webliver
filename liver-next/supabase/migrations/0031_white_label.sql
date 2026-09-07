@@ -66,6 +66,19 @@ create unique index if not exists producers_domain_key on public.producers (doma
 --  therefore returns only what a visitor to that producer's public page is
 --  meant to see: how they are called, how they look, and how to reach them.
 --  No status, no counts, no address, no id of anything owned.
+/* Dropped first, and this line is why. `create or replace function` cannot
+   change a return type, and 0046 later drops both of these and recreates them
+   with an extra column. On an empty database that is fine — this one creates,
+   0046 replaces — but running the history a second time brings this statement
+   up against 0046's function and Postgres refuses outright: "cannot change
+   return type of existing function".
+
+   That is not a theoretical tidy. It is what stopped the first automatic
+   release, and before that it silently left one live database several
+   migrations behind for weeks. Dropping first makes the whole history
+   re-runnable, which is what turns "apply the schema" into something that can
+   be trusted to fix drift rather than only to build a database from nothing. */
+drop function if exists public.producer_by_host(text);
 create or replace function public.producer_by_host(p_host text)
 returns table (brand text, tagline text, accent text, logo_url text, whatsapp text, booking_url text)
 language sql stable security definer set search_path = public as $$
@@ -101,6 +114,19 @@ grant execute on function public.producer_by_host(text) to anon, authenticated, 
 --
 --  So the same narrow shape as producer_by_host, reached from the other
 --  direction: the producer running an event this caller is actually on.
+/* Dropped first, and this line is why. `create or replace function` cannot
+   change a return type, and 0046 later drops both of these and recreates them
+   with an extra column. On an empty database that is fine — this one creates,
+   0046 replaces — but running the history a second time brings this statement
+   up against 0046's function and Postgres refuses outright: "cannot change
+   return type of existing function".
+
+   That is not a theoretical tidy. It is what stopped the first automatic
+   release, and before that it silently left one live database several
+   migrations behind for weeks. Dropping first makes the whole history
+   re-runnable, which is what turns "apply the schema" into something that can
+   be trusted to fix drift rather than only to build a database from nothing. */
+drop function if exists public.my_workspace_brand();
 create or replace function public.my_workspace_brand()
 returns table (brand text, tagline text, accent text, logo_url text, whatsapp text, booking_url text)
 language sql stable security definer set search_path = public as $$
