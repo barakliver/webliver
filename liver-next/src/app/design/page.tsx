@@ -66,6 +66,7 @@ import { AppShell } from '@/components/app/AppShell';
 import { ProducerLinkCard } from '@/components/app/ProducerLinkCard';
 import { BrandEditor } from '@/components/app/BrandEditor';
 import { BrandAssets } from '@/components/app/BrandAssets';
+import { AdminRow } from '@/components/app/AdminRow';
 import { NoticeBell } from '@/components/app/NoticeBell';
 import { IssueReporter } from '@/components/app/IssueReporter';
 import { VendorImport } from '@/components/app/VendorImport';
@@ -573,6 +574,21 @@ export default async function DesignPage() {
               <div className="skeleton h-32 w-full" />
             </AppShell>
           </div>
+        </Panel>
+
+        {/* The console row nobody could look at, because /app/admin is root
+            only and behind a real session. The decision under it is the one
+            this screen exists for: an account is guessed to be a producer on
+            sign-up, and about half those guesses are wrong. */}
+        <Panel name="Admin · one account" note="approve or block, and underneath, what the account actually is">
+          <ul className="list-none space-y-3 p-0">
+            <AdminRow p={{
+              id: 'p-1', brand: 'שיר', email: 'shir.aeo@gmail.com', status: 'pending',
+              lastSeen: new Date().toISOString(), eventsLive: 0, eventsTotal: 0,
+              leadsTotal: 0, leads30d: 0, signedTotal: 0, isRoot: false,
+              ownerId: FIXTURE_VIEWER, ownerRole: 'producer',
+            }} />
+          </ul>
         </Panel>
 
         <Panel name="BrandAssets" note="the three pictures, each with its rules beside the button; one already uploaded">

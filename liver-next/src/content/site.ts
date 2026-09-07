@@ -1019,6 +1019,24 @@ export const appCopy = {
     suspend: 'השהיה',
     restore: 'החזרה לפעילות',
     rootBadge: 'בעל המערכת',
+    /* The decision the console could not make. Everybody who signs up is
+       guessed to be a producer, and roughly half the time that is wrong —
+       "אישור" and "דחייה" were two answers to a question nobody had asked.
+       The words here name what the person is, not what the database does to
+       them: nobody thinks of themselves as a row with a role column. */
+    kind: {
+      title: 'מה החשבון הזה',
+      sub: 'כל מי שנרשם מוגדר כמפיק כברירת מחדל. כאן מתקנים.',
+      producer: 'מפיקה',
+      producerNote: 'עסק הפקה. חוזר להמתנה, ואישור נותן גישה.',
+      diy: 'זוג שמתכנן לבד',
+      diyNote: 'נפתח מרחב עבודה משלהם, והם נכנסים אליו מיד.',
+      managed: 'זוג של מפיק',
+      managedNote: 'ממתינים שמפיק יזמין אותם לאירוע שלו.',
+      current: 'כרגע',
+      isProducer: 'מפיקה',
+      isClient: 'לקוחה',
+    },
     oneLive: 'אירוע פעיל',
     manyLive: 'אירועים פעילים',
     ofTotal: 'מתוך',
@@ -1232,6 +1250,8 @@ export const appCopy = {
   clientPage: {
     back: 'חזרה לאירועים',
     details: 'פרטי האירוע',
+    /* On the pencil beside the name at the top of the page. */
+    rename: 'עריכת שם ופרטי האירוע',
 
     /* The event file, in sections. One page holding nine panels is not a file,
        it is a scroll, and the thing somebody came for is always below the

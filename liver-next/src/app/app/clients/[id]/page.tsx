@@ -1,4 +1,4 @@
-import { CalendarPlus, Eye, Hash, ListOrdered, Radio, BookOpen } from 'lucide-react';
+import { CalendarPlus, Eye, Hash, ListOrdered, Pencil, Radio, BookOpen } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { requireLiveProducer } from '@/lib/auth';
@@ -130,6 +130,21 @@ export default async function ClientPage({
       </div>
 
       <PageHead title={client.display_name}
+        /* A pencil on the name itself. The form that renames an event has
+           always existed, on the overview, under the templates — far enough
+           down that the one person who most needed it went looking for a
+           feature that was already there. A typo in a couple's name is seen
+           at the top of the screen, so the way to fix it belongs there. */
+        actions={
+          <Link
+            href={`/app/clients/${client.id}#event-details`}
+            aria-label={appCopy.clientPage.rename}
+            title={appCopy.clientPage.rename}
+            className="grid size-9 place-items-center rounded-xl2 text-ink-mute transition hover:bg-surface-200 hover:text-ink"
+          >
+            <Pencil size={15} strokeWidth={1.5} aria-hidden />
+          </Link>
+        }
         report={<IssueReporter userId={account.id} context={appCopy.clientPage.tabs[tab]} />}
       />
 

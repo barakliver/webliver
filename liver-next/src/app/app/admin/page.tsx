@@ -1,9 +1,9 @@
-import { formatDate } from '@/lib/dates';
-import { Check, Ban, RotateCcw, ShieldCheck, Lock, LifeBuoy } from 'lucide-react';
+import { Lock, LifeBuoy } from 'lucide-react';
 import Link from 'next/link';
 import { requireRoot, ROOT_ADMIN_EMAIL } from '@/lib/auth';
-import { getConsole, type ProducerRow, type Stats } from '@/lib/directory';
-import { setProducerStatus } from '@/app/actions/admin';
+import { getConsole, type Stats } from '@/lib/directory';
+import { AdminRow } from '@/components/app/AdminRow';
+
 import { appCopy, ticketCopy } from '@/content/site';
 import { PageHead, Empty } from '@/components/app/PageHead';
 import { IssueReporter } from '@/components/app/IssueReporter';
@@ -14,36 +14,11 @@ import { publicEnv } from '@/lib/env';
 import { FeatureFlags } from '@/components/app/FeatureFlags';
 import { MetricBlock } from '@/components/app/Metric';
 import { Live } from '@/components/app/Live';
-import { EVENT_ZONE } from '@/lib/clock';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: appCopy.admin.title };
 
 const c = appCopy.admin;
-const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE, day: '2-digit', month: '2-digit', year: 'numeric' });
-
-const STATUS_TONE: Record<ProducerRow['status'], string> = {
-  approved:  'bg-ok-wash text-ok',
-  pending:   'bg-warn-wash text-warn',
-  suspended: 'bg-bad-wash text-bad',
-  rejected:  'bg-surface-200 text-ink-mute',
-};
-
-function StatusButton({ id, status, label, tone }: {
-  id: string; status: string; label: string; tone: 'primary' | 'ghost' | 'quiet';
-}) {
-  const Icon = status === 'approved' ? Check : status === 'pending' ? RotateCcw : Ban;
-  return (
-    <form action={setProducerStatus}>
-      <input type="hidden" name="producer_id" value={id} />
-      <input type="hidden" name="status" value={status} />
-      <button type="submit" className={`btn-${tone} px-3.5 text-[13.5px]`}>
-        <Icon size={15} aria-hidden strokeWidth={1.5} />
-        {label}
-      </button>
-    </form>
-  );
-}
 
 /** One number, and the thing it counts. The first row is the headline and
  *  gets the design's own metric size; the two under it are the qualifiers,
@@ -102,54 +77,6 @@ function Telemetry({ s }: { s: Stats }) {
   );
 }
 
-function Producer({ p }: { p: ProducerRow }) {
-  return (
-    <li className="card">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="min-w-0">
-          <h3 className="flex flex-wrap items-center gap-2 font-display text-[17.5px] font-semibold text-ink">
-            {p.brand}
-            {p.isRoot && (
-              <span className="inline-flex items-center gap-1 rounded-xl2 bg-accent-wash px-2.5 py-0.5 text-[12px] font-medium text-accent">
-                <ShieldCheck size={13} aria-hidden strokeWidth={1.5} />
-                {c.rootBadge}
-              </span>
-            )}
-            <span className={`rounded-xl2 px-2.5 py-0.5 text-[12px] font-medium ${STATUS_TONE[p.status]}`}>
-              {appCopy.pending.statuses[p.status]}
-            </span>
-          </h3>
-
-          <p className="mt-1.5 text-[14px] text-ink-soft" dir="ltr">{p.email}</p>
-
-          <p className="mt-1 text-[13px] text-ink-mute">
-            {p.eventsLive} {p.eventsLive === 1 ? c.oneLive : c.manyLive}
-            {p.eventsTotal !== p.eventsLive && ` · ${c.ofTotal} ${p.eventsTotal}`}
-            {' · '}{c.board.leads} {p.leadsTotal}
-            {' · '}{c.board.signed} {p.signedTotal}
-          </p>
-
-          <p className="mt-0.5 text-[13px] text-ink-mute">
-            {p.lastSeen ? `${c.lastSeen} ${formatDate(dateFmt, p.lastSeen, '·')}` : c.never}
-          </p>
-        </div>
-
-        {/* The root account gets no buttons at all. Approving yourself is
-            meaningless and suspending yourself is a locked door with the key
-            inside. */}
-        {!p.isRoot && (
-          <div className="flex flex-wrap gap-2">
-            {p.status !== 'approved' && <StatusButton id={p.id} status="approved" label={c.approve} tone="primary" />}
-            {p.status === 'pending' && <StatusButton id={p.id} status="rejected" label={c.reject} tone="quiet" />}
-            {p.status === 'approved' && <StatusButton id={p.id} status="suspended" label={c.suspend} tone="quiet" />}
-            {p.status === 'suspended' && <StatusButton id={p.id} status="approved" label={c.restore} tone="ghost" />}
-          </div>
-        )}
-      </div>
-    </li>
-  );
-}
-
 export default async function AdminPage() {
   const account = await requireRoot();
   const { stats, producers, flags } = await getConsole(ROOT_ADMIN_EMAIL);
@@ -179,7 +106,7 @@ export default async function AdminPage() {
           <section>
             <h2 className="eyebrow mb-3">{c.waiting} · {waiting.length}</h2>
             <ul className="list-none space-y-3 p-0">
-              {waiting.map((p) => <Producer key={p.id} p={p} />)}
+              {waiting.map((p) => <AdminRow key={p.id} p={p} />)}
             </ul>
           </section>
         )}
@@ -191,7 +118,7 @@ export default async function AdminPage() {
             <Empty text={c.empty} />
           ) : (
             <ul className="list-none space-y-3 p-0">
-              {rest.map((p) => <Producer key={p.id} p={p} />)}
+              {rest.map((p) => <AdminRow key={p.id} p={p} />)}
             </ul>
           )}
         </section>

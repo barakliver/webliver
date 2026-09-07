@@ -82,3 +82,32 @@ export async function setFeatureFlag(formData: FormData): Promise<void> {
 
   revalidatePath('/app/admin');
 }
+
+/**
+ * What a sign-up actually is.
+ *
+ * Everybody who signs up is guessed to be a producer, because the platform has
+ * no way of knowing. This is the correction, and it has three answers: a
+ * production business, a couple planning alone, or a couple whose producer
+ * will invite them onto an event.
+ *
+ * The check below is a courtesy for the screen. The real one is in
+ * `set_account_kind`, which refuses anybody but root and refuses the root
+ * account as a target — because this writes profiles.role, and a check that
+ * lives only in a screen is a check that a fetch call goes around.
+ */
+export async function setAccountKind(formData: FormData): Promise<void> {
+  const owner = String(formData.get('owner_id') ?? '');
+  const kind = String(formData.get('kind') ?? '');
+  if (!owner || !['producer', 'diy', 'managed'].includes(kind)) return;
+
+  const account = await currentAccount();
+  if (!account || account.role !== 'super_admin') return;
+
+  const sb = await supabaseServer();
+  const { error } = await sb.rpc('set_account_kind', { p_owner: owner, p_kind: kind });
+  if (error) console.error('[admin] kind failed', error);
+
+  revalidatePath('/app/admin');
+  revalidatePath('/app/clients');
+}

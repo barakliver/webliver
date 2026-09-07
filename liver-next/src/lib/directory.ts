@@ -44,6 +44,11 @@ export type ProducerRow = {
   leads30d: number;
   signedTotal: number;
   isRoot: boolean;
+  /* The account behind the workspace, which is what the kind switch writes to.
+     A profile id and a role are governance, the same as an approval status;
+     nothing about anybody's wedding travels with them. */
+  ownerId: string | null;
+  ownerRole: 'super_admin' | 'producer' | 'client' | 'staff' | null;
 };
 
 export type Flag = { key: string; label: string; diy: boolean; managed: boolean };
@@ -103,6 +108,8 @@ export async function getConsole(rootEmail: string): Promise<Console> {
     leadsTotal: Number(p.leads_total ?? 0),
     leads30d: Number(p.leads_30d ?? 0),
     signedTotal: Number(p.signed_total ?? 0),
+    ownerId: (p.owner_id as string | null) ?? null,
+    ownerRole: (p.owner_role as ProducerRow['ownerRole']) ?? null,
     /* The root account is not something to approve, suspend or reject. It is
        the thing doing the approving, and offering those buttons against it is
        an invitation to lock yourself out of your own platform. */

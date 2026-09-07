@@ -129,7 +129,11 @@ export function EventDetails({ event }: { event: EventCore }) {
   }
 
   return (
-    <section className="card">
+    /* Named so the title at the top of the page can point at it. Renaming an
+       event lives here and only here, and it is below the templates and below
+       the fold — which is why the person who owns the platform could not find
+       it and asked for a rename that already existed. */
+    <section id="event-details" className="card scroll-mt-24">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <h2 className="font-display text-[18px] font-semibold text-ink">{c.details}</h2>
         <button

@@ -3828,6 +3828,13 @@ grant execute on function public.platform_stats() to authenticated;
 --  A producer's own brand name is governance: it is what an approval decision
 --  is made against. Everything else here is a count. No couple, no event name
 --  and no money crosses this boundary.
+/* Dropped first. 0055 adds two columns to this, which changes its return
+   type — and `create or replace function` cannot do that. Without this line
+   the whole history stops being re-runnable the moment 0055 exists: applying
+   it a second time reaches here, meets 0055's twelve-column version, and
+   refuses. The schema check caught exactly that within a minute of 0055 being
+   written, which is what it is for. */
+drop function if exists public.producer_leaderboard();
 create or replace function public.producer_leaderboard()
 returns table (
   producer_id   uuid,
@@ -7357,3 +7364,68 @@ comment on function public.set_account_kind(uuid, text) is
 
 revoke all on function public.set_account_kind(uuid, text) from public, anon;
 grant execute on function public.set_account_kind(uuid, text) to authenticated;
+
+
+-- ── and the console needs two more columns to offer the decision ────────────
+--  The leaderboard returns a producer's brand, status and counts. Deciding
+--  what an account is needs the account: the owner's profile id to write the
+--  role to, and the role it currently has, so the screen shows what is true
+--  rather than what it assumes.
+--
+--  Dropped before it is replaced. `create or replace function` cannot change a
+--  return type, and adding two columns changes it — which is the exact failure
+--  that stopped the first automatic release, from a function whose signature
+--  moved between 0031 and 0046 with nothing dropping it first.
+--
+--  Still counts only. A profile id and a role are governance, the same as an
+--  approval status; no couple, no event name and no money crosses this
+--  boundary, and none is added here.
+drop function if exists public.producer_leaderboard();
+
+create or replace function public.producer_leaderboard()
+returns table (
+  producer_id   uuid,
+  brand         text,
+  contact_email text,
+  status        text,
+  last_seen_at  timestamptz,
+  events_live   integer,
+  events_total  integer,
+  leads_total   integer,
+  leads_30d     integer,
+  signed_total  integer,
+  owner_id      uuid,
+  owner_role    text
+)
+language plpgsql stable security definer set search_path = public as $$
+begin
+  if not public.is_super_admin() then
+    raise exception 'אין הרשאה' using errcode = 'insufficient_privilege';
+  end if;
+
+  return query
+  select
+    pr.id,
+    coalesce(nullif(pr.brand_name, ''), nullif(pr.contact_name, ''), pr.contact_email),
+    pr.contact_email,
+    pr.status::text,
+    p.last_seen_at,
+    (select count(*)::int from public.clients c
+      where c.producer_id = pr.id and c.archived_at is null),
+    (select count(*)::int from public.clients c where c.producer_id = pr.id),
+    (select count(*)::int from public.leads l where l.producer_id = pr.id),
+    (select count(*)::int from public.leads l
+      where l.producer_id = pr.id and l.created_at > now() - interval '30 days'),
+    (select count(distinct ct.client_id)::int
+       from public.contracts ct
+       join public.clients c on c.id = ct.client_id
+      where c.producer_id = pr.id and ct.signed_at is not null),
+    pr.owner_id,
+    p.role::text
+  from public.producers pr
+  left join public.profiles p on p.id = pr.owner_id
+  order by 6 desc, 8 desc;
+end $$;
+
+revoke all on function public.producer_leaderboard() from public;
+grant execute on function public.producer_leaderboard() to authenticated;

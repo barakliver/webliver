@@ -354,6 +354,13 @@ grant execute on function public.platform_stats() to authenticated;
 --  A producer's own brand name is governance: it is what an approval decision
 --  is made against. Everything else here is a count. No couple, no event name
 --  and no money crosses this boundary.
+/* Dropped first. 0055 adds two columns to this, which changes its return
+   type — and `create or replace function` cannot do that. Without this line
+   the whole history stops being re-runnable the moment 0055 exists: applying
+   it a second time reaches here, meets 0055's twelve-column version, and
+   refuses. The schema check caught exactly that within a minute of 0055 being
+   written, which is what it is for. */
+drop function if exists public.producer_leaderboard();
 create or replace function public.producer_leaderboard()
 returns table (
   producer_id   uuid,
