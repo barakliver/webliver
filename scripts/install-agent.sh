@@ -198,16 +198,36 @@ EOF
 # nothing, so a first release that failed its checks would sit there broken
 # with no way back — the one moment the safety net has a hole in it.
 #
-# Whatever is checked out on this machine right now is, by definition, the
-# thing that has been serving the site. Recording its commit closes the hole:
-# the agent hands that to git checkout exactly as it would a tag, so the first
-# release can fall back to the version that was working an hour ago.
+# Asked of the running app rather than of the checkout, and the difference is
+# the whole point. This used to record `git rev-parse HEAD`, on the reasoning
+# that whatever is checked out is what has been serving. That reasoning is
+# wrong the moment anybody runs `git pull` before running this installer —
+# which is the documented first step, so it is wrong essentially always. The
+# checkout was then the NEW commit, the file that means "already deployed" was
+# written with it, the marker pointed at the same commit, and the agent
+# concluded on every tick that the release was already out. It sat there doing
+# nothing, silently, exactly as designed, and the release never went anywhere.
+#
+# The running build knows its own commit: next.config stamps the short SHA onto
+# the html element as data-dpl-id, so the answer comes from the thing being
+# asked about instead of from a directory that has moved on without it.
 STATE_DIR=/var/lib/liver-agent
 mkdir -p "$STATE_DIR"
 if [ ! -s "$STATE_DIR/deployed" ]; then
-  LIVE="$(git -C "$REPO" rev-parse HEAD)"
-  printf '%s' "$LIVE" > "$STATE_DIR/deployed"
-  echo "→ the version serving now (${LIVE:0:7}) is the rollback point for the first release"
+  LIVE="$(curl -fsS --max-time 5 "http://127.0.0.1:${PORT:-3000}/" 2>/dev/null \
+          | grep -o 'data-dpl-id="[^"]*"' | head -1 | cut -d'"' -f2 || true)"
+
+  if [ -n "$LIVE" ]; then
+    printf '%s' "$LIVE" > "$STATE_DIR/deployed"
+    echo "→ the build answering on :${PORT:-3000} is $LIVE; that is the rollback point"
+  else
+    # Nothing serving, or it does not carry the stamp. Recording the checkout
+    # here would be the bug above, so record nothing: the first release then
+    # has no rollback point, which is a smaller problem than a first release
+    # that never happens. It is said out loud rather than left to be found.
+    echo "→ nothing is answering on :${PORT:-3000}, so there is no rollback point yet."
+    echo "  The first release has nothing to fall back to if its checks fail."
+  fi
 fi
 
 systemctl daemon-reload
