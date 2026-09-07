@@ -179,6 +179,83 @@ try {
     const after = rows();
     say(before === after, 'and every row is exactly as it was, twice over',
       before === after ? '' : `\n        before ${before}\n        after  ${after}`);
+
+    // ── 4. a share link opens exactly what it says and nothing else ──────────
+    /* The one function in this schema that hands somebody else's family
+       photographs to a caller with no account. Its whole security is that the
+       token is an argument rather than a condition inside a policy, and that
+       is a claim about behaviour: it can only be checked by presenting tokens
+       to a real database and reading what comes back.
+       Six of these are the cases that would be a breach if they were wrong —
+       a scoped link that returns the other half, a revoked or expired link
+       that still opens, one event's token reaching another event's rows. */
+    psql('one', `-c "insert into public.event_vips (client_id, name, relation, note) values ('${cid}','סבתא מרים','סבתא של הכלה','בכניסה לחופה')"`);
+    psql('one', `-c "insert into public.event_looks (client_id, category, note, image_url) values ('${cid}','hair','אסוף נמוך','${cid}/a.jpg')"`);
+
+    /* A second wedding, so 'nothing leaks' is a claim about two events that
+       exist rather than about an empty table. */
+    psql('one', `-c "insert into public.clients (producer_id, display_name, kind) values ('${pid}','רוני ועומר','wedding')"`);
+    const other = ask('one', `select id from public.clients where display_name='רוני ועומר'`);
+    psql('one', `-c "insert into public.event_vips (client_id, name) values ('${other}','דוד אריק')"`);
+
+    /* The token is minted by the trigger, so it is read back rather than
+       chosen here — which is the point: a credential this script could pick
+       is a credential a request body could pick. */
+    const mint = (scope) => {
+      psql('one', `-c "insert into public.event_prep_shares (client_id, token, scope, label) values ('${cid}','chosen-by-the-caller','${scope}','${scope}')"`);
+      return ask('one', `select token from public.event_prep_shares where label='${scope}'`);
+    };
+    const faces = mint('faces');
+    const looks = mint('looks');
+    const all = mint('all');
+
+    say(/^[a-f0-9]{32}$/.test(all), 'the database mints the token, not the caller',
+      /^[a-f0-9]{32}$/.test(all) ? '' : `got ${all || '(nothing)'}`);
+
+    /* Frozen on update. A share row is writable by everybody who can read the
+       event, so an update that could set the token would let one of them hand
+       out a link of their own choosing. */
+    psql('one', `-c "update public.event_prep_shares set token='chosen-by-the-caller', label='all' where token='${all}'"`);
+    const stillAll = ask('one', `select token from public.event_prep_shares where label='all'`);
+    say(stillAll === all, 'and freezes it: an update cannot choose one',
+      stillAll === all ? '' : `token became ${stillAll || '(nothing)'}`);
+
+    /* jsonb_array_length rather than the contents: what is being asserted is
+       which half of the sheet a scope opens, and a count of 0 against 1 says
+       that without depending on how a name is spelled. */
+    const sheet = (token) => ask('one', [
+      "select coalesce((select jsonb_array_length(faces)||'/'||jsonb_array_length(looks)",
+      `from public.prep_sheet('${token}')), 'no row')`,
+    ].join(' '));
+
+    const cases = [
+      ['a link for the photographer opens the faces and not the looks', faces, '1/0'],
+      ['a link for the stylist opens the looks and not the faces', looks, '0/1'],
+      ['a link for both opens both', all, '1/1'],
+      ['a token nobody minted opens nothing', '00000000000000000000000000000000', 'no row'],
+      ['a token that is not a token opens nothing', 'not-a-token', 'no row'],
+    ];
+    for (const [label, token, want] of cases) {
+      const got = sheet(token);
+      say(got === want, label, got === want ? '' : `expected ${want}, got ${got}`);
+    }
+
+    /* One event's link must not reach another event's roster. The second
+       wedding has a face on it and no share of its own, so anything other
+       than one face and no looks here means the scope carried but the event
+       did not. */
+    const leak = sheet(all);
+    say(leak === '1/1', 'and it stops at its own event', leak === '1/1' ? '' : `got ${leak}`);
+
+    psql('one', `-c "update public.event_prep_shares set revoked_at = now() where label='faces'"`);
+    const revoked = sheet(faces);
+    say(revoked === 'no row', 'a revoked link stops opening',
+      revoked === 'no row' ? '' : `got ${revoked}`);
+
+    psql('one', `-c "update public.event_prep_shares set expires_at = now() - interval '1 day' where label='looks'"`);
+    const expired = sheet(looks);
+    say(expired === 'no row', 'and so does an expired one',
+      expired === 'no row' ? '' : `got ${expired}`);
   }
 } catch (e) {
   failures++;
