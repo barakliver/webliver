@@ -109,7 +109,7 @@ export async function loadPortal(
      platform outage must not silently take features away from a couple three
      days before their wedding: closing a door is a decision somebody made, and
      a failed query is not one. */
-  const modules = ['budget', 'guests', 'seating', 'moodboard', 'runsheet', 'messages', 'files'];
+  const modules = ['budget', 'guests', 'seating', 'moodboard', 'runsheet', 'messages', 'files', 'prep'];
   const closed = new Set<string>();
   await Promise.all(
     ids.flatMap((cid) =>

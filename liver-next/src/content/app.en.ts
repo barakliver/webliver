@@ -1,4 +1,4 @@
-import type { NoticeCopy, TicketCopy, BookCopy, CompanionCopy } from './appUi.ts';
+import type { NoticeCopy, TicketCopy, BookCopy, CompanionCopy, PrepCopy } from './appUi.ts';
 import type {
   PortalCopy, FilesCopy, SheetsCopy, TasksCopy, MoneyCopy, BoardCopy,
   GuestsCopy, SeatingCopy, DayCopy, ThreadCopy, PartyCopy, ContractCopy, EventFileCopy,
@@ -484,6 +484,45 @@ export const companionCopyEn: CompanionCopy = {
   thinking: 'Writing',
   wentWrong: 'Something went wrong at my end. Write to us and we will come back to you.',
   disclaimer: 'Answers come from your event details. Changes go through us.',
+};
+
+/* The faces and the looks, in English.
+   Addressed to the couple rather than to the producer: they are the ones who
+   know who the aunt is, and on their screen "the photographer does not know
+   anybody in the room" is the whole reason the panel exists. */
+export const prepCopyEn: PrepCopy = {
+  facesTitle: 'Who not to miss',
+  facesSub: 'A face and a name for everyone who has to be in the photographs. The photographer does not know anybody in the room.',
+  facesEmpty: 'Nobody added yet. Grandma is a good place to start.',
+  name: 'Name',
+  relation: 'Who they are',
+  relationPh: "The bride's grandmother",
+  note: 'Note',
+  notePh: 'A photograph with her on the way into the ceremony',
+  photo: 'Photograph',
+  add: 'Add',
+  adding: 'Adding',
+  remove: 'Remove',
+
+  looksTitle: 'Hair, makeup and outfit references',
+  looksSub: 'The pictures saved on your phone, in one place you can send to the stylist.',
+  looksEmpty: 'No pictures yet.',
+  kind: 'Kind',
+  categories: { hair: 'Hair', makeup: 'Makeup', outfit: 'Outfit', other: 'Other' },
+
+  shareTitle: 'A link for a supplier',
+  shareSub: 'The photographer and the stylist are not going to open an account to look at pictures. One link, no password, and each of them gets only what concerns them.',
+  shareAll: 'Everything',
+  shareFaces: 'For the photographer',
+  shareLooks: 'For the stylist',
+  shareNew: 'New link',
+  shareCopy: 'Copy',
+  shareCopied: 'Copied',
+  shareRevoke: 'Revoke',
+  shareNone: 'No link yet.',
+  shareUntil: 'Valid until',
+  uploadFailed: 'The upload failed. You can try again.',
+  tooBig: 'That picture is too large. Up to 8MB.',
 };
 
 export const noticeCopyEn: NoticeCopy = {

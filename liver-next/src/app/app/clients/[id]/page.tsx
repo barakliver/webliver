@@ -37,14 +37,7 @@ import { safeRows, safeValue } from '@/lib/safe';
 import { publicEnv } from '@/lib/env';
 import { PrepSheet } from '@/components/app/PrepSheet';
 import { prepCopy } from '@/content/site';
-import { signPrepImages } from '@/lib/prep';
-
-type PrepRow = { id: string; name: string; relation: string; note: string; photo_url: string | null };
-type LookRow = { id: string; category: 'hair' | 'makeup' | 'outfit' | 'other'; note: string; image_url: string | null };
-type ShareRow = {
-  id: string; token: string; scope: 'all' | 'faces' | 'looks'; label: string;
-  expires_at: string | null; revoked_at: string | null;
-};
+import { loadPrep, prepOf } from '@/lib/prep';
 import { loadThread, loadContracts } from '@/lib/portal';
 import { loadFiles } from '@/lib/files';
 import { loadEventSummary } from '@/lib/eventSummary';
@@ -366,41 +359,17 @@ async function Section({ tab, client, viewerId }: { tab: EventTab; client: Clien
   }
 
   if (tab === 'prep') {
-    /* Three reads rather than one join, and each allowed to fail on its own:
-       a share link that will not load must not take the roster with it. */
-    const [vips, looks, shares] = await Promise.all([
-      safeRows<PrepRow>('prep faces', sb.from('event_vips')
-        .select('id,name,relation,note,photo_url').eq('client_id', id)
-        .order('sort').order('created_at')),
-      safeRows<LookRow>('prep looks', sb.from('event_looks')
-        .select('id,category,note,image_url').eq('client_id', id)
-        .order('category').order('sort').order('created_at')),
-      safeRows<ShareRow>('prep links', sb.from('event_prep_shares')
-        .select('id,token,scope,label,expires_at,revoked_at').eq('client_id', id)
-        .is('revoked_at', null).order('created_at', { ascending: false })),
-    ]);
-
-    /* The bucket is private, so what the screen gets is signed urls and never
-       paths. An hour is longer than anybody spends on this tab. */
-    const paths = [...vips.map((v) => v.photo_url), ...looks.map((l) => l.image_url)].filter(Boolean) as string[];
-    const urls = await safeValue('prep pictures', signPrepImages(sb, paths), new Map<string, string>());
+    /* The same loader the couple's own panel uses, so the two screens cannot
+       drift: they are looking at one event's rows from two sides. */
+    const prep = prepOf(await loadPrep(sb, [id]), id);
 
     return (
       <PrepSheet
         c={prepCopy}
         clientId={id}
-        vips={vips.map((v) => ({
-          id: v.id, name: v.name, relation: v.relation, note: v.note,
-          url: v.photo_url ? urls.get(v.photo_url) ?? null : null,
-        }))}
-        looks={looks.map((l) => ({
-          id: l.id, category: l.category, note: l.note,
-          url: l.image_url ? urls.get(l.image_url) ?? null : null,
-        }))}
-        shares={shares.map((s) => ({
-          id: s.id, token: s.token, scope: s.scope, label: s.label,
-          expiresAt: s.expires_at, revokedAt: s.revoked_at,
-        }))}
+        vips={prep.vips}
+        looks={prep.looks}
+        shares={prep.shares}
         siteUrl={publicEnv.siteUrl}
       />
     );

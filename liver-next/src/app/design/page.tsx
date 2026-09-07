@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import { appUiFor } from '@/content/appUi';
+import { appUiFor, prepFor } from '@/content/appUi';
 import { CopyProvider } from '@/components/app/CopyProvider';
 import { currentLocale } from '@/lib/serverLocale';
 import { TaskList } from '@/components/app/TaskList';
@@ -601,6 +601,18 @@ export default async function DesignPage() {
         <Panel name="PrepSheet" note="who not to miss, the looks, and one scoped link per supplier">
           <PrepSheet
             c={prepCopy} clientId={client}
+            vips={fixtureVips} looks={fixtureLooks} shares={fixtureShares}
+            siteUrl="https://app.liverproductions.com"
+          />
+        </Panel>
+
+        {/* The same panel, in the couple's own area and their own language.
+            One component and not two: they are looking at the same rows from
+            the other side, and a read-only copy of this would send them back
+            to WhatsApp to have a name corrected. */}
+        <Panel name="PrepSheet · the couple's panel" note="the couple's language, the same rows, the same panel">
+          <PrepSheet
+            c={prepFor(locale)} clientId={client}
             vips={fixtureVips} looks={fixtureLooks} shares={fixtureShares}
             siteUrl="https://app.liverproductions.com"
           />

@@ -19,7 +19,10 @@ import { fileReport } from '@/app/actions/report';
 import { brandFor } from '@/lib/branding';
 import { Ltr } from '@/components/Ltr';
 import { IssueReporter } from '@/components/app/IssueReporter';
-import { ticketFor } from '@/content/appUi';
+import { ticketFor, prepFor } from '@/content/appUi';
+import { PrepSheet } from '@/components/app/PrepSheet';
+import { loadPrep, prepOf } from '@/lib/prep';
+import { publicEnv } from '@/lib/env';
 
 export async function generateMetadata() {
   return { title: appUiFor(await currentLocale()).portal.title };
@@ -43,8 +46,8 @@ export default async function PortalPage() {
      person, so they have to reach the right one. */
   const brand = await brandFor(account);
   const ids = data.workspaces.map((w) => w.id);
-  const [threads, contracts, files] = await Promise.all([
-    loadThread(sb, ids), loadContracts(sb, ids), loadFiles(sb, ids),
+  const [threads, contracts, files, prep] = await Promise.all([
+    loadThread(sb, ids), loadContracts(sb, ids), loadFiles(sb, ids), loadPrep(sb, ids),
   ]);
 
   /* The songs and the personal details are the couple's to fill in — they are
@@ -88,7 +91,9 @@ export default async function PortalPage() {
           report={<IssueReporter userId={account.id} context={ui.portal.title} copy={ticketFor(locale)} />}
         />
       <div className="space-y-6">
-        {data.workspaces.map((w) => (
+        {data.workspaces.map((w) => {
+          const sheet = prepOf(prep, w.id);
+          return (
           <div key={w.id} className="space-y-6">
             <PortalWorkspace workspace={w} data={data} viewerId={account.id} ui={ui} />
             <Contracts clientId={w.id} contracts={contracts.get(w.id) ?? []} viewer="client" />
@@ -106,9 +111,26 @@ export default async function PortalPage() {
               people={eventFiles.get(w.id)?.people ?? []}
               viewer="client"
             />
+            {/* The same panel the producer has on the event file, not a
+                read-only copy of it. Who the aunt is and what the dress
+                should look like are things only the couple knows, and a
+                screen where they can see the roster but not fix a name is a
+                screen that sends them back to WhatsApp — which is the
+                conversation this whole module exists to end. */}
+            {data.can(w.id, 'prep') && (
+              <PrepSheet
+                c={prepFor(locale)}
+                clientId={w.id}
+                vips={sheet.vips}
+                looks={sheet.looks}
+                shares={sheet.shares}
+                siteUrl={publicEnv.siteUrl}
+              />
+            )}
             <Thread clientId={w.id} messages={threads.get(w.id) ?? []} viewerId={account.id} />
           </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* The two things wanted at a moment nobody plans for: reaching the
