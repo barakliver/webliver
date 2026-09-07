@@ -230,18 +230,70 @@ fi
 # Two weeks of them. Older ones are worth less than the disk on this machine.
 find "$BACKUP_DIR" -name 'before-*.sql.gz' -mtime +14 -delete 2>/dev/null || true
 
-say "applying the schema"
-if ! psql --quiet --no-psqlrc -v ON_ERROR_STOP=1 "$DB_URL" -f "$APP/supabase/setup.sql" >>"$LOG" 2>&1; then
-  say "FAIL  the schema did not apply. The database is untouched past the last"
-  say "      statement that worked, and the backup above predates all of it."
-  say "      Nothing was deployed. See $LOG."
-  git -C "$REPO" checkout --quiet "$BRANCH" || true
-  exit 1
+# ── only the migrations this release actually adds ──────────────────────────
+# This used to apply setup.sql, the whole history concatenated, on the
+# assumption that it was safe to re-run. It is not, and the reason is worth
+# writing down because it is invisible until it happens.
+#
+# setup.sql is idempotent for tables and columns — every one of those is
+# `if not exists`. It is not idempotent for a function whose signature ever
+# changed. producer_by_host is created in 0031 and dropped and recreated with
+# a different return type in 0046. On an empty database that is fine: 0031
+# creates it, 0046 replaces it. On a database that is already current, 0031's
+# `create or replace` meets 0046's function and tries to change the return
+# type back, and Postgres refuses outright: "cannot change return type of
+# existing function". So the file works exactly once, on a fresh database,
+# which is the one case an automatic release never has.
+#
+# What a release actually needs is the migrations it adds — nothing else has
+# any business running again. Each one is written to be safe on its own, and
+# the set of them is a fact git can be asked for rather than a guess.
+OLD_TAG="$(cat "$DEPLOYED" 2>/dev/null || echo '')"
+MIGDIR="liver-next/supabase/migrations"
+
+if [ -z "$OLD_TAG" ] || ! git -C "$REPO" cat-file -e "${OLD_TAG}^{commit}" 2>/dev/null; then
+  # No record of what is live means no way to work out what is new. Applying
+  # the whole history instead is what this change exists to stop doing, so
+  # nothing is applied — which cannot damage anything — and it is said out
+  # loud. A release that then needs a missing column fails its own screen
+  # checks and rolls back, which is the net working as intended.
+  say "no record of the live commit, so no migration is applied by this run."
+  say "      If this release adds any, run them in the SQL editor first."
+  NEW_MIGS=""
+else
+  NEW_MIGS="$(git -C "$REPO" diff --name-only --diff-filter=A "$OLD_TAG" "$TARGET" -- "$MIGDIR" 2>/dev/null || true)"
+  EDITED="$(git -C "$REPO" diff --name-only --diff-filter=M "$OLD_TAG" "$TARGET" -- "$MIGDIR" 2>/dev/null || true)"
+  # An already-applied migration that has been edited will never reach the
+  # database, because it is not new and will not be run again. Usually that is
+  # a comment; occasionally it is somebody expecting an edit to take effect.
+  if [ -n "$EDITED" ]; then
+    say "note: these already-applied migrations were edited, and edits to them"
+    say "      do not reach the database:"
+    printf '%s\n' "$EDITED" | while read -r f; do say "        ${f##*/}"; done
+  fi
 fi
-say "schema applied"
+
+if [ -z "$NEW_MIGS" ]; then
+  say "no new migrations in this release; the schema is left alone"
+else
+  COUNT="$(printf '%s\n' "$NEW_MIGS" | grep -c . || true)"
+  say "applying $COUNT new migration(s)"
+  # In order. They are numbered, and a later one can depend on an earlier one.
+  while read -r f; do
+    [ -n "$f" ] || continue
+    say "  ${f##*/}"
+    if ! psql --quiet --no-psqlrc -v ON_ERROR_STOP=1 "$DB_URL" -f "$REPO/$f" >>"$LOG" 2>&1; then
+      say "FAIL  ${f##*/} did not apply. The database is untouched past the last"
+      say "      statement that worked, and the backup above predates all of it."
+      say "      Nothing was deployed. See $LOG."
+      git -C "$REPO" checkout --quiet "$BRANCH" || true
+      exit 1
+    fi
+  done <<< "$(printf '%s\n' "$NEW_MIGS" | sort)"
+  say "schema applied"
+fi
 
 # ── the code ────────────────────────────────────────────────────────────────
-OLD_TAG="$(cat "$DEPLOYED" 2>/dev/null || echo '')"
 
 # Which go this is. Counted before the attempt rather than after, so a run that
 # is killed halfway — the machine runs out of memory during a build, which on a

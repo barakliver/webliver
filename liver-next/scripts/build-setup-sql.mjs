@@ -9,6 +9,20 @@
  * migrations it is supposed to be, and the drift is invisible until the day a
  * fresh database is built from it and comes out different from the live one.
  *
+ * FOR A FRESH DATABASE ONLY. It is not re-runnable, and the reason is not
+ * obvious enough to leave unwritten: every table and column in here is
+ * `if not exists`, so re-running looks safe right up until it meets a function
+ * whose signature changed. producer_by_host is created in 0031 and dropped and
+ * recreated with a different return type in 0046. Run in order on an empty
+ * database that is correct. Run against a database that is already current,
+ * 0031's `create or replace` meets 0046's function, tries to put the old
+ * return type back, and Postgres refuses: "cannot change return type of
+ * existing function".
+ *
+ * So an existing database is brought forward by applying the migrations it
+ * does not have yet, one at a time — which is what the release agent does —
+ * and never by running this file again.
+ *
  *     node scripts/build-setup-sql.mjs
  */
 import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
