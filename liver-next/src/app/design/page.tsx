@@ -68,6 +68,8 @@ import { ProducerLinkCard } from '@/components/app/ProducerLinkCard';
 import { BrandEditor } from '@/components/app/BrandEditor';
 import { BrandAssets } from '@/components/app/BrandAssets';
 import { PrepSheet } from '@/components/app/PrepSheet';
+import { PrepView } from '@/components/PrepView';
+import { prepViewFor } from '@/content/prepView';
 import { AdminRow } from '@/components/app/AdminRow';
 import { NoticeBell } from '@/components/app/NoticeBell';
 import { IssueReporter } from '@/components/app/IssueReporter';
@@ -602,6 +604,23 @@ export default async function DesignPage() {
             vips={fixtureVips} looks={fixtureLooks} shares={fixtureShares}
             siteUrl="https://app.liverproductions.com"
           />
+        </Panel>
+
+        {/* What the supplier's link opens. Unreachable from here with a real
+            token, and the state that matters is the populated one: a
+            photographer standing in a hall reading it once on a phone. */}
+        <Panel name="PrepView · the supplier's link" note="no account, no navigation, names under faces">
+          <div className="overflow-hidden rounded-xl2 border border-line bg-surface">
+            <PrepView
+              c={prepViewFor(locale)}
+              eventName="נועה ואיתי"
+              dateLabel="שבת, 5 בדצמבר 2026"
+              venue="אחוזת הכפר"
+              producer="ברק ליור"
+              faces={fixtureVips.map((v) => ({ name: v.name, relation: v.relation, note: v.note, url: v.url }))}
+              looks={fixtureLooks.map((l) => ({ category: l.category, note: l.note, url: l.url }))}
+            />
+          </div>
         </Panel>
 
         <Panel name="BrandAssets" note="the three pictures, each with its rules beside the button; one already uploaded">

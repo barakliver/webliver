@@ -1270,6 +1270,9 @@ export const appCopy = {
       meetings: 'פגישות',
       messages: 'הודעות',
       board: 'השראה',
+      /* Named for what it is used for rather than for what it holds. A
+         producer opens this the week of, to send the photographer a link. */
+      prep: 'הכנה לצילום',
     },
 
     edit: 'עריכת פרטים',
