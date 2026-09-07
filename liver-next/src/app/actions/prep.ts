@@ -3,6 +3,13 @@
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { currentAccount } from '@/lib/auth';
+import { noteFailure, saidFor } from '@/lib/flash';
+import { currentLocale } from '@/lib/serverLocale';
+
+/* The couple owns this panel too, and a couple may be reading English — so a
+   failure here speaks the language the screen is in rather than the one the
+   producer's console is written in. */
+const said = async () => saidFor(await currentLocale());
 
 /**
  * The faces and the looks.
@@ -79,7 +86,10 @@ export async function removeVip(form: FormData): Promise<void> {
   if (!id) return;
   const sb = await supabaseServer();
   const { error } = await sb.from('event_vips').delete().eq('id', id);
-  if (error) console.error('[prep] vip delete failed', error);
+  if (error) {
+    console.error('[prep] vip delete failed', error);
+    await noteFailure((await said()).notRemoved);
+  }
   touch(clientId);
 }
 
@@ -115,7 +125,10 @@ export async function removeLook(form: FormData): Promise<void> {
   if (!id) return;
   const sb = await supabaseServer();
   const { error } = await sb.from('event_looks').delete().eq('id', id);
-  if (error) console.error('[prep] look delete failed', error);
+  if (error) {
+    console.error('[prep] look delete failed', error);
+    await noteFailure((await said()).notRemoved);
+  }
   touch(clientId);
 }
 
@@ -143,7 +156,10 @@ export async function mintShare(form: FormData): Promise<void> {
   const expires = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString();
   const { error } = await sb.from('event_prep_shares')
     .insert({ client_id: clientId, scope, label, token: 'set-by-the-database', expires_at: expires });
-  if (error) console.error('[prep] share failed', error);
+  if (error) {
+    console.error('[prep] share failed', error);
+    await noteFailure((await said()).linkNotMade);
+  }
   touch(clientId);
 }
 
@@ -154,7 +170,13 @@ export async function revokeShare(form: FormData): Promise<void> {
   const sb = await supabaseServer();
   const { error } = await sb.from('event_prep_shares')
     .update({ revoked_at: new Date().toISOString() }).eq('id', id);
-  if (error) console.error('[prep] revoke failed', error);
+  /* The one here that is not a convenience. A link that would not revoke and
+     says nothing reads as "the button did not register", when what is true is
+     that somebody's family photographs are still reachable by that address. */
+  if (error) {
+    console.error('[prep] revoke failed', error);
+    await noteFailure((await said()).linkNotRevoked);
+  }
   touch(clientId);
 }
 

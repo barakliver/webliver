@@ -1,5 +1,7 @@
 'use server';
 
+import { noteFailure } from '@/lib/flash';
+
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { currentAccount } from '@/lib/auth';
@@ -94,7 +96,10 @@ export async function removeLabel(form: FormData): Promise<void> {
   if (!id) return;
   const sb = await supabaseServer();
   const { error } = await sb.from('producer_labels').delete().eq('id', id);
-  if (error) console.error('[labels] delete failed', error);
+  if (error) {
+    console.error('[labels] delete failed', error);
+    await noteFailure('לא הצלחנו למחוק את התווית. אפשר לנסות שוב.');
+  }
   touch();
 }
 
@@ -109,6 +114,9 @@ export async function setEventLabel(form: FormData): Promise<void> {
     .from('clients')
     .update({ label_id: labelId || null })
     .eq('id', clientId);
-  if (error) console.error('[labels] event tag failed', error);
+  if (error) {
+    console.error('[labels] event tag failed', error);
+    await noteFailure('לא הצלחנו לשנות את התווית. אפשר לנסות שוב.');
+  }
   touch();
 }

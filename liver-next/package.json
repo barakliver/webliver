@@ -21,10 +21,11 @@
     "hydration": "node scripts/check-hydration.mjs",
     "verify": "node scripts/verify.mjs",
     "db": "bash scripts/db-test.sh",
-    "check": "npm run typecheck && npm run test && npm run classes && npm run bidi && npm run contrast && npm run sqlcheck && npm run schema && npm run dates && npm run screens && npm run rls && npm run print && npm run guards && npm run harness",
+    "check": "npm run typecheck && npm run test && npm run classes && npm run bidi && npm run contrast && npm run sqlcheck && npm run schema && npm run dates && npm run screens && npm run rls && npm run print && npm run guards && npm run harness && npm run actions",
     "print": "node scripts/check-print.mjs",
     "guards": "node scripts/check-guards.mjs",
     "harness": "node scripts/check-harness.mjs",
+    "actions": "node scripts/check-actions.mjs",
     "schema": "node scripts/check-schema.mjs"
   },
   "dependencies": {

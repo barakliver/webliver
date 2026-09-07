@@ -1,5 +1,7 @@
 'use server';
 
+import { noteFailure } from '@/lib/flash';
+
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { currentAccount } from '@/lib/auth';
@@ -148,7 +150,11 @@ export async function removeBrandAsset(form: FormData): Promise<void> {
     .from('producers')
     .update({ [rule.column]: null })
     .eq('id', account.producer.id);
-  if (error) { console.error('[brand] asset clear failed', error); return; }
+  if (error) {
+    console.error('[brand] asset clear failed', error);
+    await noteFailure('לא הצלחנו להסיר את הקובץ. אפשר לנסות שוב.');
+    return;
+  }
 
   /* Every extension the kind may have been stored under. A miss costs
      nothing; a leftover object would sit in the bucket forever. */

@@ -1,5 +1,7 @@
 'use server';
 
+import { noteFailure } from '@/lib/flash';
+
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { TRACKS, AUDIENCES, type Track } from '@/content/lists';
@@ -260,6 +262,7 @@ export async function moveDayItem(form: FormData): Promise<void> {
     .single();
   if (meError || !me) {
     console.error('[day] move: line not found', meError);
+    await noteFailure('לא הצלחנו להזיז את השורה. אפשר לנסות שוב.');
     return;
   }
 
@@ -280,6 +283,7 @@ export async function moveDayItem(form: FormData): Promise<void> {
 
   if (neighbour.error) {
     console.error('[day] move: neighbour lookup failed', neighbour.error);
+    await noteFailure('לא הצלחנו להזיז את השורה. אפשר לנסות שוב.');
     return;
   }
   /* Already first or already last. Nothing to say and nothing to do. */
@@ -295,12 +299,14 @@ export async function moveDayItem(form: FormData): Promise<void> {
   const first = await sb.from('day_schedule').update({ at_time: theirs }).eq('id', id);
   if (first.error) {
     console.error('[day] move: first write failed', first.error);
+    await noteFailure('לא הצלחנו להזיז את השורה. אפשר לנסות שוב.');
     return;
   }
   const second = await sb.from('day_schedule').update({ at_time: mine }).eq('id', neighbour.data.id);
   if (second.error) {
     console.error('[day] move: second write failed, undoing the first', second.error);
     await sb.from('day_schedule').update({ at_time: mine }).eq('id', id);
+    await noteFailure('לא הצלחנו להזיז את השורה. אפשר לנסות שוב.');
     return;
   }
 

@@ -1,5 +1,7 @@
 'use server';
 
+import { noteFailure } from '@/lib/flash';
+
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { publicEnv } from '@/lib/env';
@@ -158,6 +160,9 @@ export async function revokeSignLink(form: FormData): Promise<void> {
 
   const sb = await supabaseServer();
   const { error } = await sb.rpc('revoke_sign_link', { p_contract: id });
-  if (error) console.error('[contracts] could not withdraw the link', error);
+  if (error) {
+    console.error('[contracts] could not withdraw the link', error);
+    await noteFailure('הקישור לא בוטל. הוא עדיין פעיל. אפשר לנסות שוב.');
+  }
   touch(clientId);
 }

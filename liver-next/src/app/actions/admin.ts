@@ -1,5 +1,7 @@
 'use server';
 
+import { noteFailure } from '@/lib/flash';
+
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { currentAccount } from '@/lib/auth';
@@ -53,7 +55,10 @@ export async function transferClient(formData: FormData): Promise<void> {
     p_client: clientId,
     p_to_producer: producerId,
   });
-  if (error) console.error('[admin] transfer failed', error);
+  if (error) {
+    console.error('[admin] transfer failed', error);
+    await noteFailure('האירוע לא הועבר. אפשר לנסות שוב.');
+  }
 
   revalidatePath('/app/admin');
   revalidatePath('/app/clients');
@@ -78,7 +83,10 @@ export async function setFeatureFlag(formData: FormData): Promise<void> {
     p_diy: formData.get('diy') === 'on',
     p_managed: formData.get('managed') === 'on',
   });
-  if (error) console.error('[admin] flag failed', error);
+  if (error) {
+    console.error('[admin] flag failed', error);
+    await noteFailure('הדגל לא נשמר. אפשר לנסות שוב.');
+  }
 
   revalidatePath('/app/admin');
 }
@@ -106,7 +114,10 @@ export async function setAccountKind(formData: FormData): Promise<void> {
 
   const sb = await supabaseServer();
   const { error } = await sb.rpc('set_account_kind', { p_owner: owner, p_kind: kind });
-  if (error) console.error('[admin] kind failed', error);
+  if (error) {
+    console.error('[admin] kind failed', error);
+    await noteFailure('ההרשאה לא השתנתה. אפשר לנסות שוב.');
+  }
 
   revalidatePath('/app/admin');
   revalidatePath('/app/clients');

@@ -1,5 +1,7 @@
 'use server';
 
+import { noteFailure } from '@/lib/flash';
+
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { currentAccount } from '@/lib/auth';
@@ -119,7 +121,10 @@ export async function bookVendor(form: FormData): Promise<void> {
 
   const sb = await supabaseServer();
   const { error } = await sb.rpc('book_vendor', { p_client: clientId, p_vendor: vendorId });
-  if (error) console.error('[vendors] book failed', error);
+  if (error) {
+    console.error('[vendors] book failed', error);
+    await noteFailure('לא הצלחנו לעדכן את הספק. אפשר לנסות שוב.');
+  }
   touchEvent(clientId);
 }
 

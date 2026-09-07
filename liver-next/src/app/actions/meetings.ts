@@ -1,5 +1,7 @@
 'use server';
 
+import { noteFailure } from '@/lib/flash';
+
 import { revalidatePath } from 'next/cache';
 import Anthropic from '@anthropic-ai/sdk';
 import { supabaseServer } from '@/lib/supabase/server';
@@ -97,7 +99,14 @@ export async function deleteMeeting(form: FormData): Promise<void> {
   const clientId = String(form.get('client_id') ?? '');
   if (!id) return;
   const sb = await supabaseServer();
-  await sb.from('meeting_logs').delete().eq('id', id);
+  /* The error used to be discarded outright rather than logged: a delete that
+     the database refused looked exactly like one it performed, on the screen
+     and in the log both. */
+  const { error } = await sb.from('meeting_logs').delete().eq('id', id);
+  if (error) {
+    console.error('[meetings] delete failed', error);
+    await noteFailure('לא הצלחנו למחוק את הפגישה. אפשר לנסות שוב.');
+  }
   refresh(clientId);
 }
 

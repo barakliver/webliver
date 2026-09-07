@@ -10,6 +10,7 @@ import { Avatar } from './Avatar';
 import { IssueReporter } from './IssueReporter';
 import { ProducerCopilot } from './ProducerCopilot';
 import { CoupleCompanion } from './CoupleCompanion';
+import { Flash } from './Flash';
 import { QuickJump, type JumpEvent } from './QuickJump';
 import type { JumpRecord } from '@/lib/jump';
 import { cn } from '@/lib/utils';
@@ -208,6 +209,10 @@ export function AppShell({
             id="main"
             className="mx-auto w-full max-w-content px-4 py-7 pb-32 sm:px-8 sm:py-9 lg:pb-16"
           >
+            {/* Above the screen rather than inside it: the actions that leave
+                a message are spread over a dozen screens, and half of them are
+                bare form submissions with nowhere local to put one. */}
+            <Flash />
             {children}
           </main>
         </div>

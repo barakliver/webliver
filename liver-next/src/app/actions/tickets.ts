@@ -1,5 +1,7 @@
 'use server';
 
+import { noteFailure } from '@/lib/flash';
+
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { currentAccount, ROOT_ADMIN_EMAIL } from '@/lib/auth';
@@ -100,6 +102,9 @@ export async function setTicketStatus(form: FormData): Promise<void> {
     .from('support_tickets')
     .update({ status, resolved_at: status === 'closed' ? new Date().toISOString() : null })
     .eq('id', id);
-  if (error) console.error('[tickets] status change failed', error);
+  if (error) {
+    console.error('[tickets] status change failed', error);
+    await noteFailure('לא הצלחנו לעדכן את הפנייה. אפשר לנסות שוב.');
+  }
   revalidatePath('/app/admin/tickets');
 }

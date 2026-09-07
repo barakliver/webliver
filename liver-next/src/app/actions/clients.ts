@@ -1,5 +1,7 @@
 'use server';
 
+import { noteFailure } from '@/lib/flash';
+
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { supabaseServer } from '@/lib/supabase/server';
@@ -305,6 +307,7 @@ export async function setArchived(form: FormData): Promise<void> {
     const { error } = await sb.rpc('close_event', { p_client: id, p_note: '' });
     if (error) {
       console.error('[clients] close_event refused', { message: error.message });
+      await noteFailure('לא הצלחנו לסגור את התיק. אפשר לנסות שוב.');
       return;
     }
   } else {

@@ -44,6 +44,7 @@ const NOT_DRAWN = {
   'app/Sortable': 'a drag behaviour that wraps rows; the rows it wraps are in the run sheet and the seating plan',
   'app/DragOnto': 'the other half of that behaviour, and a drop target draws nothing until something is dragged',
   ChatDock: 'the chat shell itself, looked at through both assistants that mount it',
+  'app/FlashClear': 'deletes the message once it has been seen and renders nothing',
 };
 
 const files = [];

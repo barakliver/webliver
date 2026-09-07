@@ -88,6 +88,7 @@ import { PortalSummary, summaryRows } from '@/components/app/PortalSummary';
 import { Metric, MetricRows, MetricBlock } from '@/components/app/Metric';
 import { PageHead, Empty } from '@/components/app/PageHead';
 import { TroubleLine } from '@/components/app/LoadTrouble';
+import { FlashLine } from '@/components/app/Flash';
 import { Avatar } from '@/components/app/Avatar';
 import { ArchiveButton } from '@/components/app/ArchiveButton';
 import { PrintButton } from '@/components/app/PrintButton';
@@ -951,6 +952,15 @@ export default async function DesignPage() {
             it exists for is the one nobody can reproduce on purpose. */}
         <Panel name="LoadTrouble" note="what sits above a screen whose data half arrived">
           <div className="max-w-2xl"><TroubleLine text={ui.loadTrouble} /></div>
+        </Panel>
+
+        {/* What a write that did not happen says. Sixteen server actions used
+            to log the failure and redraw the screen exactly as it was. */}
+        <Panel name="Flash" note="the sentence an action leaves behind when the write did not happen">
+          <div className="max-w-2xl space-y-3">
+            <FlashLine text="הקישור לא בוטל. הוא עדיין פעיל. אפשר לנסות שוב." />
+            <FlashLine text="לא הצלחנו להזיז את השורה. אפשר לנסות שוב." />
+          </div>
         </Panel>
 
         <Panel name="Avatar" note="initials when there is no picture, which is almost always">
