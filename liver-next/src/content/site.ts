@@ -2221,6 +2221,48 @@ export const companionCopy = {
   disclaimer: 'התשובות מתוך פרטי האירוע שלכם. שינויים עוברים דרכנו.',
 } as const;
 
+/**
+ * The faces and the looks, in the producer's Hebrew.
+ *
+ * Written as the instruction actually given rather than as the table it is
+ * stored in. Nobody says "VIP roster"; they say "מי אסור לפספס", which is the
+ * sentence the photographer is handed and the reason this panel exists.
+ */
+export const prepCopy = {
+  facesTitle: 'מי אסור לפספס',
+  facesSub: 'תמונה ושם לכל אחד שחייב להיות בתמונות. הצלם לא מכיר אף אחד באולם.',
+  facesEmpty: 'עוד לא הוספתם אף אחד. סבתא היא התחלה טובה.',
+  name: 'שם',
+  relation: 'הקשר',
+  relationPh: 'סבתא של הכלה',
+  note: 'הערה',
+  notePh: 'לצלם איתה בכניסה לחופה',
+  photo: 'תמונה',
+  add: 'הוספה',
+  adding: 'מוסיף',
+  remove: 'מחיקה',
+
+  looksTitle: 'השראה לשיער, איפור ולבוש',
+  looksSub: 'התמונות שאתם שומרים בטלפון, במקום אחד שאפשר לשלוח למעצבת.',
+  looksEmpty: 'עוד לא העליתם תמונות.',
+  kind: 'סוג',
+  categories: { hair: 'שיער', makeup: 'איפור', outfit: 'לבוש', other: 'שונות' },
+
+  shareTitle: 'קישור לספק',
+  shareSub: 'הצלם והמעצבת לא פותחים חשבון בשביל להסתכל בתמונות. קישור אחד, בלי סיסמה, ולכל אחד רק מה שנוגע לו.',
+  shareAll: 'הכל',
+  shareFaces: 'לצלם',
+  shareLooks: 'למעצבת',
+  shareNew: 'קישור חדש',
+  shareCopy: 'העתקה',
+  shareCopied: 'הועתק',
+  shareRevoke: 'ביטול',
+  shareNone: 'עוד לא יצרתם קישור.',
+  shareUntil: 'תקף עד',
+  uploadFailed: 'ההעלאה נכשלה. אפשר לנסות שוב.',
+  tooBig: 'התמונה גדולה מדי. עד 8MB.',
+} as const;
+
 export const siteEditorCopy = {
   title: 'עריכת האתר',
   sub: 'הטקסטים באתר הציבורי. שינוי נשמר ומתפרסם מיד, בלי פריסה.',

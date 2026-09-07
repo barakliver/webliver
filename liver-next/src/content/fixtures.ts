@@ -457,3 +457,29 @@ export const fixtureSheetArrivals: SheetArrival[] = [
   { id: 'sa3', name: 'קייטרינג השדה', role: 'קייטרינג', call_time: '16:30' },
   { id: 'sa4', name: 'דנה בר', role: 'מלווה זוג', call_time: '18:00' },
 ];
+
+/* The prep sheet. Two faces and three references, which is roughly what an
+   event has a fortnight out — enough that the grid has to hold together and
+   few enough that the empty state is one click away. */
+export const fixtureVips = [
+  /* Pictures drawn rather than fetched. The first version of this fixture had
+     a null image everywhere, which showed the reference grid as a row of empty
+     boxes and invited a design decision about a state the column cannot be in.
+     One face is deliberately left without a photograph, because that one is
+     real: a name can be added before anybody has found a picture of her. */
+  { id: 'v1', name: 'סבתא מרים', relation: 'סבתא של הכלה', note: 'לצלם איתה בכניסה לחופה, היא לא נשארת עד הסוף', url: 'data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27240%27%20height=%27240%27%3E%3Cdefs%3E%3ClinearGradient%20id=%27g%27%20x1=%270%27%20y1=%270%27%20x2=%271%27%20y2=%271%27%3E%3Cstop%20offset=%270%27%20stop-color=%27%23e7ddd0%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27%23a98f6d%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%27240%27%20height=%27240%27%20fill=%27url(%23g)%27/%3E%3C/svg%3E' },
+  { id: 'v2', name: 'דוד אריק', relation: 'דוד של החתן', note: '', url: null },
+  { id: 'v3', name: 'נועה בן דוד', relation: 'שושבינה', note: 'מחזיקה את הטבעות', url: 'data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27240%27%20height=%27240%27%3E%3Cdefs%3E%3ClinearGradient%20id=%27g%27%20x1=%270%27%20y1=%270%27%20x2=%271%27%20y2=%271%27%3E%3Cstop%20offset=%270%27%20stop-color=%27%23dfe3ea%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27%238b97ab%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%27240%27%20height=%27240%27%20fill=%27url(%23g)%27/%3E%3C/svg%3E' },
+];
+
+export const fixtureLooks = [
+  { id: 'l1', category: 'hair' as const, note: 'אסוף נמוך', url: 'data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27240%27%20height=%27240%27%3E%3Cdefs%3E%3ClinearGradient%20id=%27g%27%20x1=%270%27%20y1=%270%27%20x2=%271%27%20y2=%271%27%3E%3Cstop%20offset=%270%27%20stop-color=%27%23c9b8a4%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27%238a6136%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%27240%27%20height=%27240%27%20fill=%27url(%23g)%27/%3E%3C/svg%3E' },
+  { id: 'l2', category: 'hair' as const, note: '', url: 'data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27240%27%20height=%27240%27%3E%3Cdefs%3E%3ClinearGradient%20id=%27g%27%20x1=%270%27%20y1=%270%27%20x2=%271%27%20y2=%271%27%3E%3Cstop%20offset=%270%27%20stop-color=%27%23e3d9cb%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27%23b09777%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%27240%27%20height=%27240%27%20fill=%27url(%23g)%27/%3E%3C/svg%3E' },
+  { id: 'l3', category: 'makeup' as const, note: 'טבעי, בלי נצנצים', url: 'data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27240%27%20height=%27240%27%3E%3Cdefs%3E%3ClinearGradient%20id=%27g%27%20x1=%270%27%20y1=%270%27%20x2=%271%27%20y2=%271%27%3E%3Cstop%20offset=%270%27%20stop-color=%27%23e8d6d0%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27%23c08d80%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%27240%27%20height=%27240%27%20fill=%27url(%23g)%27/%3E%3C/svg%3E' },
+  { id: 'l4', category: 'outfit' as const, note: 'לשושבינות', url: 'data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27240%27%20height=%27240%27%3E%3Cdefs%3E%3ClinearGradient%20id=%27g%27%20x1=%270%27%20y1=%270%27%20x2=%271%27%20y2=%271%27%3E%3Cstop%20offset=%270%27%20stop-color=%27%23d6dcd8%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27%237e938a%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%27240%27%20height=%27240%27%20fill=%27url(%23g)%27/%3E%3C/svg%3E' },
+];
+
+export const fixtureShares = [
+  { id: 's1', token: 'aaaaaaaabbbbbbbbccccccccdddddddd', scope: 'faces' as const,
+    label: 'סטודיו לביא', expiresAt: '2026-12-01', revokedAt: null },
+];

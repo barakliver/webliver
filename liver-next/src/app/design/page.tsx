@@ -54,6 +54,7 @@ import {
   fixtureResponse, fixtureCash, fixtureReferrals, fixtureTemplates,
   fixtureMeetings, fixtureDayLines, fixtureDayCrew, fixtureDayVendors,
   fixtureSheetGuests, fixtureSheetTables, fixtureSheetMoments, fixtureSheetArrivals,
+  fixtureVips, fixtureLooks, fixtureShares,
 } from '@/content/fixtures';
 import { NumbersSheet } from '@/components/app/NumbersSheet';
 import { GuestSiteView } from '@/components/guest/GuestSiteView';
@@ -66,6 +67,7 @@ import { AppShell } from '@/components/app/AppShell';
 import { ProducerLinkCard } from '@/components/app/ProducerLinkCard';
 import { BrandEditor } from '@/components/app/BrandEditor';
 import { BrandAssets } from '@/components/app/BrandAssets';
+import { PrepSheet } from '@/components/app/PrepSheet';
 import { AdminRow } from '@/components/app/AdminRow';
 import { NoticeBell } from '@/components/app/NoticeBell';
 import { IssueReporter } from '@/components/app/IssueReporter';
@@ -74,7 +76,7 @@ import { ProducerCopilot } from '@/components/app/ProducerCopilot';
 import { QuickJump } from '@/components/app/QuickJump';
 import { FinanceSummary } from '@/components/app/FinanceSummary';
 import { ProducerLedger } from '@/components/app/ProducerLedger';
-import { appCopy } from '@/content/site';
+import { appCopy, prepCopy } from '@/content/site';
 import { HebrewCalendar } from '@/components/app/HebrewCalendar';
 import { LabelToolbar } from '@/components/app/LabelToolbar';
 import { EventTagPicker } from '@/components/app/EventTagPicker';
@@ -589,6 +591,17 @@ export default async function DesignPage() {
               ownerId: FIXTURE_VIEWER, ownerRole: 'producer',
             }} />
           </ul>
+        </Panel>
+
+        {/* The two things a supplier needs and a WhatsApp thread never
+            carries: a face with a name on it, and the references that
+            otherwise arrive as a screenshot of a screenshot. */}
+        <Panel name="PrepSheet" note="who not to miss, the looks, and one scoped link per supplier">
+          <PrepSheet
+            c={prepCopy} clientId={client}
+            vips={fixtureVips} looks={fixtureLooks} shares={fixtureShares}
+            siteUrl="https://app.liverproductions.com"
+          />
         </Panel>
 
         <Panel name="BrandAssets" note="the three pictures, each with its rules beside the button; one already uploaded">
