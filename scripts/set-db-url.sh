@@ -41,16 +41,70 @@ cat <<'EOF'
   transaction pooler, it does not carry the statements pg_dump needs, and the
   backup is the whole reason this is being asked for.
 
-  Replace [YOUR-PASSWORD] in it with the real password, and paste the WHOLE
-  line. Not the password on its own — the whole thing, which looks like:
-
-      postgresql://postgres.abcdefgh:THEPASSWORD@aws-0-eu-central-1.pooler.supabase.com:5432/postgres
+  Paste it exactly as Supabase shows it. Leave [YOUR-PASSWORD] in it — this
+  asks for the password separately and puts it in for you.
 
 EOF
 
-printf '  paste the whole connection string, then Enter:\n  '
+printf '  paste the connection string, then Enter:\n  '
 IFS= read -r URI
 echo
+
+# ── the password, asked for separately ──────────────────────────────────────
+# Substituting [YOUR-PASSWORD] by hand before pasting is the step that failed
+# three times: once the placeholder went in unreplaced, once the password was
+# pasted on its own, and once a line of example output was pasted instead of
+# either. All three are the same problem — a value that has to be assembled
+# out of two pieces before it can be typed — so the assembling happens here.
+#
+# Read with -s, because the one thing everybody agrees should not be on the
+# screen is the password, and this console gets photographed.
+#
+# And percent-encoded, because from here it is going inside a URI, where
+# @ / : ? # are syntax. Encoding it here is safe in a way that asking somebody
+# to encode it themselves is not.
+urlencode() {
+  local s="$1" out="" c i
+  for (( i = 0; i < ${#s}; i++ )); do
+    c="${s:i:1}"
+    case "$c" in
+      [a-zA-Z0-9.~_-]) out+="$c" ;;
+      *)               out+="$(printf '%%%02X' "'$c")" ;;
+    esac
+  done
+  printf '%s' "$out"
+}
+
+case "$URI" in
+  *'[YOUR-PASSWORD]'*)
+    echo "  Now the password. It will not be shown as you paste it."
+    printf '  paste the database password, then Enter: '
+    IFS= read -rs PW
+    echo; echo
+
+    if [ -z "$PW" ]; then
+      echo "  Not written: no password was pasted."
+      echo "  Nothing in $ENVFILE was changed."
+      exit 1
+    fi
+    case "$PW" in
+      *'[YOUR-PASSWORD]'*|*' '*)
+        echo "  Not written: that is not a password — it is the placeholder, or it"
+        echo "  has a space in it. Nothing in $ENVFILE was changed."
+        exit 1 ;;
+    esac
+    # Non-ASCII would have to be encoded as UTF-8 bytes rather than characters,
+    # and getting that subtly wrong produces a password that is almost right.
+    # Supabase's generated passwords are letters and digits.
+    if printf '%s' "$PW" | LC_ALL=C grep -q '[^ -~]'; then
+      echo "  Not written: that password has characters outside the plain ASCII"
+      echo "  range. Reset it and press Generate a password."
+      exit 1
+    fi
+
+    URI="${URI//\[YOUR-PASSWORD\]/$(urlencode "$PW")}"
+    ;;
+esac
 
 # ── is it the thing, or a description of the thing ──────────────────────────
 # Every one of these has actually been written into this file by somebody
