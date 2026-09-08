@@ -40,7 +40,19 @@ export type SiteCopy = {
   lead: {
     title: string; sub: string;
     fields: { name: string; phone: string; email: string; kind: string; date: string; guests: string; message: string; location: string };
-    locationFree: string; locationPh: string; locationNeed: string;
+    locationFree: string; locationPh: string;
+    /* Why a form was refused, in the language it was read in.
+       The labels above were moved out of the browser bundle for exactly this
+       reason once already — a client component importing the Hebrew constant
+       shipped a Hebrew form to an English visitor whatever the page around it
+       said. The refusals stayed behind in the action, hard-coded, so the form
+       read in English and then said no in Hebrew. `{max}` is the only
+       substitution, and it is the guest ceiling. */
+    errors: {
+      name: string; contact: string; location: string; email: string;
+      date: string; dateFrom: string; guests: string; guestsMax: string;
+      saveFailed: string;
+    };
     /* Six labels, in the reader's language, for the six regions in REGIONS. */
     regions: readonly [string, string, string, string, string, string];
     submit: string; sending: string; okTitle: string; okBody: string;
@@ -207,7 +219,17 @@ export const site: SiteCopy = {
     },
     locationFree: 'או שם האולם, אם כבר נבחר',
     locationPh: 'שם האולם או כתובת, אם יש',
-    locationNeed: 'נא לבחור אזור או לכתוב איפה האירוע',
+    errors: {
+      name: 'נא למלא שם מלא',
+      contact: 'נא להשאיר טלפון או אימייל',
+      location: 'נא לבחור אזור או לכתוב איפה האירוע',
+      email: 'כתובת האימייל לא תקינה',
+      date: 'תאריך לא תקין',
+      dateFrom: 'התאריך צריך להיות משנת 2026 ואילך',
+      guests: 'כמות אורחים לא תקינה',
+      guestsMax: 'כמות האורחים המרבית היא {max}',
+      saveFailed: 'לא הצלחנו לשמור את הפנייה. נסו שוב או שלחו הודעה בוואטסאפ.',
+    },
     regions: ['מרכז', 'שרון', 'צפון', 'דרום', 'ירושלים והסביבה', 'שטח / פתוח'],
     submit: 'שליחה',
     sending: 'שולח',

@@ -1,4 +1,9 @@
-import { site, PROMISE } from '@/content/site';
+/* Relative rather than aliased, so the letters can be rendered by a test.
+   `node --test` does not resolve `@/`, and the one letter here that leaves the
+   business is worth being able to look at without a browser. */
+import { site, PROMISE } from '../../content/site.ts';
+import { siteEn } from '../../content/site.en.ts';
+import type { Locale } from '../locale.ts';
 
 /**
  * The identity at the foot of a letter.
@@ -13,20 +18,36 @@ import { site, PROMISE } from '@/content/site';
  */
 export type MailBrand = { name: string; tagline?: string; promise?: string };
 
-const PLATFORM_MAIL: MailBrand = { name: site.brand, tagline: site.tagline, promise: PROMISE };
+/* The platform's own signature, in the language the letter is written in.
+   Signing an English letter in Hebrew was the residual half of the same bug:
+   the body was translated and the name at the bottom was not, so the first
+   thing the business ever said to an English enquirer ended in a script they
+   cannot read. The English promise is the English hero line, which is where
+   that sentence is already written for this language. */
+const platformMail = (locale: Locale): MailBrand => (locale === 'en'
+  ? { name: siteEn.brand, tagline: siteEn.tagline, promise: siteEn.hero.headline }
+  : { name: site.brand, tagline: site.tagline, promise: PROMISE });
 
-const shell = (inner: string, brand: MailBrand = PLATFORM_MAIL) => `
-<div dir="rtl" style="font-family:Assistant,Heebo,Arial,sans-serif;background:#f4f8fd;padding:28px">
+/* The language is one argument rather than two, so the direction cannot
+   disagree with the words. Everything sent inward is Hebrew and always will
+   be; the confirmation that lands in an enquirer's inbox is in whatever
+   language they filled the form in, and an English paragraph laid out right to
+   left is a letter that looks broken before it is read. */
+function shell(inner: string, brand?: MailBrand, locale: Locale = 'he'): string {
+  const sign = brand ?? platformMail(locale);
+  return `
+<div dir="${locale === 'en' ? 'ltr' : 'rtl'}" style="font-family:Assistant,Heebo,Arial,sans-serif;background:#f4f8fd;padding:28px">
   <div style="max-width:560px;margin:0 auto;background:#fff;border-radius:20px;padding:28px;border:1px solid #e6eef8">
     ${inner}
     <hr style="border:none;border-top:1px solid #eef2f7;margin:22px 0">
     <!-- The signature line, when the sender has one. In the accent and tracked
          open, so it reads as a signature rather than as another line of small
          print. Above the name, because it is what the name is for. -->
-    ${brand.promise ? `<p style="margin:0 0 6px;color:#a3814f;font-size:12px;font-weight:600;letter-spacing:.14em">${brand.promise}</p>` : ''}
-    <p style="color:#6b7686;font-size:12.5px;margin:0">${brand.name}${brand.tagline ? ` · ${brand.tagline}` : ''}</p>
+    ${sign.promise ? `<p style="margin:0 0 6px;color:#a3814f;font-size:12px;font-weight:600;letter-spacing:.14em">${sign.promise}</p>` : ''}
+    <p style="color:#6b7686;font-size:12.5px;margin:0">${sign.name}${sign.tagline ? ` · ${sign.tagline}` : ''}</p>
   </div>
 </div>`;
+}
 
 const row = (k: string, v: string) =>
   v ? `<tr><td style="padding:5px 0;color:#6b7686;width:120px">${k}</td><td style="padding:5px 0;color:#0b1220">${v}</td></tr>` : '';
@@ -50,16 +71,33 @@ export function adminLeadEmail(l: LeadPayload) {
     </table>`);
 }
 
-export function clientConfirmEmail(name: string, brand?: MailBrand) {
-  return shell(`
+/** The only letter here that goes to somebody outside the business, and so the
+ *  only one written in the reader's language rather than the office's. */
+export function clientConfirmEmail(name: string, brand?: MailBrand, locale: Locale = 'he') {
+  const p = 'margin:0 0 10px;font-size:15px;line-height:1.8;color:#3c4657';
+  const inner = locale === 'en'
+    ? `
+    <h2 style="margin:0 0 10px;font-size:20px;color:#0b1220">Thank you ${name}, we have your details</h2>
+    <p style="${p}">
+      Your enquiry has reached us, and we usually come back within one business day.
+    </p>
+    <p style="margin:0;font-size:15px;line-height:1.8;color:#3c4657">
+      If anything is urgent in the meantime, simply reply to this email.
+    </p>`
+    : `
     <h2 style="margin:0 0 10px;font-size:20px;color:#0b1220">תודה ${name}, קיבלנו את הפרטים</h2>
-    <p style="margin:0 0 10px;font-size:15px;line-height:1.8;color:#3c4657">
+    <p style="${p}">
       הפנייה שלכם התקבלה, ונחזור אליכם בדרך כלל תוך יום עסקים.
     </p>
     <p style="margin:0;font-size:15px;line-height:1.8;color:#3c4657">
       בינתיים, אם יש משהו דחוף אפשר פשוט להשיב למייל הזה.
-    </p>`, brand);
+    </p>`;
+  return shell(inner, brand, locale);
 }
+
+/** The subject line of that same letter, in the same language as its body. */
+export const clientConfirmSubject = (locale: Locale): string =>
+  locale === 'en' ? 'We have your enquiry' : 'קיבלנו את הפנייה שלכם';
 
 export function adminLeadWhatsApp(l: LeadPayload) {
   return [

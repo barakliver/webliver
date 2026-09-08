@@ -3,10 +3,12 @@
 import { supabaseServer } from '@/lib/supabase/server';
 import { sendMail } from '@/lib/notify/mail';
 import { sendWhatsApp } from '@/lib/notify/whatsapp';
-import { adminLeadEmail, clientConfirmEmail, adminLeadWhatsApp, type LeadPayload, type MailBrand } from '@/lib/notify/templates';
+import { adminLeadEmail, clientConfirmEmail, clientConfirmSubject, adminLeadWhatsApp, type LeadPayload, type MailBrand } from '@/lib/notify/templates';
 import { brandForHost } from '@/lib/branding';
 import { optional } from '@/lib/env';
 import { MIN_EVENT_DATE, MAX_GUESTS } from '@/content/site';
+import { shippedCopy } from '@/lib/siteCopy';
+import { currentLocale } from '@/lib/serverLocale';
 
 export type LeadResult =
   | { ok: true }
@@ -17,6 +19,14 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 /** Server-side validation is the authority. The same rules run in the browser
  *  for feedback, but nothing here trusts that they did. */
 export async function submitLead(_prev: LeadResult | null, form: FormData): Promise<LeadResult> {
+  /* The language the form was read in. The labels were moved out of the client
+     bundle for this reason once already; the refusals stayed behind here as
+     Hebrew literals, so an English visitor filled in an English form and was
+     turned away in a language they do not read. Shipped copy rather than the
+     edited copy: saying no is not a marketing sentence, and it should not cost
+     a database round trip. */
+  const locale = await currentLocale();
+  const say = shippedCopy(locale).lead.errors;
   const v = (k: string) => String(form.get(k) ?? '').trim();
 
   const payload: LeadPayload = {
@@ -30,23 +40,25 @@ export async function submitLead(_prev: LeadResult | null, form: FormData): Prom
     location: v('location').slice(0, 120),
   };
 
-  if (payload.full_name.length < 2) return { ok: false, error: 'נא למלא שם מלא', field: 'full_name' };
-  if (!payload.phone && !payload.email) return { ok: false, error: 'נא להשאיר טלפון או אימייל', field: 'phone' };
+  if (payload.full_name.length < 2) return { ok: false, error: say.name, field: 'full_name' };
+  if (!payload.phone && !payload.email) return { ok: false, error: say.contact, field: 'phone' };
   /* Where is required on the public form. It is the question the first call
      is spent on, and a tap on a chip answers it. */
-  if (!payload.location) return { ok: false, error: 'נא לבחור אזור או לכתוב איפה האירוע', field: 'location' };
-  if (payload.email && !EMAIL_RE.test(payload.email)) return { ok: false, error: 'כתובת האימייל לא תקינה', field: 'email' };
+  if (!payload.location) return { ok: false, error: say.location, field: 'location' };
+  if (payload.email && !EMAIL_RE.test(payload.email)) return { ok: false, error: say.email, field: 'email' };
 
   if (payload.event_date) {
-    if (Number.isNaN(Date.parse(payload.event_date))) return { ok: false, error: 'תאריך לא תקין', field: 'event_date' };
-    if (payload.event_date < MIN_EVENT_DATE) return { ok: false, error: 'התאריך צריך להיות משנת 2026 ואילך', field: 'event_date' };
+    if (Number.isNaN(Date.parse(payload.event_date))) return { ok: false, error: say.date, field: 'event_date' };
+    if (payload.event_date < MIN_EVENT_DATE) return { ok: false, error: say.dateFrom, field: 'event_date' };
   }
 
   let guests: number | null = null;
   if (payload.guest_count) {
     guests = Number(payload.guest_count);
-    if (!Number.isFinite(guests) || guests <= 0) return { ok: false, error: 'כמות אורחים לא תקינה', field: 'guest_count' };
-    if (guests > MAX_GUESTS) return { ok: false, error: `כמות האורחים המרבית היא ${MAX_GUESTS}`, field: 'guest_count' };
+    if (!Number.isFinite(guests) || guests <= 0) return { ok: false, error: say.guests, field: 'guest_count' };
+    if (guests > MAX_GUESTS) {
+      return { ok: false, error: say.guestsMax.replace('{max}', String(MAX_GUESTS)), field: 'guest_count' };
+    }
   }
 
   /* The lead is stored first; notifications are best effort once it is safe.
@@ -72,7 +84,7 @@ export async function submitLead(_prev: LeadResult | null, form: FormData): Prom
     if (error) throw new Error(`${error.code ?? ''} ${error.message}`.trim());
   } catch (e) {
     console.error('[lead] save failed', e);
-    return { ok: false, error: 'לא הצלחנו לשמור את הפנייה. נסו שוב או שלחו הודעה בוואטסאפ.' };
+    return { ok: false, error: say.saveFailed };
   }
 
   /* The confirmation goes back to a visitor who was reading somebody's site.
@@ -89,7 +101,13 @@ export async function submitLead(_prev: LeadResult | null, form: FormData): Prom
   const results = await Promise.allSettled([
     adminTo ? sendMail({ to: adminTo, subject: `פנייה חדשה מהאתר: ${payload.full_name}`, html: adminLeadEmail(payload), replyTo: payload.email || undefined }) : Promise.resolve({ sent: false }),
     sendWhatsApp(adminLeadWhatsApp(payload)),
-    payload.email ? sendMail({ to: payload.email, subject: 'קיבלנו את הפנייה שלכם', html: clientConfirmEmail(payload.full_name.split(' ')[0], visitorBrand) }) : Promise.resolve({ sent: false }),
+    payload.email
+      ? sendMail({
+          to: payload.email,
+          subject: clientConfirmSubject(locale),
+          html: clientConfirmEmail(payload.full_name.split(' ')[0], visitorBrand, locale),
+        })
+      : Promise.resolve({ sent: false }),
   ]);
   results.forEach((r, i) => {
     if (r.status === 'rejected') console.error('[lead] notify channel', i, 'threw', r.reason);

@@ -53,6 +53,17 @@ function applyAt(target: SiteCopy, key: string, value: string): void {
   }
 }
 
+/**
+ * The shipped copy for a language, with no overrides and no database.
+ *
+ * For text a producer must not be able to edit and a visitor must not be made
+ * to wait for. A server action refusing a form is both: telling somebody their
+ * email address is not an address should not be a round trip, and it should
+ * not be a sentence anybody can rewrite into something that no longer says
+ * what went wrong.
+ */
+export const shippedCopy = (locale: Locale): SiteCopy => SHIPPED[locale] ?? site;
+
 export function mergeCopy(
   overrides: { key: string; value: string }[],
   locale: Locale = DEFAULT_LOCALE,
