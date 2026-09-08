@@ -27,7 +27,15 @@ import type { Locale } from './locale';
  * page's own scripts, because that is how it clears itself after being shown
  * once.
  */
-const NAME = 'liver-said';
+/* `__Host-` is not decoration. Without it a cookie of this name can be set
+   with a Domain attribute by anything on liverproductions.com — and the main
+   site on that domain is a WordPress install, which is a different security
+   story from this one. The prefix makes the browser refuse any such cookie:
+   it may only be set by this exact host, only over HTTPS, and only at path /.
+   Nothing worse than a wrong sentence could have come through, because the
+   message is React-escaped and only ever one of a fixed set. It is still not
+   an opening this product needs to leave. */
+const NAME = '__Host-liver-said';
 
 /* Long enough to survive the redraw that follows the action, short enough that
    a message nobody's browser managed to clear is gone by the time they come
@@ -40,6 +48,9 @@ export async function noteFailure(text: string): Promise<void> {
       maxAge: SECONDS,
       path: '/',
       sameSite: 'lax',
+      /* Required by the __Host- prefix, and right on its own now that the
+         platform is only reachable over HTTPS. */
+      secure: true,
       /* Readable on purpose. The shell shows it and then deletes it, which is
          what stops the same sentence appearing on the next three screens. */
       httpOnly: false,

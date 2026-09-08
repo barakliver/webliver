@@ -16,7 +16,9 @@ import { useEffect } from 'react';
  */
 export function FlashClear({ name }: { name: string }) {
   useEffect(() => {
-    document.cookie = `${name}=; Max-Age=0; Path=/; SameSite=Lax`;
+    /* Secure, because the cookie it is clearing carries the __Host- prefix
+       and a browser will not match a deletion that drops it. */
+    document.cookie = `${name}=; Max-Age=0; Path=/; SameSite=Lax; Secure`;
   }, [name]);
   return null;
 }
