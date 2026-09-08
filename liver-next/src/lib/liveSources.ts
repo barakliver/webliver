@@ -38,6 +38,7 @@ export function workspaceSources(clientId: string): LiveSource[] {
     of('payments'),
     of('client_authorized_emails'),
     of('messages'),
+    of('venue_comparisons'),
     of('contracts'),
     of('client_files'),
   ];
@@ -50,4 +51,5 @@ export const PORTAL_LIVE_SOURCES: LiveSource[] = [
   { table: 'tables_seating' }, { table: 'moodboards' }, { table: 'day_schedule' },
   { table: 'budget_items' }, { table: 'payments' },
   { table: 'messages' }, { table: 'contracts' }, { table: 'client_files' },
+  { table: 'venue_comparisons' },
 ];

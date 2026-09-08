@@ -1,10 +1,10 @@
 import type { Locale } from '../lib/locale.ts';
 import {
   appCopy, guestsCopy, seatingCopy, dayCopy, threadCopy, partyCopy, contractCopy, eventFileCopy,
-  noticeCopy, ticketCopy, companionCopy, prepCopy,
+  noticeCopy, ticketCopy, companionCopy, prepCopy, venueCopy,
 } from './site.ts';
 import {
-  noticeCopyEn, ticketCopyEn, companionCopyEn, prepCopyEn,
+  noticeCopyEn, ticketCopyEn, companionCopyEn, prepCopyEn, venueCopyEn,
   portalEn, filesEn, sheetsEn, tasksEn, moneyEn, boardEn, bookEn,
   guestsEn, seatingEn, dayEn, threadEn, partyEn, contractEn, eventFileEn,
 } from './app.en.ts';
@@ -63,6 +63,9 @@ export type CompanionCopy = Wide<typeof companionCopy>;
    resolved rather than provided: the producer's tab passes the Hebrew straight
    in, and the couple's area asks for their own language. */
 export type PrepCopy = Wide<typeof prepCopy>;
+/* The halls. Both sides edit it and the couple is the side that toured them,
+   so it is resolved rather than handed the console's Hebrew. */
+export type VenueCopy = Wide<typeof venueCopy>;
 
 /** Everything the couple's screens read, resolved together. One object rather
  *  than thirteen lookups, because it travels as one value through one context
@@ -108,3 +111,4 @@ export const noticeFor = (l: Locale): NoticeCopy => (l === 'en' ? noticeCopyEn :
 export const ticketFor = (l: Locale): TicketCopy => (l === 'en' ? ticketCopyEn : ticketCopy);
 export const companionFor = (l: Locale): CompanionCopy => (l === 'en' ? companionCopyEn : companionCopy);
 export const prepFor = (l: Locale): PrepCopy => (l === 'en' ? prepCopyEn : prepCopy);
+export const venuesFor = (l: Locale): VenueCopy => (l === 'en' ? venueCopyEn : venueCopy);

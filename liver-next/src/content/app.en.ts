@@ -1,4 +1,4 @@
-import type { NoticeCopy, TicketCopy, BookCopy, CompanionCopy, PrepCopy } from './appUi.ts';
+import type { NoticeCopy, TicketCopy, BookCopy, CompanionCopy, PrepCopy, VenueCopy } from './appUi.ts';
 import type {
   PortalCopy, FilesCopy, SheetsCopy, TasksCopy, MoneyCopy, BoardCopy,
   GuestsCopy, SeatingCopy, DayCopy, ThreadCopy, PartyCopy, ContractCopy, EventFileCopy,
@@ -523,6 +523,81 @@ export const prepCopyEn: PrepCopy = {
   shareUntil: 'Valid until',
   uploadFailed: 'The upload failed. You can try again.',
   tooBig: 'That picture is too large. Up to 8MB.',
+};
+
+/* The halls, in English. Written for the couple: they are the ones who walked
+   round four of them and were handed four numbers that do not mean the same
+   thing. */
+export const venueCopyEn: VenueCopy = {
+  title: 'Comparing venues',
+  sub: 'Every quote you were given, broken into the parts that actually differ. The figure at the bottom is what the evening really costs.',
+  empty: 'No venue added yet. The last one you saw is a good place to start.',
+  emptySub: 'The plate price is enough to begin with. The rest can wait until after you have called them.',
+
+  add: 'Add a venue',
+  adding: 'Adding',
+  save: 'Save',
+  saving: 'Saving',
+  edit: 'Edit',
+  remove: 'Remove',
+  cancel: 'Cancel',
+
+  name: 'Venue',
+  namePh: 'The Courtyard',
+  location: 'Area',
+  locationPh: 'Sharon',
+  contact: 'Contact',
+  phone: 'Phone',
+  toured: 'Date of the tour',
+  notes: 'Impressions',
+  notesPh: 'Parking, access, acoustics, how flexible they are about hours',
+
+  plate: 'Price per plate',
+  vatIncluded: 'This price includes VAT',
+  bar: 'Bar and alcohol',
+  barFlat: 'Flat fee',
+  barPerPerson: 'Per guest',
+  sound: 'Sound and lighting',
+  ancillary: 'Ancillary fees',
+  ancillaryHint: 'Cleaning, security, air conditioning, a screen, the chuppah, extra hours',
+  servicePercent: 'Service charge, per cent',
+  serviceFlat: 'Flat gratuity',
+  quote: 'Their quote',
+  quoteOpen: 'Open the quote',
+
+  guests: 'Guests',
+  guestsHint: "This is the event's guest estimate. Changing it here changes it in the bar calculator and the budget too.",
+  vatBasis: 'Show prices including VAT',
+
+  food: 'Catering',
+  service: 'Service',
+  total: 'Total',
+  buffer: 'Buffer',
+  withBuffer: 'With the buffer',
+  perGuest: 'Real cost per guest',
+  perGuestHint: 'Once the fixed fees are spread across everyone coming.',
+  overCheapest: '{n}% more than the cheapest',
+
+  bestValue: 'Best value',
+  chosen: 'The chosen venue',
+  choose: 'Choose this venue',
+  chooseHint: 'The venue goes onto the event and the figure becomes the baseline line in the budget. The other quotes stay here to look back at.',
+
+  flags: 'What is there',
+  flagLabels: {
+    licence: 'Business licence in date',
+    kosher: 'Kosher certification',
+    volume: 'Volume limit after 23:00',
+    suite: 'Couple\'s suite',
+    generator: 'Backup generator',
+    parking: 'Parking',
+    accessible: 'Step-free access',
+  },
+
+  print: 'Print',
+  printHint: 'One landscape page, for the parents.',
+  uploadFailed: 'The upload failed. You can try again.',
+  tooBig: 'That file is too large. Up to 10MB.',
 };
 
 export const noticeCopyEn: NoticeCopy = {

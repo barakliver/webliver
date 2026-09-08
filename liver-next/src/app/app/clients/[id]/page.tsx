@@ -36,8 +36,11 @@ import { signBoardImages } from '@/lib/board';
 import { safeRows, safeValue } from '@/lib/safe';
 import { publicEnv } from '@/lib/env';
 import { PrepSheet } from '@/components/app/PrepSheet';
-import { prepCopy } from '@/content/site';
+import { prepCopy, venueCopy } from '@/content/site';
 import { loadPrep, prepOf } from '@/lib/prep';
+import { VenueCompare } from '@/components/app/VenueCompare';
+import { loadVenues, venuesOf } from '@/lib/venueRows';
+
 import { loadThread, loadContracts } from '@/lib/portal';
 import { loadFiles } from '@/lib/files';
 import { loadEventSummary } from '@/lib/eventSummary';
@@ -356,6 +359,21 @@ async function Section({ tab, client, viewerId }: { tab: EventTab; client: Clien
   if (tab === 'messages') {
     const threads = await safeValue('thread', loadThread(sb, [id]), new Map());
     return <Thread clientId={id} messages={threads.get(id) ?? []} viewerId={viewerId} />;
+  }
+
+  if (tab === 'venues') {
+    /* The same loader the couple's own panel uses, so the two screens are
+       looking at one comparison rather than two that agree by accident. */
+    const data = venuesOf(await loadVenues(sb, [id]), id);
+    return (
+      <VenueCompare
+        c={venueCopy}
+        clientId={id}
+        venues={data.venues}
+        quoteUrls={data.quoteUrls}
+        guestEstimate={client.guest_estimate ?? 0}
+      />
+    );
   }
 
   if (tab === 'prep') {

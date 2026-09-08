@@ -695,4 +695,11 @@
   .print-block { break-inside: avoid; }
 
   @page { margin: 16mm 14mm; }
+
+  /* A comparison is columns side by side, and four columns on a portrait page
+     is four columns nobody can read. A named page rather than a blanket
+     `size: landscape`, so turning the paper is a property of this one document
+     and not of every document in the product. */
+  .print-wide { page: wide; }
+  @page wide { size: A4 landscape; margin: 12mm; }
 }

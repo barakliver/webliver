@@ -1273,6 +1273,9 @@ export const appCopy = {
       /* Named for what it is used for rather than for what it holds. A
          producer opens this the week of, to send the photographer a link. */
       prep: 'הכנה לצילום',
+      /* Before there is an event to run there is a hall to choose, so this
+         sits early in the row rather than beside the money. */
+      venues: 'אולמות',
     },
 
     edit: 'עריכת פרטים',
@@ -2264,6 +2267,78 @@ export const prepCopy = {
   shareUntil: 'תקף עד',
   uploadFailed: 'ההעלאה נכשלה. אפשר לנסות שוב.',
   tooBig: 'התמונה גדולה מדי. עד 8MB.',
+} as const;
+
+export const venueCopy = {
+  title: 'השוואת אולמות',
+  sub: 'כל הצעה שקיבלתם, מפורקת לחלקים שבאמת שונים ביניהן. המספר למטה הוא מה שהערב באמת יעלה.',
+  empty: 'עוד לא הוספתם אולם. אפשר להתחיל מזה שראיתם אחרון.',
+  emptySub: 'צריך רק את מחיר המנה כדי להתחיל. את השאר אפשר להשלים אחרי השיחה איתם.',
+
+  add: 'הוספת אולם',
+  adding: 'מוסיף',
+  save: 'שמירה',
+  saving: 'שומר',
+  edit: 'עריכה',
+  remove: 'מחיקה',
+  cancel: 'ביטול',
+
+  name: 'שם האולם',
+  namePh: 'אחוזת הכפר',
+  location: 'אזור',
+  locationPh: 'שרון',
+  contact: 'איש קשר',
+  phone: 'טלפון',
+  toured: 'תאריך הסיור',
+  notes: 'התרשמות',
+  notesPh: 'חניה, נגישות, אקוסטיקה, גמישות בשעות',
+
+  plate: 'מחיר מנה',
+  vatIncluded: 'המחיר כולל מע״מ',
+  bar: 'בר ואלכוהול',
+  barFlat: 'סכום קבוע',
+  barPerPerson: 'לאורח',
+  sound: 'הגברה ותאורה',
+  ancillary: 'הוצאות נלוות',
+  ancillaryHint: 'ניקיון, אבטחה, מיזוג, מסך, חופה, שעות נוספות',
+  servicePercent: 'דמי שירות באחוזים',
+  serviceFlat: 'טיפ קבוע',
+  quote: 'הצעת המחיר',
+  quoteOpen: 'פתיחת ההצעה',
+
+  guests: 'כמות מוזמנים',
+  guestsHint: 'זאת הערכת המוזמנים של האירוע. שינוי כאן משנה אותה גם במחשבון הבר ובתקציב.',
+  vatBasis: 'להציג מחירים כולל מע״מ',
+
+  food: 'מנות',
+  service: 'שירות',
+  total: 'סך הכל',
+  buffer: 'רזרבה',
+  withBuffer: 'עם רזרבה',
+  perGuest: 'עלות אמיתית לאורח',
+  perGuestHint: 'אחרי שההוצאות הקבועות מתחלקות על כל המוזמנים.',
+  overCheapest: 'יקר ב-{n}% מהזול ביותר',
+
+  bestValue: 'המשתלם ביותר',
+  chosen: 'האולם שנבחר',
+  choose: 'בחירת האולם הזה',
+  chooseHint: 'האולם ייכנס לאירוע, והסכום ייכנס לתקציב כשורת הבסיס. שאר ההצעות יישארו כאן לעיון.',
+
+  flags: 'מה יש שם',
+  flagLabels: {
+    licence: 'רישיון עסק בתוקף',
+    kosher: 'כשרות',
+    volume: 'הגבלת ווליום אחרי 23:00',
+    suite: 'חדר חתן־כלה',
+    generator: 'גנרטור חירום',
+    parking: 'חניה',
+    accessible: 'נגישות',
+  },
+
+  print: 'הדפסה',
+  printHint: 'דף אחד לרוחב, להורים.',
+  uploadFailed: 'ההעלאה נכשלה. אפשר לנסות שוב.',
+  tooBig: 'הקובץ גדול מדי. עד 10MB.',
 } as const;
 
 export const siteEditorCopy = {

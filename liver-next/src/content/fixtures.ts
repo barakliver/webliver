@@ -307,6 +307,7 @@ import type { EventSummary } from '@/lib/eventSummary';
 import type { Funnel, SourceRow, Response, Cash } from '@/lib/analytics';
 import type { ReferralRow } from '@/components/app/Referrals';
 import type { Template } from '@/components/app/WorkflowTemplates';
+import type { VenueRow } from '@/components/app/VenueCompare';
 import type { MeetingLog } from '@/components/app/MeetingDrawer';
 import type { Line, Caller } from '@/lib/dayof';
 
@@ -482,4 +483,56 @@ export const fixtureLooks = [
 export const fixtureShares = [
   { id: 's1', token: 'aaaaaaaabbbbbbbbccccccccdddddddd', scope: 'faces' as const,
     label: 'סטודיו לביא', expiresAt: '2026-12-01', revokedAt: null },
+];
+
+/* Four halls, which is what a couple has toured by the time this screen is
+   worth opening. Deliberately quoted four different ways: one before VAT with
+   a flat bar, one after VAT with the bar per head, one that leaves sound and
+   lighting to the DJ, and one that is dearer per plate and cheaper in total.
+   That last one is the whole point of the screen. */
+export const fixtureVenues: VenueRow[] = [
+  {
+    id: 'h1', venueName: 'אחוזת הכפר', location: 'שרון',
+    platePrice: 320, isVatIncluded: false,
+    barCost: 22000, barType: 'flat',
+    soundLightingCost: 14000, ancillaryFees: 9000,
+    servicePercent: 0, serviceFlat: 6000, contingencyPercent: 10,
+    prosCons: ['licence', 'kosher', 'parking', 'suite'],
+    quotePath: '', isSelected: false,
+    contact: 'מירב', phone: '0521111111', touredOn: '2026-07-14',
+    notes: 'אקוסטיקה טובה, חניה צמודה. גמישים עד 01:00 בתוספת תשלום.',
+  },
+  {
+    id: 'h2', venueName: 'בית הבאר', location: 'מרכז',
+    platePrice: 401, isVatIncluded: true,
+    barCost: 95, barType: 'per_person',
+    soundLightingCost: 0, ancillaryFees: 6500,
+    servicePercent: 12, serviceFlat: 0, contingencyPercent: 10,
+    prosCons: ['licence', 'volume', 'accessible'],
+    quotePath: '', isSelected: false,
+    contact: 'אבי', phone: '0522222222', touredOn: '2026-07-28',
+    notes: 'הגברה ותאורה דרך הדיג׳יי שלנו. מגבילים ווליום אחרי 23:00.',
+  },
+  {
+    id: 'h3', venueName: 'הגן הצפוני', location: 'צפון',
+    platePrice: 270, isVatIncluded: false,
+    barCost: 18000, barType: 'flat',
+    soundLightingCost: 21000, ancillaryFees: 15500,
+    servicePercent: 10, serviceFlat: 0, contingencyPercent: 15,
+    prosCons: ['kosher', 'generator', 'parking'],
+    quotePath: '', isSelected: false,
+    contact: 'תמר', phone: '0523333333', touredOn: '2026-08-09',
+    notes: 'המנה הכי זולה מהארבע. הנלוות מכסות ניקיון, אבטחה וחימום.',
+  },
+  {
+    id: 'h4', venueName: 'טרסה', location: 'ירושלים והסביבה',
+    platePrice: 355, isVatIncluded: false,
+    barCost: 70, barType: 'per_person',
+    soundLightingCost: 9000, ancillaryFees: 4000,
+    servicePercent: 0, serviceFlat: 4500, contingencyPercent: 10,
+    prosCons: ['licence', 'kosher', 'suite', 'accessible', 'generator'],
+    quotePath: '', isSelected: false,
+    contact: 'יונתן', phone: '0524444444', touredOn: '2026-08-21',
+    notes: '',
+  },
 ];

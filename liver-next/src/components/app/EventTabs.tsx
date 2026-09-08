@@ -3,7 +3,7 @@ import { appCopy } from '@/content/site';
 import { LinkHint } from './LinkHint';
 
 /** The sections of an event file, in the order somebody works through one. */
-export const EVENT_TABS = ['overview', 'tasks', 'day', 'guests', 'details', 'crew', 'bar', 'money', 'docs', 'files', 'meetings', 'messages', 'board', 'prep'] as const;
+export const EVENT_TABS = ['overview', 'tasks', 'venues', 'day', 'guests', 'details', 'crew', 'bar', 'money', 'docs', 'files', 'meetings', 'messages', 'board', 'prep'] as const;
 export type EventTab = (typeof EVENT_TABS)[number];
 
 export const readTab = (raw: string | undefined): EventTab =>

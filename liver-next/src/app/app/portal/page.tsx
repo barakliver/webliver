@@ -19,9 +19,11 @@ import { fileReport } from '@/app/actions/report';
 import { brandFor } from '@/lib/branding';
 import { Ltr } from '@/components/Ltr';
 import { IssueReporter } from '@/components/app/IssueReporter';
-import { ticketFor, prepFor } from '@/content/appUi';
+import { ticketFor, prepFor, venuesFor } from '@/content/appUi';
 import { PrepSheet } from '@/components/app/PrepSheet';
 import { loadPrep, prepOf } from '@/lib/prep';
+import { VenueCompare } from '@/components/app/VenueCompare';
+import { loadVenues, venuesOf } from '@/lib/venueRows';
 import { publicEnv } from '@/lib/env';
 
 export async function generateMetadata() {
@@ -49,6 +51,7 @@ export default async function PortalPage() {
   const [threads, contracts, files, prep] = await Promise.all([
     loadThread(sb, ids), loadContracts(sb, ids), loadFiles(sb, ids), loadPrep(sb, ids),
   ]);
+  const halls = await loadVenues(sb, ids);
 
   /* The songs and the personal details are the couple's to fill in — they are
      the ones who know what she likes to drink and who is walking her in. Read
@@ -93,10 +96,23 @@ export default async function PortalPage() {
       <div className="space-y-6">
         {data.workspaces.map((w) => {
           const sheet = prepOf(prep, w.id);
+          const venues = venuesOf(halls, w.id);
           return (
           <div key={w.id} className="space-y-6">
             <PortalWorkspace workspace={w} data={data} viewerId={account.id} ui={ui} />
             <Contracts clientId={w.id} contracts={contracts.get(w.id) ?? []} viewer="client" />
+            {/* Only once there is something to compare. An empty comparison on
+                the screen of a couple whose hall was booked a year ago is a
+                panel asking them to redo a decision they have made. */}
+            {venues.venues.length > 0 && (
+              <VenueCompare
+                c={venuesFor(locale)}
+                clientId={w.id}
+                venues={venues.venues}
+                quoteUrls={venues.quoteUrls}
+                guestEstimate={w.guest_estimate ?? 0}
+              />
+            )}
             {/* Behind the same gate every other module is behind, so a plan
                 that does not include it does not quietly include it here. */}
             {data.can(w.id, 'files') && (

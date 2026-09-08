@@ -68,6 +68,9 @@ import { ProducerLinkCard } from '@/components/app/ProducerLinkCard';
 import { BrandEditor } from '@/components/app/BrandEditor';
 import { BrandAssets } from '@/components/app/BrandAssets';
 import { PrepSheet } from '@/components/app/PrepSheet';
+import { VenueCompare } from '@/components/app/VenueCompare';
+import { venuesFor } from '@/content/appUi';
+import { fixtureVenues } from '@/content/fixtures';
 import { PrepView } from '@/components/PrepView';
 import { prepViewFor } from '@/content/prepView';
 import { AdminRow } from '@/components/app/AdminRow';
@@ -627,6 +630,24 @@ export default async function DesignPage() {
         {/* The two things a supplier needs and a WhatsApp thread never
             carries: a face with a name on it, and the references that
             otherwise arrive as a screenshot of a screenshot. */}
+        {/* The comparison a couple cannot make on their own. The four halls
+            here are quoted the four ways halls quote, on purpose: the one with
+            the dearest plate is not the dearest evening, which is the entire
+            reason this screen exists. */}
+        <Panel name="VenueCompare" note="four quotes in four shapes, made into one number each">
+          <VenueCompare
+            c={venuesFor(locale)} clientId={client}
+            venues={fixtureVenues} quoteUrls={{}} guestEstimate={250}
+          />
+        </Panel>
+
+        <Panel name="VenueCompare · nothing toured yet" note="what it says before the first hall is added">
+          <VenueCompare
+            c={venuesFor(locale)} clientId={client}
+            venues={[]} quoteUrls={{}} guestEstimate={0}
+          />
+        </Panel>
+
         <Panel name="PrepSheet" note="who not to miss, the looks, and one scoped link per supplier">
           <PrepSheet
             c={prepCopy} clientId={client}
