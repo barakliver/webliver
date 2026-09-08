@@ -101,10 +101,15 @@ export default async function PortalPage() {
           <div key={w.id} className="space-y-6">
             <PortalWorkspace workspace={w} data={data} viewerId={account.id} ui={ui} />
             <Contracts clientId={w.id} contracts={contracts.get(w.id) ?? []} viewer="client" />
-            {/* Only once there is something to compare. An empty comparison on
-                the screen of a couple whose hall was booked a year ago is a
-                panel asking them to redo a decision they have made. */}
-            {venues.venues.length > 0 && (
+            {/* While the hall is still open, or once there is something to
+                compare. Gating it on the halls alone was wrong in the way that
+                only shows up from the couple's side: they are the ones touring
+                venues, and a panel that appears only after somebody else has
+                added one is a panel they can never start. Gating it on nothing
+                is wrong the other way — a comparison on the screen of a couple
+                whose hall was booked a year ago is a panel asking them to redo
+                a decision they have made. */}
+            {(venues.venues.length > 0 || !w.venue) && (
               <VenueCompare
                 c={venuesFor(locale)}
                 clientId={w.id}

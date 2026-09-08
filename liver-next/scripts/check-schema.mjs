@@ -256,6 +256,62 @@ try {
     const expired = sheet(looks);
     say(expired === 'no row', 'and so does an expired one',
       expired === 'no row' ? '' : `got ${expired}`);
+
+    // ── 5. choosing a hall writes the budget, and gets the money right ───────
+    /* `choose_venue` computes the total itself rather than taking one from the
+       browser, because the figure becomes the financial baseline of somebody's
+       wedding. That makes the database the second place this arithmetic is
+       written — lib/venues.ts is the first — and two copies of a formula are
+       two copies until something proves they agree. This is that proof, run
+       against the same numbers the unit tests use.
+
+       220 guests at 300 a plate = 66,000 food. A per-head bar at 80 = 17,600.
+       Sound 15,000, ancillary 9,000, and 10% service on the food = 6,600.
+       Total 114,200. */
+    psql('one', `-c "insert into public.venue_comparisons (client_id, venue_name, plate_price, bar_cost, bar_type, sound_lighting_cost, ancillary_fees, service_percent) values ('${cid}','אחוזת הכפר',300,80,'per_person',15000,9000,10)"`);
+    psql('one', `-c "insert into public.venue_comparisons (client_id, venue_name, plate_price) values ('${cid}','בית הבאר',250)"`);
+    const hall = ask('one', `select id from public.venue_comparisons where venue_name='אחוזת הכפר'`);
+    const cheaperHall = ask('one', `select id from public.venue_comparisons where venue_name='בית הבאר'`);
+
+    /* With an identity. The first run of this test failed with "not yours",
+       which is `choose_venue`'s own `can_read_client` guard firing against a
+       superuser session that had never claimed to be anybody — the guard
+       working, proved by accident. Every call below carries the root account's
+       subject claim, the way a real request does. */
+    const asRoot = (sql) => psql('one', `-c "set request.jwt.claim.sub = '${uid}'" -c "${sql}"`);
+    asRoot(`select public.choose_venue('${hall}', 220)`);
+
+    const line = ask('one', "select estimate::text from public.budget_items where category='אולם' and label='אחוזת הכפר'");
+    say(line === '114200.00', 'choosing a hall writes its true total into the budget',
+      line === '114200.00' ? '' : `expected 114200.00, got ${line || '(no row)'}`);
+
+    const onEvent = ask('one', `select venue||'/'||guest_estimate from public.clients where id='${cid}'`);
+    say(onEvent === 'אחוזת הכפר/220', 'and puts the hall and the count on the event',
+      onEvent === 'אחוזת הכפר/220' ? '' : `got ${onEvent}`);
+
+    /* The invariant the partial unique index exists for. Choosing the second
+       hall has to unmark the first in the same statement pair, and if it does
+       not the index refuses the write rather than letting two live. */
+    asRoot(`select public.choose_venue('${cheaperHall}', 220)`);
+    const chosen = ask('one', "select coalesce(string_agg(venue_name, ','), '-') from public.venue_comparisons where is_selected");
+    say(chosen === 'בית הבאר', 'and only ever one hall is the chosen one',
+      chosen === 'בית הבאר' ? '' : `chosen: ${chosen}`);
+
+    /* Re-choosing the same hall must not leave two budget lines for it. A
+       producer who presses it twice is a producer who pressed it twice. */
+    asRoot(`select public.choose_venue('${cheaperHall}', 220)`);
+    const lines = ask('one', "select count(*)::text from public.budget_items where category='אולם' and label='בית הבאר'");
+    say(lines === '1', 'and pressing it twice leaves one budget line, not two',
+      lines === '1' ? '' : `got ${lines} lines`);
+
+    /* Zero guests means "use what the event already knows", not "multiply by
+       nothing". The screen sends 0 before a couple has typed a number. */
+    psql('one', `-c "update public.clients set guest_estimate = 100 where id='${cid}'"`);
+    asRoot(`select public.choose_venue('${hall}', 0)`);
+    const fallback = ask('one', "select estimate::text from public.budget_items where category='אולם' and label='אחוזת הכפר'");
+    /* 100 guests: 30,000 food + 8,000 bar + 15,000 + 9,000 + 3,000 service. */
+    say(fallback === '65000.00', 'no guest count falls back to the event, not to zero',
+      fallback === '65000.00' ? '' : `expected 65000.00, got ${fallback || '(no row)'}`);
   }
 } catch (e) {
   failures++;
