@@ -98,13 +98,53 @@ if (!/requireRoot[\s\S]{0,300}role !== 'super_admin'[\s\S]{0,80}redirect/.test(a
   problems.push("src/lib/auth.ts\n    requireRoot no longer turns away anybody who is not the root admin");
 }
 
+/* ── and every module the couple's screen gates on can be switched off ─────
+   The portal asks `feature_on(client, key)` for each module it draws, and the
+   producer's console lists the switches from the feature_flags table. Those
+   two lists have to be the same list. A key the portal gates on with no row
+   behind it is a module that is silently always on, invisible on the screen
+   where a producer decides what a plan includes.
+
+   That has now happened twice — the faces and the looks in 0057, the halls in
+   0059 — both times noticed by hand, weeks and minutes apart. Once is an
+   oversight; twice is a missing check. */
+const portal = readFileSync('src/lib/portal.ts', 'utf8');
+const gated = (portal.match(/const modules = \[([^\]]*)\]/)?.[1] ?? '')
+  .split(',').map((s) => s.trim().replace(/^'|'$/g, '')).filter(Boolean);
+
+if (!gated.length) {
+  /* The list is read out of a source file by shape, and a refactor that
+     renames it or spreads it from somewhere else would leave this loop with
+     nothing to check and the suite still green. Silence is the failure. */
+  problems.push('src/lib/portal.ts\n    the list of gated modules could not be read, so nothing below was checked');
+}
+
+const migrations = readdirSync('supabase/migrations')
+  .filter((f) => f.endsWith('.sql'))
+  .map((f) => readFileSync(join('supabase/migrations', f), 'utf8'))
+  .join('\n');
+const seeded = new Set(
+  [...migrations.matchAll(/\(\s*'([a-z_]+)'\s*,\s*'[^']*'\s*,\s*(?:true|false)\s*,\s*(?:true|false)\s*\)/g)]
+    .map((m) => m[1]),
+);
+
+for (const key of gated) {
+  if (!seeded.has(key)) {
+    problems.push(
+      `src/lib/portal.ts\n    the portal gates on '${key}' and no migration seeds a feature_flags row for it,`
+      + `\n    so it is always on and never appears on the producer's switches`,
+    );
+  }
+}
+
 if (problems.length) {
-  console.error('\nscreens that do not say who may open them:\n');
+  console.error('\nplaces where it is not written down who may see something:\n');
   for (const p of problems) console.error('  ' + p + '\n');
   process.exit(1);
 }
 
 console.log(
   `\nevery screen says who may open it  (${producerOnly} producer-only, ` +
-  `${Object.keys(SHARED).length} shared on purpose, ${pages.length} read)\n`,
+  `${Object.keys(SHARED).length} shared on purpose, ${pages.length} read)\n` +
+  `every module the couple sees can be switched off  (${gated.length} gated, all seeded)\n`,
 );

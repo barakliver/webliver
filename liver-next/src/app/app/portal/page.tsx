@@ -109,7 +109,7 @@ export default async function PortalPage() {
                 is wrong the other way — a comparison on the screen of a couple
                 whose hall was booked a year ago is a panel asking them to redo
                 a decision they have made. */}
-            {(venues.venues.length > 0 || !w.venue) && (
+            {data.can(w.id, 'venues') && (venues.venues.length > 0 || !w.venue) && (
               <VenueCompare
                 c={venuesFor(locale)}
                 clientId={w.id}
