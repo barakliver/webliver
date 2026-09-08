@@ -35,6 +35,12 @@ import { mkdtempSync, rmSync, existsSync, readdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
+/* The real module, not a copy of its arithmetic. Section 5 compares what the
+   database computes for a hall against what the screen computes for the same
+   hall, and the only way that is a proof rather than a coincidence is if this
+   is the same code the browser runs. Loaded with --experimental-strip-types,
+   which is why `npm run schema` carries the flag. */
+import { cost } from '../src/lib/venues.ts';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const sqlDir = join(root, 'supabase');
@@ -262,16 +268,46 @@ try {
        browser, because the figure becomes the financial baseline of somebody's
        wedding. That makes the database the second place this arithmetic is
        written — lib/venues.ts is the first — and two copies of a formula are
-       two copies until something proves they agree. This is that proof, run
-       against the same numbers the unit tests use.
+       two copies until something proves they agree.
 
-       220 guests at 300 a plate = 66,000 food. A per-head bar at 80 = 17,600.
-       Sound 15,000, ancillary 9,000, and 10% service on the food = 6,600.
-       Total 114,200. */
-    psql('one', `-c "insert into public.venue_comparisons (client_id, venue_name, plate_price, bar_cost, bar_type, sound_lighting_cost, ancillary_fees, service_percent) values ('${cid}','אחוזת הכפר',300,80,'per_person',15000,9000,10)"`);
-    psql('one', `-c "insert into public.venue_comparisons (client_id, venue_name, plate_price) values ('${cid}','בית הבאר',250)"`);
-    const hall = ask('one', `select id from public.venue_comparisons where venue_name='אחוזת הכפר'`);
-    const cheaperHall = ask('one', `select id from public.venue_comparisons where venue_name='בית הבאר'`);
+       The first version of this test compared the database against a total
+       worked out by hand in this comment, and passed while the two were 13,068
+       shekels apart. Both halls in it happened to be stored the way the SQL
+       assumed, so the one thing the SQL got wrong — a plate quoted before VAT,
+       which the screen converts and the function did not — was the one case
+       the test never built. A hand-computed expectation is a third copy of the
+       formula, and it agreed with the wrong one.
+
+       So the expectation now comes from `cost()` itself, on the inclusive
+       basis the budget is always written on, and the first hall below is
+       deliberately quoted before the tax. */
+    const hallRow = {
+      id: '', venueName: 'אחוזת הכפר', location: '',
+      platePrice: 300, isVatIncluded: false,
+      barCost: 80, barType: 'per_person',
+      soundLightingCost: 15000, ancillaryFees: 9000,
+      servicePercent: 10, serviceFlat: 0,
+      contingencyPercent: 10, prosCons: [], quotePath: '',
+      isSelected: false, contact: '', phone: '', touredOn: null, notes: '',
+    };
+    const cheapRow = {
+      ...hallRow, venueName: 'בית הבאר', platePrice: 250, isVatIncluded: true,
+      barCost: 0, barType: 'flat', soundLightingCost: 0, ancillaryFees: 0, servicePercent: 0,
+    };
+
+    const addVenue = (r) => {
+      psql('one', `-c ${JSON.stringify(
+        'insert into public.venue_comparisons (client_id, venue_name, plate_price, is_vat_included,'
+        + ' bar_cost, bar_type, sound_lighting_cost, ancillary_fees, service_percent, service_flat) values'
+        + ` ('${cid}','${r.venueName}',${r.platePrice},${r.isVatIncluded},${r.barCost},'${r.barType}',`
+        + `${r.soundLightingCost},${r.ancillaryFees},${r.servicePercent},${r.serviceFlat})`)}`);
+      return ask('one', `select id from public.venue_comparisons where venue_name='${r.venueName}'`);
+    };
+    /* What the couple was looking at when they pressed the button. */
+    const onScreen = (r, g) => cost(r, g, true).total.toFixed(2);
+
+    const hall = addVenue(hallRow);
+    const cheaperHall = addVenue(cheapRow);
 
     /* With an identity. The first run of this test failed with "not yours",
        which is `choose_venue`'s own `can_read_client` guard firing against a
@@ -282,8 +318,16 @@ try {
     asRoot(`select public.choose_venue('${hall}', 220)`);
 
     const line = ask('one', "select estimate::text from public.budget_items where category='אולם' and label='אחוזת הכפר'");
-    say(line === '114200.00', 'choosing a hall writes its true total into the budget',
-      line === '114200.00' ? '' : `expected 114200.00, got ${line || '(no row)'}`);
+    const want = onScreen(hallRow, 220);
+    say(line === want, 'the budget line is the number the card showed',
+      line === want ? '' : `screen said ${want}, budget got ${line || '(no row)'}`);
+
+    /* And it says which side of the tax it is on, because a figure this size
+       with no basis written next to it is a figure somebody will re-derive
+       wrongly in March. */
+    const basis = ask('one', "select notes from public.budget_items where category='אולם' and label='אחוזת הכפר'");
+    say(basis.includes('מע״מ'), 'and the line says which side of the tax it is on',
+      basis.includes('מע״מ') ? '' : `note reads: ${basis || '(none)'}`);
 
     const onEvent = ask('one', `select venue||'/'||guest_estimate from public.clients where id='${cid}'`);
     say(onEvent === 'אחוזת הכפר/220', 'and puts the hall and the count on the event',
@@ -309,9 +353,9 @@ try {
     psql('one', `-c "update public.clients set guest_estimate = 100 where id='${cid}'"`);
     asRoot(`select public.choose_venue('${hall}', 0)`);
     const fallback = ask('one', "select estimate::text from public.budget_items where category='אולם' and label='אחוזת הכפר'");
-    /* 100 guests: 30,000 food + 8,000 bar + 15,000 + 9,000 + 3,000 service. */
-    say(fallback === '65000.00', 'no guest count falls back to the event, not to zero',
-      fallback === '65000.00' ? '' : `expected 65000.00, got ${fallback || '(no row)'}`);
+    const wantFallback = onScreen(hallRow, 100);
+    say(fallback === wantFallback, 'no guest count falls back to the event, not to zero',
+      fallback === wantFallback ? '' : `expected ${wantFallback}, got ${fallback || '(no row)'}`);
   }
 } catch (e) {
   failures++;

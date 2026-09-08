@@ -568,6 +568,7 @@ export const venueCopyEn: VenueCopy = {
   guests: 'Guests',
   guestsHint: "This is the event's guest estimate. Changing it here changes it in the bar calculator and the budget too.",
   vatBasis: 'Show prices including VAT',
+  vatOffNote: 'The budget line is always written including VAT, even while the screen is showing prices without it.',
 
   food: 'Catering',
   service: 'Service',

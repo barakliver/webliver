@@ -110,7 +110,17 @@ export function VenueCompare({ c, clientId, venues, guestEstimate, quoteUrls, ca
           {c.vatBasis}
         </label>
 
-        <p className="w-full text-[12.5px] leading-snug text-ink-mute">{c.guestsHint}</p>
+        <div className="w-full space-y-1 text-[12.5px] leading-snug text-ink-mute">
+          <p>{c.guestsHint}</p>
+          <p>{c.chooseHint}</p>
+          {/* Only while the two disagree. The budget is written on the
+              inclusive basis whichever way this screen is being read, so a
+              couple looking at figures without the tax is looking at a total
+              lower than the one the button will write. Said here rather than
+              on four cards, and not said at all when there is nothing to
+              reconcile. */}
+          {!withVat && <p className="text-ink-soft">{c.vatOffNote}</p>}
+        </div>
       </div>
 
       {adding && (
@@ -198,6 +208,7 @@ function Column({ c, clientId, v, k, guests, isBest, over, quoteUrl, canChoose, 
         <p className="font-display text-[26px] font-semibold text-ink">
           <Money value={k.perGuest} />
         </p>
+        <p className="mt-0.5 text-[12px] leading-snug text-ink-mute">{c.perGuestHint}</p>
       </div>
 
       <dl className="mt-3 space-y-1 text-[13.5px]">
