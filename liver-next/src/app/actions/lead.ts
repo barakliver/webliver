@@ -41,11 +41,13 @@ export async function submitLead(_prev: LeadResult | null, form: FormData): Prom
   };
 
   if (payload.full_name.length < 2) return { ok: false, error: say.name, field: 'full_name' };
-  if (!payload.phone && !payload.email) return { ok: false, error: say.contact, field: 'phone' };
-  /* Where is required on the public form. It is the question the first call
-     is spent on, and a tap on a chip answers it. */
-  if (!payload.location) return { ok: false, error: say.location, field: 'location' };
-  if (payload.email && !EMAIL_RE.test(payload.email)) return { ok: false, error: say.email, field: 'email' };
+  /* Both, now, rather than either. One of the two was enough while the form
+     was a way of starting a conversation; a lead that becomes a workspace
+     needs the address the invitation is sent to and the number that is rung
+     the week of the event, and chasing the missing half later costs more than
+     asking for it here. Where is no longer refused over — see the form. */
+  if (!payload.phone) return { ok: false, error: say.contact, field: 'phone' };
+  if (!payload.email || !EMAIL_RE.test(payload.email)) return { ok: false, error: say.email, field: 'email' };
 
   if (payload.event_date) {
     if (Number.isNaN(Date.parse(payload.event_date))) return { ok: false, error: say.date, field: 'event_date' };

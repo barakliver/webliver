@@ -120,6 +120,10 @@ export async function createClient(_prev: ActionResult | null, form: FormData): 
       phase: group.title,
       title: t.note ? `${t.title} · ${t.note}` : t.title,
       visible_to_client: t.shared,
+      /* What makes ticking it ask who was hired. Without this the supplier
+         form never opened on a real event: it fires on the category, and the
+         checklist that every wedding actually gets was seeded without one. */
+      category: t.vendor ?? '',
     })),
   );
   const { error: seedError } = await sb.from('tasks').insert(seed);

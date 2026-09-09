@@ -52,13 +52,13 @@ export function LeadForm({ compact = false, site, kinds }: {
         </div>
         <div>
           <label className="label" htmlFor="lf-phone">{site.lead.fields.phone}</label>
-          <input id="lf-phone" name="phone" type="tel" inputMode="tel" autoComplete="tel" className="field" aria-invalid={invalid('phone')} />
+          <input id="lf-phone" name="phone" type="tel" required inputMode="tel" autoComplete="tel" className="field" aria-invalid={invalid('phone')} />
         </div>
       </div>
 
       <div>
         <label className="label" htmlFor="lf-email">{site.lead.fields.email}</label>
-        <input id="lf-email" name="email" type="email" autoComplete="email" className="field" aria-invalid={invalid('email')} />
+        <input id="lf-email" name="email" type="email" required autoComplete="email" className="field" aria-invalid={invalid('email')} />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
@@ -78,10 +78,12 @@ export function LeadForm({ compact = false, site, kinds }: {
         </div>
       </div>
 
-      {/* Where, before what else. It is the first thing the producer asks and
-          the one that decides whether the call happens at all. */}
+      {/* Worth asking, not worth refusing over. It is the first thing the
+          producer asks on the call, but somebody enquiring before they have
+          settled on a region is still somebody to call back — and a form that
+          turns them away to protect a field is a form that loses the lead. */}
       <RegionPicker
-        id="lf-location" name="location" required
+        id="lf-location" name="location"
         regions={REGIONS.map((value, i) => ({ value, label: site.lead.regions[i] }))}
         label={site.lead.fields.location} freeLabel={site.lead.locationFree} freePh={site.lead.locationPh}
         invalid={!!invalid('location')}

@@ -12,6 +12,7 @@ import { isPastDue } from '@/lib/clock';
 import { EyeOff } from 'lucide-react';
 import { PlanOffer } from '@/components/app/PlanOffer';
 import { VendorCaptureModal } from '@/components/portal/VendorCaptureModal';
+import { VENDOR_CATEGORIES } from '@/content/eventFile';
 
 export type Task = {
   /** False keeps it on the producer's side. The couple never receives these
@@ -65,8 +66,11 @@ function Row({ task, clientId, viewer, canDelete, grip }: {
       ? (task.owner === 'producer' ? c.ownerProducer : c.ownerClient)
       : (task.owner === 'producer' ? c.ownerProducerClientView : c.ownerClientClientView);
 
-  const vendorCategories = ['venue', 'catering', 'photography', 'dj', 'flowers', 'decor', 'attire', 'printing', 'henna'];
-  const isVendorTask = task.category && vendorCategories.includes(task.category);
+  /* One list, in the file that also tags the checklist, so a category can
+     never be seeded that this row does not recognise. It was a second copy
+     here, nine categories long, and it had neither makeup nor a rabbi in it. */
+  const isVendorTask = !!task.category
+    && (VENDOR_CATEGORIES as readonly string[]).includes(task.category);
 
   const handleToggleClick = async () => {
     // If marking as done and it's a vendor task, show modal
@@ -175,7 +179,7 @@ function Row({ task, clientId, viewer, canDelete, grip }: {
             ask_phone: true,
             ask_contact_name: false,
             ask_location: false,
-            ask_notes: false,
+            ask_notes: true,
             sort_order: 0,
             created_at: new Date().toISOString(),
           }}

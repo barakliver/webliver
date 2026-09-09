@@ -149,9 +149,9 @@ export const siteEn: SiteCopy = {
     locationPh: 'Venue name or address, if known',
     errors: {
       name: 'Please give your full name',
-      contact: 'Please leave a phone number or an email address',
+      contact: 'Please leave a phone number',
       location: 'Please choose a region or say where the event is',
-      email: 'That email address does not look right',
+      email: 'Please leave a valid email address',
       date: 'That date does not look right',
       dateFrom: 'The date needs to be in 2026 or later',
       guests: 'That guest count does not look right',

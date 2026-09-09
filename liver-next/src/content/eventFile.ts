@@ -99,12 +99,35 @@ export const COUPLE_DETAIL_FIELDS: string[] = [
 ];
 
 
+/** The kinds of supplier this business actually books.
+ *
+ *  A task carrying one of these is a task that ends with somebody hired, so
+ *  ticking it asks who and for how much rather than just crossing the line
+ *  out. A task without one is an errand — a mikveh, an AirTag, a glass to
+ *  break — and ticking it is the whole of it.
+ *
+ *  Drawn from his own checklist rather than from a generic list of wedding
+ *  trades: the first version of this had nine categories copied from nowhere,
+ *  and it had no makeup, no hair, no rabbi and no sound, which is most of what
+ *  a wedding here is actually made of. */
+export const VENDOR_CATEGORIES = [
+  'venue', 'catering', 'bar', 'photography', 'video', 'magnets', 'photobooth',
+  'dj', 'sound', 'lighting', 'decor', 'flowers', 'makeup', 'hair', 'attire',
+  'rings', 'printing', 'rabbi', 'rsvp', 'attraction', 'henna', 'transport',
+] as const;
+
+export type VendorCategory = (typeof VENDOR_CATEGORIES)[number];
+
 export type TemplateTask = {
   title: string;
   /** Whether this one is offered as shared. The producer changes any of them
    *  before applying; this is only what is ticked when the list opens. */
   shared: boolean;
   note?: string;
+  /** Set when finishing this task means a supplier was hired. Ticking it then
+   *  asks for the name, the price and a phone number, and the answer becomes a
+   *  row in the event's supplier list rather than a memory. */
+  vendor?: VendorCategory;
 };
 
 export type TaskGroup = { id: string; title: string; sub: string; tasks: TemplateTask[] };
@@ -140,18 +163,18 @@ export const STANDING_CHECKLIST: TaskGroup[] = [
     title: 'צ׳ק ליסט',
     sub: 'מה שסוגרים לכל אירוע. נכנס לבד לכל אירוע חדש, וניתן למחיקה שורה שורה.',
     tasks: [
-      { title: 'מקום', shared: true },
-      { title: 'DJ', shared: true },
-      { title: 'צלם וידיאו', shared: true },
-      { title: 'צלם סטילס', shared: true },
-      { title: 'צלם מגנטים', shared: true },
-      { title: 'תא צילום', shared: true },
-      { title: 'צלמת סושיאל', shared: true },
-      { title: 'עיצוב', shared: true, note: 'להבין איך רוצים את העיצוב ולסגור עם מקום' },
-      { title: 'איפור', shared: true },
-      { title: 'שיער', shared: true },
+      { title: 'מקום', shared: true, vendor: 'venue' },
+      { title: 'DJ', shared: true, vendor: 'dj' },
+      { title: 'צלם וידיאו', shared: true, vendor: 'video' },
+      { title: 'צלם סטילס', shared: true, vendor: 'photography' },
+      { title: 'צלם מגנטים', shared: true, vendor: 'magnets' },
+      { title: 'תא צילום', shared: true, vendor: 'photobooth' },
+      { title: 'צלמת סושיאל', shared: true, vendor: 'photography' },
+      { title: 'עיצוב', shared: true, note: 'להבין איך רוצים את העיצוב ולסגור עם מקום', vendor: 'decor' },
+      { title: 'איפור', shared: true, vendor: 'makeup' },
+      { title: 'שיער', shared: true, vendor: 'hair' },
       { title: 'לפתוח תיק ברבנות', shared: true },
-      { title: 'לסגור רב', shared: true },
+      { title: 'לסגור רב', shared: true, vendor: 'rabbi' },
       { title: 'מקווה', shared: true },
       { title: 'חינה ?', shared: true },
       { title: 'שבת חתן?', shared: true },
@@ -162,14 +185,14 @@ export const STANDING_CHECKLIST: TaskGroup[] = [
     title: 'ביגוד',
     sub: 'מה שלובשים ומה שנוסע איתם.',
     tasks: [
-      { title: 'חליפה +בגדים להחלפה', shared: true },
-      { title: 'שמלה +הינומה', shared: true },
+      { title: 'חליפה +בגדים להחלפה', shared: true, vendor: 'attire' },
+      { title: 'שמלה +הינומה', shared: true, vendor: 'attire' },
       { title: 'שמלה שניה', shared: true },
       { title: 'נעליים לכל אחד', shared: true },
       { title: 'כוס שבירה לחתונה', shared: true },
-      { title: 'טבעות לטקס', shared: true },
+      { title: 'טבעות לטקס', shared: true, vendor: 'rings' },
       { title: 'AirTag', shared: true, note: 'אם אין זמין לי יש' },
-      { title: 'כתובה', shared: true },
+      { title: 'כתובה', shared: true, vendor: 'printing' },
       { title: 'רמקול למוזיקה להתארגנות', shared: true },
       { title: 'תיק ללילה במלון לפני', shared: true },
       { title: 'וביגוד למלון', shared: true },
@@ -180,7 +203,7 @@ export const STANDING_CHECKLIST: TaskGroup[] = [
     title: 'הושבה',
     sub: 'מי מגיע, ומי יושב איפה.',
     tasks: [
-      { title: 'לסגור חברת לאישורי הגעה', shared: true },
+      { title: 'לסגור חברת לאישורי הגעה', shared: true, vendor: 'rsvp' },
       { title: 'לעשות רשומות', shared: true },
       { title: 'לסדר מי יושב באיזה שולחן', shared: true },
       { title: 'לקבל מוזמנים מההורים', shared: true },
@@ -193,12 +216,13 @@ export const STANDING_CHECKLIST: TaskGroup[] = [
     title: 'מקום',
     sub: 'מה קורה באולם עצמו.',
     tasks: [
-      { title: 'בר אלכוהול/קוקטיילים', shared: true },
+      { title: 'בר אלכוהול/קוקטיילים', shared: true, vendor: 'bar' },
       { title: 'גומי', shared: true },
       {
         title: 'אטקציה מגניבה',
         shared: true,
         note: 'קוקטיילים, ברמן מפעיל בבר, משהו שמוסיף עניין בגדול',
+        vendor: 'attraction',
       },
       { title: 'בטקס- 7 ברכות ?', shared: true, note: 'מי מקריא, ילדות פרחים מי הן ?' },
       { title: 'מתנות לאורחים', shared: true },
@@ -220,14 +244,14 @@ export const TASK_TEMPLATE: TaskGroup[] = [
     title: 'תכנון',
     sub: 'מה שצריך לקרות לפני. רובן משותפות, כי הזוג עושה חצי מהן.',
     tasks: [
-      { title: 'סגירת מקום וביטוח', shared: true },
-      { title: 'סגירת קייטרינג ותפריט', shared: true },
-      { title: 'סגירת בר ושירותי מזיגה', shared: true },
-      { title: 'סגירת דיג׳יי', shared: true },
-      { title: 'סגירת צלם סטילס ווידאו', shared: true },
-      { title: 'סגירת מגנטים', shared: true },
-      { title: 'סגירת מעצב', shared: true },
-      { title: 'סגירת תאורה והגברה', shared: true },
+      { title: 'סגירת מקום וביטוח', shared: true, vendor: 'venue' },
+      { title: 'סגירת קייטרינג ותפריט', shared: true, vendor: 'catering' },
+      { title: 'סגירת בר ושירותי מזיגה', shared: true, vendor: 'bar' },
+      { title: 'סגירת דיג׳יי', shared: true, vendor: 'dj' },
+      { title: 'סגירת צלם סטילס ווידאו', shared: true, vendor: 'photography' },
+      { title: 'סגירת מגנטים', shared: true, vendor: 'magnets' },
+      { title: 'סגירת מעצב', shared: true, vendor: 'decor' },
+      { title: 'סגירת תאורה והגברה', shared: true, vendor: 'sound' },
       { title: 'בחירת שמלה', shared: true },
       { title: 'בחירת חליפה', shared: true },
       { title: 'סגירת איפור ושיער', shared: true },
