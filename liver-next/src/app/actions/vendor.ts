@@ -45,7 +45,7 @@ export async function completeVendorTask(opts: {
     // Create vendor if data provided
     if (opts.vendorData && template.vendor_category) {
       const { data: vendor, error: vendorError } = await sb
-        .from('vendors')
+        .from('vendor_choices')
         .insert({
           event_id: opts.eventId,
           category: template.vendor_category,
@@ -104,7 +104,7 @@ export async function updateVendor(opts: {
     if (opts.phone !== undefined) update.phone = opts.phone;
     if (opts.contactName !== undefined) update.contact_name = opts.contactName;
 
-    const { error } = await sb.from('vendors').update(update).eq('id', opts.vendorId);
+    const { error } = await sb.from('vendor_choices').update(update).eq('id', opts.vendorId);
 
     if (error) {
       console.error('[vendor] update failed', error);

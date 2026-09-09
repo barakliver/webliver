@@ -1,205 +1,237 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import { supabaseBrowser } from '@/lib/supabase/client';
-type Event = {
-  id: string;
-  client_id: string;
-  event_type: string;
-  display_name: string;
-  event_date: string | null;
-  location: string;
-  guest_estimate: number | null;
-  created_at: string;
-};
+import type { PortalEvent } from '@/lib/portal';
 
-interface EventSelectorProps {
+/** The celebrations in one workspace, and the one currently being read.
+ *
+ *  Which event is open lives in the address rather than in this component, for
+ *  two reasons. A couple comparing the henna list with the wedding list wants
+ *  two tabs, and state held here cannot be in two tabs at once. And the
+ *  filtering happens on the server, where the rows already are — a selection
+ *  held in a hook would mean shipping every event's tasks to the browser and
+ *  hiding most of them, which is the same page pretending to be smaller.
+ *
+ *  The rows arrive as a prop for the same reason: the server has already read
+ *  them to answer the question, so fetching them again here would only buy a
+ *  skeleton on every visit. */
+export function EventSelector({ clientId, events, selectedId, labels }: {
   clientId: string;
-  currentEventId?: string;
-  onEventChange: (eventId: string) => void;
-}
-
-export function EventSelector({ clientId, currentEventId, onEventChange }: EventSelectorProps) {
-  const [events, setEvents] = useState<Event[]>([]);
-  const [loading, setLoading] = useState(true);
+  events: PortalEvent[];
+  selectedId: string | null;
+  labels: { add: string; empty: string };
+}) {
+  const router = useRouter();
+  const pathname = usePathname();
   const [showForm, setShowForm] = useState(false);
-  const sb = supabaseBrowser();
 
-  const loadEvents = async () => {
-    setLoading(true);
-    const { data } = await sb
-      .from('events')
-      .select('*')
-      .eq('client_id', clientId)
-      .order('event_date', { ascending: true, nullsFirst: false });
+  /* One celebration is not a choice, so there is nothing to choose between —
+     but the button that adds a second one still has to be there. */
+  const soleEvent = events.length <= 1;
 
-    setEvents((data ?? []) as Event[]);
-    if (!currentEventId && data?.[0]) {
-      onEventChange(data[0].id);
-    }
-    setLoading(false);
+  const open = (id: string) => {
+    const next = new URLSearchParams();
+    next.set('event', id);
+    router.push(`${pathname}?${next}`, { scroll: false });
   };
 
-  useEffect(() => {
-    loadEvents();
-  }, [clientId]);
-
-  if (loading) return <div className="h-12 bg-neutral-100 animate-pulse rounded" />;
-
   return (
-    <div className="flex items-center gap-2 mb-6">
-      <div className="flex-1 flex gap-2 overflow-x-auto pb-2">
-        {events.map((e) => (
-          <button
-            key={e.id}
-            onClick={() => onEventChange(e.id)}
-            className={`
-              px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-colors
-              ${currentEventId === e.id
-                ? 'bg-blue-600 text-white'
-                : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
-              }
-            `}
-          >
-            {e.display_name}
-            {e.event_date && (
-              <span className="text-sm ml-2 opacity-75">
-                {new Date(e.event_date).toLocaleDateString('he-IL')}
-              </span>
-            )}
-          </button>
-        ))}
-      </div>
+    <div className="flex flex-wrap items-center gap-2">
+      {!soleEvent && (
+        <div
+          role="tablist"
+          aria-label={labels.empty}
+          className="flex min-w-0 flex-1 gap-2 overflow-x-auto"
+        >
+          {events.map((e) => {
+            const on = e.id === selectedId;
+            return (
+              <button
+                key={e.id}
+                type="button"
+                role="tab"
+                aria-selected={on}
+                onClick={() => open(e.id)}
+                className={`whitespace-nowrap rounded-xl2 border px-3 py-2 text-[14px] transition ${
+                  on
+                    ? 'border-ink bg-ink text-surface'
+                    : 'border-line bg-card text-ink-soft hover:border-ink'
+                }`}
+              >
+                {e.display_name}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
       <button
+        type="button"
         onClick={() => setShowForm(true)}
-        className="px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors flex-shrink-0"
+        className="btn-quiet whitespace-nowrap px-3 py-2 text-[14px]"
       >
-        + אירוע
+        {labels.add}
       </button>
-      {showForm && <CreateEventModal clientId={clientId} onClose={() => setShowForm(false)} onCreated={loadEvents} />}
+
+      {showForm && (
+        <CreateEventModal
+          clientId={clientId}
+          onClose={() => setShowForm(false)}
+          onCreated={(id) => {
+            setShowForm(false);
+            /* Straight to the new list. Refreshing without it would land the
+               couple back on the event they were already looking at, with no
+               sign that anything had happened. */
+            open(id);
+            router.refresh();
+          }}
+        />
+      )}
     </div>
   );
 }
 
-interface CreateEventModalProps {
+const TYPES = [
+  { key: 'wedding', name: 'חתונה' },
+  { key: 'henna', name: 'חינה' },
+  { key: 'groom_party', name: 'שבת חתן' },
+  { key: 'rehearsal', name: 'חזרה' },
+  { key: 'post_party', name: 'ארוחת ערב' },
+];
+
+function CreateEventModal({ clientId, onClose, onCreated }: {
   clientId: string;
   onClose: () => void;
-  onCreated: () => void;
-}
-
-function CreateEventModal({ clientId, onClose, onCreated }: CreateEventModalProps) {
+  onCreated: (eventId: string) => void;
+}) {
   const [name, setName] = useState('');
-  const [eventType, setEventType] = useState('wedding');
+  const [eventType, setEventType] = useState('henna');
   const [date, setDate] = useState('');
   const [location, setLocation] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const sb = supabaseBrowser();
 
-  const handleCreate = async () => {
-    if (!name.trim()) return;
-    setLoading(true);
+  const create = async () => {
+    if (!name.trim() || saving) return;
+    setSaving(true);
+    setError(null);
 
-    try {
-      const { error } = await sb.from('events').insert({
+    /* The id comes back from the insert itself. Looking the row up afterwards
+       by its name was wrong in a way that only shows on the second henna: two
+       events called the same thing, and the checklist lands on whichever one
+       the database happened to return first. */
+    const { data: event, error: insertError } = await sb
+      .from('events')
+      .insert({
         client_id: clientId,
         event_type: eventType,
-        display_name: name,
+        display_name: name.trim(),
         event_date: date || null,
         location,
-      });
+      })
+      .select('id')
+      .single();
 
-      if (!error) {
-        // Auto-create tasks from templates
-        const { data: templates } = await sb
-          .from('task_templates')
-          .select('*')
-          .eq('event_type', eventType);
-
-        if (templates?.length) {
-          const { data: event } = await sb
-            .from('events')
-            .select('id')
-            .eq('client_id', clientId)
-            .eq('display_name', name)
-            .limit(1)
-            .single();
-
-          if (event) {
-            const tasksToInsert = templates.map((t) => ({
-              event_id: event.id,
-              client_id: clientId,
-              title: t.title,
-              category: eventType,
-              done: false,
-              owner: 'producer' as const,
-            }));
-
-            await sb.from('tasks').insert(tasksToInsert);
-          }
-        }
-
-        onCreated();
-        onClose();
-      }
-    } finally {
-      setLoading(false);
+    if (insertError || !event) {
+      setError('לא הצלחנו לפתוח את האירוע. אפשר לנסות שוב.');
+      setSaving(false);
+      return;
     }
+
+    /* The starter checklist. A failure here is worth saying out loud rather
+       than swallowing: the event exists either way, but a couple who was
+       promised a list and got an empty one has no way to tell that the list
+       was the part that broke. */
+    const { data: templates } = await sb
+      .from('task_templates')
+      .select('title,vendor_category,sort_order')
+      .eq('event_type', eventType)
+      .order('sort_order');
+
+    if (templates?.length) {
+      const { error: taskError } = await sb.from('tasks').insert(
+        templates.map((t) => ({
+          event_id: event.id,
+          client_id: clientId,
+          title: t.title,
+          category: t.vendor_category ?? '',
+          done: false,
+          owner: 'client' as const,
+        })),
+      );
+      if (taskError) {
+        setError('האירוע נפתח, אבל רשימת המשימות לא נוצרה.');
+        setSaving(false);
+        return;
+      }
+    }
+
+    onCreated(event.id);
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-        <h2 className="text-xl font-bold mb-4">אירוע חדש</h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4">
+      <div className="w-full max-w-md rounded-xl2 border border-line bg-card p-6">
+        <h2 className="font-display text-[18px] font-semibold text-ink">אירוע נוסף</h2>
+        <p className="mt-1 text-[14px] text-ink-soft">
+          חינה, שבת חתן, ארוחת ערב. לכל אחד התאריך והרשימה שלו.
+        </p>
 
-        <input
-          type="text"
-          placeholder="שם האירוע"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="w-full mb-4 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-
-        <select
-          value={eventType}
-          onChange={(e) => setEventType(e.target.value)}
-          className="w-full mb-4 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="wedding">חתונה</option>
-          <option value="henna">חינה</option>
-          <option value="groom_party">שבת חתן</option>
-          <option value="rehearsal">חזרה</option>
-          <option value="post_party">ארוחה בערב</option>
-        </select>
-
-        <input
-          type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          className="w-full mb-4 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-
-        <input
-          type="text"
-          placeholder="מיקום"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-          className="w-full mb-4 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-
-        <div className="flex gap-2">
-          <button
-            onClick={onClose}
-            className="flex-1 px-4 py-2 bg-neutral-100 text-neutral-700 rounded-lg hover:bg-neutral-200 transition-colors"
-            disabled={loading}
+        <div className="mt-5 grid gap-3">
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="שם האירוע"
+            aria-label="שם האירוע"
+            autoFocus
+            className="field"
+          />
+          <select
+            value={eventType}
+            onChange={(e) => setEventType(e.target.value)}
+            aria-label="סוג האירוע"
+            className="field"
           >
+            {TYPES.map((t) => (
+              <option key={t.key} value={t.key}>{t.name}</option>
+            ))}
+          </select>
+          <input
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            aria-label="תאריך"
+            className="field"
+          />
+          <input
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            placeholder="מיקום"
+            aria-label="מיקום"
+            className="field"
+          />
+        </div>
+
+        {error && (
+          <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+            {error}
+          </p>
+        )}
+
+        <div className="mt-5 flex gap-2">
+          <button type="button" onClick={onClose} disabled={saving} className="btn-quiet flex-1">
             ביטול
           </button>
           <button
-            onClick={handleCreate}
-            className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
-            disabled={loading || !name.trim()}
+            type="button"
+            onClick={create}
+            disabled={saving || !name.trim()}
+            className="btn-primary flex-1"
           >
-            {loading ? '...' : 'יצור'}
+            {saving ? 'פותח…' : 'פתיחה'}
           </button>
         </div>
       </div>

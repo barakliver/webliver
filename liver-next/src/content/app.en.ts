@@ -44,6 +44,8 @@ export const portalEn: PortalCopy = {
   rowRsvp: 'Replies',
   rowBoard: 'Inspiration',
   rowVendors: 'Suppliers',
+  eventAdd: 'Add an event',
+  eventPick: 'Your events',
 };
 
 export const filesEn: FilesCopy = {

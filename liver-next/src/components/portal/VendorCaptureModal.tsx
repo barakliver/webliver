@@ -66,7 +66,7 @@ export function VendorCaptureModal({ task, template, eventId, onClose, onSaved }
     try {
       // Create vendor record
       const { data: vendor, error: vendorError } = await sb
-        .from('vendors')
+        .from('vendor_choices')
         .insert({
           event_id: eventId,
           category: template.vendor_category!,

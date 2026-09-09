@@ -341,6 +341,7 @@ export default async function DesignPage() {
               dayFor: () => fixtureDay,
               boardFor: () => [],
               vendorsFor: () => [],
+              eventsFor: () => [],
             }}
           />
         </Panel>

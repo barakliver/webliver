@@ -27,6 +27,17 @@ export type Workspace = {
  *  flags the platform owner controls, and neither belongs in a component. */
 export type Gate = (clientId: string, key: string) => boolean;
 
+/** One celebration inside a workspace. A couple with a henna and a wedding
+ *  has two of these, each with its own date, place and checklist. */
+export type PortalEvent = {
+  id: string;
+  client_id: string;
+  event_type: string;
+  display_name: string;
+  event_date: string | null;
+  location: string;
+};
+
 export type Vendor = {
   id: string;
   event_id: string;
@@ -56,6 +67,9 @@ export type PortalData = {
   dayFor: (id: string) => DayItem[];
   boardFor: (id: string) => BoardImage[];
   vendorsFor: (id: string) => Vendor[];
+  /** In date order, soonest first. Read on the server so the selector does not
+   *  have to fetch its own rows and flash a skeleton on every visit. */
+  eventsFor: (id: string) => PortalEvent[];
 };
 
 const WORKSPACE_COLS =
@@ -98,17 +112,22 @@ export async function loadPortal(
     can: () => true,
     tasksFor: () => [], paymentsFor: () => [], budgetFor: () => [],
     guestsFor: () => [], tablesFor: () => [], dayFor: () => [], boardFor: () => [],
-    vendorsFor: () => [],
+    vendorsFor: () => [], eventsFor: () => [],
   };
   if (ids.length === 0) return empty;
 
-  // Get events for each workspace to load vendors
+  /* The celebrations themselves. Read whole rather than by id alone: the
+     selector above the checklist needs the name and the date, and the page
+     needs to know which of them a `?event=` in the address actually refers to
+     before it trusts it. */
   const { data: eventsData } = await sb
     .from('events')
-    .select('id,client_id')
-    .in('client_id', ids);
+    .select('id,client_id,event_type,display_name,event_date,location')
+    .in('client_id', ids)
+    .order('event_date', { ascending: true, nullsFirst: false });
 
-  const eventIds = eventsData?.map((e) => e.id) ?? [];
+  const events = (eventsData ?? []) as PortalEvent[];
+  const eventIds = events.map((e) => e.id);
 
   const [tasks, payments, budget, guests, tables, day, boardRows, vendorRows] = await Promise.all([
     sb.from('tasks').select('id,client_id,title,due_on,done,owner,created_by,event_id,category,vendor_id')
@@ -126,7 +145,7 @@ export async function loadPortal(
     sb.from('moodboards').select('id,client_id,category,caption,image_path')
       .in('client_id', ids).order('created_at', { ascending: false }),
     eventIds.length > 0
-      ? sb.from('vendors')
+      ? sb.from('vendor_choices')
           .select('id,event_id,category,name,contact_name,phone,email,cost,location,notes,task_id,status,created_at')
           .in('event_id', eventIds)
       : Promise.resolve({ data: null } as any),
@@ -163,16 +182,13 @@ export async function loadPortal(
   const moneyVisible = (id: string) => !opts.asClient || shared.has(id);
 
   // Map vendors by client through event relationships
+  const clientOfEvent = new Map(events.map((e) => [e.id, e.client_id]));
   const vendorsByClient = new Map<string, Vendor[]>();
-  if (vendorRows.data) {
-    for (const vendor of vendorRows.data as (Vendor & { event_id: string })[]) {
-      const event = eventsData?.find((e) => e.id === vendor.event_id);
-      if (event) {
-        const clientId = event.client_id;
-        if (!vendorsByClient.has(clientId)) vendorsByClient.set(clientId, []);
-        vendorsByClient.get(clientId)!.push(vendor);
-      }
-    }
+  for (const vendor of (vendorRows.data ?? []) as Vendor[]) {
+    const clientId = clientOfEvent.get(vendor.event_id);
+    if (!clientId) continue;
+    if (!vendorsByClient.has(clientId)) vendorsByClient.set(clientId, []);
+    vendorsByClient.get(clientId)!.push(vendor);
   }
 
   return {
@@ -186,6 +202,7 @@ export async function loadPortal(
     dayFor: (id) => by(day.data as WithClient<DayItem>[], id),
     boardFor: (id) => by(board as WithClient<BoardImage>[], id),
     vendorsFor: (id) => vendorsByClient.get(id) ?? [],
+    eventsFor: (id) => events.filter((e) => e.client_id === id),
   };
 }
 

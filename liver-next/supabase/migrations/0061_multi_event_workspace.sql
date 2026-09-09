@@ -67,13 +67,11 @@ alter table public.tasks add column if not exists category text not null default
 -- For existing tasks, assign them to the primary (wedding) event of their client
 update public.tasks set event_id = (
   select e.id from public.events e
-  where e.client_id = tasks.client_id and e.event_type = 'wedding'
-  order by e.created_at limit 1
+  where e.client_id = tasks.client_id
+  order by (e.event_type <> 'wedding'), e.created_at limit 1
 )
 where event_id is null and client_id in (select id from public.clients);
 
--- Make event_id required on new inserts
-alter table public.tasks alter column event_id set not null;
 
 -- Drop the old phase column (moved to category for now, or semantically tied to task itself)
 alter table public.tasks drop column if exists phase;
@@ -86,12 +84,11 @@ alter table public.guests_rsvp add column if not exists event_id uuid references
 
 update public.guests_rsvp set event_id = (
   select e.id from public.events e
-  where e.client_id = guests_rsvp.client_id and e.event_type = 'wedding'
-  order by e.created_at limit 1
+  where e.client_id = guests_rsvp.client_id
+  order by (e.event_type <> 'wedding'), e.created_at limit 1
 )
 where event_id is null and client_id in (select id from public.clients);
 
-alter table public.guests_rsvp alter column event_id set not null;
 create index if not exists guests_event_idx on public.guests_rsvp(event_id, status);
 
 -- ── tables_seating: ties to an event ───────────────────────────────────────
@@ -99,12 +96,11 @@ alter table public.tables_seating add column if not exists event_id uuid referen
 
 update public.tables_seating set event_id = (
   select e.id from public.events e
-  where e.client_id = tables_seating.client_id and e.event_type = 'wedding'
-  order by e.created_at limit 1
+  where e.client_id = tables_seating.client_id
+  order by (e.event_type <> 'wedding'), e.created_at limit 1
 )
 where event_id is null and client_id in (select id from public.clients);
 
-alter table public.tables_seating alter column event_id set not null;
 create index if not exists tables_event_idx on public.tables_seating(event_id);
 
 -- ── day_schedule: ties to an event ─────────────────────────────────────────
@@ -112,12 +108,11 @@ alter table public.day_schedule add column if not exists event_id uuid reference
 
 update public.day_schedule set event_id = (
   select e.id from public.events e
-  where e.client_id = day_schedule.client_id and e.event_type = 'wedding'
-  order by e.created_at limit 1
+  where e.client_id = day_schedule.client_id
+  order by (e.event_type <> 'wedding'), e.created_at limit 1
 )
 where event_id is null and client_id in (select id from public.clients);
 
-alter table public.day_schedule alter column event_id set not null;
 create index if not exists day_event_idx on public.day_schedule(event_id, at_time);
 
 -- ── budget_items: ties to an event ────────────────────────────────────────
@@ -125,12 +120,11 @@ alter table public.budget_items add column if not exists event_id uuid reference
 
 update public.budget_items set event_id = (
   select e.id from public.events e
-  where e.client_id = budget_items.client_id and e.event_type = 'wedding'
-  order by e.created_at limit 1
+  where e.client_id = budget_items.client_id
+  order by (e.event_type <> 'wedding'), e.created_at limit 1
 )
 where event_id is null and client_id in (select id from public.clients);
 
-alter table public.budget_items alter column event_id set not null;
 create index if not exists budget_event_idx on public.budget_items(event_id);
 
 -- ── venue_comparisons: ties to an event ────────────────────────────────────
@@ -138,12 +132,11 @@ alter table public.venue_comparisons add column if not exists event_id uuid refe
 
 update public.venue_comparisons set event_id = (
   select e.id from public.events e
-  where e.client_id = venue_comparisons.client_id and e.event_type = 'wedding'
-  order by e.created_at limit 1
+  where e.client_id = venue_comparisons.client_id
+  order by (e.event_type <> 'wedding'), e.created_at limit 1
 )
 where event_id is null and client_id in (select id from public.clients);
 
-alter table public.venue_comparisons alter column event_id set not null;
 create index if not exists venue_comparisons_event_idx on public.venue_comparisons(event_id);
 
 -- ── RLS: events inherit workspace permissions ──────────────────────────────

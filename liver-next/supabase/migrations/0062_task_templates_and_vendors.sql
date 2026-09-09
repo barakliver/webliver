@@ -7,12 +7,18 @@
 --
 --  When they mark a "choose venue", "hire catering", "book DJ" task done,
 --  that done flag should trigger a form: "Which venue? How much? Phone number?"
---  The answers go into a vendors table, which becomes the event summary card
---  and feeds into the budget.
+--  The answers go into vendor_choices, which becomes the event summary card and
+--  feeds into the budget. A row there belongs to an event and sometimes to the
+--  task that captured it (the "choose DJ" task keeps its link to the DJ row).
 --
---  Vendor table unifies how all suppliers are recorded — one table rather than
---  scattered columns like clients.venue. A vendor belongs to an event and
---  sometimes to a task (the "choose DJ" task stores its link to the DJ row).
+--  vendor_choices, not vendors: 0025 already owns `vendors`, and it is a
+--  different thing — the producer's own directory of suppliers they work with,
+--  keyed by producer_id and kept across every event they ever run. This table
+--  is one supplier hired for one celebration, at a price, on a date. The first
+--  draft of this migration called it `vendors` and opened with
+--  `create table if not exists`, which on any real database quietly did
+--  nothing and then failed on the index — leaving the feature pointed at the
+--  producer's address book. Two different questions, two tables, two names.
 -- ============================================================================
 
 -- ── task_templates: one row per (event_type, task) combo ───────────────────
@@ -74,7 +80,7 @@ values
 on conflict do nothing;
 
 -- ── vendors: the registry of all suppliers and choices ─────────────────────
-create table if not exists public.vendors (
+create table if not exists public.vendor_choices (
   id             uuid primary key default gen_random_uuid(),
   event_id       uuid not null references public.events(id) on delete cascade,
   category       text not null,
@@ -90,38 +96,46 @@ create table if not exists public.vendors (
   task_id        uuid references public.tasks(id) on delete set null,
   status         text not null default 'selected',  -- selected, confirmed, completed
   created_at     timestamptz not null default now(),
-  constraint vendors_cost_nonneg check (cost is null or cost >= 0)
+  constraint vendor_choices_cost_nonneg check (cost is null or cost >= 0)
 );
 
-create index if not exists vendors_event_idx on public.vendors(event_id, category);
-create index if not exists vendors_task_idx on public.vendors(task_id);
+create index if not exists vendor_choices_event_idx on public.vendor_choices(event_id, category);
+create index if not exists vendor_choices_task_idx on public.vendor_choices(task_id);
 
 -- ── RLS for vendors ────────────────────────────────────────────────────────
-alter table public.vendors enable row level security;
+alter table public.vendor_choices enable row level security;
 
-drop policy if exists vendors_read on public.vendors;
-create policy vendors_read on public.vendors for select
-  using (public.can_read_client((select client_id from public.events where id = vendors.event_id)));
+drop policy if exists vendor_choices_read on public.vendor_choices;
+create policy vendor_choices_read on public.vendor_choices for select
+  using (public.can_read_client((select client_id from public.events where id = vendor_choices.event_id)));
 
-drop policy if exists vendors_write on public.vendors;
-create policy vendors_write on public.vendors for all
-  using (public.can_read_client((select client_id from public.events where id = vendors.event_id)))
-  with check (public.can_read_client((select client_id from public.events where id = vendors.event_id)));
+drop policy if exists vendor_choices_write on public.vendor_choices;
+create policy vendor_choices_write on public.vendor_choices for all
+  using (public.can_read_client((select client_id from public.events where id = vendor_choices.event_id)))
+  with check (public.can_read_client((select client_id from public.events where id = vendor_choices.event_id)));
 
 -- ── add vendor link to tasks ───────────────────────────────────────────────
-alter table public.tasks add column if not exists vendor_id uuid references public.vendors(id) on delete set null;
+alter table public.tasks add column if not exists vendor_id uuid references public.vendor_choices(id) on delete set null;
 create index if not exists tasks_vendor_idx on public.tasks(vendor_id);
 
 -- ── RLS updates for task_templates and event_types ────────────────────────
 alter table public.task_templates enable row level security;
 alter table public.event_types enable row level security;
 
--- Everyone can read templates (they are platform-wide)
+/* Both tables are product content rather than anybody's event: the kinds of
+   celebration there are, and the checklist each kind starts with. Every
+   workspace reads the same rows, so there is nothing to scope them by.
+
+   Signed in, though, not open to the world. A stranger has no use for the
+   starter checklist, and a table read by `anon` is a table that has to be
+   re-argued every time somebody adds a column to it. */
 drop policy if exists task_templates_read on public.task_templates;
-create policy task_templates_read on public.task_templates for select using (true);
+create policy task_templates_read on public.task_templates
+  for select to authenticated using (true);
 
 drop policy if exists event_types_read on public.event_types;
-create policy event_types_read on public.event_types for select using (true);
+create policy event_types_read on public.event_types
+  for select to authenticated using (true);
 
 -- ── comments ───────────────────────────────────────────────────────────────
 comment on table public.task_templates is
@@ -136,12 +150,12 @@ comment on column public.task_templates.vendor_category is
   'What kind of supplier this is: venue, catering, dj, etc. Used to categorize '
   'the vendors table.';
 
-comment on table public.vendors is
+comment on table public.vendor_choices is
   'A supplier hired for an event. Categories: venue, catering, photography, dj, '
   'flowers, decor, attire, printing, etc. One vendor may serve multiple tasks '
   '(a venue hosts both henna and wedding).';
 
-comment on column public.vendors.status is
+comment on column public.vendor_choices.status is
   'selected (chosen but not contacted), confirmed (committed), completed (day-of '
   'or after). Helps track whether arrangements are solid.';
 

@@ -1641,6 +1641,11 @@ export const appCopy = {
        the same register, and nothing can. */
     rowBoard: 'השראה',
     rowVendors: 'ספקים',
+    /* A couple often celebrates more than once — חינה, שבת חתן, ארוחת ערב —
+       and each one has its own date and its own list. Said in their words:
+       these are their events, not "workspaces" or "entities". */
+    eventAdd: 'אירוע נוסף',
+    eventPick: 'האירועים שלכם',
   },
 } as const;
 

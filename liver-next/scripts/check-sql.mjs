@@ -181,6 +181,43 @@ for (const file of files) {
   }
 }
 
+/* Two migrations that create the same table.
+ *
+ * `create table if not exists` is the right way to write a migration that may
+ * run twice. It is the wrong way to find out that the name is already taken:
+ * on a fresh database the second migration builds the table it meant, and on
+ * every database that already has the first one it silently builds nothing and
+ * carries on. The columns it wanted are missing, so the next statement that
+ * names one fails — an index, usually, hundreds of lines from the cause.
+ *
+ * 0062 hit this twice in one afternoon. It wanted a table for the supplier a
+ * couple hired for one celebration and called it `vendors`, which 0025 had
+ * already used for the producer's own directory of suppliers; renamed to
+ * `event_vendors`, which 0025 had also already used, for the crew call sheet.
+ * Both times the migration created nothing and died on its own index. Had it
+ * not died, the feature would have been reading and writing whichever table it
+ * had collided with. */
+const created = new Map();
+for (const file of files) {
+  const sql = readFileSync(join(dir, file), 'utf8');
+  const re = /create\s+table\s+(?:if\s+not\s+exists\s+)?(?:public\.)?([a-z0-9_]+)/gi;
+  let m;
+  while ((m = re.exec(sql)) !== null) {
+    const table = m[1].toLowerCase();
+    const line = sql.slice(0, m.index).split('\n').length;
+    const first = created.get(table);
+    if (first && first.file !== file) {
+      complain(file, line,
+        `creates public.${table}, which ${first.file} already creates. ` +
+        'With `if not exists` the second one quietly builds nothing on any database ' +
+        'that ran the first, and the next statement naming a column it expected fails ' +
+        'instead. Pick a name nothing has taken, or alter the table that is already there.');
+    } else if (!first) {
+      created.set(table, { file, line });
+    }
+  }
+}
+
 console.log(failed === 0
   ? `\nevery migration is sound  (${files.length} files read)`
   : `\n${failed} problem${failed === 1 ? '' : 's'} above`);

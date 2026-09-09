@@ -8010,13 +8010,11 @@ alter table public.tasks add column if not exists category text not null default
 -- For existing tasks, assign them to the primary (wedding) event of their client
 update public.tasks set event_id = (
   select e.id from public.events e
-  where e.client_id = tasks.client_id and e.event_type = 'wedding'
-  order by e.created_at limit 1
+  where e.client_id = tasks.client_id
+  order by (e.event_type <> 'wedding'), e.created_at limit 1
 )
 where event_id is null and client_id in (select id from public.clients);
 
--- Make event_id required on new inserts
-alter table public.tasks alter column event_id set not null;
 
 -- Drop the old phase column (moved to category for now, or semantically tied to task itself)
 alter table public.tasks drop column if exists phase;
@@ -8029,12 +8027,11 @@ alter table public.guests_rsvp add column if not exists event_id uuid references
 
 update public.guests_rsvp set event_id = (
   select e.id from public.events e
-  where e.client_id = guests_rsvp.client_id and e.event_type = 'wedding'
-  order by e.created_at limit 1
+  where e.client_id = guests_rsvp.client_id
+  order by (e.event_type <> 'wedding'), e.created_at limit 1
 )
 where event_id is null and client_id in (select id from public.clients);
 
-alter table public.guests_rsvp alter column event_id set not null;
 create index if not exists guests_event_idx on public.guests_rsvp(event_id, status);
 
 -- ── tables_seating: ties to an event ───────────────────────────────────────
@@ -8042,12 +8039,11 @@ alter table public.tables_seating add column if not exists event_id uuid referen
 
 update public.tables_seating set event_id = (
   select e.id from public.events e
-  where e.client_id = tables_seating.client_id and e.event_type = 'wedding'
-  order by e.created_at limit 1
+  where e.client_id = tables_seating.client_id
+  order by (e.event_type <> 'wedding'), e.created_at limit 1
 )
 where event_id is null and client_id in (select id from public.clients);
 
-alter table public.tables_seating alter column event_id set not null;
 create index if not exists tables_event_idx on public.tables_seating(event_id);
 
 -- ── day_schedule: ties to an event ─────────────────────────────────────────
@@ -8055,12 +8051,11 @@ alter table public.day_schedule add column if not exists event_id uuid reference
 
 update public.day_schedule set event_id = (
   select e.id from public.events e
-  where e.client_id = day_schedule.client_id and e.event_type = 'wedding'
-  order by e.created_at limit 1
+  where e.client_id = day_schedule.client_id
+  order by (e.event_type <> 'wedding'), e.created_at limit 1
 )
 where event_id is null and client_id in (select id from public.clients);
 
-alter table public.day_schedule alter column event_id set not null;
 create index if not exists day_event_idx on public.day_schedule(event_id, at_time);
 
 -- ── budget_items: ties to an event ────────────────────────────────────────
@@ -8068,12 +8063,11 @@ alter table public.budget_items add column if not exists event_id uuid reference
 
 update public.budget_items set event_id = (
   select e.id from public.events e
-  where e.client_id = budget_items.client_id and e.event_type = 'wedding'
-  order by e.created_at limit 1
+  where e.client_id = budget_items.client_id
+  order by (e.event_type <> 'wedding'), e.created_at limit 1
 )
 where event_id is null and client_id in (select id from public.clients);
 
-alter table public.budget_items alter column event_id set not null;
 create index if not exists budget_event_idx on public.budget_items(event_id);
 
 -- ── venue_comparisons: ties to an event ────────────────────────────────────
@@ -8081,12 +8075,11 @@ alter table public.venue_comparisons add column if not exists event_id uuid refe
 
 update public.venue_comparisons set event_id = (
   select e.id from public.events e
-  where e.client_id = venue_comparisons.client_id and e.event_type = 'wedding'
-  order by e.created_at limit 1
+  where e.client_id = venue_comparisons.client_id
+  order by (e.event_type <> 'wedding'), e.created_at limit 1
 )
 where event_id is null and client_id in (select id from public.clients);
 
-alter table public.venue_comparisons alter column event_id set not null;
 create index if not exists venue_comparisons_event_idx on public.venue_comparisons(event_id);
 
 -- ── RLS: events inherit workspace permissions ──────────────────────────────
@@ -8149,12 +8142,18 @@ comment on column public.venue_comparisons.event_id is
 --
 --  When they mark a "choose venue", "hire catering", "book DJ" task done,
 --  that done flag should trigger a form: "Which venue? How much? Phone number?"
---  The answers go into a vendors table, which becomes the event summary card
---  and feeds into the budget.
+--  The answers go into vendor_choices, which becomes the event summary card and
+--  feeds into the budget. A row there belongs to an event and sometimes to the
+--  task that captured it (the "choose DJ" task keeps its link to the DJ row).
 --
---  Vendor table unifies how all suppliers are recorded — one table rather than
---  scattered columns like clients.venue. A vendor belongs to an event and
---  sometimes to a task (the "choose DJ" task stores its link to the DJ row).
+--  vendor_choices, not vendors: 0025 already owns `vendors`, and it is a
+--  different thing — the producer's own directory of suppliers they work with,
+--  keyed by producer_id and kept across every event they ever run. This table
+--  is one supplier hired for one celebration, at a price, on a date. The first
+--  draft of this migration called it `vendors` and opened with
+--  `create table if not exists`, which on any real database quietly did
+--  nothing and then failed on the index — leaving the feature pointed at the
+--  producer's address book. Two different questions, two tables, two names.
 -- ============================================================================
 
 -- ── task_templates: one row per (event_type, task) combo ───────────────────
@@ -8216,7 +8215,7 @@ values
 on conflict do nothing;
 
 -- ── vendors: the registry of all suppliers and choices ─────────────────────
-create table if not exists public.vendors (
+create table if not exists public.vendor_choices (
   id             uuid primary key default gen_random_uuid(),
   event_id       uuid not null references public.events(id) on delete cascade,
   category       text not null,
@@ -8232,38 +8231,46 @@ create table if not exists public.vendors (
   task_id        uuid references public.tasks(id) on delete set null,
   status         text not null default 'selected',  -- selected, confirmed, completed
   created_at     timestamptz not null default now(),
-  constraint vendors_cost_nonneg check (cost is null or cost >= 0)
+  constraint vendor_choices_cost_nonneg check (cost is null or cost >= 0)
 );
 
-create index if not exists vendors_event_idx on public.vendors(event_id, category);
-create index if not exists vendors_task_idx on public.vendors(task_id);
+create index if not exists vendor_choices_event_idx on public.vendor_choices(event_id, category);
+create index if not exists vendor_choices_task_idx on public.vendor_choices(task_id);
 
 -- ── RLS for vendors ────────────────────────────────────────────────────────
-alter table public.vendors enable row level security;
+alter table public.vendor_choices enable row level security;
 
-drop policy if exists vendors_read on public.vendors;
-create policy vendors_read on public.vendors for select
-  using (public.can_read_client((select client_id from public.events where id = vendors.event_id)));
+drop policy if exists vendor_choices_read on public.vendor_choices;
+create policy vendor_choices_read on public.vendor_choices for select
+  using (public.can_read_client((select client_id from public.events where id = vendor_choices.event_id)));
 
-drop policy if exists vendors_write on public.vendors;
-create policy vendors_write on public.vendors for all
-  using (public.can_read_client((select client_id from public.events where id = vendors.event_id)))
-  with check (public.can_read_client((select client_id from public.events where id = vendors.event_id)));
+drop policy if exists vendor_choices_write on public.vendor_choices;
+create policy vendor_choices_write on public.vendor_choices for all
+  using (public.can_read_client((select client_id from public.events where id = vendor_choices.event_id)))
+  with check (public.can_read_client((select client_id from public.events where id = vendor_choices.event_id)));
 
 -- ── add vendor link to tasks ───────────────────────────────────────────────
-alter table public.tasks add column if not exists vendor_id uuid references public.vendors(id) on delete set null;
+alter table public.tasks add column if not exists vendor_id uuid references public.vendor_choices(id) on delete set null;
 create index if not exists tasks_vendor_idx on public.tasks(vendor_id);
 
 -- ── RLS updates for task_templates and event_types ────────────────────────
 alter table public.task_templates enable row level security;
 alter table public.event_types enable row level security;
 
--- Everyone can read templates (they are platform-wide)
+/* Both tables are product content rather than anybody's event: the kinds of
+   celebration there are, and the checklist each kind starts with. Every
+   workspace reads the same rows, so there is nothing to scope them by.
+
+   Signed in, though, not open to the world. A stranger has no use for the
+   starter checklist, and a table read by `anon` is a table that has to be
+   re-argued every time somebody adds a column to it. */
 drop policy if exists task_templates_read on public.task_templates;
-create policy task_templates_read on public.task_templates for select using (true);
+create policy task_templates_read on public.task_templates
+  for select to authenticated using (true);
 
 drop policy if exists event_types_read on public.event_types;
-create policy event_types_read on public.event_types for select using (true);
+create policy event_types_read on public.event_types
+  for select to authenticated using (true);
 
 -- ── comments ───────────────────────────────────────────────────────────────
 comment on table public.task_templates is
@@ -8278,12 +8285,12 @@ comment on column public.task_templates.vendor_category is
   'What kind of supplier this is: venue, catering, dj, etc. Used to categorize '
   'the vendors table.';
 
-comment on table public.vendors is
+comment on table public.vendor_choices is
   'A supplier hired for an event. Categories: venue, catering, photography, dj, '
   'flowers, decor, attire, printing, etc. One vendor may serve multiple tasks '
   '(a venue hosts both henna and wedding).';
 
-comment on column public.vendors.status is
+comment on column public.vendor_choices.status is
   'selected (chosen but not contacted), confirmed (committed), completed (day-of '
   'or after). Helps track whether arrangements are solid.';
 
@@ -8310,3 +8317,133 @@ comment on column public.tasks.vendor_id is
 insert into public.feature_flags (key, label, diy, managed) values
   ('events', 'מספר אירועים', true, true)
 on conflict (key) do nothing;
+
+-- ============================================================================
+--  0064 — an event_id nobody has to supply
+-- ============================================================================
+--  0061 gave six tables an event_id and made every one of them not null. That
+--  was written as though the application already knew about events. It does
+--  not: adding a task, a guest, a table, a schedule row, a budget line or a
+--  hall to compare goes through nine insert statements, and not one of them
+--  names an event. The column was not null from the moment the migration ran,
+--  so every one of those writes would have been refused. A couple adding a
+--  guest would have got an error, and nothing on the screen could have told
+--  them why.
+--
+--  The same migration also assumed every workspace is a wedding. It seeds the
+--  events table with `select id, kind::text ... from clients`, and clients.kind
+--  is the event_class enum — 'wedding' or 'corporate'. There is no 'corporate'
+--  row in event_types, so a single corporate client makes that insert fail on
+--  a foreign key, and 0061 aborts partway through on exactly the databases
+--  that have the most in them.
+--
+--  This migration is the repair, and it is written to be correct whether or
+--  not 0061 ever finished:
+--
+--    1. corporate becomes a kind of event, so the seed has somewhere to land.
+--    2. any workspace still without an event gets one, of its own kind.
+--    3. the six columns become nullable again.
+--    4. a trigger fills event_id in from the workspace's main event when the
+--       writer did not name one, so those nine insert statements keep working
+--       and their rows still belong to a celebration.
+--
+--  Not null can come back once every writer names its event. Until then a
+--  constraint the code cannot satisfy is not a safeguard, it is an outage.
+-- ============================================================================
+
+-- ── 1. corporate is a kind of event ────────────────────────────────────────
+insert into public.event_types (key, name, description) values
+  ('corporate', 'אירוע חברה', 'A company event rather than a wedding')
+on conflict (key) do nothing;
+
+-- ── 2. every workspace has at least one event ──────────────────────────────
+--  Covers both the rows 0061 skipped and any workspace opened since: the
+--  client creation path does not make an event yet.
+insert into public.events (client_id, event_type, display_name, event_date, location)
+select c.id, c.kind::text, c.display_name, c.event_date, c.venue
+from public.clients c
+where not exists (select 1 from public.events e where e.client_id = c.id);
+
+-- ── 3. the columns become nullable again ───────────────────────────────────
+alter table public.tasks             alter column event_id drop not null;
+alter table public.guests_rsvp       alter column event_id drop not null;
+alter table public.tables_seating    alter column event_id drop not null;
+alter table public.day_schedule      alter column event_id drop not null;
+alter table public.budget_items      alter column event_id drop not null;
+alter table public.venue_comparisons alter column event_id drop not null;
+
+-- ── 4. the workspace's main event, when the writer did not name one ────────
+--  The wedding first, then whichever event was opened earliest. That is what
+--  every one of these rows meant before events existed, so a writer that has
+--  not been taught about events yet keeps producing rows that mean the same
+--  thing they used to.
+create or replace function public.fill_event_id()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if new.event_id is null then
+    select e.id into new.event_id
+      from public.events e
+     where e.client_id = new.client_id
+     order by (e.event_type <> 'wedding'), e.created_at
+     limit 1;
+  end if;
+  return new;
+end $$;
+
+comment on function public.fill_event_id() is
+  'Fills event_id with the workspace''s main event when an insert does not name '
+  'one. Lets writers that predate the events table keep working, and keeps '
+  'their rows attached to a celebration rather than floating loose.';
+
+do $$
+declare t text;
+begin
+  foreach t in array array[
+    'tasks', 'guests_rsvp', 'tables_seating',
+    'day_schedule', 'budget_items', 'venue_comparisons'
+  ]
+  loop
+    execute format('drop trigger if exists fill_event_id on public.%I', t);
+    execute format(
+      'create trigger fill_event_id before insert on public.%I '
+      'for each row execute function public.fill_event_id()', t);
+  end loop;
+end $$;
+
+-- ── and the rows 0061 could not reach ──────────────────────────────────────
+--  0061 matched only on event_type = 'wedding', so a corporate workspace's
+--  rows were left null and then refused by the not null it added next. Now
+--  that every workspace has an event, they can be pointed at it.
+update public.tasks t set event_id = (
+  select e.id from public.events e where e.client_id = t.client_id
+   order by (e.event_type <> 'wedding'), e.created_at limit 1)
+ where t.event_id is null;
+
+update public.guests_rsvp g set event_id = (
+  select e.id from public.events e where e.client_id = g.client_id
+   order by (e.event_type <> 'wedding'), e.created_at limit 1)
+ where g.event_id is null;
+
+update public.tables_seating s set event_id = (
+  select e.id from public.events e where e.client_id = s.client_id
+   order by (e.event_type <> 'wedding'), e.created_at limit 1)
+ where s.event_id is null;
+
+update public.day_schedule d set event_id = (
+  select e.id from public.events e where e.client_id = d.client_id
+   order by (e.event_type <> 'wedding'), e.created_at limit 1)
+ where d.event_id is null;
+
+update public.budget_items b set event_id = (
+  select e.id from public.events e where e.client_id = b.client_id
+   order by (e.event_type <> 'wedding'), e.created_at limit 1)
+ where b.event_id is null;
+
+update public.venue_comparisons v set event_id = (
+  select e.id from public.events e where e.client_id = v.client_id
+   order by (e.event_type <> 'wedding'), e.created_at limit 1)
+ where v.event_id is null;

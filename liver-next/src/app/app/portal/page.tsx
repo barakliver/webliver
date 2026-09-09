@@ -31,9 +31,19 @@ export async function generateMetadata() {
   return { title: appUiFor(await currentLocale()).portal.title };
 }
 
-export default async function PortalPage() {
+export default async function PortalPage({ searchParams }: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
   const account = await requireAccount();
   const sb = await supabaseServer();
+
+  /* Which celebration is open. It lives in the address so the henna and the
+     wedding can be two tabs, and so the filtering below happens here rather
+     than in the browser. Trusted only as far as the next few lines: it is
+     matched against the events this reader may actually read, and anything
+     else falls back to the first. */
+  const wanted = (await searchParams).event;
+  const openEventId = typeof wanted === 'string' ? wanted : null;
 
   /* The couple's own language. Everything below reads its words from here, and
      the panels read theirs from the provider, so one cookie decides the whole
@@ -98,10 +108,26 @@ export default async function PortalPage() {
         {data.workspaces.map((w) => {
           const sheet = prepOf(prep, w.id);
           const venues = venuesOf(halls, w.id);
+          /* An address naming an event on somebody else's workspace, or one
+             that has since been deleted, resolves to nothing here and the
+             workspace falls back to its first celebration — rather than to a
+             checklist that is empty because the filter matched no rows. */
+          const events = data.eventsFor(w.id);
+          const openEvent = events.find((e) => e.id === openEventId) ?? events[0] ?? null;
           return (
             <div key={w.id} className="space-y-6">
-              <EventSelector clientId={w.id} currentEventId={undefined} onEventChange={() => {}} />
-              <PortalWorkspace workspace={w} data={data} viewerId={account.id} ui={ui} />
+              {data.can(w.id, 'events') && events.length > 0 && (
+                <EventSelector
+                  clientId={w.id}
+                  events={events}
+                  selectedId={openEvent?.id ?? null}
+                  labels={{ add: ui.portal.eventAdd, empty: ui.portal.eventPick }}
+                />
+              )}
+              <PortalWorkspace
+                workspace={w} data={data} viewerId={account.id} ui={ui}
+                currentEventId={openEvent?.id}
+              />
               <Contracts clientId={w.id} contracts={contracts.get(w.id) ?? []} viewer="client" />
               {/* While the hall is still open, or once there is something to
                   compare. Gating it on the halls alone was wrong in the way that
