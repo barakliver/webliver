@@ -119,6 +119,8 @@ import { companionFor } from '@/content/appUi';
 import ConsoleLoading from '@/app/app/loading';
 import EventLoading from '@/app/app/clients/[id]/loading';
 import PortalLoading from '@/app/app/portal/loading';
+import { EventSelector } from '@/components/portal/EventSelector';
+import { VendorCaptureDemo } from './VendorCaptureDemo';
 
 /**
  * Every panel in the product, on one page, with no database behind it.
@@ -1035,6 +1037,40 @@ export default async function DesignPage() {
               }}
             />
             <CoupleCompanion copy={companionFor(locale)} />
+          </div>
+        </Panel>
+
+        <Panel name="EventSelector" note="a couple with more than one celebration: which list they are looking at, and the way to open another">
+          <EventSelector
+            clientId="00000000-0000-4000-8000-000000000003"
+            selectedId="00000000-0000-4000-8000-000000000001"
+            labels={{ add: ui.portal.eventAdd, empty: ui.portal.eventPick }}
+            events={[
+              {
+                id: '00000000-0000-4000-8000-000000000001',
+                client_id: '00000000-0000-4000-8000-000000000003',
+                event_type: 'wedding', display_name: 'החתונה',
+                event_date: '2026-12-05', location: 'אחוזת הכפר',
+              },
+              {
+                id: '00000000-0000-4000-8000-000000000005',
+                client_id: '00000000-0000-4000-8000-000000000003',
+                event_type: 'henna', display_name: 'חינה',
+                event_date: '2026-11-28', location: 'בית ההורים',
+              },
+              {
+                id: '00000000-0000-4000-8000-000000000006',
+                client_id: '00000000-0000-4000-8000-000000000003',
+                event_type: 'groom_party', display_name: 'שבת חתן',
+                event_date: null, location: '',
+              },
+            ]}
+          />
+        </Panel>
+
+        <Panel name="VendorCaptureModal" note="what opens when a supplier task is ticked: the form that catches who was hired, and for how much">
+          <div className="relative h-[34rem] overflow-hidden rounded-xl2 border border-line bg-surface [transform:translate(0)]">
+            <VendorCaptureDemo />
           </div>
         </Panel>
       </main>

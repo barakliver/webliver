@@ -30,7 +30,13 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const HARNESS = join(root, 'src/app/design/page.tsx');
+/* The gallery is the whole directory, not just the page.
+   A component that needs client-side handlers cannot be mounted straight from
+   page.tsx, because it is a server component and a function cannot cross that
+   line — so it gets a small 'use client' wrapper beside it, and the component
+   is then imported there rather than in the page. Reading only the page missed
+   those, and reported a component as never looked at while it was on screen. */
+const HARNESS_DIR = join(root, 'src/app/design');
 
 /* Not panels. Each line is the reason, and each reason is about the component
    rather than about the effort of writing a fixture. */
@@ -47,18 +53,58 @@ const NOT_DRAWN = {
   'app/FlashClear': 'deletes the message once it has been seen and renders nothing',
 };
 
+/* Every directory under components, however deep, found rather than listed.
+ *
+ * This named `src/components/app` and `src/components` outright, which was
+ * every directory there was on the day it was written. `src/components/portal`
+ * was added later, and the two components in it — the event selector and the
+ * form that catches a supplier when a task is ticked — were never scanned, so
+ * a check whose entire purpose is to notice components nobody looks at did not
+ * notice them. It reported 88 components and passed.
+ *
+ * A list of directories is a thing somebody has to remember to update, and the
+ * one time it is not updated is the time a new directory appears — which is
+ * exactly when a component is newest and least looked at. Walking finds them. */
 const files = [];
-for (const dir of ['src/components/app', 'src/components']) {
-  for (const name of readdirSync(join(root, dir))) {
-    if (!name.endsWith('.tsx')) continue;
-    files.push(dir.endsWith('/app') ? `app/${name.slice(0, -4)}` : name.slice(0, -4));
+const walk = (dir, prefix = '') => {
+  for (const entry of readdirSync(join(root, dir), { withFileTypes: true })) {
+    if (entry.isDirectory()) walk(join(dir, entry.name), `${prefix}${entry.name}/`);
+    else if (entry.name.endsWith('.tsx')) files.push(`${prefix}${entry.name.slice(0, -4)}`);
   }
-}
+};
+walk('src/components');
 
-const harness = readFileSync(HARNESS, 'utf8');
+const harness = readdirSync(HARNESS_DIR)
+  .filter((f) => f.endsWith('.tsx'))
+  .map((f) => readFileSync(join(HARNESS_DIR, f), 'utf8'))
+  .join('\n');
 const imported = new Set([...harness.matchAll(/from '@\/components\/([A-Za-z0-9_/]+)'/g)].map((m) => m[1]));
 
-const unseen = files.filter((f) => !imported.has(f) && !(f in NOT_DRAWN));
+/* Components the directory bug hid, which drew nothing for anybody to see.
+ *
+ * These are not excused. Every one of them draws something and every one of
+ * them wants a panel; they are here because making the scan honest surfaced
+ * twenty-three of them in one go, and twenty-three fixtures written in a hurry
+ * to turn a check green is how a check stops meaning anything.
+ *
+ * The rule this buys: the gap cannot grow. A component added from here on has
+ * to be in the harness, because it will not be in this list and nothing may be
+ * added to it. The list only ever gets shorter, and the count below is printed
+ * every run so it is not somewhere quiet. */
+const BACKLOG = new Set([
+  'a11y/A11yPanel', 'guest/FindInvite',
+  'marketing/AiConcierge', 'marketing/AmbientBackdrop', 'marketing/BeginPath',
+  'marketing/BookMeeting', 'marketing/BudgetSimulator', 'marketing/DarkBand',
+  'marketing/FabDock', 'marketing/Hero', 'marketing/Journey', 'marketing/LangToggle',
+  'marketing/LeadForm', 'marketing/Nav', 'marketing/Parallax', 'marketing/PhoneStage',
+  'marketing/Portfolio', 'marketing/Portrait', 'marketing/Prose', 'marketing/Section',
+  'marketing/SiteFooter', 'marketing/Steps', 'marketing/StructuredData',
+]);
+
+const unseen = files.filter((f) => !imported.has(f) && !(f in NOT_DRAWN) && !BACKLOG.has(f));
+/* A backlog line that has been dealt with is a line to delete, same as a
+   reason that has outlived its component. */
+const settled = [...BACKLOG].filter((f) => imported.has(f) || !files.includes(f));
 /* A reason that has outlived its component is a reason nobody will delete. */
 const stale = Object.keys(NOT_DRAWN).filter((f) => !files.includes(f));
 const contradicted = Object.keys(NOT_DRAWN).filter((f) => imported.has(f));
@@ -73,9 +119,20 @@ for (const f of contradicted) {
   console.log(`  excused anyway    ${f} is in the harness; drop its line from NOT_DRAWN`);
 }
 
-const failures = unseen.length + stale.length + contradicted.length;
+for (const f of settled) {
+  console.log(`  done              ${f} is in the harness now; drop its line from BACKLOG`);
+}
+
+const waiting = [...BACKLOG].filter((f) => !settled.includes(f));
+const failures = unseen.length + stale.length + contradicted.length + settled.length;
 if (failures === 0) {
-  console.log(`\nevery component can be looked at  (${imported.size} in the harness, ${Object.keys(NOT_DRAWN).length} that draw nothing)\n`);
+  console.log(`\nevery component can be looked at  (${imported.size} in the harness, ${Object.keys(NOT_DRAWN).length} that draw nothing)`);
+  if (waiting.length > 0) {
+    console.log(`${waiting.length} still waiting for a panel, from before the scan walked every directory:`);
+    console.log(`  ${waiting.join(', ')}\n`);
+  } else {
+    console.log('');
+  }
 } else {
   console.log(`\nAdd a panel to src/app/design/page.tsx, or a reason to NOT_DRAWN in this file.`);
   console.log(`A panel is nearly always the right answer: the ones nobody adds are the ones nobody sees.\n`);
