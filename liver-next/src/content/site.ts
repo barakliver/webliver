@@ -2360,6 +2360,7 @@ export const prepCopy = {
   shareNew: 'קישור חדש',
   shareCopy: 'העתקה',
   shareCopied: 'הועתק',
+  shareWhatsapp: 'שליחה בוואטסאפ',
   shareRevoke: 'ביטול',
   shareNone: 'עוד לא יצרתם קישור.',
   shareUntil: 'תקף עד',

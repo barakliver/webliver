@@ -333,6 +333,15 @@ function Shares({ c, clientId, shares, siteUrl }: {
                 }} className="btn-ghost min-h-[34px] px-3 text-[13px]">
                   {copied === s.id ? c.shareCopied : c.shareCopy}
                 </button>
+                {/* The stylist is on WhatsApp, not on email. One tap opens the
+                    app with the link already in the message. */}
+                <a
+                  href={`https://wa.me/?text=${encodeURIComponent(url)}`}
+                  target="_blank" rel="noopener noreferrer"
+                  className="btn-ghost inline-flex min-h-[34px] items-center px-3 text-[13px]"
+                >
+                  {c.shareWhatsapp}
+                </a>
                 <form action={revokeShare}>
                   <input type="hidden" name="id" value={s.id} />
                   <input type="hidden" name="client_id" value={clientId} />

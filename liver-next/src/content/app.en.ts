@@ -540,6 +540,7 @@ export const prepCopyEn: PrepCopy = {
   shareNew: 'New link',
   shareCopy: 'Copy',
   shareCopied: 'Copied',
+  shareWhatsapp: 'Send on WhatsApp',
   shareRevoke: 'Revoke',
   shareNone: 'No link yet.',
   shareUntil: 'Valid until',
