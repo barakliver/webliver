@@ -1,5 +1,6 @@
 'use client';
 
+import { count as plural, fill } from '@/lib/copyText';
 import { useState } from 'react';
 import Link from 'next/link';
 import { ChevronDown, MapPin, Users } from 'lucide-react';
@@ -49,10 +50,10 @@ export function ArchiveShelf({ shelf }: { shelf: Shelf[] }) {
               className="flex w-full items-center justify-between gap-3 px-5 py-4 text-start"
             >
               <span className="font-display text-[20px] font-semibold text-ink">
-                {folder.year ? c.yearLabel(folder.year) : c.noYear}
+                {folder.year ? fill(c.yearLabel, { year: folder.year }) : c.noYear}
               </span>
               <span className="flex items-center gap-3">
-                <span className="text-[13.5px] text-ink-mute">{c.count(folder.events.length)}</span>
+                <span className="text-[13.5px] text-ink-mute">{plural(c.count, folder.events.length)}</span>
                 <ChevronDown
                   size={17} aria-hidden strokeWidth={1.5}
                   className={`text-ink-mute transition-transform ${on ? 'rotate-180' : ''}`}

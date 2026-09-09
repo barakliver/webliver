@@ -696,7 +696,7 @@ export const appCopy = {
     now: 'דחוף',
     soon: 'השבוע',
     nextEvent: 'האירוע הקרוב',
-    inDays: (n: number) => (n === 0 ? 'היום' : n === 1 ? 'מחר' : `בעוד ${n} ימים`),
+    inDays: { today: 'היום', tomorrow: 'מחר', later: 'בעוד {n} ימים' },
     money: 'כסף',
     paid: 'שולם',
     owed: 'פתוח',
@@ -769,7 +769,7 @@ export const appCopy = {
       median: 'זמן תגובה חציוני',
       answered: 'פניות שנענו',
       waiting: 'ממתינות למענה',
-      hours: (n: number) => (n < 1 ? 'פחות משעה' : n < 2 ? 'שעה' : `${n} שעות`),
+      hours: { lessThanOne: 'פחות משעה', one: 'שעה', many: '{n} שעות' },
       none: 'אין עדיין מספיק פניות שנענו',
     },
 
@@ -779,7 +779,7 @@ export const appCopy = {
       collected: 'נגבה',
       due: 'פתוח',
       overdue: 'באיחור',
-      overdueCount: (n: number) => (n === 1 ? 'תשלום אחד' : `${n} תשלומים`),
+      overdueCount: { one: 'תשלום אחד', many: '{n} תשלומים' },
     },
 
     health: {
@@ -812,14 +812,14 @@ export const appCopy = {
     late: 'עבר הזמן',
     tick: 'סימון כבוצע',
     untick: 'ביטול הסימון',
-    doneAt: (t: string) => `סומן ב-${t}`,
+    doneAt: 'סומן ב-{t}',
     /* Said out loud, because the alternative is the row going back to how it
        was with no explanation. In a hall, on the hall's wifi, that reads as an
        app that ignored the tap. */
     saving: 'שומר',
     notSaved: 'לא נשמר. אפשר לנסות שוב.',
     schedule: 'כל הלוז',
-    openCount: (n: number) => (n === 1 ? 'שורה אחת פתוחה' : `${n} שורות פתוחות`),
+    openCount: { one: 'שורה אחת פתוחה', many: '{n} שורות פתוחות' },
 
     people: {
       title: 'מי אמור להיות כאן',
@@ -833,15 +833,15 @@ export const appCopy = {
       empty: 'עוד לא נרשמו אנשים לאירוע הזה.',
       here: 'הגיע',
       arrived: 'כאן',
-      arrivedAt: (t: string) => `הגיע ב-${t}`,
+      arrivedAt: 'הגיע ב-{t}',
       undo: 'ביטול',
       notSaved: 'לא נשמר. אפשר לנסות שוב.',
       missing: 'טרם הגיעו',
-      headcount: (here: number, of: number) => `${here} מתוך ${of} כאן`,
+      headcount: '{here} מתוך {of} כאן',
     },
 
     alert: {
-      inMinutes: (n: number) => (n === 0 ? 'מתחיל עכשיו' : n === 1 ? 'עוד דקה' : `עוד ${n} דקות`),
+      inMinutes: { now: 'מתחיל עכשיו', one: 'עוד דקה', many: 'עוד {n} דקות' },
       dismiss: 'הבנתי',
     },
 
@@ -863,7 +863,7 @@ export const appCopy = {
       allMissing: 'לכל מי שטרם הגיע',
       everyone: 'לכולם',
       noPhones: 'לאף אחד ברשימה אין מספר טלפון שמור.',
-      count: (n: number) => (n === 1 ? 'איש קשר אחד' : `${n} אנשי קשר`),
+      count: { one: 'איש קשר אחד', many: '{n} אנשי קשר' },
       cancel: 'סגירה',
     },
   },
@@ -1319,7 +1319,7 @@ export const appCopy = {
     today: 'האירוע היום',
     tomorrow: 'האירוע מחר',
     passed: 'האירוע היה',
-    daysAgo: (n: number) => `לפני ${n} ימים`,
+    daysAgo: 'לפני {n} ימים',
 
     at: {
       guests: 'אורחים',
@@ -1975,7 +1975,7 @@ export const vendorCopy = {
   dirArchived: 'בארכיון',
   archive: 'העברה לארכיון',
   unarchive: 'החזרה',
-  count: (n: number) => `${n} ספקים`,
+  count: '{n} ספקים',
   noResults: 'לא נמצא ספק מתאים.',
   allCategories: 'כל התחומים',
   agreedPrice: 'מחיר מוסכם',
@@ -2116,10 +2116,10 @@ export const templateCopy = {
   shared: 'הזוג רואה',
   sharedOn: 'משותף',
   sharedOff: 'פרטי',
-  apply: (n: number) => (n === 1 ? 'הוספת שורה אחת' : `הוספת ${n} שורות`),
+  apply: { one: 'הוספת שורה אחת', many: 'הוספת {n} שורות' },
   applying: 'מוסיף',
   nothing: 'לא נבחר כלום',
-  added: (n: number) => `נוספו ${n}. אפשר לערוך כל אחת מהן.`,
+  added: 'נוספו {n}. אפשר לערוך כל אחת מהן.',
   privateNote: 'משימה פרטית לא מופיעה אצל הזוג, לא באזור שלהם ולא בהתראות.',
   open: 'להוסיף מהתבנית',
   close: 'סגירה',
@@ -2812,9 +2812,9 @@ export const archiveCopy = {
   sub: 'אירועים שנסגרו, לפי השנה שבה הם היו.',
   open: 'ארכיון',
   backToLive: 'לאירועים הפעילים',
-  yearLabel: (year: number) => `אירועי ${year}`,
+  yearLabel: 'אירועי {year}',
   noYear: 'בלי תאריך',
-  count: (n: number) => (n === 1 ? 'אירוע אחד' : `${n} אירועים`),
+  count: { one: 'אירוע אחד', many: '{n} אירועים' },
   empty: 'עוד לא נסגר כאן אף אירוע.',
   emptyYear: 'אין אירועים בשנה הזאת.',
 
@@ -2870,7 +2870,7 @@ export const meetingCopy = {
   summarising: 'כותב',
   summaryByModel: 'הפסקה העליונה נכתבה אוטומטית. הרישום שמתחתיה הוא מה שנרשם בפגישה.',
   summaryNone: 'אין עדיין מה לסכם. מלאו כמה שדות ושמרו.',
-  answered: (filled: number, total: number) => `נענו ${filled} מתוך ${total}`,
+  answered: 'נענו {filled} מתוך {total}',
   shareWithCouple: 'משותף עם הזוג',
   shareHint: 'כברירת מחדל פגישה נשארת אצלכם בלבד.',
   versions: 'גרסאות',
@@ -2912,10 +2912,10 @@ export const workflowCopy = {
      three words on two screens that do different things. */
   onThisEvent: 'רשימה לאירוע הזה',
   which: 'איזו תבנית',
-  stepsCount: (n: number) => (n === 1 ? 'שלב אחד' : `${n} שלבים`),
+  stepsCount: { one: 'שלב אחד', many: '{n} שלבים' },
   apply: 'החלה על אירוע',
   applying: 'מחיל',
-  applied: (n: number) => (n === 0 ? 'הכל כבר היה שם' : `נוספו ${n} שלבים`),
+  applied: { none: 'הכל כבר היה שם', many: 'נוספו {n} שלבים' },
   noDate: 'לאירוע אין עדיין תאריך, אז השלבים ייכנסו בלי תאריך יעד.',
   saveFailed: 'לא הצלחנו לשמור',
 } as const;

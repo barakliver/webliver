@@ -1,3 +1,4 @@
+import { count as plural, fill } from '@/lib/copyText';
 import Link from 'next/link';
 import { appCopy } from '@/content/site';
 import type { Conversion } from '@/lib/analytics';
@@ -157,7 +158,7 @@ export function CashPanel({ cash }: { cash: Cash }) {
           label={c.cash.overdue}
           value=<Money value={cash.overdue} />
           tone={cash.overdue > 0 ? 'bad' : 'ink'}
-          note={cash.overdueCount > 0 ? c.cash.overdueCount(cash.overdueCount) : undefined}
+          note={cash.overdueCount > 0 ? plural(c.cash.overdueCount, cash.overdueCount) : undefined}
           href={cash.overdue > 0 ? '/app/clients' : undefined}
         />
       </div>
@@ -173,7 +174,10 @@ export function ResponsePanel({ r }: { r: Response }) {
       <div className="mt-4 grid gap-3 sm:grid-cols-3">
         <Figure
           label={c.response.median}
-          value={r.medianHours === null ? '·' : c.response.hours(r.medianHours)}
+          value={r.medianHours === null ? '·'
+            : r.medianHours < 1 ? c.response.hours.lessThanOne
+            : r.medianHours < 2 ? c.response.hours.one
+            : fill(c.response.hours.many, { n: r.medianHours })}
           note={r.medianHours === null ? c.response.none : undefined}
         />
         <Figure label={c.response.answered} value={String(r.answered)} href="/app/leads" />

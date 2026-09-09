@@ -48,7 +48,7 @@ export type PrepCopy = {
   looksTitle: string; looksSub: string; looksEmpty: string; kind: string;
   categories: { hair: string; makeup: string; outfit: string; other: string };
   shareTitle: string; shareSub: string; shareAll: string; shareFaces: string; shareLooks: string;
-  shareNew: string; shareCopy: string; shareCopied: string; shareRevoke: string;
+  shareNew: string; shareCopy: string; shareCopied: string; shareWhatsapp: string; shareRevoke: string;
   shareNone: string; shareUntil: string; uploadFailed: string; tooBig: string;
 };
 

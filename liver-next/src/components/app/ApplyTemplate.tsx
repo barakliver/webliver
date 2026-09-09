@@ -1,5 +1,6 @@
 'use client';
 
+import { count as plural, fill } from '@/lib/copyText';
 import { useState } from 'react';
 import { ListChecks } from 'lucide-react';
 import { applyTemplate } from '@/app/actions/workflow';
@@ -35,7 +36,8 @@ export function ApplyTemplate({ clientId, templates, hasDate }: {
     const res = await applyTemplate(clientId, pick);
     setBusy(false);
     if (!res.ok) { setError(res.error ?? c.saveFailed); return; }
-    setSaid(c.applied(res.added ?? 0));
+    const added = res.added ?? 0;
+    setSaid(added === 0 ? c.applied.none : fill(c.applied.many, { n: added }));
   };
 
   return (
@@ -56,7 +58,7 @@ export function ApplyTemplate({ clientId, templates, hasDate }: {
           >
             {templates.map((t) => (
               <option key={t.id} value={t.id}>
-                {t.name} · {c.stepsCount(t.steps.length)}
+                {t.name} · {plural(c.stepsCount, t.steps.length)}
               </option>
             ))}
           </select>

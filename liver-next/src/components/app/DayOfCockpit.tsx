@@ -1,5 +1,6 @@
 'use client';
 
+import { count as plural, fill } from '@/lib/copyText';
 import { useActionState, useEffect, useState } from 'react';
 import { useScreenAwake } from '@/lib/awake';
 import { Check, Loader2, Megaphone, MessageCircle, Phone, Sun, Undo2, UserCheck, X } from 'lucide-react';
@@ -98,7 +99,7 @@ export function DayOfCockpit({
       {live && sheet.length > 0 && (
         <div className="flex flex-wrap items-center justify-between gap-3">
           <span className="text-[14px] text-ink-soft">
-            {c.people.headcount(heads.here, heads.of)}
+            {fill(c.people.headcount, { here: heads.here, of: heads.of })}
             {heads.late > 0 && (
               <span className="ms-2 chip-bad">{c.people.missing} · {heads.late}</span>
             )}
@@ -132,7 +133,7 @@ export function DayOfCockpit({
       <section className="card">
         <div className="flex items-baseline justify-between gap-3">
           <h2 className="font-display text-[19px] font-semibold text-ink">{c.schedule}</h2>
-          <span className="text-[12.5px] text-ink-mute">{c.openCount(open)}</span>
+          <span className="text-[12.5px] text-ink-mute">{plural(c.openCount, open)}</span>
         </div>
 
         <ul className="mt-4 list-none space-y-2 p-0">
@@ -229,7 +230,7 @@ function Row({ p, clientId }: { p: Placed; clientId: string }) {
           {p.line.key_moment && <span className="chip-mute">{c.keyMoment}</span>}
         </div>
         {done && p.line.done_at && (
-          <div className="mt-0.5 text-[12.5px] text-ink-mute">{c.doneAt(timeOf(p.line.done_at))}</div>
+          <div className="mt-0.5 text-[12.5px] text-ink-mute">{fill(c.doneAt, { t: timeOf(p.line.done_at) })}</div>
         )}
         {/* Announced as well as drawn, and it stays until the next attempt.
             A message that fades is one somebody glancing at a phone between
@@ -321,7 +322,7 @@ function PersonRow({ person, clientId }: { person: Caller; clientId: string }) {
 
           {here && person.arrived_at && (
             <div className="mt-0.5 text-[12.5px] text-ink-mute">
-              {c.people.arrivedAt(timeOf(person.arrived_at))}
+              {fill(c.people.arrivedAt, { t: timeOf(person.arrived_at) })}
             </div>
           )}
 
@@ -376,7 +377,9 @@ function Countdown({ placed, onDismiss }: { placed: Placed; onDismiss: () => voi
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="min-w-0">
-          <div className="text-[12.5px] font-semibold text-warn">{c.alert.inMinutes(mins)}</div>
+          <div className="text-[12.5px] font-semibold text-warn">
+            {mins === 0 ? c.alert.inMinutes.now : mins === 1 ? c.alert.inMinutes.one : fill(c.alert.inMinutes.many, { n: mins })}
+          </div>
           <div className="mt-0.5 font-display text-[22px] font-semibold leading-tight text-ink">
             {placed.line.title}
           </div>
@@ -475,7 +478,7 @@ function Broadcast({ sheet, late }: { sheet: Caller[]; late: Caller[] }) {
                   </button>
                 ))}
               </div>
-              <p className="mt-2 text-[12.5px] text-ink-mute">{c.broadcast.count(target.length)}</p>
+              <p className="mt-2 text-[12.5px] text-ink-mute">{plural(c.broadcast.count, target.length)}</p>
             </fieldset>
 
             <div className="mt-4">

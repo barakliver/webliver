@@ -3,6 +3,9 @@ import {
   appCopy, guestsCopy, seatingCopy, dayCopy, threadCopy, partyCopy, contractCopy, eventFileCopy,
   noticeCopy, ticketCopy, companionCopy, prepCopy, venueCopy, envelopesCopy, vehiclesCopy,
   meetingTemplatesCopy,
+  leadsCopy, crewCopy, vendorCopy, templateCopy, barCopy, updateCopy, linkCopy, signCopy,
+  siteEditorCopy, hebrewCalCopy, labelCopy, knowledgeCopy, jumpCopy, copilotCopy, archiveCopy,
+  meetingCopy, workflowCopy, referralCopy,
 } from './site.ts';
 import {
   noticeCopyEn, ticketCopyEn, companionCopyEn, prepCopyEn, venueCopyEn, envelopesCopyEn, vehiclesCopyEn,
@@ -10,6 +13,11 @@ import {
   portalEn, filesEn, sheetsEn, tasksEn, moneyEn, boardEn, bookEn,
   guestsEn, seatingEn, dayEn, threadEn, partyEn, contractEn, eventFileEn,
 } from './app.en.ts';
+import {
+  consoleEn, leadEn, crewEn, vendorEn, templateEn, barEn, updateEn, linkEn, signEn,
+  siteEditorEn, hebrewCalEn, labelEn, knowledgeEn, jumpEn, copilotEn, archiveEn,
+  meetingEn, workflowEn, referralEn,
+} from './console.en.ts';
 
 /**
  * The couple's own area, in whichever language they are reading.
@@ -72,9 +80,40 @@ export type MeetingTemplatesCopy = Wide<typeof meetingTemplatesCopy>;
    so it is resolved rather than handed the console's Hebrew. */
 export type VenueCopy = Wide<typeof venueCopy>;
 
-/** Everything the couple's screens read, resolved together. One object rather
- *  than thirteen lookups, because it travels as one value through one context
- *  rather than as a prop down thirteen component trees. */
+/* The producer's console. The seven blocks the couple also reads were lifted
+   out first and sit above; these are the rest of appCopy, whole, plus the
+   standalone blocks each console screen imported by name. Every one of them
+   now has an English twin, because the switch on the shell is offered to the
+   producer too. */
+type ConsoleKey =
+  | 'signOut' | 'overview2' | 'profile' | 'insights' | 'dayOf' | 'brand' | 'nav' | 'pending'
+  | 'overview' | 'leads' | 'clients' | 'admin' | 'newClient' | 'live' | 'guestImport' | 'calendar'
+  | 'runsheet' | 'numbers' | 'guestSite' | 'statusBoard' | 'preview' | 'clientPage';
+export type ConsoleCopy = Wide<Pick<typeof appCopy, ConsoleKey>>;
+export type LeadCopy = Wide<typeof leadsCopy>;
+export type CrewCopy = Wide<typeof crewCopy>;
+export type VendorCopy = Wide<typeof vendorCopy>;
+export type TemplateCopy = Wide<typeof templateCopy>;
+export type BarCopy = Wide<typeof barCopy>;
+export type UpdateCopy = Wide<typeof updateCopy>;
+export type LinkCopy = Wide<typeof linkCopy>;
+export type SignCopy = Wide<typeof signCopy>;
+export type SiteEditorCopy = Wide<typeof siteEditorCopy>;
+export type HebrewCalCopy = Wide<typeof hebrewCalCopy>;
+export type LabelCopy = Wide<typeof labelCopy>;
+export type KnowledgeCopy = Wide<typeof knowledgeCopy>;
+export type JumpCopy = Wide<typeof jumpCopy>;
+export type CopilotCopy = Wide<typeof copilotCopy>;
+export type ArchiveCopy = Wide<typeof archiveCopy>;
+export type MeetingCopy = Wide<typeof meetingCopy>;
+export type WorkflowCopy = Wide<typeof workflowCopy>;
+export type ReferralCopy = Wide<typeof referralCopy>;
+
+/** Everything a screen reads, resolved together. One object rather than
+ *  forty lookups, because it travels as one value through one context rather
+ *  than as a prop down forty component trees. The couple's blocks and the
+ *  producer's are one object on purpose: the shell is shared, and a producer
+ *  previewing the couple's screen reads both in the same language. */
 export type AppUi = {
   /* The language travels with the words, because several of these screens
      format a date or a time and a formatter locked to he-IL would print a
@@ -88,6 +127,24 @@ export type AppUi = {
   guests: GuestsCopy; seating: SeatingCopy; day: DayCopy;
   thread: ThreadCopy; party: PartyCopy; contract: ContractCopy;
   eventFile: EventFileCopy;
+  /* The producer's own screens, by the name each one imported. `leads` is
+     the leads page's own two lines; `lead` is the row, the call and the form. */
+  lead: LeadCopy; crew: CrewCopy; vendor: VendorCopy; template: TemplateCopy;
+  bar: BarCopy; update: UpdateCopy; link: LinkCopy; sign: SignCopy;
+  siteEditor: SiteEditorCopy; hebrewCal: HebrewCalCopy; label: LabelCopy;
+  knowledge: KnowledgeCopy; jump: JumpCopy; copilot: CopilotCopy; archive: ArchiveCopy;
+  meeting: MeetingCopy; workflow: WorkflowCopy; referral: ReferralCopy;
+  meetingTemplates: MeetingTemplatesCopy;
+} & ConsoleCopy;
+
+const consoleHe: ConsoleCopy = {
+  signOut: appCopy.signOut, overview2: appCopy.overview2, profile: appCopy.profile,
+  insights: appCopy.insights, dayOf: appCopy.dayOf, brand: appCopy.brand, nav: appCopy.nav,
+  pending: appCopy.pending, overview: appCopy.overview, leads: appCopy.leads,
+  clients: appCopy.clients, admin: appCopy.admin, newClient: appCopy.newClient, live: appCopy.live,
+  guestImport: appCopy.guestImport, calendar: appCopy.calendar, runsheet: appCopy.runsheet,
+  numbers: appCopy.numbers, guestSite: appCopy.guestSite, statusBoard: appCopy.statusBoard,
+  preview: appCopy.preview, clientPage: appCopy.clientPage,
 };
 
 export const APP_UI_HE: AppUi = {
@@ -98,6 +155,13 @@ export const APP_UI_HE: AppUi = {
   guests: guestsCopy, seating: seatingCopy, day: dayCopy,
   thread: threadCopy, party: partyCopy, contract: contractCopy,
   eventFile: eventFileCopy,
+  lead: leadsCopy, crew: crewCopy, vendor: vendorCopy, template: templateCopy,
+  bar: barCopy, update: updateCopy, link: linkCopy, sign: signCopy,
+  siteEditor: siteEditorCopy, hebrewCal: hebrewCalCopy, label: labelCopy,
+  knowledge: knowledgeCopy, jump: jumpCopy, copilot: copilotCopy, archive: archiveCopy,
+  meeting: meetingCopy, workflow: workflowCopy, referral: referralCopy,
+  meetingTemplates: meetingTemplatesCopy,
+  ...consoleHe,
 };
 
 const APP_UI_EN: AppUi = {
@@ -108,6 +172,13 @@ const APP_UI_EN: AppUi = {
   guests: guestsEn, seating: seatingEn, day: dayEn,
   thread: threadEn, party: partyEn, contract: contractEn,
   eventFile: eventFileEn,
+  lead: leadEn, crew: crewEn, vendor: vendorEn, template: templateEn,
+  bar: barEn, update: updateEn, link: linkEn, sign: signEn,
+  siteEditor: siteEditorEn, hebrewCal: hebrewCalEn, label: labelEn,
+  knowledge: knowledgeEn, jump: jumpEn, copilot: copilotEn, archive: archiveEn,
+  meeting: meetingEn, workflow: workflowEn, referral: referralEn,
+  meetingTemplates: meetingTemplatesCopyEn,
+  ...consoleEn,
 };
 
 export const appUiFor = (l: Locale): AppUi => (l === 'en' ? APP_UI_EN : APP_UI_HE);

@@ -1,5 +1,6 @@
 'use client';
 
+import { count as plural } from '@/lib/copyText';
 import { useState, useTransition } from 'react';
 import { GripVertical, Plus, Trash2, X } from 'lucide-react';
 import { saveTemplate, deleteTemplate, seedMeetingTemplate } from '@/app/actions/workflow';
@@ -82,7 +83,7 @@ export function WorkflowTemplates({ templates }: { templates: Template[] }) {
                   >
                     <p className="text-[15px] text-ink">{t.name}</p>
                     <p className="mt-0.5 text-[12.5px] text-ink-mute">
-                      {c.stepsCount(t.steps.length)}
+                      {plural(c.stepsCount, t.steps.length)}
                     </p>
                   </button>
 

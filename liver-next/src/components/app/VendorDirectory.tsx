@@ -1,5 +1,6 @@
 'use client';
 
+import { fill } from '@/lib/copyText';
 import { useActionState, useMemo, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { Archive, ArchiveRestore, FileSpreadsheet, Pencil, Plus, Search, X } from 'lucide-react';
@@ -305,7 +306,7 @@ export function VendorDirectory({ vendors }: { vendors: Vendor[] }) {
         </div>
       ) : (
         <>
-          <p className="mb-3 text-[13px] text-ink-mute">{c.count(shown.length)}</p>
+          <p className="mb-3 text-[13px] text-ink-mute">{fill(c.count, { n: shown.length })}</p>
           <ul className="space-y-2.5">
             {shown.map((v) => <Row key={v.id} vendor={v} />)}
           </ul>

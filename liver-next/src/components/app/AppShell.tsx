@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { LogOut } from 'lucide-react';
 import { signOut } from '@/app/actions/auth';
-import { appCopy } from '@/content/site';
+import type { AppUi } from '@/content/appUi';
 import { brandStyle, type Brand } from '@/lib/branding';
 import { isLive, type Account } from '@/lib/auth';
 import { NoticeBell, type Notice } from './NoticeBell';
@@ -14,21 +14,21 @@ import { Flash } from './Flash';
 import { QuickJump, type JumpEvent } from './QuickJump';
 import type { JumpRecord } from '@/lib/jump';
 import { cn } from '@/lib/utils';
-import { companionFor, noticeFor, ticketFor } from '@/content/appUi';
+import { appUiFor, companionFor, noticeFor, ticketFor } from '@/content/appUi';
 import { dirOf, type Locale } from '@/lib/locale';
 import { LangToggle } from '@/components/marketing/LangToggle';
 
-/** The couple's two labels in the couple's language. The producer's console
- *  stays Hebrew, so only these two travel as a prop. */
+/** The couple's two labels, taken from the screens they name so the menu and
+ *  the page always agree. */
 export type ClientNavLabels = { portal: string; guide: string };
 
-function navFor(a: Account, clientNav?: ClientNavLabels): NavItem[] {
+function navFor(a: Account, nav: AppUi['nav'], clientNav?: ClientNavLabels): NavItem[] {
   if (a.role === 'client') {
     /* Two destinations, which is what makes the phone's bottom bar appear for
        a couple: their event, and the book that explains it. */
     return [
-      { href: '/app/portal', label: clientNav?.portal ?? appCopy.nav.portal, icon: 'portal' },
-      { href: '/app/guide', label: clientNav?.guide ?? appCopy.nav.guide, icon: 'guide' },
+      { href: '/app/portal', label: clientNav?.portal ?? nav.portal, icon: 'portal' },
+      { href: '/app/guide', label: clientNav?.guide ?? nav.guide, icon: 'guide' },
     ];
   }
   /* Ordered by how often a producer opens them, not by when each was built.
@@ -38,22 +38,22 @@ function navFor(a: Account, clientNav?: ClientNavLabels): NavItem[] {
      Two entries left. The playbook and the guides were adjacent and neither
      name said which kind of knowledge it held, so they are one shelf now. */
   const items: NavItem[] = [
-    { href: '/app',          label: appCopy.nav.overview,  icon: 'overview' },
-    { href: '/app/clients',  label: appCopy.nav.clients,   icon: 'clients' },
-    { href: '/app/leads',    label: appCopy.nav.leads,     icon: 'leads' },
-    { href: '/app/calendar', label: appCopy.nav.calendar,  icon: 'calendar' },
-    { href: '/app/insights', label: appCopy.nav.insights,  icon: 'insights' },
-    { href: '/app/vendors',  label: appCopy.nav.vendors,   icon: 'vendors' },
-    { href: '/app/knowledge', label: appCopy.nav.knowledge, icon: 'sop' },
-    { href: '/app/store',    label: appCopy.nav.store,     icon: 'store' },
-    { href: '/app/brand',    label: appCopy.nav.brand,     icon: 'brand' },
+    { href: '/app',          label: nav.overview,  icon: 'overview' },
+    { href: '/app/clients',  label: nav.clients,   icon: 'clients' },
+    { href: '/app/leads',    label: nav.leads,     icon: 'leads' },
+    { href: '/app/calendar', label: nav.calendar,  icon: 'calendar' },
+    { href: '/app/insights', label: nav.insights,  icon: 'insights' },
+    { href: '/app/vendors',  label: nav.vendors,   icon: 'vendors' },
+    { href: '/app/knowledge', label: nav.knowledge, icon: 'sop' },
+    { href: '/app/store',    label: nav.store,     icon: 'store' },
+    { href: '/app/brand',    label: nav.brand,     icon: 'brand' },
   ];
   if (a.role === 'super_admin') {
     /* The public site is one site and it belongs to the account the enquiry
        form files leads under. Offering the editor to every producer would be
        offering most of them a screen that edits somebody else's homepage. */
-    items.push({ href: '/app/site', label: appCopy.nav.site, icon: 'site' });
-    items.push({ href: '/app/admin', label: appCopy.nav.admin, icon: 'admin' });
+    items.push({ href: '/app/site', label: nav.site, icon: 'site' });
+    items.push({ href: '/app/admin', label: nav.admin, icon: 'admin' });
   }
   return items;
 }
@@ -88,7 +88,8 @@ export function AppShell({
   records?: JumpRecord[];
   children: React.ReactNode;
 }) {
-  const items = navFor(account, clientNav);
+  const ui = appUiFor(locale);
+  const items = navFor(account, ui.nav, clientNav);
   /* The chrome in the couple's language. A couple reading English got a
      Hebrew bell and a Hebrew bug sheet, on a screen that was otherwise
      theirs; the producer's console stays Hebrew and passes nothing. */
@@ -109,13 +110,11 @@ export function AppShell({
        a table of forty rows from reading as heavy. */
     /* Direction follows the words actually on the screen, not the cookie.
        <html dir> is set from the language cookie for every page, and the
-       marketing site flips that cookie. The producer's console is written in
-       Hebrew whatever the cookie says — forty-four of its screens have no
-       English — so a producer who switched the public site to English got
-       Hebrew laid out left to right: every screen backwards, and nothing in
-       here to flip it back. The layout already resolves the locale this shell
-       renders in (the couple's cookie for a couple, Hebrew for a producer);
-       this is where that locale becomes the direction. */
+       marketing site flips that cookie. Before the console had English, a
+       producer who switched the public site got Hebrew laid out left to
+       right: every screen backwards, and nothing in here to flip it back.
+       The layout resolves the locale this shell renders in, and this is
+       where that locale becomes the direction. */
     <div
       dir={dirOf(locale)}
       lang={locale}
@@ -151,8 +150,8 @@ export function AppShell({
               <form action={signOut}>
                 <button
                   type="submit"
-                  aria-label={appCopy.signOut}
-                  title={appCopy.signOut}
+                  aria-label={ui.signOut}
+                  title={ui.signOut}
                   className="grid size-9 place-items-center rounded-xl2 text-ink-mute transition-colors hover:bg-surface-200 hover:text-ink"
                 >
                   <LogOut size={15} strokeWidth={1.5} aria-hidden />
@@ -195,12 +194,12 @@ export function AppShell({
                     uses, posting to the same action, so the two can never
                     disagree about what the cookie means. The producer does not
                     get one, because the console has nothing to switch to. */}
-                {account.role === 'client' && <LangToggle current={locale} className="me-1" />}
+                <LangToggle current={locale} className="me-1" />
                 <NoticeBell notices={notices} copy={notice} />
                 <Link
                   href="/app/me"
                   className="ms-1.5 transition-opacity hover:opacity-80"
-                  aria-label={appCopy.profile.title}
+                  aria-label={ui.profile.title}
                 >
                   <Avatar name={account.fullName || account.email} src={account.avatarUrl} size={32} />
                 </Link>
@@ -247,7 +246,7 @@ export function AppShell({
                 className="flex min-h-[52px] w-full items-center gap-3 px-1 text-start text-[15px] text-ink-soft transition-colors duration-300 hover:text-ink"
               >
                 <LogOut size={20} strokeWidth={1.5} aria-hidden />
-                {appCopy.signOut}
+                {ui.signOut}
               </button>
             </form>
           </>

@@ -1,5 +1,6 @@
 'use client';
 
+import { count as plural, fill } from '@/lib/copyText';
 import { useActionState, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { Check, ClipboardList, Eye, EyeOff, Lock } from 'lucide-react';
@@ -16,7 +17,7 @@ function Apply({ count }: { count: number }) {
   const { pending } = useFormStatus();
   return (
     <button type="submit" className="btn-primary" disabled={pending || count === 0}>
-      {pending ? c.applying : count === 0 ? c.nothing : c.apply(count)}
+      {pending ? c.applying : count === 0 ? c.nothing : plural(c.apply, count)}
     </button>
   );
 }
@@ -33,7 +34,7 @@ function Result({ state }: { state: TemplateResult | null }) {
   return (
     <p role="status" className="mt-3 inline-flex items-center gap-2 rounded-xl2 border border-ok/30 bg-ok-wash px-4 py-2.5 text-[14px] text-ok">
       <Check size={15} aria-hidden strokeWidth={1.5} />
-      {c.added(state.added ?? 0)}
+      {fill(c.added, { n: state.added ?? 0 })}
     </p>
   );
 }

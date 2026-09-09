@@ -1,3 +1,4 @@
+import { fill } from '@/lib/copyText';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { CalendarHeart, Wallet, ChevronLeft } from 'lucide-react';
@@ -88,7 +89,7 @@ export default async function OverviewPage() {
               </p>
               <p className="mt-1 text-[14px] text-ink-soft">{next.date}</p>
               <p className="mt-4 font-display text-[32px] font-semibold leading-none text-ink">
-                {c.inDays(next.days)}
+                {next.days === 0 ? c.inDays.today : next.days === 1 ? c.inDays.tomorrow : fill(c.inDays.later, { n: next.days })}
               </p>
             </Link>
           )}

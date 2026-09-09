@@ -1,5 +1,6 @@
 'use client';
 
+import { fill } from '@/lib/copyText';
 import { useActionState, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { CalendarPlus, Pencil } from 'lucide-react';
@@ -168,7 +169,7 @@ export function EventDetails({ event }: { event: EventCore }) {
             </>
           ) : (
             <span className="font-display text-[24px] font-semibold leading-none text-ink">
-              {left === 0 ? c.today : left === 1 ? c.tomorrow : `${c.passed} ${c.daysAgo(-left)}`}
+              {left === 0 ? c.today : left === 1 ? c.tomorrow : `${c.passed} ${fill(c.daysAgo, { n: -left })}`}
             </span>
           )}
         </div>

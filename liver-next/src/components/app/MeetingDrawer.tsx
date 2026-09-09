@@ -1,5 +1,6 @@
 'use client';
 
+import { fill } from '@/lib/copyText';
 import { useState, useTransition } from 'react';
 import Link from 'next/link';
 import { CalendarDays, ChevronDown, Sparkles, Trash2 } from 'lucide-react';
@@ -195,7 +196,7 @@ export function MeetingDrawer({ clientId, logs, own = [] }: {
 
 const answered = (t: MeetingTemplate, answers: Record<string, unknown>) => {
   const { filled, total } = completeness(t, answers);
-  return c.answered(filled, total);
+  return fill(c.answered, { filled, total });
 };
 
 function Form({ clientId, template, log, onDone }: {
@@ -274,7 +275,7 @@ function Form({ clientId, template, log, onDone }: {
       )}
 
       <div className="mt-5 flex flex-wrap items-center gap-2">
-        <span className="text-[12.5px] text-ink-mute">{c.answered(filled, total)}</span>
+        <span className="text-[12.5px] text-ink-mute">{fill(c.answered, { filled, total })}</span>
         <span className="ms-auto flex flex-wrap items-center gap-2">
           <button type="button" onClick={onDone} className="btn-quiet px-3 text-[14px]">{c.cancel}</button>
           <button

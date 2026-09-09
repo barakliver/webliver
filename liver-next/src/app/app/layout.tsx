@@ -3,6 +3,7 @@ import { requireAccount, currentAccount } from '@/lib/auth';
 import { supabaseServer } from '@/lib/supabase/server';
 import { Live } from '@/components/app/Live';
 import { AppShell, type ClientNavLabels } from '@/components/app/AppShell';
+import { CopyProvider } from '@/components/app/CopyProvider';
 import { brandFor } from '@/lib/branding';
 import { PAGE_GROUND } from '@/content/brand';
 import { currentLocale } from '@/lib/serverLocale';
@@ -106,20 +107,30 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     ];
   }
 
+  /* One language for the whole area, producer and couple alike. The console
+     was hard-wired to Hebrew while the couple's screens read the cookie, and
+     the root layout set the page direction from that same cookie for
+     everybody: a producer who switched the marketing site to English got a
+     console flipped left-to-right with every word still in Hebrew. */
+  const locale: Locale = await currentLocale();
+  const ui = appUiFor(locale);
+
   /* The couple's two menu labels, in the couple's language. Reused from the
      screens they name rather than written again: the portal's own title and
      the book's own title, so the menu and the page always agree. */
   let clientNav: ClientNavLabels | undefined;
-  let locale: Locale = 'he';
   if (account.role === 'client') {
-    locale = await currentLocale();
-    clientNav = { portal: appUiFor(locale).portal.title, guide: guideUiFor(locale).pageTitle };
+    clientNav = { portal: ui.portal.title, guide: guideUiFor(locale).pageTitle };
   }
 
+  /* One provider over every screen inside the area. The portal used to mount
+     its own; it still may, and a nested one simply agrees with this one. */
   return (
-    <AppShell account={account} notices={(data ?? []) as Notice[]} brand={brand} clientNav={clientNav} locale={locale} events={events} records={records}>
-      {children}
-      <Live sources={[{ table: 'notifications' }]} />
-    </AppShell>
+    <CopyProvider value={ui}>
+      <AppShell account={account} notices={(data ?? []) as Notice[]} brand={brand} clientNav={clientNav} locale={locale} events={events} records={records}>
+        {children}
+        <Live sources={[{ table: 'notifications' }]} />
+      </AppShell>
+    </CopyProvider>
   );
 }
