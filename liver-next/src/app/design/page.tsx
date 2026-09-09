@@ -340,6 +340,7 @@ export default async function DesignPage() {
               tablesFor: () => fixtureTables,
               dayFor: () => fixtureDay,
               boardFor: () => [],
+              vendorsFor: () => [],
             }}
           />
         </Panel>

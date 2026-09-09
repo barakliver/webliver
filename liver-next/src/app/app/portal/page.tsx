@@ -25,6 +25,7 @@ import { loadPrep, prepOf } from '@/lib/prep';
 import { VenueCompare } from '@/components/app/VenueCompare';
 import { loadVenues, venuesOf } from '@/lib/venueRows';
 import { publicEnv } from '@/lib/env';
+import { EventSelector } from '@/components/portal/EventSelector';
 
 export async function generateMetadata() {
   return { title: appUiFor(await currentLocale()).portal.title };
@@ -98,58 +99,59 @@ export default async function PortalPage() {
           const sheet = prepOf(prep, w.id);
           const venues = venuesOf(halls, w.id);
           return (
-          <div key={w.id} className="space-y-6">
-            <PortalWorkspace workspace={w} data={data} viewerId={account.id} ui={ui} />
-            <Contracts clientId={w.id} contracts={contracts.get(w.id) ?? []} viewer="client" />
-            {/* While the hall is still open, or once there is something to
-                compare. Gating it on the halls alone was wrong in the way that
-                only shows up from the couple's side: they are the ones touring
-                venues, and a panel that appears only after somebody else has
-                added one is a panel they can never start. Gating it on nothing
-                is wrong the other way — a comparison on the screen of a couple
-                whose hall was booked a year ago is a panel asking them to redo
-                a decision they have made. */}
-            {data.can(w.id, 'venues') && (venues.venues.length > 0 || !w.venue) && (
-              <VenueCompare
-                c={venuesFor(locale)}
+            <div key={w.id} className="space-y-6">
+              <EventSelector clientId={w.id} currentEventId={undefined} onEventChange={() => {}} />
+              <PortalWorkspace workspace={w} data={data} viewerId={account.id} ui={ui} />
+              <Contracts clientId={w.id} contracts={contracts.get(w.id) ?? []} viewer="client" />
+              {/* While the hall is still open, or once there is something to
+                  compare. Gating it on the halls alone was wrong in the way that
+                  only shows up from the couple's side: they are the ones touring
+                  venues, and a panel that appears only after somebody else has
+                  added one is a panel they can never start. Gating it on nothing
+                  is wrong the other way — a comparison on the screen of a couple
+                  whose hall was booked a year ago is a panel asking them to redo
+                  a decision they have made. */}
+              {data.can(w.id, 'venues') && (venues.venues.length > 0 || !w.venue) && (
+                <VenueCompare
+                  c={venuesFor(locale)}
+                  clientId={w.id}
+                  venues={venues.venues}
+                  quoteUrls={venues.quoteUrls}
+                  guestEstimate={w.guest_estimate ?? 0}
+                />
+              )}
+              {/* Behind the same gate every other module is behind, so a plan
+                  that does not include it does not quietly include it here. */}
+              {data.can(w.id, 'files') && (
+                <EventFiles clientId={w.id} files={files.get(w.id) ?? []} viewer="client" />
+              )}
+              {/* Theirs to fill in. The equipment is read only for them — it is
+                  the producer's logistics — and the component knows that. */}
+              <EventFileLists
                 clientId={w.id}
-                venues={venues.venues}
-                quoteUrls={venues.quoteUrls}
-                guestEstimate={w.guest_estimate ?? 0}
+                songs={eventFiles.get(w.id)?.songs ?? []}
+                kit={eventFiles.get(w.id)?.kit ?? []}
+                people={eventFiles.get(w.id)?.people ?? []}
+                viewer="client"
               />
-            )}
-            {/* Behind the same gate every other module is behind, so a plan
-                that does not include it does not quietly include it here. */}
-            {data.can(w.id, 'files') && (
-              <EventFiles clientId={w.id} files={files.get(w.id) ?? []} viewer="client" />
-            )}
-            {/* Theirs to fill in. The equipment is read only for them — it is
-                the producer's logistics — and the component knows that. */}
-            <EventFileLists
-              clientId={w.id}
-              songs={eventFiles.get(w.id)?.songs ?? []}
-              kit={eventFiles.get(w.id)?.kit ?? []}
-              people={eventFiles.get(w.id)?.people ?? []}
-              viewer="client"
-            />
-            {/* The same panel the producer has on the event file, not a
-                read-only copy of it. Who the aunt is and what the dress
-                should look like are things only the couple knows, and a
-                screen where they can see the roster but not fix a name is a
-                screen that sends them back to WhatsApp — which is the
-                conversation this whole module exists to end. */}
-            {data.can(w.id, 'prep') && (
-              <PrepSheet
-                c={prepFor(locale)}
-                clientId={w.id}
-                vips={sheet.vips}
-                looks={sheet.looks}
-                shares={sheet.shares}
-                siteUrl={publicEnv.siteUrl}
-              />
-            )}
-            <Thread clientId={w.id} messages={threads.get(w.id) ?? []} viewerId={account.id} />
-          </div>
+              {/* The same panel the producer has on the event file, not a
+                  read-only copy of it. Who the aunt is and what the dress
+                  should look like are things only the couple knows, and a
+                  screen where they can see the roster but not fix a name is a
+                  screen that sends them back to WhatsApp — which is the
+                  conversation this whole module exists to end. */}
+              {data.can(w.id, 'prep') && (
+                <PrepSheet
+                  c={prepFor(locale)}
+                  clientId={w.id}
+                  vips={sheet.vips}
+                  looks={sheet.looks}
+                  shares={sheet.shares}
+                  siteUrl={publicEnv.siteUrl}
+                />
+              )}
+              <Thread clientId={w.id} messages={threads.get(w.id) ?? []} viewerId={account.id} />
+            </div>
           );
         })}
       </div>

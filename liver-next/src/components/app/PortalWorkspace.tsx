@@ -22,8 +22,8 @@ import type { PortalData, Workspace } from '@/lib/portal';
  *  is only nearly right is worse than none: it invites decisions about what
  *  the couple can see, based on a screen they never saw. */
 export function PortalWorkspace({
-  workspace, data, viewerId, ui,
-}: { workspace: Workspace; data: PortalData; viewerId: string; ui: AppUi }) {
+  workspace, data, viewerId, ui, currentEventId,
+}: { workspace: Workspace; data: PortalData; viewerId: string; ui: AppUi; currentEventId?: string }) {
   const c = workspace;
   const dateFmt = weekdayDate(ui.locale);
   const left = daysUntil(c.event_date);
@@ -35,6 +35,12 @@ export function PortalWorkspace({
      row is how a summary becomes the slowest thing on its own screen. */
   const attending = guests.filter((g) => g.status === 'attending').length;
   const agreed = budget.reduce((sum, b) => sum + (Number(b.agreed ?? b.estimate) || 0), 0);
+
+  /* Filter tasks by event if currentEventId is set */
+  const allTasks = data.tasksFor(c.id);
+  const filteredTasks = currentEventId
+    ? allTasks.filter((t) => t.event_id === currentEventId)
+    : allTasks;
 
   return (
     <div>
@@ -82,7 +88,7 @@ export function PortalWorkspace({
             switched the page on. Above the tasks because sending it is
             usually the first thing the couple wants to do. */}
         {c.guest_site_on && c.guest_token && <GuestSiteLink token={c.guest_token} />}
-        <TaskList clientId={c.id} tasks={data.tasksFor(c.id)} viewer="client" viewerId={viewerId} />
+        <TaskList clientId={c.id} tasks={filteredTasks} viewer="client" viewerId={viewerId} />
         {/* The working shown before the lists, and only once there is a
             budget to show: without lines the five figures are five zeros. */}
         {data.can(c.id, 'budget') && budget.length > 0 && (

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { createClient } from '@/lib/supabase/client';
+import { supabaseBrowser } from '@/lib/supabase/client';
 type Event = {
   id: string;
   client_id: string;
@@ -23,7 +23,7 @@ export function EventSelector({ clientId, currentEventId, onEventChange }: Event
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const sb = createClient();
+  const sb = supabaseBrowser();
 
   const loadEvents = async () => {
     setLoading(true);
@@ -93,7 +93,7 @@ function CreateEventModal({ clientId, onClose, onCreated }: CreateEventModalProp
   const [date, setDate] = useState('');
   const [location, setLocation] = useState('');
   const [loading, setLoading] = useState(false);
-  const sb = createClient();
+  const sb = supabaseBrowser();
 
   const handleCreate = async () => {
     if (!name.trim()) return;

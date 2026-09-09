@@ -98,6 +98,7 @@ export async function loadPortal(
     can: () => true,
     tasksFor: () => [], paymentsFor: () => [], budgetFor: () => [],
     guestsFor: () => [], tablesFor: () => [], dayFor: () => [], boardFor: () => [],
+    vendorsFor: () => [],
   };
   if (ids.length === 0) return empty;
 
@@ -110,7 +111,7 @@ export async function loadPortal(
   const eventIds = eventsData?.map((e) => e.id) ?? [];
 
   const [tasks, payments, budget, guests, tables, day, boardRows, vendorRows] = await Promise.all([
-    sb.from('tasks').select('id,client_id,title,due_on,done,owner,created_by')
+    sb.from('tasks').select('id,client_id,title,due_on,done,owner,created_by,event_id,category,vendor_id')
       .in('client_id', ids).order('done').order('sort_order')
       .order('due_on', { ascending: true, nullsFirst: false }),
     sb.from('payments').select('id,client_id,title,amount,due_on,paid,paid_on')

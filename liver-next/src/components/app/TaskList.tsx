@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useState, useActionState } from 'react';
 import { formatDate } from '@/lib/dates';
 import { useFormStatus } from 'react-dom';
 import { addTask, toggleTask, deleteTask, reorderTasks, type TaskResult } from '@/app/actions/tasks';
@@ -11,6 +11,7 @@ import { shortDate } from '@/lib/appDates';
 import { isPastDue } from '@/lib/clock';
 import { EyeOff } from 'lucide-react';
 import { PlanOffer } from '@/components/app/PlanOffer';
+import { VendorCaptureModal } from '@/components/portal/VendorCaptureModal';
 
 export type Task = {
   /** False keeps it on the producer's side. The couple never receives these
@@ -22,6 +23,9 @@ export type Task = {
   done: boolean;
   owner: 'producer' | 'client';
   created_by: string | null;
+  event_id?: string;
+  category?: string;
+  vendor_id?: string | null;
 };
 
 
@@ -51,6 +55,7 @@ function Row({ task, clientId, viewer, canDelete, grip }: {
   task: Task; clientId: string; viewer: 'producer' | 'client'; canDelete: boolean;
   grip?: React.ReactNode;
 }) {
+  const [showVendorModal, setShowVendorModal] = useState(false);
   const ui = useCopy();
   const c = ui.tasks;
   const dateFmt = shortDate(ui.locale);
@@ -60,37 +65,53 @@ function Row({ task, clientId, viewer, canDelete, grip }: {
       ? (task.owner === 'producer' ? c.ownerProducer : c.ownerClient)
       : (task.owner === 'producer' ? c.ownerProducerClientView : c.ownerClientClientView);
 
+  const vendorCategories = ['venue', 'catering', 'photography', 'dj', 'flowers', 'decor', 'attire', 'printing', 'henna'];
+  const isVendorTask = task.category && vendorCategories.includes(task.category);
+
+  const handleToggleClick = async () => {
+    // If marking as done and it's a vendor task, show modal
+    if (!task.done && isVendorTask && task.event_id) {
+      setShowVendorModal(true);
+    } else {
+      // Otherwise just toggle normally
+      const formData = new FormData();
+      formData.append('task_id', task.id);
+      formData.append('client_id', clientId);
+      formData.append('done', String(task.done));
+      await toggleTask(formData);
+    }
+  };
+
   return (
-    <div className={`flex flex-wrap items-center gap-2 rounded-xl2 border px-3 py-3 ${
-      late ? 'border-bad/25 bg-bad-wash/60' : 'border-line'
-    }`}>
-      {grip}
-      <form action={toggleTask} className="flex items-center">
-        <input type="hidden" name="task_id" value={task.id} />
-        <input type="hidden" name="client_id" value={clientId} />
-        <input type="hidden" name="done" value={String(task.done)} />
-        {/* The circle stays 24px and the target around it grows to 44 tall by
-            32 wide. It was the button itself at 24 square, which is the most
-            tapped control in the product drawn at half the size a finger
-            needs. Tall rather than square on purpose: the row already has the
-            height to spare and none of the width, and a 44px square pushed
-            every task title into wrapping a line earlier. */}
-        <button
-          type="submit"
-          aria-label={task.title}
-          aria-pressed={task.done}
-          className="-my-2 -mx-1 flex h-11 w-8 items-center justify-center"
-        >
-          <span
-            aria-hidden
-            className={`flex h-6 w-6 items-center justify-center rounded-full border text-[13px] transition ${
-              task.done ? 'border-ok/30 bg-ok text-surface' : 'border-line-strong bg-card hover:border-ink'
-            }`}
+    <>
+      <div className={`flex flex-wrap items-center gap-2 rounded-xl2 border px-3 py-3 ${
+        late ? 'border-bad/25 bg-bad-wash/60' : 'border-line'
+      }`}>
+        {grip}
+        <div className="flex items-center">
+          {/* The circle stays 24px and the target around it grows to 44 tall by
+              32 wide. It was the button itself at 24 square, which is the most
+              tapped control in the product drawn at half the size a finger
+              needs. Tall rather than square on purpose: the row already has the
+              height to spare and none of the width, and a 44px square pushed
+              every task title into wrapping a line earlier. */}
+          <button
+            type="button"
+            onClick={handleToggleClick}
+            aria-label={task.title}
+            aria-pressed={task.done}
+            className="-my-2 -mx-1 flex h-11 w-8 items-center justify-center"
           >
-            {task.done ? '✓' : ''}
-          </span>
-        </button>
-      </form>
+            <span
+              aria-hidden
+              className={`flex h-6 w-6 items-center justify-center rounded-full border text-[13px] transition ${
+                task.done ? 'border-ok/30 bg-ok text-surface' : 'border-line-strong bg-card hover:border-ink'
+              }`}
+            >
+              {task.done ? '✓' : ''}
+            </span>
+          </button>
+        </div>
 
       <div className="min-w-0 flex-1">
         <p className={`text-[15px] ${task.done ? 'text-ink-mute line-through' : 'text-ink'}`}>
@@ -117,14 +138,61 @@ function Row({ task, clientId, viewer, canDelete, grip }: {
         </p>
       </div>
 
-      {canDelete && (
-        <form action={deleteTask}>
-          <input type="hidden" name="task_id" value={task.id} />
-          <input type="hidden" name="client_id" value={clientId} />
-          <button type="submit" className="btn-quiet px-3 py-1 text-[13px]">{c.remove}</button>
-        </form>
+        {canDelete && (
+          <form action={deleteTask}>
+            <input type="hidden" name="task_id" value={task.id} />
+            <input type="hidden" name="client_id" value={clientId} />
+            <button type="submit" className="btn-quiet px-3 py-1 text-[13px]">{c.remove}</button>
+          </form>
+        )}
+      </div>
+
+      {/* Show vendor capture modal when task marked done */}
+      {showVendorModal && task.event_id && task.category && (
+        <VendorCaptureModal
+          task={{
+            id: task.id,
+            client_id: clientId,
+            event_id: task.event_id,
+            title: task.title,
+            due_on: task.due_on,
+            done: task.done,
+            owner: task.owner,
+            created_by: task.created_by,
+            created_at: new Date().toISOString(),
+            category: task.category,
+            vendor_id: task.vendor_id ?? null,
+          }}
+          template={{
+            id: '',
+            event_type: task.category,
+            title: task.title,
+            description: '',
+            is_vendor_task: true,
+            vendor_category: task.category,
+            ask_name: true,
+            ask_cost: true,
+            ask_phone: true,
+            ask_contact_name: false,
+            ask_location: false,
+            ask_notes: false,
+            sort_order: 0,
+            created_at: new Date().toISOString(),
+          }}
+          eventId={task.event_id}
+          onClose={() => setShowVendorModal(false)}
+          onSaved={async () => {
+            setShowVendorModal(false);
+            // Mark task as done
+            const formData = new FormData();
+            formData.append('task_id', task.id);
+            formData.append('client_id', clientId);
+            formData.append('done', String(false));
+            await toggleTask(formData);
+          }}
+        />
       )}
-    </div>
+    </>
   );
 }
 

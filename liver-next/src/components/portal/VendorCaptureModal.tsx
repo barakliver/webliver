@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { createClient } from '@/lib/supabase/client';
+import { supabaseBrowser } from '@/lib/supabase/client';
 type Task = {
   id: string;
   client_id: string;
@@ -53,7 +53,7 @@ export function VendorCaptureModal({ task, template, eventId, onClose, onSaved }
   });
   const [loading, setLoading] = useState(false);
   const [showSkip, setShowSkip] = useState(false);
-  const sb = createClient();
+  const sb = supabaseBrowser();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
