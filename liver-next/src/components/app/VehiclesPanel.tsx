@@ -59,7 +59,7 @@ export function VehiclesPanel({ c, clientId, items }: {
                   {v.name}
                   {v.driver && <span className="text-ink-soft"> · {v.driver}</span>}
                   {v.seats !== null && (
-                    <span className="ms-2 rounded-xl2 bg-surface-200 px-2 py-0.5 text-[11.5px] text-ink-mute">
+                    <span className="ms-2 whitespace-nowrap rounded-xl2 bg-surface-200 px-2 py-0.5 text-[11.5px] text-ink-mute">
                       <Ltr>{v.seats}</Ltr> {c.seats}
                     </span>
                   )}

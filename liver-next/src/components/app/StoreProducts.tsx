@@ -172,7 +172,7 @@ export function StoreProducts({ producerId, products }: {
         >
           {(p, { handle, dragging }) => (
             <div className={`transition ${dragging ? 'opacity-95' : ''}`}>
-              <div className="flex items-start gap-2 p-3">
+              <div className="flex flex-wrap items-start gap-2 p-3">
                 <Handle label={c.drag} {...handle} />
 
                 {p.image_path ? (
@@ -202,7 +202,10 @@ export function StoreProducts({ producerId, products }: {
                   <Money value={p.price} className="mt-1 block text-[14px] text-ink" />
                 </div>
 
-                <div className="flex shrink-0 items-center gap-1">
+                {/* Three buttons beside a name and a picture is one thing too
+                    many at phone width, where the name was wrapping a word a
+                    line. They take the next line there. */}
+                <div className="flex w-full shrink-0 items-center justify-end gap-1 sm:w-auto">
                   <form action={toggleProduct}>
                     <input type="hidden" name="id" value={p.id} />
                     <input type="hidden" name="active" value={String(!p.active)} />

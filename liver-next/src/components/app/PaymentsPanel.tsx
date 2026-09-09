@@ -87,7 +87,7 @@ export function PaymentsPanel({ clientId, payments, viewer }: {
               }`}>
                 <div className="min-w-0 flex-1">
                   <p className="text-[15px] text-ink">{p.title}</p>
-                  <p className="mt-0.5 text-[12.5px] text-ink-mute">
+                  <p className="mt-0.5 whitespace-nowrap text-[12.5px] text-ink-mute">
                     {p.paid
                       ? `${c.paid}${p.paid_on ? ' · ' + formatDate(dateFmt, p.paid_on, '') : ''}`
                       : (
@@ -103,8 +103,11 @@ export function PaymentsPanel({ clientId, payments, viewer }: {
                   <Money value={Number(p.amount)} />
                 </span>
 
+                {/* On a phone the two buttons take the next line, so the
+                    title and the date stop being squeezed into a column
+                    three characters wide. */}
                 {(
-                  <div className="flex gap-2">
+                  <div className="flex w-full justify-end gap-2 sm:w-auto">
                     <form action={togglePaid}>
                       <input type="hidden" name="payment_id" value={p.id} />
                       <input type="hidden" name="client_id" value={clientId} />

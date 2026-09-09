@@ -72,8 +72,8 @@ export function MeetingTemplates({ c, own }: { c: MeetingTemplatesCopy; own: Mee
         <p className="mt-1 text-[12.5px] text-ink-mute">{c.builtInHint}</p>
         <ul className="mt-3 divide-y divide-line border-t border-line">
           {BUILT_IN_TEMPLATES.map((t) => (
-            <li key={t.kind} className="flex flex-wrap items-center justify-between gap-2 py-2.5">
-              <div className="min-w-0">
+            <li key={t.kind} className="flex items-center justify-between gap-3 py-2.5">
+              <div className="min-w-0 flex-1">
                 <p className="text-[15px] text-ink">{t.title}</p>
                 <p className="mt-0.5 text-[12.5px] text-ink-mute">
                   {t.when} · {c.questionsCount.replace('{n}', String(questionCount(t)))}
@@ -83,7 +83,7 @@ export function MeetingTemplates({ c, own }: { c: MeetingTemplatesCopy; own: Mee
                 type="button"
                 onClick={() => copy(t.kind)}
                 disabled={copying !== null}
-                className="btn-quiet inline-flex items-center gap-1.5 px-3 text-[13.5px] disabled:opacity-60"
+                className="btn-quiet inline-flex shrink-0 items-center gap-1.5 px-3 text-[13.5px] disabled:opacity-60"
               >
                 <Copy size={14} aria-hidden strokeWidth={1.5} />
                 {copying === t.kind ? c.copying : c.copy}

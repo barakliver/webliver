@@ -174,7 +174,7 @@ function Row({
   }
 
   return (
-    <li className={`group flex gap-4 rounded-xl2 border px-4 py-3.5 transition ${
+    <li className={`group flex flex-wrap gap-4 rounded-xl2 border px-4 py-3.5 transition ${
       clash ? 'border-warn/30 bg-warn-wash/70' : 'border-line hover:border-line-strong'
     }`}>
       {/* Left to right inside a right-to-left page, because a clock reads that
@@ -210,7 +210,10 @@ function Row({
         )}
       </div>
 
-      <div className="flex shrink-0 items-start gap-1">
+      {/* Four 44px buttons are 190px of a 360px phone. On a phone they take
+          the next line rather than the title, which at that width was being
+          rendered one letter per line. */}
+      <div className="flex w-full shrink-0 items-start justify-end gap-1 sm:w-auto">
         {/* Earlier and later, as buttons.
             Dragging is added underneath and is never the only way: HTML5 drag
             fires for a mouse and for nothing else, so a keyboard, a screen
