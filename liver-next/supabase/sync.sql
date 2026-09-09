@@ -7843,3 +7843,307 @@ comment on function public.choose_venue(uuid, int) is
 
 revoke all on function public.choose_venue(uuid, int) from public;
 grant execute on function public.choose_venue(uuid, int) to authenticated;
+
+-- ============================================================================
+--  0061 — a workspace holds multiple events, and every event is a checklist
+-- ============================================================================
+--  A couple planning may have more than one celebration: a henna, a bachelor
+--  party, a wedding, a post-party. Each has its own date, location, guest
+--  list, budget and checklist. Today everything is forced into one event row,
+--  and couples working on multiple occasions are second-class.
+--
+--  This migration splits: the workspace (clients table) becomes the container
+--  for a couple's season, and events become the individual celebrations.
+--  Tasks, guests, seating, budget and day_schedule move to being per-event.
+--
+--  Everything existing becomes one event under the workspace, dated as the
+--  workspace was and located where the workspace said.
+-- ============================================================================
+
+-- ── new table: event_types, a registry of what a celebration can be ────────
+create table if not exists public.event_types (
+  id         uuid primary key default gen_random_uuid(),
+  key        text not null unique,
+  name       text not null,
+  description text not null default '',
+  created_at timestamptz not null default now()
+);
+
+-- [sync] one-time data migration removed: insert into public.event_types (key, name, description) valu
+
+-- ── new table: events, the unit of planning ────────────────────────────────
+create table if not exists public.events (
+  id           uuid primary key default gen_random_uuid(),
+  client_id    uuid not null references public.clients(id) on delete cascade,
+  event_type   text not null references public.event_types(key),
+  display_name text not null,
+  event_date   date,
+  location     text not null default '',
+  guest_estimate int,
+  created_at   timestamptz not null default now(),
+  constraint events_date_2026 check (event_date is null or event_date >= date '2026-01-01')
+);
+
+create index if not exists events_client_idx on public.events(client_id, event_date);
+create index if not exists events_type_idx on public.events(event_type);
+
+-- ── clients: migrate venue and event_date to the primary event ─────────────
+--  These columns stay on clients because they may be queried for sorting or
+--  filtering the workspace list. They represent the workspace's primary event,
+--  which is almost always the wedding. The production book and timelines read
+--  from the primary event; so does the portal workspace card.
+
+-- Migrate existing data: every client becomes one event of their kind
+-- [sync] one-time data migration removed: insert into public.events (client_id, event_type, display_na
+
+-- ── task table: add event_id, phase moves to become a task category ────────
+alter table public.tasks add column if not exists event_id uuid references public.events(id) on delete cascade;
+alter table public.tasks add column if not exists category text not null default '';
+
+-- For existing tasks, assign them to the primary (wedding) event of their client
+-- [sync] one-time data migration removed: update public.tasks set event_id = (
+
+-- Make event_id required on new inserts
+alter table public.tasks alter column event_id set not null;
+
+-- Drop the old phase column (moved to category for now, or semantically tied to task itself)
+alter table public.tasks drop column if exists phase;
+
+-- Index for the new column
+create index if not exists tasks_event_idx on public.tasks(event_id, done, sort_order);
+
+-- ── guests_rsvp: ties to an event ──────────────────────────────────────────
+alter table public.guests_rsvp add column if not exists event_id uuid references public.events(id) on delete cascade;
+
+-- [sync] one-time data migration removed: update public.guests_rsvp set event_id = (
+
+alter table public.guests_rsvp alter column event_id set not null;
+create index if not exists guests_event_idx on public.guests_rsvp(event_id, status);
+
+-- ── tables_seating: ties to an event ───────────────────────────────────────
+alter table public.tables_seating add column if not exists event_id uuid references public.events(id) on delete cascade;
+
+-- [sync] one-time data migration removed: update public.tables_seating set event_id = (
+
+alter table public.tables_seating alter column event_id set not null;
+create index if not exists tables_event_idx on public.tables_seating(event_id);
+
+-- ── day_schedule: ties to an event ─────────────────────────────────────────
+alter table public.day_schedule add column if not exists event_id uuid references public.events(id) on delete cascade;
+
+-- [sync] one-time data migration removed: update public.day_schedule set event_id = (
+
+alter table public.day_schedule alter column event_id set not null;
+create index if not exists day_event_idx on public.day_schedule(event_id, at_time);
+
+-- ── budget_items: ties to an event ────────────────────────────────────────
+alter table public.budget_items add column if not exists event_id uuid references public.events(id) on delete cascade;
+
+-- [sync] one-time data migration removed: update public.budget_items set event_id = (
+
+alter table public.budget_items alter column event_id set not null;
+create index if not exists budget_event_idx on public.budget_items(event_id);
+
+-- ── venue_comparisons: ties to an event ────────────────────────────────────
+alter table public.venue_comparisons add column if not exists event_id uuid references public.events(id) on delete cascade;
+
+-- [sync] one-time data migration removed: update public.venue_comparisons set event_id = (
+
+alter table public.venue_comparisons alter column event_id set not null;
+create index if not exists venue_comparisons_event_idx on public.venue_comparisons(event_id);
+
+-- ── RLS: events inherit workspace permissions ──────────────────────────────
+alter table public.events enable row level security;
+
+drop policy if exists events_read on public.events;
+create policy events_read on public.events for select
+  using (public.can_read_client(client_id));
+
+drop policy if exists events_write on public.events;
+create policy events_write on public.events for all
+  using (public.can_read_client(client_id))
+  with check (public.can_read_client(client_id));
+
+-- Couple and producer may both create events, but cannot edit each other's
+drop policy if exists events_create_couple on public.events;
+create policy events_create_couple on public.events for insert
+  with check (
+    public.can_read_client(client_id)
+    and (auth.uid() in (select profile_id from public.client_authorized_emails where client_id = events.client_id)
+         or public.owns_producer((select producer_id from public.clients where id = events.client_id)))
+  );
+
+-- ── comments ───────────────────────────────────────────────────────────────
+comment on table public.events is
+  'One celebration in a couple''s season. A workspace (clients) may hold '
+  'multiple events — a henna, a wedding, a post-party. Each has its own date, '
+  'location, guest list and checklist. The workspace''s event_date and venue '
+  'reflect the primary (usually wedding) event.';
+
+comment on column public.events.event_type is
+  'The kind of celebration: wedding, henna, etc. Determines which task '
+  'templates are offered and which features apply.';
+
+comment on column public.tasks.event_id is
+  'The event this task belongs to. Allows one workspace to checklist multiple '
+  'celebrations without mixing them.';
+
+comment on column public.guests_rsvp.event_id is
+  'The event this guest''s RSVP applies to. A guest may attend multiple events.';
+
+comment on column public.tables_seating.event_id is
+  'The event this seating plan applies to.';
+
+comment on column public.day_schedule.event_id is
+  'The event this schedule entry applies to.';
+
+comment on column public.budget_items.event_id is
+  'The event this budget line applies to.';
+
+comment on column public.venue_comparisons.event_id is
+  'The event this venue comparison applies to.';
+
+-- ============================================================================
+--  0062 — task templates auto-populate events, vendors capture supplier data
+-- ============================================================================
+--  When a couple creates a new event (e.g., a henna), they need a starter
+--  checklist. Each event type comes with expected tasks. Rather than offer a
+--  modal picker, tasks are created from a template keyed by the event type.
+--
+--  When they mark a "choose venue", "hire catering", "book DJ" task done,
+--  that done flag should trigger a form: "Which venue? How much? Phone number?"
+--  The answers go into a vendors table, which becomes the event summary card
+--  and feeds into the budget.
+--
+--  Vendor table unifies how all suppliers are recorded — one table rather than
+--  scattered columns like clients.venue. A vendor belongs to an event and
+--  sometimes to a task (the "choose DJ" task stores its link to the DJ row).
+-- ============================================================================
+
+-- ── task_templates: one row per (event_type, task) combo ───────────────────
+create table if not exists public.task_templates (
+  id           uuid primary key default gen_random_uuid(),
+  event_type   text not null references public.event_types(key),
+  title        text not null,
+  description  text not null default '',
+  is_vendor_task boolean not null default false,
+  vendor_category text,
+  -- When is_vendor_task is true, these fields guide the sub-task form:
+  ask_name     boolean not null default true,
+  ask_cost     boolean not null default true,
+  ask_phone    boolean not null default true,
+  ask_contact_name boolean not null default false,
+  ask_location boolean not null default false,
+  ask_notes    boolean not null default false,
+  sort_order   int not null default 999,
+  created_at   timestamptz not null default now(),
+  constraint vendor_task_check check (
+    (is_vendor_task = false) or
+    (is_vendor_task = true and vendor_category is not null)
+  )
+);
+
+create index if not exists task_templates_type_idx on public.task_templates(event_type, sort_order);
+
+-- ── populate templates for wedding event type ──────────────────────────────
+-- [sync] one-time data migration removed: insert into public.task_templates (event_type, title, descri
+
+-- ── henna event templates
+-- [sync] one-time data migration removed: insert into public.task_templates (event_type, title, descri
+
+-- ── groom_party templates
+-- [sync] one-time data migration removed: insert into public.task_templates (event_type, title, descri
+
+-- ── vendors: the registry of all suppliers and choices ─────────────────────
+create table if not exists public.vendors (
+  id             uuid primary key default gen_random_uuid(),
+  event_id       uuid not null references public.events(id) on delete cascade,
+  category       text not null,
+  -- The decision: what business was hired
+  name           text not null,
+  contact_name   text not null default '',
+  phone          text not null default '',
+  email          text not null default '',
+  cost           numeric(12,2),
+  location       text not null default '',
+  notes          text not null default '',
+  -- Link to the task that captured it, if any
+  task_id        uuid references public.tasks(id) on delete set null,
+  status         text not null default 'selected',  -- selected, confirmed, completed
+  created_at     timestamptz not null default now(),
+  constraint vendors_cost_nonneg check (cost is null or cost >= 0)
+);
+
+create index if not exists vendors_event_idx on public.vendors(event_id, category);
+create index if not exists vendors_task_idx on public.vendors(task_id);
+
+-- ── RLS for vendors ────────────────────────────────────────────────────────
+alter table public.vendors enable row level security;
+
+drop policy if exists vendors_read on public.vendors;
+create policy vendors_read on public.vendors for select
+  using (public.can_read_client((select client_id from public.events where id = vendors.event_id)));
+
+drop policy if exists vendors_write on public.vendors;
+create policy vendors_write on public.vendors for all
+  using (public.can_read_client((select client_id from public.events where id = vendors.event_id)))
+  with check (public.can_read_client((select client_id from public.events where id = vendors.event_id)));
+
+-- ── add vendor link to tasks ───────────────────────────────────────────────
+alter table public.tasks add column if not exists vendor_id uuid references public.vendors(id) on delete set null;
+create index if not exists tasks_vendor_idx on public.tasks(vendor_id);
+
+-- ── RLS updates for task_templates and event_types ────────────────────────
+alter table public.task_templates enable row level security;
+alter table public.event_types enable row level security;
+
+-- Everyone can read templates (they are platform-wide)
+drop policy if exists task_templates_read on public.task_templates;
+create policy task_templates_read on public.task_templates for select using (true);
+
+drop policy if exists event_types_read on public.event_types;
+create policy event_types_read on public.event_types for select using (true);
+
+-- ── comments ───────────────────────────────────────────────────────────────
+comment on table public.task_templates is
+  'One task offered to a new event of a given type. When a couple creates a '
+  '(say) henna event, tasks are auto-created from the henna templates.';
+
+comment on column public.task_templates.is_vendor_task is
+  'True for tasks like "choose venue" that are completed by hiring a supplier. '
+  'When marked done, the couple (or producer) is asked for the vendor details.';
+
+comment on column public.task_templates.vendor_category is
+  'What kind of supplier this is: venue, catering, dj, etc. Used to categorize '
+  'the vendors table.';
+
+comment on table public.vendors is
+  'A supplier hired for an event. Categories: venue, catering, photography, dj, '
+  'flowers, decor, attire, printing, etc. One vendor may serve multiple tasks '
+  '(a venue hosts both henna and wedding).';
+
+comment on column public.vendors.status is
+  'selected (chosen but not contacted), confirmed (committed), completed (day-of '
+  'or after). Helps track whether arrangements are solid.';
+
+comment on column public.tasks.vendor_id is
+  'If this task captured a vendor choice, link to that vendor row. Allows the '
+  'vendor panel to tie directly to the task that booked it.';
+
+-- ============================================================================
+--  0063 — multi-event planning as a feature flag
+-- ============================================================================
+--  The events table is now the center of planning. The couple's portal can
+--  display multiple events (henna, wedding, post-party) and manage each one
+--  separately. This is a platform-wide feature, open for both DIY and managed
+--  couples.
+--
+--  The existing "venues" module now lives within events — each event can have
+--  venue comparisons, and they are kept separate.
+-- ============================================================================
+
+-- ── seed feature flag for events ───────────────────────────────────────────
+--  Multi-event planning: couples can create, name, and manage multiple
+--  celebrations (wedding, henna, groom party, etc).
+
+-- [sync] one-time data migration removed: insert into public.feature_flags (key, label, diy, managed) 
