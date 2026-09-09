@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { supabaseBrowser } from '@/lib/supabase/client';
+import { productionCategoryOf, categoryLabel } from '@/content/production';
 
 type Task = {
   id: string;
@@ -53,13 +54,16 @@ interface VendorCaptureModalProps {
  *  Skipping is a real answer and stays one press away. A couple who ticked the
  *  task because the hall was booked a year ago should not have to invent a
  *  price to get the tick. */
-export function VendorCaptureModal({ task, template, eventId, onClose, onSaved }: VendorCaptureModalProps) {
+export function VendorCaptureModal({ task, template, onClose, onSaved }: VendorCaptureModalProps) {
   const [form, setForm] = useState({
     name: '', contactName: '', phone: '', email: '',
     cost: '', location: '', notes: '',
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  /* Once the supplier row exists it is remembered here, so a retry after the
+     budget line or the link failed does not write the DJ a second time. */
+  const [savedId, setSavedId] = useState<string | null>(null);
   const sb = supabaseBrowser();
 
   const change = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -67,50 +71,93 @@ export function VendorCaptureModal({ task, template, eventId, onClose, onSaved }
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  /* Where it lands: event_vendors, the table the suppliers tab, the run
+     sheet, the day-of console, the book and the numbers sheet all read. The
+     first version of this wrote to a table of its own, and a DJ saved there
+     was a DJ nobody ever saw again. The checklist's category ('dj') becomes
+     the event file's ('music') on the way in. */
   const save = async () => {
     if (saving) return;
     setSaving(true);
     setError(null);
 
-    const { data: vendor, error: insertError } = await sb
-      .from('vendor_choices')
-      .insert({
-        event_id: eventId,
-        category: template.vendor_category ?? task.category,
-        name: form.name.trim(),
-        contact_name: form.contactName.trim(),
-        phone: form.phone.trim(),
-        email: form.email.trim(),
-        cost: form.cost ? Number(form.cost) : null,
-        location: form.location.trim(),
-        notes: form.notes.trim(),
-        task_id: task.id,
-        status: 'selected',
-      })
-      .select('id')
-      .single();
-
-    /* Said out loud. This threw the error into a try whose only handler was a
-       finally, so a refused write left the form sitting there unchanged and
-       the couple with no idea the supplier had not been saved. */
-    if (insertError || !vendor) {
-      setError('לא הצלחנו לשמור את הספק. אפשר לנסות שוב.');
+    const category = productionCategoryOf(template.vendor_category ?? task.category);
+    const name = form.name.trim().slice(0, 120);
+    const cost = form.cost.trim() ? Number(form.cost) : null;
+    if (cost !== null && (!Number.isFinite(cost) || cost < 0)) {
+      setError('העלות לא נראית כמו מספר.');
       setSaving(false);
       return;
+    }
+
+    let vendorId = savedId;
+    if (!vendorId) {
+      /* Everything the form asked that event_vendors has no column for goes
+         into the note, labelled, rather than being dropped. */
+      const notes = [
+        form.contactName.trim() && `איש קשר: ${form.contactName.trim()}`,
+        form.email.trim() && `אימייל: ${form.email.trim()}`,
+        form.location.trim() && `מיקום: ${form.location.trim()}`,
+        form.notes.trim(),
+      ].filter(Boolean).join('\n').slice(0, 500);
+
+      const { data: vendor, error: insertError } = await sb
+        .from('event_vendors')
+        .insert({
+          client_id: task.client_id,
+          name,
+          category,
+          phone: form.phone.trim().slice(0, 40),
+          status: 'booked',
+          notes,
+        })
+        .select('id')
+        .single();
+
+      /* Said out loud. This threw the error into a try whose only handler was
+         a finally, so a refused write left the form sitting there unchanged
+         and the couple with no idea the supplier had not been saved. */
+      if (insertError || !vendor) {
+        setError('לא הצלחנו לשמור את הספק. אפשר לנסות שוב.');
+        setSaving(false);
+        return;
+      }
+      vendorId = vendor.id as string;
+      setSavedId(vendorId);
+    }
+
+    /* Money has one home, the budget, and the supplier's line links back to
+       the card. Only when a figure was given: a line of zero is a question,
+       not a record. */
+    if (cost !== null && cost > 0) {
+      const { error: budgetError } = await sb.from('budget_items').insert({
+        client_id: task.client_id,
+        category: categoryLabel(category),
+        label: name,
+        estimate: cost,
+        agreed: cost,
+        vendor: name,
+        event_vendor_id: vendorId,
+      });
+      if (budgetError) {
+        setError('הספק נשמר, אבל העלות לא נכנסה לתקציב. אפשר לנסות שוב, או להוסיף אותה בתקציב.');
+        setSaving(false);
+        return;
+      }
     }
 
     /* The link back. A failure here is worth its own sentence: the supplier is
        saved either way, and telling somebody the whole thing failed would send
        them to type it in a second time. */
     const { error: linkError } = await sb
-      .from('tasks').update({ vendor_id: vendor.id }).eq('id', task.id);
+      .from('tasks').update({ event_vendor_id: vendorId }).eq('id', task.id);
     if (linkError) {
       setError('הספק נשמר, אבל לא הצלחנו לקשר אותו למשימה.');
       setSaving(false);
       return;
     }
 
-    onSaved(vendor.id);
+    onSaved(vendorId);
   };
 
   const skip = async () => {

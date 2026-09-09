@@ -51,5 +51,5 @@ export const PORTAL_LIVE_SOURCES: LiveSource[] = [
   { table: 'tables_seating' }, { table: 'moodboards' }, { table: 'day_schedule' },
   { table: 'budget_items' }, { table: 'payments' },
   { table: 'messages' }, { table: 'contracts' }, { table: 'client_files' },
-  { table: 'venue_comparisons' },
+  { table: 'venue_comparisons' }, { table: 'event_vendors' },
 ];

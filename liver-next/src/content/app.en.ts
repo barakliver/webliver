@@ -60,6 +60,12 @@ export const portalEn: PortalCopy = {
   rowEnvelopes: 'Envelopes',
   rowTransport: 'Cars and rides',
   rowThread: 'Messages',
+  vendorsTitle: 'Our suppliers',
+  vendorsSub: 'Who is booked and who is still being looked at. A supplier you tick off in the tasks lands here by itself.',
+  vendorsEmpty: 'No supplier booked yet. Tick one off in the tasks and it appears here with their number.',
+  vendorBooked: 'Booked',
+  vendorShortlist: 'Being looked at',
+  vendorCancelled: 'Cancelled',
 };
 
 export const filesEn: FilesCopy = {

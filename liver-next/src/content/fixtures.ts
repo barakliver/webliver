@@ -5,6 +5,7 @@ import type { BoardImage } from '@/components/app/WinningBoard';
 import type { Guest } from '@/components/app/GuestList';
 import type { SeatTable, SeatGuest } from '@/components/app/SeatingPlan';
 import type { DayItem } from '@/components/app/DaySchedule';
+import type { Vendor as PortalVendor } from '@/lib/portal';
 import type { Message } from '@/components/app/Thread';
 import type { Contract } from '@/components/app/Contracts';
 import type { EventFile } from '@/components/app/EventFiles';
@@ -86,6 +87,13 @@ export const fixtureSeatGuests: SeatGuest[] = [
   { id: 'g2', full_name: 'דוד ורונית לוי', party_size: 2, status: 'attending', table_id: 'tb1' },
   { id: 'g5', full_name: 'סבתא מרים ובני משפחתה מחיפה', party_size: 6, status: 'attending', table_id: 'tb3' },
   { id: 'g3', full_name: 'יעל מהעבודה', party_size: 1, status: 'attending', table_id: null },
+];
+
+/* The suppliers as the couple sees them: two closed, one still open. */
+export const fixturePortalVendors: PortalVendor[] = [
+  { id: 'pv1', client_id: FIXTURE_CLIENT, name: 'קייטרינג השדה', category: 'catering', phone: '0544444444', status: 'booked', notes: '' },
+  { id: 'pv2', client_id: FIXTURE_CLIENT, name: 'DJ אורי', category: 'music', phone: '0522222222', status: 'booked', notes: 'איש קשר: אורי' },
+  { id: 'pv3', client_id: FIXTURE_CLIENT, name: 'סטודיו לביא', category: 'photo', phone: '0521111111', status: 'shortlist', notes: '' },
 ];
 
 export const fixtureDay: DayItem[] = [

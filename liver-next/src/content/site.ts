@@ -1661,6 +1661,13 @@ export const appCopy = {
     rowEnvelopes: 'מעטפות',
     rowTransport: 'רכבים והסעות',
     rowThread: 'הודעות',
+    /* The suppliers list on the couple's screen. */
+    vendorsTitle: 'הספקים שלנו',
+    vendorsSub: 'מי כבר סגור ומי עוד בבדיקה. ספק שסימנתם במשימות מגיע לכאן לבד.',
+    vendorsEmpty: 'עוד לא נסגר ספק. כשתסמנו במשימות שבחרתם אחד, הוא יופיע כאן עם הטלפון שלו.',
+    vendorBooked: 'סגור',
+    vendorShortlist: 'בבדיקה',
+    vendorCancelled: 'בוטל',
   },
 } as const;
 

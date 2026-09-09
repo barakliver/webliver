@@ -105,7 +105,7 @@ export function summaryRows(opts: {
       shown: opts.can('guests'),
     },
     { key: 'seating',   label: c.rowSeating,   value: <Ltr>{opts.tables}</Ltr>,    href: '#seating',   shown: opts.can('seating') },
-    { key: 'vendors',   label: c.rowVendors,   value: <Ltr>{opts.vendors}</Ltr>,   href: '#runsheet',  shown: opts.can('runsheet') },
+    { key: 'vendors',   label: c.rowVendors,   value: <Ltr>{opts.vendors}</Ltr>,   href: '#vendors',   shown: true },
     { key: 'board',     label: c.rowBoard,     value: <Ltr>{opts.saved}</Ltr>,     href: '#board',     shown: opts.can('moodboard') },
     { key: 'contracts', label: c.rowContracts, value: <Ltr>{opts.contracts}</Ltr>, href: '#contracts', shown: true },
     { key: 'venues',    label: c.rowVenues,    value: <Ltr>{opts.venues}</Ltr>,    href: '#venues',    shown: opts.can('venues') },

@@ -38,20 +38,16 @@ export type PortalEvent = {
   location: string;
 };
 
+/** A supplier on the event, as the couple sees it: the same event_vendors row
+ *  the producer's suppliers tab shows, read under the couple's own policy. */
 export type Vendor = {
   id: string;
-  event_id: string;
-  category: string;
+  client_id: string;
   name: string;
-  contact_name: string;
+  category: string;
   phone: string;
-  email: string;
-  cost: number | null;
-  location: string;
-  notes: string;
-  task_id: string | null;
   status: string;
-  created_at: string;
+  notes: string;
 };
 
 export type PortalData = {
@@ -127,7 +123,6 @@ export async function loadPortal(
     .order('event_date', { ascending: true, nullsFirst: false });
 
   const events = (eventsData ?? []) as PortalEvent[];
-  const eventIds = events.map((e) => e.id);
 
   const [tasks, payments, budget, guests, tables, day, boardRows, vendorRows] = await Promise.all([
     sb.from('tasks').select('id,client_id,title,due_on,done,owner,created_by,event_id,category,vendor_id')
@@ -144,11 +139,8 @@ export async function loadPortal(
     sb.from('day_schedule').select('id,client_id,track,at_time,title,note,owner,audience,duration_min').in('client_id', ids).order('at_time'),
     sb.from('moodboards').select('id,client_id,category,caption,image_path')
       .in('client_id', ids).order('created_at', { ascending: false }),
-    eventIds.length > 0
-      ? sb.from('vendor_choices')
-          .select('id,event_id,category,name,contact_name,phone,email,cost,location,notes,task_id,status,created_at')
-          .in('event_id', eventIds)
-      : Promise.resolve({ data: null } as any),
+    sb.from('event_vendors').select('id,client_id,name,category,phone,status,notes')
+      .in('client_id', ids).order('category').order('name'),
   ]);
 
   /* One row per workspace and module rather than a call per panel. A gate that
@@ -181,16 +173,6 @@ export async function loadPortal(
   const shared = new Set(workspaces.filter((w) => w.budget_visible).map((w) => w.id));
   const moneyVisible = (id: string) => !opts.asClient || shared.has(id);
 
-  // Map vendors by client through event relationships
-  const clientOfEvent = new Map(events.map((e) => [e.id, e.client_id]));
-  const vendorsByClient = new Map<string, Vendor[]>();
-  for (const vendor of (vendorRows.data ?? []) as Vendor[]) {
-    const clientId = clientOfEvent.get(vendor.event_id);
-    if (!clientId) continue;
-    if (!vendorsByClient.has(clientId)) vendorsByClient.set(clientId, []);
-    vendorsByClient.get(clientId)!.push(vendor);
-  }
-
   return {
     workspaces,
     tasksFor: (id) => by(tasks.data as WithClient<Task>[], id),
@@ -201,7 +183,7 @@ export async function loadPortal(
     tablesFor: (id) => by(tables.data as WithClient<SeatTable>[], id),
     dayFor: (id) => by(day.data as WithClient<DayItem>[], id),
     boardFor: (id) => by(board as WithClient<BoardImage>[], id),
-    vendorsFor: (id) => vendorsByClient.get(id) ?? [],
+    vendorsFor: (id) => by(vendorRows.data as WithClient<Vendor>[], id),
     eventsFor: (id) => events.filter((e) => e.client_id === id),
   };
 }

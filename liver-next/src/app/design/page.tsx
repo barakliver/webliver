@@ -11,6 +11,7 @@ import { SeatingPlan } from '@/components/app/SeatingPlan';
 import { DaySchedule } from '@/components/app/DaySchedule';
 import { RunSheet } from '@/components/app/RunSheet';
 import { PortalWorkspace } from '@/components/app/PortalWorkspace';
+import { PortalVendors } from '@/components/app/PortalVendors';
 import { PlanOffer } from '@/components/app/PlanOffer';
 import { ProductionBook } from '@/components/app/ProductionBook';
 import { Thread } from '@/components/app/Thread';
@@ -54,6 +55,7 @@ import {
   fixtureAnniversaries, fixtureEventSummary, fixtureFunnel, fixtureSources,
   fixtureResponse, fixtureCash, fixtureReferrals, fixtureTemplates,
   fixtureMeetings, fixtureMeetingTemplates, fixtureDayLines, fixtureDayCrew, fixtureDayVendors,
+  fixturePortalVendors,
   fixtureSheetGuests, fixtureSheetTables, fixtureSheetMoments, fixtureSheetArrivals,
   fixtureVips, fixtureLooks, fixtureShares,
 } from '@/content/fixtures';
@@ -345,10 +347,14 @@ export default async function DesignPage() {
               tablesFor: () => fixtureTables,
               dayFor: () => fixtureDay,
               boardFor: () => [],
-              vendorsFor: () => [],
+              vendorsFor: () => fixturePortalVendors,
               eventsFor: () => [],
             }}
           />
+        </Panel>
+
+        <Panel name="PortalVendors" note="the couple's suppliers: two booked, one still open, grouped the producer's way">
+          <PortalVendors vendors={fixturePortalVendors} c={ui.portal} locale={locale} />
         </Panel>
 
         <Panel name="RunSheet · printed" note="the page somebody holds at eleven at night: big clock, tick boxes, numbers">

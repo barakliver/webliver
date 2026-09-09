@@ -231,11 +231,38 @@ try {
         `insert into public.clients (producer_id, display_name, kind, event_date, venue) values ('${pid3}','דנה ויואב','wedding','2026-09-12','גן האירועים')`,
         `insert into public.clients (producer_id, display_name, kind, event_date, venue) values ('${pid3}','כנס סתיו','corporate','2026-11-20','מרכז הכנסים')`,
       ].map((s) => `-c "${s}"`).join(' '));
+      /* Applied in two halves, with a row planted between them: 0062 gave the
+         checklist a form that wrote suppliers to a table nothing reads, and
+         0069 copies whatever it caught into the one the screens read. The
+         copy can only be checked by having something to copy. */
+      const before69 = arriving.filter((f) => f < '0069');
+      const from69 = arriving.filter((f) => f >= '0069');
+      let arrErr = before69.map((f) => [f, apply('three', join('migrations', f))]).find(([, e]) => e);
+      const cid3 = ask('three', "select id from public.clients where display_name='דנה ויואב'");
+      if (!arrErr) {
+        const evt3 = ask('three', `select id from public.events where client_id='${cid3}' limit 1`);
+        psql('three', [
+          `insert into public.tasks (client_id, title, category) values ('${cid3}','לסגור DJ','dj')`,
+          `insert into public.vendor_choices (event_id, category, name, contact_name, phone, cost, task_id)`
+            + ` select '${evt3}','dj','DJ אורי','אורי','0522222222',9000,id from public.tasks where client_id='${cid3}' and title='לסגור DJ'`,
+        ].map((s) => `-c "${s}"`).join(' '));
+      }
+      /* Counted after the planted row and before the half that touches
+         tasks, so "nothing lost" is measured against what was really there. */
       const tasksBefore = ask('three', "select count(*)::text from public.tasks");
-
-      const arrErr = arriving.map((f) => [f, apply('three', join('migrations', f))]).find(([, e]) => e);
+      if (!arrErr) {
+        arrErr = from69.map((f) => [f, apply('three', join('migrations', f))]).find(([, e]) => e);
+      }
       say(!arrErr, `and the ${arriving.length} this release adds go on over it`,
         arrErr ? `${arrErr[0]}: ${arrErr[1]}` : '');
+
+      /* The DJ the form caught is now on the event file, under the event
+         file's own category, and the task that caught him points at the row. */
+      const copied = ask('three',
+        `select (select count(*) from public.event_vendors where client_id='${cid3}' and name='DJ אורי' and category='music' and status='booked')::text`
+        + ` || '/' || (select count(*) from public.tasks where client_id='${cid3}' and title='לסגור DJ' and event_vendor_id is not null)::text`);
+      say(copied === '1/1', 'and the DJ the checklist caught is on the suppliers tab, once',
+        copied === '1/1' ? '' : `got ${copied}`);
 
       /* Each workspace got an event of its own kind — the corporate one being
          the row whose absence took 0061 down. */
@@ -257,7 +284,6 @@ try {
       /* 0068 swaps the check on meeting_logs.kind for one with two more
          kinds. On an upgraded database — not a fresh one — the new kinds
          have to be accepted and the old ones still stored. */
-      const cid3 = ask('three', "select id from public.clients where display_name='דנה ויואב'");
       let introErr = '';
       try {
         psql('three',
@@ -488,6 +514,7 @@ try {
       `insert into public.tables_seating (client_id, name) values ('${cidA}','שולחן 1')`,
       `insert into public.messages (client_id, author_id, body) values ('${cidA}','${uidA}','שלום')`,
       `insert into public.contracts (client_id, title) values ('${cidA}','הסכם אולם')`,
+      `insert into public.event_vendors (client_id, name, category) values ('${cidA}','להקת שדות','music')`,
       `insert into public.support_tickets (reporter_id, producer_id, body) values ('${uidA}','${pidA}','משהו לא עובד')`,
       /* The producer's own meeting form, and a meeting written from it. Built
          with jsonb_build_* rather than a literal, because the literal's
@@ -526,6 +553,7 @@ try {
       tables_seating:    `client_id='${cidA}'`,
       messages:          `client_id='${cidA}'`,
       contracts:         `client_id='${cidA}'`,
+      event_vendors:     `client_id='${cidA}'`,
       support_tickets:   `reporter_id='${uidA}'`,
       meeting_templates: `producer_id='${pidA}'`,
       meeting_logs:      `client_id='${cidA}'`,
@@ -551,9 +579,12 @@ try {
     const coupleClient = asAccount(uidC, mailC, `select count(*) from public.clients where id='${cidA}'`);
     const coupleLeads = asAccount(uidC, mailC, `select count(*) from public.leads where producer_id='${pidA}'`);
     const coupleGuests = asAccount(uidC, mailC, `select count(*) from public.guests_rsvp where client_id='${cidA}'`);
-    say(coupleClient === '1' && coupleGuests === '1' && coupleLeads === '0',
-      'an invited couple reads their event and no lead',
-      `event:${coupleClient} guests:${coupleGuests} leads:${coupleLeads}`);
+    /* And their suppliers: the DJ they ticked off has to be a row they can
+       read back, or the form that asked them lied. */
+    const coupleVendors = asAccount(uidC, mailC, `select count(*) from public.event_vendors where client_id='${cidA}'`);
+    say(coupleClient === '1' && coupleGuests === '1' && coupleVendors === '1' && coupleLeads === '0',
+      'an invited couple reads their event, their suppliers, and no lead',
+      `event:${coupleClient} guests:${coupleGuests} vendors:${coupleVendors} leads:${coupleLeads}`);
 
     /* The platform owner. Every tenant policy above was written without a
        root branch, and this is the line that keeps it that way: the root

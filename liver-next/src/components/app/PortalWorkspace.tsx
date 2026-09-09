@@ -11,6 +11,7 @@ import { SeatingPlan } from '@/components/app/SeatingPlan';
 import { DaySchedule } from '@/components/app/DaySchedule';
 import { PortalSummary, summaryRows } from '@/components/app/PortalSummary';
 import { GuestSiteLink } from '@/components/app/GuestSiteLink';
+import { PortalVendors } from '@/components/app/PortalVendors';
 import { Ltr } from '@/components/Ltr';
 import type { PortalData, Workspace } from '@/lib/portal';
 
@@ -88,7 +89,7 @@ export function PortalWorkspace({
           invited: guests.length,
           tables: data.tablesFor(c.id).length,
           saved: data.boardFor(c.id).length,
-          vendors: data.dayFor(c.id).length,
+          vendors: data.vendorsFor(c.id).length,
           ...extra,
           can: (key) => data.can(c.id, key as never),
           c: ui.portal,
@@ -124,6 +125,9 @@ export function PortalWorkspace({
         {data.can(c.id, 'seating') && (
           <div id="seating"><SeatingPlan clientId={c.id} tables={data.tablesFor(c.id)} guests={data.guestsFor(c.id) as never} /></div>
         )}
+        {/* Who is hired. The same rows the producer's suppliers tab shows,
+            and where a DJ ticked off the checklist above turns up. */}
+        <div id="vendors"><PortalVendors vendors={data.vendorsFor(c.id)} c={ui.portal} locale={ui.locale} /></div>
         {data.can(c.id, 'runsheet') && (
           <div id="runsheet"><DaySchedule
             clientId={c.id}
