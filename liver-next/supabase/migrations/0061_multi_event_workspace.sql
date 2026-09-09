@@ -23,6 +23,22 @@ create table if not exists public.event_types (
   created_at timestamptz not null default now()
 );
 
+/* Fenced in the same breath as it is created, and every table below is too.
+   sync.sql grants all tables to `authenticated` and then asserts that every
+   one of them has row level security — correctly, since the grant is what
+   makes an unfenced table readable by anybody signed in. Between a `create
+   table` and its `enable row level security` there is a window where that
+   assertion is false, and a run that dies inside the window leaves the table
+   granted and open. That is not hypothetical: the first attempt at this
+   release died partway through, left public.events sitting unfenced, and
+   every deploy afterwards was refused by the guard — which was the guard
+   doing its job, protecting a table anybody with an account could have read.
+
+   Closing the window is one line in the right place. event_types was the
+   worst of them: created here and not fenced until 0062, a whole migration
+   later. */
+alter table public.event_types enable row level security;
+
 insert into public.event_types (key, name, description) values
   ('wedding', 'חתונה', 'The primary celebration'),
   ('henna', 'חינה', 'Pre-wedding henna party'),
@@ -50,6 +66,8 @@ create table if not exists public.events (
   created_at   timestamptz not null default now(),
   constraint events_date_2026 check (event_date is null or event_date >= date '2026-01-01')
 );
+
+alter table public.events enable row level security;
 
 create index if not exists events_client_idx on public.events(client_id, event_date);
 create index if not exists events_type_idx on public.events(event_type);
@@ -165,8 +183,8 @@ where event_id is null and client_id in (select id from public.clients);
 create index if not exists venue_comparisons_event_idx on public.venue_comparisons(event_id);
 
 -- ── RLS: events inherit workspace permissions ──────────────────────────────
-alter table public.events enable row level security;
-
+--  The fence itself went up with the table, far above. Only the policies are
+--  here, because they name can_read_client, which later migrations replace.
 drop policy if exists events_read on public.events;
 create policy events_read on public.events for select
   using (public.can_read_client(client_id));

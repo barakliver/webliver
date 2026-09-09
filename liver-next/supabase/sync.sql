@@ -7869,6 +7869,22 @@ create table if not exists public.event_types (
   created_at timestamptz not null default now()
 );
 
+/* Fenced in the same breath as it is created, and every table below is too.
+   sync.sql grants all tables to `authenticated` and then asserts that every
+   one of them has row level security — correctly, since the grant is what
+   makes an unfenced table readable by anybody signed in. Between a `create
+   table` and its `enable row level security` there is a window where that
+   assertion is false, and a run that dies inside the window leaves the table
+   granted and open. That is not hypothetical: the first attempt at this
+   release died partway through, left public.events sitting unfenced, and
+   every deploy afterwards was refused by the guard — which was the guard
+   doing its job, protecting a table anybody with an account could have read.
+
+   Closing the window is one line in the right place. event_types was the
+   worst of them: created here and not fenced until 0062, a whole migration
+   later. */
+alter table public.event_types enable row level security;
+
 -- [sync] one-time data migration removed: insert into public.event_types (key, name, description) valu
 
 -- ── new table: events, the unit of planning ────────────────────────────────
@@ -7883,6 +7899,8 @@ create table if not exists public.events (
   created_at   timestamptz not null default now(),
   constraint events_date_2026 check (event_date is null or event_date >= date '2026-01-01')
 );
+
+alter table public.events enable row level security;
 
 create index if not exists events_client_idx on public.events(client_id, event_date);
 create index if not exists events_type_idx on public.events(event_type);
@@ -7964,8 +7982,8 @@ alter table public.venue_comparisons add column if not exists event_id uuid refe
 create index if not exists venue_comparisons_event_idx on public.venue_comparisons(event_id);
 
 -- ── RLS: events inherit workspace permissions ──────────────────────────────
-alter table public.events enable row level security;
-
+--  The fence itself went up with the table, far above. Only the policies are
+--  here, because they name can_read_client, which later migrations replace.
 drop policy if exists events_read on public.events;
 create policy events_read on public.events for select
   using (public.can_read_client(client_id));
@@ -8060,6 +8078,8 @@ create table if not exists public.task_templates (
   )
 );
 
+alter table public.task_templates enable row level security;
+
 create index if not exists task_templates_type_idx on public.task_templates(event_type, sort_order);
 
 -- ── populate templates for wedding event type ──────────────────────────────
@@ -8091,12 +8111,12 @@ create table if not exists public.vendor_choices (
   constraint vendor_choices_cost_nonneg check (cost is null or cost >= 0)
 );
 
+alter table public.vendor_choices enable row level security;
+
 create index if not exists vendor_choices_event_idx on public.vendor_choices(event_id, category);
 create index if not exists vendor_choices_task_idx on public.vendor_choices(task_id);
 
--- ── RLS for vendors ────────────────────────────────────────────────────────
-alter table public.vendor_choices enable row level security;
-
+-- ── who may read a choice ──────────────────────────────────────────────────
 drop policy if exists vendor_choices_read on public.vendor_choices;
 create policy vendor_choices_read on public.vendor_choices for select
   using (public.can_read_client((select client_id from public.events where id = vendor_choices.event_id)));
@@ -8110,10 +8130,7 @@ create policy vendor_choices_write on public.vendor_choices for all
 alter table public.tasks add column if not exists vendor_id uuid references public.vendor_choices(id) on delete set null;
 create index if not exists tasks_vendor_idx on public.tasks(vendor_id);
 
--- ── RLS updates for task_templates and event_types ────────────────────────
-alter table public.task_templates enable row level security;
-alter table public.event_types enable row level security;
-
+-- ── who may read the templates ─────────────────────────────────────────────
 /* Both tables are product content rather than anybody's event: the kinds of
    celebration there are, and the checklist each kind starts with. Every
    workspace reads the same rows, so there is nothing to scope them by.

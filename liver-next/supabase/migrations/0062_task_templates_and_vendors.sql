@@ -44,6 +44,8 @@ create table if not exists public.task_templates (
   )
 );
 
+alter table public.task_templates enable row level security;
+
 create index if not exists task_templates_type_idx on public.task_templates(event_type, sort_order);
 
 -- ── populate templates for wedding event type ──────────────────────────────
@@ -99,12 +101,12 @@ create table if not exists public.vendor_choices (
   constraint vendor_choices_cost_nonneg check (cost is null or cost >= 0)
 );
 
+alter table public.vendor_choices enable row level security;
+
 create index if not exists vendor_choices_event_idx on public.vendor_choices(event_id, category);
 create index if not exists vendor_choices_task_idx on public.vendor_choices(task_id);
 
--- ── RLS for vendors ────────────────────────────────────────────────────────
-alter table public.vendor_choices enable row level security;
-
+-- ── who may read a choice ──────────────────────────────────────────────────
 drop policy if exists vendor_choices_read on public.vendor_choices;
 create policy vendor_choices_read on public.vendor_choices for select
   using (public.can_read_client((select client_id from public.events where id = vendor_choices.event_id)));
@@ -118,10 +120,7 @@ create policy vendor_choices_write on public.vendor_choices for all
 alter table public.tasks add column if not exists vendor_id uuid references public.vendor_choices(id) on delete set null;
 create index if not exists tasks_vendor_idx on public.tasks(vendor_id);
 
--- ── RLS updates for task_templates and event_types ────────────────────────
-alter table public.task_templates enable row level security;
-alter table public.event_types enable row level security;
-
+-- ── who may read the templates ─────────────────────────────────────────────
 /* Both tables are product content rather than anybody's event: the kinds of
    celebration there are, and the checklist each kind starts with. Every
    workspace reads the same rows, so there is nothing to scope them by.
