@@ -45,7 +45,12 @@ export function PortalSummary({ rows, label }: { rows: SummaryRow[]; label: stri
             >
               <span className="text-[15.5px] text-ink">{r.label}</span>
               <span className="flex items-center gap-3">
-                <span className="font-display text-[22px] font-semibold text-ink">{r.value}</span>
+                {/* Some sections have a number worth showing beside the name
+                    and some do not: the thread has no count that means
+                    anything, and a made-up one is worse than the arrow alone. */}
+                {r.value !== null && (
+                  <span className="font-display text-[22px] font-semibold text-ink">{r.value}</span>
+                )}
                 {/* Points the way the language runs. In a right-to-left page
                     a chevron aimed right is aimed backwards. */}
                 <ChevronLeft size={16} strokeWidth={1.5} className="chev-onward text-ink-mute" aria-hidden />
@@ -63,15 +68,27 @@ export function PortalSummary({ rows, label }: { rows: SummaryRow[]; label: stri
  *  component so the labels and the figures cannot drift apart. */
 export function summaryRows(opts: {
   budget: number | null;
+  /* What is still owed, which is the payments figure a couple actually
+     wants: the total paid is history, the balance is a decision. */
+  owed: number;
+  openTasks: number;
   attending: number; invited: number;
+  tables: number;
+  contracts: number; venues: number; files: number;
   saved: number; vendors: number;
+  envelopes: number; vehicles: number;
   can: (key: string) => boolean;
-  /* The labels come in rather than being read here, because this runs on the
-     server for a couple who may be reading English. */
+  /* Resolved by the caller. This runs on the server for a couple who may be
+     reading English. */
   c: PortalCopy;
 }): SummaryRow[] {
   const c = opts.c;
+  /* Every section on the couple's screen, in the order it appears below, so
+     the strip reads as a table of contents and not as four favourites. A row
+     whose module is switched off for this plan is left out rather than shown
+     locked; a row with nothing to count carries no figure. */
   return [
+    { key: 'tasks',     label: c.rowTasks,     value: <Ltr>{opts.openTasks}</Ltr>, href: '#tasks',     shown: true },
     {
       key: 'budget',
       label: c.rowBudget,
@@ -79,6 +96,7 @@ export function summaryRows(opts: {
       href: '#budget',
       shown: opts.can('budget'),
     },
+    { key: 'payments',  label: c.rowPayments,  value: <Money value={opts.owed} />, href: '#payments',  shown: opts.can('budget') },
     {
       key: 'rsvp',
       label: c.rowRsvp,
@@ -86,19 +104,16 @@ export function summaryRows(opts: {
       href: '#guests',
       shown: opts.can('guests'),
     },
-    {
-      key: 'board',
-      label: c.rowBoard,
-      value: <Ltr>{opts.saved.toLocaleString('en-US')}</Ltr>,
-      href: '#board',
-      shown: opts.can('moodboard'),
-    },
-    {
-      key: 'vendors',
-      label: c.rowVendors,
-      value: <Ltr>{opts.vendors.toLocaleString('en-US')}</Ltr>,
-      href: '#runsheet',
-      shown: opts.can('runsheet'),
-    },
+    { key: 'seating',   label: c.rowSeating,   value: <Ltr>{opts.tables}</Ltr>,    href: '#seating',   shown: opts.can('seating') },
+    { key: 'vendors',   label: c.rowVendors,   value: <Ltr>{opts.vendors}</Ltr>,   href: '#runsheet',  shown: opts.can('runsheet') },
+    { key: 'board',     label: c.rowBoard,     value: <Ltr>{opts.saved}</Ltr>,     href: '#board',     shown: opts.can('moodboard') },
+    { key: 'contracts', label: c.rowContracts, value: <Ltr>{opts.contracts}</Ltr>, href: '#contracts', shown: true },
+    { key: 'venues',    label: c.rowVenues,    value: <Ltr>{opts.venues}</Ltr>,    href: '#venues',    shown: opts.can('venues') },
+    { key: 'files',     label: c.rowFiles,     value: <Ltr>{opts.files}</Ltr>,     href: '#files',     shown: opts.can('files') },
+    { key: 'lists',     label: c.rowLists,     value: null,                        href: '#lists',     shown: true },
+    { key: 'prep',      label: c.rowPrep,      value: null,                        href: '#prep',      shown: opts.can('prep') },
+    { key: 'envelopes', label: c.rowEnvelopes, value: <Ltr>{opts.envelopes}</Ltr>, href: '#envelopes', shown: opts.can('envelopes') },
+    { key: 'transport', label: c.rowTransport, value: <Ltr>{opts.vehicles}</Ltr>,  href: '#transport', shown: opts.can('transport') },
+    { key: 'thread',    label: c.rowThread,    value: null,                        href: '#thread',    shown: true },
   ];
 }

@@ -78,7 +78,12 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
         />
       </div>
 
-      {viewer === 'producer' && (
+      {/* Both sides. The couple is the one who knows what the hall quoted;
+          a table they can read but not type into sends the number back to
+          WhatsApp. What stays the producer's is the switch that hides the
+          whole panel from the couple, and the receipt scanner, which writes
+          on the producer's behalf. */}
+      {(
         <form id={formId} action={action} className="mt-5 grid gap-3 sm:grid-cols-[1fr_1fr_130px_130px_auto]">
           <input type="hidden" name="client_id" value={clientId} />
           <input name="label" required placeholder={c.budLabelPh} autoComplete="off" className="field" aria-label={c.budLabel} />
@@ -131,7 +136,7 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
                   )}
                 </div>
               </div>
-              {viewer === 'producer' && (
+              {(
                 <form action={deleteBudgetItem} className="mt-2">
                   <input type="hidden" name="item_id" value={i.id} />
                   <input type="hidden" name="client_id" value={clientId} />
@@ -150,7 +155,7 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
                 <th scope="col" className="py-2 font-medium">{c.budVendor}</th>
                 <th scope="col" className="py-2 font-medium">{c.budEstimate}</th>
                 <th scope="col" className="py-2 font-medium">{c.budAgreed}</th>
-                {viewer === 'producer' && <th />}
+                <th />
               </tr>
             </thead>
             <tbody>
@@ -162,7 +167,7 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
                   <td className="py-3 tabular-nums text-ink">
                     {i.agreed === null ? '·' : <Money value={Number(i.agreed)} />}
                   </td>
-                  {viewer === 'producer' && (
+                  {(
                     <td className="py-3">
                       <form action={deleteBudgetItem}>
                         <input type="hidden" name="item_id" value={i.id} />

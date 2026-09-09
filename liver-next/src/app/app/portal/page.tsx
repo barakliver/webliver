@@ -26,6 +26,11 @@ import { VenueCompare } from '@/components/app/VenueCompare';
 import { loadVenues, venuesOf } from '@/lib/venueRows';
 import { publicEnv } from '@/lib/env';
 import { EventSelector } from '@/components/portal/EventSelector';
+import { loadEnvelopes, envelopesOf } from '@/lib/envelopes';
+import { loadVehicles, vehiclesOf } from '@/lib/vehicles';
+import { EnvelopesPanel } from '@/components/app/EnvelopesPanel';
+import { VehiclesPanel } from '@/components/app/VehiclesPanel';
+import { envelopesFor, vehiclesFor } from '@/content/appUi';
 
 export async function generateMetadata() {
   return { title: appUiFor(await currentLocale()).portal.title };
@@ -59,8 +64,9 @@ export default async function PortalPage({ searchParams }: {
      person, so they have to reach the right one. */
   const brand = await brandFor(account);
   const ids = data.workspaces.map((w) => w.id);
-  const [threads, contracts, files, prep] = await Promise.all([
+  const [threads, contracts, files, prep, envelopes, vehicles] = await Promise.all([
     loadThread(sb, ids), loadContracts(sb, ids), loadFiles(sb, ids), loadPrep(sb, ids),
+    loadEnvelopes(sb, ids), loadVehicles(sb, ids),
   ]);
   const halls = await loadVenues(sb, ids);
 
@@ -114,6 +120,8 @@ export default async function PortalPage({ searchParams }: {
              checklist that is empty because the filter matched no rows. */
           const events = data.eventsFor(w.id);
           const openEvent = events.find((e) => e.id === openEventId) ?? events[0] ?? null;
+          const envs = envelopesOf(envelopes, w.id);
+          const cars = vehiclesOf(vehicles, w.id);
           return (
             <div key={w.id} className="space-y-6">
               {data.can(w.id, 'events') && events.length > 0 && (
@@ -127,8 +135,15 @@ export default async function PortalPage({ searchParams }: {
               <PortalWorkspace
                 workspace={w} data={data} viewerId={account.id} ui={ui}
                 currentEventId={openEvent?.id}
+                extra={{
+                  contracts: (contracts.get(w.id) ?? []).length,
+                  venues: venues.venues.length,
+                  files: (files.get(w.id) ?? []).length,
+                  envelopes: envs.length,
+                  vehicles: cars.length,
+                }}
               />
-              <Contracts clientId={w.id} contracts={contracts.get(w.id) ?? []} viewer="client" />
+              <div id="contracts"><Contracts clientId={w.id} contracts={contracts.get(w.id) ?? []} viewer="client" /></div>
               {/* While the hall is still open, or once there is something to
                   compare. Gating it on the halls alone was wrong in the way that
                   only shows up from the couple's side: they are the ones touring
@@ -138,28 +153,28 @@ export default async function PortalPage({ searchParams }: {
                   whose hall was booked a year ago is a panel asking them to redo
                   a decision they have made. */}
               {data.can(w.id, 'venues') && (venues.venues.length > 0 || !w.venue) && (
-                <VenueCompare
+                <div id="venues"><VenueCompare
                   c={venuesFor(locale)}
                   clientId={w.id}
                   venues={venues.venues}
                   quoteUrls={venues.quoteUrls}
                   guestEstimate={w.guest_estimate ?? 0}
-                />
+                /></div>
               )}
               {/* Behind the same gate every other module is behind, so a plan
                   that does not include it does not quietly include it here. */}
               {data.can(w.id, 'files') && (
-                <EventFiles clientId={w.id} files={files.get(w.id) ?? []} viewer="client" />
+                <div id="files"><EventFiles clientId={w.id} files={files.get(w.id) ?? []} viewer="client" /></div>
               )}
               {/* Theirs to fill in. The equipment is read only for them — it is
                   the producer's logistics — and the component knows that. */}
-              <EventFileLists
+              <div id="lists"><EventFileLists
                 clientId={w.id}
                 songs={eventFiles.get(w.id)?.songs ?? []}
                 kit={eventFiles.get(w.id)?.kit ?? []}
                 people={eventFiles.get(w.id)?.people ?? []}
                 viewer="client"
-              />
+              /></div>
               {/* The same panel the producer has on the event file, not a
                   read-only copy of it. Who the aunt is and what the dress
                   should look like are things only the couple knows, and a
@@ -167,16 +182,24 @@ export default async function PortalPage({ searchParams }: {
                   screen that sends them back to WhatsApp — which is the
                   conversation this whole module exists to end. */}
               {data.can(w.id, 'prep') && (
-                <PrepSheet
+                <div id="prep"><PrepSheet
                   c={prepFor(locale)}
                   clientId={w.id}
                   vips={sheet.vips}
                   looks={sheet.looks}
                   shares={sheet.shares}
                   siteUrl={publicEnv.siteUrl}
-                />
+                /></div>
               )}
-              <Thread clientId={w.id} messages={threads.get(w.id) ?? []} viewerId={account.id} />
+              {/* The two lists the event manager needs in hand on the night.
+                  Written by either side, gated like everything else. */}
+              {data.can(w.id, 'envelopes') && (
+                <div id="envelopes"><EnvelopesPanel c={envelopesFor(locale)} clientId={w.id} items={envs} /></div>
+              )}
+              {data.can(w.id, 'transport') && (
+                <div id="transport"><VehiclesPanel c={vehiclesFor(locale)} clientId={w.id} items={cars} /></div>
+              )}
+              <div id="thread"><Thread clientId={w.id} messages={threads.get(w.id) ?? []} viewerId={account.id} /></div>
             </div>
           );
         })}

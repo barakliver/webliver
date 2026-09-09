@@ -57,7 +57,9 @@ export function PaymentsPanel({ clientId, payments, viewer }: {
         <Metric kicker={c.totalAll} value={<Money value={paid + owed} />} />
       </div>
 
-      {viewer === 'producer' && (
+      {/* Both sides may add a payment and mark one paid: the couple is the
+          one who made the transfer. */}
+      {(
         <form action={action} className="mt-5 grid gap-3 sm:grid-cols-[1fr_140px_150px_auto]">
           <input type="hidden" name="client_id" value={clientId} />
           <input name="title" required placeholder={c.payWhatPh} autoComplete="off" className="field" aria-label={c.payWhat} />
@@ -101,7 +103,7 @@ export function PaymentsPanel({ clientId, payments, viewer }: {
                   <Money value={Number(p.amount)} />
                 </span>
 
-                {viewer === 'producer' ? (
+                {(
                   <div className="flex gap-2">
                     <form action={togglePaid}>
                       <input type="hidden" name="payment_id" value={p.id} />
@@ -117,12 +119,6 @@ export function PaymentsPanel({ clientId, payments, viewer }: {
                       <button type="submit" className="btn-quiet px-2 py-1.5 text-[13px]">{c.remove}</button>
                     </form>
                   </div>
-                ) : (
-                  <span className={`rounded-xl2 px-3 py-1 text-[12.5px] ${
-                    p.paid ? 'bg-ok-wash text-ok' : 'bg-warn-wash text-warn'
-                  }`}>
-                    {p.paid ? c.paid : c.unpaid}
-                  </span>
                 )}
               </li>
             );

@@ -14,6 +14,13 @@ import { GuestSiteLink } from '@/components/app/GuestSiteLink';
 import { Ltr } from '@/components/Ltr';
 import type { PortalData, Workspace } from '@/lib/portal';
 
+/** Counts the page loads beside this component rather than inside it —
+ *  contracts, halls, files and the two night-of lists — so the summary strip
+ *  can point at every section without this component fetching six more
+ *  things. Absent means zero, which is what a preview with no rows has. */
+export type PortalExtra = { contracts: number; venues: number; files: number; envelopes: number; vehicles: number };
+const NO_EXTRA: PortalExtra = { contracts: 0, venues: 0, files: 0, envelopes: 0, vehicles: 0 };
+
 /** One event, as the couple sees it.
  *
  *  This is the couple's screen and the producer's preview of it, the same
@@ -22,8 +29,8 @@ import type { PortalData, Workspace } from '@/lib/portal';
  *  is only nearly right is worse than none: it invites decisions about what
  *  the couple can see, based on a screen they never saw. */
 export function PortalWorkspace({
-  workspace, data, viewerId, ui, currentEventId,
-}: { workspace: Workspace; data: PortalData; viewerId: string; ui: AppUi; currentEventId?: string }) {
+  workspace, data, viewerId, ui, currentEventId, extra = NO_EXTRA,
+}: { workspace: Workspace; data: PortalData; viewerId: string; ui: AppUi; currentEventId?: string; extra?: PortalExtra }) {
   const c = workspace;
   const dateFmt = weekdayDate(ui.locale);
   const left = daysUntil(c.event_date);
@@ -35,6 +42,8 @@ export function PortalWorkspace({
      row is how a summary becomes the slowest thing on its own screen. */
   const attending = guests.filter((g) => g.status === 'attending').length;
   const agreed = budget.reduce((sum, b) => sum + (Number(b.agreed ?? b.estimate) || 0), 0);
+  const payments = data.paymentsFor(c.id);
+  const owed = payments.filter((p) => !p.paid).reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
 
   /* Filter tasks by event if currentEventId is set */
   const allTasks = data.tasksFor(c.id);
@@ -73,10 +82,14 @@ export function PortalWorkspace({
       <PortalSummary
         rows={summaryRows({
           budget: agreed > 0 ? agreed : null,
+          owed,
+          openTasks: filteredTasks.filter((t) => !t.done).length,
           attending,
           invited: guests.length,
+          tables: data.tablesFor(c.id).length,
           saved: data.boardFor(c.id).length,
           vendors: data.dayFor(c.id).length,
+          ...extra,
           can: (key) => data.can(c.id, key as never),
           c: ui.portal,
         })}
@@ -88,7 +101,7 @@ export function PortalWorkspace({
             switched the page on. Above the tasks because sending it is
             usually the first thing the couple wants to do. */}
         {c.guest_site_on && c.guest_token && <GuestSiteLink token={c.guest_token} />}
-        <TaskList clientId={c.id} tasks={filteredTasks} viewer="client" viewerId={viewerId} />
+        <div id="tasks"><TaskList clientId={c.id} tasks={filteredTasks} viewer="client" viewerId={viewerId} /></div>
         {/* The working shown before the lists, and only once there is a
             budget to show: without lines the five figures are five zeros. */}
         {data.can(c.id, 'budget') && budget.length > 0 && (
@@ -98,18 +111,18 @@ export function PortalWorkspace({
             items={budget} payments={data.paymentsFor(c.id)}
           />
         )}
-        <PaymentsPanel clientId={c.id} payments={data.paymentsFor(c.id)} viewer="client" />
+        <div id="payments"><PaymentsPanel clientId={c.id} payments={payments} viewer="client" /></div>
         {/* Gated modules. A closed one is absent rather than greyed out: a
             locked panel advertising something the couple was not sold is a
             sales screen wearing the clothes of a tool. */}
-        {data.can(c.id, 'budget') && budget.length > 0 && (
+        {data.can(c.id, 'budget') && (
           <div id="budget"><BudgetPanel clientId={c.id} items={budget} viewer="client" visible /></div>
         )}
         {data.can(c.id, 'guests') && (
           <div id="guests"><GuestList clientId={c.id} guests={guests} /></div>
         )}
         {data.can(c.id, 'seating') && (
-          <SeatingPlan clientId={c.id} tables={data.tablesFor(c.id)} guests={data.guestsFor(c.id) as never} />
+          <div id="seating"><SeatingPlan clientId={c.id} tables={data.tablesFor(c.id)} guests={data.guestsFor(c.id) as never} /></div>
         )}
         {data.can(c.id, 'runsheet') && (
           <div id="runsheet"><DaySchedule

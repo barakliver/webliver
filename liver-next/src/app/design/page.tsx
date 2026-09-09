@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import { appUiFor, prepFor } from '@/content/appUi';
+import { appUiFor, prepFor, envelopesFor, vehiclesFor } from '@/content/appUi';
 import { CopyProvider } from '@/components/app/CopyProvider';
 import { currentLocale } from '@/lib/serverLocale';
 import { TaskList } from '@/components/app/TaskList';
@@ -121,6 +121,8 @@ import EventLoading from '@/app/app/clients/[id]/loading';
 import PortalLoading from '@/app/app/portal/loading';
 import { EventSelector } from '@/components/portal/EventSelector';
 import { VendorCaptureDemo } from './VendorCaptureDemo';
+import { EnvelopesPanel } from '@/components/app/EnvelopesPanel';
+import { VehiclesPanel } from '@/components/app/VehiclesPanel';
 
 /**
  * Every panel in the product, on one page, with no database behind it.
@@ -838,7 +840,10 @@ export default async function DesignPage() {
             <PortalSummary
               label={ui.portal.title}
               rows={summaryRows({
-                budget: 148000, attending: 96, invited: 180, saved: 12, vendors: 7,
+                budget: 148000, owed: 32000, openTasks: 9,
+                attending: 96, invited: 180, tables: 18,
+                contracts: 2, venues: 3, files: 5, saved: 12, vendors: 7,
+                envelopes: 3, vehicles: 2,
                 can: (key) => key !== 'seating',
                 c: ui.portal,
               })}
@@ -1064,6 +1069,29 @@ export default async function DesignPage() {
                 event_type: 'groom_party', display_name: 'שבת חתן',
                 event_date: null, location: '',
               },
+            ]}
+          />
+        </Panel>
+
+        <Panel name="EnvelopesPanel" note="the cash for the night: who each envelope is for, how much, and the one already handed over">
+          <EnvelopesPanel
+            c={envelopesFor(locale)}
+            clientId="00000000-0000-4000-8000-000000000003"
+            items={[
+              { id: 'e1', label: 'רב', amount: 1500, recipient: 'הרב כהן', cash: true, delivered_at: '2026-12-05T18:40:00Z', note: 'אחרי החופה' },
+              { id: 'e2', label: 'טיפ לצוות', amount: 800, recipient: '', cash: true, delivered_at: null, note: '' },
+              { id: 'e3', label: 'צלם, יתרה', amount: 4200, recipient: 'יוסי', cash: false, delivered_at: null, note: 'העברה ביום שאחרי' },
+            ]}
+          />
+        </Panel>
+
+        <Panel name="VehiclesPanel" note="how everybody gets to the hall and home: a name the couple chose, whose car, seats, who rides">
+          <VehiclesPanel
+            c={vehiclesFor(locale)}
+            clientId="00000000-0000-4000-8000-000000000003"
+            items={[
+              { id: 'v1', name: 'רכב 1', driver: 'אבא של נועה', phone: '0501234567', seats: 4, riders: 'סבתא, דודה רחל, שני הילדים', leg: 'both', note: 'יוצאים ב-16:30 מהבית' },
+              { id: 'v2', name: 'הסעה מהצפון', driver: 'חברת ההסעות', phone: '0529876543', seats: 20, riders: 'החברים מחיפה', leg: 'to', note: '' },
             ]}
           />
         </Panel>

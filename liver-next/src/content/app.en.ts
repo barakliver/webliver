@@ -1,4 +1,4 @@
-import type { NoticeCopy, TicketCopy, BookCopy, CompanionCopy, PrepCopy, VenueCopy } from './appUi.ts';
+import type { NoticeCopy, TicketCopy, BookCopy, CompanionCopy, PrepCopy, VenueCopy, EnvelopesCopy, VehiclesCopy } from './appUi.ts';
 import type {
   PortalCopy, FilesCopy, SheetsCopy, TasksCopy, MoneyCopy, BoardCopy,
   GuestsCopy, SeatingCopy, DayCopy, ThreadCopy, PartyCopy, ContractCopy, EventFileCopy,
@@ -46,6 +46,17 @@ export const portalEn: PortalCopy = {
   rowVendors: 'Suppliers',
   eventAdd: 'Add an event',
   eventPick: 'Your events',
+  rowTasks: 'Open tasks',
+  rowPayments: 'Still to pay',
+  rowSeating: 'Tables',
+  rowContracts: 'Contracts',
+  rowVenues: 'Halls to compare',
+  rowFiles: 'Files and photos',
+  rowLists: 'Songs, kit and details',
+  rowPrep: 'Faces and looks',
+  rowEnvelopes: 'Envelopes',
+  rowTransport: 'Cars and rides',
+  rowThread: 'Messages',
 };
 
 export const filesEn: FilesCopy = {
@@ -716,4 +727,50 @@ export const bookEn: BookCopy = {
     foundation: 'Foundations', bookings: 'Bookings', experience: 'Guest experience',
     guests: 'Guest operations', final: 'Final coordination', dayOf: 'The day', after: 'After',
   },
+};
+
+export const envelopesCopyEn: EnvelopesCopy = {
+  title: 'Envelopes',
+  sub: 'The cash you bring on the night: who each one is for, how much, and what has been handed over.',
+  empty: 'No envelopes yet. Once you add them, the event manager sees them here on the day.',
+  label: 'For',
+  labelPh: 'Rabbi, crew tip, photographer',
+  recipient: 'Handed to',
+  recipientPh: 'A name, if there is one',
+  amount: 'Amount',
+  how: 'How',
+  cash: 'Cash',
+  transfer: 'Transfer',
+  note: 'Note',
+  notePh: 'After the ceremony, for example',
+  add: 'Add an envelope',
+  adding: 'Adding…',
+  remove: 'Remove',
+  markDelivered: 'Handed over',
+  markUndelivered: 'Not handed over yet',
+  handed: '{n} of {of} handed over',
+};
+
+export const vehiclesCopyEn: VehiclesCopy = {
+  title: 'Cars and rides',
+  sub: 'Getting from wherever you are getting ready to the hall and back: who drives, how many seats, who rides with whom.',
+  empty: 'No cars yet. Add the first one and give it a name everybody will recognise.',
+  name: 'Car',
+  namePh: 'Car 1, Dad\'s car',
+  driver: 'Driver',
+  driverPh: 'Who is driving',
+  phone: 'Phone',
+  seats: 'seats',
+  seatsTotal: 'seats in all',
+  leg: 'Direction',
+  legTo: 'To the hall',
+  legFrom: 'Back',
+  legBoth: 'Both ways',
+  riders: 'Riding',
+  ridersPh: 'Grandma, Aunt Rachel, the two kids',
+  note: 'Note',
+  notePh: 'Leaving home at 16:30',
+  add: 'Add a car',
+  adding: 'Adding…',
+  remove: 'Remove',
 };

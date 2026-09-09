@@ -15,7 +15,8 @@ import { QuickJump, type JumpEvent } from './QuickJump';
 import type { JumpRecord } from '@/lib/jump';
 import { cn } from '@/lib/utils';
 import { companionFor, noticeFor, ticketFor } from '@/content/appUi';
-import type { Locale } from '@/lib/locale';
+import { dirOf, type Locale } from '@/lib/locale';
+import { LangToggle } from '@/components/marketing/LangToggle';
 
 /** The couple's two labels in the couple's language. The producer's console
  *  stays Hebrew, so only these two travel as a prop. */
@@ -106,7 +107,18 @@ export function AppShell({
     /* The producer's ground is a shade brighter than the couple's. It is a
        working screen rather than a keepsake, and the extra light is what keeps
        a table of forty rows from reading as heavy. */
+    /* Direction follows the words actually on the screen, not the cookie.
+       <html dir> is set from the language cookie for every page, and the
+       marketing site flips that cookie. The producer's console is written in
+       Hebrew whatever the cookie says — forty-four of its screens have no
+       English — so a producer who switched the public site to English got
+       Hebrew laid out left to right: every screen backwards, and nothing in
+       here to flip it back. The layout already resolves the locale this shell
+       renders in (the couple's cookie for a couple, Hebrew for a producer);
+       this is where that locale becomes the direction. */
     <div
+      dir={dirOf(locale)}
+      lang={locale}
       className={cn('brand-scope min-h-dvh', account.role === 'client' ? 'bg-surface' : 'bg-surface-100')}
       style={brandStyle(brand)}
     >
@@ -178,6 +190,12 @@ export function AppShell({
                   header is a row nobody can tell apart. */}
               <div className="flex items-center gap-0.5">
                 {isProducer && <QuickJump screens={items} events={events} records={records} compact />}
+                {/* The couple's screen exists in both languages, so the couple
+                    gets the switch. It is the same control the public site
+                    uses, posting to the same action, so the two can never
+                    disagree about what the cookie means. The producer does not
+                    get one, because the console has nothing to switch to. */}
+                {account.role === 'client' && <LangToggle current={locale} className="me-1" />}
                 <NoticeBell notices={notices} copy={notice} />
                 <Link
                   href="/app/me"

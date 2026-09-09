@@ -1646,6 +1646,21 @@ export const appCopy = {
        these are their events, not "workspaces" or "entities". */
     eventAdd: 'אירוע נוסף',
     eventPick: 'האירועים שלכם',
+    /* The strip at the top is a table of contents for the whole screen: one
+       row per section, in the order the sections appear, so a couple can get
+       to the seating plan without scrolling past the budget. In their words,
+       and short — these sit beside a number. */
+    rowTasks: 'משימות פתוחות',
+    rowPayments: 'נשאר לשלם',
+    rowSeating: 'שולחנות',
+    rowContracts: 'הסכמים',
+    rowVenues: 'אולמות להשוואה',
+    rowFiles: 'קבצים ותמונות',
+    rowLists: 'שירים, ציוד ופרטים',
+    rowPrep: 'פנים ולוקים',
+    rowEnvelopes: 'מעטפות',
+    rowTransport: 'רכבים והסעות',
+    rowThread: 'הודעות',
   },
 } as const;
 
@@ -2261,6 +2276,55 @@ export const companionCopy = {
  * stored in. Nobody says "VIP roster"; they say "מי אסור לפספס", which is the
  * sentence the photographer is handed and the reason this panel exists.
  */
+/** The envelopes and the cars, as the couple would say them. Two short
+ *  lists the event manager needs in hand on the night; the words sit beside
+ *  a figure and a tick, so they are short. */
+export const envelopesCopy = {
+  title: 'מעטפות',
+  sub: 'המזומן שמביאים לאירוע: למי, כמה, ומה כבר נמסר.',
+  empty: 'עוד אין מעטפות. כשתוסיפו, מנהל האירוע יראה אותן כאן ביום עצמו.',
+  label: 'למי',
+  labelPh: 'רב, טיפ לצוות, צלם',
+  recipient: 'מי מקבל',
+  recipientPh: 'שם, אם יש',
+  amount: 'סכום',
+  how: 'איך',
+  cash: 'מזומן',
+  transfer: 'העברה',
+  note: 'הערה',
+  notePh: 'למסור אחרי החופה, למשל',
+  add: 'הוספת מעטפה',
+  adding: 'מוסיף…',
+  remove: 'מחיקה',
+  markDelivered: 'נמסרה',
+  markUndelivered: 'עדיין לא נמסרה',
+  handed: 'נמסרו {n} מתוך {of}',
+} as const;
+
+export const vehiclesCopy = {
+  title: 'רכבים והסעות',
+  sub: 'איך מגיעים מההתארגנות לאולם וחזרה: מי נוהג, כמה מקומות, ומי נוסע עם מי.',
+  empty: 'עוד אין רכבים. תוסיפו את הראשון ותנו לו שם שכולם יזהו.',
+  name: 'שם הרכב',
+  namePh: 'רכב 1, האוטו של אבא',
+  driver: 'נהג',
+  driverPh: 'מי נוהג',
+  phone: 'טלפון',
+  seats: 'מקומות',
+  seatsTotal: 'מקומות בסך הכל',
+  leg: 'כיוון',
+  legTo: 'לאולם',
+  legFrom: 'חזרה',
+  legBoth: 'הלוך וחזור',
+  riders: 'מי נוסע',
+  ridersPh: 'סבתא, דודה רחל, שני הילדים',
+  note: 'הערה',
+  notePh: 'יוצאים ב-16:30 מהבית',
+  add: 'הוספת רכב',
+  adding: 'מוסיף…',
+  remove: 'מחיקה',
+} as const;
+
 export const prepCopy = {
   facesTitle: 'מי אסור לפספס',
   facesSub: 'תמונה ושם לכל אחד שחייב להיות בתמונות. הצלם לא מכיר אף אחד באולם.',

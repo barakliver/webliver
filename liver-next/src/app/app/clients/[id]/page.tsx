@@ -36,6 +36,11 @@ import { signBoardImages } from '@/lib/board';
 import { safeRows, safeValue } from '@/lib/safe';
 import { publicEnv } from '@/lib/env';
 import { PrepSheet } from '@/components/app/PrepSheet';
+import { EnvelopesPanel } from '@/components/app/EnvelopesPanel';
+import { VehiclesPanel } from '@/components/app/VehiclesPanel';
+import { loadEnvelopes, envelopesOf } from '@/lib/envelopes';
+import { loadVehicles, vehiclesOf } from '@/lib/vehicles';
+import { envelopesCopy, vehiclesCopy } from '@/content/site';
 import { prepCopy, venueCopy } from '@/content/site';
 import { loadPrep, prepOf } from '@/lib/prep';
 import { VenueCompare } from '@/components/app/VenueCompare';
@@ -219,8 +224,12 @@ async function Section({ tab, client, viewerId }: { tab: EventTab; client: Clien
   }
 
   if (tab === 'tasks') {
+    /* event_id, category and vendor_id are what make ticking a supplier task
+       open the form instead of crossing the line out. This select did not
+       carry them, so on the producer's own screen — the one that gets used —
+       the form could never open, whatever the database said. */
     const tasks = await safeRows<Task>('tasks', sb.from('tasks')
-      .select('id,title,due_on,done,owner,created_by,visible_to_client').eq('client_id', id)
+      .select('id,title,due_on,done,owner,created_by,visible_to_client,event_id,category,vendor_id').eq('client_id', id)
       /* The producer's own order first, then the fallbacks — so a list
          nobody has dragged still comes out sorted by what is due. */
       .order('done').order('sort_order').order('due_on', { ascending: true, nullsFirst: false }));
@@ -381,15 +390,23 @@ async function Section({ tab, client, viewerId }: { tab: EventTab; client: Clien
        drift: they are looking at one event's rows from two sides. */
     const prep = prepOf(await loadPrep(sb, [id]), id);
 
+    /* The two night-of lists live beside the faces and the looks: they are
+       the same kind of thing, a short list on one event written by either
+       side, and the producer reads all three with the bag in hand. */
+    const [envelopes, vehicles] = await Promise.all([loadEnvelopes(sb, [id]), loadVehicles(sb, [id])]);
     return (
-      <PrepSheet
+      <div className="space-y-10">
+        <PrepSheet
         c={prepCopy}
         clientId={id}
         vips={prep.vips}
         looks={prep.looks}
         shares={prep.shares}
         siteUrl={publicEnv.siteUrl}
-      />
+        />
+        <EnvelopesPanel c={envelopesCopy} clientId={id} items={envelopesOf(envelopes, id)} />
+        <VehiclesPanel c={vehiclesCopy} clientId={id} items={vehiclesOf(vehicles, id)} />
+      </div>
     );
   }
 
