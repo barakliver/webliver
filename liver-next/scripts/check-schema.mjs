@@ -356,6 +356,121 @@ try {
     const wantFallback = onScreen(hallRow, 100);
     say(fallback === wantFallback, 'no guest count falls back to the event, not to zero',
       fallback === wantFallback ? '' : `expected ${wantFallback}, got ${fallback || '(no row)'}`);
+
+    // ── 5. one producer cannot read another's ─────────────────────────────
+    /* check-rls.mjs reads every policy and confirms each table is fenced.
+       What it cannot do is run a query. Everything above runs as the
+       superuser, which Postgres exempts from row level security, and the one
+       call that carries a claim carries the root account's — so no test in
+       this file has ever asked the database the question the policies exist
+       to answer: signed in as one producer, how many of another producer's
+       rows come back?
+
+       Asked here, as `authenticated`, which is the role a real request
+       arrives as and which owns none of these tables — so the policies are
+       the only thing between the query and the rows. Three accounts that are
+       not the root: producer A with a wedding on the books, producer B with
+       nothing to do with it, and a couple invited onto A's event. Every count
+       is of A's rows specifically, because the root account owns the fixture
+       above and would legitimately see its own. */
+    const person = (n) => `00000000-0000-4000-8000-00000000000${n}`;
+    const [uidA, uidB, uidC] = [person(1), person(2), person(3)];
+    const mailA = 'producer-a@example.com', mailB = 'producer-b@example.com', mailC = 'couple@example.com';
+    for (const [id, mail] of [[uidA, mailA], [uidB, mailB], [uidC, mailC]]) {
+      psql('one', `-c "insert into auth.users (id, email) values ('${id}','${mail}') on conflict do nothing"`);
+    }
+    /* New producers arrive pending. Approved here so that a zero below can
+       only ever mean the policy said no, never that the account was still in
+       the queue. Approved by the root account, carrying its claim, because
+       the guard on producers.status lets nobody else — the first run of this
+       block was refused by that guard from a claimless superuser session,
+       which is the guard doing its job. */
+    psql('one',
+      `-c "set request.jwt.claim.sub = '${uid}'"`
+      + ` -c "set request.jwt.claims = '{\\"sub\\":\\"${uid}\\",\\"email\\":\\"barakliver@gmail.com\\"}'"`
+      + ` -c "update public.producers set status='approved' where owner_id in ('${uidA}','${uidB}')"`);
+    const pidA = ask('one', `select id from public.producers where owner_id='${uidA}'`);
+
+    psql('one', `-c "insert into public.clients (producer_id, display_name, kind, event_date, venue) values ('${pidA}','מאיה ועידו','wedding','2026-10-15','גני הדר')"`);
+    const cidA = ask('one', `select id from public.clients where producer_id='${pidA}'`);
+    psql('one', [
+      `insert into public.leads (full_name, producer_id) values ('לקוח של א','${pidA}')`,
+      `insert into public.budget_items (client_id, label) values ('${cidA}','אולם')`,
+      `insert into public.guests_rsvp (client_id, full_name) values ('${cidA}','סבתא רחל')`,
+      `insert into public.venue_comparisons (client_id, venue_name) values ('${cidA}','גני הדר')`,
+      `insert into public.tasks (client_id, title) values ('${cidA}','לסגור צלם')`,
+      `insert into public.day_schedule (client_id, at_time, title) values ('${cidA}','19:00','קבלת פנים')`,
+      `insert into public.tables_seating (client_id, name) values ('${cidA}','שולחן 1')`,
+      `insert into public.messages (client_id, author_id, body) values ('${cidA}','${uidA}','שלום')`,
+      `insert into public.contracts (client_id, title) values ('${cidA}','הסכם אולם')`,
+      `insert into public.support_tickets (reporter_id, producer_id, body) values ('${uidA}','${pidA}','משהו לא עובד')`,
+      /* The invitation. The trigger finds the couple's profile by address and
+         turns it into a client account, the way a real invitation does. */
+      `insert into public.client_authorized_emails (client_id, email) values ('${cidA}','${mailC}')`,
+    ].map((s) => `-c "${s}"`).join(' '));
+
+    /* One connection, so the claims and the role are still set when the
+       query runs. `set role authenticated` is the whole test: from that line
+       on, the session is a signed-in stranger with no special standing. */
+    const asAccount = (id, mail, sql) => sh(
+      `${BIN}/psql -h ${dir} -U postgres -d one -tAq -v ON_ERROR_STOP=1`
+      + ` -c "set request.jwt.claim.sub = '${id}'"`
+      + ` -c "set request.jwt.claim.role = 'authenticated'"`
+      + ` -c "set request.jwt.claims = '{\\"sub\\":\\"${id}\\",\\"email\\":\\"${mail}\\",\\"role\\":\\"authenticated\\"}'"`
+      + ` -c "set role authenticated"`
+      + ` -c "${sql}" 2>&1`,
+    ).trim();
+
+    /* Every table a wedding is made of, each counted down to A's own rows. */
+    const ofA = {
+      leads:             `producer_id='${pidA}'`,
+      clients:           `id='${cidA}'`,
+      budget_items:      `client_id='${cidA}'`,
+      guests_rsvp:       `client_id='${cidA}'`,
+      venue_comparisons: `client_id='${cidA}'`,
+      tasks:             `client_id='${cidA}'`,
+      day_schedule:      `client_id='${cidA}'`,
+      tables_seating:    `client_id='${cidA}'`,
+      messages:          `client_id='${cidA}'`,
+      contracts:         `client_id='${cidA}'`,
+      support_tickets:   `reporter_id='${uidA}'`,
+    };
+    const seen = (id, mail) => Object.fromEntries(
+      Object.entries(ofA).map(([t, w]) => [t, asAccount(id, mail, `select count(*) from public.${t} where ${w}`)]),
+    );
+    const leaked = (counts) => Object.entries(counts).filter(([, n]) => n !== '0').map(([t, n]) => `${t}:${n}`);
+    const missing = (counts) => Object.entries(counts).filter(([, n]) => n !== '1').map(([t, n]) => `${t}:${n || '(error)'}`);
+
+    /* The positive control first. If A cannot see A's own rows, a zero for B
+       proves nothing — the query may simply be failing. */
+    const asA = seen(uidA, mailA);
+    say(missing(asA).length === 0, 'a producer reads every row of their own event',
+      missing(asA).length === 0 ? '' : `short: ${missing(asA).join(', ')}`);
+
+    const asB = seen(uidB, mailB);
+    say(leaked(asB).length === 0, "and nothing of another producer's",
+      leaked(asB).length === 0 ? '' : `LEAKED to producer B: ${leaked(asB).join(', ')}`);
+
+    /* The couple sees their own event and none of the producer's pipeline:
+       leads are the business's, not the wedding's. */
+    const coupleClient = asAccount(uidC, mailC, `select count(*) from public.clients where id='${cidA}'`);
+    const coupleLeads = asAccount(uidC, mailC, `select count(*) from public.leads where producer_id='${pidA}'`);
+    const coupleGuests = asAccount(uidC, mailC, `select count(*) from public.guests_rsvp where client_id='${cidA}'`);
+    say(coupleClient === '1' && coupleGuests === '1' && coupleLeads === '0',
+      'an invited couple reads their event and no lead',
+      `event:${coupleClient} guests:${coupleGuests} leads:${coupleLeads}`);
+
+    /* The platform owner. Every tenant policy above was written without a
+       root branch, and this is the line that keeps it that way: the root
+       account, with its own claim and its own address, reading a producer's
+       private rows and getting none — and the one table it is meant to read,
+       the ticket a producer filed with it, coming back. */
+    const asRootAcct = seen(uid, 'barakliver@gmail.com');
+    const { support_tickets: rootTicket, ...rootTenant } = asRootAcct;
+    say(leaked(rootTenant).length === 0, "the owner reads no producer's private rows",
+      leaked(rootTenant).length === 0 ? '' : `visible to root: ${leaked(rootTenant).join(', ')}`);
+    say(rootTicket === '1', 'and does read the ticket filed with them',
+      rootTicket === '1' ? '' : `tickets visible to root: ${rootTicket || '(error)'}`);
   }
 } catch (e) {
   failures++;
