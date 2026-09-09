@@ -14,13 +14,34 @@ import type { Contract as ContractRow } from '@/components/app/Contracts';
 export type Workspace = {
   id: string; display_name: string; event_date: string | null;
   venue: string; guest_estimate: number | null; budget_visible: boolean;
+  budget_target: number | null;
   track_a_label: string; track_b_label: string;
+  /** The guests' page: its address, and whether it is switched on. The
+   *  couple gets the link to paste into their invitations; nothing else about
+   *  the page is theirs to change from here. */
+  guest_token: string | null; guest_site_on: boolean;
 };
 
 /** Which modules this workspace may open. Asked of the database rather than
  *  worked out here: the answer depends on the plan the workspace is on and on
  *  flags the platform owner controls, and neither belongs in a component. */
 export type Gate = (clientId: string, key: string) => boolean;
+
+export type Vendor = {
+  id: string;
+  event_id: string;
+  category: string;
+  name: string;
+  contact_name: string;
+  phone: string;
+  email: string;
+  cost: number | null;
+  location: string;
+  notes: string;
+  task_id: string | null;
+  status: string;
+  created_at: string;
+};
 
 export type PortalData = {
   workspaces: Workspace[];
@@ -34,10 +55,11 @@ export type PortalData = {
   tablesFor: (id: string) => SeatTable[];
   dayFor: (id: string) => DayItem[];
   boardFor: (id: string) => BoardImage[];
+  vendorsFor: (id: string) => Vendor[];
 };
 
 const WORKSPACE_COLS =
-  'id,display_name,event_date,venue,guest_estimate,budget_visible,track_a_label,track_b_label';
+  'id,display_name,event_date,venue,guest_estimate,budget_visible,budget_target,track_a_label,track_b_label,guest_token,guest_site_on';
 
 type WithClient<T> = T & { client_id: string };
 const by = <T,>(rows: WithClient<T>[] | null | undefined, id: string): T[] =>
@@ -76,12 +98,22 @@ export async function loadPortal(
     can: () => true,
     tasksFor: () => [], paymentsFor: () => [], budgetFor: () => [],
     guestsFor: () => [], tablesFor: () => [], dayFor: () => [], boardFor: () => [],
+    vendorsFor: () => [],
   };
   if (ids.length === 0) return empty;
 
-  const [tasks, payments, budget, guests, tables, day, boardRows] = await Promise.all([
-    sb.from('tasks').select('id,client_id,title,due_on,done,owner,created_by')
-      .in('client_id', ids).order('done').order('due_on', { ascending: true, nullsFirst: false }),
+  // Get events for each workspace to load vendors
+  const { data: eventsData } = await sb
+    .from('events')
+    .select('id,client_id')
+    .in('client_id', ids);
+
+  const eventIds = eventsData?.map((e) => e.id) ?? [];
+
+  const [tasks, payments, budget, guests, tables, day, boardRows, vendorRows] = await Promise.all([
+    sb.from('tasks').select('id,client_id,title,due_on,done,owner,created_by,event_id,category,vendor_id')
+      .in('client_id', ids).order('done').order('sort_order')
+      .order('due_on', { ascending: true, nullsFirst: false }),
     sb.from('payments').select('id,client_id,title,amount,due_on,paid,paid_on')
       .in('client_id', ids).order('paid').order('due_on', { ascending: true, nullsFirst: false }),
     sb.from('budget_items').select('id,client_id,category,label,estimate,agreed,vendor')
@@ -93,6 +125,11 @@ export async function loadPortal(
     sb.from('day_schedule').select('id,client_id,track,at_time,title,note,owner,audience,duration_min').in('client_id', ids).order('at_time'),
     sb.from('moodboards').select('id,client_id,category,caption,image_path')
       .in('client_id', ids).order('created_at', { ascending: false }),
+    eventIds.length > 0
+      ? sb.from('vendors')
+          .select('id,event_id,category,name,contact_name,phone,email,cost,location,notes,task_id,status,created_at')
+          .in('event_id', eventIds)
+      : Promise.resolve({ data: null } as any),
   ]);
 
   /* One row per workspace and module rather than a call per panel. A gate that
@@ -103,7 +140,7 @@ export async function loadPortal(
      platform outage must not silently take features away from a couple three
      days before their wedding: closing a door is a decision somebody made, and
      a failed query is not one. */
-  const modules = ['budget', 'guests', 'seating', 'moodboard', 'runsheet', 'messages', 'files'];
+  const modules = ['budget', 'guests', 'seating', 'moodboard', 'runsheet', 'messages', 'files', 'prep', 'venues', 'events'];
   const closed = new Set<string>();
   await Promise.all(
     ids.flatMap((cid) =>
@@ -125,6 +162,19 @@ export async function loadPortal(
   const shared = new Set(workspaces.filter((w) => w.budget_visible).map((w) => w.id));
   const moneyVisible = (id: string) => !opts.asClient || shared.has(id);
 
+  // Map vendors by client through event relationships
+  const vendorsByClient = new Map<string, Vendor[]>();
+  if (vendorRows.data) {
+    for (const vendor of vendorRows.data as (Vendor & { event_id: string })[]) {
+      const event = eventsData?.find((e) => e.id === vendor.event_id);
+      if (event) {
+        const clientId = event.client_id;
+        if (!vendorsByClient.has(clientId)) vendorsByClient.set(clientId, []);
+        vendorsByClient.get(clientId)!.push(vendor);
+      }
+    }
+  }
+
   return {
     workspaces,
     tasksFor: (id) => by(tasks.data as WithClient<Task>[], id),
@@ -135,6 +185,7 @@ export async function loadPortal(
     tablesFor: (id) => by(tables.data as WithClient<SeatTable>[], id),
     dayFor: (id) => by(day.data as WithClient<DayItem>[], id),
     boardFor: (id) => by(board as WithClient<BoardImage>[], id),
+    vendorsFor: (id) => vendorsByClient.get(id) ?? [],
   };
 }
 
@@ -170,7 +221,7 @@ export async function loadThread(
     clientIds.map(async (cid) => {
       const { data: people } = await sb.rpc('thread_people', { p_client: cid });
       (people ?? []).forEach((p: { id: string; display_name: string; avatar_url: string | null }) => {
-        if (!who.has(p.id)) who.set(p.id, { name: p.display_name || '—', avatar: p.avatar_url });
+        if (!who.has(p.id)) who.set(p.id, { name: p.display_name || '·', avatar: p.avatar_url });
       });
     })
   );
@@ -183,7 +234,7 @@ export async function loadThread(
       author_id: m.author_id,
       body: m.body,
       created_at: m.created_at,
-      author_name: person?.name ?? '—',
+      author_name: person?.name ?? '·',
       author_avatar: person?.avatar ?? null,
     });
     byClient.set(m.client_id, list);
@@ -208,7 +259,7 @@ export async function loadContracts(
 
   const { data } = await sb
     .from('contracts')
-    .select('id,client_id,title,body,file_path,amount,status,signed_at,signed_name')
+    .select('id,client_id,title,body,file_path,amount,status,signed_at,signed_name,party_name,party_role')
     .in('client_id', clientIds)
     .order('created_at', { ascending: false });
 
