@@ -1,10 +1,9 @@
-import { appCopy } from '@/content/site';
+import { serverCopy } from '@/lib/serverLocale';
 import { DIETS } from '@/content/lists';
 import { formatDate } from '@/lib/dates';
 import { hhmm, inDayOrder } from '@/lib/runsheet';
 import { EVENT_ZONE } from '@/lib/clock';
 
-const c = appCopy.numbers;
 
 export type SheetGuest = {
   id: string; full_name: string; status: string; party_size: number | null;
@@ -36,7 +35,7 @@ const withParty = (g: SheetGuest) =>
  * real ones. All the arithmetic a supplier cares about lives here: heads,
  * meals, seats, and the two clocks.
  */
-export function NumbersSheet({ client, guests, tables, day, arrivals: arrivalsIn, brand }: {
+export async function NumbersSheet({ client, guests, tables, day, arrivals: arrivalsIn, brand }: {
   client: { display_name: string; event_date: string | null; venue: string | null };
   guests: SheetGuest[];
   tables: SheetTable[];
@@ -45,6 +44,8 @@ export function NumbersSheet({ client, guests, tables, day, arrivals: arrivalsIn
   arrivals: SheetArrival[];
   brand: { name: string; tagline?: string };
 }) {
+  const ui = await serverCopy();
+  const c = (await serverCopy()).numbers;
   const attending = guests.filter((g) => g.status === 'attending');
   const heads = attending.reduce((n, g) => n + Number(g.party_size || 0), 0);
   const pending = guests.filter((g) => g.status === 'pending').length;
@@ -80,7 +81,7 @@ export function NumbersSheet({ client, guests, tables, day, arrivals: arrivalsIn
       <header className="border-b-2 border-ink pb-4">
         <h1 className="font-display text-[27px] font-light text-ink">{client.display_name}</h1>
         <p className="mt-1.5 text-[15px] text-ink-soft">
-          {formatDate(dateFmt, client.event_date, appCopy.runsheet.noDate)}
+          {formatDate(dateFmt, client.event_date, ui.runsheet.noDate)}
           {client.venue ? ` · ${client.venue}` : ''}
         </p>
         <p className="mt-1 text-[14px] font-medium text-accent">{c.title} · {c.sub}</p>

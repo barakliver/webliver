@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers';
 import { LOCALE_COOKIE, readLocale, type Locale } from './locale';
 import { EVENT_ZONE } from './clock.ts';
+import { appUiFor, type AppUi } from '../content/appUi.ts';
 
 /**
  * The language this request is being read in.
@@ -16,6 +17,14 @@ import { EVENT_ZONE } from './clock.ts';
  */
 export async function currentLocale(): Promise<Locale> {
   return readLocale((await cookies()).get(LOCALE_COOKIE)?.value);
+}
+
+/** The words for this request, for a server component or a page. The client
+ *  components read the same object from the provider; this is the server
+ *  side of the same door, and the two always agree because the layout hands
+ *  the provider exactly this. */
+export async function serverCopy(): Promise<AppUi> {
+  return appUiFor(await currentLocale());
 }
 
 /** The date format each language expects. A policy that says it was updated on

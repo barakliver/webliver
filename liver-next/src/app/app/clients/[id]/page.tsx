@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { requireLiveProducer } from '@/lib/auth';
 import { supabaseServer } from '@/lib/supabase/server';
-import { appCopy } from '@/content/site';
+import { serverCopy } from '@/lib/serverLocale';
 import { Live } from '@/components/app/Live';
 import { workspaceSources } from '@/lib/liveSources';
 import { PageHead } from '@/components/app/PageHead';
@@ -40,8 +40,7 @@ import { EnvelopesPanel } from '@/components/app/EnvelopesPanel';
 import { VehiclesPanel } from '@/components/app/VehiclesPanel';
 import { loadEnvelopes, envelopesOf } from '@/lib/envelopes';
 import { loadVehicles, vehiclesOf } from '@/lib/vehicles';
-import { envelopesCopy, vehiclesCopy } from '@/content/site';
-import { prepCopy, venueCopy } from '@/content/site';
+import { prepFor, envelopesFor, vehiclesFor, venuesFor } from '@/content/appUi';
 import { loadPrep, prepOf } from '@/lib/prep';
 import { VenueCompare } from '@/components/app/VenueCompare';
 import { loadVenues, venuesOf } from '@/lib/venueRows';
@@ -79,6 +78,7 @@ export default async function ClientPage({
   params: Promise<{ id: string }>;
   searchParams: Promise<{ tab?: string }>;
 }) {
+  const ui = await serverCopy();
   const account = await requireLiveProducer();
   const { id } = await params;
   const tab = readTab((await searchParams).tab);
@@ -95,7 +95,7 @@ export default async function ClientPage({
   /* The producer's own colours, so this event can be given one. */
   const tags = await loadLabels(sb, 'event_tag');
 
-  const c = appCopy.clientPage;
+  const c = ui.clientPage;
 
   return (
     <>
@@ -107,37 +107,37 @@ export default async function ClientPage({
         <div className="-mx-4 flex w-[calc(100%+2rem)] items-center gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:w-auto sm:flex-wrap sm:px-0 sm:pb-0">
           <a href={`/app/clients/${client.id}/event.ics`} className={link}>
             <CalendarPlus size={16} aria-hidden strokeWidth={1.5} />
-            {appCopy.calendar.addEvent}
+            {ui.calendar.addEvent}
           </a>
           <Link href={`/app/clients/${client.id}/runsheet`} className={link}>
             <ListOrdered size={16} aria-hidden strokeWidth={1.5} />
-            {appCopy.runsheet.open}
+            {ui.runsheet.open}
           </Link>
           {/* The page every supplier call asks for: how many, what, when.
               The run sheet is the evening; this is the numbers. */}
           <Link href={`/app/clients/${client.id}/sheet`} className={link}>
             <Hash size={16} aria-hidden strokeWidth={1.5} />
-            {appCopy.numbers.open}
+            {ui.numbers.open}
           </Link>
           {/* Everything at once, for the folder. The other sheets each answer
               one question; this one is the whole file, for the afternoon when
               there are no tabs and no signal. */}
           <Link href={`/app/clients/${client.id}/book`} className={link}>
             <BookOpen size={16} aria-hidden strokeWidth={1.5} />
-            {appCopy.book.title}
+            {ui.book.title}
           </Link>
           {/* The same evening, read on the evening. The printed sheet is for
               planning it; this one is for standing in the hall with it. */}
           <Link href={`/app/clients/${client.id}/live`} className={link}>
             <Radio size={16} aria-hidden strokeWidth={1.5} />
-            {appCopy.dayOf.open}
+            {ui.dayOf.open}
           </Link>
           {/* The one honest way to answer "what can they actually see?" — which
               is a question about policy, not about markup, and therefore not
               one to answer from memory. */}
           <Link href={`/app/clients/${client.id}/preview`} className={link}>
             <Eye size={16} aria-hidden strokeWidth={1.5} />
-            {appCopy.preview.open}
+            {ui.preview.open}
           </Link>
         </div>
       </div>
@@ -151,14 +151,14 @@ export default async function ClientPage({
         actions={
           <Link
             href={`/app/clients/${client.id}#event-details`}
-            aria-label={appCopy.clientPage.rename}
-            title={appCopy.clientPage.rename}
+            aria-label={ui.clientPage.rename}
+            title={ui.clientPage.rename}
             className="grid size-9 place-items-center rounded-xl2 text-ink-mute transition hover:bg-surface-200 hover:text-ink"
           >
             <Pencil size={15} strokeWidth={1.5} aria-hidden />
           </Link>
         }
-        report={<IssueReporter userId={account.id} context={appCopy.clientPage.tabs[tab]} />}
+        report={<IssueReporter userId={account.id} context={ui.clientPage.tabs[tab]} />}
       />
 
       {/* Above the tabs and outside them: which kind of thing this event is
@@ -173,7 +173,7 @@ export default async function ClientPage({
         {/* Named by the open tab, so a report from the money tab arrives
             saying so rather than costing a round trip to find out. */}
         <div className="mt-1 shrink-0">
-          <IssueReporter userId={account.id} context={`${client.display_name} · ${appCopy.clientPage.tabs[tab]}`} />
+          <IssueReporter userId={account.id} context={`${client.display_name} · ${ui.clientPage.tabs[tab]}`} />
         </div>
       </div>
 
@@ -197,6 +197,7 @@ type Client = {
  *  point of the sections: the guest list and the seating plan are the two
  *  heaviest reads on this page and most visits never open them. */
 async function Section({ tab, client, viewerId }: { tab: EventTab; client: Client; viewerId: string }) {
+  const ui = await serverCopy();
   const sb = await supabaseServer();
   const id = client.id;
 
@@ -340,7 +341,7 @@ async function Section({ tab, client, viewerId }: { tab: EventTab; client: Clien
         {/* The couple's five figures above; the producer's bottom line here.
             Two ledgers on purpose, from one module, so they cannot be derived
             differently — and only this one is ever rendered for the couple. */}
-        <ProducerLedger c={appCopy.money.ledger} payments={payments} items={budget} crew={crewFees} />
+        <ProducerLedger c={ui.money.ledger} payments={payments} items={budget} crew={crewFees} />
         <PaymentsPanel clientId={id} payments={payments} viewer="producer" />
         <BudgetPanel clientId={id} items={budget} viewer="producer" visible={!!client.budget_visible} />
       </div>
@@ -380,7 +381,7 @@ async function Section({ tab, client, viewerId }: { tab: EventTab; client: Clien
     const data = venuesOf(await loadVenues(sb, [id]), id);
     return (
       <VenueCompare
-        c={venueCopy}
+        c={venuesFor(ui.locale)}
         clientId={id}
         venues={data.venues}
         quoteUrls={data.quoteUrls}
@@ -401,15 +402,15 @@ async function Section({ tab, client, viewerId }: { tab: EventTab; client: Clien
     return (
       <div className="space-y-10">
         <PrepSheet
-        c={prepCopy}
+        c={prepFor(ui.locale)}
         clientId={id}
         vips={prep.vips}
         looks={prep.looks}
         shares={prep.shares}
         siteUrl={publicEnv.siteUrl}
         />
-        <EnvelopesPanel c={envelopesCopy} clientId={id} items={envelopesOf(envelopes, id)} />
-        <VehiclesPanel c={vehiclesCopy} clientId={id} items={vehiclesOf(vehicles, id)} />
+        <EnvelopesPanel c={envelopesFor(ui.locale)} clientId={id} items={envelopesOf(envelopes, id)} />
+        <VehiclesPanel c={vehiclesFor(ui.locale)} clientId={id} items={vehiclesOf(vehicles, id)} />
       </div>
     );
   }

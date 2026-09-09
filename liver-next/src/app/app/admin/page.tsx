@@ -4,7 +4,8 @@ import { requireRoot, ROOT_ADMIN_EMAIL } from '@/lib/auth';
 import { getConsole, type Stats } from '@/lib/directory';
 import { AdminRow } from '@/components/app/AdminRow';
 
-import { appCopy, ticketCopy } from '@/content/site';
+import { ticketCopy } from '@/content/site';
+import { serverCopy } from '@/lib/serverLocale';
 import { PageHead, Empty } from '@/components/app/PageHead';
 import { IssueReporter } from '@/components/app/IssueReporter';
 import { Referrals, type ReferralRow } from '@/components/app/Referrals';
@@ -16,9 +17,10 @@ import { MetricBlock } from '@/components/app/Metric';
 import { Live } from '@/components/app/Live';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: appCopy.admin.title };
+export async function generateMetadata() {
+  return { title: (await serverCopy()).admin.title };
+}
 
-const c = appCopy.admin;
 
 /** One number, and the thing it counts. The first row is the headline and
  *  gets the design's own metric size; the two under it are the qualifiers,
@@ -42,7 +44,8 @@ function Band({ title, rows, href }: {
   );
 }
 
-function Telemetry({ s }: { s: Stats }) {
+async function Telemetry({ s }: { s: Stats }) {
+  const c = (await serverCopy()).admin;
   return (
     <section>
       <h2 className="eyebrow mb-3">{c.stats.title}</h2>
@@ -78,6 +81,7 @@ function Telemetry({ s }: { s: Stats }) {
 }
 
 export default async function AdminPage() {
+  const c = (await serverCopy()).admin;
   const account = await requireRoot();
   const { stats, producers, flags } = await getConsole(ROOT_ADMIN_EMAIL);
 

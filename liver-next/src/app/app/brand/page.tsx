@@ -1,5 +1,5 @@
 import { requireLiveProducer } from '@/lib/auth';
-import { appCopy } from '@/content/site';
+import { serverCopy } from '@/lib/serverLocale';
 import { platformRoot } from '@/lib/tenant';
 import { PageHead } from '@/components/app/PageHead';
 import { IssueReporter } from '@/components/app/IssueReporter';
@@ -8,16 +8,19 @@ import { ProducerLinkCard } from '@/components/app/ProducerLinkCard';
 import { BrandAssets } from '@/components/app/BrandAssets';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: appCopy.brand.title };
+export async function generateMetadata() {
+  return { title: (await serverCopy()).brand.title };
+}
 
 export default async function BrandPage() {
+  const ui = await serverCopy();
   const account = await requireLiveProducer();
   const p = account.producer;
 
   return (
     <>
-      <PageHead title={appCopy.brand.title} sub={appCopy.brand.sub}
-        report={<IssueReporter userId={account.id} context={appCopy.brand.title} />}
+      <PageHead title={ui.brand.title} sub={ui.brand.sub}
+        report={<IssueReporter userId={account.id} context={ui.brand.title} />}
       />
       {/* First on the screen, above the editor: the reason most producers
           open this page after the first week is to get the link they send. */}

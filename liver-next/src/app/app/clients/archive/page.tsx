@@ -4,11 +4,13 @@ import { supabaseServer } from '@/lib/supabase/server';
 import { PageHead, Empty } from '@/components/app/PageHead';
 import { loadShelf } from '@/lib/archive';
 import { ArchiveShelf } from '@/components/app/ArchiveShelf';
-import { archiveCopy as c } from '@/content/site';
+import { serverCopy } from '@/lib/serverLocale';
 import { IssueReporter } from '@/components/app/IssueReporter';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: c.title };
+export async function generateMetadata() {
+  return { title: (await serverCopy()).archive.title };
+}
 
 /**
  * Closed events, on a shelf, by year.
@@ -24,6 +26,7 @@ export const metadata = { title: c.title };
  * row has been renamed twice.
  */
 export default async function ArchivePage() {
+  const c = (await serverCopy()).archive;
   const account = await requireLiveProducer();
   const sb = await supabaseServer();
   const shelf = await loadShelf(sb);

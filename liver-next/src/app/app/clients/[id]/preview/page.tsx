@@ -4,7 +4,7 @@ import { Eye, ArrowRight } from 'lucide-react';
 import { requireLiveProducer } from '@/lib/auth';
 import { supabaseServer } from '@/lib/supabase/server';
 import { Live } from '@/components/app/Live';
-import { appCopy } from '@/content/site';
+import { serverCopy } from '@/lib/serverLocale';
 import { appUiFor } from '@/content/appUi';
 import { CopyProvider } from '@/components/app/CopyProvider';
 import { currentLocale } from '@/lib/serverLocale';
@@ -12,7 +12,9 @@ import { PortalWorkspace } from '@/components/app/PortalWorkspace';
 import { PORTAL_LIVE_SOURCES } from '@/lib/liveSources';
 import { loadPortal } from '@/lib/portal';
 
-export const metadata = { title: appCopy.preview.title };
+export async function generateMetadata() {
+  return { title: (await serverCopy()).preview.title };
+}
 
 /**
  * The couple's screen, seen by the producer.
@@ -42,7 +44,7 @@ export default async function PreviewPage({ params }: { params: Promise<{ id: st
   const workspace = data.workspaces[0];
   if (!workspace) notFound();
 
-  const c = appCopy.preview;
+  const c = (await serverCopy()).preview;
 
   return (
     <>

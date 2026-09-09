@@ -5,7 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { CalendarDays, CornerDownLeft, HeartHandshake, History, Layers, Search, Target, Truck, X } from 'lucide-react';
 import { useCopy } from '@/components/app/CopyProvider';
 import { byRelevance as rank, matchesWords, splitQuery, type JumpEvent, type JumpRecord } from '@/lib/jump';
-import { EVENT_TABS } from './EventTabs';
+import { EVENT_TABS } from '@/content/eventTabs';
 import type { NavItem } from './AppNav';
 import { cn } from '@/lib/utils';
 import { EVENT_ZONE } from '@/lib/clock';

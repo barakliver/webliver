@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { ChevronLeft, CalendarX2, Users, Wallet } from 'lucide-react';
-import { appCopy } from '@/content/site';
+import { serverCopy } from '@/lib/serverLocale';
 import type { ClientStatus } from '@/lib/status';
 import { ArchiveButton } from '@/components/app/ArchiveButton';
 import { formatDate } from '@/lib/dates';
@@ -9,14 +9,14 @@ import { EVENT_ZONE } from '@/lib/clock';
 
 const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE, day: 'numeric', month: 'short', year: 'numeric' });
 
-const c = appCopy.statusBoard;
 
 /** The number that answers "how soon".
  *
  *  Deliberately the loudest thing on the row, because it is the one fact that
  *  reorders everything else: the same empty guest list is patience at eight
  *  months and a phone call at five weeks. */
-function Countdown({ days }: { days: number | null }) {
+async function Countdown({ days }: { days: number | null }) {
+  const c = (await serverCopy()).statusBoard;
   if (days === null) {
     return (
       <div className="flex flex-col items-center justify-center rounded-xl2 bg-surface-200 px-3 py-2 text-center">
@@ -73,7 +73,8 @@ function GapChip({ label, level }: { label: string; level: 'now' | 'soon' }) {
    it looks equally clickable. The link is an overlay covering the card, the
    content above it is inert, and the archive control is lifted back out so it
    stays its own button rather than a hole in the link. */
-function Row({ s }: { s: ClientStatus }) {
+async function Row({ s }: { s: ClientStatus }) {
+  const c = (await serverCopy()).statusBoard;
   return (
     <li className="card relative p-0 transition-colors focus-within:border-accent hover:border-accent">
       <Link

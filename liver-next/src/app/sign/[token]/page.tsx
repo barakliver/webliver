@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { supabasePublic } from '@/lib/supabase/public';
-import { site, signCopy as c } from '@/content/site';
+import { site } from '@/content/site';
+import { serverCopy } from '@/lib/serverLocale';
+import { CopyProvider } from '@/components/app/CopyProvider';
 import { PromiseLine } from '@/components/Promise';
 import { Money } from '@/components/Ltr';
 import { SignForm } from './SignForm';
@@ -23,10 +25,12 @@ import { EVENT_ZONE } from '@/lib/clock';
 export const dynamic = 'force-dynamic';
 /* An agreement is a private document and the link is the credential. Nothing
    about this page belongs in an index or a shared cache. */
-export const metadata: Metadata = {
-  title: c.eyebrow,
-  robots: { index: false, follow: false, nocache: true },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: (await serverCopy()).sign.eyebrow,
+    robots: { index: false, follow: false, nocache: true },
+  };
+}
 
 const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE,
   day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit',
@@ -43,12 +47,15 @@ type Agreement = {
 
 export default async function SignPage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
+  const ui = await serverCopy();
+  const c = ui.sign;
 
   const sb = supabasePublic();
   const { data } = await sb.rpc('contract_by_token', { p_token: token });
   const deal = (Array.isArray(data) ? data[0] : null) as Agreement | null;
 
   return (
+    <CopyProvider value={ui}>
     <main id="main" className="flex min-h-dvh items-center justify-center px-5 py-14">
       <div className="w-full max-w-2xl">
         <p className="text-center font-display text-[19px] font-semibold text-ink">
@@ -117,5 +124,6 @@ export default async function SignPage({ params }: { params: Promise<{ token: st
         )}
       </div>
     </main>
+    </CopyProvider>
   );
 }

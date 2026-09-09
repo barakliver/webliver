@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { currentAccount } from '@/lib/auth';
 import { safeColor } from '@/content/palette';
-import { labelCopy as c } from '@/content/site';
+import { serverCopy } from '@/lib/serverLocale';
 import { noteFailure } from '@/lib/flash';
 
 export type LabelResult = { ok: boolean; error?: string };
@@ -26,6 +26,7 @@ function touch() {
 /** A producer's own word for something, with a colour on it. Both taxonomies
  *  come through here; `kind` is the only thing that differs. */
 export async function addLabel(_prev: LabelResult | null, form: FormData): Promise<LabelResult> {
+  const c = (await serverCopy()).label;
   const account = await currentAccount();
   if (!account?.producer) return { ok: false, error: 'צריך להתחבר כמפיק' };
 
@@ -64,6 +65,7 @@ export async function addLabel(_prev: LabelResult | null, form: FormData): Promi
 }
 
 export async function updateLabel(_prev: LabelResult | null, form: FormData): Promise<LabelResult> {
+  const c = (await serverCopy()).label;
   const id = String(form.get('label_id') ?? '');
   if (!id) return { ok: false, error: c.failed };
 

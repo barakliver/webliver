@@ -1,16 +1,16 @@
 import { count as plural, fill } from '@/lib/copyText';
 import Link from 'next/link';
-import { appCopy } from '@/content/site';
+import { serverCopy } from '@/lib/serverLocale';
 import type { Conversion } from '@/lib/analytics';
 import type { Funnel, SourceRow, Response, Cash } from '@/lib/analytics';
 import { Money, Ratio, ils } from '@/components/Ltr';
 import { Metric } from '@/components/app/Metric';
 
-const c = appCopy.insights;
 
 /** A rate, or the reason there isn't one. Never a percentage sign with three
  *  cases behind it. */
-function Rate({ value }: { value: number | null }) {
+async function Rate({ value }: { value: number | null }) {
+  const c = (await serverCopy()).insights;
   if (value === null) {
     return <span className="text-[12.5px] font-medium text-ink-mute">{c.thin}</span>;
   }
@@ -21,13 +21,6 @@ function Rate({ value }: { value: number | null }) {
   );
 }
 
-const LABELS: Record<string, string> = {
-  leads: c.funnel.leads,
-  contacted: c.funnel.contacted,
-  meeting: c.funnel.meeting,
-  won: c.funnel.won,
-};
-
 /**
  * The funnel as bars, measured against the top rather than against each other.
  *
@@ -35,7 +28,11 @@ const LABELS: Record<string, string> = {
  * information. A chart where every bar is scaled to its own step is a chart
  * where nothing ever looks like it is being lost.
  */
-export function FunnelChart({ funnel }: { funnel: Funnel }) {
+export async function FunnelChart({ funnel }: { funnel: Funnel }) {
+  const c = (await serverCopy()).insights;
+  const LABELS: Record<string, string> = {
+    leads: c.funnel.leads, contacted: c.funnel.contacted, meeting: c.funnel.meeting, won: c.funnel.won,
+  };
   const top = Math.max(funnel.total, 1);
   return (
     <section className="card">
@@ -84,7 +81,8 @@ export function FunnelChart({ funnel }: { funnel: Funnel }) {
   );
 }
 
-export function Sources({ rows }: { rows: SourceRow[] }) {
+export async function Sources({ rows }: { rows: SourceRow[] }) {
+  const c = (await serverCopy()).insights;
   if (rows.length === 0) return null;
   return (
     <section className="card">
@@ -142,7 +140,8 @@ function Figure({ label, value, tone = 'ink', note, href }: {
   return <Metric kicker={label} value={value} sub={note} tone={tone} href={href} />;
 }
 
-export function CashPanel({ cash }: { cash: Cash }) {
+export async function CashPanel({ cash }: { cash: Cash }) {
+  const c = (await serverCopy()).insights;
   return (
     <section className="card">
       <h2 className="font-display text-[19px] font-semibold text-ink">{c.cash.title}</h2>
@@ -166,7 +165,8 @@ export function CashPanel({ cash }: { cash: Cash }) {
   );
 }
 
-export function ResponsePanel({ r }: { r: Response }) {
+export async function ResponsePanel({ r }: { r: Response }) {
+  const c = (await serverCopy()).insights;
   return (
     <section className="card">
       <h2 className="font-display text-[19px] font-semibold text-ink">{c.response.title}</h2>
@@ -192,9 +192,10 @@ export function ResponsePanel({ r }: { r: Response }) {
   );
 }
 
-export function Health({ signed, overdue, waiting }: {
+export async function Health({ signed, overdue, waiting }: {
   signed: { signed: number; of: number }; overdue: number; waiting: number;
 }) {
+  const c = (await serverCopy()).insights;
   const clear = overdue === 0 && waiting === 0;
   return (
     <section className="card">
@@ -243,7 +244,8 @@ export function Health({ signed, overdue, waiting }: {
  * only answerable now that an event carries a reference back to its enquiry.
  * The gap between the two numbers is the interesting one.
  */
-export function ConversionPanel({ r }: { r: Conversion }) {
+export async function ConversionPanel({ r }: { r: Conversion }) {
+  const c = (await serverCopy()).insights;
   const cc = c.conversion;
   if (r.rate === null) {
     return (

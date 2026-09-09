@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { CalendarClock, ChevronLeft, CircleCheck, CreditCard, Target, TriangleAlert } from 'lucide-react';
 import type { AttentionItem } from '@/lib/attention';
-import { appCopy } from '@/content/site';
+import { serverCopy } from '@/lib/serverLocale';
 import { cn } from '@/lib/utils';
 
 const ICON = {
@@ -14,9 +14,9 @@ const ICON = {
   behind:  CalendarClock,
 } as const;
 
-const c = appCopy.overview2;
 
-export function AttentionList({ items }: { items: AttentionItem[] }) {
+export async function AttentionList({ items }: { items: AttentionItem[] }) {
+  const c = (await serverCopy()).overview2;
   if (!items.length) {
     return (
       <div className="card flex items-center gap-4">

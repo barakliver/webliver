@@ -2,7 +2,7 @@ import { formatDate } from '@/lib/dates';
 import { Check, Ban, RotateCcw, ShieldCheck } from 'lucide-react';
 import type { ProducerRow } from '@/lib/directory';
 import { setProducerStatus, setAccountKind } from '@/app/actions/admin';
-import { appCopy } from '@/content/site';
+import { serverCopy } from '@/lib/serverLocale';
 import { EVENT_ZONE } from '@/lib/clock';
 
 /**
@@ -14,7 +14,6 @@ import { EVENT_ZONE } from '@/lib/clock';
  * open without being the owner of the platform, on a laptop, signed in.
  */
 
-const c = appCopy.admin;
 const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE, day: '2-digit', month: '2-digit', year: 'numeric' });
 
 const STATUS_TONE: Record<ProducerRow['status'], string> = {
@@ -40,7 +39,9 @@ function StatusButton({ id, status, label, tone }: {
   );
 }
 
-export function AdminRow({ p }: { p: ProducerRow }) {
+export async function AdminRow({ p }: { p: ProducerRow }) {
+  const ui = await serverCopy();
+  const c = (await serverCopy()).admin;
   return (
     <li className="card">
       <div className="flex flex-wrap items-start justify-between gap-4">
@@ -54,7 +55,7 @@ export function AdminRow({ p }: { p: ProducerRow }) {
               </span>
             )}
             <span className={`rounded-xl2 px-2.5 py-0.5 text-[12px] font-medium ${STATUS_TONE[p.status]}`}>
-              {appCopy.pending.statuses[p.status]}
+              {ui.pending.statuses[p.status]}
             </span>
           </h3>
 
@@ -104,7 +105,8 @@ export function AdminRow({ p }: { p: ProducerRow }) {
  * of them opens a workspace, and a button whose consequence has to be
  * remembered is a button somebody presses once to find out.
  */
-function KindSwitch({ ownerId, role }: { ownerId: string; role: ProducerRow['ownerRole'] }) {
+async function KindSwitch({ ownerId, role }: { ownerId: string; role: ProducerRow['ownerRole'] }) {
+  const c = (await serverCopy()).admin;
   const k = c.kind;
   const options = [
     { kind: 'producer', label: k.producer, note: k.producerNote, on: role !== 'client' },

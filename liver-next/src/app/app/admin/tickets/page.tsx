@@ -6,7 +6,8 @@ import { safeRows } from '@/lib/safe';
 import { PageHead, Empty } from '@/components/app/PageHead';
 import { Live } from '@/components/app/Live';
 import { setTicketStatus } from '@/app/actions/tickets';
-import { ticketCopy, appCopy } from '@/content/site';
+import { ticketCopy } from '@/content/site';
+import { serverCopy } from '@/lib/serverLocale';
 import { Ltr } from '@/components/Ltr';
 import { EVENT_ZONE } from '@/lib/clock';
 import { IssueReporter } from '@/components/app/IssueReporter';
@@ -28,6 +29,7 @@ type Ticket = {
  * closed ones are the record and the open ones are the work.
  */
 export default async function TicketsPage({ searchParams }: { searchParams: Promise<{ all?: string }> }) {
+  const ui = await serverCopy();
   const account = await requireRoot();
   const showClosed = (await searchParams).all === '1';
   const sb = await supabaseServer();
@@ -56,7 +58,7 @@ export default async function TicketsPage({ searchParams }: { searchParams: Prom
   return (
     <>
       <div className="mb-4">
-        <Link href="/app/admin" className="btn-quiet inline-block px-0 text-[14px]">← {appCopy.admin.title}</Link>
+        <Link href="/app/admin" className="btn-quiet inline-block px-0 text-[14px]">← {ui.admin.title}</Link>
       </div>
       <PageHead title={c.title} sub={c.sub}
         report={<IssueReporter userId={account.id} context={c.title} />}

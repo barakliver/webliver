@@ -84,7 +84,7 @@ import { ProducerCopilot } from '@/components/app/ProducerCopilot';
 import { QuickJump } from '@/components/app/QuickJump';
 import { FinanceSummary } from '@/components/app/FinanceSummary';
 import { ProducerLedger } from '@/components/app/ProducerLedger';
-import { appCopy, prepCopy } from '@/content/site';
+import { prepCopy } from '@/content/site';
 import { HebrewCalendar } from '@/components/app/HebrewCalendar';
 import { LabelToolbar } from '@/components/app/LabelToolbar';
 import { EventTagPicker } from '@/components/app/EventTagPicker';
@@ -223,7 +223,7 @@ export default async function DesignPage() {
             exist and nothing has been billed. */}
         <Panel name="ProducerLedger · healthy" note="billed, received, costs and what is left">
           <ProducerLedger
-            c={appCopy.money.ledger}
+            c={ui.money.ledger}
             /* Billed above the costs, which is what a healthy event looks
                like. The first version of this panel reused fixturePayments,
                whose total is a fraction of the budget fixture, so the panel
@@ -241,7 +241,7 @@ export default async function DesignPage() {
 
         <Panel name="ProducerLedger · at a loss" note="the figure worth having on exactly the events where it is unwelcome">
           <ProducerLedger
-            c={appCopy.money.ledger}
+            c={ui.money.ledger}
             payments={[{ amount: 42000, paid: true }]}
             items={fixtureBudget}
             crew={[{ fee: 5000 }]}
@@ -250,7 +250,7 @@ export default async function DesignPage() {
 
         <Panel name="ProducerLedger · costs before billing" note="the normal shape three months out, which must not read as a loss">
           <ProducerLedger
-            c={appCopy.money.ledger}
+            c={ui.money.ledger}
             payments={[]}
             items={fixtureBudget}
             crew={[{ fee: 5000 }]}
@@ -258,7 +258,7 @@ export default async function DesignPage() {
         </Panel>
 
         <Panel name="ProducerLedger · nothing yet" note="a brand new event">
-          <ProducerLedger c={appCopy.money.ledger} payments={[]} items={[]} crew={[]} />
+          <ProducerLedger c={ui.money.ledger} payments={[]} items={[]} crew={[]} />
         </Panel>
 
         <Panel name="BudgetPanel · producer" note="an agreed figure, two still open">
@@ -359,7 +359,7 @@ export default async function DesignPage() {
 
         <Panel name="RunSheet · printed" note="the page somebody holds at eleven at night: big clock, tick boxes, numbers">
           <RunSheet
-            c={appCopy.runsheet}
+            c={ui.runsheet}
             client={{ display_name: 'נועה ואיתי', venue: 'אחוזת הכפר' }}
             brand={{ name: 'ברק ליור', tagline: 'הפקת אירועים' }}
             lines={fixtureDay.map((d) => ({

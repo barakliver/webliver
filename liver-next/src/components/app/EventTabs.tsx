@@ -1,13 +1,12 @@
 import Link from 'next/link';
-import { appCopy } from '@/content/site';
+import { serverCopy } from '@/lib/serverLocale';
 import { LinkHint } from './LinkHint';
 
-/** The sections of an event file, in the order somebody works through one. */
-export const EVENT_TABS = ['overview', 'tasks', 'venues', 'day', 'guests', 'details', 'crew', 'bar', 'money', 'docs', 'files', 'meetings', 'messages', 'board', 'prep'] as const;
-export type EventTab = (typeof EVENT_TABS)[number];
-
-export const readTab = (raw: string | undefined): EventTab =>
-  (EVENT_TABS as readonly string[]).includes(raw ?? '') ? (raw as EventTab) : 'overview';
+/* The list itself lives in content, with no server import behind it, because
+   the quick search reads it from the browser and this file now reads the
+   request's cookie. Re-exported so the pages keep importing from here. */
+import { EVENT_TABS, readTab, type EventTab } from '@/content/eventTabs';
+export { EVENT_TABS, readTab, type EventTab };
 
 /**
  * Sections rather than a scroll.
@@ -23,18 +22,19 @@ export const readTab = (raw: string | undefined): EventTab =>
  * A badge on every tab is decoration, and decoration on a number is how a
  * number stops being read.
  */
-export function EventTabs({
+export async function EventTabs({
   clientId, active, counts,
 }: {
   clientId: string;
   active: EventTab;
   counts?: Partial<Record<EventTab, number>>;
 }) {
-  const labels = appCopy.clientPage.tabs;
+  const ui = await serverCopy();
+  const labels = ui.clientPage.tabs;
 
   return (
     <nav
-      aria-label={appCopy.clientPage.details}
+      aria-label={ui.clientPage.details}
       /* One row that scrolls, rather than nine pills wrapping onto three. Three
          rows of chrome above the content is most of a phone screen spent on
          navigation, and the section somebody came for starts below the fold on

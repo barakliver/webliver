@@ -2,13 +2,12 @@ import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { CheckSquare, Coins, CircleAlert } from 'lucide-react';
 import { Money, Ratio } from '@/components/Ltr';
-import { appCopy } from '@/content/site';
+import { serverCopy } from '@/lib/serverLocale';
 import type { EventSummary as Summary } from '@/lib/eventSummary';
 import { formatDate, isOverdue } from '@/lib/dates';
 import { Metric } from '@/components/app/Metric';
 import { EVENT_ZONE } from '@/lib/clock';
 
-const c = appCopy.clientPage;
 
 const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE, day: '2-digit', month: '2-digit' });
 
@@ -34,7 +33,8 @@ function Tile({ label, value, tone = 'plain', sub }: {
  * and soonest first, because the next move is whichever is nearest and
  * splitting them into two lists hands that decision back to the reader.
  */
-export function EventSummary({ clientId, summary }: { clientId: string; summary: Summary }) {
+export async function EventSummary({ clientId, summary }: { clientId: string; summary: Summary }) {
+  const c = (await serverCopy()).clientPage;
   const t = c.at;
   const { guests, money, next } = summary;
 

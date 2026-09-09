@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { requireLiveProducer } from '@/lib/auth';
-import { appCopy, archiveCopy } from '@/content/site';
+import { serverCopy } from '@/lib/serverLocale';
 import { PageHead, Empty } from '@/components/app/PageHead';
 import { IssueReporter } from '@/components/app/IssueReporter';
 import { NewClientForm } from '@/components/app/NewClientForm';
@@ -8,13 +8,16 @@ import { StatusBoard } from '@/components/app/StatusBoard';
 import { Live } from '@/components/app/Live';
 import { getBoard } from '@/lib/status';
 
-export const metadata = { title: appCopy.clients.title };
+export async function generateMetadata() {
+  return { title: (await serverCopy()).clients.title };
+}
 
-const c = appCopy.statusBoard;
 
 export default async function ClientsPage({
   searchParams,
 }: { searchParams: Promise<{ show?: string }> }) {
+  const ui = await serverCopy();
+  const c = (await serverCopy()).statusBoard;
   const account = await requireLiveProducer();
   const { show } = await searchParams;
   const archived = show === 'done';
@@ -25,27 +28,27 @@ export default async function ClientsPage({
   return (
     <>
       <PageHead
-        title={appCopy.clients.title}
+        title={ui.clients.title}
         sub={
           archived
             ? undefined
             : openGaps > 0
               ? `${openGaps} ${openGaps === 1 ? 'פער פתוח' : 'פערים פתוחים'} על פני ${items.length} ${items.length === 1 ? 'אירוע' : 'אירועים'}`
-              : appCopy.clients.sub
+              : ui.clients.sub
         }
-        report={<IssueReporter userId={account.id} context={appCopy.clients.title} />}
+        report={<IssueReporter userId={account.id} context={ui.clients.title} />}
       />
 
       {/* Two lists, not a filter menu: live work and closed files are different
           questions, and one of them is asked far more often than the other. */}
-      <nav className="mb-6 inline-flex rounded-xl2 border border-line bg-surface-100 p-1 text-[14px]" aria-label={appCopy.clients.title}>
+      <nav className="mb-6 inline-flex rounded-xl2 border border-line bg-surface-100 p-1 text-[14px]" aria-label={ui.clients.title}>
         {[
           { key: 'live', href: '/app/clients', label: c.tabLive, on: !archived },
           { key: 'done', href: '/app/clients?show=done', label: c.tabDone, on: archived },
           /* The shelf is a third question, not a filter on the second: "which
              events are closed" is asked this week, and "who was the
              photographer in 2025" is asked two summers later. */
-          { key: 'archive', href: '/app/clients/archive', label: archiveCopy.title, on: false },
+          { key: 'archive', href: '/app/clients/archive', label: ui.archive.title, on: false },
         ].map((t) => (
           <Link
             key={t.key}
@@ -63,7 +66,7 @@ export default async function ClientsPage({
       {!archived && <div className="mb-8"><NewClientForm /></div>}
 
       {items.length === 0 ? (
-        <Empty text={archived ? c.emptyDone : appCopy.clients.empty} />
+        <Empty text={archived ? c.emptyDone : ui.clients.empty} />
       ) : (
         <>
           {!archived && openGaps === 0 && (

@@ -4,16 +4,17 @@ import { ArrowRight } from 'lucide-react';
 import { requireLiveProducer } from '@/lib/auth';
 import { supabaseServer } from '@/lib/supabase/server';
 import { brandFor } from '@/lib/branding';
-import { appCopy } from '@/content/site';
+import { serverCopy } from '@/lib/serverLocale';
 import { safeRows } from '@/lib/safe';
 import { PrintButton } from '@/components/app/PrintButton';
 import {
   NumbersSheet, type SheetGuest, type SheetTable, type SheetMoment, type SheetArrival,
 } from '@/components/app/NumbersSheet';
 
-const c = appCopy.numbers;
 
-export const metadata = { title: appCopy.numbers.title };
+export async function generateMetadata() {
+  return { title: (await serverCopy()).numbers.title };
+}
 export const dynamic = 'force-dynamic';
 
 type CrewRow = { id: string; name: string; role: string; call_time: string | null };
@@ -41,6 +42,7 @@ type VendorRow = { id: string; name: string; category: string; call_time: string
  * caterer holds is a tenant's stationery.
  */
 export default async function NumbersSheetPage({ params }: { params: Promise<{ id: string }> }) {
+  const c = (await serverCopy()).numbers;
   const account = await requireLiveProducer();
   const { id } = await params;
 

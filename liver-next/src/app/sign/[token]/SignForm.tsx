@@ -4,9 +4,10 @@ import { useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { PenLine } from 'lucide-react';
 import { signByLink, type SignResult } from '@/app/actions/sign';
-import { signCopy as c } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
 
 function Button() {
+  const c = useCopy().sign;
   const { pending } = useFormStatus();
   return (
     <button type="submit" disabled={pending} className="btn-primary w-full justify-center gap-2 disabled:opacity-60">
@@ -29,6 +30,7 @@ function Button() {
  * still not press it.
  */
 export function SignForm({ token, defaultName }: { token: string; defaultName: string }) {
+  const c = useCopy().sign;
   const [state, action] = useActionState<SignResult | null, FormData>(signByLink, null);
 
   return (

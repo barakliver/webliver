@@ -1,7 +1,7 @@
 import { Live } from '@/components/app/Live';
 import { requireLiveProducer } from '@/lib/auth';
 import { supabaseServer } from '@/lib/supabase/server';
-import { appCopy, leadsCopy } from '@/content/site';
+import { serverCopy } from '@/lib/serverLocale';
 import { PageHead, Empty } from '@/components/app/PageHead';
 import { LeadRow, type Lead, type Call } from '@/components/app/LeadRow';
 import { CallsPanel } from '@/components/app/CallsPanel';
@@ -12,9 +12,12 @@ import { IssueReporter } from '@/components/app/IssueReporter';
 import { LEAD_SOURCES } from '@/content/site';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: appCopy.leads.title };
+export async function generateMetadata() {
+  return { title: (await serverCopy()).leads.title };
+}
 
 export default async function LeadsPage() {
+  const ui = await serverCopy();
   const account = await requireLiveProducer();
   const sb = await supabaseServer();
 
@@ -38,8 +41,8 @@ export default async function LeadsPage() {
   return (
     <>
       <PageHead
-        title={appCopy.leads.title} sub={appCopy.leads.sub}
-        report={<IssueReporter userId={account.id} context={appCopy.leads.title} />}
+        title={ui.leads.title} sub={ui.leads.sub}
+        report={<IssueReporter userId={account.id} context={ui.leads.title} />}
       />
 
       {/* Ahead of the list on purpose. The enquiry a producer is holding in
@@ -61,13 +64,13 @@ export default async function LeadsPage() {
 
 
       {rows.length === 0 ? (
-        <Empty text={appCopy.leads.empty} />
+        <Empty text={ui.leads.empty} />
       ) : (
         <div className="mt-6 space-y-6">
           {fresh.length > 0 && (
             <div>
               <h2 className="mb-3 text-[13px] font-semibold text-accent">
-                {leadsCopy.statuses.new} · {fresh.length}
+                {ui.lead.statuses.new} · {fresh.length}
               </h2>
               <ul className="space-y-3">
                 {fresh.map((l) => <LeadRow key={l.id} lead={l} calls={callsFor(l.id)} />)}
@@ -76,7 +79,7 @@ export default async function LeadsPage() {
           )}
           {rest.length > 0 && (
             <div>
-              <h2 className="mb-3 text-[13px] font-semibold text-ink-mute">{appCopy.leads.title} · {rest.length}</h2>
+              <h2 className="mb-3 text-[13px] font-semibold text-ink-mute">{ui.leads.title} · {rest.length}</h2>
               <ul className="space-y-3">
                 {rest.map((l) => <LeadRow key={l.id} lead={l} calls={callsFor(l.id)} />)}
               </ul>

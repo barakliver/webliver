@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { ArrowRight } from 'lucide-react';
 import { requireLiveProducer } from '@/lib/auth';
 import { supabaseServer } from '@/lib/supabase/server';
-import { appCopy } from '@/content/site';
+import { serverCopy } from '@/lib/serverLocale';
 import { formatDate } from '@/lib/dates';
 import { PageHead, Empty } from '@/components/app/PageHead';
 import { DayOfCockpit } from '@/components/app/DayOfCockpit';
@@ -13,7 +13,9 @@ import { EVENT_ZONE } from '@/lib/clock';
 import { IssueReporter } from '@/components/app/IssueReporter';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: appCopy.dayOf.title };
+export async function generateMetadata() {
+  return { title: (await serverCopy()).dayOf.title };
+}
 
 const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE, weekday: 'long', day: 'numeric', month: 'long' });
 
@@ -28,6 +30,7 @@ const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE, weekday
  * that boundary would quietly be lost.
  */
 export default async function DayOfPage({ params }: { params: Promise<{ id: string }> }) {
+  const ui = await serverCopy();
   const account = await requireLiveProducer();
   const { id } = await params;
   const sb = await supabaseServer();
@@ -65,17 +68,17 @@ export default async function DayOfPage({ params }: { params: Promise<{ id: stri
   return (
     <>
       <Link href={`/app/clients/${id}`} className="btn-quiet mb-2 -ms-3">
-        <ArrowRight size={16} strokeWidth={1.5} aria-hidden /> {appCopy.dayOf.toEvent}
+        <ArrowRight size={16} strokeWidth={1.5} aria-hidden /> {ui.dayOf.toEvent}
       </Link>
 
       <PageHead
-        title={appCopy.dayOf.title}
+        title={ui.dayOf.title}
         sub={[client.display_name, when, client.venue].filter(Boolean).join(' · ')}
-        report={<IssueReporter userId={account.id} context={appCopy.dayOf.title} />}
+        report={<IssueReporter userId={account.id} context={ui.dayOf.title} />}
       />
 
       {lines.length === 0 && crewRows.length === 0 && vendorRows.length === 0 ? (
-        <Empty text={appCopy.dayOf.empty} />
+        <Empty text={ui.dayOf.empty} />
       ) : (
         <DayOfCockpit
           clientId={id}

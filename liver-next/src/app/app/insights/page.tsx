@@ -1,6 +1,6 @@
 import { requireLiveProducer } from '@/lib/auth';
 import { supabaseServer } from '@/lib/supabase/server';
-import { appCopy } from '@/content/site';
+import { serverCopy } from '@/lib/serverLocale';
 import { PageHead, Empty } from '@/components/app/PageHead';
 import { IssueReporter } from '@/components/app/IssueReporter';
 import { FunnelChart, Sources, ResponsePanel, CashPanel, Health, ConversionPanel } from '@/components/app/Insights';
@@ -10,9 +10,12 @@ import {
 } from '@/lib/analytics';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: appCopy.insights.title };
+export async function generateMetadata() {
+  return { title: (await serverCopy()).insights.title };
+}
 
 export default async function InsightsPage() {
+  const ui = await serverCopy();
   const account = await requireLiveProducer();
   const sb = await supabaseServer();
 
@@ -37,10 +40,10 @@ export default async function InsightsPage() {
   if (leadRows.length === 0 && clientCount === 0) {
     return (
       <>
-        <PageHead title={appCopy.insights.title} sub={appCopy.insights.sub}
-        report={<IssueReporter userId={account.id} context={appCopy.insights.title} />}
+        <PageHead title={ui.insights.title} sub={ui.insights.sub}
+        report={<IssueReporter userId={account.id} context={ui.insights.title} />}
       />
-        <Empty text={appCopy.insights.empty} />
+        <Empty text={ui.insights.empty} />
       </>
     );
   }
@@ -57,8 +60,8 @@ export default async function InsightsPage() {
 
   return (
     <>
-      <PageHead title={appCopy.insights.title} sub={appCopy.insights.sub}
-        report={<IssueReporter userId={account.id} context={appCopy.insights.title} />}
+      <PageHead title={ui.insights.title} sub={ui.insights.sub}
+        report={<IssueReporter userId={account.id} context={ui.insights.title} />}
       />
 
       {/* What needs doing today comes before what happened this quarter. */}

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
-import { appCopy } from '@/content/site';
+import { serverCopy } from '@/lib/serverLocale';
 import { producerGuide } from '@/content/guide';
 
 /**
@@ -15,8 +15,8 @@ import { producerGuide } from '@/content/guide';
  * The steps come from the operating book rather than being written again, so
  * the card and the book cannot tell a new producer two different stories.
  */
-export function BeginHere() {
-  const c = appCopy.overview2.begin;
+export async function BeginHere() {
+  const c = (await serverCopy()).overview2.begin;
   return (
     <div className="card">
       <p className="text-[14.5px] text-ink-soft">{c.sub}</p>

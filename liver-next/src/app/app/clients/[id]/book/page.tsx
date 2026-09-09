@@ -5,7 +5,7 @@ import { requireLiveProducer } from '@/lib/auth';
 import { supabaseServer } from '@/lib/supabase/server';
 import { brandFor } from '@/lib/branding';
 import { safeRows } from '@/lib/safe';
-import { appCopy } from '@/content/site';
+import { serverCopy } from '@/lib/serverLocale';
 import { appUiFor } from '@/content/appUi';
 import { currentLocale } from '@/lib/serverLocale';
 import { daysBetween, todayInZone } from '@/lib/clock';
@@ -17,7 +17,9 @@ import {
   type BookTask, type BookPayment,
 } from '@/components/app/ProductionBook';
 
-export const metadata = { title: appCopy.book.title };
+export async function generateMetadata() {
+  return { title: (await serverCopy()).book.title };
+}
 export const dynamic = 'force-dynamic';
 
 type GuestRow = { status: string; party_size: number; diet: string };

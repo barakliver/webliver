@@ -3,12 +3,14 @@ import { supabaseServer } from '@/lib/supabase/server';
 import { PageHead } from '@/components/app/PageHead';
 import { SiteEditor } from '@/components/app/SiteEditor';
 import { EDITABLE, EDITABLE_KEYS, defaultAt } from '@/content/editable';
-import { siteEditorCopy } from '@/content/site';
+import { serverCopy } from '@/lib/serverLocale';
 import { safeRows } from '@/lib/safe';
 import { IssueReporter } from '@/components/app/IssueReporter';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: siteEditorCopy.title };
+export async function generateMetadata() {
+  return { title: (await serverCopy()).siteEditor.title };
+}
 
 /**
  * The words on the public site.
@@ -19,6 +21,7 @@ export const metadata = { title: siteEditorCopy.title };
  * button can promise something specific.
  */
 export default async function SiteEditorPage() {
+  const ui = await serverCopy();
   const account = await requireLiveProducer();
   const sb = await supabaseServer();
 
@@ -38,11 +41,11 @@ export default async function SiteEditorPage() {
 
   return (
     <>
-      <PageHead title={siteEditorCopy.title} sub={siteEditorCopy.sub}
-        report={<IssueReporter userId={account.id} context={siteEditorCopy.title} />}
+      <PageHead title={ui.siteEditor.title} sub={ui.siteEditor.sub}
+        report={<IssueReporter userId={account.id} context={ui.siteEditor.title} />}
       />
       <SiteEditor values={values} overridden={overridden} />
-      <p className="mt-8 text-[13px] text-ink-mute">{siteEditorCopy.note}</p>
+      <p className="mt-8 text-[13px] text-ink-mute">{ui.siteEditor.note}</p>
     </>
   );
 }

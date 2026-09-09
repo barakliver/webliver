@@ -5,7 +5,7 @@ import { CalendarHeart, Wallet, ChevronLeft } from 'lucide-react';
 import { requireAccount, isLive } from '@/lib/auth';
 import { getOverview } from '@/lib/attention';
 import { Live } from '@/components/app/Live';
-import { appCopy } from '@/content/site';
+import { serverCopy } from '@/lib/serverLocale';
 import { PageHead } from '@/components/app/PageHead';
 import { AttentionList } from '@/components/app/Attention';
 import { Money, ils } from '@/components/Ltr';
@@ -16,11 +16,14 @@ import { loadAnniversaries } from '@/lib/workflow';
 import { BeginHere } from '@/components/app/BeginHere';
 import { IssueReporter } from '@/components/app/IssueReporter';
 
-export const metadata = { title: appCopy.nav.overview };
+export async function generateMetadata() {
+  return { title: (await serverCopy()).nav.overview };
+}
 
-const c = appCopy.overview2;
 
 export default async function OverviewPage() {
+  const ui = await serverCopy();
+  const c = (await serverCopy()).overview2;
   const account = await requireAccount();
   if (account.role === 'client') redirect('/app/portal');
   if (!isLive(account)) redirect('/app/pending');
@@ -43,13 +46,13 @@ export default async function OverviewPage() {
   return (
     <>
       <PageHead
-        title={`${appCopy.overview.greeting}${first ? ' ' + first : ''}`}
+        title={`${ui.overview.greeting}${first ? ' ' + first : ''}`}
         sub={
           items.length
             ? `${items.length} ${items.length === 1 ? 'דבר מחכה' : 'דברים מחכים'} להחלטה שלך`
             : c.clearSub
         }
-        report={<IssueReporter userId={account.id} context={appCopy.overview.greeting} />}
+        report={<IssueReporter userId={account.id} context={ui.overview.greeting} />}
       />
 
       <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr] lg:gap-8">

@@ -11,13 +11,14 @@ import { requireLiveProducer } from '@/lib/auth';
 import { supabaseServer } from '@/lib/supabase/server';
 import { loadTemplates } from '@/lib/workflow';
 import { loadMeetingTemplates } from '@/lib/meetingTemplateRows';
-import { meetingTemplatesFor } from '@/content/appUi';
 import { sopCopy, sopItemCount } from '@/content/sop';
 import { producerGuide, clientGuide, guideUi } from '@/content/guide';
-import { knowledgeCopy } from '@/content/site';
+import { serverCopy } from '@/lib/serverLocale';
 import { cn } from '@/lib/utils';
 
-export const metadata = { title: knowledgeCopy.title };
+export async function generateMetadata() {
+  return { title: (await serverCopy()).knowledge.title };
+}
 export const dynamic = 'force-dynamic';
 
 const SHELVES = ['book', 'playbook', 'templates'] as const;
@@ -57,7 +58,8 @@ export default async function KnowledgePage({
   const sb = await supabaseServer();
   const [templates, meetingTemplates] = await Promise.all([loadTemplates(sb), loadMeetingTemplates(sb)]);
 
-  const c = knowledgeCopy;
+  const ui = await serverCopy();
+  const c = ui.knowledge;
   const counts: Record<Shelf, number> = {
     book: producerGuide.chapters.reduce((n, ch) => n + ch.entries.length, 0),
     playbook: sopItemCount,
@@ -145,7 +147,7 @@ export default async function KnowledgePage({
       {shelf === 'templates' && (
         <div className="space-y-8">
           <WorkflowTemplates templates={templates} />
-          <div id="meetings"><MeetingTemplates c={meetingTemplatesFor('he')} own={meetingTemplates} /></div>
+          <div id="meetings"><MeetingTemplates c={ui.meetingTemplates} own={meetingTemplates} /></div>
         </div>
       )}
     </>

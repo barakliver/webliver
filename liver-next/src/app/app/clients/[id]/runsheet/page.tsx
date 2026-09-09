@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import { ArrowRight } from 'lucide-react';
 import { requireAccount } from '@/lib/auth';
 import { supabaseServer } from '@/lib/supabase/server';
-import { appCopy } from '@/content/site';
+import { serverCopy } from '@/lib/serverLocale';
 import { AUDIENCES } from '@/content/lists';
 import { PrintButton } from '@/components/app/PrintButton';
 import { RunSheet } from '@/components/app/RunSheet';
@@ -13,7 +13,9 @@ import { safeRows } from '@/lib/safe';
 import { hhmm, inDayOrder, spanOf, humanSpan, crossesMidnight } from '@/lib/runsheet';
 import { EVENT_ZONE } from '@/lib/clock';
 
-export const metadata = { title: appCopy.runsheet.title };
+export async function generateMetadata() {
+  return { title: (await serverCopy()).runsheet.title };
+}
 
 type Item = {
   id: string; track: string; at_time: string; title: string; note: string;
@@ -55,7 +57,7 @@ export default async function RunsheetPage({
   const { for: forRaw } = await searchParams;
 
   const role = AUDIENCES.find((a) => a.value === forRaw)?.value ?? null;
-  const c = appCopy.runsheet;
+  const c = (await serverCopy()).runsheet;
 
   const sb = await supabaseServer();
   const [{ data: client }, { data: rows }, brand] = await Promise.all([

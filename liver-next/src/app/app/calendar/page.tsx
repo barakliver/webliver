@@ -3,7 +3,7 @@ import { CalendarHeart, CheckCircle2, Wallet, CalendarPlus } from 'lucide-react'
 import { requireLiveProducer } from '@/lib/auth';
 import { supabaseServer } from '@/lib/supabase/server';
 import { getCalendar, type CalItem } from '@/lib/calendar';
-import { appCopy } from '@/content/site';
+import { serverCopy } from '@/lib/serverLocale';
 import { PageHead, Empty } from '@/components/app/PageHead';
 import { Live } from '@/components/app/Live';
 import { CalendarFeed } from '@/components/app/CalendarFeed';
@@ -14,9 +14,10 @@ import { IssueReporter } from '@/components/app/IssueReporter';
 import { Money, ils } from '@/components/Ltr';
 import { EVENT_ZONE } from '@/lib/clock';
 
-export const metadata = { title: appCopy.calendar.title };
+export async function generateMetadata() {
+  return { title: (await serverCopy()).calendar.title };
+}
 
-const c = appCopy.calendar;
 
 const monthFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE, month: 'long', year: 'numeric' });
 const dayFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE, weekday: 'long', day: 'numeric', month: 'long' });
@@ -29,6 +30,7 @@ const TONE: Record<CalItem['kind'], string> = {
 };
 
 export default async function CalendarPage() {
+  const c = (await serverCopy()).calendar;
   const account = await requireLiveProducer();
   const sb = await supabaseServer();
   const [all, tags] = await Promise.all([getCalendar(sb), loadLabels(sb, 'event_tag')]);

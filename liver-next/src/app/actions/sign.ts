@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { supabasePublic } from '@/lib/supabase/public';
-import { signCopy } from '@/content/site';
+import { serverCopy } from '@/lib/serverLocale';
 
 export type SignResult = { ok: boolean; error?: string };
 
@@ -22,16 +22,17 @@ export async function signByLink(_prev: SignResult | null, form: FormData): Prom
   const token = String(form.get('token') ?? '').trim();
   const name = String(form.get('name') ?? '').trim();
 
-  if (!token) return { ok: false, error: signCopy.failed };
-  if (name.length < 2) return { ok: false, error: signCopy.short };
+  const c = (await serverCopy()).sign;
+  if (!token) return { ok: false, error: c.failed };
+  if (name.length < 2) return { ok: false, error: c.short };
 
   const sb = supabasePublic();
   const { error } = await sb.rpc('sign_contract_by_token', { p_token: token, p_name: name });
 
   if (error) {
     console.error('[sign] refused', { code: error.code, message: error.message });
-    if (/בשם מלא/.test(error.message)) return { ok: false, error: signCopy.short };
-    return { ok: false, error: signCopy.failed };
+    if (/בשם מלא/.test(error.message)) return { ok: false, error: c.short };
+    return { ok: false, error: c.failed };
   }
 
   /* The same page, which now renders the signed state rather than the form. */
