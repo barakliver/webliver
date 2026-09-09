@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>בדיקת התחברות — Liver productions</title>
+<style>
+ :root{--ink:#0b1220;--soft:#3c4657;--mute:#6b7686;--line:rgba(11,18,32,.12);--azure:#2f6ba6;--haze:#f7fafd}
+ *{box-sizing:border-box}
+ body{margin:0;background:var(--haze);color:var(--ink);font:16px/1.6 -apple-system,Segoe UI,Arial,sans-serif;padding:28px 16px}
+ .wrap{max-width:520px;margin:0 auto}
+ .card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:26px;margin-bottom:16px}
+ h1{font-size:21px;margin:0 0 6px}
+ p.sub{margin:0 0 20px;color:var(--mute);font-size:14px}
+ label{display:block;font-size:13px;font-weight:600;color:var(--soft);margin:0 0 6px}
+ input{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;font-size:15px;font-family:inherit}
+ input[dir=ltr]{text-align:left}
+ .field+.field{margin-top:14px}
+ button{width:100%;margin-top:16px;padding:13px;border:0;border-radius:999px;background:var(--ink);color:#fff;
+        font-size:15px;font-weight:600;font-family:inherit;cursor:pointer}
+ button:disabled{opacity:.5;cursor:default}
+ button.ghost{background:transparent;color:var(--azure);border:1px solid var(--line);margin-top:8px}
+ .msg{margin-top:16px;padding:12px 14px;border-radius:12px;font-size:14px;white-space:pre-wrap;word-break:break-word}
+ .ok{background:#eaf7ee;color:#1d6b34;border:1px solid #bfe4ca}
+ .bad{background:#fdecec;color:#8f2323;border:1px solid #f2c2c2}
+ .info{background:#eef4fb;color:#2b4a6b;border:1px solid #cfe0f2}
+ code{background:#eef4fb;padding:2px 6px;border-radius:6px;font-size:13px}
+ .hide{display:none}
+ .step{font-size:12px;color:var(--mute);margin-bottom:4px}
+ table{width:100%;border-collapse:collapse;margin-top:12px;font-size:14px}
+ td{padding:7px 0;border-bottom:1px solid var(--line)}
+ td:first-child{color:var(--mute);width:42%}
+ td:last-child{font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+ <div class="card" id="cfgCard">
+  <div class="step">שלב 0</div>
+  <h1>מפתח הפרויקט</h1>
+  <p class="sub">
+   ב-Supabase: <b>Project Settings</b> ← <b>API Keys</b>, להעתיק את המפתח שמסומן
+   <code>anon</code> / <code>publishable</code> ולהדביק כאן. הוא נשמר בדפדפן הזה בלבד.
+  </p>
+  <div class="field">
+   <label for="url">כתובת הפרויקט</label>
+   <input id="url" dir="ltr" value="https://nyxmfmvmhfdqjntqlirm.supabase.co">
+  </div>
+  <div class="field">
+   <label for="key">anon key</label>
+   <input id="key" dir="ltr" placeholder="eyJhbGciOi... או sb_publishable_...">
+  </div>
+  <button id="saveCfg">שמירה והמשך</button>
+ </div>
+
+ <div class="card hide" id="askCard">
+  <div class="step">שלב 1</div>
+  <h1>שליחת קוד</h1>
+  <p class="sub">הקוד נשלח למייל דרך Resend. בשלב הזה הוא יגיע רק לכתובת שאיתה נפתח חשבון Resend.</p>
+  <div class="field">
+   <label for="email">כתובת אימייל</label>
+   <input id="email" dir="ltr" type="email" value="barakliver@gmail.com">
+  </div>
+  <button id="send">שליחת קוד</button>
+  <button class="ghost" id="backCfg">להחליף מפתח</button>
+  <div id="askMsg"></div>
+ </div>
+
+ <div class="card hide" id="codeCard">
+  <div class="step">שלב 2</div>
+  <h1>הזנת הקוד</h1>
+  <p class="sub">הספרות מהמייל, בדיוק כפי שהן.</p>
+  <div class="field">
+   <label for="code">הקוד</label>
+   <input id="code" dir="ltr" inputmode="numeric" maxlength="12" style="text-align:center;font-size:26px;letter-spacing:.4em">
+  </div>
+  <button id="verify">כניסה</button>
+  <button class="ghost" id="again">לשלוח קוד מחדש</button>
+  <div id="codeMsg"></div>
+ </div>
+
+ <div class="card hide" id="doneCard">
+  <div class="step">התוצאה</div>
+  <h1 id="doneTitle"></h1>
+  <div id="doneBody"></div>
+  <button class="ghost" id="reset">בדיקה נוספת</button>
+ </div>
+
+</div>
+<script>
+(function(){
+ var $ = function(id){ return document.getElementById(id); };
+ var show = function(id){ $(id).classList.remove('hide'); };
+ var hide = function(id){ $(id).classList.add('hide'); };
+ var say  = function(el, kind, text){ $(el).innerHTML = '<div class="msg '+kind+'">'+text+'</div>'; };
+ var clear= function(el){ $(el).innerHTML = ''; };
+
+ var CFG = { url:'', key:'' };
+ try{
+  var saved = JSON.parse(localStorage.getItem('liverAuthTest')||'{}');
+  if(saved.url) $('url').value = saved.url;
+  if(saved.key) $('key').value = saved.key;
+ }catch(e){}
+
+ function api(path, body, token){
+  var h = { 'Content-Type':'application/json', 'apikey': CFG.key };
+  if(token) h['Authorization'] = 'Bearer '+token;
+  return fetch(CFG.url.replace(/\/+$/,'') + path, {
+   method: body ? 'POST' : 'GET', headers: h,
+   body: body ? JSON.stringify(body) : undefined
+  }).then(function(r){
+   return r.text().then(function(t){
+    var d = null; try{ d = t ? JSON.parse(t) : null; }catch(e){ d = { raw:t }; }
+    return { ok:r.ok, status:r.status, data:d };
+   });
+  });
+ }
+
+ /* Supabase puts the human readable reason in different keys depending on
+    which layer refused, so try them in order rather than showing [object]. */
+ function reason(res){
+  var d = res.data || {};
+  return d.msg || d.error_description || d.message || d.error ||
+         ('שגיאה '+res.status);
+ }
+
+ $('saveCfg').onclick = function(){
+  CFG.url = $('url').value.trim();
+  CFG.key = $('key').value.trim();
+  if(!CFG.url || !CFG.key) return;
+  try{ localStorage.setItem('liverAuthTest', JSON.stringify(CFG)); }catch(e){}
+  hide('cfgCard'); show('askCard');
+ };
+ $('backCfg').onclick = function(){ hide('askCard'); show('cfgCard'); };
+
+ function sendCode(){
+  CFG.url = $('url').value.trim() || CFG.url;
+  var email = $('email').value.trim();
+  say('askMsg','info','שולח…');
+  $('send').disabled = true;
+  api('/auth/v1/otp', { email: email, create_user: true }).then(function(res){
+   $('send').disabled = false;
+   if(!res.ok){ say('askMsg','bad','לא נשלח: '+reason(res)); return; }
+   clear('askMsg');
+   hide('askCard'); show('codeCard');
+   $('code').focus();
+  }).catch(function(e){
+   $('send').disabled = false;
+   say('askMsg','bad','לא הצלחנו לפנות לשרת: '+e.message);
+  });
+ }
+ $('send').onclick = sendCode;
+ $('again').onclick = function(){ hide('codeCard'); show('askCard'); clear('codeMsg'); };
+
+ $('verify').onclick = function(){
+  var email = $('email').value.trim();
+  var token = $('code').value.replace(/\D/g,'');
+  /* Supabase's OTP length is a project setting and is not always six, so
+     accept whatever it issues rather than hard coding one length. */
+  if(token.length < 4){ say('codeMsg','bad','חסרות ספרות בקוד'); return; }
+  say('codeMsg','info','בודק…');
+  $('verify').disabled = true;
+
+  api('/auth/v1/verify', { email: email, token: token, type: 'email' }).then(function(res){
+   $('verify').disabled = false;
+   if(!res.ok){ say('codeMsg','bad','הקוד לא התקבל: '+reason(res)); return; }
+   var at = res.data && res.data.access_token;
+   clear('codeMsg');
+
+   /* The real proof is not that a session came back, but that the database
+      trigger put this address in the right role. */
+   return api('/rest/v1/profiles?select=email,role', null, at).then(function(p){
+    hide('codeCard'); show('doneCard');
+    var row = (p.data && p.data[0]) || null;
+    if(!row){
+     $('doneTitle').textContent = 'נכנסת, אבל הפרופיל לא נמצא';
+     $('doneBody').innerHTML = '<div class="msg bad">ההתחברות עבדה, אבל הטבלה profiles לא החזירה שורה. סימן שהסכמה לא רצה במלואה.</div>';
+     return;
+    }
+    var isRoot = row.role === 'super_admin';
+    $('doneTitle').textContent = isRoot ? 'הכל עובד ✅' : 'נכנסת, אבל לא כמנהל';
+    $('doneBody').innerHTML =
+     '<div class="msg '+(isRoot?'ok':'bad')+'">'+
+      (isRoot ? 'המייל נשלח, הקוד התקבל, והמערכת זיהתה אותך כבעל ההרשאות הראשי.'
+              : 'ההתחברות עבדה, אבל התפקיד שהתקבל הוא '+row.role+' ולא super_admin.')+
+     '</div>'+
+     '<table>'+
+      '<tr><td>אימייל</td><td dir="ltr">'+row.email+'</td></tr>'+
+      '<tr><td>תפקיד</td><td dir="ltr">'+row.role+'</td></tr>'+
+     '</table>';
+   });
+  }).catch(function(e){
+   $('verify').disabled = false;
+   say('codeMsg','bad','תקלה: '+e.message);
+  });
+ };
+
+ $('reset').onclick = function(){
+  hide('doneCard'); show('askCard');
+  $('code').value=''; clear('askMsg'); clear('codeMsg');
+ };
+})();
+</script>
+</body>
+</html>
