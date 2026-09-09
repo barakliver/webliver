@@ -2,9 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { Check, Copy, MessageCircle, Send } from 'lucide-react';
-import { appCopy } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
 
-const c = appCopy.brand;
 
 /**
  * The link a producer sends their couples.
@@ -17,6 +16,7 @@ const c = appCopy.brand;
  * address here, so it is right on any host the console is opened from.
  */
 export function ProducerLinkCard({ slug }: { slug: string | null }) {
+  const c = useCopy().brand;
   const [url, setUrl] = useState('');
   const [copied, setCopied] = useState(false);
 

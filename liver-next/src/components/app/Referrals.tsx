@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Copy, Check } from 'lucide-react';
-import { referralCopy as c } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
 import { Ltr } from '@/components/Ltr';
 
 export type ReferralRow = {
@@ -27,6 +27,7 @@ export type ReferralRow = {
 export function Referrals({ rows, siteUrl, mine }: {
   rows: ReferralRow[]; siteUrl: string; mine: string | null;
 }) {
+  const c = useCopy().referral;
   const [copied, setCopied] = useState(false);
   const link = mine ? `${siteUrl.replace(/\/+$/, '')}/login?ref=${mine}` : '';
 

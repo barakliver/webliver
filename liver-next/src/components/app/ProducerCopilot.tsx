@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { Check, Copy, MessageCircle, Sparkles } from 'lucide-react';
-import { copilotCopy as c } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
 import { ChatDock } from '@/components/ChatDock';
 import { cn } from '@/lib/utils';
 
@@ -25,6 +25,7 @@ import { cn } from '@/lib/utils';
  * was built from, and the fact that an answer here is a draft going somewhere.
  */
 export function ProducerCopilot({ brandName }: { brandName: string }) {
+  const c = useCopy().copilot;
   const pathname = usePathname();
   const [eventName, setEventName] = useState<string | null>(null);
   /* What the answer was built from. Shown rather than implied: an assistant

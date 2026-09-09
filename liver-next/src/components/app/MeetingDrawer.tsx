@@ -8,7 +8,8 @@ import { saveMeeting, deleteMeeting } from '@/app/actions/meetings';
 import { BUILT_IN_TEMPLATES, meetingTemplate, type Field, type MeetingTemplate } from '@/content/meetings';
 import { completeness } from '@/lib/ai/meeting';
 import { templateOf } from '@/lib/meetingTemplates';
-import { meetingCopy as c } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
+import type { MeetingCopy } from '@/content/appUi';
 import { EVENT_ZONE } from '@/lib/clock';
 
 export type MeetingLog = {
@@ -50,6 +51,7 @@ const keyOf = (t: MeetingTemplate) => (t.kind === 'custom' ? `custom:${t.id}` : 
 export function MeetingDrawer({ clientId, logs, own = [] }: {
   clientId: string; logs: MeetingLog[]; own?: MeetingTemplate[];
 }) {
+  const c = useCopy().meeting;
   const [editing, setEditing] = useState<string | null>(null);
   const [adding, setAdding] = useState<string | null>(null);
 
@@ -139,7 +141,7 @@ export function MeetingDrawer({ clientId, logs, own = [] }: {
                           {dateFmt.format(new Date(log.held_on))}
                         </span>
                       )}
-                      {t && <span>{answered(t, log.answers)}</span>}
+                      {t && <span>{answered(c, t, log.answers)}</span>}
                       {log.visible_to_client && <span className="text-accent">{c.shareWithCouple}</span>}
                     </p>
                   </button>
@@ -194,7 +196,7 @@ export function MeetingDrawer({ clientId, logs, own = [] }: {
   );
 }
 
-const answered = (t: MeetingTemplate, answers: Record<string, unknown>) => {
+const answered = (c: MeetingCopy, t: MeetingTemplate, answers: Record<string, unknown>) => {
   const { filled, total } = completeness(t, answers);
   return fill(c.answered, { filled, total });
 };
@@ -202,6 +204,7 @@ const answered = (t: MeetingTemplate, answers: Record<string, unknown>) => {
 function Form({ clientId, template, log, onDone }: {
   clientId: string; template: MeetingTemplate; log?: MeetingLog; onDone: () => void;
 }) {
+  const c = useCopy().meeting;
   const [answers, setAnswers] = useState<Record<string, unknown>>(log?.answers ?? {});
   const [heldOn, setHeldOn] = useState(log?.held_on ?? '');
   const [shared, setShared] = useState(log?.visible_to_client ?? false);

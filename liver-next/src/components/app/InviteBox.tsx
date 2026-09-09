@@ -5,13 +5,13 @@ import { MAX_CLIENT_EMAILS } from '@/content/lists';
 import { useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { inviteToClient, revokeInvite, type ActionResult } from '@/app/actions/clients';
-import { appCopy } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
 
 export type Invite = { id: string; email: string; profile_id: string | null };
 
 function Submit({ disabled }: { disabled: boolean }) {
   const { pending } = useFormStatus();
-  const c = appCopy.clientPage;
+  const c = useCopy().clientPage;
   return (
     <button type="submit" className="btn-primary whitespace-nowrap" disabled={pending || disabled}>
       {pending ? c.inviting : c.invite}
@@ -21,7 +21,7 @@ function Submit({ disabled }: { disabled: boolean }) {
 
 export function InviteBox({ clientId, invites }: { clientId: string; invites: Invite[] }) {
   const [state, action] = useActionState<ActionResult | null, FormData>(inviteToClient, null);
-  const c = appCopy.clientPage;
+  const c = useCopy().clientPage;
   const full = invites.length >= MAX_CLIENT_EMAILS;
 
   return (

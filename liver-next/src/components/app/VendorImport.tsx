@@ -4,14 +4,15 @@ import { useMemo, useRef, useState } from 'react';
 import { Check, Download, FileSpreadsheet, Upload, X } from 'lucide-react';
 import { importVendors, type ImportRow, type ImportResult } from '@/app/actions/vendorImport';
 import { VENDOR_CATEGORIES } from '@/content/production';
+import { useCopy } from '@/components/app/CopyProvider';
 import { vendorCopy } from '@/content/site';
 import { Ltr } from '@/components/Ltr';
 import { cn } from '@/lib/utils';
 
-const c = vendorCopy.import;
 
-type Field = keyof typeof c.columns;
-const FIELDS = Object.keys(c.columns) as Field[];
+/* The keys, not the words: the same nine in both languages. */
+type Field = keyof typeof vendorCopy.import.columns;
+const FIELDS = Object.keys(vendorCopy.import.columns) as Field[];
 
 /* What a column header may be called, in the producer's sheet or in ours.
    Folded to lowercase and stripped of punctuation before comparing, so
@@ -53,6 +54,8 @@ type Parsed = { headers: string[]; rows: string[][] };
  * headers it ships with are exactly the headers the guesser recognises.
  */
 export function VendorImport({ existingNames, onDone }: { existingNames: string[]; onDone?: () => void }) {
+  const ui = useCopy();
+  const c = useCopy().vendor.import;
   const input = useRef<HTMLInputElement>(null);
   const [parsed, setParsed] = useState<Parsed | null>(null);
   const [map, setMap] = useState<Record<number, Field | ''>>({});
@@ -177,7 +180,7 @@ export function VendorImport({ existingNames, onDone }: { existingNames: string[
             {c.added} <Ltr>{result.added}</Ltr> · {c.updated} <Ltr>{result.updated}</Ltr> · {c.skipped} <Ltr>{result.skipped}</Ltr>
           </p>
           {onDone && (
-            <button type="button" onClick={onDone} className="btn-quiet mt-2 px-0 text-[13.5px]">{vendorCopy.close}</button>
+            <button type="button" onClick={onDone} className="btn-quiet mt-2 px-0 text-[13.5px]">{ui.vendor.close}</button>
           )}
         </div>
       )}

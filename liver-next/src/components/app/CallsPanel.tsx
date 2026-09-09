@@ -4,7 +4,7 @@ import { dateInZone, todayInZone } from '@/lib/clock';
 
 import { completeCall } from '@/app/actions/leads';
 import { formatDate } from '@/lib/dates';
-import { leadsCopy } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
 import type { Call } from './LeadRow';
 import { EVENT_ZONE } from '@/lib/clock';
 
@@ -22,7 +22,7 @@ function dueState(d: string | null): 'late' | 'today' | 'ahead' {
 
 export function CallsPanel({ calls, leads }: { calls: Call[]; leads: { id: string; name: string }[] }) {
   const open = calls.filter((c) => !c.done);
-  const c = leadsCopy;
+  const c = useCopy().lead;
   if (open.length === 0) return null;
 
   const nameOf = (id: string | null) => leads.find((l) => l.id === id)?.name ?? '';

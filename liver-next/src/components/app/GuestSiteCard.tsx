@@ -4,11 +4,11 @@ import { useActionState, useEffect, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { Check, Copy, ExternalLink, Globe, MessageCircle } from 'lucide-react';
 import { setGuestSite, type ActionResult } from '@/app/actions/clients';
-import { appCopy } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
 
-const c = appCopy.guestSite;
 
 function Save() {
+  const c = useCopy().guestSite;
   const { pending } = useFormStatus();
   return (
     <button type="submit" className="btn-primary" disabled={pending}>
@@ -29,6 +29,7 @@ function Save() {
 export function GuestSiteCard({ clientId, token, on, note }: {
   clientId: string; token: string | null; on: boolean; note: string;
 }) {
+  const c = useCopy().guestSite;
   const [state, action] = useActionState<ActionResult | null, FormData>(setGuestSite, null);
   const [enabled, setEnabled] = useState(on);
   const [copied, setCopied] = useState(false);

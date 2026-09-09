@@ -2,12 +2,11 @@
 
 import { useState, useTransition } from 'react';
 import { Check } from 'lucide-react';
-import { appCopy } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
 import { setFeatureFlag } from '@/app/actions/admin';
 import type { Flag } from '@/lib/directory';
 import { cn } from '@/lib/utils';
 
-const c = appCopy.admin.flags;
 
 /**
  * Which modules each kind of couple may open.
@@ -24,6 +23,7 @@ const c = appCopy.admin.flags;
  * switched on is worse than no screen.
  */
 export function FeatureFlags({ flags }: { flags: Flag[] }) {
+  const c = useCopy().admin.flags;
   if (flags.length === 0) return null;
   return (
     <section>
@@ -41,6 +41,7 @@ export function FeatureFlags({ flags }: { flags: Flag[] }) {
 }
 
 function Row({ flag }: { flag: Flag }) {
+  const c = useCopy().admin.flags;
   /* Held locally so the switch moves under the finger, then reconciled by the
      revalidate the action triggers. Waiting for a round trip to show a toggle
      move is how somebody taps it three times. */
@@ -90,6 +91,7 @@ function Row({ flag }: { flag: Flag }) {
 /** A switch that reads without colour: the word is there either way, and the
  *  tick is a shape rather than a hue. */
 function Toggle({ label, on, onClick }: { label: string; on: boolean; onClick: () => void }) {
+  const c = useCopy().admin.flags;
   return (
     <button
       type="button"

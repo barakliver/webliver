@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
-import { appCopy } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
 
 /**
  * A panel that rises from the bottom of the screen.
@@ -34,6 +34,7 @@ export function Sheet({
   sub?: string;
   children: React.ReactNode;
 }) {
+  const ui = useCopy();
   const panel = useRef<HTMLDivElement>(null);
   const opener = useRef<Element | null>(null);
 
@@ -72,7 +73,7 @@ export function Sheet({
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
       <button
         type="button"
-        aria-label={appCopy.sheets.close}
+        aria-label={ui.sheets.close}
         onClick={onClose}
         className="absolute inset-0 h-full w-full cursor-default bg-ink/30"
       />
@@ -102,7 +103,7 @@ export function Sheet({
           <button
             type="button"
             onClick={onClose}
-            aria-label={appCopy.sheets.close}
+            aria-label={ui.sheets.close}
             className="grid h-11 w-11 shrink-0 place-items-center rounded-full text-ink-mute
                        transition-colors duration-300 hover:text-ink"
           >

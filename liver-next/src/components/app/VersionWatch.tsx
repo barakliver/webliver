@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { RefreshCw } from 'lucide-react';
-import { updateCopy as c } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
 
 /* What this copy of the app was built from. Baked in at build time, so it
    never changes while the app is running — which is the entire point. */
@@ -33,6 +33,7 @@ const EVERY = 30 * 60 * 1000;
  * for a new copy of itself at the same time.
  */
 export function VersionWatch() {
+  const c = useCopy().update;
   const [stale, setStale] = useState(false);
 
   /* True while somebody is actually working in a field. A reload here is the

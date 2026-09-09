@@ -8,7 +8,7 @@ import { VendorImport } from './VendorImport';
 import { Ltr } from '@/components/Ltr';
 import { addVendor, updateVendor, setVendorArchived, type VendorResult } from '@/app/actions/vendors';
 import { VENDOR_CATEGORIES, categoryLabel } from '@/content/production';
-import { vendorCopy as c } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
 
 export type Vendor = {
   id: string; name: string; category: string; contact_name: string;
@@ -19,6 +19,7 @@ export type Vendor = {
 const shekels = new Intl.NumberFormat('he-IL', { style: 'currency', currency: 'ILS', maximumFractionDigits: 0 });
 
 function Save() {
+  const c = useCopy().vendor;
   const { pending } = useFormStatus();
   return <button type="submit" className="btn-primary" disabled={pending}>{pending ? c.saving : c.save}</button>;
 }
@@ -32,6 +33,7 @@ function Alert({ text }: { text: string }) {
 }
 
 function Fields({ vendor }: { vendor?: Vendor }) {
+  const c = useCopy().vendor;
   return (
     <>
       <div className="grid gap-3 sm:grid-cols-[1fr_180px_1fr]">
@@ -83,6 +85,7 @@ function Fields({ vendor }: { vendor?: Vendor }) {
 }
 
 function Row({ vendor }: { vendor: Vendor }) {
+  const c = useCopy().vendor;
   const [editing, setEditing] = useState(false);
   const [state, action] = useActionState<VendorResult | null, FormData>(
     async (prev, form) => {
@@ -169,6 +172,7 @@ function Row({ vendor }: { vendor: Vendor }) {
  * an event in a single click with the number already filled in.
  */
 export function VendorDirectory({ vendors }: { vendors: Vendor[] }) {
+  const c = useCopy().vendor;
   const [adding, setAdding] = useState(false);
   const [importing, setImporting] = useState(false);
   const [query, setQuery] = useState('');

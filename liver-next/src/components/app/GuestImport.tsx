@@ -5,11 +5,11 @@ import { useFormStatus } from 'react-dom';
 import { Upload, Download, FileSpreadsheet } from 'lucide-react';
 import { importGuests } from '@/app/actions/guests';
 import type { ImportReport } from '@/lib/guestImport';
-import { appCopy } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
 
-const c = appCopy.guestImport;
 
 function Submit() {
+  const c = useCopy().guestImport;
   const { pending } = useFormStatus();
   return (
     <button type="submit" disabled={pending} className="btn-primary inline-flex items-center gap-2 disabled:opacity-60">
@@ -23,6 +23,7 @@ function Submit() {
  *  back out for the caterer. Both directions matter: a guest list that can only
  *  be typed in is a guest list nobody moves to. */
 export function GuestImport({ clientId }: { clientId: string }) {
+  const c = useCopy().guestImport;
   const [report, action] = useActionState<ImportReport | null, FormData>(importGuests, null);
   const [open, setOpen] = useState(false);
 

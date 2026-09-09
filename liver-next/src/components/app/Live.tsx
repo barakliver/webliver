@@ -3,7 +3,7 @@
 import { CloudOff } from 'lucide-react';
 import { useLive } from '@/lib/realtime';
 import type { LiveSource } from '@/lib/liveSources';
-import { appCopy } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
 
 /** Drops into any server-rendered page to make it live. Renders nothing while
  *  the connection is healthy — the whole point is that staying in step is not
@@ -14,6 +14,7 @@ import { appCopy } from '@/content/site';
  *  briefly stale and a producer acting on a task somebody else finished ten
  *  minutes ago. */
 export function Live({ sources }: { sources: LiveSource[] }) {
+  const ui = useCopy();
   const status = useLive(sources);
   if (status !== 'offline') return null;
 
@@ -24,7 +25,7 @@ export function Live({ sources }: { sources: LiveSource[] }) {
     >
       <span className="inline-flex items-center gap-2 rounded-xl2 border border-line-strong bg-surface-100 px-3.5 py-2 text-[13px] text-ink-soft">
         <CloudOff size={15} aria-hidden strokeWidth={1.5} />
-        {appCopy.live.offline}
+        {ui.live.offline}
       </span>
     </div>
   );

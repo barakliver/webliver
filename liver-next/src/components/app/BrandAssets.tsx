@@ -3,11 +3,10 @@
 import { useActionState, useRef, useState } from 'react';
 import { Check, ImageIcon, Smartphone, Sparkles, Trash2, Upload } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { appCopy } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
 import { uploadBrandAsset, removeBrandAsset, type BrandAsset, type BrandResult } from '@/app/actions/brand';
 import { cn } from '@/lib/utils';
 
-const c = appCopy.brand.assets;
 
 export type BrandAssetUrls = { logo: string | null; icon: string | null; cover: string | null };
 
@@ -36,6 +35,7 @@ const ICONS: Record<BrandAsset, LucideIcon> = { logo: Sparkles, icon: Smartphone
  * to press after the first is the step people forget.
  */
 export function BrandAssets({ urls }: { urls: BrandAssetUrls }) {
+  const c = useCopy().brand.assets;
   return (
     <section className="card">
       <h2 className="font-display text-[17px] font-semibold text-ink">{c.title}</h2>
@@ -50,6 +50,7 @@ export function BrandAssets({ urls }: { urls: BrandAssetUrls }) {
 }
 
 function Asset({ kind, url }: { kind: BrandAsset; url: string | null }) {
+  const c = useCopy().brand.assets;
   const rule = c[kind];
   const limit = LIMITS[kind];
   const Icon = ICONS[kind];

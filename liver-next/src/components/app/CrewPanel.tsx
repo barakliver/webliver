@@ -5,7 +5,7 @@ import { useFormStatus } from 'react-dom';
 import { Lock, Pencil, Plus, Trash2, Users } from 'lucide-react';
 import { addCrew, updateCrew, removeCrew, type CrewResult } from '@/app/actions/crew';
 import { CREW_ROLES } from '@/content/production';
-import { crewCopy as c } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
 import { hhmm, inDayOrder } from '@/lib/runsheet';
 import { Money } from '@/components/Ltr';
 
@@ -16,6 +16,7 @@ export type CrewMember = {
 
 
 function Save() {
+  const c = useCopy().crew;
   const { pending } = useFormStatus();
   return (
     <button type="submit" className="btn-primary" disabled={pending}>
@@ -33,6 +34,7 @@ function Alert({ text }: { text: string }) {
 }
 
 function Fields({ member }: { member?: CrewMember }) {
+  const c = useCopy().crew;
   return (
     <>
       <div className="grid gap-3 sm:grid-cols-[1fr_1fr_120px]">
@@ -81,6 +83,7 @@ function Fields({ member }: { member?: CrewMember }) {
 }
 
 function Row({ member, clientId }: { member: CrewMember; clientId: string }) {
+  const c = useCopy().crew;
   const [editing, setEditing] = useState(false);
   const [state, action] = useActionState<CrewResult | null, FormData>(
     async (prev, form) => {
@@ -164,6 +167,7 @@ function Row({ member, clientId }: { member: CrewMember; clientId: string }) {
  * remember the policy to trust the screen.
  */
 export function CrewPanel({ clientId, crew }: { clientId: string; crew: CrewMember[] }) {
+  const c = useCopy().crew;
   const [adding, setAdding] = useState(false);
   const [state, action] = useActionState<CrewResult | null, FormData>(
     async (prev, form) => {

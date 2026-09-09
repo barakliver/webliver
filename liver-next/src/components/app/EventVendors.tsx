@@ -8,7 +8,7 @@ import {
   type VendorResult,
 } from '@/app/actions/vendors';
 import { VENDOR_CATEGORIES, VENDOR_STATES, categoryLabel } from '@/content/production';
-import { vendorCopy as c } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
 import { hhmm } from '@/lib/runsheet';
 
 export type EventVendor = {
@@ -19,6 +19,7 @@ export type EventVendor = {
 export type DirectoryEntry = { id: string; name: string; category: string; phone: string };
 
 function Save() {
+  const c = useCopy().vendor;
   const { pending } = useFormStatus();
   return <button type="submit" className="btn-primary" disabled={pending}>{pending ? c.saving : c.save}</button>;
 }
@@ -45,6 +46,7 @@ const statusTone: Record<string, string> = {
 export function EventVendors({ clientId, vendors, directory }: {
   clientId: string; vendors: EventVendor[]; directory: DirectoryEntry[];
 }) {
+  const c = useCopy().vendor;
   const [adding, setAdding] = useState(false);
   const [picking, setPicking] = useState(false);
   const [state, action] = useActionState<VendorResult | null, FormData>(

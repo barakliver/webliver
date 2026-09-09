@@ -2846,6 +2846,8 @@ export const archiveCopy = {
     month: 'בעוד חודש',
     week: 'בעוד שבוע',
     day: 'מחר',
+    today: 'היום',
+    passed: 'עבר',
   },
   greet: 'שליחת ברכה',
 } as const;

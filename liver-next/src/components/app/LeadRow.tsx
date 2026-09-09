@@ -5,7 +5,9 @@ import { formatDate } from '@/lib/dates';
 import { MapPin } from 'lucide-react';
 import { useFormStatus } from 'react-dom';
 import { setLeadStatus, setLeadNote, bookCall, convertLead, type LeadActionResult } from '@/app/actions/leads';
-import { leadsCopy, appCopy, EVENT_KINDS } from '@/content/site';
+import { EVENT_KINDS, type leadsCopy } from '@/content/site';
+import type { LeadCopy } from '@/content/appUi';
+import { useCopy } from '@/components/app/CopyProvider';
 import { EVENT_ZONE } from '@/lib/clock';
 
 export type Lead = {
@@ -24,21 +26,23 @@ const show = (d: string | null) => formatDate(dateFmt, d, '·');
 /** A channel nobody has named yet is shown as it was stored rather than
  *  hidden. A new source that starts working is then visible on day one,
  *  instead of on the day somebody remembers to add a label for it. */
-const sourceLabel = (s: string) => leadsCopy.sources[s] ?? s.replace(/_/g, ' ');
+const sourceLabel = (c: LeadCopy, s: string) => c.sources[s] ?? s.replace(/_/g, ' ');
 
 function Book() {
+  const c = useCopy().lead;
   const { pending } = useFormStatus();
   return (
     <button type="submit" className="btn-ghost whitespace-nowrap px-4 py-2 text-[13.5px]" disabled={pending}>
-      {pending ? leadsCopy.callBooking : leadsCopy.callBook}
+      {pending ? c.callBooking : c.callBook}
     </button>
   );
 }
 
 export function LeadRow({ lead, calls }: { lead: Lead; calls: Call[] }) {
+  const ui = useCopy();
   const [open, setOpen] = useState(false);
   const [state, action] = useActionState<LeadActionResult | null, FormData>(bookCall, null);
-  const c = leadsCopy;
+  const c = useCopy().lead;
   const kind = EVENT_KINDS.find((k) => k.value === lead.kind)?.label ?? lead.kind;
   const openCalls = calls.filter((x) => !x.done);
 
@@ -63,7 +67,7 @@ export function LeadRow({ lead, calls }: { lead: Lead; calls: Call[] }) {
             {kind}
             {lead.event_date ? ` · ${show(lead.event_date)}` : ''}
             {lead.guest_count ? ` · ${lead.guest_count}` : ''}
-            {lead.source ? ` · ${sourceLabel(lead.source)}` : ''}
+            {lead.source ? ` · ${sourceLabel(c, lead.source)}` : ''}
           </p>
           {/* Where, on its own line and in ink: it is the first thing the
               producer looks for, and it decides whether to pick up the phone. */}
@@ -87,7 +91,7 @@ export function LeadRow({ lead, calls }: { lead: Lead; calls: Call[] }) {
             name="status" defaultValue={lead.status}
             onChange={(e) => e.currentTarget.form?.requestSubmit()}
             className="field w-[140px] py-1.5 text-[13.5px]"
-            aria-label={appCopy.leads.cols.status}
+            aria-label={ui.leads.cols.status}
           >
             {Object.entries(c.statuses).map(([v, label]) => <option key={v} value={v}>{label}</option>)}
           </select>

@@ -4,7 +4,7 @@ import { count as plural, fill } from '@/lib/copyText';
 import { useActionState, useEffect, useState } from 'react';
 import { useScreenAwake } from '@/lib/awake';
 import { Check, Loader2, Megaphone, MessageCircle, Phone, Sun, Undo2, UserCheck, X } from 'lucide-react';
-import { appCopy } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
 import { markDayItem, type DayResult } from '@/app/actions/day';
 import { markArrival, type ArrivalResult } from '@/app/actions/arrivals';
 import { hhmm, humanSpan } from '@/lib/runsheet';
@@ -16,7 +16,6 @@ import { normalizePhone, displayPhone } from '@/lib/phone';
 import { cn } from '@/lib/utils';
 import { EVENT_ZONE } from '@/lib/clock';
 
-const c = appCopy.dayOf;
 
 const timeOf = (iso: string) =>
   new Date(iso).toLocaleTimeString('he-IL', { timeZone: EVENT_ZONE, hour: '2-digit', minute: '2-digit' });
@@ -44,6 +43,7 @@ export function DayOfCockpit({
   crew: Caller[];
   vendors: Caller[];
 }) {
+  const c = useCopy().dayOf;
   const [now, setNow] = useState<Date | null>(null);
   /* Declared after `live` is known, below. */
 
@@ -181,6 +181,7 @@ function Headline({ label, placed, fallback, tone }: {
  *  screen where somebody walks away on the strength of it. And a write that
  *  failed says so and stays saying so, until it is tried again. */
 function Row({ p, clientId }: { p: Placed; clientId: string }) {
+  const c = useCopy().dayOf;
   const done = p.state === 'done';
   const late = p.state === 'late';
   const isNow = p.state === 'now';
@@ -245,6 +246,7 @@ function Row({ p, clientId }: { p: Placed; clientId: string }) {
 }
 
 function People({ sheet, clientId }: { sheet: Caller[]; clientId: string }) {
+  const c = useCopy().dayOf;
   if (sheet.length === 0) {
     return (
       <section className="card">
@@ -272,6 +274,7 @@ function People({ sheet, clientId }: { sheet: Caller[]; clientId: string }) {
  *  now holds state — whether this person's write is in flight, and whether it
  *  failed — and one row's failure belongs to that row and to nobody else. */
 function PersonRow({ person, clientId }: { person: Caller; clientId: string }) {
+  const c = useCopy().dayOf;
   const e164 = normalizePhone(person.phone);
   const here = !!person.arrived_at;
 
@@ -368,6 +371,7 @@ function PersonRow({ person, clientId }: { person: Caller; clientId: string }) {
  * forty lines and an alert before each one is an alert before none.
  */
 function Countdown({ placed, onDismiss }: { placed: Placed; onDismiss: () => void }) {
+  const c = useCopy().dayOf;
   const mins = placed.inMinutes ?? 0;
   return (
     <div
@@ -407,6 +411,7 @@ function Countdown({ placed, onDismiss }: { placed: Placed; onDismiss: () => voi
  * different typo in each.
  */
 function Broadcast({ sheet, late }: { sheet: Caller[]; late: Caller[] }) {
+  const c = useCopy().dayOf;
   const [open, setOpen] = useState(false);
   const [text, setText] = useState('');
   const [who, setWho] = useState<'everyone' | 'here' | 'missing'>('everyone');

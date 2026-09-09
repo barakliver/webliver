@@ -8,12 +8,13 @@ import {
   applyTaskTemplate, applyBudgetTemplate, applySupplierTemplate, type TemplateResult,
 } from '@/app/actions/template';
 import { TASK_TEMPLATE, BUDGET_LINES, SUPPLIER_ROLES } from '@/content/eventFile';
-import { templateCopy as c } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
 import { categoryLabel } from '@/content/production';
 
 type Tab = 'tasks' | 'budget' | 'suppliers';
 
 function Apply({ count }: { count: number }) {
+  const c = useCopy().template;
   const { pending } = useFormStatus();
   return (
     <button type="submit" className="btn-primary" disabled={pending || count === 0}>
@@ -23,6 +24,7 @@ function Apply({ count }: { count: number }) {
 }
 
 function Result({ state }: { state: TemplateResult | null }) {
+  const c = useCopy().template;
   if (!state) return null;
   if (!state.ok) {
     return (
@@ -53,6 +55,7 @@ function Result({ state }: { state: TemplateResult | null }) {
  * reading the cash envelope list.
  */
 export function EventTemplate({ clientId }: { clientId: string }) {
+  const c = useCopy().template;
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState<Tab>('tasks');
 

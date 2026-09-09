@@ -5,7 +5,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { ChevronDown, MapPin, Users } from 'lucide-react';
 import type { Shelf, ArchivedEvent } from '@/lib/archive';
-import { archiveCopy as c } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
 import { Money, Ltr } from '@/components/Ltr';
 import { EVENT_ZONE } from '@/lib/clock';
 
@@ -25,6 +25,7 @@ const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE,
  * is the entire reason somebody came.
  */
 export function ArchiveShelf({ shelf }: { shelf: Shelf[] }) {
+  const c = useCopy().archive;
   const [open, setOpen] = useState<Set<string>>(
     () => new Set(shelf.length ? [String(shelf[0].year ?? 'none')] : [])
   );
@@ -74,6 +75,7 @@ export function ArchiveShelf({ shelf }: { shelf: Shelf[] }) {
 }
 
 function Row({ event: e }: { event: ArchivedEvent }) {
+  const c = useCopy().archive;
   const [open, setOpen] = useState(false);
   const budget = Number(e.money?.budget) || 0;
   const paid = Number(e.money?.paid) || 0;

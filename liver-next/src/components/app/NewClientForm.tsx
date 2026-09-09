@@ -3,13 +3,15 @@
 import { useActionState, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { createClient, type ActionResult } from '@/app/actions/clients';
-import { appCopy, EVENT_KINDS, MIN_EVENT_DATE, MAX_GUESTS } from '@/content/site';
+import { EVENT_KINDS, MIN_EVENT_DATE, MAX_GUESTS } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
 
 function Submit() {
+  const ui = useCopy();
   const { pending } = useFormStatus();
   return (
     <button type="submit" className="btn-primary" disabled={pending}>
-      {pending ? appCopy.newClient.saving : appCopy.newClient.submit}
+      {pending ? ui.newClient.saving : ui.newClient.submit}
     </button>
   );
 }
@@ -17,7 +19,7 @@ function Submit() {
 export function NewClientForm() {
   const [open, setOpen] = useState(false);
   const [state, action] = useActionState<ActionResult | null, FormData>(createClient, null);
-  const c = appCopy.newClient;
+  const c = useCopy().newClient;
 
   if (!open) {
     return (

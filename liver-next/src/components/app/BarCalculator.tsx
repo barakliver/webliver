@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { Martini, Printer } from 'lucide-react';
 import { planBar, shoppingList, DEFAULT_PRICES, type BarStyle, type Season, type Prices } from '@/lib/bar';
-import { barCopy as c } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
 import { Money } from '@/components/Ltr';
 
 
@@ -83,6 +83,7 @@ function Number_({ label, hint, value, onChange, min, max, step = 1, suffix }: {
 export function BarCalculator({ guestEstimate, confirmedGuests }: {
   guestEstimate: number | null; confirmedGuests: number;
 }) {
+  const c = useCopy().bar;
   /* Confirmed seats beat an estimate the moment there are any, because by then
      the estimate is a memory of what somebody guessed in January. */
   const [guests, setGuests] = useState(confirmedGuests || guestEstimate || 150);

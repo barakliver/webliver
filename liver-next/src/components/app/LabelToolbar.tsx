@@ -4,7 +4,7 @@ import { useActionState, useState } from 'react';
 import { Check, Palette, Plus, Trash2, X } from 'lucide-react';
 import { addLabel, updateLabel, removeLabel, type LabelResult, type LabelKind, type ProducerLabel } from '@/app/actions/labels';
 import { PALETTE } from '@/content/palette';
-import { labelCopy as c } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
 import { cn } from '@/lib/utils';
 
 /**
@@ -27,6 +27,7 @@ export function LabelToolbar({ kind, labels, builtIn = [] }: {
    *  second "וואטסאפ" beside the one that already exists. */
   builtIn?: string[];
 }) {
+  const c = useCopy().label;
   const [adding, setAdding] = useState(false);
   const [color, setColor] = useState(PALETTE[0].hex);
   const [editing, setEditing] = useState<string | null>(null);
@@ -128,6 +129,7 @@ export function LabelToolbar({ kind, labels, builtIn = [] }: {
 }
 
 function EditRow({ label, onDone }: { label: ProducerLabel; onDone: () => void }) {
+  const c = useCopy().label;
   const [color, setColor] = useState(label.color);
   const [state, action, pending] = useActionState<LabelResult | null, FormData>(
     async (prev, form) => {
@@ -161,6 +163,7 @@ function EditRow({ label, onDone }: { label: ProducerLabel; onDone: () => void }
 }
 
 function Swatches({ value, onPick }: { value: string; onPick: (hex: string) => void }) {
+  const c = useCopy().label;
   return (
     <div className="mt-3">
       <p className="label">{c.color}</p>

@@ -3,7 +3,8 @@
 import { CalendarHeart, Mail, X } from 'lucide-react';
 import Link from 'next/link';
 import { cancelAnniversary } from '@/app/actions/archive';
-import { archiveCopy as c } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
+import type { ArchiveCopy } from '@/content/appUi';
 import { Ltr } from '@/components/Ltr';
 import { EVENT_ZONE } from '@/lib/clock';
 
@@ -34,6 +35,7 @@ const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE, day: 'n
  * read is worse than nothing.
  */
 export function Anniversaries({ items }: { items: Anniversary[] }) {
+  const c = useCopy().archive;
   if (items.length === 0) return null;
 
   return (
@@ -53,7 +55,7 @@ export function Anniversaries({ items }: { items: Anniversary[] }) {
                 {/* The date is the wedding's, not the reminder's. Without
                     saying so, "tomorrow · 2 September 2025" reads as a wedding
                     happening tomorrow in a year that has passed. */}
-                {when(a)} · {c.yearSince}{dateFmt.format(new Date(a.eventDate))}
+                {when(a, c)} · {c.yearSince}{dateFmt.format(new Date(a.eventDate))}
               </p>
             </Link>
 
@@ -90,9 +92,9 @@ export function Anniversaries({ items }: { items: Anniversary[] }) {
 /** How far off, said the way a person says it. A day that has already passed
  *  is stated plainly rather than hidden: it is the one state that means the
  *  nightly sweep has not run, and hiding it would hide the fault. */
-function when(a: Anniversary): string {
-  if (a.daysAway < 0) return 'עבר';
-  if (a.daysAway === 0) return 'היום';
+function when(a: Anniversary, c: ArchiveCopy): string {
+  if (a.daysAway < 0) return c.anniversaryIn.passed;
+  if (a.daysAway === 0) return c.anniversaryIn.today;
   if (a.daysAway === 1) return c.anniversaryIn.day;
   if (a.daysAway <= 8) return c.anniversaryIn.week;
   return c.anniversaryIn.month;

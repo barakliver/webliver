@@ -4,9 +4,10 @@ import { useActionState, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { Link2, Copy, Check, MessageCircle, Ban } from 'lucide-react';
 import { issueSignLink, revokeSignLink, type ContractResult } from '@/app/actions/contracts';
-import { linkCopy as c } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
 
 function Make() {
+  const c = useCopy().link;
   const { pending } = useFormStatus();
   return (
     <button type="submit" disabled={pending} className="btn-ghost inline-flex items-center gap-1.5 text-[13.5px] disabled:opacity-60">
@@ -30,6 +31,7 @@ function Make() {
 export function SignLink({ contractId, clientId, party }: {
   contractId: string; clientId: string; party: string;
 }) {
+  const c = useCopy().link;
   const [state, action] = useActionState<ContractResult | null, FormData>(issueSignLink, null);
   const [copied, setCopied] = useState(false);
   const url = state?.ok ? state.id : undefined;

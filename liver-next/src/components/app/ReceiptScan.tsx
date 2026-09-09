@@ -2,10 +2,9 @@
 
 import { useRef, useState } from 'react';
 import { Camera, Loader2 } from 'lucide-react';
-import { appCopy } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
 import type { Receipt } from '@/lib/ai/receipt';
 
-const c = appCopy.money;
 
 /* Long enough that the whole receipt is legible, small enough that a phone on
    a venue's wifi sends it in a second. A 12 megapixel photograph of a piece of
@@ -69,6 +68,7 @@ async function shrink(file: File): Promise<{ media_type: string; data: string }>
  * The photograph is not stored anywhere. It goes up, it is read, it is gone.
  */
 export function ReceiptScan({ clientId, formId }: { clientId: string; formId: string }) {
+  const c = useCopy().money;
   const fileRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [note, setNote] = useState<{ text: string; bad: boolean } | null>(null);

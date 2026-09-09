@@ -4,7 +4,7 @@ import { count as plural, fill } from '@/lib/copyText';
 import { useState } from 'react';
 import { ListChecks } from 'lucide-react';
 import { applyTemplate } from '@/app/actions/workflow';
-import { workflowCopy as c } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
 import type { Template } from '@/components/app/WorkflowTemplates';
 import { Ltr } from '@/components/Ltr';
 
@@ -22,6 +22,7 @@ import { Ltr } from '@/components/Ltr';
 export function ApplyTemplate({ clientId, templates, hasDate }: {
   clientId: string; templates: Template[]; hasDate: boolean;
 }) {
+  const c = useCopy().workflow;
   const [pick, setPick] = useState(templates[0]?.id ?? '');
   const [busy, setBusy] = useState(false);
   const [said, setSaid] = useState('');

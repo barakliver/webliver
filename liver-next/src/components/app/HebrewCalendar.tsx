@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { CalendarCheck, CircleAlert, Info, ShieldAlert } from 'lucide-react';
 import { ruleRange, hebrewLabel, type DayRuling, type Verdict } from '@/lib/hebrewDate';
-import { hebrewCalCopy as c } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
 import { cn } from '@/lib/utils';
 import { EVENT_ZONE } from '@/lib/clock';
 
@@ -28,6 +28,7 @@ import { EVENT_ZONE } from '@/lib/clock';
  * is the difference between a useful tool and one that oversteps.
  */
 export function HebrewCalendar({ from }: { from: string }) {
+  const c = useCopy().hebrewCal;
   const [span, setSpan] = useState<30 | 60>(30);
   const days = useMemo(() => ruleRange(from, span), [from, span]);
 
@@ -106,6 +107,7 @@ function Legend({ tone, label, n }: { tone: Verdict; label: string; n: number })
 const dayFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE, weekday: 'short', day: 'numeric', month: 'short' });
 
 function Row({ day, today }: { day: DayRuling; today: boolean }) {
+  const c = useCopy().hebrewCal;
   const tone = TONE[day.verdict];
   const words = day.reasons.map((r) => c.reasons[r]).filter(Boolean);
 

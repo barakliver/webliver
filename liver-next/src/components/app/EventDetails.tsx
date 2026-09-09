@@ -5,11 +5,11 @@ import { useActionState, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { CalendarPlus, Pencil } from 'lucide-react';
 import { updateClientDetails, type ActionResult } from '@/app/actions/clients';
-import { appCopy, EVENT_KINDS, MIN_EVENT_DATE, MAX_GUESTS } from '@/content/site';
+import { EVENT_KINDS, MIN_EVENT_DATE, MAX_GUESTS } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
 import { formatDate, daysUntil } from '@/lib/dates';
 import { EVENT_ZONE } from '@/lib/clock';
 
-const c = appCopy.clientPage;
 
 const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE,
   weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
@@ -32,6 +32,7 @@ export type EventCore = {
 };
 
 function Save() {
+  const c = useCopy().clientPage;
   const { pending } = useFormStatus();
   return (
     <button type="submit" className="btn-primary" disabled={pending}>
@@ -58,6 +59,8 @@ function Line({ label, children }: { label: string; children: React.ReactNode })
  * way in, and the only route to one was to delete the event and make it again.
  */
 export function EventDetails({ event }: { event: EventCore }) {
+  const ui = useCopy();
+  const c = useCopy().clientPage;
   const [editing, setEditing] = useState(false);
   const [state, action] = useActionState<ActionResult | null, FormData>(
     async (prev, form) => {
@@ -88,11 +91,11 @@ export function EventDetails({ event }: { event: EventCore }) {
 
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <div>
-              <label className="label" htmlFor="ed-name">{appCopy.newClient.name}</label>
+              <label className="label" htmlFor="ed-name">{ui.newClient.name}</label>
               <input id="ed-name" name="display_name" required defaultValue={event.display_name} className="field" autoComplete="off" />
             </div>
             <div>
-              <label className="label" htmlFor="ed-kind">{appCopy.newClient.kind}</label>
+              <label className="label" htmlFor="ed-kind">{ui.newClient.kind}</label>
               <select id="ed-kind" name="kind" defaultValue={event.kind} className="field">
                 {EVENT_KINDS.map((k) => <option key={k.value} value={k.value}>{k.label}</option>)}
               </select>
@@ -101,18 +104,18 @@ export function EventDetails({ event }: { event: EventCore }) {
 
           <div className="mt-4 grid gap-4 sm:grid-cols-3">
             <div>
-              <label className="label" htmlFor="ed-date">{appCopy.newClient.date}</label>
+              <label className="label" htmlFor="ed-date">{ui.newClient.date}</label>
               <input
                 id="ed-date" name="event_date" type="date" min={MIN_EVENT_DATE}
                 defaultValue={event.event_date ?? ''} className="field"
               />
             </div>
             <div>
-              <label className="label" htmlFor="ed-venue">{appCopy.newClient.venue}</label>
+              <label className="label" htmlFor="ed-venue">{ui.newClient.venue}</label>
               <input id="ed-venue" name="venue" defaultValue={event.venue ?? ''} className="field" autoComplete="off" />
             </div>
             <div>
-              <label className="label" htmlFor="ed-guests">{appCopy.newClient.guests}</label>
+              <label className="label" htmlFor="ed-guests">{ui.newClient.guests}</label>
               <input
                 id="ed-guests" name="guest_estimate" type="number" min={1} max={MAX_GUESTS} inputMode="numeric"
                 defaultValue={event.guest_estimate ?? ''} className="field"
@@ -176,12 +179,12 @@ export function EventDetails({ event }: { event: EventCore }) {
       )}
 
       <dl className="mt-6 space-y-3 text-[14.5px]">
-        <Line label={appCopy.newClient.kind}>{kind}</Line>
-        <Line label={appCopy.newClient.date}>
+        <Line label={ui.newClient.kind}>{kind}</Line>
+        <Line label={ui.newClient.date}>
           {formatDate(dateFmt, event.event_date, c.noDateYet)}
         </Line>
-        <Line label={appCopy.newClient.venue}>{event.venue || c.at.none}</Line>
-        <Line label={appCopy.newClient.guests}>{event.guest_estimate ?? c.at.none}</Line>
+        <Line label={ui.newClient.venue}>{event.venue || c.at.none}</Line>
+        <Line label={ui.newClient.guests}>{event.guest_estimate ?? c.at.none}</Line>
 
         {/* The number the producer actually calls, as something they can press
             rather than something they have to select and copy. This was on the

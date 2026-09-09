@@ -5,7 +5,6 @@ import { formatDate } from '@/lib/dates';
 import { useFormStatus } from 'react-dom';
 import { addTask, toggleTask, deleteTask, reorderTasks, type TaskResult } from '@/app/actions/tasks';
 import { Sortable, Handle } from '@/components/app/Sortable';
-import { templateCopy } from '@/content/site';
 import { useCopy } from '@/components/app/CopyProvider';
 import { shortDate } from '@/lib/appDates';
 import { isPastDue } from '@/lib/clock';
@@ -126,10 +125,10 @@ function Row({ task, clientId, viewer, canDelete, grip }: {
           {task.visible_to_client === false && (
             <span
               className="ms-2 inline-flex items-center gap-1 align-middle rounded-xl2 bg-surface-200 px-2 py-0.5 text-[11.5px] text-ink-mute"
-              title={templateCopy.privateNote}
+              title={ui.template.privateNote}
             >
               <EyeOff size={11} aria-hidden strokeWidth={1.5} />
-              {templateCopy.sharedOff}
+              {ui.template.sharedOff}
             </span>
           )}
         </p>

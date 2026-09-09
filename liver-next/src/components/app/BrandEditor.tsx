@@ -2,12 +2,11 @@
 
 import { useActionState, useEffect, useState } from 'react';
 import { Check } from 'lucide-react';
-import { appCopy } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
 import { ACCENTS, accentByKey, accentVars } from '@/content/brand';
 import { saveBrand, type BrandResult } from '@/app/actions/brand';
 import { cn } from '@/lib/utils';
 
-const c = appCopy.brand;
 
 export type BrandFields = {
   brandName: string;
@@ -34,6 +33,8 @@ export type BrandFields = {
  * is a decision.
  */
 export function BrandEditor({ fields, rootDomain }: { fields: BrandFields; rootDomain: string }) {
+  const ui = useCopy();
+  const c = useCopy().brand;
   const [state, action, pending] = useActionState<BrandResult | null, FormData>(saveBrand, null);
   const [accent, setAccent] = useState(fields.accent);
   const [name, setName] = useState(fields.brandName);
@@ -74,7 +75,7 @@ export function BrandEditor({ fields, rootDomain }: { fields: BrandFields; rootD
               {name || c.namePh}
             </span>
             <span className="chip" style={{ borderColor: chosen.line, color: chosen.base }}>
-              {appCopy.nav.overview}
+              {ui.nav.overview}
             </span>
           </div>
           <p className="mt-3 text-[14px] text-ink-soft">{tagline || c.taglinePh}</p>
@@ -83,13 +84,13 @@ export function BrandEditor({ fields, rootDomain }: { fields: BrandFields; rootD
               className="inline-flex min-h-[36px] items-center rounded-xl2 px-4 text-[13.5px] font-medium text-surface"
               style={{ background: chosen.base }}
             >
-              {appCopy.brand.save}
+              {ui.brand.save}
             </span>
             <span
               className="inline-flex min-h-[36px] items-center rounded-xl2 border px-4 text-[13.5px]"
               style={{ borderColor: chosen.line, color: chosen.base }}
             >
-              {appCopy.nav.clients}
+              {ui.nav.clients}
             </span>
           </div>
         </div>

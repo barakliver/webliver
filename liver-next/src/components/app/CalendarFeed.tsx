@@ -2,10 +2,9 @@
 
 import { useState, useTransition } from 'react';
 import { CalendarPlus, Copy, Check, Trash2 } from 'lucide-react';
-import { appCopy } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
 import { feedLink, revokeFeed } from '@/app/actions/calendarFeed';
 
-const c = appCopy.calendar.feed;
 
 /**
  * A subscription, rather than a download.
@@ -21,6 +20,7 @@ const c = appCopy.calendar.feed;
  * settings screen is one nobody finds on the day they need it.
  */
 export function CalendarFeed({ clientId }: { clientId?: string }) {
+  const c = useCopy().calendar.feed;
   const [token, setToken] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);

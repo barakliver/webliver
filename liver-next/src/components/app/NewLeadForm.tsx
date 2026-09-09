@@ -3,10 +3,12 @@
 import { useActionState, useEffect, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { recordLead, type LeadActionResult } from '@/app/actions/leads';
-import { leadsCopy as c, LEAD_SOURCES, EVENT_KINDS, MIN_EVENT_DATE, MAX_GUESTS, REGIONS } from '@/content/site';
+import { LEAD_SOURCES, EVENT_KINDS, MIN_EVENT_DATE, MAX_GUESTS, REGIONS } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
 import { RegionPicker } from '@/components/RegionPicker';
 
 function Submit() {
+  const c = useCopy().lead;
   const { pending } = useFormStatus();
   return (
     <button type="submit" className="btn-primary" disabled={pending}>
@@ -31,6 +33,7 @@ export function NewLeadForm({ channels = [] }: {
   /** The producer's own channels, appended to the six the platform ships. */
   channels?: { value: string; label: string }[];
 }) {
+  const c = useCopy().lead;
   const [open, setOpen] = useState(false);
   const [state, action] = useActionState<LeadActionResult | null, FormData>(recordLead, null);
 

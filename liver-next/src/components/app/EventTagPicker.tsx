@@ -3,7 +3,7 @@
 import { useTransition } from 'react';
 import { Tag } from 'lucide-react';
 import { setEventLabel, type ProducerLabel } from '@/app/actions/labels';
-import { labelCopy as c } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
 import { labelOn } from '@/content/palette';
 import { cn } from '@/lib/utils';
 
@@ -25,6 +25,7 @@ export function EventTagPicker({ clientId, labels, current }: {
   labels: ProducerLabel[];
   current: string | null;
 }) {
+  const c = useCopy().label;
   const [pending, start] = useTransition();
 
   /* Nothing to choose from is not an empty control, it is no control: a

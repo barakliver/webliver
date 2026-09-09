@@ -3,11 +3,11 @@
 import { useFormStatus } from 'react-dom';
 import { Archive, ArchiveRestore } from 'lucide-react';
 import { setArchived } from '@/app/actions/clients';
-import { appCopy } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
 
-const c = appCopy.statusBoard;
 
 function Button({ archived, highlight }: { archived: boolean; highlight: boolean }) {
+  const c = useCopy().statusBoard;
   const { pending } = useFormStatus();
   const Icon = archived ? ArchiveRestore : Archive;
   const label = archived ? c.reopen : c.close;

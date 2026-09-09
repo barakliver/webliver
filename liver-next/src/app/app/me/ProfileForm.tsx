@@ -3,15 +3,15 @@
 import { useActionState, useRef, useState, useTransition } from 'react';
 import { useFormStatus } from 'react-dom';
 import { Camera, Trash2, Check } from 'lucide-react';
-import { appCopy } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
 import { supabaseBrowser } from '@/lib/supabase/client';
 import { saveProfile, setAvatar, type ProfileResult } from '@/app/actions/profile';
 import { Avatar } from '@/components/app/Avatar';
 
 const MAX_BYTES = 5 * 1024 * 1024;
-const c = appCopy.profile;
 
 function SaveButton() {
+  const c = useCopy().profile;
   const { pending } = useFormStatus();
   return (
     <button type="submit" className="btn-primary" disabled={pending}>
@@ -25,6 +25,7 @@ export function ProfileForm({
 }: {
   userId: string; name: string; email: string; avatarUrl: string | null;
 }) {
+  const c = useCopy().profile;
   const [state, action] = useActionState<ProfileResult | null, FormData>(saveProfile, null);
 
   /* Shown immediately from a local object URL so the new picture appears the

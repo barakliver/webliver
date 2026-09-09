@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { CalendarDays, CornerDownLeft, HeartHandshake, History, Layers, Search, Target, Truck, X } from 'lucide-react';
-import { appCopy, jumpCopy as c } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
 import { byRelevance as rank, matchesWords, splitQuery, type JumpEvent, type JumpRecord } from '@/lib/jump';
 import { EVENT_TABS } from './EventTabs';
 import type { NavItem } from './AppNav';
@@ -23,8 +23,6 @@ type Hit = {
 };
 
 const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE, day: 'numeric', month: 'short' });
-const tabLabel = appCopy.clientPage.tabs;
-const SECTIONS = EVENT_TABS.map((tab) => ({ tab, label: tabLabel[tab] }));
 
 /* The four events somebody opens all week, remembered in this browser only.
    Not a column on the account: which events a producer had open on their
@@ -81,6 +79,11 @@ export function QuickJump({ screens, events, records = [], compact }: {
   records?: JumpRecord[];
   compact?: boolean;
 }) {
+  const ui = useCopy();
+  const c = ui.jump;
+  /* The section names a query can end with, in the language of the tabs. */
+  const tabLabel = ui.clientPage.tabs;
+  const SECTIONS = useMemo(() => EVENT_TABS.map((tab) => ({ tab, label: tabLabel[tab] })), [tabLabel]);
   const router = useRouter();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);

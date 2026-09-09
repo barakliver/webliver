@@ -1082,6 +1082,8 @@ export const archiveEn: ArchiveCopy = {
     month: 'in a month',
     week: 'in a week',
     day: 'tomorrow',
+    today: 'today',
+    passed: 'passed',
   },
   greet: 'Send a greeting',
 };

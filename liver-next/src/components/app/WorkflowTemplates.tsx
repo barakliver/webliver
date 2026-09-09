@@ -4,7 +4,7 @@ import { count as plural } from '@/lib/copyText';
 import { useState, useTransition } from 'react';
 import { GripVertical, Plus, Trash2, X } from 'lucide-react';
 import { saveTemplate, deleteTemplate, seedMeetingTemplate } from '@/app/actions/workflow';
-import { workflowCopy as c } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
 
 export type Step = { title: string; offset_days: number; owner: 'producer' | 'client'; note?: string };
 export type Template = {
@@ -25,6 +25,7 @@ export type Template = {
  * be a lie about what the list is.
  */
 export function WorkflowTemplates({ templates }: { templates: Template[] }) {
+  const c = useCopy().workflow;
   const [editing, setEditing] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
   const [busy, startSeed] = useTransition();
@@ -111,6 +112,7 @@ export function WorkflowTemplates({ templates }: { templates: Template[] }) {
 const blank = (): Step => ({ title: '', offset_days: -30, owner: 'producer' });
 
 function Editor({ template, onDone }: { template?: Template; onDone: () => void }) {
+  const c = useCopy().workflow;
   const [name, setName] = useState(template?.name ?? '');
   const [steps, setSteps] = useState<Step[]>(
     template?.steps?.length ? template.steps : [blank()]

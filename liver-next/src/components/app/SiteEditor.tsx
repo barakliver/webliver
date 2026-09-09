@@ -5,9 +5,10 @@ import { useFormStatus } from 'react-dom';
 import { Check, RotateCcw } from 'lucide-react';
 import { saveSiteCopy, type CopyResult } from '@/app/actions/siteCopy';
 import { EDITABLE, type EditableField } from '@/content/editable';
-import { siteEditorCopy as c } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
 
 function Save({ dirty }: { dirty: boolean }) {
+  const c = useCopy().siteEditor;
   const { pending } = useFormStatus();
   return (
     <button type="submit" className="btn-primary px-5 text-[14px]" disabled={pending || !dirty}>
@@ -30,6 +31,7 @@ function Save({ dirty }: { dirty: boolean }) {
 function Field({ field, current, isOverridden }: {
   field: EditableField; current: string; isOverridden: boolean;
 }) {
+  const c = useCopy().siteEditor;
   const [value, setValue] = useState(current);
   const [state, action] = useActionState<CopyResult | null, FormData>(saveSiteCopy, null);
 
@@ -110,6 +112,7 @@ export function SiteEditor({ values, overridden }: {
   values: Record<string, string>;
   overridden: Set<string>;
 }) {
+  const c = useCopy().siteEditor;
   const [open, setOpen] = useState<string>(EDITABLE[0].id);
 
   return (

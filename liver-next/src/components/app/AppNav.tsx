@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { BookOpen, CalendarDays, Ellipsis, Globe, HeartHandshake, LayoutGrid, LifeBuoy, Palette, ShieldCheck, Sparkles, Store, Target, TrendingUp, Truck, X, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { appCopy } from '@/content/site';
+import { useCopy } from '@/components/app/CopyProvider';
 import { LinkHint } from './LinkHint';
 
 export type NavItem = { href: string; label: string; icon: IconName };
@@ -106,6 +106,7 @@ export function MobileTabBar({ items, extra }: {
   /** Rows under the overflow list: the things that were crowding the header. */
   extra?: React.ReactNode;
 }) {
+  const ui = useCopy();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
@@ -138,23 +139,23 @@ export function MobileTabBar({ items, extra }: {
         <div className="fixed inset-0 z-[65] lg:hidden">
           <button
             type="button"
-            aria-label={appCopy.nav.close}
+            aria-label={ui.nav.close}
             onClick={() => setOpen(false)}
             className="absolute inset-0 h-full w-full cursor-default bg-ink/25 backdrop-blur-[2px]"
           />
           <div
             role="dialog"
             aria-modal="true"
-            aria-label={appCopy.nav.moreTitle}
+            aria-label={ui.nav.moreTitle}
             className="glass-strong absolute inset-x-0 bottom-0 rounded-t-3xl border-t border-line p-4 shadow-dock"
             style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 5.5rem)' }}
           >
             <div className="mb-3 flex items-center justify-between">
-              <h2 className="text-[15px] font-semibold text-ink">{appCopy.nav.moreTitle}</h2>
+              <h2 className="text-[15px] font-semibold text-ink">{ui.nav.moreTitle}</h2>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                aria-label={appCopy.nav.close}
+                aria-label={ui.nav.close}
                 className="grid h-11 w-11 place-items-center rounded-full text-ink-mute transition-colors hover:text-ink"
               >
                 <X size={20} strokeWidth={1.5} aria-hidden />
@@ -250,7 +251,7 @@ export function MobileTabBar({ items, extra }: {
                 )}
               >
                 <Ellipsis size={21} strokeWidth={1.5} aria-hidden />
-                <span className="max-w-full truncate">{appCopy.nav.more}</span>
+                <span className="max-w-full truncate">{ui.nav.more}</span>
                 <span
                   aria-hidden
                   className={cn(
