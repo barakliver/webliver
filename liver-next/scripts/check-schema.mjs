@@ -186,6 +186,75 @@ try {
     say(before === after, 'and every row is exactly as it was, twice over',
       before === after ? '' : `\n        before ${before}\n        after  ${after}`);
 
+    // ── 3b. the migrations, applied the way the agent applies them ───────────
+    /* Everything above tests the two generated files. The agent runs a third
+       thing that neither of them is: after levelling with sync.sql, it applies
+       each migration the release adds as its own file, for the one-time data
+       sync.sql strips — a seeded row, a backfill.
+
+       Nothing tested that path, and it is the one that runs against his
+       database. 0061 seeds public.events with `select kind::text from
+       clients`, where clients.kind is the event_class enum: 'wedding' or
+       'corporate'. Only the wedding kinds were registered in event_types, so
+       one corporate workspace made that insert fail its foreign key and took
+       the migration down — on exactly the databases with the most in them,
+       and invisibly to every check here, because the fixture above is a
+       wedding and sync.sql does not carry that insert at all.
+
+       The first attempt at this test ran the new migrations over database
+       `one`, which setup.sql had already built in full — so 0064's own seed
+       had put 'corporate' in event_types long before 0061 asked for it, and
+       removing the fix changed nothing. A test that cannot fail is not a test.
+
+       So the database is built the way his actually got here: every migration
+       up to the last release, and then the ones this release adds, in order,
+       exactly as the agent applies them. */
+
+    const allMigs = readdirSync(join(sqlDir, 'migrations')).filter((f) => f.endsWith('.sql')).sort();
+    const NEW_FROM = '0061';
+    const settled = allMigs.filter((f) => f < NEW_FROM);
+    const arriving = allMigs.filter((f) => f >= NEW_FROM);
+
+    fresh('three');
+    const settledErr = settled.map((f) => [f, apply('three', join('migrations', f))]).find(([, e]) => e);
+    say(!settledErr, `a database at the last release, ${settled.length} migrations deep`,
+      settledErr ? `${settledErr[0]}: ${settledErr[1]}` : '');
+
+    if (!settledErr) {
+      /* A producer with two workspaces on the books: the wedding everything
+         here is written around, and the corporate event that is equally real
+         and that no check had ever put in front of a migration. */
+      const uid3 = '22222222-2222-2222-2222-222222222222';
+      psql('three', `-c "insert into auth.users (id, email) values ('${uid3}','upgrade@example.com') on conflict do nothing"`);
+      const pid3 = ask('three', `select id from public.producers where owner_id='${uid3}'`);
+      psql('three', [
+        `insert into public.clients (producer_id, display_name, kind, event_date, venue) values ('${pid3}','דנה ויואב','wedding','2026-09-12','גן האירועים')`,
+        `insert into public.clients (producer_id, display_name, kind, event_date, venue) values ('${pid3}','כנס סתיו','corporate','2026-11-20','מרכז הכנסים')`,
+      ].map((s) => `-c "${s}"`).join(' '));
+      const tasksBefore = ask('three', "select count(*)::text from public.tasks");
+
+      const arrErr = arriving.map((f) => [f, apply('three', join('migrations', f))]).find(([, e]) => e);
+      say(!arrErr, `and the ${arriving.length} this release adds go on over it`,
+        arrErr ? `${arrErr[0]}: ${arrErr[1]}` : '');
+
+      /* Each workspace got an event of its own kind — the corporate one being
+         the row whose absence took 0061 down. */
+      const kinds = ask('three',
+        "select coalesce(string_agg(c.display_name||'='||coalesce(e.event_type,'(none)'), ', ' order by c.display_name),'-')"
+        + ' from public.clients c left join public.events e on e.client_id = c.id');
+      const wantKinds = 'דנה ויואב=wedding, כנס סתיו=corporate';
+      say(kinds === wantKinds, 'and every workspace gets an event of its own kind',
+        kinds === wantKinds ? '' : `got ${kinds}`);
+
+      /* And the upgrade did not eat anything on the way past. phase is the
+         column an earlier draft of 0061 dropped in a file about events. */
+      const kept = ask('three',
+        "select (select count(*) from public.tasks)::text || '/' ||"
+        + " (select count(*) from information_schema.columns where table_name='tasks' and column_name='phase')::text");
+      say(kept === `${tasksBefore}/1`, 'and no task, and no column of one, is lost on the way',
+        kept === `${tasksBefore}/1` ? '' : `expected ${tasksBefore}/1, got ${kept}`);
+    }
+
     // ── 4. a share link opens exactly what it says and nothing else ──────────
     /* The one function in this schema that hands somebody else's family
        photographs to a caller with no account. Its whole security is that the

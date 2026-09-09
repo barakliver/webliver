@@ -7971,7 +7971,14 @@ insert into public.event_types (key, name, description) values
   ('henna', 'חינה', 'Pre-wedding henna party'),
   ('groom_party', 'שבת חתן', 'Groom or groom and bride party'),
   ('rehearsal', 'חזרה', 'Rehearsal dinner'),
-  ('post_party', 'ארוחת הערב', 'Post-wedding celebration')
+  ('post_party', 'ארוחת הערב', 'Post-wedding celebration'),
+  /* Not a celebration anybody adds from the portal, but a workspace kind that
+     already exists. The seed below reads clients.kind, which is the
+     event_class enum — 'wedding' or 'corporate' — straight into this table's
+     foreign key. Without a row here, one corporate client on the books makes
+     that insert fail and takes the whole migration down with it, on precisely
+     the databases that have the most in them. */
+  ('corporate', 'אירוע חברה', 'A company event rather than a wedding')
 on conflict (key) do nothing;
 
 -- ── new table: events, the unit of planning ────────────────────────────────
