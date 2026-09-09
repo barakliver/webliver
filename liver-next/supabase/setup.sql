@@ -8003,7 +8003,7 @@ from public.clients
 where not exists (select 1 from public.events where events.client_id = clients.id)
 on conflict do nothing;
 
--- ── task table: add event_id, phase moves to become a task category ────────
+-- ── task table: add event_id, and a category beside phase ──────────────────
 alter table public.tasks add column if not exists event_id uuid references public.events(id) on delete cascade;
 alter table public.tasks add column if not exists category text not null default '';
 
@@ -8016,8 +8016,26 @@ update public.tasks set event_id = (
 where event_id is null and client_id in (select id from public.clients);
 
 
--- Drop the old phase column (moved to category for now, or semantically tied to task itself)
-alter table public.tasks drop column if exists phase;
+/* `phase` stays. An earlier draft of this migration dropped it here, on the
+   theory that `category` replaces it. Two things were wrong with that.
+
+   The first is that it destroys data. A DROP COLUMN is DDL, so it lands in
+   sync.sql, which the agent runs over the live database on every single
+   release — and nothing in this file copies the column anywhere before
+   removing it. Every task on every wedding ever run would have lost the
+   checklist heading it was filed under, silently, with the backup taken
+   moments earlier being the only copy left.
+
+   The second is that they are not the same field. `phase` is the group a task
+   sits under on the producer's standing checklist, written in Hebrew and set
+   by createClient. `category` is which kind of supplier a task books, from a
+   fixed list, and it is what decides whether ticking the task opens the vendor
+   form. Folding one into the other would put 'אורחים' where 'venue' belongs.
+
+   So both columns exist, holding the two different things they hold. If phase
+   is ever genuinely finished with, retiring it is its own change, made after a
+   release has proved nothing writes it — not a line inside a migration about
+   something else. */
 
 -- Index for the new column
 create index if not exists tasks_event_idx on public.tasks(event_id, done, sort_order);

@@ -181,6 +181,55 @@ for (const file of files) {
   }
 }
 
+/* A migration that throws data away on every release.
+ *
+ * build-setup-sql strips top-level `insert`, `update` and `delete from` out of
+ * sync.sql, so a one-time data fix runs once and is then gone from the file
+ * the agent replays. It does not strip DDL, because DDL is the whole point of
+ * sync.sql — which means a `drop column` sits in it permanently and executes
+ * against the live database on every single release, forever.
+ *
+ * That asymmetry is the trap. 0014's top-level delete, clearing pending
+ * producer rows for accounts that turned out to be clients, is safe: it ran
+ * once. 0061's `drop column tasks.phase` was not: nothing copied the column
+ * first, so every task on every wedding would have lost the checklist heading
+ * it was filed under — and createClient, which still writes that column, would
+ * have started failing its seed on every new event. Both silent. The drop says
+ * nothing, and the seed failure is caught and logged.
+ *
+ * Retiring a column is sometimes right. Doing it as a side effect of a
+ * migration about something else is not, so it has to be said out loud, in the
+ * file, next to the reason.
+ *
+ * Function bodies are exempt: what is inside one runs when the function is
+ * called, not when the migration is applied. */
+const DESTRUCTIVE = /\b(drop\s+column|drop\s+table|truncate)\b/i;
+const ACKNOWLEDGED = /--\s*destroys-data:/i;
+
+for (const file of files) {
+  const sql = readFileSync(join(dir, file), 'utf8');
+  if (ACKNOWLEDGED.test(sql)) continue;
+
+  /* Bodies blanked line for line, so what is left keeps its numbering. */
+  let top = sql;
+  for (const fn of bodies(sql)) {
+    top = top.replace(fn.text, fn.text.replace(/[^\n]/g, ' '));
+  }
+  /* Comments too — this very file describes the bug it checks for. */
+  top = top.replace(/\/\*[\s\S]*?\*\//g, (m) => m.replace(/[^\n]/g, ' '))
+           .replace(/--[^\n]*/g, (m) => ' '.repeat(m.length));
+
+  for (const line of top.split('\n')) {
+    const m = DESTRUCTIVE.exec(line);
+    if (!m) continue;
+    complain(file, top.split('\n').indexOf(line) + 1,
+      `runs \`${m[1].replace(/\s+/g, ' ')}\` at the top level. Unlike a one-time insert or ` +
+      'delete, DDL is not stripped from sync.sql — so this runs against the live database on ' +
+      'every release, not once. If it is meant, say so in the file with a comment reading ' +
+      '`-- destroys-data: <why, and what was preserved first>`.');
+  }
+}
+
 /* Two migrations that create the same table.
  *
  * `create table if not exists` is the right way to write a migration that may
