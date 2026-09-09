@@ -2,10 +2,36 @@
 
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import type { Database } from '@/lib/supabase/database.types';
+type Task = {
+  id: string;
+  client_id: string;
+  event_id: string;
+  title: string;
+  due_on: string | null;
+  done: boolean;
+  owner: string;
+  created_by: string | null;
+  created_at: string;
+  category: string;
+  vendor_id: string | null;
+};
 
-type Task = Database['public']['Tables']['tasks']['Row'];
-type TaskTemplate = Database['public']['Tables']['task_templates']['Row'];
+type TaskTemplate = {
+  id: string;
+  event_type: string;
+  title: string;
+  description: string;
+  is_vendor_task: boolean;
+  vendor_category: string | null;
+  ask_name: boolean;
+  ask_cost: boolean;
+  ask_phone: boolean;
+  ask_contact_name: boolean;
+  ask_location: boolean;
+  ask_notes: boolean;
+  sort_order: number;
+  created_at: string;
+};
 
 interface VendorCaptureModalProps {
   task: Task;

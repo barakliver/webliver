@@ -1,10 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import type { Database } from '@/lib/supabase/database.types';
-
-type Event = Database['public']['Tables']['events']['Row'];
+type Event = {
+  id: string;
+  client_id: string;
+  event_type: string;
+  display_name: string;
+  event_date: string | null;
+  location: string;
+  guest_estimate: number | null;
+  created_at: string;
+};
 
 interface EventSelectorProps {
   clientId: string;
@@ -32,6 +39,10 @@ export function EventSelector({ clientId, currentEventId, onEventChange }: Event
     }
     setLoading(false);
   };
+
+  useEffect(() => {
+    loadEvents();
+  }, [clientId]);
 
   if (loading) return <div className="h-12 bg-neutral-100 animate-pulse rounded" />;
 

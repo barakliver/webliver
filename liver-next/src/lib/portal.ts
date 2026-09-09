@@ -27,6 +27,22 @@ export type Workspace = {
  *  flags the platform owner controls, and neither belongs in a component. */
 export type Gate = (clientId: string, key: string) => boolean;
 
+export type Vendor = {
+  id: string;
+  event_id: string;
+  category: string;
+  name: string;
+  contact_name: string;
+  phone: string;
+  email: string;
+  cost: number | null;
+  location: string;
+  notes: string;
+  task_id: string | null;
+  status: string;
+  created_at: string;
+};
+
 export type PortalData = {
   workspaces: Workspace[];
   /** Never a reason to hide anything from the producer's own screens: the
@@ -39,6 +55,7 @@ export type PortalData = {
   tablesFor: (id: string) => SeatTable[];
   dayFor: (id: string) => DayItem[];
   boardFor: (id: string) => BoardImage[];
+  vendorsFor: (id: string) => Vendor[];
 };
 
 const WORKSPACE_COLS =
@@ -84,7 +101,15 @@ export async function loadPortal(
   };
   if (ids.length === 0) return empty;
 
-  const [tasks, payments, budget, guests, tables, day, boardRows] = await Promise.all([
+  // Get events for each workspace to load vendors
+  const { data: eventsData } = await sb
+    .from('events')
+    .select('id,client_id')
+    .in('client_id', ids);
+
+  const eventIds = eventsData?.map((e) => e.id) ?? [];
+
+  const [tasks, payments, budget, guests, tables, day, boardRows, vendorRows] = await Promise.all([
     sb.from('tasks').select('id,client_id,title,due_on,done,owner,created_by')
       .in('client_id', ids).order('done').order('sort_order')
       .order('due_on', { ascending: true, nullsFirst: false }),
@@ -99,6 +124,11 @@ export async function loadPortal(
     sb.from('day_schedule').select('id,client_id,track,at_time,title,note,owner,audience,duration_min').in('client_id', ids).order('at_time'),
     sb.from('moodboards').select('id,client_id,category,caption,image_path')
       .in('client_id', ids).order('created_at', { ascending: false }),
+    eventIds.length > 0
+      ? sb.from('vendors')
+          .select('id,event_id,category,name,contact_name,phone,email,cost,location,notes,task_id,status,created_at')
+          .in('event_id', eventIds)
+      : Promise.resolve({ data: null } as any),
   ]);
 
   /* One row per workspace and module rather than a call per panel. A gate that
@@ -131,6 +161,19 @@ export async function loadPortal(
   const shared = new Set(workspaces.filter((w) => w.budget_visible).map((w) => w.id));
   const moneyVisible = (id: string) => !opts.asClient || shared.has(id);
 
+  // Map vendors by client through event relationships
+  const vendorsByClient = new Map<string, Vendor[]>();
+  if (vendorRows.data) {
+    for (const vendor of vendorRows.data as (Vendor & { event_id: string })[]) {
+      const event = eventsData?.find((e) => e.id === vendor.event_id);
+      if (event) {
+        const clientId = event.client_id;
+        if (!vendorsByClient.has(clientId)) vendorsByClient.set(clientId, []);
+        vendorsByClient.get(clientId)!.push(vendor);
+      }
+    }
+  }
+
   return {
     workspaces,
     tasksFor: (id) => by(tasks.data as WithClient<Task>[], id),
@@ -141,6 +184,7 @@ export async function loadPortal(
     tablesFor: (id) => by(tables.data as WithClient<SeatTable>[], id),
     dayFor: (id) => by(day.data as WithClient<DayItem>[], id),
     boardFor: (id) => by(board as WithClient<BoardImage>[], id),
+    vendorsFor: (id) => vendorsByClient.get(id) ?? [],
   };
 }
 
