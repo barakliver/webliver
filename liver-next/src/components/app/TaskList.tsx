@@ -1,17 +1,11 @@
 'use client';
 
-import { useState, useActionState } from 'react';
+import { useActionState } from 'react';
 import { formatDate } from '@/lib/dates';
 import { useFormStatus } from 'react-dom';
-import { addTask, toggleTask, deleteTask, reorderTasks, type TaskResult } from '@/app/actions/tasks';
-import { Sortable, Handle } from '@/components/app/Sortable';
-import { templateCopy } from '@/content/site';
-import { useCopy } from '@/components/app/CopyProvider';
-import { shortDate } from '@/lib/appDates';
-import { isPastDue } from '@/lib/clock';
+import { addTask, toggleTask, deleteTask, type TaskResult } from '@/app/actions/tasks';
+import { appCopy, templateCopy } from '@/content/site';
 import { EyeOff } from 'lucide-react';
-import { PlanOffer } from '@/components/app/PlanOffer';
-import { VendorCaptureModal } from '@/components/portal/VendorCaptureModal';
 
 export type Task = {
   /** False keeps it on the producer's side. The couple never receives these
@@ -23,95 +17,58 @@ export type Task = {
   done: boolean;
   owner: 'producer' | 'client';
   created_by: string | null;
-  event_id?: string;
-  category?: string;
-  vendor_id?: string | null;
 };
 
+const dateFmt = new Intl.DateTimeFormat('he-IL', { day: '2-digit', month: '2-digit', year: '2-digit' });
 
-/** Compared on calendar dates where the event is, so a task due today is
- *  never shown as late merely because it is the evening — and so the server
- *  and the phone reach the same verdict. Reading "today" off whichever
- *  machine was asking meant a server in UTC called a row on time while the
- *  producer's phone called it overdue, and React threw the page away. */
-const isOverdue = (due: string | null): boolean => isPastDue(due);
+/** Compared on calendar dates, so a task due today is never shown as late
+ *  merely because it is the evening. */
+function isOverdue(due: string | null): boolean {
+  if (!due) return false;
+  const now = new Date();
+  const today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+  const d = new Date(due);
+  return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) < today;
+}
 
 function AddButton() {
-  const ui = useCopy();
-  const c = ui.tasks;
-  const dateFmt = shortDate(ui.locale);
   const { pending } = useFormStatus();
   return (
     <button type="submit" className="btn-primary whitespace-nowrap" disabled={pending}>
-      {pending ? c.adding : c.add}
+      {pending ? appCopy.tasks.adding : appCopy.tasks.add}
     </button>
   );
 }
 
-/* A row rather than a list item, because the sortable list supplies the item
-   and the finished list supplies its own. One row, drawn the same way in
-   both, is worth more than two that drift. */
-function Row({ task, clientId, viewer, canDelete, grip }: {
+function Row({ task, clientId, viewer, canDelete }: {
   task: Task; clientId: string; viewer: 'producer' | 'client'; canDelete: boolean;
-  grip?: React.ReactNode;
 }) {
-  const [showVendorModal, setShowVendorModal] = useState(false);
-  const ui = useCopy();
-  const c = ui.tasks;
-  const dateFmt = shortDate(ui.locale);
+  const c = appCopy.tasks;
   const late = !task.done && isOverdue(task.due_on);
   const ownerLabel =
     viewer === 'producer'
       ? (task.owner === 'producer' ? c.ownerProducer : c.ownerClient)
       : (task.owner === 'producer' ? c.ownerProducerClientView : c.ownerClientClientView);
 
-  const vendorCategories = ['venue', 'catering', 'photography', 'dj', 'flowers', 'decor', 'attire', 'printing', 'henna'];
-  const isVendorTask = task.category && vendorCategories.includes(task.category);
-
-  const handleToggleClick = async () => {
-    // If marking as done and it's a vendor task, show modal
-    if (!task.done && isVendorTask && task.event_id) {
-      setShowVendorModal(true);
-    } else {
-      // Otherwise just toggle normally
-      const formData = new FormData();
-      formData.append('task_id', task.id);
-      formData.append('client_id', clientId);
-      formData.append('done', String(task.done));
-      await toggleTask(formData);
-    }
-  };
-
   return (
-    <>
-      <div className={`flex flex-wrap items-center gap-2 rounded-xl2 border px-3 py-3 ${
-        late ? 'border-bad/25 bg-bad-wash/60' : 'border-line'
-      }`}>
-        {grip}
-        <div className="flex items-center">
-          {/* The circle stays 24px and the target around it grows to 44 tall by
-              32 wide. It was the button itself at 24 square, which is the most
-              tapped control in the product drawn at half the size a finger
-              needs. Tall rather than square on purpose: the row already has the
-              height to spare and none of the width, and a 44px square pushed
-              every task title into wrapping a line earlier. */}
-          <button
-            type="button"
-            onClick={handleToggleClick}
-            aria-label={task.title}
-            aria-pressed={task.done}
-            className="-my-2 -mx-1 flex h-11 w-8 items-center justify-center"
-          >
-            <span
-              aria-hidden
-              className={`flex h-6 w-6 items-center justify-center rounded-full border text-[13px] transition ${
-                task.done ? 'border-ok/30 bg-ok text-surface' : 'border-line-strong bg-card hover:border-ink'
-              }`}
-            >
-              {task.done ? '✓' : ''}
-            </span>
-          </button>
-        </div>
+    <li className={`flex flex-wrap items-center gap-3 rounded-2xl border px-4 py-3 ${
+      late ? 'border-bad/25 bg-bad-wash/60' : 'border-line'
+    }`}>
+      <form action={toggleTask} className="flex items-center">
+        <input type="hidden" name="task_id" value={task.id} />
+        <input type="hidden" name="client_id" value={clientId} />
+        <input type="hidden" name="done" value={String(task.done)} />
+        <button
+          type="submit"
+          aria-label={task.title}
+          aria-pressed={task.done}
+          className={`flex h-6 w-6 items-center justify-center rounded-full border text-[13px] transition ${
+            task.done ? 'border-ok/30 bg-ok text-white' : 'border-line-strong bg-white hover:border-ink'
+          }`}
+        >
+          {task.done ? '✓' : ''}
+        </button>
+      </form>
 
       <div className="min-w-0 flex-1">
         <p className={`text-[15px] ${task.done ? 'text-ink-mute line-through' : 'text-ink'}`}>
@@ -121,10 +78,10 @@ function Row({ task, clientId, viewer, canDelete, grip }: {
               their list is the policy and not a styling choice. */}
           {task.visible_to_client === false && (
             <span
-              className="ms-2 inline-flex items-center gap-1 align-middle rounded-xl2 bg-surface-200 px-2 py-0.5 text-[11.5px] text-ink-mute"
+              className="ms-2 inline-flex items-center gap-1 align-middle rounded-full bg-surface-200 px-2 py-0.5 text-[11.5px] text-ink-mute"
               title={templateCopy.privateNote}
             >
-              <EyeOff size={11} aria-hidden strokeWidth={1.5} />
+              <EyeOff size={11} aria-hidden strokeWidth={2} />
               {templateCopy.sharedOff}
             </span>
           )}
@@ -138,61 +95,14 @@ function Row({ task, clientId, viewer, canDelete, grip }: {
         </p>
       </div>
 
-        {canDelete && (
-          <form action={deleteTask}>
-            <input type="hidden" name="task_id" value={task.id} />
-            <input type="hidden" name="client_id" value={clientId} />
-            <button type="submit" className="btn-quiet px-3 py-1 text-[13px]">{c.remove}</button>
-          </form>
-        )}
-      </div>
-
-      {/* Show vendor capture modal when task marked done */}
-      {showVendorModal && task.event_id && task.category && (
-        <VendorCaptureModal
-          task={{
-            id: task.id,
-            client_id: clientId,
-            event_id: task.event_id,
-            title: task.title,
-            due_on: task.due_on,
-            done: task.done,
-            owner: task.owner,
-            created_by: task.created_by,
-            created_at: new Date().toISOString(),
-            category: task.category,
-            vendor_id: task.vendor_id ?? null,
-          }}
-          template={{
-            id: '',
-            event_type: task.category,
-            title: task.title,
-            description: '',
-            is_vendor_task: true,
-            vendor_category: task.category,
-            ask_name: true,
-            ask_cost: true,
-            ask_phone: true,
-            ask_contact_name: false,
-            ask_location: false,
-            ask_notes: false,
-            sort_order: 0,
-            created_at: new Date().toISOString(),
-          }}
-          eventId={task.event_id}
-          onClose={() => setShowVendorModal(false)}
-          onSaved={async () => {
-            setShowVendorModal(false);
-            // Mark task as done
-            const formData = new FormData();
-            formData.append('task_id', task.id);
-            formData.append('client_id', clientId);
-            formData.append('done', String(false));
-            await toggleTask(formData);
-          }}
-        />
+      {canDelete && (
+        <form action={deleteTask}>
+          <input type="hidden" name="task_id" value={task.id} />
+          <input type="hidden" name="client_id" value={clientId} />
+          <button type="submit" className="btn-quiet px-3 py-1 text-[13px]">{c.remove}</button>
+        </form>
       )}
-    </>
+    </li>
   );
 }
 
@@ -200,9 +110,7 @@ export function TaskList({ clientId, tasks, viewer, viewerId }: {
   clientId: string; tasks: Task[]; viewer: 'producer' | 'client'; viewerId: string;
 }) {
   const [state, action] = useActionState<TaskResult | null, FormData>(addTask, null);
-  const ui = useCopy();
-  const c = ui.tasks;
-  const dateFmt = shortDate(ui.locale);
+  const c = appCopy.tasks;
 
   const open = tasks.filter((t) => !t.done);
   const done = tasks.filter((t) => t.done);
@@ -229,54 +137,25 @@ export function TaskList({ clientId, tasks, viewer, viewerId }: {
       </form>
 
       {state && !state.ok && state.error && (
-        <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+        <p role="alert" className="mt-3 rounded-2xl border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
           {state.error}
         </p>
       )}
 
       {tasks.length === 0 ? (
-        /* The producer gets the offer to build a plan; the couple gets the
-           sentence. Twenty-eight production steps are not theirs to start,
-           and half of them are things they would rather not know had to be
-           chased. */
-        viewer === 'producer'
-          ? <PlanOffer clientId={clientId} />
-          : <p className="mt-6 text-[14.5px] text-ink-mute">{c.none}</p>
+        <p className="mt-6 text-[14.5px] text-ink-mute">{c.none}</p>
       ) : (
         <>
           <h3 className="mt-7 text-[13px] font-semibold text-accent">{c.open} · {open.length}</h3>
-          {/* The order here is a decision, not a sort. What matters this week
-              is not the three with the earliest dates; it is the three the
-              person doing them decided matter. The finished list below stays a
-              plain list, because putting completed work in a preferred order
-              is not a thing anybody means to do. */}
-          <Sortable
-            items={open}
-            onReorder={async (ids) => {
-              const res = await reorderTasks(clientId, ids);
-              if (!res.ok) throw new Error(res.error);
-            }}
-            announce={(id, at, of) =>
-              `${open.find((t) => t.id === id)?.title ?? ''} · מיקום ${at} מתוך ${of}`}
-            className="mt-3 space-y-2"
-          >
-            {(t, { handle }) => (
-              <Row
-                task={t} clientId={clientId} viewer={viewer} canDelete={mayDelete(t)}
-                grip={<Handle label={c.reorder} {...handle} />}
-              />
-            )}
-          </Sortable>
+          <ul className="mt-3 space-y-2">
+            {open.map((t) => <Row key={t.id} task={t} clientId={clientId} viewer={viewer} canDelete={mayDelete(t)} />)}
+          </ul>
 
           {done.length > 0 && (
             <>
               <h3 className="mt-7 text-[13px] font-semibold text-ink-mute">{c.done} · {done.length}</h3>
               <ul className="mt-3 space-y-2">
-                {done.map((t) => (
-                  <li key={t.id}>
-                    <Row task={t} clientId={clientId} viewer={viewer} canDelete={mayDelete(t)} />
-                  </li>
-                ))}
+                {done.map((t) => <Row key={t.id} task={t} clientId={clientId} viewer={viewer} canDelete={mayDelete(t)} />)}
               </ul>
             </>
           )}
