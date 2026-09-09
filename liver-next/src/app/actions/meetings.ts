@@ -4,10 +4,11 @@ import { revalidatePath } from 'next/cache';
 import Anthropic from '@anthropic-ai/sdk';
 import { supabaseServer } from '@/lib/supabase/server';
 import { optional } from '@/lib/env';
-import { meetingTemplate } from '@/content/meetings';
+import { meetingTemplate, type MeetingTemplate } from '@/content/meetings';
 import {
   cleanAnswers, writeSummary, summaryPrompt, readModelSummary, joinSummary,
 } from '@/lib/ai/meeting';
+import { templateFromRow, type MeetingTemplateRow } from '@/lib/meetingTemplates';
 import { noteFailure } from '@/lib/flash';
 
 export type MeetingResult = { ok: boolean; error?: string; id?: string; summary?: string };
@@ -31,6 +32,8 @@ export async function saveMeeting(input: {
   id?: string;
   clientId: string;
   kind: string;
+  /** For kind 'custom': the producer's own template this was written from. */
+  templateId?: string;
   title?: string;
   heldOn?: string;
   answers: Record<string, unknown>;
@@ -38,14 +41,16 @@ export async function saveMeeting(input: {
   /** False writes the record only. The producer asks for the paragraph. */
   withModel?: boolean;
 }): Promise<MeetingResult> {
-  const template = meetingTemplate(input.kind);
-  if (!template) return { ok: false, error: 'סוג פגישה לא מוכר' };
   if (!input.clientId) return { ok: false, error: 'חסר מזהה אירוע' };
+
+  const sb = await supabaseServer();
+  const template = await resolveTemplate(sb, input.kind, input.templateId);
+  if (!template) return { ok: false, error: 'סוג פגישה לא מוכר' };
 
   /* Only keys this template defines survive, and each one is coerced to the
      shape its field declares. A questionnaire posted from a browser is
      attacker controlled. */
-  const answers = cleanAnswers(input.kind, input.answers);
+  const answers = cleanAnswers(template, input.answers);
   const record = writeSummary(template, answers);
 
   let prose = '';
@@ -60,9 +65,9 @@ export async function saveMeeting(input: {
   const heldOn = /^\d{4}-\d{2}-\d{2}$/.test(String(input.heldOn ?? ''))
     ? String(input.heldOn) : null;
 
-  const sb = await supabaseServer();
   const fields = {
-    kind: input.kind,
+    kind: template.kind,
+    template_id: template.kind === 'custom' ? (template.id ?? null) : null,
     title: String(input.title ?? template.title).trim().slice(0, 200),
     held_on: heldOn,
     answers,
@@ -91,6 +96,28 @@ export async function saveMeeting(input: {
 
   refresh(input.clientId);
   return { ok: true, id: data.id as string, summary };
+}
+
+/**
+ * Which questions this meeting answers.
+ *
+ * A compiled-in kind resolves from code. A producer's own resolves from their
+ * row, read under row level security so a template id that belongs to some
+ * other producer comes back as nothing, and nothing is refused above. An
+ * archived template still resolves: the log that points at it is being
+ * edited, and its questions are exactly the ones it needs.
+ */
+async function resolveTemplate(
+  sb: Awaited<ReturnType<typeof supabaseServer>>, kind: string, templateId?: string,
+): Promise<MeetingTemplate | undefined> {
+  if (kind !== 'custom') return meetingTemplate(kind);
+  if (!templateId) return undefined;
+  const { data, error } = await sb.from('meeting_templates')
+    .select('id,name,when_text,offset_days,blurb,sections,archived_at')
+    .eq('id', templateId)
+    .maybeSingle();
+  if (error || !data) return undefined;
+  return templateFromRow(data as MeetingTemplateRow);
 }
 
 export async function deleteMeeting(form: FormData): Promise<void> {

@@ -309,6 +309,7 @@ import type { ReferralRow } from '@/components/app/Referrals';
 import type { Template } from '@/components/app/WorkflowTemplates';
 import type { VenueRow } from '@/components/app/VenueCompare';
 import type { MeetingLog } from '@/components/app/MeetingDrawer';
+import type { MeetingTemplate } from '@/content/meetings';
 import type { Line, Caller } from '@/lib/dayof';
 
 export const fixtureAnniversaries: Anniversary[] = [
@@ -392,14 +393,47 @@ export const fixtureTemplates: Template[] = [
 
 export const fixtureMeetings: MeetingLog[] = [
   {
-    id: 'mt1', kind: 'production', title: 'פגישת הפקה', held_on: day(-12),
+    id: 'mt1', kind: 'production', template_id: null, title: 'פגישת הפקה', held_on: day(-12),
     answers: { guests_final: 214, arrive_from: '19:00', chuppah_at: '20:30' },
     summary: 'עוברים על הלוז המלא. החופה הוקדמה לחצי שמונה בגלל השקיעה, והוחלט על קבלת פנים בחוץ.',
     summary_by: 'person', visible_to_client: true, updated_at: hoursAgo(280),
   },
   {
-    id: 'mt2', kind: 'tasting', title: 'טעימות', held_on: null,
+    id: 'mt2', kind: 'tasting', template_id: null, title: 'טעימות', held_on: null,
     answers: {}, summary: '', summary_by: 'none', visible_to_client: false, updated_at: hoursAgo(4),
+  },
+  /* Written from the producer's own template below, so the drawer's second
+     row of buttons and its pointer both get exercised. */
+  {
+    id: 'mt3', kind: 'custom', template_id: 'mtp1', title: 'שיחה ראשונה בטלפון', held_on: day(-200),
+    answers: { names: 'מאיה ועידו', guests: 180, style: 'שקט, בחוץ, בלי הפתעות' },
+    summary: 'מי אתם\nשמות: מאיה ועידו\n\nהאירוע\nכמה אורחים בערך: 180\nאיך זה אמור להרגיש: שקט, בחוץ, בלי הפתעות',
+    summary_by: 'person', visible_to_client: false, updated_at: hoursAgo(4800),
+  },
+];
+
+/* The producer's own meeting forms: one live, one archived because a log
+   still points at it. */
+export const fixtureMeetingTemplates: MeetingTemplate[] = [
+  {
+    kind: 'custom', id: 'mtp1', title: 'שיחה ראשונה בטלפון', when: 'לפני שסוגרים', offsetDays: null,
+    blurb: 'עשר דקות. מי הם ומה הם רוצים.',
+    sections: [
+      { title: 'מי אתם', fields: [
+        { id: 'names', label: 'שמות', kind: 'text' },
+        { id: 'heard', label: 'איך הגעתם', kind: 'choice', options: ['המלצה', 'אינסטגרם', 'אולם'] },
+      ] },
+      { title: 'האירוע', fields: [
+        { id: 'guests', label: 'כמה אורחים בערך', kind: 'number' },
+        { id: 'booked', label: 'האולם סגור', kind: 'yesno' },
+        { id: 'style', label: 'איך זה אמור להרגיש', kind: 'long', hint: 'במשפט' },
+      ] },
+    ],
+  },
+  {
+    kind: 'custom', id: 'mtp2', title: 'סיור באולם', when: 'לפני שחותמים', offsetDays: null, blurb: '',
+    sections: [{ title: '', fields: [{ id: 'q1', label: 'מה ראינו', kind: 'long' }] }],
+    archived: true,
   },
 ];
 

@@ -2,9 +2,11 @@ import type { Locale } from '../lib/locale.ts';
 import {
   appCopy, guestsCopy, seatingCopy, dayCopy, threadCopy, partyCopy, contractCopy, eventFileCopy,
   noticeCopy, ticketCopy, companionCopy, prepCopy, venueCopy, envelopesCopy, vehiclesCopy,
+  meetingTemplatesCopy,
 } from './site.ts';
 import {
   noticeCopyEn, ticketCopyEn, companionCopyEn, prepCopyEn, venueCopyEn, envelopesCopyEn, vehiclesCopyEn,
+  meetingTemplatesCopyEn,
   portalEn, filesEn, sheetsEn, tasksEn, moneyEn, boardEn, bookEn,
   guestsEn, seatingEn, dayEn, threadEn, partyEn, contractEn, eventFileEn,
 } from './app.en.ts';
@@ -65,6 +67,7 @@ export type CompanionCopy = Wide<typeof companionCopy>;
 export type PrepCopy = Wide<typeof prepCopy>;
 export type EnvelopesCopy = Wide<typeof envelopesCopy>;
 export type VehiclesCopy = Wide<typeof vehiclesCopy>;
+export type MeetingTemplatesCopy = Wide<typeof meetingTemplatesCopy>;
 /* The halls. Both sides edit it and the couple is the side that toured them,
    so it is resolved rather than handed the console's Hebrew. */
 export type VenueCopy = Wide<typeof venueCopy>;
@@ -115,4 +118,6 @@ export const companionFor = (l: Locale): CompanionCopy => (l === 'en' ? companio
 export const prepFor = (l: Locale): PrepCopy => (l === 'en' ? prepCopyEn : prepCopy);
 export const envelopesFor = (l: Locale): EnvelopesCopy => (l === 'en' ? envelopesCopyEn : envelopesCopy);
 export const vehiclesFor = (l: Locale): VehiclesCopy => (l === 'en' ? vehiclesCopyEn : vehiclesCopy);
+export const meetingTemplatesFor = (l: Locale): MeetingTemplatesCopy =>
+  (l === 'en' ? meetingTemplatesCopyEn : meetingTemplatesCopy);
 export const venuesFor = (l: Locale): VenueCopy => (l === 'en' ? venueCopyEn : venueCopy);

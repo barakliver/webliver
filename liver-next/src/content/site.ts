@@ -2869,6 +2869,12 @@ export const meetingCopy = {
   versionsNone: 'זאת הגרסה הראשונה.',
   savedAt: 'נשמר',
   saveFailed: 'לא הצלחנו לשמור',
+  /* The buttons come in two rows once a producer has templates of their own. */
+  builtIn: 'הפגישות הקבועות',
+  own: 'התבניות שלכם',
+  buildOwn: 'לבנות תבנית משלכם',
+  /* A log whose template was deleted before templates learned to archive. */
+  noForm: 'התבנית שממנה נכתבה הפגישה כבר לא קיימת. הסיכום נשאר.',
 } as const;
 
 export const workflowCopy = {
@@ -2904,6 +2910,55 @@ export const workflowCopy = {
   applied: (n: number) => (n === 0 ? 'הכל כבר היה שם' : `נוספו ${n} שלבים`),
   noDate: 'לאירוע אין עדיין תאריך, אז השלבים ייכנסו בלי תאריך יעד.',
   saveFailed: 'לא הצלחנו לשמור',
+} as const;
+
+/* The producer's own meeting forms. Handed to a client component whole, so
+   nothing here is a function; the one count is a sentence with a hole. */
+export const meetingTemplatesCopy = {
+  title: 'תבניות פגישה',
+  sub: 'השאלות שאתם שואלים בכל פגישה, בסדר שהן עולות בשיחה. כל תבנית מופיעה כלחצן בתיק של כל אירוע.',
+  builtIn: 'הפגישות הקבועות',
+  builtInHint: 'מובנות במערכת ואי אפשר לערוך אותן. אפשר להעתיק אחת ולשנות את העותק.',
+  copy: 'העתקה לעריכה',
+  copying: 'מעתיק',
+  own: 'התבניות שלכם',
+  none: 'עוד לא בניתם תבנית. התחילו מהשיחה הראשונה, או מדף ריק.',
+  add: 'תבנית חדשה',
+  name: 'שם התבנית',
+  namePh: 'שיחה ראשונה בטלפון',
+  when: 'מתי זה קורה',
+  whenPh: 'לפני שסוגרים, חודש לפני',
+  blurb: 'משפט על הפגישה',
+  blurbPh: 'מה מטרת הפגישה, במילים שלכם',
+  sections: 'חלקים',
+  sectionTitle: 'כותרת החלק',
+  sectionTitlePh: 'מי אתם, האירוע, כסף',
+  addSection: 'חלק נוסף',
+  removeSection: 'הסרת החלק',
+  question: 'השאלה',
+  questionPh: 'כמה אורחים בערך',
+  kind: 'סוג תשובה',
+  kinds: {
+    text: 'טקסט קצר', long: 'טקסט ארוך', number: 'מספר',
+    time: 'שעה', choice: 'בחירה מרשימה', yesno: 'כן או לא',
+  },
+  options: 'האפשרויות',
+  optionsPh: 'אפשרות אחת בכל שורה',
+  hint: 'רמז',
+  hintPh: 'מה שמופיע באפור בתוך השדה',
+  addQuestion: 'שאלה נוספת',
+  removeQuestion: 'הסרת השאלה',
+  moveUp: 'להעלות',
+  moveDown: 'להוריד',
+  questionsCount: 'שאלות: {n}',
+  archived: 'בארכיון',
+  save: 'שמירה',
+  saving: 'שומר',
+  cancel: 'ביטול',
+  remove: 'מחיקה',
+  removeAsk: 'למחוק את התבנית? פגישות שכבר נכתבו ממנה יישמרו.',
+  saveFailed: 'לא הצלחנו לשמור',
+  noQuestions: 'צריך לפחות שאלה אחת',
 } as const;
 
 export const referralCopy = {

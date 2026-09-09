@@ -52,6 +52,7 @@ import { loadEventSummary } from '@/lib/eventSummary';
 import { Contracts } from '@/components/app/Contracts';
 import { EventFiles } from '@/components/app/EventFiles';
 import { MeetingDrawer, type MeetingLog } from '@/components/app/MeetingDrawer';
+import { loadMeetingTemplates } from '@/lib/meetingTemplateRows';
 import { Thread } from '@/components/app/Thread';
 
 export const dynamic = 'force-dynamic';
@@ -357,12 +358,15 @@ async function Section({ tab, client, viewerId }: { tab: EventTab; client: Clien
   }
 
   if (tab === 'meetings') {
-    const logs = await safeRows<MeetingLog>('meetings', sb.from('meeting_logs')
-      .select('id,kind,title,held_on,answers,summary,summary_by,visible_to_client,updated_at')
-      .eq('client_id', id)
-      .order('held_on', { ascending: false, nullsFirst: false })
-      .order('created_at', { ascending: false }));
-    return <MeetingDrawer clientId={id} logs={logs} />;
+    const [logs, own] = await Promise.all([
+      safeRows<MeetingLog>('meetings', sb.from('meeting_logs')
+        .select('id,kind,template_id,title,held_on,answers,summary,summary_by,visible_to_client,updated_at')
+        .eq('client_id', id)
+        .order('held_on', { ascending: false, nullsFirst: false })
+        .order('created_at', { ascending: false })),
+      loadMeetingTemplates(sb),
+    ]);
+    return <MeetingDrawer clientId={id} logs={logs} own={own} />;
   }
 
   if (tab === 'messages') {

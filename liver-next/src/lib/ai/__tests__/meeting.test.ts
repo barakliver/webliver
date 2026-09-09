@@ -6,6 +6,7 @@ import {
 import { meetingTemplate } from '../../../content/meetings.ts';
 
 const production = meetingTemplate('production')!;
+const tasting = meetingTemplate('tasting')!;
 
 /**
  * The summary is a record somebody is paid against and a couple remembers
@@ -38,7 +39,7 @@ test('yes and no are read as words, not as English booleans', () => {
 });
 
 test('an answer under a key the template does not define never lands', () => {
-  const out = cleanAnswers('production', {
+  const out = cleanAnswers(production, {
     guests_final: 240,
     '"; drop table meeting_logs; --': 'x',
     unknown_field: 'x',
@@ -47,23 +48,36 @@ test('an answer under a key the template does not define never lands', () => {
 });
 
 test('a number nobody could have meant is dropped rather than stored', () => {
-  assert.deepEqual(cleanAnswers('production', { guests_final: 9_000_000 }), {});
-  assert.deepEqual(cleanAnswers('production', { guests_final: -5 }), {});
-  assert.deepEqual(cleanAnswers('production', { guests_final: '240' }), { guests_final: 240 });
+  assert.deepEqual(cleanAnswers(production, { guests_final: 9_000_000 }), {});
+  assert.deepEqual(cleanAnswers(production, { guests_final: -5 }), {});
+  assert.deepEqual(cleanAnswers(production, { guests_final: '240' }), { guests_final: 240 });
 });
 
 test('a choice outside the list is refused', () => {
-  assert.deepEqual(cleanAnswers('tasting', { kosher: 'מהדרין' }), { kosher: 'מהדרין' });
-  assert.deepEqual(cleanAnswers('tasting', { kosher: 'משהו אחר' }), {});
+  assert.deepEqual(cleanAnswers(tasting, { kosher: 'מהדרין' }), { kosher: 'מהדרין' });
+  assert.deepEqual(cleanAnswers(tasting, { kosher: 'משהו אחר' }), {});
 });
 
 test('a long answer is capped rather than refused', () => {
-  const out = cleanAnswers('production', { speeches: 'א'.repeat(9000) });
+  const out = cleanAnswers(production, { speeches: 'א'.repeat(9000) });
   assert.equal(String(out.speeches).length, 4000);
 });
 
 test('an unknown meeting kind yields nothing at all', () => {
-  assert.deepEqual(cleanAnswers('not-a-meeting', { guests_final: 240 }), {});
+  assert.deepEqual(cleanAnswers(meetingTemplate('not-a-meeting'), { guests_final: 240 }), {});
+  assert.deepEqual(cleanAnswers(undefined, { guests_final: 240 }), {});
+});
+
+test("a producer's own template cleans exactly like a compiled-in one", () => {
+  const own = {
+    kind: 'custom' as const, id: 'row1', title: 'שלי', when: '', offsetDays: null, blurb: '',
+    sections: [{ title: 'א', fields: [
+      { id: 'q1', label: 'כמה', kind: 'number' as const },
+      { id: 'q2', label: 'מה', kind: 'choice' as const, options: ['x', 'y'] },
+    ] }],
+  };
+  assert.deepEqual(cleanAnswers(own, { q1: '12', q2: 'y', q3: 'never' }), { q1: 12, q2: 'y' });
+  assert.match(writeSummary(own, { q1: 12 }), /כמה: 12/);
 });
 
 test('how much was answered is counted, not guessed', () => {

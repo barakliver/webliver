@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import { appUiFor, prepFor, envelopesFor, vehiclesFor } from '@/content/appUi';
+import { appUiFor, prepFor, envelopesFor, vehiclesFor, meetingTemplatesFor } from '@/content/appUi';
 import { CopyProvider } from '@/components/app/CopyProvider';
 import { currentLocale } from '@/lib/serverLocale';
 import { TaskList } from '@/components/app/TaskList';
@@ -37,6 +37,7 @@ import { FunnelChart, Sources, CashPanel, ResponsePanel } from '@/components/app
 import { Referrals } from '@/components/app/Referrals';
 import { WorkflowTemplates } from '@/components/app/WorkflowTemplates';
 import { MeetingDrawer } from '@/components/app/MeetingDrawer';
+import { MeetingTemplates } from '@/components/app/MeetingTemplates';
 import { DayOfCockpit } from '@/components/app/DayOfCockpit';
 import { CallsPanel } from '@/components/app/CallsPanel';
 import { InviteBox } from '@/components/app/InviteBox';
@@ -52,7 +53,7 @@ import {
   fixtureLeads, fixtureCalls, fixtureVendors,
   fixtureAnniversaries, fixtureEventSummary, fixtureFunnel, fixtureSources,
   fixtureResponse, fixtureCash, fixtureReferrals, fixtureTemplates,
-  fixtureMeetings, fixtureDayLines, fixtureDayCrew, fixtureDayVendors,
+  fixtureMeetings, fixtureMeetingTemplates, fixtureDayLines, fixtureDayCrew, fixtureDayVendors,
   fixtureSheetGuests, fixtureSheetTables, fixtureSheetMoments, fixtureSheetArrivals,
   fixtureVips, fixtureLooks, fixtureShares,
 } from '@/content/fixtures';
@@ -451,12 +452,16 @@ export default async function DesignPage() {
           <BarCalculator guestEstimate={220} confirmedGuests={141} />
         </Panel>
 
-        <Panel name="MeetingDrawer" note="one meeting written up, one not yet held">
-          <MeetingDrawer clientId={client} logs={fixtureMeetings} />
+        <Panel name="MeetingDrawer" note="one meeting written up, one not yet held, one from the producer's own template">
+          <MeetingDrawer clientId={client} logs={fixtureMeetings} own={fixtureMeetingTemplates} />
         </Panel>
 
         <Panel name="WorkflowTemplates" note="two templates, steps counted back from the day">
           <WorkflowTemplates templates={fixtureTemplates} />
+        </Panel>
+
+        <Panel name="MeetingTemplates" note="the five standing meetings to copy from, and one of the producer's own">
+          <MeetingTemplates c={meetingTemplatesFor('he')} own={fixtureMeetingTemplates} />
         </Panel>
 
         <Panel name="Insights" note="funnel, sources, cash and response, stacked as the real page stacks them">

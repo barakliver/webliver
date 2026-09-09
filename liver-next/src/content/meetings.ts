@@ -1,9 +1,11 @@
 /**
- * The four meetings a wedding actually has, and what gets asked in each.
+ * The meetings a wedding actually has, and what gets asked in each.
  *
- * Written as data rather than as four screens, because the drawer that renders
- * one of these is the same drawer for all four and the thing that differs is
- * the list of questions. A fifth meeting is a new entry here and nothing else.
+ * Written as data rather than as screens, because the drawer that renders
+ * one of these is the same drawer for all of them and the thing that differs
+ * is the list of questions. The four coordination meetings and the first call
+ * are compiled in here; a producer's own are rows of the same shape in
+ * `meeting_templates`, and the drawer cannot tell them apart.
  *
  * The questions are the ones a producer asks anyway, in the order they come up
  * in the room. Which is the point: a form that asks in a different order from
@@ -11,7 +13,8 @@
  * written from memory is worth less than no summary.
  */
 
-export type FieldKind = 'text' | 'long' | 'number' | 'time' | 'choice' | 'yesno';
+export const FIELD_KINDS = ['text', 'long', 'number', 'time', 'choice', 'yesno'] as const;
+export type FieldKind = (typeof FIELD_KINDS)[number];
 
 export type Field = {
   id: string;
@@ -22,19 +25,93 @@ export type Field = {
   hint?: string;
 };
 
-export type MeetingKind = 'production' | 'tasting' | 'venue' | 'design' | 'other';
+export type Section = { title: string; fields: readonly Field[] };
+
+/** The compiled-in kinds, plus 'custom' for a producer's own template and
+ *  'other' which the database has always allowed and nothing has written. */
+export type MeetingKind = 'intro' | 'production' | 'tasting' | 'venue' | 'design' | 'custom' | 'other';
 
 export type MeetingTemplate = {
   kind: MeetingKind;
+  /** The row id, for a producer's own. Absent on the compiled-in ones. */
+  id?: string;
   title: string;
   /** When it happens, said the way a producer says it. */
   when: string;
-  /** Days before the wedding, for the timeline. Negative is before. */
-  offsetDays: number;
+  /** Days before the wedding, for the timeline. Negative is before. Null
+   *  keeps it off the timeline, which is right for a first call. */
+  offsetDays: number | null;
   blurb: string;
-  sections: readonly { title: string; fields: readonly Field[] }[];
+  sections: readonly Section[];
+  /** A producer's template that still has logs pointing at it, and so is
+   *  kept but no longer offered. */
+  archived?: boolean;
 };
 
+/**
+ * The first conversation, before anything is signed.
+ *
+ * Asked for by name: "a template every producer can build for the first call
+ * with a couple, with the basic questions". This is the one to start from,
+ * and the button that copies it into a producer's own list is how they make
+ * it theirs. Nothing here is a coordination detail; it is who they are, what
+ * they want and whether it is a fit.
+ */
+export const INTRO_TEMPLATE: MeetingTemplate = {
+  kind: 'intro',
+  title: 'שיחה ראשונה',
+  when: 'לפני שסוגרים',
+  offsetDays: null,
+  blurb: 'מי הם, מה הם רוצים, ואם זה מתאים. הרישום כאן הוא מה שנזכרים בו בשיחה השנייה.',
+  sections: [
+    {
+      title: 'מי אתם',
+      fields: [
+        { id: 'names', label: 'שמות בני הזוג', kind: 'text' },
+        { id: 'heard_from', label: 'איך הגעתם אלינו', kind: 'text',
+          hint: 'המלצה, אינסטגרם, אולם' },
+        { id: 'who_decides', label: 'מי מעורב בהחלטות', kind: 'text',
+          hint: 'הורים, אח גדול, רק שניכם' },
+      ],
+    },
+    {
+      title: 'האירוע',
+      fields: [
+        { id: 'date_idea', label: 'תאריך או עונה', kind: 'text' },
+        { id: 'guests_idea', label: 'כמה אורחים בערך', kind: 'number' },
+        { id: 'venue_booked', label: 'האולם כבר סגור', kind: 'yesno' },
+        { id: 'venue_idea', label: 'איפה, או איזה סוג מקום', kind: 'text',
+          hint: 'אולם, גן, שטח פתוח, אזור בארץ' },
+        { id: 'kind', label: 'סוג האירוע', kind: 'choice',
+          options: ['חתונה', 'חינה', 'בר או בת מצווה', 'אירוע חברה', 'אחר'] },
+      ],
+    },
+    {
+      title: 'מה הם רוצים',
+      fields: [
+        { id: 'feel', label: 'האירוע במשפט', kind: 'long',
+          hint: 'איך זה אמור להרגיש' },
+        { id: 'must', label: 'מה הכי חשוב להם', kind: 'long' },
+        { id: 'avoid', label: 'מה לא רוצים בשום אופן', kind: 'long' },
+      ],
+    },
+    {
+      title: 'מסגרת',
+      fields: [
+        { id: 'budget_range', label: 'טווח תקציב', kind: 'choice',
+          options: ['עד 150 אלף', '150 עד 250 אלף', '250 עד 400 אלף', 'מעל 400 אלף', 'עוד לא יודעים'] },
+        { id: 'service', label: 'מה מחפשים מאיתנו', kind: 'choice',
+          options: ['הפקה מלאה', 'ליווי ותיאום', 'ניהול יום האירוע', 'עוד לא ברור'] },
+        { id: 'fit', label: 'הרושם שלי', kind: 'long',
+          hint: 'לעצמכם. הזוג לא רואה את זה אלא אם משתפים.' },
+        { id: 'next', label: 'מה הצעד הבא', kind: 'text',
+          hint: 'הצעת מחיר, פגישה, סיור באולם' },
+      ],
+    },
+  ],
+};
+
+/** The four coordination meetings. Offsets place them on the timeline. */
 export const MEETING_TEMPLATES: readonly MeetingTemplate[] = [
   {
     kind: 'production',
@@ -188,8 +265,12 @@ export const MEETING_TEMPLATES: readonly MeetingTemplate[] = [
   },
 ];
 
+/** Everything compiled in, in the order the buttons show it: the first call
+ *  first, because it is the first thing that happens. */
+export const BUILT_IN_TEMPLATES: readonly MeetingTemplate[] = [INTRO_TEMPLATE, ...MEETING_TEMPLATES];
+
 export const meetingTemplate = (kind: string): MeetingTemplate | undefined =>
-  MEETING_TEMPLATES.find((m) => m.kind === kind);
+  BUILT_IN_TEMPLATES.find((m) => m.kind === kind);
 
 /** Every field of a template, flattened. The summary builder walks this and so
  *  does the check that an unknown answer key never reaches the database. */

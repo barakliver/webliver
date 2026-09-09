@@ -253,6 +253,22 @@ try {
         + " (select count(*) from information_schema.columns where table_name='tasks' and column_name='phase')::text");
       say(kept === `${tasksBefore}/1`, 'and no task, and no column of one, is lost on the way',
         kept === `${tasksBefore}/1` ? '' : `expected ${tasksBefore}/1, got ${kept}`);
+
+      /* 0068 swaps the check on meeting_logs.kind for one with two more
+         kinds. On an upgraded database — not a fresh one — the new kinds
+         have to be accepted and the old ones still stored. */
+      const cid3 = ask('three', "select id from public.clients where display_name='דנה ויואב'");
+      let introErr = '';
+      try {
+        psql('three',
+          `-c "insert into public.meeting_logs (client_id, kind) values ('${cid3}','intro')"`
+          + ` -c "insert into public.meeting_logs (client_id, kind) values ('${cid3}','production')"`);
+      } catch (e) {
+        introErr = (e.stdout ?? e.message ?? '').split('\n').find((l) => /ERROR/.test(l)) ?? 'failed';
+      }
+      const introCount = ask('three', `select count(*)::text from public.meeting_logs where client_id='${cid3}'`);
+      say(!introErr && introCount === '2', 'and the first call is a meeting the upgraded database accepts',
+        introErr || `stored ${introCount}`);
     }
 
     // ── 4. a share link opens exactly what it says and nothing else ──────────
@@ -473,6 +489,14 @@ try {
       `insert into public.messages (client_id, author_id, body) values ('${cidA}','${uidA}','שלום')`,
       `insert into public.contracts (client_id, title) values ('${cidA}','הסכם אולם')`,
       `insert into public.support_tickets (reporter_id, producer_id, body) values ('${uidA}','${pidA}','משהו לא עובד')`,
+      /* The producer's own meeting form, and a meeting written from it. Built
+         with jsonb_build_* rather than a literal, because the literal's
+         double quotes would end the shell string this runs inside. */
+      `insert into public.meeting_templates (producer_id, name, sections) values ('${pidA}','שיחה ראשונה',`
+        + ` jsonb_build_array(jsonb_build_object('title','מי','fields',`
+        + ` jsonb_build_array(jsonb_build_object('id','q1','label','שמות','kind','text')))))`,
+      `insert into public.meeting_logs (client_id, kind, template_id)`
+        + ` select '${cidA}','custom',id from public.meeting_templates where producer_id='${pidA}'`,
       /* The invitation. The trigger finds the couple's profile by address and
          turns it into a client account, the way a real invitation does. */
       `insert into public.client_authorized_emails (client_id, email) values ('${cidA}','${mailC}')`,
@@ -503,6 +527,8 @@ try {
       messages:          `client_id='${cidA}'`,
       contracts:         `client_id='${cidA}'`,
       support_tickets:   `reporter_id='${uidA}'`,
+      meeting_templates: `producer_id='${pidA}'`,
+      meeting_logs:      `client_id='${cidA}'`,
     };
     const seen = (id, mail) => Object.fromEntries(
       Object.entries(ofA).map(([t, w]) => [t, asAccount(id, mail, `select count(*) from public.${t} where ${w}`)]),

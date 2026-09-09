@@ -6,9 +6,12 @@ import { PrintButton } from '@/components/app/PrintButton';
 import { SopBook } from '@/components/app/SopBook';
 import { GuideBookView } from '@/components/app/GuideBook';
 import { WorkflowTemplates } from '@/components/app/WorkflowTemplates';
+import { MeetingTemplates } from '@/components/app/MeetingTemplates';
 import { requireLiveProducer } from '@/lib/auth';
 import { supabaseServer } from '@/lib/supabase/server';
 import { loadTemplates } from '@/lib/workflow';
+import { loadMeetingTemplates } from '@/lib/meetingTemplateRows';
+import { meetingTemplatesFor } from '@/content/appUi';
 import { sopCopy, sopItemCount } from '@/content/sop';
 import { producerGuide, clientGuide, guideUi } from '@/content/guide';
 import { knowledgeCopy } from '@/content/site';
@@ -52,13 +55,13 @@ export default async function KnowledgePage({
 
   const shelf = readShelf((await searchParams).shelf);
   const sb = await supabaseServer();
-  const templates = await loadTemplates(sb);
+  const [templates, meetingTemplates] = await Promise.all([loadTemplates(sb), loadMeetingTemplates(sb)]);
 
   const c = knowledgeCopy;
   const counts: Record<Shelf, number> = {
     book: producerGuide.chapters.reduce((n, ch) => n + ch.entries.length, 0),
     playbook: sopItemCount,
-    templates: templates.length,
+    templates: templates.length + meetingTemplates.filter((t) => !t.archived).length,
   };
 
   return (
@@ -139,7 +142,12 @@ export default async function KnowledgePage({
         </div>
       )}
 
-      {shelf === 'templates' && <WorkflowTemplates templates={templates} />}
+      {shelf === 'templates' && (
+        <div className="space-y-8">
+          <WorkflowTemplates templates={templates} />
+          <div id="meetings"><MeetingTemplates c={meetingTemplatesFor('he')} own={meetingTemplates} /></div>
+        </div>
+      )}
     </>
   );
 }

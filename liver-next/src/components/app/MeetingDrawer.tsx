@@ -1,17 +1,20 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import Link from 'next/link';
 import { CalendarDays, ChevronDown, Sparkles, Trash2 } from 'lucide-react';
 import { saveMeeting, deleteMeeting } from '@/app/actions/meetings';
-import { MEETING_TEMPLATES, meetingTemplate, type Field, type MeetingTemplate } from '@/content/meetings';
+import { BUILT_IN_TEMPLATES, meetingTemplate, type Field, type MeetingTemplate } from '@/content/meetings';
 import { completeness } from '@/lib/ai/meeting';
+import { templateOf } from '@/lib/meetingTemplates';
 import { meetingCopy as c } from '@/content/site';
-import { Ltr } from '@/components/Ltr';
 import { EVENT_ZONE } from '@/lib/clock';
 
 export type MeetingLog = {
   id: string;
   kind: string;
+  /** For kind 'custom': which of the producer's own templates it was written from. */
+  template_id: string | null;
   title: string;
   held_on: string | null;
   answers: Record<string, unknown>;
@@ -23,8 +26,12 @@ export type MeetingLog = {
 
 const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE, day: 'numeric', month: 'long', year: 'numeric' });
 
+/* The buttons are keyed so a producer's template and a compiled-in one can
+   never collide, whatever the row's id happens to be. */
+const keyOf = (t: MeetingTemplate) => (t.kind === 'custom' ? `custom:${t.id}` : t.kind);
+
 /**
- * The four meetings, as a form that matches the conversation.
+ * The meetings, as a form that matches the conversation.
  *
  * The questions are in the order they come up in the room, which is the whole
  * reason this is worth building: a form that asks in a different order gets
@@ -35,10 +42,41 @@ const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE, day: 'n
  * a car park has recorded three true things, and a form that refuses to save
  * until it is complete is a form that gets abandoned at the door and written
  * up never.
+ *
+ * `own` is the producer's templates, archived ones included: the buttons skip
+ * those, but a log written from one still needs its questions to be edited.
  */
-export function MeetingDrawer({ clientId, logs }: { clientId: string; logs: MeetingLog[] }) {
+export function MeetingDrawer({ clientId, logs, own = [] }: {
+  clientId: string; logs: MeetingLog[]; own?: MeetingTemplate[];
+}) {
   const [editing, setEditing] = useState<string | null>(null);
   const [adding, setAdding] = useState<string | null>(null);
+
+  const offered = own.filter((t) => !t.archived);
+  const pick = (key: string): MeetingTemplate | undefined =>
+    key.startsWith('custom:') ? own.find((t) => t.id === key.slice(7)) : meetingTemplate(key);
+  const addingTemplate = adding ? pick(adding) : undefined;
+
+  const chip = (t: MeetingTemplate) => {
+    const key = keyOf(t);
+    const on = adding === key;
+    return (
+      <button
+        key={key}
+        type="button"
+        onClick={() => { setAdding(on ? null : key); setEditing(null); }}
+        aria-pressed={on}
+        className={`rounded-button border px-4 py-2 text-start text-[13.5px] transition ${
+          on
+            ? 'border-accent bg-accent-wash text-ink'
+            : 'border-line-strong bg-card text-ink-soft hover:border-accent/40 hover:text-ink'
+        }`}
+      >
+        <span className="block text-ink">{t.title}</span>
+        {t.when && <span className="block text-[12px] text-ink-mute">{t.when}</span>}
+      </button>
+    );
+  };
 
   return (
     <section className="card">
@@ -47,35 +85,30 @@ export function MeetingDrawer({ clientId, logs }: { clientId: string; logs: Meet
           <h2 className="font-display text-[22px] font-semibold text-ink">{c.title}</h2>
           <p className="mt-1 text-[13.5px] text-ink-mute">{c.sub}</p>
         </div>
+        <Link href="/app/knowledge?shelf=templates" className="text-[13.5px] text-accent hover:underline">
+          {c.buildOwn}
+        </Link>
       </div>
 
-      {/* Four buttons rather than a menu. There are exactly four and they are
-          the whole feature; hiding them behind a select would be hiding the
-          thing the screen is for. */}
-      <div className="mt-5 flex flex-wrap gap-2">
-        {MEETING_TEMPLATES.map((t) => (
-          <button
-            key={t.kind}
-            type="button"
-            onClick={() => { setAdding(adding === t.kind ? null : t.kind); setEditing(null); }}
-            aria-pressed={adding === t.kind}
-            className={`rounded-button border px-4 py-2 text-start text-[13.5px] transition ${
-              adding === t.kind
-                ? 'border-accent bg-accent-wash text-ink'
-                : 'border-line-strong bg-card text-ink-soft hover:border-accent/40 hover:text-ink'
-            }`}
-          >
-            <span className="block text-ink">{t.title}</span>
-            <span className="block text-[12px] text-ink-mute">{t.when}</span>
-          </button>
-        ))}
+      {/* Buttons rather than a menu. They are the whole feature; hiding them
+          behind a select would be hiding the thing the screen is for. Two
+          rows once the producer has their own, so theirs read as theirs. */}
+      {offered.length > 0 && <p className="eyebrow mt-5">{c.builtIn}</p>}
+      <div className={`flex flex-wrap gap-2 ${offered.length > 0 ? 'mt-2' : 'mt-5'}`}>
+        {BUILT_IN_TEMPLATES.map(chip)}
       </div>
+      {offered.length > 0 && (
+        <>
+          <p className="eyebrow mt-4">{c.own}</p>
+          <div className="mt-2 flex flex-wrap gap-2">{offered.map(chip)}</div>
+        </>
+      )}
 
-      {adding && (
+      {addingTemplate && (
         <div className="mt-5">
           <Form
             clientId={clientId}
-            template={meetingTemplate(adding)!}
+            template={addingTemplate}
             onDone={() => setAdding(null)}
           />
         </div>
@@ -86,7 +119,7 @@ export function MeetingDrawer({ clientId, logs }: { clientId: string; logs: Meet
       ) : (
         <ul className="mt-6 divide-y divide-line border-t border-line">
           {logs.map((log) => {
-            const t = meetingTemplate(log.kind);
+            const t = templateOf(log, own);
             const on = editing === log.id;
             return (
               <li key={log.id} className="py-3">
@@ -140,6 +173,17 @@ export function MeetingDrawer({ clientId, logs }: { clientId: string; logs: Meet
                     <Form clientId={clientId} template={t} log={log} onDone={() => setEditing(null)} />
                   </div>
                 )}
+
+                {/* The questions are gone; the record is not. Shown whole
+                    rather than clamped, since there is no form to open. */}
+                {on && !t && (
+                  <div className="mt-3 rounded-card-sm bg-surface-100 p-4">
+                    <p className="text-[13px] text-ink-mute">{c.noForm}</p>
+                    {log.summary && (
+                      <p className="mt-2 whitespace-pre-line text-[14px] text-ink">{log.summary}</p>
+                    )}
+                  </div>
+                )}
               </li>
             );
           })}
@@ -175,6 +219,7 @@ function Form({ clientId, template, log, onDone }: {
       id: log?.id,
       clientId,
       kind: template.kind,
+      templateId: template.id,
       title: template.title,
       heldOn: heldOn || undefined,
       answers,
@@ -192,7 +237,7 @@ function Form({ clientId, template, log, onDone }: {
 
   return (
     <div className="rounded-card-sm bg-surface-100 p-4">
-      <p className="text-[13.5px] text-ink-soft">{template.blurb}</p>
+      {template.blurb && <p className="text-[13.5px] text-ink-soft">{template.blurb}</p>}
 
       <label className="mt-4 block text-[12.5px] text-ink-mute">
         {c.held}
@@ -202,9 +247,9 @@ function Form({ clientId, template, log, onDone }: {
         />
       </label>
 
-      {template.sections.map((section) => (
-        <fieldset key={section.title} className="mt-5 border-0 p-0">
-          <legend className="text-[13px] text-accent">{section.title}</legend>
+      {template.sections.map((section, i) => (
+        <fieldset key={`${section.title}-${i}`} className="mt-5 border-0 p-0">
+          {section.title && <legend className="text-[13px] text-accent">{section.title}</legend>}
           <div className="mt-2 grid gap-3 sm:grid-cols-2">
             {section.fields.map((f) => (
               <Input key={f.id} field={f} value={answers[f.id]} onChange={(v) => set(f.id, v)} />
@@ -339,7 +384,7 @@ function Input({ field, value, onChange }: {
         inputMode={field.kind === 'number' ? 'numeric' : undefined}
         className={`${common} mt-1`}
         value={String(value ?? '')}
-        onChange={(e) => onChange(field.kind === 'number' ? e.target.value : e.target.value)}
+        onChange={(e) => onChange(e.target.value)}
         placeholder={field.hint}
         autoComplete="off"
       />

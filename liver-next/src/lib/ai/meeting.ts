@@ -1,7 +1,7 @@
 /* Relative, with the extension, the way siteCopy.ts imports its own content.
    The `@/` alias is a bundler convention and the test runner has no bundler,
    so a lib file that has to be testable without one reaches for the path. */
-import { fieldsOf, meetingTemplate, type MeetingTemplate } from '../../content/meetings.ts';
+import { fieldsOf, type MeetingTemplate } from '../../content/meetings.ts';
 
 /**
  * A meeting, turned into something a person can read six months later.
@@ -70,9 +70,12 @@ export function completeness(template: MeetingTemplate, answers: Record<string, 
 
 /** Only keys the template actually defines survive. A questionnaire posted
  *  from a browser is attacker controlled, and a stored answer under a key
- *  nothing renders is a row that grows forever and is read by nobody. */
-export function cleanAnswers(kind: string, raw: unknown): Record<string, string | number | boolean> {
-  const t = meetingTemplate(kind);
+ *  nothing renders is a row that grows forever and is read by nobody.
+ *
+ *  Takes the template rather than its kind, because a producer's own template
+ *  has no kind to look up by: the caller resolves it, by kind or by row, and
+ *  hands it in. No template means no answers, whatever was posted. */
+export function cleanAnswers(t: MeetingTemplate | undefined, raw: unknown): Record<string, string | number | boolean> {
   if (!t || typeof raw !== 'object' || raw === null) return {};
 
   const known = new Map(fieldsOf(t).map((f) => [f.id, f]));

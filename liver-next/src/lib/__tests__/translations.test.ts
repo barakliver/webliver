@@ -1,6 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { appUiFor } from '../../content/appUi.ts';
+import {
+  appUiFor, prepFor, envelopesFor, vehiclesFor, venuesFor, meetingTemplatesFor,
+} from '../../content/appUi.ts';
 import {
   authFor, privacyFor, termsFor, a11yFor, installFor, storeFor, rsvpFor,
   budgetSimFor, conciergeFor, eventKindsFor,
@@ -67,6 +69,34 @@ test('the couple’s area has the same shape in both languages', () => {
   assert.equal(he.locale, 'he');
   assert.equal(en.locale, 'en');
   assert.deepEqual(paths({ ...en, locale: '' }), paths({ ...he, locale: '' }));
+});
+
+/* The blocks handed to one panel each rather than through the provider. The
+   types hold them to the same shape; this is the run-time half, for the
+   same reason as above. */
+const PANEL_BLOCKS = {
+  prep: prepFor, envelopes: envelopesFor, vehicles: vehiclesFor, venues: venuesFor,
+  meetingTemplates: meetingTemplatesFor,
+} as const;
+
+test('every panel block has the same shape and the same holes in both languages', () => {
+  const holes = (s: string) => (s.match(/\{[a-z]+\}/g) ?? []).sort();
+  const compare = (a: unknown, b: unknown, where: string): void => {
+    if (typeof a === 'string' && typeof b === 'string') {
+      assert.deepEqual(holes(a), holes(b), `${where}: placeholders differ`);
+      return;
+    }
+    if (a && b && typeof a === 'object' && typeof b === 'object') {
+      for (const k of Object.keys(a)) {
+        compare((a as Record<string, unknown>)[k], (b as Record<string, unknown>)[k], `${where}.${k}`);
+      }
+    }
+  };
+  for (const [name, resolve] of Object.entries(PANEL_BLOCKS)) {
+    assert.deepEqual(paths(resolve('en')), paths(resolve('he')), `${name} differs between he and en`);
+    assert.deepEqual(functionsIn(resolve('en')), [], `${name} (en) carries a function`);
+    compare(resolve('he'), resolve('en'), name);
+  }
 });
 
 test('nothing handed to a client component is a function', () => {
