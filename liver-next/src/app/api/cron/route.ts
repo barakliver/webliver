@@ -3,6 +3,7 @@ import { supabaseAdmin } from '@/lib/supabase/admin';
 import { optional } from '@/lib/env';
 import { EVENT_ZONE, todayInZone, weekdayInZone } from '@/lib/clock';
 import { sendBudgetDigests } from '@/lib/notify/budgetDigest';
+import { sendVendorDigests } from '@/lib/notify/vendorDigest';
 
 /**
  * The nightly sweep: close what the calendar has closed, and send the
@@ -85,7 +86,7 @@ export async function POST(req: Request) {
   }
 
   const sb = supabaseAdmin();
-  const out = { archived: 0, reminded: 0, digests: 0, errors: [] as string[] };
+  const out = { archived: 0, reminded: 0, digests: 0, vendorDigests: 0, errors: [] as string[] };
 
   /* The Sunday letter. On the nightly run it goes out on Sunday's run, which
      is Sunday morning where the events are; `?job=digest` sends it on any
@@ -97,6 +98,15 @@ export async function POST(req: Request) {
     const d = await sendBudgetDigests(sb, today);
     out.digests = d.sent;
     out.errors.push(...d.errors);
+  }
+
+  /* The Monday letter about suppliers, same shape: Monday's run, or
+     `?job=vendors` on any day, once a week per event. */
+  const wantVendors = new URL(req.url).searchParams.get('job') === 'vendors' || weekdayInZone() === 1;
+  if (wantVendors) {
+    const v = await sendVendorDigests(sb, today);
+    out.vendorDigests = v.sent;
+    out.errors.push(...v.errors);
   }
 
   /* Fourteen days of grace. The week after a wedding is when the last invoice

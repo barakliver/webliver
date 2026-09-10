@@ -55,6 +55,13 @@ export type Vendor = {
   phone: string;
   status: string;
   notes: string;
+  /* The relationship's status, for the couple's copy of the supplier HQ. */
+  deposit: number | null;
+  deposit_paid_on: string | null;
+  balance_due_on: string | null;
+  last_contact_on: string | null;
+  waiting_on: 'me' | 'them' | null;
+  next_action: string;
 };
 
 export type PortalData = {
@@ -137,7 +144,7 @@ export async function loadPortal(
       .order('due_on', { ascending: true, nullsFirst: false }),
     sb.from('payments').select('id,client_id,title,amount,due_on,paid,paid_on')
       .in('client_id', ids).order('paid').order('due_on', { ascending: true, nullsFirst: false }),
-    sb.from('budget_items').select('id,client_id,category,label,estimate,agreed,vendor,created_at')
+    sb.from('budget_items').select('id,client_id,category,label,estimate,agreed,vendor,event_vendor_id,created_at')
       .in('client_id', ids).order('created_at'),
     sb.from('guests_rsvp')
       .select('id,client_id,full_name,side,phone,status,party_size,diet,note,invite_token,table_id')
@@ -146,7 +153,7 @@ export async function loadPortal(
     sb.from('day_schedule').select('id,client_id,track,at_time,title,note,owner,audience,duration_min').in('client_id', ids).order('at_time'),
     sb.from('moodboards').select('id,client_id,category,caption,image_path')
       .in('client_id', ids).order('created_at', { ascending: false }),
-    sb.from('event_vendors').select('id,client_id,name,category,phone,status,notes')
+    sb.from('event_vendors').select('id,client_id,name,category,phone,status,notes,deposit,deposit_paid_on,balance_due_on,last_contact_on,waiting_on,next_action')
       .in('client_id', ids).order('category').order('name'),
   ]);
 
@@ -315,6 +322,7 @@ export async function loadContracts(
       status: r.status,
       signed_at: r.signed_at,
       signed_name: r.signed_name,
+      party_name: r.party_name ?? '',
       intact: intacts.get(r.id) ?? true,
       file_url: r.file_path ? (signedUrls.get(r.file_path) ?? null) : null,
     });

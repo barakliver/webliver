@@ -22,6 +22,7 @@ import { VendorScoutDemo } from './VendorScoutDemo';
 import { QuickLedger } from '@/components/app/QuickLedger';
 import { LedgerEntries } from '@/components/app/LedgerEntries';
 import { MonthGrid } from '@/components/app/MonthGrid';
+import { VendorHq } from '@/components/app/VendorHq';
 import { PlanOffer } from '@/components/app/PlanOffer';
 import { ProductionBook } from '@/components/app/ProductionBook';
 import { Thread } from '@/components/app/Thread';
@@ -372,6 +373,28 @@ export default async function DesignPage() {
             <ShareSwitches clientId="00000000-0000-4000-8000-000000000003" shares={{ envelopes: false }} moneyOn />
             <TabShare clientId="00000000-0000-4000-8000-000000000003" tab="prep" shares={{ envelopes: false }} moneyOn />
             <TabShare clientId="00000000-0000-4000-8000-000000000003" tab="money" shares={{}} moneyOn={false} />
+          </div>
+        </Panel>
+
+        <Panel name="VendorHq" note="every supplier on one event with an honest status: one red, one amber, two green; the week's list and the three to watch">
+          <div className="max-w-5xl">
+            <VendorHq
+              clientId="00000000-0000-4000-8000-000000000003" viewer="producer" couple="נועה ואיתי" date="2026-12-05" signAs="ברק"
+              vendors={[
+                { id: 'h1', name: 'גני ורדים', category: 'venue', phone: '0521111111', status: 'booked', notes: '', deposit: 30000, deposit_paid_on: '2026-03-01', balance_due_on: '2026-09-15', last_contact_on: '2026-09-02', waiting_on: null, next_action: '' },
+                { id: 'h2', name: 'סטודיו לביא', category: 'photo', phone: '0522222222', status: 'booked', notes: '', deposit: 3000, deposit_paid_on: null, balance_due_on: null, last_contact_on: '2026-08-20', waiting_on: 'them', next_action: '' },
+                { id: 'h3', name: 'להקת שדות', category: 'music', phone: '', status: 'booked', notes: '', deposit: null, deposit_paid_on: null, balance_due_on: null, last_contact_on: '2026-09-09', waiting_on: 'me', next_action: 'לשלוח את רשימת השירים' },
+                { id: 'h4', name: 'פרח לבן', category: 'floral', phone: '0523333333', status: 'shortlist', notes: '', deposit: null, deposit_paid_on: null, balance_due_on: null, last_contact_on: null, waiting_on: null, next_action: '' },
+              ]}
+              contracts={[
+                { party_name: 'גני ורדים', status: 'signed', signed_at: '2026-03-01' },
+                { party_name: 'סטודיו לביא', status: 'sent', signed_at: null },
+              ]}
+              lines={[
+                { event_vendor_id: 'h1', estimate: 150000, agreed: 162000 },
+                { event_vendor_id: 'h2', estimate: 14000, agreed: 13500 },
+              ]}
+            />
           </div>
         </Panel>
 

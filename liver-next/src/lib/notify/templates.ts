@@ -277,3 +277,41 @@ export function budgetDigestEmail(opts: {
     <p style="margin:0"><a href="${opts.url}" style="display:inline-block;padding:10px 18px;border-radius:12px;background:#0e1620;color:#fff;text-decoration:none;font-size:14.5px">למעקב המלא</a></p>
   `, opts.brand);
 }
+
+/* ── the Monday supplier letter ──────────────────────────────────────────── */
+const HQ_ACTION: Record<string, string> = {
+  sendContract: 'לשלוח הסכם לחתימה', chaseContract: 'לזרז חתימה על ההסכם', payDeposit: 'לשלם מקדמה',
+  payBalance: 'לשלם יתרה', nudge: 'לכתוב שוב, שתקו', reply: 'לענות להם', own: '', wait: 'לחכות',
+};
+
+export function supplierDigestEmail(opts: {
+  eventName: string;
+  sum: import('../vendorHq.ts').HqSummary;
+  risky: import('../vendorHq.ts').HqRow[];
+  url: string;
+  brand?: MailBrand;
+}) {
+  const { sum, risky } = opts;
+  const li = (t: string) => `<li>${t}</li>`;
+  const what = (r: import('../vendorHq.ts').HqRow) => (r.action === 'own' ? r.ownAction : HQ_ACTION[r.action]);
+  const why = (r: import('../vendorHq.ts').HqRow) =>
+    r.flags.includes('silent') && r.silentDays !== null ? `לא ענו כבר ${r.silentDays} ימים.`
+      : r.contract !== 'signed' && r.vendor.status === 'booked' ? 'סגור בלי הסכם חתום.'
+        : r.balance ? `יתרה של ${shekels(r.balance)} עדיין פתוחה.` : 'כלום דחוף, פשוט הכי חשוף מהרשימה.';
+
+  return shell(`
+    <h2 style="margin:0 0 12px;font-size:20px;color:#0e1620">הספקים של ${opts.eventName}, השבוע</h2>
+    <ol style="margin:0 0 18px;padding-inline-start:20px;font-size:15px;line-height:1.9;color:#0e1620">
+      ${li(`ספקים סגורים עם הסכם חתום: ${sum.locked} מתוך ${sum.total}`)}
+      ${li(`מקדמות ששולמו: ${sum.depositsPaid}`)}
+      ${li(`יתרות שמגיעות בשלושים יום: ${shekels(sum.dueSoon)}`)}
+      ${li(sum.first ? `<b>הדבר הכי חשוב השבוע: ${sum.first.vendor.name}: ${what(sum.first)}</b>` : 'הדבר הכי חשוב השבוע: כלום. הכל ירוק.')}
+    </ol>
+    ${risky.length === 0 ? '' : `
+    <p style="margin:0 0 6px;font-size:13px;letter-spacing:.06em;color:#8a97a8">שלושה לשים עליהם עין</p>
+    <ol style="margin:0 0 18px;padding-inline-start:20px;font-size:15px;line-height:1.9;color:#47566a">
+      ${risky.map((r) => li(`<b>${r.vendor.name}</b>: ${why(r)}`)).join('')}
+    </ol>`}
+    <p style="margin:0"><a href="${opts.url}" style="display:inline-block;padding:10px 18px;border-radius:12px;background:#0e1620;color:#fff;text-decoration:none;font-size:14.5px">למצב הספקים</a></p>
+  `, opts.brand);
+}

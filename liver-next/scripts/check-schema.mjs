@@ -286,6 +286,12 @@ try {
         `select budget_plan::text || '|' || coalesce(budget_digest_on::text, 'never') from public.clients where id='${cid3}'`);
       say(money === '{}|never', 'an existing event has an empty budget plan and no Sunday letter yet', `got: ${money}`);
 
+      /* 0075: a supplier booked before the status columns existed has
+         nothing to say yet, and says so with nulls rather than noise. */
+      const hq = ask('three',
+        `select coalesce(waiting_on,'-') || '|' || coalesce(deposit::text,'-') || '|' || next_action from public.event_vendors where client_id='${cid3}' and name='DJ אורי'`);
+      say(hq === '-|-|', 'a supplier from before 0075 has an empty status, not a wrong one', `got: ${hq}`);
+
       /* 0073: the enum grew, and the guest who said "kosher" still says it. */
       const diets = ask('three', "select string_agg(enumlabel, ',' order by enumsortorder) from pg_enum where enumtypid = 'diet_pref'::regtype");
       say(/glatt/.test(diets) && /allergy/.test(diets) && /kosher/.test(diets), 'the caterer\'s new answers are on the enum beside the old ones', `got: ${diets}`);

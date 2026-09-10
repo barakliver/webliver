@@ -90,10 +90,11 @@ export const fixtureSeatGuests: SeatGuest[] = [
 ];
 
 /* The suppliers as the couple sees them: two closed, one still open. */
+const quiet = { deposit: null, deposit_paid_on: null, balance_due_on: null, last_contact_on: null, waiting_on: null, next_action: '' } as const;
 export const fixturePortalVendors: PortalVendor[] = [
-  { id: 'pv1', client_id: FIXTURE_CLIENT, name: 'קייטרינג השדה', category: 'catering', phone: '0544444444', status: 'booked', notes: '' },
-  { id: 'pv2', client_id: FIXTURE_CLIENT, name: 'DJ אורי', category: 'music', phone: '0522222222', status: 'booked', notes: 'איש קשר: אורי' },
-  { id: 'pv3', client_id: FIXTURE_CLIENT, name: 'סטודיו לביא', category: 'photo', phone: '0521111111', status: 'shortlist', notes: '' },
+  { id: 'pv1', client_id: FIXTURE_CLIENT, name: 'קייטרינג השדה', category: 'catering', phone: '0544444444', status: 'booked', notes: '', ...quiet },
+  { id: 'pv2', client_id: FIXTURE_CLIENT, name: 'DJ אורי', category: 'music', phone: '0522222222', status: 'booked', notes: 'איש קשר: אורי', ...quiet },
+  { id: 'pv3', client_id: FIXTURE_CLIENT, name: 'סטודיו לביא', category: 'photo', phone: '0521111111', status: 'shortlist', notes: '', ...quiet },
 ];
 
 export const fixtureDay: DayItem[] = [

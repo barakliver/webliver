@@ -31,6 +31,7 @@ import { loadVehicles, vehiclesOf } from '@/lib/vehicles';
 import { EnvelopesPanel } from '@/components/app/EnvelopesPanel';
 import { VehiclesPanel } from '@/components/app/VehiclesPanel';
 import { CalendarFeed } from '@/components/app/CalendarFeed';
+import { VendorHq } from '@/components/app/VendorHq';
 import { envelopesFor, vehiclesFor } from '@/content/appUi';
 
 export async function generateMetadata() {
@@ -144,6 +145,15 @@ export default async function PortalPage({ searchParams }: {
                   vehicles: cars.length,
                 }}
               />
+              {data.can(w.id, 'vendors') && data.vendorsFor(w.id).length > 0 && (
+                <div id="vendorhq" className="scroll-mt-28"><VendorHq
+                  clientId={w.id} viewer="client"
+                  vendors={data.vendorsFor(w.id)}
+                  contracts={(contracts.get(w.id) ?? []).map((k) => ({ party_name: k.party_name ?? '', status: k.status, signed_at: k.signed_at }))}
+                  lines={data.budgetFor(w.id).map((b) => ({ event_vendor_id: (b as { event_vendor_id?: string | null }).event_vendor_id ?? null, estimate: b.estimate, agreed: b.agreed }))}
+                  couple={w.display_name} date={w.event_date} signAs={brand.name}
+                /></div>
+              )}
               {data.can(w.id, 'contracts') && (
                 <div id="contracts" className="scroll-mt-28"><Contracts clientId={w.id} contracts={contracts.get(w.id) ?? []} viewer="client" /></div>
               )}

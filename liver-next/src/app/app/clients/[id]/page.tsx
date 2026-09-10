@@ -20,6 +20,8 @@ import { BudgetTracker } from '@/components/app/BudgetTracker';
 import { readPlan } from '@/lib/budgetPlan';
 import { loadLedger } from '@/lib/ledger';
 import { LedgerEntries } from '@/components/app/LedgerEntries';
+import { VendorHq } from '@/components/app/VendorHq';
+import type { HqVendor, HqContract, HqLine } from '@/lib/vendorHq';
 import { ApplyTemplate } from '@/components/app/ApplyTemplate';
 import { EventFileLists } from '@/components/app/EventFileLists';
 import { loadEventFile } from '@/lib/eventFile';
@@ -314,7 +316,7 @@ async function Section({ tab, client, viewerId }: { tab: EventTab; client: Clien
        the event. It is the producer's own book and row level security already
        scopes it to them; the archived ones are left out because booking a
        retired supplier is not a thing anybody means to do. */
-    const [crew, eventVendors, directory] = await Promise.all([
+    const [crew, eventVendors, directory, hqVendors, hqContracts, hqLines] = await Promise.all([
       safeRows<CrewMember>('crew', sb.from('crew')
         .select('id,name,role,phone,call_time,fee,notes')
         .eq('client_id', id).order('call_time', { ascending: true, nullsFirst: false })),
@@ -323,9 +325,25 @@ async function Section({ tab, client, viewerId }: { tab: EventTab; client: Clien
         .eq('client_id', id).order('category')),
       safeRows<DirectoryEntry>('vendor directory', sb.from('vendors')
         .select('id,name,category,phone').is('archived_at', null).order('name')),
+      /* The status of each relationship: the same rows with the six
+         columns 0075 added, the contracts that name a supplier, and the
+         budget line that says what was agreed. */
+      safeRows<HqVendor>('supplier status', sb.from('event_vendors')
+        .select('id,name,category,phone,status,notes,deposit,deposit_paid_on,balance_due_on,last_contact_on,waiting_on,next_action')
+        .eq('client_id', id)),
+      safeRows<HqContract>('supplier contracts', sb.from('contracts')
+        .select('party_name,status,signed_at').eq('client_id', id)),
+      safeRows<HqLine>('supplier lines', sb.from('budget_items')
+        .select('event_vendor_id,estimate,agreed').eq('client_id', id).not('event_vendor_id', 'is', null)),
     ]);
     return (
       <div className="space-y-6">
+        <VendorHq
+          clientId={id} viewer="producer"
+          vendors={hqVendors} contracts={hqContracts} lines={hqLines}
+          couple={client.display_name} date={client.event_date}
+          signAs={(await requireLiveProducer()).producer?.brandName || ''}
+        />
         <EventVendors clientId={id} vendors={eventVendors} directory={directory} />
         <CrewPanel clientId={id} crew={crew} />
       </div>
