@@ -347,6 +347,12 @@ export const boardEn: BoardCopy = {
   noneProducer: 'The couple has not uploaded anything yet.',
   remove: 'Remove',
   tooBig: 'That image is too large. Up to 8MB.',
+  chooseMany: 'Choose photographs',
+  picked: { one: 'One photograph chosen', many: '{n} photographs chosen' },
+  progress: 'Uploading {n} of {m}',
+  failedSome: { one: 'One photograph did not upload', many: '{n} photographs did not upload' },
+  dropHint: 'Choose several at once, or drag them here. The caption and the category apply to all of them.',
+  subProducerAdd: 'The photographs the couple collected, and what you added for them. The brand reading works on what is here.',
 };
 
 export const guestsEn: GuestsCopy = {

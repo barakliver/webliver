@@ -7,53 +7,45 @@ import { BOARD_CATEGORIES } from '@/content/lists';
 export type BoardResult = { ok: boolean; error?: string };
 
 const BUCKET = 'moodboards';
-const MAX_BYTES = 8 * 1024 * 1024;
-const ALLOWED = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
 
-
-function extensionFor(type: string, name: string): string {
-  const fromName = (name.match(/\.([a-zA-Z0-9]{2,5})$/)?.[1] ?? '').toLowerCase();
-  if (fromName) return fromName;
-  return type === 'image/png' ? 'png' : type === 'image/webp' ? 'webp' : 'jpg';
-}
-
-/** The file goes under <client_id>/… because that first path segment is what
- *  the storage policies read to decide who may touch it. A path built any
- *  other way would be refused rather than land somewhere unprotected. */
-export async function uploadBoardImage(_prev: BoardResult | null, form: FormData): Promise<BoardResult> {
-  const clientId = String(form.get('client_id') ?? '');
-  const caption = String(form.get('caption') ?? '').trim();
-  const categoryRaw = String(form.get('category') ?? 'other');
+/**
+ * The row for a photograph the browser has already put in the bucket.
+ *
+ * The board used to send the bytes through a server action, one file per
+ * press, and a server action has a ceiling of a few megabytes. One photograph off
+ * a camera is past it, and eight together are far past it, and the
+ * ceiling is a 413 that the screen never hears about. So the board now
+ * does what the shared folder does: the browser uploads under its own
+ * session, straight to storage, where the same policies decide whether
+ * it may, and this records what landed.
+ *
+ * The path is attacker controlled and is checked rather than trusted: it
+ * must sit in this workspace's own folder, or a row could be filed
+ * pointing at another couple's photograph.
+ */
+export async function registerBoardImage(input: {
+  clientId: string; path: string; caption?: string; category?: string;
+}): Promise<BoardResult> {
+  const { clientId, path } = input;
+  const caption = String(input.caption ?? '').trim().slice(0, 200);
+  const categoryRaw = String(input.category ?? 'other');
   const category = BOARD_CATEGORIES.some((c) => c.value === categoryRaw) ? categoryRaw : 'other';
-  const file = form.get('image');
 
-  if (!clientId) return { ok: false, error: 'חסר מזהה אירוע' };
-  if (!(file instanceof File) || file.size === 0) return { ok: false, error: 'נא לבחור תמונה' };
-  if (file.size > MAX_BYTES) return { ok: false, error: 'התמונה גדולה מדי. עד 8MB.' };
-  if (!ALLOWED.includes(file.type)) return { ok: false, error: 'אפשר להעלות תמונות בלבד' };
+  if (!clientId || !path) return { ok: false, error: 'חסרים פרטים על התמונה' };
+  if (!path.startsWith(`${clientId}/`) || path.includes('..')) {
+    return { ok: false, error: 'התמונה לא נשמרה במקום הנכון' };
+  }
 
   const sb = await supabaseServer();
-  const path = `${clientId}/${crypto.randomUUID()}.${extensionFor(file.type, file.name)}`;
-
-  const { error: upErr } = await sb.storage.from(BUCKET).upload(path, file, {
-    contentType: file.type,
-    upsert: false,
-  });
-  if (upErr) return { ok: false, error: 'ההעלאה נכשלה. נסו שוב.' };
-
-  const { error: rowErr } = await sb
-    .from('moodboards')
-    .insert({ client_id: clientId, category, caption, image_path: path });
-
-  /* A row that never landed would leave an image nobody can reach or remove,
-     so the file goes with it. */
-  if (rowErr) {
+  const { error } = await sb.from('moodboards').insert({ client_id: clientId, category, caption, image_path: path });
+  if (error) {
     await sb.storage.from(BUCKET).remove([path]);
     return { ok: false, error: 'לא הצלחנו לשמור את התמונה' };
   }
 
   revalidatePath('/app/portal');
   revalidatePath(`/app/clients/${clientId}`);
+  revalidatePath(`/app/clients/${clientId}/preview`);
   return { ok: true };
 }
 
