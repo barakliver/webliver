@@ -41,6 +41,10 @@ printf '  paste the key, then Enter: '
 IFS= read -rs KEY
 echo; echo
 
+# A paste from a web page often carries a space or a newline on either end.
+# That is not the key's fault, so it is trimmed rather than refused.
+KEY="$(printf '%s' "$KEY" | tr -d '\r\n' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+
 # ── is it the thing, or a description of the thing ──────────────────────────
 bad=""
 case "$KEY" in
