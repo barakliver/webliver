@@ -13,7 +13,7 @@ set -euo pipefail
 ENVFILE="${ENVFILE:-/etc/liver-next.env}"
 APP="${APP:-/root/webliver/liver-next}"
 NAMES="NEXT_PUBLIC_SUPABASE_URL NEXT_PUBLIC_SUPABASE_ANON_KEY SUPABASE_SERVICE_ROLE_KEY DATABASE_URL \
-       ANTHROPIC_API_KEY RESEND_API_KEY MAIL_FROM CRON_KEY"
+       ANTHROPIC_API_KEY RESEND_API_KEY MAIL_FROM CRON_KEY GOOGLE_CLIENT_ID GOOGLE_CLIENT_SECRET"
 
 if [ ! -f "$ENVFILE" ]; then
   echo "$ENVFILE does not exist. Run deploy-next.sh first."
@@ -58,6 +58,8 @@ has ANTHROPIC_API_KEY         || echo "    ANTHROPIC_API_KEY: every assistant an
 has RESEND_API_KEY            || echo "    RESEND_API_KEY / MAIL_FROM: every email the platform sends.           bash /root/webliver/scripts/set-mail.sh"
 has MAIL_FROM                 || true
 has CRON_KEY                  || echo "    CRON_KEY: the nightly sweep cannot be called.                          bash /root/webliver/scripts/set-cron-key.sh"
+has GOOGLE_CLIENT_ID          || echo "    GOOGLE_CLIENT_ID / _SECRET: the Google Calendar link.                  bash /root/webliver/scripts/set-google.sh"
+has GOOGLE_CLIENT_SECRET      || true
 
 echo
 if crontab -l 2>/dev/null | grep -q '/api/cron'; then

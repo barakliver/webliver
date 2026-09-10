@@ -257,10 +257,13 @@ bash /root/webliver/scripts/check-env.sh
 bash /root/webliver/scripts/set-service-key.sh
 bash /root/webliver/scripts/set-cron-key.sh
 bash /root/webliver/scripts/set-mail.sh
+bash /root/webliver/scripts/set-google.sh
 ```
 
-`set-cron-key.sh` גם כותב את שלוש שורות התזמון (לילה, ראשון 09:00, שני
-08:00) ומריץ את הסריקה פעם אחת כדי להוכיח שהיא עובדת.
+`set-cron-key.sh` גם כותב את ארבע שורות התזמון (לילה, ראשון 09:00, שני
+08:00, וכל רבע שעה הסנכרון עם יומן גוגל) ומריץ את הסריקה פעם אחת כדי
+להוכיח שהיא עובדת. `set-google.sh` מסביר בראשו איך מוציאים את שני
+המפתחות מ-Google Cloud; בלי שניהם כפתור "לחבר יומן גוגל" לא מוצע.
 
 **היא בלתי נראית, ולכן היא הדבר שהכי קל לשכוח שהפסיק לעבוד.** אחרי כל פריסה
 ששינתה משהו סביב `.env.local`, שווה להריץ אותה ידנית פעם אחת:

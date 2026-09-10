@@ -158,7 +158,7 @@ export function ProductionBook(props: BookProps) {
             <dd className="font-medium">
               {label(c.phase, standing.phase)}
               {standing.behind > 0 && <span className="ms-1.5 text-bad">{fill(c.behind, standing.behind)}</span>}
-              {standing.ahead > 0 && <span className="ms-1.5 text-good">{fill(c.ahead, standing.ahead)}</span>}
+              {standing.ahead > 0 && <span className="ms-1.5 text-ok">{fill(c.ahead, standing.ahead)}</span>}
             </dd>
           </div>
           <div>

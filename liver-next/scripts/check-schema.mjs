@@ -548,6 +548,10 @@ try {
       `insert into public.contracts (client_id, title) values ('${cidA}','הסכם אולם')`,
       `insert into public.event_vendors (client_id, name, category) values ('${cidA}','להקת שדות','music')`,
       `insert into public.producer_ledger (producer_id, client_id, kind, amount, label) values ('${pidA}','${cidA}','income',100,'טיפ')`,
+      `insert into public.diary_entries (producer_id, client_id, title, on_date, at_time) values ('${pidA}','${cidA}','פגישה עם הפרחים','2026-10-02','10:00')`,
+      /* The Google link, as the server writes it: a token that must never
+         reach a session. */
+      `insert into public.google_calendars (producer_id, email, refresh_token, calendar_id) values ('${pidA}','a@gmail.test','1//secret-token','cal_a')`,
       `insert into public.support_tickets (reporter_id, producer_id, body) values ('${uidA}','${pidA}','משהו לא עובד')`,
       /* The producer's own meeting form, and a meeting written from it. Built
          with jsonb_build_* rather than a literal, because the literal's
@@ -588,6 +592,7 @@ try {
       contracts:         `client_id='${cidA}'`,
       event_vendors:     `client_id='${cidA}'`,
       producer_ledger:   `producer_id='${pidA}'`,
+      diary_entries:     `producer_id='${pidA}'`,
       support_tickets:   `reporter_id='${uidA}'`,
       meeting_templates: `producer_id='${pidA}'`,
       meeting_logs:      `client_id='${cidA}'`,
@@ -634,6 +639,26 @@ try {
     ).trim();
     say(feed === 'לשלוח הזמנות:7', 'the couple\'s calendar carries their shared deadlines with the reminder, and no private one',
       `got: ${feed}`);
+
+    /* 0077: the owner sees that Google is connected and whose account,
+       through the view, and cannot read the token even from their own row;
+       another producer sees no link at all. */
+    const viewOwn = asAccount(uidA, mailA, `select email from public.my_google_calendar`);
+    const viewOther = asAccount(uidB, mailB, `select count(*) from public.my_google_calendar`);
+    let tokenRead = '';
+    try { tokenRead = asAccount(uidA, mailA, `select refresh_token from public.google_calendars`); }
+    catch (e) { tokenRead = (e.stdout || e.message || '').toString(); }
+    say(viewOwn === 'a@gmail.test' && viewOther === '0' && /permission denied/.test(tokenRead) && !/secret-token/.test(tokenRead),
+      'the Google link shows its address to its owner, hides its token from everyone, and nothing to a stranger',
+      `own:${viewOwn} other:${viewOther} token:${/permission denied/.test(tokenRead) ? 'refused' : tokenRead}`);
+    /* And the phone's subscription carries the entry. */
+    psql('one', `-c "insert into public.calendar_feeds (token, profile_id) values ('test-token-for-the-producer-0123456789','${uidA}')"`);
+    const ownFeed = sh(
+      `${BIN}/psql -h ${dir} -U postgres -d one -tAq -v ON_ERROR_STOP=1`
+      + ` -c "set role anon"`
+      + ` -c "select string_agg(kind || ':' || title, ',' order by kind) from public.calendar_by_token('test-token-for-the-producer-0123456789') where kind in ('entry','event')" 2>&1`,
+    ).trim();
+    say(ownFeed === 'entry:פגישה עם הפרחים,event:מאיה ועידו', 'the producer\'s subscription carries their own entries beside the weddings', `got: ${ownFeed}`);
 
     /* 0076: the couple picks an option on their own wedding through the
        definer function, a stranger is refused by it, and the guests' page

@@ -20,6 +20,8 @@ import { TimelineDemo } from './TimelineDemo';
 import { BudgetPlannerDemo } from './BudgetPlannerDemo';
 import { VendorScoutDemo } from './VendorScoutDemo';
 import { BrandStudioDemo } from './BrandStudioDemo';
+import { DayDrawer } from '@/components/app/DayDrawer';
+import { GoogleSyncCard } from '@/components/app/GoogleSyncCard';
 import { QuickLedger } from '@/components/app/QuickLedger';
 import { LedgerEntries } from '@/components/app/LedgerEntries';
 import { MonthGrid } from '@/components/app/MonthGrid';
@@ -396,6 +398,30 @@ export default async function DesignPage() {
                 { event_vendor_id: 'h2', estimate: 14000, agreed: 13500 },
               ]}
             />
+          </div>
+        </Panel>
+
+        <Panel name="DayDrawer" note="one day opened from the grid: a wedding, a payment and an entry of the producer's own, with the form that adds another">
+          <div className="max-w-3xl">
+            <DayDrawer
+              day="2026-10-02" dayText="יום שישי, 2 באוקטובר 2026"
+              items={[
+                { id: 'event-c1', kind: 'event', date: '2026-10-02', title: 'לי ורותם', detail: 'שדה חמד · 180 אורחים', href: '/app/clients/c1', clientId: 'c1', color: '#2F6F5E' },
+                { id: 'pay-p1', kind: 'payment', date: '2026-10-02', title: 'יתרה לאולם', detail: 'לי ורותם', href: '/app/clients/c1?tab=money', clientId: 'c1', amount: 42000 },
+                { id: 'entry-e1', rowId: 'e1', kind: 'entry', date: '2026-10-02', time: '10:00', title: '10:00 פגישה עם הפרחים', detail: 'לי ורותם · להביא דוגמאות', href: '/app/calendar?day=2026-10-02', clientId: 'c1' },
+              ]}
+              entries={[{ id: 'e1', client_id: 'c1', title: 'פגישה עם הפרחים', on_date: '2026-10-02', at_time: '10:00:00', duration_min: 90, note: 'להביא דוגמאות' }]}
+              clients={[{ id: 'c1', name: 'לי ורותם' }, { id: 'c2', name: 'נועה ואיתי' }]}
+            />
+          </div>
+        </Panel>
+
+        <Panel name="GoogleSyncCard" note="the Google Calendar link: not configured, ready to connect, and connected with a last sync and one failure">
+          <div className="max-w-3xl space-y-4">
+            <GoogleSyncCard ui={ui} status={null} configured={false} notice="" />
+            <GoogleSyncCard ui={ui} status={null} configured notice="denied" />
+            <GoogleSyncCard ui={ui} status={{ email: 'barak@gmail.com', ready: true, connected_at: '2026-09-10T08:00:00Z', last_sync_at: '2026-09-10T09:15:00Z', last_error: '' }} configured notice="connected" />
+            <GoogleSyncCard ui={ui} status={{ email: 'barak@gmail.com', ready: true, connected_at: '2026-09-10T08:00:00Z', last_sync_at: '2026-09-10T09:30:00Z', last_error: 'google 401: invalid_grant' }} configured notice="" />
           </div>
         </Panel>
 

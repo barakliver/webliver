@@ -4,6 +4,7 @@ import { optional } from '@/lib/env';
 import { EVENT_ZONE, todayInZone, weekdayInZone } from '@/lib/clock';
 import { sendBudgetDigests } from '@/lib/notify/budgetDigest';
 import { sendVendorDigests } from '@/lib/notify/vendorDigest';
+import { syncAll } from '@/lib/google/sync';
 
 /**
  * The nightly sweep: close what the calendar has closed, and send the
@@ -86,7 +87,7 @@ export async function POST(req: Request) {
   }
 
   const sb = supabaseAdmin();
-  const out = { archived: 0, reminded: 0, digests: 0, vendorDigests: 0, errors: [] as string[] };
+  const out = { archived: 0, reminded: 0, digests: 0, vendorDigests: 0, gsync: 0, errors: [] as string[] };
 
   /* The Sunday letter. On the nightly run it goes out on Sunday's run, which
      is Sunday morning where the events are; `?job=digest` sends it on any
@@ -107,6 +108,18 @@ export async function POST(req: Request) {
     const v = await sendVendorDigests(sb, today);
     out.vendorDigests = v.sent;
     out.errors.push(...v.errors);
+  }
+
+  /* The Google twins. `?job=gsync` is the quarter-hourly line and does
+     only this; the nightly run does it too, so a producer with no crontab
+     line still gets a daily pass. */
+  const job = new URL(req.url).searchParams.get('job');
+  const g = await syncAll(sb);
+  out.gsync = g.pushed + g.pulled;
+  out.errors.push(...g.errors);
+  if (job === 'gsync') {
+    if (out.errors.length) console.error('[cron] gsync finished with problems', out);
+    return NextResponse.json({ ok: out.errors.length === 0, ...out });
   }
 
   /* Fourteen days of grace. The week after a wedding is when the last invoice

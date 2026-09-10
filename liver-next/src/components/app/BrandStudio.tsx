@@ -179,7 +179,7 @@ export function BrandStudio({ clientId, viewer, brand, images, data, canAi, prin
             )}
           </div>
           {note && (
-            <p role="alert" className={`mt-3 rounded-xl2 px-4 py-2.5 text-[14px] ${note.tone === 'bad' ? 'border border-bad/25 bg-bad-wash text-bad' : 'border border-good/25 bg-good-wash text-good'}`}>
+            <p role="alert" className={`mt-3 rounded-xl2 px-4 py-2.5 text-[14px] ${note.tone === 'bad' ? 'border border-bad/25 bg-bad-wash text-bad' : 'border border-ok/25 bg-ok-wash text-ok'}`}>
               {note.text}
             </p>
           )}
@@ -197,7 +197,7 @@ export function BrandStudio({ clientId, viewer, brand, images, data, canAi, prin
               <h3 className="font-display text-[20px] font-semibold text-ink">{c.sheet.title}</h3>
               <p className="text-[13.5px] text-ink-mute">{producer ? c.sheet.sub : ''}{draft.by && <span className="ms-1">· {draft.by === 'ai' ? c.sheet.byAi : c.sheet.byHand}</span>}</p>
             </div>
-            {producer && <div className="flex items-center gap-3">{savedAt > 0 && <span className="text-[13px] text-good">{c.sheet.saved}</span>}<SaveButton /></div>}
+            {producer && <div className="flex items-center gap-3">{savedAt > 0 && <span className="text-[13px] text-ok">{c.sheet.saved}</span>}<SaveButton /></div>}
           </div>
           {state && !state.ok && state.error && <p role="alert" className="mt-3 text-[14px] text-bad">{state.error}</p>}
 

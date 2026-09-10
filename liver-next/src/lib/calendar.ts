@@ -7,7 +7,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
    the reason to look at a calendar rather than three separate screens is to
    see them against each other.                                              */
 
-export type CalKind = 'event' | 'task' | 'payment';
+export type CalKind = 'event' | 'task' | 'payment' | 'entry';
 
 /* Supabase embeds a to-one relation as an object, but the generated types
    describe it as an array where the key is not provably unique. Reading both
@@ -22,6 +22,10 @@ const embeddedColor = (v: unknown): string | null => {
 export type CalItem = {
   id: string;
   kind: CalKind;
+  /** The row's own id, for the drawer that edits an entry. */
+  rowId?: string;
+  /** hh:mm, on an entry that has one. */
+  time?: string;
   /** Calendar date, yyyy-mm-dd, in the event's own timezone. */
   date: string;
   title: string;
@@ -59,6 +63,10 @@ export async function getCalendar(sb: SupabaseClient): Promise<CalItem[]> {
           .in('client_id', ids).not('due_on', 'is', null),
       ])
     : [{ data: [] }, { data: [] }];
+  /* The producer's own entries: the row policy scopes them, and an entry
+     on no event is still on the diary. */
+  const entriesQ = await sb.from('diary_entries')
+    .select('id,client_id,title,on_date,at_time,note').order('at_time', { ascending: true, nullsFirst: true });
 
   const items: CalItem[] = [];
 
@@ -102,6 +110,22 @@ export async function getCalendar(sb: SupabaseClient): Promise<CalItem[]> {
       color: colorOf.get(p.client_id) ?? null,
       amount: Number(p.amount) || 0,
       done: p.paid,
+    });
+  }
+
+  for (const e of (entriesQ.data ?? []) as { id: string; client_id: string | null; title: string; on_date: string; at_time: string | null; note: string }[]) {
+    const time = e.at_time ? e.at_time.slice(0, 5) : '';
+    items.push({
+      id: `entry-${e.id}`,
+      rowId: e.id,
+      kind: 'entry',
+      date: e.on_date,
+      time,
+      title: time ? `${time} ${e.title}` : e.title,
+      detail: [e.client_id ? nameOf.get(e.client_id) ?? '' : '', e.note].filter(Boolean).join(' · '),
+      href: `/app/calendar?day=${e.on_date}`,
+      clientId: e.client_id ?? '',
+      color: e.client_id ? colorOf.get(e.client_id) ?? null : null,
     });
   }
 

@@ -25,6 +25,7 @@ const TONE: Record<CalItem['kind'], string> = {
   event: 'bg-accent text-surface',
   task: 'bg-surface-200 text-ink',
   payment: 'bg-warn-wash text-warn',
+  entry: 'bg-ok-wash text-ok',
 };
 const DAY_TINT: Record<Verdict, string> = {
   clear: '',
@@ -41,13 +42,15 @@ function monthStart(from: string, n: number): Date {
   return d;
 }
 
-export function MonthGrid({ items, from, months = 3, locale, ui }: {
+export function MonthGrid({ items, from, months = 3, locale, ui, open = '' }: {
   items: CalItem[];
   /** Today, as an ISO date in the event zone. */
   from: string;
   months?: number;
   locale: Locale;
   ui: AppUi;
+  /** The day the drawer has open, so its cell is marked. */
+  open?: string;
 }) {
   const c = ui.calendar;
   const tag = locale === 'en' ? 'en-GB' : 'he-IL';
@@ -74,6 +77,7 @@ export function MonthGrid({ items, from, months = 3, locale, ui }: {
         <span className="inline-flex items-center gap-1.5"><span aria-hidden className={`size-2.5 rounded-full ${TONE.event.split(' ')[0]}`} />{c.legendEvent}</span>
         <span className="inline-flex items-center gap-1.5"><span aria-hidden className="size-2.5 rounded-full bg-ink-mute" />{c.legendTask}</span>
         <span className="inline-flex items-center gap-1.5"><span aria-hidden className="size-2.5 rounded-full bg-warn" />{c.legendPayment}</span>
+        <span className="inline-flex items-center gap-1.5"><span aria-hidden className="size-2.5 rounded-full bg-ok" />{c.legendEntry}</span>
         <span className="inline-flex items-center gap-1.5"><span aria-hidden className="size-2.5 rounded-full bg-bad" />{ui.hebrewCal.blockedLegend}</span>
         <span className="inline-flex items-center gap-1.5"><span aria-hidden className="size-2.5 rounded-full bg-warn/60" />{ui.hebrewCal.checkLegend}</span>
       </div>
@@ -118,11 +122,20 @@ export function MonthGrid({ items, from, months = 3, locale, ui }: {
                             <td
                               key={day}
                               title={reasons || undefined}
-                              className={`h-[88px] border border-line p-1 align-top ${rule ? DAY_TINT[rule.verdict] : ''} ${past ? 'opacity-50' : ''}`}
+                              className={`group h-[88px] border p-1 align-top ${day === open ? 'border-accent ring-1 ring-accent' : 'border-line'} ${rule ? DAY_TINT[rule.verdict] : ''} ${past ? 'opacity-50' : ''}`}
                             >
-                              <p className={`mb-1 text-[12px] tabular-nums ${day === from ? 'font-semibold text-accent' : 'text-ink-mute'}`}>
-                                {Number(day.slice(8, 10))}
-                              </p>
+                              {/* The day itself is the door: press the number
+                                  and the drawer above opens on that day, with
+                                  the form that adds to it. */}
+                              <Link
+                                href={`/app/calendar?day=${day}`}
+                                scroll={false}
+                                aria-label={`${c.day.add}: ${day}`}
+                                className={`mb-1 flex items-center justify-between rounded px-1 text-[12px] tabular-nums transition hover:bg-surface-200 ${day === from ? 'font-semibold text-accent' : 'text-ink-mute'}`}
+                              >
+                                <span>{Number(day.slice(8, 10))}</span>
+                                <span aria-hidden className="text-[13px] leading-none opacity-0 transition group-hover:opacity-70">+</span>
+                              </Link>
                               <ul className="space-y-0.5">
                                 {dayItems.slice(0, SHOW).map((it) => (
                                   <li key={it.id}>
