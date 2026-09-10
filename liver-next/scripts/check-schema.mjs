@@ -673,6 +673,28 @@ try {
       'an anonymous post keeps its author from the table and from the reader, and the producer badge is stamped not sent',
       `badge:${badge} raw:${authorHidden ? (rawRead ? 'refused' : 'empty') : 'LEAKED'} feed:${feedSelf} stranger:${feedStranger}`);
 
+    /* 0079: the producer may take a post out of their own circle, a couple
+       may not take out somebody else's, and one post opens by id however
+       old it is. The button on the screen offers the producer a delete, so
+       the policy has to mean it. */
+    const otherPost = ask('one', `select id from public.forum_posts limit 1`);
+    let coupleTriedOther = '';
+    /* The couple wrote this one, so first a post they did not write. */
+    psql('one',
+      `-c "set request.jwt.claim.sub = '${uidA}'"`
+      + ` -c "set request.jwt.claims = '{\\"sub\\":\\"${uidA}\\",\\"email\\":\\"${mailA}\\",\\"role\\":\\"authenticated\\"}'"`
+      + ` -c "set role authenticated"`
+      + ` -c "insert into public.forum_posts (producer_id, author_id, is_anonymous, category, title, content) values ('${pidA}','${uidA}',false,'general','מהמפיק','שורה')"`);
+    const mineToo = ask('one', `select id from public.forum_posts where author_id='${uidA}'`);
+    /* Through the function the screen uses. A plain delete here could not
+       even RETURNING, because select is revoked on the table. */
+    coupleTriedOther = asAccount(uidC, mailC, `select public.circle_delete_post('${mineToo}')::text`);
+    const producerTook = asAccount(uidA, mailA, `select public.circle_delete_post('${otherPost}')::text`);
+    const byId = asAccount(uidC, mailC, `select count(*) from public.forum_post('${mineToo}')`);
+    say(coupleTriedOther === 'false' && producerTook === 'true' && byId === '1',
+      'a producer removes a post from their own circle, a couple cannot remove somebody else\'s, and one post opens by id',
+      `couple:${coupleTriedOther} producer:${producerTook} byId:${byId}`);
+
     /* 0077: the owner sees that Google is connected and whose account,
        through the view, and cannot read the token even from their own row;
        another producer sees no link at all. */

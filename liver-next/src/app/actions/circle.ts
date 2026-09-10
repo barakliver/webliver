@@ -90,14 +90,21 @@ export async function toggleCircleVote(form: FormData): Promise<void> {
   touch(postId);
 }
 
+/** Through the database's own function, which checks, deletes and answers.
+ *  A plain delete could do neither half of that here: select is revoked on
+ *  these tables so it cannot return the row, and a delete the policy
+ *  refuses simply matches nothing, which is not an error. Both halves
+ *  together are how the producer's button came to do nothing quietly. */
 export async function deleteCirclePost(form: FormData): Promise<void> {
   const id = String(form.get('id') ?? '');
   if (!id) return;
   const sb = await supabaseServer();
-  const { error } = await sb.from('forum_posts').delete().eq('id', id);
+  const { data, error } = await sb.rpc('circle_delete_post', { p_post: id });
   if (error) {
     console.error('[circle] delete failed', error);
     await noteFailure('לא הצלחנו למחוק. אפשר לנסות שוב.');
+  } else if (data !== true) {
+    await noteFailure('הפוסט לא נמחק. אפשר למחוק פוסט שכתבתם, ומפיק יכול למחוק כל פוסט במעגל שלו.');
   }
   touch();
 }
@@ -107,10 +114,12 @@ export async function deleteCircleReply(form: FormData): Promise<void> {
   const postId = String(form.get('post_id') ?? '');
   if (!id) return;
   const sb = await supabaseServer();
-  const { error } = await sb.from('forum_comments').delete().eq('id', id);
+  const { data, error } = await sb.rpc('circle_delete_comment', { p_comment: id });
   if (error) {
     console.error('[circle] reply delete failed', error);
     await noteFailure('לא הצלחנו למחוק. אפשר לנסות שוב.');
+  } else if (data !== true) {
+    await noteFailure('התשובה לא נמחקה. אפשר למחוק תשובה שכתבתם, ומפיק יכול למחוק כל תשובה במעגל שלו.');
   }
   touch(postId);
 }

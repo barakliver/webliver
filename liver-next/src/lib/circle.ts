@@ -76,6 +76,17 @@ export async function loadFeed(sb: SupabaseClient, producerId: string, category 
   })(), []);
 }
 
+/** One post by id, however old. The feed stops at the newest few dozen,
+ *  and looking through it was how the sixty-first post became "not found". */
+export async function loadPost(sb: SupabaseClient, postId: string): Promise<CirclePost | null> {
+  return safeValue<CirclePost | null>('circle post', (async () => {
+    const { data, error } = await sb.rpc('forum_post', { p_post: postId });
+    if (error) throw error;
+    const rows = (data ?? []) as CirclePost[];
+    return rows[0] ?? null;
+  })(), null);
+}
+
 export async function loadThread(sb: SupabaseClient, postId: string): Promise<CircleReply[]> {
   return safeValue<CircleReply[]>('circle thread', (async () => {
     const { data, error } = await sb.rpc('forum_thread', { p_post: postId });
