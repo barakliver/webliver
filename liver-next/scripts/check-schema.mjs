@@ -595,6 +595,28 @@ try {
     const coupleClient = asAccount(uidC, mailC, `select count(*) from public.clients where id='${cidA}'`);
     const coupleLeads = asAccount(uidC, mailC, `select count(*) from public.leads where producer_id='${pidA}'`);
     const coupleGuests = asAccount(uidC, mailC, `select count(*) from public.guests_rsvp where client_id='${cidA}'`);
+    /* 0071: the couple's calendar carries their open, shared, dated tasks
+       with the reminder, and not a private one. The feed function is the
+       one thing anonymous may call, so it is called with no claims at all. */
+    /* Written as producer A. A hidden task inserted by anybody else is made
+       visible by 0028's trigger, which is that trigger doing its job and
+       would make this test pass for the wrong reason. */
+    psql('one',
+      `-c "set request.jwt.claim.sub = '${uidA}'"`
+      + ` -c "set request.jwt.claims = '{\\"sub\\":\\"${uidA}\\",\\"email\\":\\"${mailA}\\"}'"`
+      + [
+        `insert into public.tasks (client_id, title, due_on, remind_days, visible_to_client) values ('${cidA}','לשלוח הזמנות','2026-08-15',7,true)`,
+        `insert into public.tasks (client_id, title, due_on, remind_days, visible_to_client) values ('${cidA}','לסגור יתרות','2026-10-01',3,false)`,
+        `insert into public.calendar_feeds (token, profile_id, client_id) values ('test-token-for-the-couple-0123456789','${uidC}','${cidA}')`,
+      ].map((s) => ` -c "${s}"`).join(''));
+    const feed = sh(
+      `${BIN}/psql -h ${dir} -U postgres -d one -tAq -v ON_ERROR_STOP=1`
+      + ` -c "set role anon"`
+      + ` -c "select string_agg(title || ':' || coalesce(remind_days::text,'-'), ',' order by starts_on) from public.calendar_by_token('test-token-for-the-couple-0123456789') where kind='task'" 2>&1`,
+    ).trim();
+    say(feed === 'לשלוח הזמנות:7', 'the couple\'s calendar carries their shared deadlines with the reminder, and no private one',
+      `got: ${feed}`);
+
     /* And their suppliers: the DJ they ticked off has to be a row they can
        read back, or the form that asked them lied. */
     const coupleVendors = asAccount(uidC, mailC, `select count(*) from public.event_vendors where client_id='${cidA}'`);

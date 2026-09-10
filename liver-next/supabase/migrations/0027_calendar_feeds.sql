@@ -122,6 +122,11 @@ grant execute on function public.revoke_calendar_feed(uuid) to authenticated, se
 --  A producer's diary carries their events, their dated tasks and their dated
 --  payments. A couple's feed carries their event and its run sheet, which is
 --  what they actually want on the morning.
+/* Dropped before it is made, the way producer_by_host is in 0031: 0071 gives
+   this function one more column, and Postgres refuses to change a return
+   type in place. Without this line the whole history runs once, on an empty
+   database, and fails the second time here. */
+drop function if exists public.calendar_by_token(text);
 create or replace function public.calendar_by_token(p_token text)
 returns table (starts_on date, at_time time, title text, detail text, kind text)
 language plpgsql security definer set search_path = public as $$

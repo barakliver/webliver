@@ -14,6 +14,7 @@ import { PortalWorkspace } from '@/components/app/PortalWorkspace';
 import { PortalVendors } from '@/components/app/PortalVendors';
 import { PortalNav } from '@/components/app/PortalNav';
 import { ShareSwitches, TabShare } from '@/components/app/ShareSwitch';
+import { TimelineDemo } from './TimelineDemo';
 import { PlanOffer } from '@/components/app/PlanOffer';
 import { ProductionBook } from '@/components/app/ProductionBook';
 import { Thread } from '@/components/app/Thread';
@@ -364,6 +365,12 @@ export default async function DesignPage() {
             <ShareSwitches clientId="00000000-0000-4000-8000-000000000003" shares={{ envelopes: false }} moneyOn />
             <TabShare clientId="00000000-0000-4000-8000-000000000003" tab="prep" shares={{ envelopes: false }} moneyOn />
             <TabShare clientId="00000000-0000-4000-8000-000000000003" tab="money" shares={{}} moneyOn={false} />
+          </div>
+        </Panel>
+
+        <Panel name="TimelineBuilder" note="the year's plan for a wedding next June, opened: inputs, the table, the tips">
+          <div className="max-w-4xl">
+            <TimelineDemo />
           </div>
         </Panel>
 

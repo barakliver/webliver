@@ -50,7 +50,10 @@ export async function GET(_req: Request, { params }: { params: Promise<{ token: 
     return empty();
   }
 
-  type Row = { starts_on: string; at_time: string | null; title: string; detail: string; kind: string };
+  type Row = {
+    starts_on: string; at_time: string | null; title: string; detail: string; kind: string;
+    remind_days: number | null;
+  };
   const rows = (data ?? []) as Row[];
 
   const events: IcsEvent[] = rows.map((r, i) => {
@@ -88,7 +91,11 @@ export async function GET(_req: Request, { params }: { params: Promise<{ token: 
       }
     }
 
-    return { uid, start: r.starts_on, allDay: true, summary: r.title, description: r.detail };
+    /* A task with a reminder alarms that many days ahead, at the start of
+       the day. A whole-day entry has no hour to count back from, so the
+       days are given in minutes, which is the one unit the alarm takes. */
+    const remind = r.kind === 'task' && r.remind_days && r.remind_days > 0 ? r.remind_days * 24 * 60 : undefined;
+    return { uid, start: r.starts_on, allDay: true, summary: r.title, description: r.detail, alarmMinutes: remind };
   });
 
   return new NextResponse(buildIcs(events, calName), {

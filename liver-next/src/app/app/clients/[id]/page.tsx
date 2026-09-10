@@ -14,6 +14,7 @@ import { loadLabels } from '@/lib/labels';
 import { EventDetails } from '@/components/app/EventDetails';
 import { EventSummary } from '@/components/app/EventSummary';
 import { EventTemplate } from '@/components/app/EventTemplate';
+import { TimelineBuilder } from '@/components/app/TimelineBuilder';
 import { ApplyTemplate } from '@/components/app/ApplyTemplate';
 import { EventFileLists } from '@/components/app/EventFileLists';
 import { loadEventFile } from '@/lib/eventFile';
@@ -227,6 +228,9 @@ async function Section({ tab, client, viewerId }: { tab: EventTab; client: Clien
         {/* On the overview because this is where an event gets set up, and it
             collapses to a single button once there is nothing left to add. */}
         <EventTemplate clientId={id} />
+        {/* The year, dated backwards from the wedding and bent to it: abroad,
+            large, or already late. Collapsed to a button for the same reason. */}
+        <TimelineBuilder clientId={id} eventDate={client.event_date} guestEstimate={client.guest_estimate} />
         {/* The producer's own lists, next to the shipped ones. Renders nothing
             until they have built one. */}
         <ApplyTemplate clientId={id} templates={templates} hasDate={!!client.event_date} />

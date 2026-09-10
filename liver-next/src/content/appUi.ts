@@ -2,14 +2,14 @@ import type { Locale } from '../lib/locale.ts';
 import {
   appCopy, guestsCopy, seatingCopy, dayCopy, threadCopy, partyCopy, contractCopy, eventFileCopy,
   noticeCopy, ticketCopy, companionCopy, prepCopy, venueCopy, envelopesCopy, vehiclesCopy,
-  meetingTemplatesCopy,
+  meetingTemplatesCopy, timelineCopy,
   leadsCopy, crewCopy, vendorCopy, templateCopy, barCopy, updateCopy, linkCopy, signCopy,
   siteEditorCopy, hebrewCalCopy, labelCopy, knowledgeCopy, jumpCopy, copilotCopy, archiveCopy,
   meetingCopy, workflowCopy, referralCopy,
 } from './site.ts';
 import {
   noticeCopyEn, ticketCopyEn, companionCopyEn, prepCopyEn, venueCopyEn, envelopesCopyEn, vehiclesCopyEn,
-  meetingTemplatesCopyEn,
+  meetingTemplatesCopyEn, timelineCopyEn,
   portalEn, filesEn, sheetsEn, tasksEn, moneyEn, boardEn, bookEn,
   guestsEn, seatingEn, dayEn, threadEn, partyEn, contractEn, eventFileEn,
 } from './app.en.ts';
@@ -76,6 +76,7 @@ export type PrepCopy = Wide<typeof prepCopy>;
 export type EnvelopesCopy = Wide<typeof envelopesCopy>;
 export type VehiclesCopy = Wide<typeof vehiclesCopy>;
 export type MeetingTemplatesCopy = Wide<typeof meetingTemplatesCopy>;
+export type TimelineCopy = Wide<typeof timelineCopy>;
 /* The halls. Both sides edit it and the couple is the side that toured them,
    so it is resolved rather than handed the console's Hebrew. */
 export type VenueCopy = Wide<typeof venueCopy>;
@@ -135,6 +136,7 @@ export type AppUi = {
   knowledge: KnowledgeCopy; jump: JumpCopy; copilot: CopilotCopy; archive: ArchiveCopy;
   meeting: MeetingCopy; workflow: WorkflowCopy; referral: ReferralCopy;
   meetingTemplates: MeetingTemplatesCopy;
+  timeline: TimelineCopy;
 } & ConsoleCopy;
 
 const consoleHe: ConsoleCopy = {
@@ -161,6 +163,7 @@ export const APP_UI_HE: AppUi = {
   knowledge: knowledgeCopy, jump: jumpCopy, copilot: copilotCopy, archive: archiveCopy,
   meeting: meetingCopy, workflow: workflowCopy, referral: referralCopy,
   meetingTemplates: meetingTemplatesCopy,
+  timeline: timelineCopy,
   ...consoleHe,
 };
 
@@ -178,6 +181,7 @@ const APP_UI_EN: AppUi = {
   knowledge: knowledgeEn, jump: jumpEn, copilot: copilotEn, archive: archiveEn,
   meeting: meetingEn, workflow: workflowEn, referral: referralEn,
   meetingTemplates: meetingTemplatesCopyEn,
+  timeline: timelineCopyEn,
   ...consoleEn,
 };
 

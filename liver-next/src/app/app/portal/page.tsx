@@ -30,6 +30,7 @@ import { loadEnvelopes, envelopesOf } from '@/lib/envelopes';
 import { loadVehicles, vehiclesOf } from '@/lib/vehicles';
 import { EnvelopesPanel } from '@/components/app/EnvelopesPanel';
 import { VehiclesPanel } from '@/components/app/VehiclesPanel';
+import { CalendarFeed } from '@/components/app/CalendarFeed';
 import { envelopesFor, vehiclesFor } from '@/content/appUi';
 
 export async function generateMetadata() {
@@ -206,6 +207,10 @@ export default async function PortalPage({ searchParams }: {
               {data.can(w.id, 'messages') && (
                 <div id="thread" className="scroll-mt-28"><Thread clientId={w.id} messages={threads.get(w.id) ?? []} viewerId={account.id} /></div>
               )}
+              {/* Their deadlines and their day, in the calendar on their
+                  phone, updating on its own. The link is a credential and
+                  the card says so. */}
+              <div id="calendar" className="scroll-mt-28"><CalendarFeed clientId={w.id} /></div>
             </div>
           );
         })}
