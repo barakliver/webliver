@@ -47,6 +47,10 @@
 #       is a screen asking for a column that is not there.
 #    4. Checks that every screen still draws something, and if it does not,
 #       puts the previous release back without being asked.
+#    5. Brings the crontab up to whatever this release expects. Everything
+#       else here arrives with the pull; a scheduled job does not, and the
+#       gap between "the code for the Monday letter is live" and "the Monday
+#       letter is scheduled" was a person remembering.
 #
 #  Nothing here is clever, on purpose. It is going to run unattended at three
 #  in the morning against a live wedding platform.
@@ -347,6 +351,12 @@ printf '%s %s\n' "$TAG" "$ATTEMPT" > "$TRIED"
 say "deploying $TAG (attempt $ATTEMPT of $TRIES)"
 if REF="$TARGET" bash "$REPO/deploy-next.sh" >>"$LOG" 2>&1; then
   say "deployed and every screen draws something"
+  # The one thing a release cannot carry by itself. Code and schema arrive
+  # with the pull; the crontab lives on this machine and in no repository,
+  # so a release that adds a scheduled job used to sit there unscheduled
+  # until somebody noticed. Quiet, idempotent, and silent about a key it
+  # does not have.
+  bash "$REPO/scripts/ensure-schedule.sh" >>"$LOG" 2>&1 || say "the schedule could not be brought up to date"
   [ -n "$OLD_TAG" ] && printf '%s' "$OLD_TAG" > "$PREVIOUS"
   printf '%s' "$TAG" > "$DEPLOYED"
   RESULT="ok"

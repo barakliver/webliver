@@ -11,9 +11,10 @@
 #  configured" and the sweep has never run.
 #
 #  Nothing to paste: the key is generated here, written to the environment
-#  file, and put into the crontab lines that call the sweep. The app is
-#  restarted so it reads the same key. Safe to run again; it replaces its
-#  own lines and nothing else.
+#  file, and the crontab lines are put there by ensure-schedule.sh, which
+#  the deploy agent also runs after every release. The app is restarted so
+#  it reads the same key. Safe to run again; it keeps an existing key and
+#  replaces its own crontab lines and nothing else.
 # ============================================================================
 set -euo pipefail
 
@@ -52,25 +53,9 @@ if systemctl is-enabled --quiet liver-next 2>/dev/null; then
 fi
 
 # ── the schedule ────────────────────────────────────────────────────────────
-# Three lines, each reading the key from the environment file at run time,
-# so rotating the key never needs the crontab touched:
-#   nightly at 04:17: close events, anniversaries, and the weekly letters on
-#                     their weekday;
-#   Sunday 09:00:     the budget letter at the hour it was asked for;
-#   Monday 08:00:     the supplier letter at the hour it was asked for;
-#   every 15 minutes: the Google Calendar twins, both directions.
-# The weekly letters are once per week per event, so the extra runs are
-# quiet when the nightly one already sent them.
-CALL="curl -sS -m 120 -X POST -H \"x-cron-key: \$(grep '^CRON_KEY=' $ENVFILE | cut -d= -f2-)\""
-LINES="17 4 * * * $CALL $HOST/api/cron >> /var/log/liver-sweep.log 2>&1 $TAG
-0 9 * * 0 $CALL '$HOST/api/cron?job=digest' >> /var/log/liver-sweep.log 2>&1 $TAG
-0 8 * * 1 $CALL '$HOST/api/cron?job=vendors' >> /var/log/liver-sweep.log 2>&1 $TAG
-*/15 * * * * $CALL '$HOST/api/cron?job=gsync' > /dev/null 2>&1 $TAG"
-
-# Any older line that calls the sweep goes too: one was installed by hand
-# before this script existed, at the same minute, with a key of its own.
-( crontab -l 2>/dev/null | grep -v "$TAG" | grep -v '/api/cron' || true; printf '%s\n' "$LINES" ) | crontab -
-echo "  the sweep is scheduled: nightly 04:17, Sunday 09:00, Monday 08:00, Google every 15 minutes"
+# One copy of these lines, in ensure-schedule.sh, because the deploy agent
+# puts them there too after every release and two copies of a crontab drift.
+HOST="$HOST" ENVFILE="$ENVFILE" bash "$(dirname "$0")/ensure-schedule.sh"
 
 # ── prove it ────────────────────────────────────────────────────────────────
 # The app was restarted a moment ago and takes a few seconds to answer again.
