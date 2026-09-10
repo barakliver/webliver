@@ -544,9 +544,12 @@ export const consoleEn: ConsoleCopy = {
     title: 'Couple\'s view',
     banner: 'You are seeing the couple\'s screen',
     exit: 'Back to managing the event',
-    moneyShared: 'The budget and payments are open to the couple, so they appear here.',
-    moneyHidden: 'The budget and payments are closed to the couple, so they do not appear here.',
     open: 'See it as the couple',
+    switchesTitle: 'What the couple sees',
+    switchesSub: 'Every section of the couple\'s screen is switched on and off here. An open section the couple sees in full and can add to themselves. The budget and payments are locked in the database as well, not only on the screen.',
+    coupleSees: 'The couple sees:',
+    sharedOn: 'Open to the couple',
+    sharedOff: 'Hidden from the couple',
   },
 
   clientPage: {

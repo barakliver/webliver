@@ -9,6 +9,7 @@ import { appUiFor } from '@/content/appUi';
 import { CopyProvider } from '@/components/app/CopyProvider';
 import { currentLocale } from '@/lib/serverLocale';
 import { PortalWorkspace } from '@/components/app/PortalWorkspace';
+import { ShareSwitches } from '@/components/app/ShareSwitch';
 import { PORTAL_LIVE_SOURCES } from '@/lib/liveSources';
 import { loadPortal } from '@/lib/portal';
 
@@ -67,13 +68,16 @@ export default async function PreviewPage({ params }: { params: Promise<{ id: st
             {c.exit}
           </Link>
         </div>
-        <p className="mt-1.5 text-[13px] text-ink-mute">
-          {workspace.budget_visible ? c.moneyShared : c.moneyHidden}
-        </p>
       </div>
 
       <CopyProvider value={ui}>
-        <PortalWorkspace workspace={workspace} data={data} viewerId={account.id} ui={ui} />
+        {/* The switches first, then the screen they shape. Flip one and the
+            section below comes or goes, which is the only honest way to
+            answer "what does the couple see": by looking. */}
+        <div className="mb-8">
+          <ShareSwitches clientId={id} shares={workspace.shared_sections} moneyOn={workspace.budget_visible} />
+        </div>
+        <PortalWorkspace workspace={workspace} data={data} viewerId={account.id} ui={ui} stickyNav={false} />
       </CopyProvider>
       <Live sources={PORTAL_LIVE_SOURCES} />
     </>

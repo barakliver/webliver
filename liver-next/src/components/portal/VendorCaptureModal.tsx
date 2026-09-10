@@ -130,10 +130,13 @@ export function VendorCaptureModal({ task, template, onClose, onSaved }: VendorC
        the card. Only when a figure was given: a line of zero is a question,
        not a record. */
     if (cost !== null && cost > 0) {
+      /* The line is named for what was ticked ("צלם סטילס"), and the supplier
+         sits in the supplier column. It was the business's name in both, which
+         read as a budget with a line called "קרא" and no photographer on it. */
       const { error: budgetError } = await sb.from('budget_items').insert({
         client_id: task.client_id,
         category: categoryLabel(category),
-        label: name,
+        label: task.title.slice(0, 120),
         estimate: cost,
         agreed: cost,
         vendor: name,
@@ -179,10 +182,19 @@ export function VendorCaptureModal({ task, template, onClose, onSaved }: VendorC
      person you ring, so it appears when the contact does. */
   const askContact = template.ask_contact_name;
 
+  /* Changing your mind. The first version had two buttons, save and "tick
+     without a supplier", and no way to close the form and leave the task as
+     it was: somebody who ticked the wrong line had to invent a supplier or
+     accept the tick. The backdrop and the third button both just close. */
+  const cancel = () => { if (!saving) onClose(); };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4">
-      <div className="w-full max-w-md rounded-xl2 border border-line bg-card p-6">
-        <h2 className="font-display text-[18px] font-semibold text-ink">{template.title}</h2>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4"
+      onClick={(e) => { if (e.target === e.currentTarget) cancel(); }}
+    >
+      <div role="dialog" aria-modal="true" aria-labelledby="vendor-capture-title" className="w-full max-w-md rounded-xl2 border border-line bg-card p-6">
+        <h2 id="vendor-capture-title" className="font-display text-[18px] font-semibold text-ink">{template.title}</h2>
         {template.description && (
           <p className="mt-1 text-[14px] text-ink-soft">{template.description}</p>
         )}
@@ -238,7 +250,10 @@ export function VendorCaptureModal({ task, template, onClose, onSaved }: VendorC
           </p>
         )}
 
-        <div className="mt-5 flex gap-2">
+        <div className="mt-5 flex flex-wrap gap-2">
+          <button type="button" onClick={cancel} disabled={saving} className="btn-quiet px-3">
+            ביטול
+          </button>
           <button type="button" onClick={skip} disabled={saving} className="btn-quiet flex-1">
             סימון בלי ספק
           </button>

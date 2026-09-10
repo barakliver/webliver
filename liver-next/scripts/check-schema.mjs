@@ -264,6 +264,22 @@ try {
       say(copied === '1/1', 'and the DJ the checklist caught is on the suppliers tab, once',
         copied === '1/1' ? '' : `got ${copied}`);
 
+      /* 0070's switches: a couple that existed before the column sees
+         everything (the column arrives empty), a door can be closed, and the
+         column refuses anything that is not an object. */
+      const doors = ask('three',
+        `select shared_sections::text from public.clients where id='${cid3}'`);
+      psql('three', `-c "update public.clients set shared_sections = jsonb_build_object('envelopes', false) where id='${cid3}'"`);
+      const closed = ask('three',
+        `select (shared_sections->>'envelopes') from public.clients where id='${cid3}'`);
+      let refused = false;
+      try {
+        psql('three', `-c "update public.clients set shared_sections = '[1]'::jsonb where id='${cid3}'"`);
+      } catch { refused = true; }
+      say(doors === '{}' && closed === 'false' && refused,
+        'the couple\'s screen starts fully open, a door closes, and the column is an object or nothing',
+        `before:${doors} closed:${closed} refused:${refused}`);
+
       /* Each workspace got an event of its own kind — the corporate one being
          the row whose absence took 0061 down. */
       const kinds = ask('three',

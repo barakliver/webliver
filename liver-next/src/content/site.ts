@@ -1264,9 +1264,15 @@ export const appCopy = {
     title: 'תצוגת הזוג',
     banner: 'אתם רואים את המסך של הזוג',
     exit: 'חזרה לניהול האירוע',
-    moneyShared: 'התקציב והתשלומים פתוחים לזוג, ולכן מופיעים כאן.',
-    moneyHidden: 'התקציב והתשלומים סגורים לזוג, ולכן לא מופיעים כאן.',
     open: 'לראות כמו הזוג',
+    /* The switches. One per section of the couple's screen, on the preview
+       where flipping one and seeing the section come or go is one scroll
+       apart, and again on the producer's own tab for that section. */
+    switchesTitle: 'מה הזוג רואה',
+    switchesSub: 'כל חלק במסך של הזוג נדלק ונכבה כאן. חלק פתוח הזוג רואה במלואו ויכול להוסיף בו דברים בעצמו. התקציב והתשלומים נעולים גם במסד הנתונים, לא רק במסך.',
+    coupleSees: 'הזוג רואה:',
+    sharedOn: 'פתוח לזוג',
+    sharedOff: 'מוסתר מהזוג',
   },
 
   clientPage: {
@@ -1661,6 +1667,9 @@ export const appCopy = {
     rowEnvelopes: 'מעטפות',
     rowTransport: 'רכבים והסעות',
     rowThread: 'הודעות',
+    rowRunsheet: 'לוז יום האירוע',
+    /* The pills under the header, one per section. */
+    nav: 'קפיצה לחלק במסך',
     /* The suppliers list on the couple's screen. */
     vendorsTitle: 'הספקים שלנו',
     vendorsSub: 'מי כבר סגור ומי עוד בבדיקה. ספק שסימנתם במשימות מגיע לכאן לבד.',

@@ -12,6 +12,8 @@ import { DaySchedule } from '@/components/app/DaySchedule';
 import { RunSheet } from '@/components/app/RunSheet';
 import { PortalWorkspace } from '@/components/app/PortalWorkspace';
 import { PortalVendors } from '@/components/app/PortalVendors';
+import { PortalNav } from '@/components/app/PortalNav';
+import { ShareSwitches, TabShare } from '@/components/app/ShareSwitch';
 import { PlanOffer } from '@/components/app/PlanOffer';
 import { ProductionBook } from '@/components/app/ProductionBook';
 import { Thread } from '@/components/app/Thread';
@@ -333,7 +335,7 @@ export default async function DesignPage() {
                  the largest thing on the couple's screen — and made a working
                  feature look missing. */
               event_date: '2026-12-05',
-              venue: 'אחוזת הכפר', guest_estimate: 180, budget_visible: true,
+              venue: 'אחוזת הכפר', guest_estimate: 180, budget_visible: true, shared_sections: {},
               budget_target: 260000, track_a_label: 'נועה', track_b_label: 'איתי',
               guest_token: 'demo-token', guest_site_on: true,
             }}
@@ -355,6 +357,31 @@ export default async function DesignPage() {
 
         <Panel name="PortalVendors" note="the couple's suppliers: two booked, one still open, grouped the producer's way">
           <PortalVendors vendors={fixturePortalVendors} c={ui.portal} locale={locale} />
+        </Panel>
+
+        <Panel name="ShareSwitch" note="the page of switches on the preview, and the one row a producer's tab carries; envelopes closed, money open">
+          <div className="max-w-2xl space-y-6">
+            <ShareSwitches clientId="00000000-0000-4000-8000-000000000003" shares={{ envelopes: false }} moneyOn />
+            <TabShare clientId="00000000-0000-4000-8000-000000000003" tab="prep" shares={{ envelopes: false }} moneyOn />
+            <TabShare clientId="00000000-0000-4000-8000-000000000003" tab="money" shares={{}} moneyOn={false} />
+          </div>
+        </Panel>
+
+        <Panel name="PortalNav" note="the pills under the header on the couple's screen, one per open section">
+          <div className="max-w-2xl">
+            <PortalNav
+              sticky={false}
+              label={ui.portal.nav}
+              rows={summaryRows({
+                budget: 148000, owed: 32000, openTasks: 9,
+                attending: 96, invited: 180, tables: 18,
+                contracts: 2, venues: 3, files: 5, saved: 12, vendors: 7,
+                envelopes: 3, vehicles: 2,
+                can: (key) => key !== 'seating',
+                c: ui.portal,
+              })}
+            />
+          </div>
         </Panel>
 
         <Panel name="RunSheet · printed" note="the page somebody holds at eleven at night: big clock, tick boxes, numbers">

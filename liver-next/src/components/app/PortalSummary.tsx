@@ -88,7 +88,7 @@ export function summaryRows(opts: {
      whose module is switched off for this plan is left out rather than shown
      locked; a row with nothing to count carries no figure. */
   return [
-    { key: 'tasks',     label: c.rowTasks,     value: <Ltr>{opts.openTasks}</Ltr>, href: '#tasks',     shown: true },
+    { key: 'tasks',     label: c.rowTasks,     value: <Ltr>{opts.openTasks}</Ltr>, href: '#tasks',     shown: opts.can('tasks') },
     {
       key: 'budget',
       label: c.rowBudget,
@@ -105,15 +105,16 @@ export function summaryRows(opts: {
       shown: opts.can('guests'),
     },
     { key: 'seating',   label: c.rowSeating,   value: <Ltr>{opts.tables}</Ltr>,    href: '#seating',   shown: opts.can('seating') },
-    { key: 'vendors',   label: c.rowVendors,   value: <Ltr>{opts.vendors}</Ltr>,   href: '#vendors',   shown: true },
+    { key: 'vendors',   label: c.rowVendors,   value: <Ltr>{opts.vendors}</Ltr>,   href: '#vendors',   shown: opts.can('vendors') },
+    { key: 'runsheet',  label: c.rowRunsheet,  value: null,                        href: '#runsheet',  shown: opts.can('runsheet') },
     { key: 'board',     label: c.rowBoard,     value: <Ltr>{opts.saved}</Ltr>,     href: '#board',     shown: opts.can('moodboard') },
-    { key: 'contracts', label: c.rowContracts, value: <Ltr>{opts.contracts}</Ltr>, href: '#contracts', shown: true },
+    { key: 'contracts', label: c.rowContracts, value: <Ltr>{opts.contracts}</Ltr>, href: '#contracts', shown: opts.can('contracts') },
     { key: 'venues',    label: c.rowVenues,    value: <Ltr>{opts.venues}</Ltr>,    href: '#venues',    shown: opts.can('venues') },
     { key: 'files',     label: c.rowFiles,     value: <Ltr>{opts.files}</Ltr>,     href: '#files',     shown: opts.can('files') },
-    { key: 'lists',     label: c.rowLists,     value: null,                        href: '#lists',     shown: true },
+    { key: 'lists',     label: c.rowLists,     value: null,                        href: '#lists',     shown: opts.can('lists') },
     { key: 'prep',      label: c.rowPrep,      value: null,                        href: '#prep',      shown: opts.can('prep') },
     { key: 'envelopes', label: c.rowEnvelopes, value: <Ltr>{opts.envelopes}</Ltr>, href: '#envelopes', shown: opts.can('envelopes') },
     { key: 'transport', label: c.rowTransport, value: <Ltr>{opts.vehicles}</Ltr>,  href: '#transport', shown: opts.can('transport') },
-    { key: 'thread',    label: c.rowThread,    value: null,                        href: '#thread',    shown: true },
+    { key: 'thread',    label: c.rowThread,    value: null,                        href: '#thread',    shown: opts.can('messages') },
   ];
 }

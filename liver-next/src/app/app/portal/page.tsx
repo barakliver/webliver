@@ -143,7 +143,9 @@ export default async function PortalPage({ searchParams }: {
                   vehicles: cars.length,
                 }}
               />
-              <div id="contracts"><Contracts clientId={w.id} contracts={contracts.get(w.id) ?? []} viewer="client" /></div>
+              {data.can(w.id, 'contracts') && (
+                <div id="contracts" className="scroll-mt-28"><Contracts clientId={w.id} contracts={contracts.get(w.id) ?? []} viewer="client" /></div>
+              )}
               {/* While the hall is still open, or once there is something to
                   compare. Gating it on the halls alone was wrong in the way that
                   only shows up from the couple's side: they are the ones touring
@@ -153,7 +155,7 @@ export default async function PortalPage({ searchParams }: {
                   whose hall was booked a year ago is a panel asking them to redo
                   a decision they have made. */}
               {data.can(w.id, 'venues') && (venues.venues.length > 0 || !w.venue) && (
-                <div id="venues"><VenueCompare
+                <div id="venues" className="scroll-mt-28"><VenueCompare
                   c={venuesFor(locale)}
                   clientId={w.id}
                   venues={venues.venues}
@@ -164,17 +166,19 @@ export default async function PortalPage({ searchParams }: {
               {/* Behind the same gate every other module is behind, so a plan
                   that does not include it does not quietly include it here. */}
               {data.can(w.id, 'files') && (
-                <div id="files"><EventFiles clientId={w.id} files={files.get(w.id) ?? []} viewer="client" /></div>
+                <div id="files" className="scroll-mt-28"><EventFiles clientId={w.id} files={files.get(w.id) ?? []} viewer="client" /></div>
               )}
               {/* Theirs to fill in. The equipment is read only for them — it is
                   the producer's logistics — and the component knows that. */}
-              <div id="lists"><EventFileLists
-                clientId={w.id}
-                songs={eventFiles.get(w.id)?.songs ?? []}
-                kit={eventFiles.get(w.id)?.kit ?? []}
-                people={eventFiles.get(w.id)?.people ?? []}
-                viewer="client"
-              /></div>
+              {data.can(w.id, 'lists') && (
+                <div id="lists" className="scroll-mt-28"><EventFileLists
+                  clientId={w.id}
+                  songs={eventFiles.get(w.id)?.songs ?? []}
+                  kit={eventFiles.get(w.id)?.kit ?? []}
+                  people={eventFiles.get(w.id)?.people ?? []}
+                  viewer="client"
+                /></div>
+              )}
               {/* The same panel the producer has on the event file, not a
                   read-only copy of it. Who the aunt is and what the dress
                   should look like are things only the couple knows, and a
@@ -182,7 +186,7 @@ export default async function PortalPage({ searchParams }: {
                   screen that sends them back to WhatsApp — which is the
                   conversation this whole module exists to end. */}
               {data.can(w.id, 'prep') && (
-                <div id="prep"><PrepSheet
+                <div id="prep" className="scroll-mt-28"><PrepSheet
                   c={prepFor(locale)}
                   clientId={w.id}
                   vips={sheet.vips}
@@ -194,12 +198,14 @@ export default async function PortalPage({ searchParams }: {
               {/* The two lists the event manager needs in hand on the night.
                   Written by either side, gated like everything else. */}
               {data.can(w.id, 'envelopes') && (
-                <div id="envelopes"><EnvelopesPanel c={envelopesFor(locale)} clientId={w.id} items={envs} /></div>
+                <div id="envelopes" className="scroll-mt-28"><EnvelopesPanel c={envelopesFor(locale)} clientId={w.id} items={envs} /></div>
               )}
               {data.can(w.id, 'transport') && (
-                <div id="transport"><VehiclesPanel c={vehiclesFor(locale)} clientId={w.id} items={cars} /></div>
+                <div id="transport" className="scroll-mt-28"><VehiclesPanel c={vehiclesFor(locale)} clientId={w.id} items={cars} /></div>
               )}
-              <div id="thread"><Thread clientId={w.id} messages={threads.get(w.id) ?? []} viewerId={account.id} /></div>
+              {data.can(w.id, 'messages') && (
+                <div id="thread" className="scroll-mt-28"><Thread clientId={w.id} messages={threads.get(w.id) ?? []} viewerId={account.id} /></div>
+              )}
             </div>
           );
         })}

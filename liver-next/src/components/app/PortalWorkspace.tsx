@@ -12,6 +12,7 @@ import { DaySchedule } from '@/components/app/DaySchedule';
 import { PortalSummary, summaryRows } from '@/components/app/PortalSummary';
 import { GuestSiteLink } from '@/components/app/GuestSiteLink';
 import { PortalVendors } from '@/components/app/PortalVendors';
+import { PortalNav } from '@/components/app/PortalNav';
 import { Ltr } from '@/components/Ltr';
 import type { PortalData, Workspace } from '@/lib/portal';
 
@@ -30,8 +31,12 @@ const NO_EXTRA: PortalExtra = { contracts: 0, venues: 0, files: 0, envelopes: 0,
  *  is only nearly right is worse than none: it invites decisions about what
  *  the couple can see, based on a screen they never saw. */
 export function PortalWorkspace({
-  workspace, data, viewerId, ui, currentEventId, extra = NO_EXTRA,
-}: { workspace: Workspace; data: PortalData; viewerId: string; ui: AppUi; currentEventId?: string; extra?: PortalExtra }) {
+  workspace, data, viewerId, ui, currentEventId, extra = NO_EXTRA, stickyNav = true,
+}: {
+  workspace: Workspace; data: PortalData; viewerId: string; ui: AppUi; currentEventId?: string; extra?: PortalExtra;
+  /** Off on the producer's preview, which has a banner stuck up there already. */
+  stickyNav?: boolean;
+}) {
   const c = workspace;
   const dateFmt = weekdayDate(ui.locale);
   const left = daysUntil(c.event_date);
@@ -52,13 +57,36 @@ export function PortalWorkspace({
     ? allTasks.filter((t) => t.event_id === currentEventId)
     : allTasks;
 
+  /* Which sections this couple sees: closed by the plan or by the producer,
+     through one gate. Every section below, the strip and the pills all read
+     the same answer. */
+  const can = (key: string) => data.can(c.id, key as never);
+
+  const rows = summaryRows({
+    budget: agreed > 0 ? agreed : null,
+    owed,
+    openTasks: filteredTasks.filter((t) => !t.done).length,
+    attending,
+    invited: guests.length,
+    tables: data.tablesFor(c.id).length,
+    saved: data.boardFor(c.id).length,
+    vendors: data.vendorsFor(c.id).length,
+    ...extra,
+    can,
+    c: ui.portal,
+  });
+
   return (
     <div>
+      {/* The way around, before anything else: a couple who came for the
+          seating plan should not have to find it by scrolling. */}
+      <PortalNav rows={rows} label={ui.portal.nav} sticky={stickyNav} />
+
       {/* The names in serif over the image, then the count. The countdown is
           the largest thing on the couple's screen on purpose: it is the one
           number they open the app to see, and every other figure on the page
           is a consequence of it. */}
-      <header>
+      <header className="mt-8">
         <p className="text-[12px] tracking-[.14em] text-ink-mute">
           {formatDate(dateFmt, c.event_date, ui.portal.dateTbd)}
           {c.venue ? ` · ${c.venue}` : ''}
@@ -80,56 +108,48 @@ export function PortalWorkspace({
         <hr className="rule-gold mt-8" />
       </header>
 
-      <PortalSummary
-        rows={summaryRows({
-          budget: agreed > 0 ? agreed : null,
-          owed,
-          openTasks: filteredTasks.filter((t) => !t.done).length,
-          attending,
-          invited: guests.length,
-          tables: data.tablesFor(c.id).length,
-          saved: data.boardFor(c.id).length,
-          vendors: data.vendorsFor(c.id).length,
-          ...extra,
-          can: (key) => data.can(c.id, key as never),
-          c: ui.portal,
-        })}
-        label={ui.portal.summary}
-      />
+      <PortalSummary rows={rows} label={ui.portal.summary} />
 
       <div className="mt-10 space-y-10">
         {/* The link they paste into the family group, once the producer has
             switched the page on. Above the tasks because sending it is
             usually the first thing the couple wants to do. */}
         {c.guest_site_on && c.guest_token && <GuestSiteLink token={c.guest_token} />}
-        <div id="tasks"><TaskList clientId={c.id} tasks={filteredTasks} viewer="client" viewerId={viewerId} /></div>
+        {can('tasks') && (
+          <div id="tasks" className="scroll-mt-28"><TaskList clientId={c.id} tasks={filteredTasks} viewer="client" viewerId={viewerId} /></div>
+        )}
         {/* The working shown before the lists, and only once there is a
             budget to show: without lines the five figures are five zeros. */}
-        {data.can(c.id, 'budget') && budget.length > 0 && (
+        {can('budget') && budget.length > 0 && (
           <FinanceSummary
             clientId={c.id} viewer="client"
             target={c.budget_target === null || c.budget_target === undefined ? null : Number(c.budget_target)}
             items={budget} payments={data.paymentsFor(c.id)}
           />
         )}
-        <div id="payments"><PaymentsPanel clientId={c.id} payments={payments} viewer="client" /></div>
         {/* Gated modules. A closed one is absent rather than greyed out: a
             locked panel advertising something the couple was not sold is a
-            sales screen wearing the clothes of a tool. */}
-        {data.can(c.id, 'budget') && (
-          <div id="budget"><BudgetPanel clientId={c.id} items={budget} viewer="client" visible /></div>
+            sales screen wearing the clothes of a tool. Money is one door for
+            both the payments and the budget. */}
+        {can('budget') && (
+          <div id="payments" className="scroll-mt-28"><PaymentsPanel clientId={c.id} payments={payments} viewer="client" /></div>
         )}
-        {data.can(c.id, 'guests') && (
-          <div id="guests"><GuestList clientId={c.id} guests={guests} /></div>
+        {can('budget') && (
+          <div id="budget" className="scroll-mt-28"><BudgetPanel clientId={c.id} items={budget} viewer="client" visible /></div>
         )}
-        {data.can(c.id, 'seating') && (
-          <div id="seating"><SeatingPlan clientId={c.id} tables={data.tablesFor(c.id)} guests={data.guestsFor(c.id) as never} /></div>
+        {can('guests') && (
+          <div id="guests" className="scroll-mt-28"><GuestList clientId={c.id} guests={guests} /></div>
+        )}
+        {can('seating') && (
+          <div id="seating" className="scroll-mt-28"><SeatingPlan clientId={c.id} tables={data.tablesFor(c.id)} guests={data.guestsFor(c.id) as never} /></div>
         )}
         {/* Who is hired. The same rows the producer's suppliers tab shows,
             and where a DJ ticked off the checklist above turns up. */}
-        <div id="vendors"><PortalVendors vendors={data.vendorsFor(c.id)} c={ui.portal} locale={ui.locale} /></div>
-        {data.can(c.id, 'runsheet') && (
-          <div id="runsheet"><DaySchedule
+        {can('vendors') && (
+          <div id="vendors" className="scroll-mt-28"><PortalVendors vendors={data.vendorsFor(c.id)} c={ui.portal} locale={ui.locale} /></div>
+        )}
+        {can('runsheet') && (
+          <div id="runsheet" className="scroll-mt-28"><DaySchedule
             clientId={c.id}
             items={data.dayFor(c.id)}
             labelA={c.track_a_label}
@@ -137,8 +157,8 @@ export function PortalWorkspace({
             viewer="client"
           /></div>
         )}
-        {data.can(c.id, 'moodboard') && (
-          <div id="board"><WinningBoard clientId={c.id} images={data.boardFor(c.id)} viewer="client" /></div>
+        {can('moodboard') && (
+          <div id="board" className="scroll-mt-28"><WinningBoard clientId={c.id} images={data.boardFor(c.id)} viewer="client" /></div>
         )}
       </div>
     </div>

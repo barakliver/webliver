@@ -10,11 +10,15 @@ import type { BoardImage } from '@/components/app/WinningBoard';
 import { signBoardImages } from '@/lib/board';
 import type { Message as ThreadMessage } from '@/components/app/Thread';
 import type { Contract as ContractRow } from '@/components/app/Contracts';
+import { readShares, sectionOpen, type SharedSections } from '@/content/portalSections';
 
 export type Workspace = {
   id: string; display_name: string; event_date: string | null;
   venue: string; guest_estimate: number | null; budget_visible: boolean;
   budget_target: number | null;
+  /** The doors the producer has closed on the couple's screen. Empty means
+   *  all open. */
+  shared_sections: SharedSections;
   track_a_label: string; track_b_label: string;
   /** The guests' page: its address, and whether it is switched on. The
    *  couple gets the link to paste into their invitations; nothing else about
@@ -69,7 +73,7 @@ export type PortalData = {
 };
 
 const WORKSPACE_COLS =
-  'id,display_name,event_date,venue,guest_estimate,budget_visible,budget_target,track_a_label,track_b_label,guest_token,guest_site_on';
+  'id,display_name,event_date,venue,guest_estimate,budget_visible,budget_target,shared_sections,track_a_label,track_b_label,guest_token,guest_site_on';
 
 type WithClient<T> = T & { client_id: string };
 const by = <T,>(rows: WithClient<T>[] | null | undefined, id: string): T[] =>
@@ -100,7 +104,7 @@ export async function loadPortal(
   if (opts.clientId) q = q.eq('id', opts.clientId);
   const { data } = await q.order('event_date', { ascending: true, nullsFirst: false });
 
-  const workspaces = (data ?? []) as Workspace[];
+  const workspaces = ((data ?? []) as Workspace[]).map((w) => ({ ...w, shared_sections: readShares(w.shared_sections) }));
   const ids = workspaces.map((w) => w.id);
 
   const empty: PortalData = {
@@ -173,11 +177,23 @@ export async function loadPortal(
   const shared = new Set(workspaces.filter((w) => w.budget_visible).map((w) => w.id));
   const moneyVisible = (id: string) => !opts.asClient || shared.has(id);
 
+  /* The producer's own switches, read on the couple's behalf only. Two
+     things close a door: the plan, above, and the producer, here. Money's
+     door is its own column, so 'budget' answers from that one. A producer
+     reading their own event through this gate is never refused. */
+  const byId = new Map(workspaces.map((w) => [w.id, w]));
+  const producerOpened = (id: string, key: string) => {
+    if (!opts.asClient) return true;
+    const w = byId.get(id);
+    if (!w) return true;
+    return key === 'budget' ? w.budget_visible : sectionOpen(w.shared_sections, key);
+  };
+
   return {
     workspaces,
     tasksFor: (id) => by(tasks.data as WithClient<Task>[], id),
     paymentsFor: (id) => (moneyVisible(id) ? by(payments.data as WithClient<Payment>[], id) : []),
-    can: (id, key) => !closed.has(`${id}:${key}`),
+    can: (id, key) => !closed.has(`${id}:${key}`) && producerOpened(id, key),
     budgetFor: (id) => (moneyVisible(id) ? by(budget.data as WithClient<BudgetItem>[], id) : []),
     guestsFor: (id) => by(guests.data as WithClient<Guest>[], id),
     tablesFor: (id) => by(tables.data as WithClient<SeatTable>[], id),

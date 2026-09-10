@@ -46,6 +46,8 @@ import { VenueCompare } from '@/components/app/VenueCompare';
 import { loadVenues, venuesOf } from '@/lib/venueRows';
 
 import { loadThread, loadContracts } from '@/lib/portal';
+import { TabShare } from '@/components/app/ShareSwitch';
+import { readShares } from '@/content/portalSections';
 import { loadFiles } from '@/lib/files';
 import { loadEventSummary } from '@/lib/eventSummary';
 import { Contracts } from '@/components/app/Contracts';
@@ -86,7 +88,7 @@ export default async function ClientPage({
   const sb = await supabaseServer();
   const { data: client } = await sb
     .from('clients')
-    .select('id,display_name,kind,event_date,venue,guest_estimate,budget_visible,budget_target,label_id,track_a_label,track_b_label,guest_token,guest_site_on,guest_note,contact_email,contact_phone,brief')
+    .select('id,display_name,kind,event_date,venue,guest_estimate,budget_visible,budget_target,shared_sections,label_id,track_a_label,track_b_label,guest_token,guest_site_on,guest_note,contact_email,contact_phone,brief')
     .eq('id', id)
     .maybeSingle();
 
@@ -177,6 +179,16 @@ export default async function ClientPage({
         </div>
       </div>
 
+      {/* The door to the couple's side of this section, on the section
+          itself. The same switch is on the preview with all the others; here
+          it is beside the rows it governs, where the question comes up. */}
+      <TabShare
+        clientId={client.id}
+        tab={tab}
+        shares={readShares(client.shared_sections)}
+        moneyOn={!!client.budget_visible}
+      />
+
       <Section tab={tab} client={client} viewerId={account.id} />
 
       <Live sources={workspaceSources(client.id)} />
@@ -188,6 +200,7 @@ type Client = {
   id: string; display_name: string; kind: string; event_date: string | null;
   venue: string | null; guest_estimate: number | null; budget_visible: boolean | null;
   budget_target: number | null;
+  shared_sections: unknown;
   label_id: string | null;
   guest_token: string | null; guest_site_on: boolean | null; guest_note: string | null;
   track_a_label: string; track_b_label: string;

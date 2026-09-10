@@ -40,6 +40,28 @@ export async function addTask(_prev: TaskResult | null, form: FormData): Promise
   return { ok: true };
 }
 
+/** Unticking a supplier task takes back what ticking it wrote.
+ *
+ *  Ticking "צלם סטילס" asks who and for how much and puts them on the
+ *  suppliers list and the budget. Unticking it used to leave both standing,
+ *  so a tick made by mistake was a photographer nobody hired sitting on the
+ *  couple's screen with a line of money under him. Only the supplier this
+ *  task produced is removed — the pointer is set by that form alone — and the
+ *  budget line that points at that supplier goes with him. A supplier typed
+ *  in by hand on the suppliers tab has no task pointing at him and is not
+ *  touched. */
+async function takeBackSupplier(sb: Awaited<ReturnType<typeof supabaseServer>>, taskId: string) {
+  const { data: task } = await sb.from('tasks').select('event_vendor_id').eq('id', taskId).maybeSingle();
+  const vendorId = task?.event_vendor_id as string | null | undefined;
+  if (!vendorId) return;
+  const { error: lineError } = await sb.from('budget_items').delete().eq('event_vendor_id', vendorId);
+  const { error: vendorError } = await sb.from('event_vendors').delete().eq('id', vendorId);
+  if (lineError || vendorError) {
+    console.error('[tasks] takeBackSupplier failed', lineError ?? vendorError);
+    await noteFailure('המשימה בוטלה, אבל הספק שנרשם ממנה נשאר ברשימת הספקים. אפשר למחוק אותו שם.');
+  }
+}
+
 export async function toggleTask(form: FormData): Promise<void> {
   const id = String(form.get('task_id') ?? '');
   const clientId = String(form.get('client_id') ?? '');
@@ -51,6 +73,8 @@ export async function toggleTask(form: FormData): Promise<void> {
   if (error) {
     console.error('[tasks] toggleTask failed', error);
     await noteFailure('לא הצלחנו לעדכן. אפשר לנסות שוב.');
+  } else if (done) {
+    await takeBackSupplier(sb, id);
   }
 
   revalidatePath(`/app/clients/${clientId}`);
