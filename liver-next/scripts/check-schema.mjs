@@ -280,6 +280,12 @@ try {
         'the couple\'s screen starts fully open, a door closes, and the column is an object or nothing',
         `before:${doors} closed:${closed} refused:${refused}`);
 
+      /* 0072: the plan arrives empty and the Sunday date empty, on a row
+         that existed before either column did. */
+      const money = ask('three',
+        `select budget_plan::text || '|' || coalesce(budget_digest_on::text, 'never') from public.clients where id='${cid3}'`);
+      say(money === '{}|never', 'an existing event has an empty budget plan and no Sunday letter yet', `got: ${money}`);
+
       /* Each workspace got an event of its own kind — the corporate one being
          the row whose absence took 0061 down. */
       const kinds = ask('three',

@@ -28,13 +28,15 @@ type Owners = Partial<Record<TimelineCategory, Owner>>;
  * They are copy, not rows: a warning read once at the right moment does more
  * than a task nobody opens.
  */
-export function TimelineBuilder({ clientId, eventDate, guestEstimate }: {
+export function TimelineBuilder({ clientId, eventDate, guestEstimate, defaultOpen = false }: {
   clientId: string; eventDate: string | null; guestEstimate: number | null;
+  /** Open on arrival. The gallery uses it; the overview does not. */
+  defaultOpen?: boolean;
 }) {
   const ui = useCopy();
   const c = ui.timeline;
   const dateFmt = shortDate(ui.locale);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen);
   const [guests, setGuests] = useState<string>(guestEstimate ? String(guestEstimate) : '');
   const [abroad, setAbroad] = useState(false);
   const [owners, setOwners] = useState<Owners>({});

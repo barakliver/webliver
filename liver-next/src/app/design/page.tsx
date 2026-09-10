@@ -6,6 +6,8 @@ import { currentLocale } from '@/lib/serverLocale';
 import { TaskList } from '@/components/app/TaskList';
 import { PaymentsPanel } from '@/components/app/PaymentsPanel';
 import { BudgetPanel } from '@/components/app/BudgetPanel';
+import { BudgetPlanner } from '@/components/app/BudgetPlanner';
+import { BudgetTracker } from '@/components/app/BudgetTracker';
 import { GuestList } from '@/components/app/GuestList';
 import { SeatingPlan } from '@/components/app/SeatingPlan';
 import { DaySchedule } from '@/components/app/DaySchedule';
@@ -15,6 +17,7 @@ import { PortalVendors } from '@/components/app/PortalVendors';
 import { PortalNav } from '@/components/app/PortalNav';
 import { ShareSwitches, TabShare } from '@/components/app/ShareSwitch';
 import { TimelineDemo } from './TimelineDemo';
+import { BudgetPlannerDemo } from './BudgetPlannerDemo';
 import { PlanOffer } from '@/components/app/PlanOffer';
 import { ProductionBook } from '@/components/app/ProductionBook';
 import { Thread } from '@/components/app/Thread';
@@ -336,7 +339,7 @@ export default async function DesignPage() {
                  the largest thing on the couple's screen — and made a working
                  feature look missing. */
               event_date: '2026-12-05',
-              venue: 'אחוזת הכפר', guest_estimate: 180, budget_visible: true, shared_sections: {},
+              venue: 'אחוזת הכפר', guest_estimate: 180, budget_visible: true, shared_sections: {}, budget_plan: null,
               budget_target: 260000, track_a_label: 'נועה', track_b_label: 'איתי',
               guest_token: 'demo-token', guest_site_on: true,
             }}
@@ -365,6 +368,24 @@ export default async function DesignPage() {
             <ShareSwitches clientId="00000000-0000-4000-8000-000000000003" shares={{ envelopes: false }} moneyOn />
             <TabShare clientId="00000000-0000-4000-8000-000000000003" tab="prep" shares={{ envelopes: false }} moneyOn />
             <TabShare clientId="00000000-0000-4000-8000-000000000003" tab="money" shares={{}} moneyOn={false} />
+          </div>
+        </Panel>
+
+        <Panel name="BudgetPlanner" note="the split before the spending: photo non-negotiable, invitations and other to cut; opened">
+          <div className="max-w-4xl"><BudgetPlannerDemo /></div>
+        </Panel>
+
+        <Panel name="BudgetTracker" note="planned against booked: design over by twelve percent, a trade-off offered, the three Sunday lines">
+          <div className="max-w-4xl">
+            <BudgetTracker
+              items={fixtureBudget}
+              payments={fixturePayments}
+              target={260000}
+              plan={{
+                total: 260000, guests: 180, must: ['photo'], nice: ['invites', 'other'],
+                splits: { venue: 52, bar: 7, photo: 6, music: 4, design: 8, look: 5, invites: 1, transport: 2, other: 9, contingency: 6 },
+              }}
+            />
           </div>
         </Panel>
 

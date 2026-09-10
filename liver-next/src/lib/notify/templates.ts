@@ -214,3 +214,66 @@ export function supportTicketEmail(t: {
     </a>
     <p style="margin:14px 0 0;font-size:12px;color:#9aa4b2" dir="ltr">${esc(t.id)}</p>`);
 }
+
+/* ── the Sunday budget letter ────────────────────────────────────────────
+   Hebrew, and the figures come already formatted so the sentence reads the
+   same here as on the money screen. The flag goes first, before the good
+   news, because the whole point of a weekly letter about money is that
+   nobody drifts past the budget without it being named. */
+const shekels = (n: number) =>
+  new Intl.NumberFormat('he-IL', { style: 'currency', currency: 'ILS', maximumFractionDigits: 0 }).format(n);
+const heDate = (iso: string) =>
+  new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'long', timeZone: 'Asia/Jerusalem' }).format(new Date(`${iso}T12:00:00Z`));
+
+const AREA: Record<string, string> = {
+  venue: 'אולם וקייטרינג', bar: 'בר ואלכוהול', photo: 'צילום ווידאו', music: 'מוזיקה', design: 'עיצוב ופרחים',
+  look: 'לבוש, איפור ושיער', invites: 'הזמנות ואישורי הגעה', transport: 'הסעות', other: 'שונות', contingency: 'מרווח ביטחון',
+};
+
+export function budgetDigestEmail(opts: {
+  eventName: string;
+  week: import('../budgetPlan.ts').Weekly;
+  url: string;
+  brand?: MailBrand;
+}) {
+  const w = opts.week;
+  const p = (t: string) => `<p style="margin:0 0 10px;font-size:15px;line-height:1.8;color:#47566a">${t}</p>`;
+  const li = (t: string) => `<li>${t}</li>`;
+
+  const flag = w.flagged.length === 0 ? '' : `
+    <div style="margin:0 0 16px;padding:12px 14px;border-radius:12px;background:#fdecec;border:1px solid #f3b6b6">
+      ${w.flagged.map((r) => `<p style="margin:0 0 6px;font-size:15px;line-height:1.7;color:#a12626"><b>חריגה: ${AREA[r.key]} ב-${r.pct - 100}% מעל המתוכנן.</b> נסגרו ${shekels(r.actual)} מול ${shekels(r.planned)} מתוכננים.</p>`).join('')}
+      <p style="margin:6px 0 0;font-size:14.5px;line-height:1.7;color:#0e1620">${
+        w.tradeOff
+          ? `המלצה: לקצץ ב${AREA[w.tradeOff.cut]}, שם נשארו ${shekels(w.tradeOff.headroom)} לא מנוצלים.`
+          : 'אין תחום עם מרווח לספוג את זה. או שהתקציב עולה, או שמורידים משהו שנסגר.'
+      }</p>
+    </div>`;
+
+  const changes = w.added.length === 0 && w.paid.length === 0
+    ? p('השבוע לא נוסף סעיף ולא נרשם תשלום.')
+    : `<ul style="margin:0 0 14px;padding-inline-start:20px;font-size:15px;line-height:1.9;color:#47566a">
+        ${w.added.map((a) => li(`נוסף <b>${a.label}</b> תחת ${AREA[a.category]}, ${shekels(a.amount)}.`)).join('')}
+        ${w.paid.map((x) => li(`שולם <b>${x.title}</b>, ${shekels(x.amount)}, ב-${heDate(x.on)}.`)).join('')}
+      </ul>`;
+
+  const overall = w.overall.target && w.overall.pct !== null
+    ? `התחייבויות של ${shekels(w.overall.committed)} מתוך ${shekels(w.overall.target)}, ${w.overall.pct}% מהתקציב.`
+    : `התחייבויות של ${shekels(w.overall.committed)}. עוד לא נקבע תקציב יעד.`;
+  const watch = w.watch ? `לשים עין על ${AREA[w.watch.key]}: ${w.watch.pct}% מהמתוכנן כבר נסגר.` : 'אין תחום שדורש עין השבוע.';
+  const due = w.nextDue
+    ? `התשלום הבא: ${w.nextDue.title}, ${shekels(w.nextDue.amount)}, עד ${heDate(w.nextDue.on)}.`
+    : 'אין תשלום שמגיע בשלושים הימים הקרובים.';
+
+  return shell(`
+    <h2 style="margin:0 0 12px;font-size:20px;color:#0e1620">התקציב של ${opts.eventName}, השבוע</h2>
+    ${flag}
+    <p style="margin:0 0 6px;font-size:13px;letter-spacing:.06em;color:#8a97a8">מה השתנה</p>
+    ${changes}
+    <p style="margin:0 0 6px;font-size:13px;letter-spacing:.06em;color:#8a97a8">השורה התחתונה</p>
+    <ol style="margin:0 0 18px;padding-inline-start:20px;font-size:15px;line-height:1.9;color:#0e1620">
+      ${li(overall)}${li(watch)}${li(due)}
+    </ol>
+    <p style="margin:0"><a href="${opts.url}" style="display:inline-block;padding:10px 18px;border-radius:12px;background:#0e1620;color:#fff;text-decoration:none;font-size:14.5px">למעקב המלא</a></p>
+  `, opts.brand);
+}

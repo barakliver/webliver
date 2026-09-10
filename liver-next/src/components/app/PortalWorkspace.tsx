@@ -4,6 +4,7 @@ import { formatDate, daysUntil } from '@/lib/dates';
 import { TaskList } from '@/components/app/TaskList';
 import { PaymentsPanel } from '@/components/app/PaymentsPanel';
 import { BudgetPanel } from '@/components/app/BudgetPanel';
+import { BudgetTracker } from '@/components/app/BudgetTracker';
 import { FinanceSummary } from '@/components/app/FinanceSummary';
 import { WinningBoard } from '@/components/app/WinningBoard';
 import { GuestList } from '@/components/app/GuestList';
@@ -135,7 +136,15 @@ export function PortalWorkspace({
           <div id="payments" className="scroll-mt-28"><PaymentsPanel clientId={c.id} payments={payments} viewer="client" /></div>
         )}
         {can('budget') && (
-          <div id="budget" className="scroll-mt-28"><BudgetPanel clientId={c.id} items={budget} viewer="client" visible /></div>
+          <div id="budget" className="scroll-mt-28 space-y-10">
+            <BudgetTracker
+              items={budget}
+              payments={payments}
+              plan={c.budget_plan}
+              target={c.budget_target === null || c.budget_target === undefined ? null : Number(c.budget_target)}
+            />
+            <BudgetPanel clientId={c.id} items={budget} viewer="client" visible />
+          </div>
         )}
         {can('guests') && (
           <div id="guests" className="scroll-mt-28"><GuestList clientId={c.id} guests={guests} /></div>

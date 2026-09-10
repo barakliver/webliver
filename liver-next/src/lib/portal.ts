@@ -11,6 +11,7 @@ import { signBoardImages } from '@/lib/board';
 import type { Message as ThreadMessage } from '@/components/app/Thread';
 import type { Contract as ContractRow } from '@/components/app/Contracts';
 import { readShares, sectionOpen, type SharedSections } from '@/content/portalSections';
+import { readPlan, type BudgetPlan } from '@/lib/budgetPlan';
 
 export type Workspace = {
   id: string; display_name: string; event_date: string | null;
@@ -19,6 +20,8 @@ export type Workspace = {
   /** The doors the producer has closed on the couple's screen. Empty means
    *  all open. */
   shared_sections: SharedSections;
+  /** The intended split, or null until the planner was used. */
+  budget_plan: BudgetPlan | null;
   track_a_label: string; track_b_label: string;
   /** The guests' page: its address, and whether it is switched on. The
    *  couple gets the link to paste into their invitations; nothing else about
@@ -73,7 +76,7 @@ export type PortalData = {
 };
 
 const WORKSPACE_COLS =
-  'id,display_name,event_date,venue,guest_estimate,budget_visible,budget_target,shared_sections,track_a_label,track_b_label,guest_token,guest_site_on';
+  'id,display_name,event_date,venue,guest_estimate,budget_visible,budget_target,shared_sections,budget_plan,track_a_label,track_b_label,guest_token,guest_site_on';
 
 type WithClient<T> = T & { client_id: string };
 const by = <T,>(rows: WithClient<T>[] | null | undefined, id: string): T[] =>
@@ -104,7 +107,7 @@ export async function loadPortal(
   if (opts.clientId) q = q.eq('id', opts.clientId);
   const { data } = await q.order('event_date', { ascending: true, nullsFirst: false });
 
-  const workspaces = ((data ?? []) as Workspace[]).map((w) => ({ ...w, shared_sections: readShares(w.shared_sections) }));
+  const workspaces = ((data ?? []) as Workspace[]).map((w) => ({ ...w, shared_sections: readShares(w.shared_sections), budget_plan: readPlan(w.budget_plan) }));
   const ids = workspaces.map((w) => w.id);
 
   const empty: PortalData = {
@@ -134,7 +137,7 @@ export async function loadPortal(
       .order('due_on', { ascending: true, nullsFirst: false }),
     sb.from('payments').select('id,client_id,title,amount,due_on,paid,paid_on')
       .in('client_id', ids).order('paid').order('due_on', { ascending: true, nullsFirst: false }),
-    sb.from('budget_items').select('id,client_id,category,label,estimate,agreed,vendor')
+    sb.from('budget_items').select('id,client_id,category,label,estimate,agreed,vendor,created_at')
       .in('client_id', ids).order('created_at'),
     sb.from('guests_rsvp')
       .select('id,client_id,full_name,side,phone,status,party_size,diet,note,invite_token,table_id')

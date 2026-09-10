@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase/admin';
 import { optional } from '@/lib/env';
-import { EVENT_ZONE } from '@/lib/clock';
+import { EVENT_ZONE, todayInZone, weekdayInZone } from '@/lib/clock';
+import { sendBudgetDigests } from '@/lib/notify/budgetDigest';
 
 /**
  * The nightly sweep: close what the calendar has closed, and send the
@@ -84,7 +85,19 @@ export async function POST(req: Request) {
   }
 
   const sb = supabaseAdmin();
-  const out = { archived: 0, reminded: 0, errors: [] as string[] };
+  const out = { archived: 0, reminded: 0, digests: 0, errors: [] as string[] };
+
+  /* The Sunday letter. On the nightly run it goes out on Sunday's run, which
+     is Sunday morning where the events are; `?job=digest` sends it on any
+     day, for a second crontab line at nine or for a hand-run. The date
+     column on each event keeps a second run in the same week quiet. */
+  const today = todayInZone();
+  const wantDigest = new URL(req.url).searchParams.get('job') === 'digest' || weekdayInZone() === 0;
+  if (wantDigest) {
+    const d = await sendBudgetDigests(sb, today);
+    out.digests = d.sent;
+    out.errors.push(...d.errors);
+  }
 
   /* Fourteen days of grace. The week after a wedding is when the last invoice
      arrives and the run sheet gets its final correction; freezing the snapshot

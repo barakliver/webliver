@@ -15,6 +15,9 @@ import { EventDetails } from '@/components/app/EventDetails';
 import { EventSummary } from '@/components/app/EventSummary';
 import { EventTemplate } from '@/components/app/EventTemplate';
 import { TimelineBuilder } from '@/components/app/TimelineBuilder';
+import { BudgetPlanner } from '@/components/app/BudgetPlanner';
+import { BudgetTracker } from '@/components/app/BudgetTracker';
+import { readPlan } from '@/lib/budgetPlan';
 import { ApplyTemplate } from '@/components/app/ApplyTemplate';
 import { EventFileLists } from '@/components/app/EventFileLists';
 import { loadEventFile } from '@/lib/eventFile';
@@ -89,7 +92,7 @@ export default async function ClientPage({
   const sb = await supabaseServer();
   const { data: client } = await sb
     .from('clients')
-    .select('id,display_name,kind,event_date,venue,guest_estimate,budget_visible,budget_target,shared_sections,label_id,track_a_label,track_b_label,guest_token,guest_site_on,guest_note,contact_email,contact_phone,brief')
+    .select('id,display_name,kind,event_date,venue,guest_estimate,budget_visible,budget_target,shared_sections,budget_plan,label_id,track_a_label,track_b_label,guest_token,guest_site_on,guest_note,contact_email,contact_phone,brief')
     .eq('id', id)
     .maybeSingle();
 
@@ -202,6 +205,7 @@ type Client = {
   venue: string | null; guest_estimate: number | null; budget_visible: boolean | null;
   budget_target: number | null;
   shared_sections: unknown;
+  budget_plan: unknown;
   label_id: string | null;
   guest_token: string | null; guest_site_on: boolean | null; guest_note: string | null;
   track_a_label: string; track_b_label: string;
@@ -341,7 +345,7 @@ async function Section({ tab, client, viewerId }: { tab: EventTab; client: Clien
         .select('id,title,amount,due_on,paid,paid_on').eq('client_id', id)
         .order('paid').order('due_on', { ascending: true, nullsFirst: false })),
       safeRows<BudgetItem>('budget', sb.from('budget_items')
-        .select('id,category,label,estimate,agreed,vendor').eq('client_id', id).order('created_at')),
+        .select('id,category,label,estimate,agreed,vendor,created_at').eq('client_id', id).order('created_at')),
       /* Fees only. The names belong on the crew screen; what this needs is a
          column that until now nothing anywhere had ever added up. */
       safeRows<{ fee: number | string | null }>('crew fees', sb.from('crew')
@@ -359,6 +363,20 @@ async function Section({ tab, client, viewerId }: { tab: EventTab; client: Clien
             Two ledgers on purpose, from one module, so they cannot be derived
             differently — and only this one is ever rendered for the couple. */}
         <ProducerLedger c={ui.money.ledger} payments={payments} items={budget} crew={crewFees} />
+        {/* The intention, then the drift from it. The planner collapses to a
+            button; the tracker is only there once there is a plan or a line. */}
+        <BudgetPlanner
+          clientId={id}
+          current={readPlan(client.budget_plan)}
+          target={client.budget_target === null ? null : Number(client.budget_target)}
+          guestEstimate={client.guest_estimate}
+        />
+        <BudgetTracker
+          items={budget}
+          payments={payments}
+          plan={readPlan(client.budget_plan)}
+          target={client.budget_target === null ? null : Number(client.budget_target)}
+        />
         <PaymentsPanel clientId={id} payments={payments} viewer="producer" />
         <BudgetPanel clientId={id} items={budget} viewer="producer" visible={!!client.budget_visible} />
       </div>

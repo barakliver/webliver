@@ -85,3 +85,12 @@ export function isPastDue(due: string | null | undefined, now?: number | Date): 
   const day = dateInZone(due);
   return day !== '' && day < todayInZone(now);
 }
+
+/** The day of the week where the events are, Sunday being 0. The nightly
+ *  sweep runs in UTC and asks this before sending the Sunday letter, so the
+ *  letter goes out on Israel's Sunday and not on the machine's. */
+export function weekdayInZone(now: number | Date = Date.now()): number {
+  const name = new Intl.DateTimeFormat('en-US', { timeZone: EVENT_ZONE, weekday: 'short' })
+    .format(now instanceof Date ? now : new Date(now));
+  return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(name);
+}
