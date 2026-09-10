@@ -1,4 +1,5 @@
 import { serverCopy } from '@/lib/serverLocale';
+import type { Locale } from '@/lib/locale';
 import { DIETS } from '@/content/lists';
 import { formatDate } from '@/lib/dates';
 import { hhmm, inDayOrder } from '@/lib/runsheet';
@@ -13,7 +14,7 @@ export type SheetTable = { id: string; name: string; seats: number };
 export type SheetMoment = { id: string; at_time: string; title: string; key_moment: boolean | null };
 export type SheetArrival = { id: string; name: string; role: string; call_time: string | null };
 
-const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE,
+const dateFmtFor = (l: Locale) => new Intl.DateTimeFormat(l === 'en' ? 'en-GB' : 'he-IL', { timeZone: EVENT_ZONE,
   weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
 });
 
@@ -44,6 +45,7 @@ export async function NumbersSheet({ client, guests, tables, day, arrivals: arri
   arrivals: SheetArrival[];
   brand: { name: string; tagline?: string };
 }) {
+  const locale = (await serverCopy()).locale;
   const ui = await serverCopy();
   const c = (await serverCopy()).numbers;
   const attending = guests.filter((g) => g.status === 'attending');
@@ -81,7 +83,7 @@ export async function NumbersSheet({ client, guests, tables, day, arrivals: arri
       <header className="border-b-2 border-ink pb-4">
         <h1 className="font-display text-[27px] font-light text-ink">{client.display_name}</h1>
         <p className="mt-1.5 text-[15px] text-ink-soft">
-          {formatDate(dateFmt, client.event_date, ui.runsheet.noDate)}
+          {formatDate(dateFmtFor(locale), client.event_date, ui.runsheet.noDate)}
           {client.venue ? ` · ${client.venue}` : ''}
         </p>
         <p className="mt-1 text-[14px] font-medium text-accent">{c.title} · {c.sub}</p>

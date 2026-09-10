@@ -7,7 +7,7 @@ import {
   addEventVendor, bookVendor, setEventVendorStatus, removeEventVendor, promoteToDirectory,
   type VendorResult,
 } from '@/app/actions/vendors';
-import { VENDOR_CATEGORIES, VENDOR_STATES, categoryLabel } from '@/content/production';
+import { categoryLabelFor, vendorCategoriesFor, vendorStatesFor } from '@/content/production';
 import { useCopy } from '@/components/app/CopyProvider';
 import { hhmm } from '@/lib/runsheet';
 
@@ -46,6 +46,7 @@ const statusTone: Record<string, string> = {
 export function EventVendors({ clientId, vendors, directory }: {
   clientId: string; vendors: EventVendor[]; directory: DirectoryEntry[];
 }) {
+  const locale = useCopy().locale;
   const c = useCopy().vendor;
   const [adding, setAdding] = useState(false);
   const [picking, setPicking] = useState(false);
@@ -69,7 +70,7 @@ export function EventVendors({ clientId, vendors, directory }: {
     byCategory.set(key, [...(byCategory.get(key) ?? []), v]);
   }
   const groups = [...byCategory.entries()].sort((a, b) =>
-    categoryLabel(a[0]).localeCompare(categoryLabel(b[0]), 'he')
+    categoryLabelFor(a[0], locale).localeCompare(categoryLabelFor(b[0], locale), locale)
   );
 
   return (
@@ -112,7 +113,7 @@ export function EventVendors({ clientId, vendors, directory }: {
                 <input type="hidden" name="vendor_id" value={d.id} />
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-[14.5px] text-ink">{d.name}</span>
-                  <span className="block text-[12.5px] text-ink-mute">{categoryLabel(d.category)}</span>
+                  <span className="block text-[12.5px] text-ink-mute">{categoryLabelFor(d.category, locale)}</span>
                 </span>
                 <button type="submit" className="btn-quiet px-3 py-1 text-[13px]">{c.bookIt}</button>
               </form>
@@ -132,7 +133,7 @@ export function EventVendors({ clientId, vendors, directory }: {
             <div>
               <label className="label">{c.category}</label>
               <select name="category" defaultValue="other" className="field">
-                {VENDOR_CATEGORIES.map((k) => <option key={k.value} value={k.value}>{k.label}</option>)}
+                {vendorCategoriesFor(locale).map((k) => <option key={k.value} value={k.value}>{k.label}</option>)}
               </select>
             </div>
             <div>
@@ -144,7 +145,7 @@ export function EventVendors({ clientId, vendors, directory }: {
             <div>
               <label className="label">{c.status}</label>
               <select name="status" defaultValue="shortlist" className="field">
-                {VENDOR_STATES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
+                {vendorStatesFor(locale).map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
               </select>
             </div>
             <div>
@@ -171,7 +172,7 @@ export function EventVendors({ clientId, vendors, directory }: {
         <div className="mt-5 space-y-5">
           {groups.map(([category, list]) => (
             <div key={category}>
-              <h3 className="mb-2 text-[12.5px] font-semibold text-accent">{categoryLabel(category)}</h3>
+              <h3 className="mb-2 text-[12.5px] font-semibold text-accent">{categoryLabelFor(category, locale)}</h3>
               <ul className="space-y-2.5">
                 {list.map((v) => (
                   <li key={v.id} className="flex flex-wrap items-center gap-3 rounded-xl2 border border-line px-4 py-3.5">
@@ -195,7 +196,7 @@ export function EventVendors({ clientId, vendors, directory }: {
                         aria-label={`${c.status} ${v.name}`}
                         className={`rounded-xl2 border-0 px-3 py-1.5 text-[12.5px] font-medium ${statusTone[v.status] ?? ''}`}
                       >
-                        {VENDOR_STATES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
+                        {vendorStatesFor(locale).map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
                       </select>
                     </form>
 

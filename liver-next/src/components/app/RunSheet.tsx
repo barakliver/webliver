@@ -1,4 +1,5 @@
 import { hhmm, spanOf, humanSpan, crossesMidnight, eventMinutes } from '@/lib/runsheet';
+import { serverCopy } from '@/lib/serverLocale';
 
 /**
  * The page somebody holds at eleven at night.
@@ -50,7 +51,7 @@ export type RunSheetCopy = {
   noContacts: string;
 };
 
-export function RunSheet({
+export async function RunSheet({
   c, client, brand, lines, contacts, roleLabel, staffVisible, dateLabel, audienceLabel, printedLabel,
 }: {
   c: RunSheetCopy;
@@ -66,6 +67,7 @@ export function RunSheet({
   audienceLabel: (value: string) => string;
   printedLabel: string;
 }) {
+  const locale = (await serverCopy()).locale;
   const wraps = crossesMidnight(lines.map((l) => l.at_time));
   const ordered = [...lines].sort(
     (a, b) => eventMinutes(a.at_time, wraps) - eventMinutes(b.at_time, wraps),
@@ -132,7 +134,7 @@ export function RunSheet({
                       end. Measured 111px out of place before this attribute. */}
                   {span.minutes !== null && (
                     <span dir="rtl" className="mt-1 block whitespace-nowrap text-[11.5px] tabular-nums text-ink-mute">
-                      {span.stated ? humanSpan(span.minutes) : `↓ ${humanSpan(span.minutes)}`}
+                      {span.stated ? humanSpan(span.minutes, locale) : `↓ ${humanSpan(span.minutes, locale)}`}
                     </span>
                   )}
                 </span>

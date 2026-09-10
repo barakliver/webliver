@@ -1,9 +1,10 @@
 'use client';
 
 import { useActionState, useState } from 'react';
+import { eventKindsFor } from '@/content/ui';
 import { useFormStatus } from 'react-dom';
 import { createClient, type ActionResult } from '@/app/actions/clients';
-import { EVENT_KINDS, MIN_EVENT_DATE, MAX_GUESTS } from '@/content/site';
+import { MIN_EVENT_DATE, MAX_GUESTS } from '@/content/site';
 import { useCopy } from '@/components/app/CopyProvider';
 
 function Submit() {
@@ -17,6 +18,7 @@ function Submit() {
 }
 
 export function NewClientForm() {
+  const locale = useCopy().locale;
   const [open, setOpen] = useState(false);
   const [state, action] = useActionState<ActionResult | null, FormData>(createClient, null);
   const c = useCopy().newClient;
@@ -50,7 +52,7 @@ export function NewClientForm() {
         <div>
           <label className="label" htmlFor="nc-kind">{c.kind}</label>
           <select id="nc-kind" name="kind" className="field" defaultValue="wedding">
-            {EVENT_KINDS.map(k => <option key={k.value} value={k.value}>{k.label}</option>)}
+            {eventKindsFor(locale).map(k => <option key={k.value} value={k.value}>{k.label}</option>)}
           </select>
         </div>
       </div>

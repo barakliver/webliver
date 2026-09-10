@@ -85,10 +85,17 @@ export function spanOf<T extends Timed & { duration_min?: number | null }>(
 
 /** "45 דק׳", "שעה וחצי", "שעתיים". Written the way somebody says it out loud,
  *  because a run sheet is read aloud more often than it is read. */
-export function humanSpan(minutes: number): string {
-  if (minutes < 60) return `${minutes} דק׳`;
+export function humanSpan(minutes: number, locale: 'he' | 'en' = 'he'): string {
   const h = Math.floor(minutes / 60);
   const m = minutes % 60;
+  if (locale === 'en') {
+    if (minutes < 60) return `${minutes} min`;
+    const hours = h === 1 ? '1 hour' : `${h} hours`;
+    if (m === 0) return hours;
+    if (m === 30) return h === 1 ? 'an hour and a half' : `${h} and a half hours`;
+    return `${hours} ${m} min`;
+  }
+  if (minutes < 60) return `${minutes} דק׳`;
   const hours = h === 1 ? 'שעה' : h === 2 ? 'שעתיים' : `${h} שעות`;
   if (m === 0) return hours;
   if (m === 30) return h === 1 ? 'שעה וחצי' : `${hours} וחצי`;

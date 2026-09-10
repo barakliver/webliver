@@ -9,7 +9,7 @@ import {
 } from '@/app/actions/template';
 import { TASK_TEMPLATE, BUDGET_LINES, SUPPLIER_ROLES } from '@/content/eventFile';
 import { useCopy } from '@/components/app/CopyProvider';
-import { categoryLabel } from '@/content/production';
+import { categoryLabelFor } from '@/content/production';
 
 type Tab = 'tasks' | 'budget' | 'suppliers';
 
@@ -55,6 +55,7 @@ function Result({ state }: { state: TemplateResult | null }) {
  * reading the cash envelope list.
  */
 export function EventTemplate({ clientId }: { clientId: string }) {
+  const locale = useCopy().locale;
   const c = useCopy().template;
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState<Tab>('tasks');
@@ -248,7 +249,7 @@ export function EventTemplate({ clientId }: { clientId: string }) {
                   {roles.has(r.name) && <input type="hidden" name="role" value={r.name} />}
                   <span className="min-w-0">
                     <span className="block text-[14.5px] text-ink">{r.name}</span>
-                    <span className="block text-[12px] text-ink-mute">{categoryLabel(r.category)}</span>
+                    <span className="block text-[12px] text-ink-mute">{categoryLabelFor(r.category, locale)}</span>
                   </span>
                 </label>
               </li>

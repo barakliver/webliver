@@ -7,7 +7,7 @@ import { Archive, ArchiveRestore, FileSpreadsheet, Pencil, Plus, Search, X } fro
 import { VendorImport } from './VendorImport';
 import { Ltr } from '@/components/Ltr';
 import { addVendor, updateVendor, setVendorArchived, type VendorResult } from '@/app/actions/vendors';
-import { VENDOR_CATEGORIES, categoryLabel } from '@/content/production';
+import { categoryLabelFor, vendorCategoriesFor } from '@/content/production';
 import { useCopy } from '@/components/app/CopyProvider';
 
 export type Vendor = {
@@ -33,6 +33,7 @@ function Alert({ text }: { text: string }) {
 }
 
 function Fields({ vendor }: { vendor?: Vendor }) {
+  const locale = useCopy().locale;
   const c = useCopy().vendor;
   return (
     <>
@@ -44,7 +45,7 @@ function Fields({ vendor }: { vendor?: Vendor }) {
         <div>
           <label className="label">{c.category}</label>
           <select name="category" defaultValue={vendor?.category || 'other'} className="field">
-            {VENDOR_CATEGORIES.map((k) => <option key={k.value} value={k.value}>{k.label}</option>)}
+            {vendorCategoriesFor(locale).map((k) => <option key={k.value} value={k.value}>{k.label}</option>)}
           </select>
         </div>
         <div>
@@ -85,6 +86,7 @@ function Fields({ vendor }: { vendor?: Vendor }) {
 }
 
 function Row({ vendor }: { vendor: Vendor }) {
+  const locale = useCopy().locale;
   const c = useCopy().vendor;
   const [editing, setEditing] = useState(false);
   const [state, action] = useActionState<VendorResult | null, FormData>(
@@ -121,7 +123,7 @@ function Row({ vendor }: { vendor: Vendor }) {
       <div className="min-w-0 flex-1">
         <p className={`text-[15.5px] ${archived ? 'text-ink-mute' : 'text-ink'}`}>{vendor.name}</p>
         <div className="mt-0.5 flex flex-wrap items-center gap-x-3 text-[13px] text-ink-mute">
-          <span>{categoryLabel(vendor.category)}</span>
+          <span>{categoryLabelFor(vendor.category, locale)}</span>
           {vendor.contact_name && <span>{vendor.contact_name}</span>}
           {vendor.phone && <a href={`tel:${vendor.phone}`} dir="ltr" className="hover:text-accent">{vendor.phone}</a>}
           {vendor.area && <span>{vendor.area}</span>}
@@ -172,6 +174,7 @@ function Row({ vendor }: { vendor: Vendor }) {
  * an event in a single click with the number already filled in.
  */
 export function VendorDirectory({ vendors }: { vendors: Vendor[] }) {
+  const locale = useCopy().locale;
   const c = useCopy().vendor;
   const [adding, setAdding] = useState(false);
   const [importing, setImporting] = useState(false);
@@ -195,10 +198,10 @@ export function VendorDirectory({ vendors }: { vendors: Vendor[] }) {
       .filter((v) => !category || v.category === category)
       .filter((v) => {
         if (q.length < 2) return true;
-        const hay = `${v.name} ${categoryLabel(v.category)} ${v.contact_name} ${v.area} ${v.notes} ${v.phone}`;
+        const hay = `${v.name} ${categoryLabelFor(v.category, locale)} ${v.contact_name} ${v.area} ${v.notes} ${v.phone}`;
         return q.split(/\s+/).every((w) => hay.includes(w));
       })
-      .sort((a, b) => a.name.localeCompare(b.name, 'he'));
+      .sort((a, b) => a.name.localeCompare(b.name, locale));
   }, [vendors, query, category, showArchived]);
 
   const activeCount = vendors.filter((v) => !v.archived_at).length;
@@ -232,7 +235,7 @@ export function VendorDirectory({ vendors }: { vendors: Vendor[] }) {
           aria-label={c.category} className="field w-auto min-w-[160px]"
         >
           <option value="">{c.allCategories}</option>
-          {VENDOR_CATEGORIES.map((k) => <option key={k.value} value={k.value}>{k.label}</option>)}
+          {vendorCategoriesFor(locale).map((k) => <option key={k.value} value={k.value}>{k.label}</option>)}
         </select>
 
         <button

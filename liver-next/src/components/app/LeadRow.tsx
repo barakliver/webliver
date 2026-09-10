@@ -1,11 +1,13 @@
 'use client';
 
 import { useActionState, useState } from 'react';
+import { eventKindsFor } from '@/content/ui';
+import type { Locale } from '@/lib/locale';
 import { formatDate } from '@/lib/dates';
 import { MapPin } from 'lucide-react';
 import { useFormStatus } from 'react-dom';
 import { setLeadStatus, setLeadNote, bookCall, convertLead, type LeadActionResult } from '@/app/actions/leads';
-import { EVENT_KINDS, type leadsCopy } from '@/content/site';
+import { type leadsCopy } from '@/content/site';
 import type { LeadCopy } from '@/content/appUi';
 import { useCopy } from '@/components/app/CopyProvider';
 import { EVENT_ZONE } from '@/lib/clock';
@@ -20,8 +22,8 @@ export type Lead = {
 };
 export type Call = { id: string; lead_id: string | null; title: string; remind_on: string | null; done: boolean };
 
-const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE, day: '2-digit', month: '2-digit', year: '2-digit' });
-const show = (d: string | null) => formatDate(dateFmt, d, '·');
+const dateFmtFor = (l: Locale) => new Intl.DateTimeFormat(l === 'en' ? 'en-GB' : 'he-IL', { timeZone: EVENT_ZONE, day: '2-digit', month: '2-digit', year: '2-digit' });
+const show = (locale: Locale, d: string | null) => formatDate(dateFmtFor(locale), d, '·');
 
 /** A channel nobody has named yet is shown as it was stored rather than
  *  hidden. A new source that starts working is then visible on day one,
@@ -39,11 +41,12 @@ function Book() {
 }
 
 export function LeadRow({ lead, calls }: { lead: Lead; calls: Call[] }) {
+  const locale = useCopy().locale;
   const ui = useCopy();
   const [open, setOpen] = useState(false);
   const [state, action] = useActionState<LeadActionResult | null, FormData>(bookCall, null);
   const c = useCopy().lead;
-  const kind = EVENT_KINDS.find((k) => k.value === lead.kind)?.label ?? lead.kind;
+  const kind = eventKindsFor(locale).find((k) => k.value === lead.kind)?.label ?? lead.kind;
   const openCalls = calls.filter((x) => !x.done);
 
   return (
@@ -65,7 +68,7 @@ export function LeadRow({ lead, calls }: { lead: Lead; calls: Call[] }) {
           </p>
           <p className="mt-0.5 text-[12.5px] text-ink-mute">
             {kind}
-            {lead.event_date ? ` · ${show(lead.event_date)}` : ''}
+            {lead.event_date ? ` · ${show(locale, lead.event_date)}` : ''}
             {lead.guest_count ? ` · ${lead.guest_count}` : ''}
             {lead.source ? ` · ${sourceLabel(c, lead.source)}` : ''}
           </p>
@@ -81,7 +84,7 @@ export function LeadRow({ lead, calls }: { lead: Lead; calls: Call[] }) {
 
         {openCalls.length > 0 && (
           <span className="rounded-xl2 bg-warn-wash px-3 py-1 text-[12.5px] text-warn">
-            {c.callTitle} · {show(openCalls[0].remind_on)}
+            {c.callTitle} · {show(locale, openCalls[0].remind_on)}
           </span>
         )}
 

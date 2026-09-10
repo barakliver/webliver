@@ -57,6 +57,15 @@ const CATEGORY_EN: Record<string, string> = {
 };
 export const categoryLabelFor = (v: string, locale: 'he' | 'en') =>
   (locale === 'en' ? CATEGORY_EN[v] : undefined) ?? categoryLabel(v);
+/** The same list as a select wants it, in the reader's language. */
+export const vendorCategoriesFor = (locale: 'he' | 'en') =>
+  VENDOR_CATEGORIES.map((c) => ({ value: c.value, label: categoryLabelFor(c.value, locale) }));
+
+const STATE_EN: Record<string, string> = { shortlist: 'Being looked at', booked: 'Booked', cancelled: 'Cancelled' };
+export const stateLabelFor = (v: string, locale: 'he' | 'en') =>
+  (locale === 'en' ? STATE_EN[v] : undefined) ?? stateLabel(v);
+export const vendorStatesFor = (locale: 'he' | 'en') =>
+  VENDOR_STATES.map((s) => ({ value: s.value, label: stateLabelFor(s.value, locale) }));
 
 /**
  * The checklist's supplier categories, mapped onto the event file's.

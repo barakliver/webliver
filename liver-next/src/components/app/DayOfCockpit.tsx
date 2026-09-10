@@ -149,6 +149,7 @@ export function DayOfCockpit({
 function Headline({ label, placed, fallback, tone }: {
   label: string; placed: Placed | null; fallback: string; tone: 'now' | 'next';
 }) {
+  const locale = useCopy().locale;
   return (
     <div className={cn('card', tone === 'now' && 'border-accent bg-accent-wash')}>
       <div className="text-[12.5px] font-semibold text-ink-mute">{label}</div>
@@ -159,8 +160,8 @@ function Headline({ label, placed, fallback, tone }: {
           </div>
           <div className="mt-1 text-[14px] text-ink-soft">
             <span className="tabular-nums">{hhmm(placed.line.at_time)}</span>
-            {placed.inMinutes !== null && tone === 'next' && ` · ${relative(placed.inMinutes)}`}
-            {placed.line.duration_min ? ` · ${humanSpan(placed.line.duration_min)}` : ''}
+            {placed.inMinutes !== null && tone === 'next' && ` · ${relative(placed.inMinutes, locale)}`}
+            {placed.line.duration_min ? ` · ${humanSpan(placed.line.duration_min, locale)}` : ''}
           </div>
         </>
       ) : (

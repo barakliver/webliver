@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import type { Locale } from '@/lib/locale';
 import { ChevronLeft, CalendarX2, Users, Wallet } from 'lucide-react';
 import { serverCopy } from '@/lib/serverLocale';
 import type { ClientStatus } from '@/lib/status';
@@ -7,7 +8,7 @@ import { formatDate } from '@/lib/dates';
 import { Money, Ratio, ils } from '@/components/Ltr';
 import { EVENT_ZONE } from '@/lib/clock';
 
-const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE, day: 'numeric', month: 'short', year: 'numeric' });
+const dateFmtFor = (l: Locale) => new Intl.DateTimeFormat(l === 'en' ? 'en-GB' : 'he-IL', { timeZone: EVENT_ZONE, day: 'numeric', month: 'short', year: 'numeric' });
 
 
 /** The number that answers "how soon".
@@ -74,6 +75,7 @@ function GapChip({ label, level }: { label: string; level: 'now' | 'soon' }) {
    content above it is inert, and the archive control is lifted back out so it
    stays its own button rather than a hole in the link. */
 async function Row({ s }: { s: ClientStatus }) {
+  const locale = (await serverCopy()).locale;
   const c = (await serverCopy()).statusBoard;
   return (
     <li className="card relative p-0 transition-colors focus-within:border-accent hover:border-accent">
@@ -96,7 +98,7 @@ async function Row({ s }: { s: ClientStatus }) {
               {s.name}
             </h3>
             <p className="text-[13.5px] text-ink-mute">
-              {formatDate(dateFmt, s.eventDate, c.noDate)}
+              {formatDate(dateFmtFor(locale), s.eventDate, c.noDate)}
               {s.venue ? ` · ${s.venue}` : ''}
             </p>
           </div>

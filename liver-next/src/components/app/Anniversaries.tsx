@@ -1,6 +1,7 @@
 'use client';
 
 import { CalendarHeart, Mail, X } from 'lucide-react';
+import type { Locale } from '@/lib/locale';
 import Link from 'next/link';
 import { cancelAnniversary } from '@/app/actions/archive';
 import { useCopy } from '@/components/app/CopyProvider';
@@ -19,7 +20,7 @@ export type Anniversary = {
   emails: string[];
 };
 
-const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE, day: 'numeric', month: 'long', year: 'numeric' });
+const dateFmtFor = (l: Locale) => new Intl.DateTimeFormat(l === 'en' ? 'en-GB' : 'he-IL', { timeZone: EVENT_ZONE, day: 'numeric', month: 'long', year: 'numeric' });
 
 /**
  * The first anniversary, on the screen a producer opens in the morning.
@@ -35,6 +36,7 @@ const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE, day: 'n
  * read is worse than nothing.
  */
 export function Anniversaries({ items }: { items: Anniversary[] }) {
+  const locale = useCopy().locale;
   const c = useCopy().archive;
   if (items.length === 0) return null;
 
@@ -55,14 +57,14 @@ export function Anniversaries({ items }: { items: Anniversary[] }) {
                 {/* The date is the wedding's, not the reminder's. Without
                     saying so, "tomorrow · 2 September 2025" reads as a wedding
                     happening tomorrow in a year that has passed. */}
-                {when(a, c)} · {c.yearSince}{dateFmt.format(new Date(a.eventDate))}
+                {when(a, c)} · {c.yearSince}{dateFmtFor(locale).format(new Date(a.eventDate))}
               </p>
             </Link>
 
             <span className="flex shrink-0 items-center gap-1">
               {a.emails.length > 0 && (
                 <a
-                  href={greeting(a)}
+                  href={greeting(a, locale)}
                   className="btn-quiet inline-flex min-h-[44px] items-center gap-1.5 px-2 text-[13px] sm:min-h-0 sm:py-1"
                 >
                   <Mail size={14} aria-hidden strokeWidth={1.5} />
@@ -101,12 +103,12 @@ function when(a: Anniversary, c: ArchiveCopy): string {
 }
 
 /** A draft in the producer's own mail client, addressed to the couple. */
-function greeting(a: Anniversary): string {
+function greeting(a: Anniversary, locale: Locale): string {
   const subject = 'שנה לחתונה שלכם';
   const body = [
     `${a.couple},`,
     '',
-    `היום לפני שנה, ב-${dateFmt.format(new Date(a.eventDate))}, התחתנתם.`,
+    `היום לפני שנה, ב-${dateFmtFor(locale).format(new Date(a.eventDate))}, התחתנתם.`,
     '',
     'מזל טוב, ושתהיה לכם שנה טובה.',
     '',

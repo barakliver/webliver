@@ -1,4 +1,5 @@
 import { formatDate } from '@/lib/dates';
+import type { Locale } from '@/lib/locale';
 import { Check, Ban, RotateCcw, ShieldCheck } from 'lucide-react';
 import type { ProducerRow } from '@/lib/directory';
 import { setProducerStatus, setAccountKind } from '@/app/actions/admin';
@@ -14,7 +15,7 @@ import { EVENT_ZONE } from '@/lib/clock';
  * open without being the owner of the platform, on a laptop, signed in.
  */
 
-const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE, day: '2-digit', month: '2-digit', year: 'numeric' });
+const dateFmtFor = (l: Locale) => new Intl.DateTimeFormat(l === 'en' ? 'en-GB' : 'he-IL', { timeZone: EVENT_ZONE, day: '2-digit', month: '2-digit', year: 'numeric' });
 
 const STATUS_TONE: Record<ProducerRow['status'], string> = {
   approved:  'bg-ok-wash text-ok',
@@ -40,6 +41,7 @@ function StatusButton({ id, status, label, tone }: {
 }
 
 export async function AdminRow({ p }: { p: ProducerRow }) {
+  const locale = (await serverCopy()).locale;
   const ui = await serverCopy();
   const c = (await serverCopy()).admin;
   return (
@@ -69,7 +71,7 @@ export async function AdminRow({ p }: { p: ProducerRow }) {
           </p>
 
           <p className="mt-0.5 text-[13px] text-ink-mute">
-            {p.lastSeen ? `${c.lastSeen} ${formatDate(dateFmt, p.lastSeen, '·')}` : c.never}
+            {p.lastSeen ? `${c.lastSeen} ${formatDate(dateFmtFor(locale), p.lastSeen, '·')}` : c.never}
           </p>
         </div>
 

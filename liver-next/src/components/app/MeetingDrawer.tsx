@@ -1,6 +1,7 @@
 'use client';
 
 import { fill } from '@/lib/copyText';
+import type { Locale } from '@/lib/locale';
 import { useState, useTransition } from 'react';
 import Link from 'next/link';
 import { CalendarDays, ChevronDown, Sparkles, Trash2 } from 'lucide-react';
@@ -26,7 +27,7 @@ export type MeetingLog = {
   updated_at: string;
 };
 
-const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE, day: 'numeric', month: 'long', year: 'numeric' });
+const dateFmtFor = (l: Locale) => new Intl.DateTimeFormat(l === 'en' ? 'en-GB' : 'he-IL', { timeZone: EVENT_ZONE, day: 'numeric', month: 'long', year: 'numeric' });
 
 /* The buttons are keyed so a producer's template and a compiled-in one can
    never collide, whatever the row's id happens to be. */
@@ -51,6 +52,7 @@ const keyOf = (t: MeetingTemplate) => (t.kind === 'custom' ? `custom:${t.id}` : 
 export function MeetingDrawer({ clientId, logs, own = [] }: {
   clientId: string; logs: MeetingLog[]; own?: MeetingTemplate[];
 }) {
+  const locale = useCopy().locale;
   const c = useCopy().meeting;
   const [editing, setEditing] = useState<string | null>(null);
   const [adding, setAdding] = useState<string | null>(null);
@@ -138,7 +140,7 @@ export function MeetingDrawer({ clientId, logs, own = [] }: {
                       {log.held_on && (
                         <span className="inline-flex items-center gap-1">
                           <CalendarDays size={13} aria-hidden strokeWidth={1.5} />
-                          {dateFmt.format(new Date(log.held_on))}
+                          {dateFmtFor(locale).format(new Date(log.held_on))}
                         </span>
                       )}
                       {t && <span>{answered(c, t, log.answers)}</span>}

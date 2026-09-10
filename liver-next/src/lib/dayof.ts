@@ -98,9 +98,14 @@ export function focus(placed: Placed[]): { now: Placed | null; next: Placed | nu
 
 /** "בעוד 20 דק׳", "עכשיו", "לפני שעה". Relative, because on the evening nobody
  *  subtracts the current time from a printed one. */
-export function relative(minutes: number): string {
-  if (minutes === 0) return 'עכשיו';
+export function relative(minutes: number, locale: 'he' | 'en' = 'he'): string {
   const abs = Math.abs(minutes);
+  if (locale === 'en') {
+    if (minutes === 0) return 'now';
+    const unit = abs < 60 ? `${abs} min` : abs < 120 ? 'an hour' : `${Math.floor(abs / 60)} hours`;
+    return minutes > 0 ? `in ${unit}` : `${unit} ago`;
+  }
+  if (minutes === 0) return 'עכשיו';
   const unit = abs < 60
     ? `${abs} דק׳`
     : abs < 120

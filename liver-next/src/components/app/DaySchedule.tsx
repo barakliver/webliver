@@ -145,6 +145,7 @@ function Row({
      morning" without anybody pressing it to find out. */
   isFirst: boolean; isLast: boolean;
 }) {
+  const locale = useCopy().locale;
   const c = useCopy().day;
   const [editing, setEditing] = useState(false);
   const [state, action] = useActionState<DayResult | null, FormData>(
@@ -183,7 +184,7 @@ function Row({
         <div className="font-display text-[17px] font-semibold tabular-nums text-ink">{hhmm(item.at_time)}</div>
         {span.minutes !== null && (
           <div className={`mt-0.5 text-[11.5px] tabular-nums ${span.stated ? 'text-accent' : 'text-ink-mute'}`}>
-            {span.stated ? humanSpan(span.minutes) : `↓ ${humanSpan(span.minutes)}`}
+            {span.stated ? humanSpan(span.minutes, locale) : `↓ ${humanSpan(span.minutes, locale)}`}
           </div>
         )}
       </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { Locale } from '@/lib/locale';
 import { usePathname, useRouter } from 'next/navigation';
 import { CalendarDays, CornerDownLeft, HeartHandshake, History, Layers, Search, Target, Truck, X } from 'lucide-react';
 import { useCopy } from '@/components/app/CopyProvider';
@@ -22,7 +23,7 @@ type Hit = {
   id?: string;
 };
 
-const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE, day: 'numeric', month: 'short' });
+const dateFmtFor = (l: Locale) => new Intl.DateTimeFormat(l === 'en' ? 'en-GB' : 'he-IL', { timeZone: EVENT_ZONE, day: 'numeric', month: 'short' });
 
 /* The four events somebody opens all week, remembered in this browser only.
    Not a column on the account: which events a producer had open on their
@@ -79,6 +80,7 @@ export function QuickJump({ screens, events, records = [], compact }: {
   records?: JumpRecord[];
   compact?: boolean;
 }) {
+  const locale = useCopy().locale;
   const ui = useCopy();
   const c = ui.jump;
   /* The section names a query can end with, in the language of the tabs. */
@@ -114,7 +116,7 @@ export function QuickJump({ screens, events, records = [], compact }: {
 
     const asEvent = (e: JumpEvent, kind: 'event' | 'recent'): Hit => ({
       kind, id: e.id, label: e.name, href: `/app/clients/${e.id}`,
-      note: e.date ? dateFmt.format(new Date(e.date)) : undefined,
+      note: e.date ? dateFmtFor(locale).format(new Date(e.date)) : undefined,
     });
 
     if (words.length === 0) {

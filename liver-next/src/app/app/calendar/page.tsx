@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import type { Locale } from '@/lib/locale';
 import { CalendarHeart, CheckCircle2, Wallet, CalendarPlus } from 'lucide-react';
 import { requireLiveProducer } from '@/lib/auth';
 import { supabaseServer } from '@/lib/supabase/server';
@@ -19,8 +20,8 @@ export async function generateMetadata() {
 }
 
 
-const monthFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE, month: 'long', year: 'numeric' });
-const dayFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE, weekday: 'long', day: 'numeric', month: 'long' });
+const monthFmtFor = (l: Locale) => new Intl.DateTimeFormat(l === 'en' ? 'en-GB' : 'he-IL', { timeZone: EVENT_ZONE, month: 'long', year: 'numeric' });
+const dayFmtFor = (l: Locale) => new Intl.DateTimeFormat(l === 'en' ? 'en-GB' : 'he-IL', { timeZone: EVENT_ZONE, weekday: 'long', day: 'numeric', month: 'long' });
 
 const ICON = { event: CalendarHeart, task: CheckCircle2, payment: Wallet };
 const TONE: Record<CalItem['kind'], string> = {
@@ -30,6 +31,7 @@ const TONE: Record<CalItem['kind'], string> = {
 };
 
 export default async function CalendarPage() {
+  const locale = (await serverCopy()).locale;
   const c = (await serverCopy()).calendar;
   const account = await requireLiveProducer();
   const sb = await supabaseServer();
@@ -83,12 +85,12 @@ export default async function CalendarPage() {
 
             return (
               <section key={month}>
-                <h2 className="eyebrow mb-3">{monthFmt.format(new Date(month + '-01T00:00:00'))}</h2>
+                <h2 className="eyebrow mb-3">{monthFmtFor(locale).format(new Date(month + '-01T00:00:00'))}</h2>
                 <div className="space-y-4">
                   {[...byDay.entries()].map(([date, dayItems]) => (
                     <div key={date} className="card">
                       <h3 className="text-[14px] font-semibold text-ink">
-                        {dayFmt.format(new Date(date + 'T00:00:00'))}
+                        {dayFmtFor(locale).format(new Date(date + 'T00:00:00'))}
                       </h3>
                       <ul className="mt-3 space-y-2">
                         {dayItems.map((i) => {

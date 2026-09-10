@@ -1,9 +1,10 @@
 'use client';
 
 import { useActionState, useEffect, useState } from 'react';
+import { eventKindsFor } from '@/content/ui';
 import { useFormStatus } from 'react-dom';
 import { recordLead, type LeadActionResult } from '@/app/actions/leads';
-import { LEAD_SOURCES, EVENT_KINDS, MIN_EVENT_DATE, MAX_GUESTS, REGIONS } from '@/content/site';
+import { LEAD_SOURCES, MIN_EVENT_DATE, MAX_GUESTS, REGIONS } from '@/content/site';
 import { useCopy } from '@/components/app/CopyProvider';
 import { RegionPicker } from '@/components/RegionPicker';
 
@@ -33,6 +34,7 @@ export function NewLeadForm({ channels = [] }: {
   /** The producer's own channels, appended to the six the platform ships. */
   channels?: { value: string; label: string }[];
 }) {
+  const locale = useCopy().locale;
   const c = useCopy().lead;
   const [open, setOpen] = useState(false);
   const [state, action] = useActionState<LeadActionResult | null, FormData>(recordLead, null);
@@ -82,7 +84,7 @@ export function NewLeadForm({ channels = [] }: {
         <div>
           <label className="label" htmlFor="nl-kind">{c.addKind}</label>
           <select id="nl-kind" name="kind" defaultValue="wedding" className="field">
-            {EVENT_KINDS.map((k) => <option key={k.value} value={k.value}>{k.label}</option>)}
+            {eventKindsFor(locale).map((k) => <option key={k.value} value={k.value}>{k.label}</option>)}
           </select>
         </div>
         <div>
@@ -96,7 +98,7 @@ export function NewLeadForm({ channels = [] }: {
         <div>
           <label className="label" htmlFor="nl-source">{c.addHow}</label>
           <select id="nl-source" name="source" defaultValue="phone" className="field">
-            {LEAD_SOURCES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
+            {LEAD_SOURCES.map((s) => <option key={s.value} value={s.value}>{c.sources[s.value] ?? s.label}</option>)}
             {channels.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
           </select>
         </div>

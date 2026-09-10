@@ -1,17 +1,19 @@
 'use client';
 
 import { fill } from '@/lib/copyText';
+import { eventKindsFor } from '@/content/ui';
+import type { Locale } from '@/lib/locale';
 import { useActionState, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { CalendarPlus, Pencil } from 'lucide-react';
 import { updateClientDetails, type ActionResult } from '@/app/actions/clients';
-import { EVENT_KINDS, MIN_EVENT_DATE, MAX_GUESTS } from '@/content/site';
+import { MIN_EVENT_DATE, MAX_GUESTS } from '@/content/site';
 import { useCopy } from '@/components/app/CopyProvider';
 import { formatDate, daysUntil } from '@/lib/dates';
 import { EVENT_ZONE } from '@/lib/clock';
 
 
-const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE,
+const dateFmtFor = (l: Locale) => new Intl.DateTimeFormat(l === 'en' ? 'en-GB' : 'he-IL', { timeZone: EVENT_ZONE,
   weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
 });
 
@@ -59,6 +61,7 @@ function Line({ label, children }: { label: string; children: React.ReactNode })
  * way in, and the only route to one was to delete the event and make it again.
  */
 export function EventDetails({ event }: { event: EventCore }) {
+  const locale = useCopy().locale;
   const ui = useCopy();
   const c = useCopy().clientPage;
   const [editing, setEditing] = useState(false);
@@ -71,7 +74,7 @@ export function EventDetails({ event }: { event: EventCore }) {
     null
   );
 
-  const kind = EVENT_KINDS.find((k) => k.value === event.kind)?.label ?? event.kind;
+  const kind = eventKindsFor(locale).find((k) => k.value === event.kind)?.label ?? event.kind;
   /* Null covers both "no date yet" and "a date nothing can parse", and the
      screen treats them the same: offer the date picker rather than throw. */
   const left = daysUntil(event.event_date);
@@ -97,7 +100,7 @@ export function EventDetails({ event }: { event: EventCore }) {
             <div>
               <label className="label" htmlFor="ed-kind">{ui.newClient.kind}</label>
               <select id="ed-kind" name="kind" defaultValue={event.kind} className="field">
-                {EVENT_KINDS.map((k) => <option key={k.value} value={k.value}>{k.label}</option>)}
+                {eventKindsFor(locale).map((k) => <option key={k.value} value={k.value}>{k.label}</option>)}
               </select>
             </div>
           </div>
@@ -181,7 +184,7 @@ export function EventDetails({ event }: { event: EventCore }) {
       <dl className="mt-6 space-y-3 text-[14.5px]">
         <Line label={ui.newClient.kind}>{kind}</Line>
         <Line label={ui.newClient.date}>
-          {formatDate(dateFmt, event.event_date, c.noDateYet)}
+          {formatDate(dateFmtFor(locale), event.event_date, c.noDateYet)}
         </Line>
         <Line label={ui.newClient.venue}>{event.venue || c.at.none}</Line>
         <Line label={ui.newClient.guests}>{event.guest_estimate ?? c.at.none}</Line>

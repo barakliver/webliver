@@ -1,6 +1,7 @@
 'use client';
 
 import { count as plural, fill } from '@/lib/copyText';
+import type { Locale } from '@/lib/locale';
 import { useState } from 'react';
 import Link from 'next/link';
 import { ChevronDown, MapPin, Users } from 'lucide-react';
@@ -9,7 +10,7 @@ import { useCopy } from '@/components/app/CopyProvider';
 import { Money, Ltr } from '@/components/Ltr';
 import { EVENT_ZONE } from '@/lib/clock';
 
-const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE,
+const dateFmtFor = (l: Locale) => new Intl.DateTimeFormat(l === 'en' ? 'en-GB' : 'he-IL', { timeZone: EVENT_ZONE,
   day: 'numeric', month: 'long', year: 'numeric',
 });
 
@@ -75,6 +76,7 @@ export function ArchiveShelf({ shelf }: { shelf: Shelf[] }) {
 }
 
 function Row({ event: e }: { event: ArchivedEvent }) {
+  const locale = useCopy().locale;
   const c = useCopy().archive;
   const [open, setOpen] = useState(false);
   const budget = Number(e.money?.budget) || 0;
@@ -86,7 +88,7 @@ function Row({ event: e }: { event: ArchivedEvent }) {
         <button type="button" onClick={() => setOpen(!open)} className="min-w-0 flex-1 text-start" aria-expanded={open}>
           <p className="text-[15.5px] text-ink">{e.display_name}</p>
           <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px] text-ink-mute">
-            {e.event_date && dateFmt.format(new Date(e.event_date))}
+            {e.event_date && dateFmtFor(locale).format(new Date(e.event_date))}
             {e.venue && (
               <span className="inline-flex items-center gap-1">
                 <MapPin size={13} aria-hidden strokeWidth={1.5} />
@@ -125,7 +127,7 @@ function Row({ event: e }: { event: ArchivedEvent }) {
             <span className="text-ink-mute">{c.budget} <Money value={budget} className="text-ink" /></span>
             <span className="text-ink-mute">{c.paid} <Money value={paid} className="text-ink" /></span>
             <span className="text-ink-mute">
-              {c.closedOn} {dateFmt.format(new Date(e.closed_at))}
+              {c.closedOn} {dateFmtFor(locale).format(new Date(e.closed_at))}
             </span>
           </div>
 

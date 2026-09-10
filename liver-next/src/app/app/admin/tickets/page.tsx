@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import type { Locale } from '@/lib/locale';
 import { Check, ExternalLink, RotateCcw } from 'lucide-react';
 import { requireRoot } from '@/lib/auth';
 import { supabaseServer } from '@/lib/supabase/server';
@@ -16,7 +17,7 @@ export const dynamic = 'force-dynamic';
 export const metadata = { title: ticketCopy.admin.title };
 
 const c = ticketCopy.admin;
-const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE, day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+const dateFmtFor = (l: Locale) => new Intl.DateTimeFormat(l === 'en' ? 'en-GB' : 'he-IL', { timeZone: EVENT_ZONE, day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 
 type Ticket = {
   id: string; reporter_id: string | null; category: string; body: string; route: string;
@@ -29,6 +30,7 @@ type Ticket = {
  * closed ones are the record and the open ones are the work.
  */
 export default async function TicketsPage({ searchParams }: { searchParams: Promise<{ all?: string }> }) {
+  const locale = (await serverCopy()).locale;
   const ui = await serverCopy();
   const account = await requireRoot();
   const showClosed = (await searchParams).all === '1';
@@ -87,7 +89,7 @@ export default async function TicketsPage({ searchParams }: { searchParams: Prom
                     </span>
                     <span className="text-ink-soft">{ticketCopy.categories[t.category as keyof typeof ticketCopy.categories] ?? t.category}</span>
                     <span className="text-ink-mute">·</span>
-                    <span className="text-ink-mute">{dateFmt.format(new Date(t.created_at))}</span>
+                    <span className="text-ink-mute">{dateFmtFor(locale).format(new Date(t.created_at))}</span>
                   </div>
                   <p className="mt-2 whitespace-pre-wrap text-[15px] leading-relaxed text-ink">{t.body}</p>
                   <dl className="mt-3 grid gap-x-6 gap-y-1 text-[12.5px] text-ink-mute sm:grid-cols-[auto_1fr]">

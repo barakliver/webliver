@@ -1,6 +1,7 @@
 'use client';
 
 import { dateInZone, todayInZone } from '@/lib/clock';
+import type { Locale } from '@/lib/locale';
 
 import { completeCall } from '@/app/actions/leads';
 import { formatDate } from '@/lib/dates';
@@ -8,7 +9,7 @@ import { useCopy } from '@/components/app/CopyProvider';
 import type { Call } from './LeadRow';
 import { EVENT_ZONE } from '@/lib/clock';
 
-const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE, day: '2-digit', month: '2-digit', year: '2-digit' });
+const dateFmtFor = (l: Locale) => new Intl.DateTimeFormat(l === 'en' ? 'en-GB' : 'he-IL', { timeZone: EVENT_ZONE, day: '2-digit', month: '2-digit', year: '2-digit' });
 
 /** Compared on calendar dates where the event is, so a reminder due today
  *  never reads as late and the server and the browser agree which day that
@@ -21,6 +22,7 @@ function dueState(d: string | null): 'late' | 'today' | 'ahead' {
 }
 
 export function CallsPanel({ calls, leads }: { calls: Call[]; leads: { id: string; name: string }[] }) {
+  const locale = useCopy().locale;
   const open = calls.filter((c) => !c.done);
   const c = useCopy().lead;
   if (open.length === 0) return null;
@@ -40,7 +42,7 @@ export function CallsPanel({ calls, leads }: { calls: Call[]; leads: { id: strin
               <div className="min-w-0 flex-1">
                 <p className="text-[14.5px] text-ink">{call.title}{nameOf(call.lead_id) ? ` · ${nameOf(call.lead_id)}` : ''}</p>
                 <p className="text-[12.5px] text-ink-mute">
-                  {formatDate(dateFmt, call.remind_on, '·')}
+                  {formatDate(dateFmtFor(locale), call.remind_on, '·')}
                   {st === 'late' ? ` · ${c.callLate}` : st === 'today' ? ` · ${c.callToday}` : ''}
                 </p>
               </div>

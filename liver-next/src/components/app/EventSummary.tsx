@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import type { Locale } from '@/lib/locale';
 import type { ReactNode } from 'react';
 import { CheckSquare, Coins, CircleAlert } from 'lucide-react';
 import { Money, Ratio } from '@/components/Ltr';
@@ -9,7 +10,7 @@ import { Metric } from '@/components/app/Metric';
 import { EVENT_ZONE } from '@/lib/clock';
 
 
-const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: EVENT_ZONE, day: '2-digit', month: '2-digit' });
+const dateFmtFor = (l: Locale) => new Intl.DateTimeFormat(l === 'en' ? 'en-GB' : 'he-IL', { timeZone: EVENT_ZONE, day: '2-digit', month: '2-digit' });
 
 function Tile({ label, value, tone = 'plain', sub }: {
   label: string; value: ReactNode; sub?: ReactNode; tone?: 'plain' | 'warn' | 'good';
@@ -34,6 +35,7 @@ function Tile({ label, value, tone = 'plain', sub }: {
  * splitting them into two lists hands that decision back to the reader.
  */
 export async function EventSummary({ clientId, summary }: { clientId: string; summary: Summary }) {
+  const locale = (await serverCopy()).locale;
   const c = (await serverCopy()).clientPage;
   const t = c.at;
   const { guests, money, next } = summary;
@@ -103,7 +105,7 @@ export async function EventSummary({ clientId, summary }: { clientId: string; su
                     <Money value={item.amount} className="text-[13.5px] tabular-nums text-ink-soft" />
                   )}
                   <span className={`text-[13px] tabular-nums ${late ? 'text-bad' : 'text-ink-mute'}`}>
-                    {formatDate(dateFmt, item.due, t.none)}
+                    {formatDate(dateFmtFor(locale), item.due, t.none)}
                   </span>
                   <Link
                     href={`/app/clients/${clientId}?tab=${item.kind === 'task' ? 'tasks' : 'money'}`}
