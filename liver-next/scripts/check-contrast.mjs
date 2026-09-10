@@ -31,23 +31,24 @@ const ratio = (a, b) => {
    marked values are darker than the design's own, because the design's fail
    the text they are used for on this ground. */
 const c = {
-  ink: '#171512', inkSoft: '#655D54', inkMid: '#8B8177',
-  inkMute: '#6E655B',              /* #8B8177 reads 3.48:1, too pale at 11px */
-  surface: '#F7F4EE', surface100: '#FCFAF7', surface200: '#F0EBE4',
-  card: '#FCFAF7',
-  dark: '#181410',
-  line: 'rgba(23,21,18,.10)', lineStrong: 'rgba(23,21,18,.18)',
-  lineControl: 'rgba(23,21,18,.60)',
-  accent: '#8A6136',               /* the brand, and safe as words   */
-  accentBright: '#A2764A',         /* large numerals only, 3:1 bar   */
-  accentLine: '#C79A63',           /* words on the dark ground       */
-  accentLight: '#DFC49B',
-  /* Not a literal: the wash is the line gold at 7% over the ground, so it
-     moves whenever either does. Written out, it drifts from what ships. */
-  accentWash: '#F4EEE4',
-  ok: '#3D6B4A', okWash: '#E6EFE8',
-  warn: '#8A5A17', warnWash: '#F3EEE2',
-  bad: '#96322A', badWash: '#F4E8E5',
+  ink: '#292823', inkSoft: '#65625B', inkMid: '#8B877D',
+  inkMute: '#605D56',              /* solved against the step up */
+  surface: '#F8F8F0', surface100: '#FFFDF9', surface200: '#EEEDE3',
+  card: '#FFFDF9',
+  dark: '#1D1E20',
+  line: '#E2DFD5', lineStrong: '#CFCBC0',
+  lineControl: '#878579',
+  accent: '#205757',               /* the primary action, safe as words */
+  accentHover: '#174444',
+  accentBright: '#2E7676',         /* large numerals only, 3:1 bar   */
+  accentLine: '#5E9F9B',           /* words on the dark ground       */
+  accentLight: '#8FC4C1',
+  /* The teal at 8% over the canvas, which is what --accent-wash ships. */
+  accentWash: '#E7EBE4',
+  ok: '#285A3F', okWash: '#EDF2E9',
+  warn: '#78520F', warnWash: '#FBF0D8',
+  bad: '#953D35', badWash: '#F9E9E6',
+  white: '#FFFFFF',
 };
 
 /* The hairlines are rgba over the ground; flatten them so the ratio is real. */
@@ -91,6 +92,8 @@ const checks = [
   ['a label on waiting',           c.surface,    c.warn,        4.5],
   ['a label on wrong',             c.surface,    c.bad,         4.5],
   ['a label on the accent',        c.surface,    c.accent,      4.5],
+  ['a white label on the accent',  c.white,      c.accent,      4.5],
+  ['a white label on the pressed accent', c.white, c.accentHover, 4.5],
   /* The dark ground: Bride Mode, the bar result panel, the site CTA band.
      Gold becomes a text colour here, which is why it is checked at 4.5. */
   ['body on the dark ground',      c.surface,    c.dark,        4.5],

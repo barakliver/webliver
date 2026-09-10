@@ -119,7 +119,7 @@ export function AppShell({
     <div
       dir={dirOf(locale)}
       lang={locale}
-      className={cn('brand-scope min-h-dvh', account.role === 'client' ? 'bg-surface' : 'bg-surface-100')}
+      className={cn('brand-scope app-type min-h-dvh', account.role === 'client' ? 'bg-surface' : 'bg-surface-100')}
       style={brandStyle(brand)}
     >
       <div className="lg:flex">

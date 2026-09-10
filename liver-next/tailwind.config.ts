@@ -99,23 +99,31 @@ const config: Config = {
            and never carries meaning on its own. `wash` is a background only
            ever sat on by `accent`. */
         accent: {
-          DEFAULT: 'rgb(var(--accent-rgb, 138 97 54) / <alpha-value>)',
-          bright:  'rgb(var(--accent-bright-rgb, 162 118 74) / <alpha-value>)',
-          line:    'rgb(var(--accent-line-rgb, 199 154 99) / <alpha-value>)',
+          DEFAULT: 'rgb(var(--accent-rgb, 32 87 87) / <alpha-value>)',
+          /* The fill under a pressed or hovered primary action. */
+          hover:   'rgb(var(--accent-hover-rgb, 23 68 68) / <alpha-value>)',
+          bright:  'rgb(var(--accent-bright-rgb, 46 118 118) / <alpha-value>)',
+          line:    'rgb(var(--accent-line-rgb, 94 159 155) / <alpha-value>)',
           /* Translucent by definition, so it stays whole and takes no
              opacity modifier. `bg-accent-wash/60` would compile to nothing. */
-          wash:    'var(--accent-wash, rgba(199,154,99,.07))',
+          wash:    'var(--accent-wash, rgba(32,87,87,.08))',
           /* on the dark ground only */
-          light:   'rgb(var(--accent-light-rgb, 223 196 155) / <alpha-value>)',
+          light:   'rgb(var(--accent-light-rgb, 143 196 193) / <alpha-value>)',
         },
+
+        /* The two soft tones of the planning system, grounds only: sage
+           under a planning moment, blush under an editorial one. Neither
+           ever carries words in its own hue; the ink goes on top. */
+        sage:  { DEFAULT: '#CED7C4', wash: '#E6EBDF' },
+        blush: { DEFAULT: '#F4E4E4', wash: '#FAF1F1' },
 
         /* State, deliberately nowhere near the accent. On a gold system a gold
            "good" is unreadable as good, so good is green, waiting is amber and
            wrong is red, each measured against this ivory rather than against
            the white it was measured on before. */
-        ok:   { DEFAULT: '#3D6B4A', wash: '#E8EFE7' },
-        warn: { DEFAULT: '#8A5A17', wash: '#F5EEDF' },
-        bad:  { DEFAULT: '#96322A', wash: '#F5E7E3' },
+        ok:   { DEFAULT: '#285A3F', wash: '#EDF2E9' },
+        warn: { DEFAULT: '#78520F', wash: '#FBF0D8' },
+        bad:  { DEFAULT: '#953D35', wash: '#F9E9E6' },
       },
       /* Two families again, and this time by his ruling rather than by a
          document's. The comment that used to sit here said "the day a display
@@ -127,10 +135,14 @@ const config: Config = {
       /* Three families now. The headings moved from the serif to Assistant,
          a Hebrew editorial sans, at his request; the serif stays as `serif`
          for the promise line alone, and Heebo stays on the body. */
+      /* Resolved through three variables set in globals.css: the UI face,
+         the editorial face, and what a display heading is on this part of
+         the product. The Hebrew faces sit behind every stack so an English
+         page's Latin faces never leave a Hebrew glyph to the system. */
       fontFamily: {
-        sans:    ['var(--font-heebo)', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif'],
-        display: ['var(--font-assistant)', 'var(--font-heebo)', '-apple-system', 'system-ui', 'sans-serif'],
-        serif:   ['var(--font-frank)', 'Georgia', 'serif'],
+        sans:    ['var(--font-ui)', 'var(--font-heebo)', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif'],
+        display: ['var(--font-display)', 'var(--font-heebo)', '-apple-system', 'system-ui', 'sans-serif'],
+        serif:   ['var(--font-editorial)', 'var(--font-frank)', 'Georgia', 'serif'],
       },
       fontSize: {
         /* Tracked open again, the values the serif era used, recovered from
@@ -142,9 +154,12 @@ const config: Config = {
            and a bold sans opens up without it. The serif era's positive
            values are two commits back in this file's history, as before:
            each swap of the display family carries its tracking with it. */
-        'display-xl': ['clamp(42px,7.4vw,104px)', { lineHeight: '1.02', letterSpacing: '-.03em' }],
-        'display':    ['clamp(30px,5vw,46px)',    { lineHeight: '1.08', letterSpacing: '-.025em' }],
-        'title':      ['clamp(22px,2.4vw,32px)',  { lineHeight: '1.16', letterSpacing: '-.02em' }],
+        /* Tracking comes from `--display-track`: a touch open where the
+           editorial serif carries the heading, a touch tight where the UI
+           face does. The hero runs 34px to 56px, as the brief sets it. */
+        'display-xl': ['clamp(34px,5.2vw,56px)',  { lineHeight: '1.2',  letterSpacing: 'var(--display-track, 0)' }],
+        'display':    ['clamp(30px,4vw,44px)',    { lineHeight: '1.2',  letterSpacing: 'var(--display-track, 0)' }],
+        'title':      ['clamp(24px,2.4vw,32px)',  { lineHeight: '1.2',  letterSpacing: 'var(--display-track, 0)' }],
         /* The numbers the screens are built around. */
         'metric':     ['62px', { lineHeight: '1',    letterSpacing: '-.02em' }],
         'metric-sm':  ['42px', { lineHeight: '1.05', letterSpacing: '-.015em' }],
@@ -188,10 +203,12 @@ const config: Config = {
       /* The design source's own scale, by the name of the thing each value is
          for. `xl2` and `4xl` stay as the two aliases a hundred components
          already ask for, mapped onto it. */
+      /* The planning system's geometry: 12px on anything pressed or typed
+         in, 16px on a card, a little more on the things that float. */
       borderRadius: {
-        control: '14px', button: '16px', 'card-sm': '20px', kpi: '22px',
-        card: '24px', panel: '26px', sheet: '30px',
-        xl2: '14px', '4xl': '24px',
+        control: '12px', button: '12px', 'card-sm': '14px', kpi: '16px',
+        card: '16px', panel: '18px', sheet: '22px',
+        xl2: '12px', '4xl': '16px',
       },
       maxWidth: { content: '70rem', prose2: '44rem' },
       spacing: { safe: 'env(safe-area-inset-bottom, 0px)' },

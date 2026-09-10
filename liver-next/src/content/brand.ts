@@ -31,7 +31,7 @@
  *  behind by a palette change twice now — the second time it was still naming
  *  a slate ground while the page had gone warm, so the six white-label tones
  *  were being checked against a colour nobody could see any more. */
-export const PAGE_GROUND = '#F7F4EE';
+export const PAGE_GROUND = '#F8F8F0';
 
 export type Accent = {
   key: string;
@@ -81,17 +81,17 @@ export const ACCENTS: Accent[] = [
     base:   '#905685',
     bright: '#B76DA9',
     line:   '#9A5C8E',
-    light:  '#AA6B9E',
+    light:  '#AA76A0',
     wash:   'rgba(154, 92, 142, .07)',
   },
   {
     key: 'teal',
     label: 'טורקיז עמוק',
-    base:   '#317570',
-    bright: '#3E938D',
-    line:   '#3C8F89',
-    light:  '#3C8F89',
-    wash:   'rgba(60, 143, 137, .07)',
+    base:   '#205757',
+    bright: '#2E7676',
+    line:   '#5E9F9B',
+    light:  '#8FC4C1',
+    wash:   'rgba(32, 87, 87, .08)',
   },
   {
     key: 'graphite',
@@ -99,7 +99,7 @@ export const ACCENTS: Accent[] = [
     base:   '#63676F',
     bright: '#828792',
     line:   '#6B6F78',
-    light:  '#7D818A',
+    light:  '#83868E',
     wash:   'rgba(107, 111, 120, .07)',
   },
 ];
@@ -135,14 +135,23 @@ const channels = (hex: string): string => {
  *  the whole colour that a gradient stop, an `accent-color` or an SVG fill
  *  needs. The whole ones are derived from the channels rather than passed
  *  separately, so the two cannot drift apart. */
+/** The pressed fill: the same hue, a fifth darker. */
+export function darker(hex: string, by = 0.2): string {
+  const n = parseInt(hex.slice(1), 16);
+  const ch = (v: number) => Math.max(0, Math.round(v * (1 - by))).toString(16).padStart(2, '0');
+  return `#${ch((n >> 16) & 255)}${ch((n >> 8) & 255)}${ch(n & 255)}`;
+}
+
 export function accentVars(a: Accent): Record<string, string> {
   return {
     '--accent-rgb': channels(a.base),
+    '--accent-hover-rgb': channels(darker(a.base)),
     '--accent-bright-rgb': channels(a.bright),
     '--accent-line-rgb': channels(a.line),
     '--accent-light-rgb': channels(a.light),
 
     '--accent': `rgb(${channels(a.base)})`,
+    '--accent-hover': `rgb(${channels(darker(a.base))})`,
     '--accent-bright': `rgb(${channels(a.bright)})`,
     '--accent-line': `rgb(${channels(a.line)})`,
     '--accent-light': `rgb(${channels(a.light)})`,

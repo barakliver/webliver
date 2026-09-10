@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Heebo, Frank_Ruhl_Libre, Assistant } from 'next/font/google';
+import { Heebo, Frank_Ruhl_Libre, Lato, Playfair_Display } from 'next/font/google';
 import { site } from '@/content/site';
 import { siteEn } from '@/content/site.en';
 import { brandForHost } from '@/lib/branding';
@@ -36,22 +36,22 @@ import { LOCALE_COOKIE, dirOf, readLocale } from '@/lib/locale';
    two sets of values are both in the git history of that file. */
 const heebo = Heebo({
   subsets: ['hebrew', 'latin'], variable: '--font-heebo',
-  display: 'swap', weight: ['300', '400', '500', '600', '700', '800'],
+  display: 'swap', weight: ['400', '500', '600', '700'],
 });
 const frank = Frank_Ruhl_Libre({
   subsets: ['hebrew', 'latin'], variable: '--font-frank',
-  display: 'swap', weight: ['300', '400', '500'],
+  display: 'swap', weight: ['400', '500'],
 });
-
-/* The third face, and the one the headings now wear. Assistant is a Hebrew
-   sans cut for editorial use: wide counters, a real 800 weight, and Latin
-   that sits at the same height as the Hebrew rather than above it. Headings
-   moved here from the serif at his request for a modern editorial feel; the
-   serif keeps the promise line, which is a signature and not a heading, and
-   Heebo keeps everything read at 13 to 16px. */
-const assistant = Assistant({
-  subsets: ['hebrew', 'latin'], variable: '--font-assistant',
-  display: 'swap', weight: ['300', '400', '600', '700', '800'],
+/* The English faces. Neither sets Hebrew, which is why globals.css keeps
+   Heebo and Frank behind them in every stack; they are swapped in by the
+   `lang` on the html element, so a Hebrew page never pays for them. */
+const lato = Lato({
+  subsets: ['latin'], variable: '--font-lato',
+  display: 'swap', weight: ['400', '700'],
+});
+const playfair = Playfair_Display({
+  subsets: ['latin'], variable: '--font-playfair',
+  display: 'swap', weight: ['400', '500', '700'],
 });
 
 /* Generated per request rather than exported flat, because the name and the
@@ -175,7 +175,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const dir = dirOf(locale);
 
   return (
-    <html lang={locale} dir={dir} className={`${heebo.variable} ${frank.variable} ${assistant.variable}`}>
+    <html lang={locale} dir={dir} className={`${heebo.variable} ${frank.variable} ${lato.variable} ${playfair.variable}`}>
       <head>
         {/* Written by hand rather than through `metadata.manifest`, for one
             attribute: a manifest is fetched without cookies unless the link

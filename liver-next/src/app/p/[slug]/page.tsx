@@ -96,7 +96,7 @@ export default async function ProducerEntryPage({ params }: { params: Promise<{ 
   return (
     <main
       id="main"
-      className="brand-scope flex min-h-dvh items-center justify-center px-5 py-14"
+      className="brand-scope app-type flex min-h-dvh items-center justify-center px-5 py-14"
       style={accentVars(accentByKey(b.accent)) as React.CSSProperties}
     >
       <div className="w-full max-w-md text-center">

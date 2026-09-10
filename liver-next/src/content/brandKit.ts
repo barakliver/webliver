@@ -237,8 +237,8 @@ export function brandVars(b: WeddingBrand): Record<string, string> {
     '--accent-bright-rgb': channels(accent).join(' '),
     '--line': `rgba(${channels(dark).join(',')}, .12)`,
     '--line-strong': `rgba(${channels(dark).join(',')}, .22)`,
-    '--font-assistant': `'${f.display}'`,
-    '--font-frank': `'${f.display}'`,
-    '--font-heebo': `'${f.body}'`,
+    '--font-display': `'${f.display}'`,
+    '--font-editorial': `'${f.display}'`,
+    '--font-ui': `'${f.body}'`,
   };
 }
