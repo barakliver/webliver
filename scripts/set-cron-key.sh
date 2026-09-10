@@ -65,7 +65,9 @@ LINES="17 4 * * * $CALL $HOST/api/cron >> /var/log/liver-sweep.log 2>&1 $TAG
 0 9 * * 0 $CALL '$HOST/api/cron?job=digest' >> /var/log/liver-sweep.log 2>&1 $TAG
 0 8 * * 1 $CALL '$HOST/api/cron?job=vendors' >> /var/log/liver-sweep.log 2>&1 $TAG"
 
-( crontab -l 2>/dev/null | grep -v "$TAG" || true; printf '%s\n' "$LINES" ) | crontab -
+# Any older line that calls the sweep goes too: one was installed by hand
+# before this script existed, at the same minute, with a key of its own.
+( crontab -l 2>/dev/null | grep -v "$TAG" | grep -v '/api/cron' || true; printf '%s\n' "$LINES" ) | crontab -
 echo "  the sweep is scheduled: nightly 04:17, Sunday 09:00, Monday 08:00"
 
 # ── prove it ────────────────────────────────────────────────────────────────
