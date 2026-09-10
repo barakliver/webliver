@@ -70,6 +70,10 @@ create trigger clients_guard_guest_token before insert or update on public.clien
 --  list, not the budget, not the run sheet's staffing lines. A switched-off
 --  page returns no row, which the route renders as "not found" - the same
 --  answer a wrong token gets, so the two are indistinguishable from outside.
+/* 0076 gives this function one more column, and a replace over the wider
+   version fails on the return type; dropped first, as 0027 does for the
+   calendar feed. */
+drop function if exists public.guest_site(text);
 create or replace function public.guest_site(p_token text)
 returns table (
   event_name text,

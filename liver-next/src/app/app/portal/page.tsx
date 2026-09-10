@@ -32,6 +32,8 @@ import { EnvelopesPanel } from '@/components/app/EnvelopesPanel';
 import { VehiclesPanel } from '@/components/app/VehiclesPanel';
 import { CalendarFeed } from '@/components/app/CalendarFeed';
 import { VendorHq } from '@/components/app/VendorHq';
+import { BrandStudio } from '@/components/app/BrandStudio';
+import { loadBrandScreen } from '@/lib/brandLoad';
 import { envelopesFor, vehiclesFor } from '@/content/appUi';
 
 export async function generateMetadata() {
@@ -71,6 +73,11 @@ export default async function PortalPage({ searchParams }: {
     loadEnvelopes(sb, ids), loadVehicles(sb, ids),
   ]);
   const halls = await loadVenues(sb, ids);
+  /* The wedding's brand and the data its pieces print, per workspace: the
+     couple has one, and the studio needs the tables and the schedule. */
+  const studios = new Map(
+    await Promise.all(data.workspaces.map(async (w) => [w.id, await loadBrandScreen(sb, w, locale)] as const))
+  );
 
   /* The songs and the personal details are the couple's to fill in — they are
      the ones who know what she likes to drink and who is walking her in. Read
@@ -152,6 +159,13 @@ export default async function PortalPage({ searchParams }: {
                   contracts={(contracts.get(w.id) ?? []).map((k) => ({ party_name: k.party_name ?? '', status: k.status, signed_at: k.signed_at }))}
                   lines={data.budgetFor(w.id).map((b) => ({ event_vendor_id: (b as { event_vendor_id?: string | null }).event_vendor_id ?? null, estimate: b.estimate, agreed: b.agreed }))}
                   couple={w.display_name} date={w.event_date} signAs={brand.name}
+                /></div>
+              )}
+              {data.can(w.id, 'moodboard') && studios.get(w.id) && (
+                <div id="studio" className="scroll-mt-28"><BrandStudio
+                  clientId={w.id} viewer="client"
+                  brand={studios.get(w.id)!.brand} images={[]} data={studios.get(w.id)!.data}
+                  canAi={false} printBase="" siteUrl={studios.get(w.id)!.siteUrl}
                 /></div>
               )}
               {data.can(w.id, 'contracts') && (

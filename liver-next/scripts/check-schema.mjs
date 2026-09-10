@@ -635,6 +635,22 @@ try {
     say(feed === 'לשלוח הזמנות:7', 'the couple\'s calendar carries their shared deadlines with the reminder, and no private one',
       `got: ${feed}`);
 
+    /* 0076: the couple picks an option on their own wedding through the
+       definer function, a stranger is refused by it, and the guests' page
+       carries the brand. The row policy gives the couple no write on
+       clients, so the function is the only door and this is the test that
+       it opens for the right person only. */
+    const pickOwn = asAccount(uidC, mailC, `select public.pick_brand_variant('${cidA}','invite','bold')`);
+    const picked = ask('one', `select brand->'picks'->>'invite' from public.clients where id='${cidA}'`);
+    let pickStranger = '';
+    try { pickStranger = asAccount(uidB, mailB, `select public.pick_brand_variant('${cidA}','menu','safe')`); }
+    catch (e) { pickStranger = (e.stdout || e.message || '').toString(); }
+    const strangerPicked = ask('one', `select coalesce(brand->'picks'->>'menu','-') from public.clients where id='${cidA}'`);
+    const siteCols = ask('one', `select pg_get_function_result('public.guest_site(text)'::regprocedure)`);
+    say(picked === 'bold' && /not your workspace|permission denied/.test(pickStranger) && strangerPicked === '-' && /brand jsonb/.test(siteCols),
+      'the couple picks a brand option on their wedding, a stranger cannot, and the guests\' page carries the brand',
+      `own:${pickOwn || 'ok'} picked:${picked} stranger:${strangerPicked} cols:${siteCols}`);
+
     /* And their suppliers: the DJ they ticked off has to be a row they can
        read back, or the form that asked them lied. */
     const coupleVendors = asAccount(uidC, mailC, `select count(*) from public.event_vendors where client_id='${cidA}'`);

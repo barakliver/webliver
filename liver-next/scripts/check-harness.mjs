@@ -51,6 +51,7 @@ const NOT_DRAWN = {
   'app/DragOnto': 'the other half of that behaviour, and a drop target draws nothing until something is dragged',
   ChatDock: 'the chat shell itself, looked at through both assistants that mount it',
   'app/FlashClear': 'deletes the message once it has been seen and renders nothing',
+  'brand/Pieces': 'the seven printed pieces, drawn fourteen times inside the BrandStudio panel and never on their own',
 };
 
 /* Every directory under components, however deep, found rather than listed.

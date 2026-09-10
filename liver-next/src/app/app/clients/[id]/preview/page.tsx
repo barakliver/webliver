@@ -12,6 +12,8 @@ import { PortalWorkspace } from '@/components/app/PortalWorkspace';
 import { ShareSwitches } from '@/components/app/ShareSwitch';
 import { PORTAL_LIVE_SOURCES } from '@/lib/liveSources';
 import { loadPortal } from '@/lib/portal';
+import { loadBrandScreen } from '@/lib/brandLoad';
+import { BrandStudio } from '@/components/app/BrandStudio';
 
 export async function generateMetadata() {
   return { title: (await serverCopy()).preview.title };
@@ -46,6 +48,7 @@ export default async function PreviewPage({ params }: { params: Promise<{ id: st
   if (!workspace) notFound();
 
   const c = (await serverCopy()).preview;
+  const studio = data.can(workspace.id, 'moodboard') ? await loadBrandScreen(sb, workspace, ui.locale) : null;
 
   return (
     <>
@@ -78,6 +81,13 @@ export default async function PreviewPage({ params }: { params: Promise<{ id: st
           <ShareSwitches clientId={id} shares={workspace.shared_sections} moneyOn={workspace.budget_visible} />
         </div>
         <PortalWorkspace workspace={workspace} data={data} viewerId={account.id} ui={ui} stickyNav={false} />
+        {studio && (
+          <div className="mt-6"><BrandStudio
+            clientId={workspace.id} viewer="client"
+            brand={studio.brand} images={[]} data={studio.data}
+            canAi={false} printBase="" siteUrl={studio.siteUrl}
+          /></div>
+        )}
       </CopyProvider>
       <Live sources={PORTAL_LIVE_SOURCES} />
     </>

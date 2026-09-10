@@ -19,6 +19,7 @@ import { ShareSwitches, TabShare } from '@/components/app/ShareSwitch';
 import { TimelineDemo } from './TimelineDemo';
 import { BudgetPlannerDemo } from './BudgetPlannerDemo';
 import { VendorScoutDemo } from './VendorScoutDemo';
+import { BrandStudioDemo } from './BrandStudioDemo';
 import { QuickLedger } from '@/components/app/QuickLedger';
 import { LedgerEntries } from '@/components/app/LedgerEntries';
 import { MonthGrid } from '@/components/app/MonthGrid';
@@ -346,7 +347,7 @@ export default async function DesignPage() {
               event_date: '2026-12-05',
               venue: 'אחוזת הכפר', guest_estimate: 180, budget_visible: true, shared_sections: {}, budget_plan: null,
               budget_target: 260000, track_a_label: 'נועה', track_b_label: 'איתי',
-              guest_token: 'demo-token', guest_site_on: true,
+              guest_token: 'demo-token', guest_site_on: true, brand: null,
             }}
             data={{
               workspaces: [],
@@ -395,6 +396,13 @@ export default async function DesignPage() {
                 { event_vendor_id: 'h2', estimate: 14000, agreed: 13500 },
               ]}
             />
+          </div>
+        </Panel>
+
+        <Panel name="BrandStudio" note="the wedding's brand read off the board: the sheet, the seven pieces in two options, where to print; the producer's side, then the couple's">
+          <div className="max-w-5xl space-y-10">
+            <BrandStudioDemo viewer="producer" />
+            <BrandStudioDemo viewer="client" />
           </div>
         </Panel>
 

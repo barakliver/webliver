@@ -54,6 +54,8 @@ import { VenueCompare } from '@/components/app/VenueCompare';
 import { loadVenues, venuesOf } from '@/lib/venueRows';
 
 import { loadThread, loadContracts } from '@/lib/portal';
+import { loadBrandScreen } from '@/lib/brandLoad';
+import { BrandStudio } from '@/components/app/BrandStudio';
 import { TabShare } from '@/components/app/ShareSwitch';
 import { readShares } from '@/content/portalSections';
 import { loadFiles } from '@/lib/files';
@@ -96,7 +98,7 @@ export default async function ClientPage({
   const sb = await supabaseServer();
   const { data: client } = await sb
     .from('clients')
-    .select('id,display_name,kind,event_date,venue,guest_estimate,budget_visible,budget_target,shared_sections,budget_plan,label_id,track_a_label,track_b_label,guest_token,guest_site_on,guest_note,contact_email,contact_phone,brief')
+    .select('id,display_name,kind,event_date,venue,guest_estimate,budget_visible,budget_target,shared_sections,budget_plan,label_id,track_a_label,track_b_label,guest_token,guest_site_on,guest_note,contact_email,contact_phone,brief,brand')
     .eq('id', id)
     .maybeSingle();
 
@@ -217,6 +219,7 @@ type Client = {
   label_id: string | null;
   guest_token: string | null; guest_site_on: boolean | null; guest_note: string | null;
   track_a_label: string; track_b_label: string;
+  brand: unknown;
 };
 
 /** One section's own data and markup. Splitting the fetches per section is the
@@ -483,6 +486,20 @@ async function Section({ tab, client, viewerId }: { tab: EventTab; client: Clien
     .order('created_at', { ascending: false }));
   /* Signing image links reaches storage, and a missing bucket or a file
      deleted underneath its row must not cost the producer the whole screen. */
-  const board = await safeValue('moodboard links', signBoardImages(sb, rows as never), []);
-  return <WinningBoard clientId={id} images={board} viewer="producer" />;
+  const [board, studio] = await Promise.all([
+    safeValue('moodboard links', signBoardImages(sb, rows as never), []),
+    loadBrandScreen(sb, client, ui.locale),
+  ]);
+  return (
+    <div className="space-y-6">
+      <WinningBoard clientId={id} images={board} viewer="producer" />
+      {/* What the board is for. Read once into a brand, then every printed
+          piece and the guests' site come out of it. */}
+      <BrandStudio
+        clientId={id} viewer="producer"
+        brand={studio.brand} images={studio.images} data={studio.data}
+        canAi={studio.canAi} printBase={`/app/clients/${id}/print`} siteUrl={studio.siteUrl}
+      />
+    </div>
+  );
 }

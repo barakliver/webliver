@@ -48,14 +48,14 @@ async function load(token: string): Promise<GuestSite | null> {
   try {
     const { data, error } = await supabasePublic().rpc('guest_site', { p_token: token });
     if (error) { console.error('[guest site] lookup failed', error); return null; }
-    const row = (Array.isArray(data) ? data[0] : data) as (Omit<GuestSite, 'moments'> & { moments: unknown }) | null;
+    const row = (Array.isArray(data) ? data[0] : data) as (Omit<GuestSite, 'moments'> & { moments: unknown; brand?: unknown }) | null;
     if (!row) return null;
     const moments = Array.isArray(row.moments)
       ? (row.moments as { at?: unknown; title?: unknown }[])
           .filter((m) => typeof m.at === 'string' && typeof m.title === 'string')
           .map((m) => ({ at: String(m.at), title: String(m.title) }))
       : [];
-    return { ...row, note: row.note ?? '', producer: row.producer ?? '', moments };
+    return { ...row, note: row.note ?? '', producer: row.producer ?? '', moments, brand: row.brand ?? null };
   } catch (e) {
     console.error('[guest site] lookup threw', e);
     return null;

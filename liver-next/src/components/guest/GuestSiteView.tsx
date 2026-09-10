@@ -6,6 +6,7 @@ import { formatDate, daysUntil } from '@/lib/dates';
 import { hhmm } from '@/lib/runsheet';
 import { Ltr } from '@/components/Ltr';
 import { FindInvite } from './FindInvite';
+import { brandVars, fontHref, readBrand } from '@/content/brandKit';
 
 export type GuestSite = {
   event_name: string;
@@ -14,6 +15,8 @@ export type GuestSite = {
   note: string;
   producer: string;
   moments: { at: string; title: string }[];
+  /** The wedding's own brand, as the column holds it, or nothing. */
+  brand?: unknown;
 };
 
 /**
@@ -38,8 +41,18 @@ export function GuestSiteView({ site, token, c, locale }: {
   const venue = site.venue?.trim() ?? '';
   const q = encodeURIComponent(venue);
 
+  /* The wedding's brand, when the board was read: the page's tokens are
+     redefined on this element, so every class below draws in the couple's
+     colours and typefaces without a second stylesheet. No brand, no change. */
+  const read = readBrand(site.brand);
+  /* A pick alone (the couple chose an option before any sheet was saved)
+     is not a brand; only a saved sheet redraws the page. */
+  const brand = read && read.by ? read : null;
+  const themed = brand ? (brandVars(brand) as React.CSSProperties) : undefined;
+
   return (
-    <main id="main" className="min-h-dvh bg-surface px-5 py-14 sm:py-20">
+    <main id="main" className="min-h-dvh bg-surface px-5 py-14 sm:py-20" style={themed}>
+      {brand && <link rel="stylesheet" href={fontHref(brand.fonts)} precedence="default" />}
       <div className="mx-auto w-full max-w-xl">
         <header className="text-center">
           <p className="eyebrow">{c.eyebrow}</p>

@@ -22,6 +22,8 @@ export type Workspace = {
   shared_sections: SharedSections;
   /** The intended split, or null until the planner was used. */
   budget_plan: BudgetPlan | null;
+  /** The wedding's brand as the column holds it; read where it is drawn. */
+  brand: unknown;
   track_a_label: string; track_b_label: string;
   /** The guests' page: its address, and whether it is switched on. The
    *  couple gets the link to paste into their invitations; nothing else about
@@ -83,7 +85,7 @@ export type PortalData = {
 };
 
 const WORKSPACE_COLS =
-  'id,display_name,event_date,venue,guest_estimate,budget_visible,budget_target,shared_sections,budget_plan,track_a_label,track_b_label,guest_token,guest_site_on';
+  'id,display_name,event_date,venue,guest_estimate,budget_visible,budget_target,shared_sections,budget_plan,track_a_label,track_b_label,guest_token,guest_site_on,brand';
 
 type WithClient<T> = T & { client_id: string };
 const by = <T,>(rows: WithClient<T>[] | null | undefined, id: string): T[] =>
