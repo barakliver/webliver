@@ -18,6 +18,8 @@ import { TimelineBuilder } from '@/components/app/TimelineBuilder';
 import { BudgetPlanner } from '@/components/app/BudgetPlanner';
 import { BudgetTracker } from '@/components/app/BudgetTracker';
 import { readPlan } from '@/lib/budgetPlan';
+import { loadLedger } from '@/lib/ledger';
+import { LedgerEntries } from '@/components/app/LedgerEntries';
 import { ApplyTemplate } from '@/components/app/ApplyTemplate';
 import { EventFileLists } from '@/components/app/EventFileLists';
 import { loadEventFile } from '@/lib/eventFile';
@@ -155,14 +157,18 @@ export default async function ClientPage({
            feature that was already there. A typo in a couple's name is seen
            at the top of the screen, so the way to fix it belongs there. */
         actions={
-          <Link
+          /* A plain anchor, not the router's link. From the overview itself
+             the router saw the same path and did nothing with the hash, so
+             the pencil did nothing; from any other tab it navigated and then
+             did not scroll. A full navigation honours the hash both times. */
+          <a
             href={`/app/clients/${client.id}#event-details`}
             aria-label={ui.clientPage.rename}
             title={ui.clientPage.rename}
             className="grid size-9 place-items-center rounded-xl2 text-ink-mute transition hover:bg-surface-200 hover:text-ink"
           >
             <Pencil size={15} strokeWidth={1.5} aria-hidden />
-          </Link>
+          </a>
         }
         report={<IssueReporter userId={account.id} context={ui.clientPage.tabs[tab]} />}
       />
@@ -340,7 +346,7 @@ async function Section({ tab, client, viewerId }: { tab: EventTab; client: Clien
   }
 
   if (tab === 'money') {
-    const [payments, budget, crewFees] = await Promise.all([
+    const [payments, budget, crewFees, ledger] = await Promise.all([
       safeRows<Payment>('payments', sb.from('payments')
         .select('id,title,amount,due_on,paid,paid_on').eq('client_id', id)
         .order('paid').order('due_on', { ascending: true, nullsFirst: false })),
@@ -350,6 +356,7 @@ async function Section({ tab, client, viewerId }: { tab: EventTab; client: Clien
          column that until now nothing anywhere had ever added up. */
       safeRows<{ fee: number | string | null }>('crew fees', sb.from('crew')
         .select('fee').eq('client_id', id)),
+      loadLedger(sb, { clientId: id }),
     ]);
     return (
       <div className="space-y-6">
@@ -379,6 +386,8 @@ async function Section({ tab, client, viewerId }: { tab: EventTab; client: Clien
         />
         <PaymentsPanel clientId={id} payments={payments} viewer="producer" />
         <BudgetPanel clientId={id} items={budget} viewer="producer" visible={!!client.budget_visible} />
+        {/* What the plus in the header recorded against this event. */}
+        <LedgerEntries entries={ledger} showEvent={false} />
       </div>
     );
   }

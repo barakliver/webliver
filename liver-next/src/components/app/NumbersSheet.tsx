@@ -57,12 +57,19 @@ export async function NumbersSheet({ client, guests, tables, day, arrivals: arri
      diet covers its whole party, which is how the data is entered - a family
      that keeps kosher keeps it together. */
   const dietTally = new Map<string, number>();
+  /* And who, at which table: the count tells the kitchen how many plates,
+     the names tell the waiter where they go. */
+  const dietWho = new Map<string, SheetGuest[]>();
   for (const g of attending) {
     if (!g.diet || g.diet === 'none') continue;
     const label = DIETS.find((d) => d.value === g.diet)?.label ?? g.diet;
     dietTally.set(label, (dietTally.get(label) ?? 0) + Number(g.party_size || 0));
+    dietWho.set(label, [...(dietWho.get(label) ?? []), g]);
   }
   const special = [...dietTally.values()].reduce((a, b) => a + b, 0);
+  const tableName = new Map(tables.map((t) => [t.id, t.name]));
+  const whoWhere = (g: SheetGuest) =>
+    `${withParty(g)}${g.table_id && tableName.get(g.table_id) ? ` (${tableName.get(g.table_id)})` : ''}`;
 
   const byTable = new Map<string, SheetGuest[]>();
   for (const g of attending) {
@@ -112,9 +119,14 @@ export async function NumbersSheet({ client, guests, tables, day, arrivals: arri
               <span className="tabular-nums text-ink">{heads - special} {c.meals}</span>
             </li>
             {[...dietTally.entries()].map(([label, n]) => (
-              <li key={label} className="flex items-baseline justify-between py-2.5">
-                <span className="text-ink">{label}</span>
-                <span className="tabular-nums text-ink">{n} {c.meals}</span>
+              <li key={label} className="py-2.5">
+                <p className="flex items-baseline justify-between">
+                  <span className="text-ink">{label}</span>
+                  <span className="tabular-nums text-ink">{n} {c.meals}</span>
+                </p>
+                <p className="mt-1 text-[13px] leading-relaxed text-ink-soft">
+                  {(dietWho.get(label) ?? []).map(whoWhere).join(' · ')}
+                </p>
               </li>
             ))}
           </ul>

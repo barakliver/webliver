@@ -18,6 +18,10 @@ import { PortalNav } from '@/components/app/PortalNav';
 import { ShareSwitches, TabShare } from '@/components/app/ShareSwitch';
 import { TimelineDemo } from './TimelineDemo';
 import { BudgetPlannerDemo } from './BudgetPlannerDemo';
+import { VendorScoutDemo } from './VendorScoutDemo';
+import { QuickLedger } from '@/components/app/QuickLedger';
+import { LedgerEntries } from '@/components/app/LedgerEntries';
+import { MonthGrid } from '@/components/app/MonthGrid';
 import { PlanOffer } from '@/components/app/PlanOffer';
 import { ProductionBook } from '@/components/app/ProductionBook';
 import { Thread } from '@/components/app/Thread';
@@ -369,6 +373,39 @@ export default async function DesignPage() {
             <TabShare clientId="00000000-0000-4000-8000-000000000003" tab="prep" shares={{ envelopes: false }} moneyOn />
             <TabShare clientId="00000000-0000-4000-8000-000000000003" tab="money" shares={{}} moneyOn={false} />
           </div>
+        </Panel>
+
+        <Panel name="VendorScout" note="five from the producer's book for one couple: scores, flags, the message; opened and ranked">
+          <div className="max-w-4xl"><VendorScoutDemo /></div>
+        </Panel>
+
+        <Panel name="QuickLedger" note="the plus in the header, and what it recorded on the event and across the business">
+          <div className="max-w-3xl space-y-6">
+            <QuickLedger events={[{ id: '00000000-0000-4000-8000-000000000003', name: 'נועה ואיתי', date: '2026-12-05' }]} />
+            <LedgerEntries entries={[
+              { id: 'l1', client_id: '00000000-0000-4000-8000-000000000003', kind: 'income', amount: 5000, label: 'מקדמה', party: '', note: '', on_date: '2026-09-08', event_name: 'נועה ואיתי' },
+              { id: 'l2', client_id: null, kind: 'income', amount: 100, label: 'טיפ מהערב', party: 'משפחת לוי', note: '', on_date: '2026-09-06', event_name: null },
+              { id: 'l3', client_id: null, kind: 'expense', amount: 60, label: 'חניה', party: '', note: 'אולם, סיור', on_date: '2026-09-05', event_name: null },
+            ]} />
+          </div>
+        </Panel>
+
+        <Panel name="MonthGrid" note="the diary as a table: three months, every couple's deadline in its cell, the day tinted by the Hebrew calendar">
+          <MonthGrid
+            from="2026-09-10"
+            months={2}
+            locale={locale}
+            ui={ui}
+            items={[
+              { id: 'e1', kind: 'event', date: '2026-10-15', title: 'מאיה ועידו', detail: 'גני הדר · 180 אורחים', href: '#', clientId: 'c1', color: '#7c5cff' },
+              { id: 't1', kind: 'task', date: '2026-09-17', title: 'לשלוח הזמנות', detail: 'מאיה ועידו', href: '#', clientId: 'c1' },
+              { id: 't2', kind: 'task', date: '2026-09-17', title: 'טעימות', detail: 'נועה ואיתי', href: '#', clientId: 'c2' },
+              { id: 't3', kind: 'task', date: '2026-09-17', title: 'לסגור פרחים', detail: 'נועה ואיתי', href: '#', clientId: 'c2' },
+              { id: 't4', kind: 'task', date: '2026-09-17', title: 'הזמנת טבעות', detail: 'דנה ויואב', href: '#', clientId: 'c3' },
+              { id: 'p1', kind: 'payment', date: '2026-10-01', title: 'יתרה לאולם', detail: 'מאיה ועידו', href: '#', clientId: 'c1', amount: 50000 },
+              { id: 't5', kind: 'task', date: '2026-09-14', title: 'מדידה שנייה', detail: 'מאיה ועידו', href: '#', clientId: 'c1', done: true },
+            ]}
+          />
         </Panel>
 
         <Panel name="BudgetPlanner" note="the split before the spending: photo non-negotiable, invitations and other to cut; opened">

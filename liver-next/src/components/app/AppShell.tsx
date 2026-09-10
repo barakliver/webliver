@@ -12,6 +12,7 @@ import { ProducerCopilot } from './ProducerCopilot';
 import { CoupleCompanion } from './CoupleCompanion';
 import { Flash } from './Flash';
 import { QuickJump, type JumpEvent } from './QuickJump';
+import { QuickLedger } from './QuickLedger';
 import type { JumpRecord } from '@/lib/jump';
 import { cn } from '@/lib/utils';
 import { appUiFor, companionFor, noticeFor, ticketFor } from '@/content/appUi';
@@ -189,6 +190,7 @@ export function AppShell({
                   header is a row nobody can tell apart. */}
               <div className="flex items-center gap-0.5">
                 {isProducer && <QuickJump screens={items} events={events} records={records} compact />}
+                {isProducer && <QuickLedger events={events} compact />}
                 {/* The couple's screen exists in both languages, so the couple
                     gets the switch. It is the same control the public site
                     uses, posting to the same action, so the two can never
@@ -215,6 +217,7 @@ export function AppShell({
           <header className="glass sticky top-0 z-40 hidden border-b border-line lg:block">
             <div className="mx-auto flex h-14 w-full max-w-content items-center justify-end gap-1 px-8">
               {isProducer && <QuickJump screens={items} events={events} records={records} />}
+              {isProducer && <QuickLedger events={events} />}
               <IssueReporter userId={account.id} copy={ticket} />
               <NoticeBell notices={notices} copy={notice} />
             </div>

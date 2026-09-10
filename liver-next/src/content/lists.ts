@@ -24,6 +24,12 @@ export const DIETS = [
   { value: 'vegan',       label: 'טבעוני' },
   { value: 'gluten_free', label: 'ללא גלוטן' },
   { value: 'kosher',      label: 'כשר' },
+  /* The two the caterer asks that the first five could not answer, and the
+     one the hall charges differently for. The detail (which allergy) goes
+     in the note beside it; the count is what the kitchen plans by. */
+  { value: 'glatt',       label: 'גלאט' },
+  { value: 'allergy',     label: 'אלרגיה (לפרט בהערה)' },
+  { value: 'kids',        label: 'מנת ילדים' },
 ] as const;
 
 export const RSVP_LABELS: Record<string, string> = {

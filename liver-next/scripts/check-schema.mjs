@@ -286,6 +286,10 @@ try {
         `select budget_plan::text || '|' || coalesce(budget_digest_on::text, 'never') from public.clients where id='${cid3}'`);
       say(money === '{}|never', 'an existing event has an empty budget plan and no Sunday letter yet', `got: ${money}`);
 
+      /* 0073: the enum grew, and the guest who said "kosher" still says it. */
+      const diets = ask('three', "select string_agg(enumlabel, ',' order by enumsortorder) from pg_enum where enumtypid = 'diet_pref'::regtype");
+      say(/glatt/.test(diets) && /allergy/.test(diets) && /kosher/.test(diets), 'the caterer\'s new answers are on the enum beside the old ones', `got: ${diets}`);
+
       /* Each workspace got an event of its own kind — the corporate one being
          the row whose absence took 0061 down. */
       const kinds = ask('three',
@@ -537,6 +541,7 @@ try {
       `insert into public.messages (client_id, author_id, body) values ('${cidA}','${uidA}','שלום')`,
       `insert into public.contracts (client_id, title) values ('${cidA}','הסכם אולם')`,
       `insert into public.event_vendors (client_id, name, category) values ('${cidA}','להקת שדות','music')`,
+      `insert into public.producer_ledger (producer_id, client_id, kind, amount, label) values ('${pidA}','${cidA}','income',100,'טיפ')`,
       `insert into public.support_tickets (reporter_id, producer_id, body) values ('${uidA}','${pidA}','משהו לא עובד')`,
       /* The producer's own meeting form, and a meeting written from it. Built
          with jsonb_build_* rather than a literal, because the literal's
@@ -576,6 +581,7 @@ try {
       messages:          `client_id='${cidA}'`,
       contracts:         `client_id='${cidA}'`,
       event_vendors:     `client_id='${cidA}'`,
+      producer_ledger:   `producer_id='${pidA}'`,
       support_tickets:   `reporter_id='${uidA}'`,
       meeting_templates: `producer_id='${pidA}'`,
       meeting_logs:      `client_id='${cidA}'`,

@@ -3,6 +3,8 @@ import { supabaseServer } from '@/lib/supabase/server';
 import { serverCopy } from '@/lib/serverLocale';
 import { PageHead, Empty } from '@/components/app/PageHead';
 import { IssueReporter } from '@/components/app/IssueReporter';
+import { LedgerEntries } from '@/components/app/LedgerEntries';
+import { loadLedger } from '@/lib/ledger';
 import { FunnelChart, Sources, ResponsePanel, CashPanel, Health, ConversionPanel } from '@/components/app/Insights';
 import {
   funnelOf, bySource, responseTime, cashOf, overdueTasks, signedShare, conversionOf,
@@ -68,6 +70,7 @@ export default async function InsightsPage() {
       <div className="space-y-5">
         <Health signed={signed} overdue={overdue} waiting={response.waiting} />
         <CashPanel cash={cash} />
+        <LedgerEntries entries={await loadLedger(sb, { limit: 60 })} />
         <FunnelChart funnel={funnel} />
         <ConversionPanel r={conversion} />
         <ResponsePanel r={response} />

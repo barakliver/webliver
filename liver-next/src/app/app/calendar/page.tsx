@@ -9,11 +9,12 @@ import { PageHead, Empty } from '@/components/app/PageHead';
 import { Live } from '@/components/app/Live';
 import { CalendarFeed } from '@/components/app/CalendarFeed';
 import { HebrewCalendar } from '@/components/app/HebrewCalendar';
+import { MonthGrid } from '@/components/app/MonthGrid';
 import { LabelToolbar } from '@/components/app/LabelToolbar';
 import { loadLabels } from '@/lib/labels';
 import { IssueReporter } from '@/components/app/IssueReporter';
 import { Money, ils } from '@/components/Ltr';
-import { EVENT_ZONE } from '@/lib/clock';
+import { EVENT_ZONE, todayInZone } from '@/lib/clock';
 
 export async function generateMetadata() {
   return { title: (await serverCopy()).calendar.title };
@@ -39,7 +40,7 @@ export default async function CalendarPage() {
 
   /* Forward-looking by default. What happened last month is on the event's own
      screen; a diary is for what is coming. */
-  const today = new Date().toISOString().slice(0, 10);
+  const today = todayInZone();
   const items = all.filter((i) => i.date >= today);
 
   /* Grouped by month, then by day, because that is how somebody scanning for
@@ -57,9 +58,11 @@ export default async function CalendarPage() {
         report={<IssueReporter userId={account.id} context={c.title} />}
       />
 
-      {/* Which evenings are available at all, before the diary of what is
-          already booked. It is the question a date gets asked first. */}
+      {/* The month as a table first: every couple's deadline in its cell,
+          the day tinted by the Hebrew calendar. Then which evenings are
+          available at all, with the reasons, and then the list. */}
       <div className="mb-7 space-y-6">
+        <MonthGrid items={all} from={today} months={3} locale={locale} ui={await serverCopy()} />
         <HebrewCalendar from={today} />
         <LabelToolbar kind="event_tag" labels={tags} />
       </div>

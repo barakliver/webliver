@@ -89,7 +89,7 @@ export type VenueCopy = Wide<typeof venueCopy>;
 type ConsoleKey =
   | 'signOut' | 'overview2' | 'profile' | 'insights' | 'dayOf' | 'brand' | 'nav' | 'pending'
   | 'overview' | 'leads' | 'clients' | 'admin' | 'newClient' | 'live' | 'guestImport' | 'calendar'
-  | 'runsheet' | 'numbers' | 'guestSite' | 'statusBoard' | 'preview' | 'clientPage';
+  | 'runsheet' | 'numbers' | 'guestSite' | 'statusBoard' | 'preview' | 'clientPage' | 'quickLedger';
 export type ConsoleCopy = Wide<Pick<typeof appCopy, ConsoleKey>>;
 export type LeadCopy = Wide<typeof leadsCopy>;
 export type CrewCopy = Wide<typeof crewCopy>;
@@ -146,7 +146,7 @@ const consoleHe: ConsoleCopy = {
   clients: appCopy.clients, admin: appCopy.admin, newClient: appCopy.newClient, live: appCopy.live,
   guestImport: appCopy.guestImport, calendar: appCopy.calendar, runsheet: appCopy.runsheet,
   numbers: appCopy.numbers, guestSite: appCopy.guestSite, statusBoard: appCopy.statusBoard,
-  preview: appCopy.preview, clientPage: appCopy.clientPage,
+  preview: appCopy.preview, clientPage: appCopy.clientPage, quickLedger: appCopy.quickLedger,
 };
 
 export const APP_UI_HE: AppUi = {
