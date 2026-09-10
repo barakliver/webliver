@@ -2,14 +2,14 @@ import type { Locale } from '../lib/locale.ts';
 import {
   appCopy, guestsCopy, seatingCopy, dayCopy, threadCopy, partyCopy, contractCopy, eventFileCopy,
   noticeCopy, ticketCopy, companionCopy, prepCopy, venueCopy, envelopesCopy, vehiclesCopy,
-  meetingTemplatesCopy, timelineCopy, studioCopy,
+  meetingTemplatesCopy, timelineCopy, studioCopy, journalCopy, circleCopy,
   leadsCopy, crewCopy, vendorCopy, templateCopy, barCopy, updateCopy, linkCopy, signCopy,
   siteEditorCopy, hebrewCalCopy, labelCopy, knowledgeCopy, jumpCopy, copilotCopy, archiveCopy,
   meetingCopy, workflowCopy, referralCopy,
 } from './site.ts';
 import {
   noticeCopyEn, ticketCopyEn, companionCopyEn, prepCopyEn, venueCopyEn, envelopesCopyEn, vehiclesCopyEn,
-  meetingTemplatesCopyEn, timelineCopyEn, studioCopyEn,
+  meetingTemplatesCopyEn, timelineCopyEn, studioCopyEn, journalEn, circleEn,
   portalEn, filesEn, sheetsEn, tasksEn, moneyEn, boardEn, bookEn,
   guestsEn, seatingEn, dayEn, threadEn, partyEn, contractEn, eventFileEn,
 } from './app.en.ts';
@@ -79,6 +79,10 @@ export type MeetingTemplatesCopy = Wide<typeof meetingTemplatesCopy>;
 export type TimelineCopy = Wide<typeof timelineCopy>;
 /* The wedding's brand and its pieces, read from both sides. */
 export type StudioCopy = Wide<typeof studioCopy>;
+/* What the couple wrote at other people's weddings, and the circle of
+   couples around one producer. Both are read from both sides. */
+export type JournalCopy = Wide<typeof journalCopy>;
+export type CircleCopy = Wide<typeof circleCopy>;
 /* The halls. Both sides edit it and the couple is the side that toured them,
    so it is resolved rather than handed the console's Hebrew. */
 export type VenueCopy = Wide<typeof venueCopy>;
@@ -140,6 +144,8 @@ export type AppUi = {
   meetingTemplates: MeetingTemplatesCopy;
   timeline: TimelineCopy;
   studio: StudioCopy;
+  journal: JournalCopy;
+  circle: CircleCopy;
 } & ConsoleCopy;
 
 const consoleHe: ConsoleCopy = {
@@ -168,6 +174,7 @@ export const APP_UI_HE: AppUi = {
   meetingTemplates: meetingTemplatesCopy,
   timeline: timelineCopy,
   studio: studioCopy,
+  journal: journalCopy, circle: circleCopy,
   ...consoleHe,
 };
 
@@ -187,6 +194,7 @@ const APP_UI_EN: AppUi = {
   meetingTemplates: meetingTemplatesCopyEn,
   timeline: timelineCopyEn,
   studio: studioCopyEn,
+  journal: journalEn, circle: circleEn,
   ...consoleEn,
 };
 

@@ -21,6 +21,9 @@ import { BudgetPlannerDemo } from './BudgetPlannerDemo';
 import { VendorScoutDemo } from './VendorScoutDemo';
 import { BrandStudioDemo } from './BrandStudioDemo';
 import { DayDrawer } from '@/components/app/DayDrawer';
+import { JournalBook } from '@/components/app/JournalBook';
+import { CircleThread } from '@/components/app/CircleThread';
+import { CircleFeed } from '@/components/app/CircleFeed';
 import { GoogleSyncCard } from '@/components/app/GoogleSyncCard';
 import { QuickLedger } from '@/components/app/QuickLedger';
 import { LedgerEntries } from '@/components/app/LedgerEntries';
@@ -396,6 +399,51 @@ export default async function DesignPage() {
               lines={[
                 { event_vendor_id: 'h1', estimate: 150000, agreed: 162000 },
                 { event_vendor_id: 'h2', estimate: 14000, agreed: 13500 },
+              ]}
+            />
+          </div>
+        </Panel>
+
+        <Panel name="JournalBook" note="the couple's notebook of other people's weddings: two logged, the summary they add up to, and the form">
+          <div className="max-w-4xl">
+            <JournalBook
+              clientId="00000000-0000-4000-8000-000000000003" viewer="client"
+              logs={[
+                { id: 'j1', venue_name: 'אחוזת הכפר', event_date: '2026-06-12', style: 'garden',
+                  pros: ['foodGood', 'ranOnTime'], cons: ['barQueue', 'musicTooLoud'],
+                  pros_note: 'הקינוחים היו הדבר שכולם דיברו עליו', cons_note: 'רבע שעה לכוס יין',
+                  takeaways: 'שני ברמנים, לא אחד\nלהוריד את המוזיקה בזמן האוכל', photos: [], photoUrls: [] },
+                { id: 'j2', venue_name: 'גני ורדים', event_date: '2026-05-01', style: 'hall',
+                  pros: ['barFast', 'seatingEnough'], cons: ['startedLate'],
+                  pros_note: '', cons_note: 'החופה התחילה ארבעים דקות אחרי',
+                  takeaways: 'לכתוב בהזמנה שעה שהיא באמת השעה', photos: [], photoUrls: [] },
+              ]}
+            />
+          </div>
+        </Panel>
+
+        <Panel name="CircleFeed" note="the circle of one producer's couples: a named question, an anonymous one, and the producer's own, with votes">
+          <div className="max-w-3xl">
+            <CircleFeed
+              producerId="00000000-0000-4000-8000-000000000009" clientId="00000000-0000-4000-8000-000000000003"
+              category="" viewer="client"
+              posts={[
+                { id: 'p1', category: 'vendors', title: 'מישהו עבד עם צלם מהצפון שלא גובה נסיעות?', content: 'אנחנו מתחתנים בגליל והצעות המחיר שקיבלנו כולן עם תוספת נסיעה של אלף שקל.', upvotes: 4, created_at: '2026-09-01T10:00:00Z', is_anonymous: false, is_producer: false, author_name: 'נועה כהן', months_out: null, mine: false, voted: true, replies: 3 },
+                { id: 'p2', category: 'food', title: 'כמה אלכוהול באמת צריך ל-180 איש?', content: 'האולם מציע חבילה, ומחוץ לאולם אמרו לנו שזה כפול ממה שצריך.', upvotes: 1, created_at: '2026-08-28T09:00:00Z', is_anonymous: true, is_producer: false, author_name: '', months_out: 4, mine: true, voted: false, replies: 0 },
+                { id: 'p3', category: 'general', title: 'על השאלה של הבר: המספרים שאני עובד לפיהם', content: 'שלוש מנות לאורח בערב של חמש שעות, ורבע מזה ויסקי.', upvotes: 9, created_at: '2026-08-27T09:00:00Z', is_anonymous: false, is_producer: true, author_name: 'ברק', months_out: null, mine: false, voted: false, replies: 1 },
+              ]}
+            />
+          </div>
+        </Panel>
+
+        <Panel name="CircleThread" note="one question with an answer from another couple and one from the producer, which carries the badge">
+          <div className="max-w-3xl">
+            <CircleThread
+              clientId="00000000-0000-4000-8000-000000000003" viewer="client"
+              post={{ id: 'p1', category: 'vendors', title: 'מישהו עבד עם צלם מהצפון שלא גובה נסיעות?', content: 'אנחנו מתחתנים בגליל והצעות המחיר שקיבלנו כולן עם תוספת נסיעה של אלף שקל.', upvotes: 4, created_at: '2026-09-01T10:00:00Z', is_anonymous: false, is_producer: false, author_name: 'נועה כהן', months_out: null, mine: false, voted: true, replies: 2 }}
+              replies={[
+                { id: 'r1', content: 'עבדנו עם סטודיו לביא, הם מהעמק ולא גבו נסיעות. שווה לבקש מהם את המחיר בלי אלבום.', created_at: '2026-09-01T12:00:00Z', is_anonymous: true, is_producer: false, author_name: '', months_out: 7, mine: false },
+                { id: 'r2', content: 'שני צלמים שאני עובד איתם בצפון לא גובים נסיעה מעל שש שעות צילום. אשלח לכם את שניהם בהודעה.', created_at: '2026-09-01T13:30:00Z', is_anonymous: false, is_producer: true, author_name: 'ברק', months_out: null, mine: false },
               ]}
             />
           </div>

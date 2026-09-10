@@ -1,4 +1,5 @@
 import { requireAccount } from '@/lib/auth';
+import Link from 'next/link';
 import { supabaseServer } from '@/lib/supabase/server';
 import { Live } from '@/components/app/Live';
 import { appUiFor } from '@/content/appUi';
@@ -33,6 +34,7 @@ import { VehiclesPanel } from '@/components/app/VehiclesPanel';
 import { CalendarFeed } from '@/components/app/CalendarFeed';
 import { VendorHq } from '@/components/app/VendorHq';
 import { BrandStudio } from '@/components/app/BrandStudio';
+import { NotebookPen, Users } from 'lucide-react';
 import { loadBrandScreen } from '@/lib/brandLoad';
 import { envelopesFor, vehiclesFor } from '@/content/appUi';
 
@@ -119,6 +121,27 @@ export default async function PortalPage({ searchParams }: {
       <PageHead title={ui.portal.title} sub={ui.portal.sub}
           report={<IssueReporter userId={account.id} context={ui.portal.title} copy={ticketFor(locale)} />}
         />
+      {/* The two rooms that are not a section of one event: the journal of
+          other people's weddings, and the circle of couples around this
+          producer. Links rather than panels, because both are screens
+          somebody sits with rather than glances at. */}
+      <nav aria-label={ui.circle.title} className="mb-6 grid gap-3 sm:grid-cols-2">
+        <Link href="/app/portal/journal" className="card flex items-start gap-3 transition hover:border-accent/40">
+          <NotebookPen size={20} aria-hidden strokeWidth={1.5} className="mt-0.5 shrink-0 text-accent" />
+          <span>
+            <span className="block text-[15.5px] font-semibold text-ink">{ui.journal.title}</span>
+            <span className="mt-0.5 block text-[13.5px] leading-relaxed text-ink-soft">{ui.journal.sub}</span>
+          </span>
+        </Link>
+        <Link href="/app/portal/community" className="card flex items-start gap-3 transition hover:border-accent/40">
+          <Users size={20} aria-hidden strokeWidth={1.5} className="mt-0.5 shrink-0 text-accent" />
+          <span>
+            <span className="block text-[15.5px] font-semibold text-ink">{ui.circle.title}</span>
+            <span className="mt-0.5 block text-[13.5px] leading-relaxed text-ink-soft">{ui.circle.sub}</span>
+          </span>
+        </Link>
+      </nav>
+
       <div className="space-y-6">
         {data.workspaces.map((w) => {
           const sheet = prepOf(prep, w.id);

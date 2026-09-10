@@ -45,6 +45,9 @@ const SHARED = {
   'app/guide/page.tsx': 'the operating book, which both sides are pointed at',
   'app/clients/[id]/runsheet/page.tsx': 'the run sheet, shared with the couple on the day',
   'app/sop/page.tsx': 'a redirect onto a guarded screen, holding no data of its own',
+  'app/portal/journal/page.tsx': "the couple's journal, which their producer also reads; the rows are fenced by can_read_client",
+  'app/portal/community/page.tsx': "the circle of couples around one producer, which the producer reads too; the reader behind it is fenced by in_circle",
+  'app/portal/community/[id]/page.tsx': 'one post in that circle, read through the same fenced reader',
 };
 
 const walk = (dir, out = []) => {

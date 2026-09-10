@@ -1,4 +1,4 @@
-import { CalendarPlus, Eye, Hash, ListOrdered, Pencil, Radio, BookOpen } from 'lucide-react';
+import { CalendarPlus, Eye, Hash, ListOrdered, Pencil, Radio, BookOpen, NotebookPen } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { requireLiveProducer } from '@/lib/auth';
@@ -143,6 +143,13 @@ export default async function ClientPage({
           <Link href={`/app/clients/${client.id}/live`} className={link}>
             <Radio size={16} aria-hidden strokeWidth={1.5} />
             {ui.dayOf.open}
+          </Link>
+          {/* What the couple wrote down at other people's weddings. Their
+              notebook, read-only from here, and the shortest way to know
+              what they like before anybody argues about it. */}
+          <Link href={`/app/portal/journal?c=${client.id}`} className={link}>
+            <NotebookPen size={16} aria-hidden strokeWidth={1.5} />
+            {ui.journal.title}
           </Link>
           {/* The one honest way to answer "what can they actually see?" — which
               is a question about policy, not about markup, and therefore not

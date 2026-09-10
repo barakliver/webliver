@@ -549,6 +549,7 @@ try {
       `insert into public.event_vendors (client_id, name, category) values ('${cidA}','להקת שדות','music')`,
       `insert into public.producer_ledger (producer_id, client_id, kind, amount, label) values ('${pidA}','${cidA}','income',100,'טיפ')`,
       `insert into public.diary_entries (producer_id, client_id, title, on_date, at_time) values ('${pidA}','${cidA}','פגישה עם הפרחים','2026-10-02','10:00')`,
+      `insert into public.event_critique_logs (client_id, venue_name, pros, cons, takeaways) values ('${cidA}','אחוזת הכפר','{barFast}','{musicTooLoud}','להוריד את המוזיקה באוכל')`,
       /* The Google link, as the server writes it: a token that must never
          reach a session. */
       `insert into public.google_calendars (producer_id, email, refresh_token, calendar_id) values ('${pidA}','a@gmail.test','1//secret-token','cal_a')`,
@@ -593,6 +594,7 @@ try {
       event_vendors:     `client_id='${cidA}'`,
       producer_ledger:   `producer_id='${pidA}'`,
       diary_entries:     `producer_id='${pidA}'`,
+      event_critique_logs: `client_id='${cidA}'`,
       support_tickets:   `reporter_id='${uidA}'`,
       meeting_templates: `producer_id='${pidA}'`,
       meeting_logs:      `client_id='${cidA}'`,
@@ -639,6 +641,37 @@ try {
     ).trim();
     say(feed === 'לשלוח הזמנות:7', 'the couple\'s calendar carries their shared deadlines with the reminder, and no private one',
       `got: ${feed}`);
+
+    /* 0078: the circle. A couple posts anonymously, and the promise is
+       kept in the database rather than on the screen: reading the table
+       direct is refused outright, the reader emits no author for an
+       anonymous post, and a producer from another tenant sees none of it.
+       The producer's badge is stamped from the author's real role. */
+    psql('one',
+      `-c "set request.jwt.claim.sub = '${uidC}'"`
+      + ` -c "set request.jwt.claims = '{\\"sub\\":\\"${uidC}\\",\\"email\\":\\"${mailC}\\",\\"role\\":\\"authenticated\\"}'"`
+      + ` -c "set role authenticated"`
+      + ` -c "insert into public.forum_posts (producer_id, author_id, client_id, is_anonymous, category, title, content) values ('${pidA}','${uidC}','${cidA}',true,'vendors','שאלה על צלם','מישהו עבד עם צלם מהצפון')"`);
+    const postId = ask('one', `select id from public.forum_posts limit 1`);
+    /* The producer answers, and the badge is not something they sent. */
+    psql('one',
+      `-c "set request.jwt.claim.sub = '${uidA}'"`
+      + ` -c "set request.jwt.claims = '{\\"sub\\":\\"${uidA}\\",\\"email\\":\\"${mailA}\\",\\"role\\":\\"authenticated\\"}'"`
+      + ` -c "set role authenticated"`
+      + ` -c "insert into public.forum_comments (post_id, author_id, is_producer, content) values ('${postId}','${uidA}',false,'שני צלמים שאני עובד איתם')"`);
+    const badge = ask('one', `select is_producer::text from public.forum_comments where post_id='${postId}'`);
+    let rawRead = '';
+    try { rawRead = asAccount(uidC, mailC, `select author_id from public.forum_posts`); }
+    catch (e) { rawRead = (e.stdout || e.message || '').toString(); }
+    const feedSelf = asAccount(uidC, mailC,
+      `select coalesce(nullif(author_name,''),'-') || '|' || is_anonymous::text from public.forum_feed('${pidA}','',10)`);
+    const feedStranger = asAccount(uidB, mailB, `select count(*) from public.forum_feed('${pidA}','',10)`);
+    /* Either a refusal or nothing at all: both keep the author, and the
+       assertion is that the id is not in the answer however it came. */
+    const authorHidden = !rawRead.includes(uidC);
+    say(badge === 'true' && authorHidden && feedSelf === '-|true' && feedStranger === '0',
+      'an anonymous post keeps its author from the table and from the reader, and the producer badge is stamped not sent',
+      `badge:${badge} raw:${authorHidden ? (rawRead ? 'refused' : 'empty') : 'LEAKED'} feed:${feedSelf} stranger:${feedStranger}`);
 
     /* 0077: the owner sees that Google is connected and whose account,
        through the view, and cannot read the token even from their own row;
