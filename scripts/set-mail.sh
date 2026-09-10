@@ -24,14 +24,18 @@ fi
 
 cat <<'EOF'
 
-  resend.com → API Keys → Create API Key.  It starts with re_ and will not
-  be shown as you paste it.
+  resend.com → API Keys → Create API Key → Add.
+
+  Resend shows the key ONCE, in the box that opens right after Add; the
+  list afterwards only shows its name and re_... with dots. If that moment
+  has passed, create a new key: it costs nothing. The key starts with re_
+  and is about 36 characters. It will not be shown as you paste it.
 
 EOF
 printf '  paste the Resend key, then Enter: '
 IFS= read -rs KEY
 echo; echo
-KEY="$(printf '%s' "$KEY" | tr -d '\r\n' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+KEY="$(printf '%s' "$KEY" | tr -d '\r\n' | sed -e 's/^[[:space:]"'"'"']*//' -e 's/[[:space:]"'"'"']*$//')"
 
 bad=""
 case "$KEY" in
@@ -39,9 +43,12 @@ case "$KEY" in
   *…*)          bad="it contains the … from an example" ;;
   *'<'*|*'>'*)  bad="it still has the angle brackets from an example around it" ;;
   *' '*)        bad="it has a space in it, so it is not a key" ;;
+  re_*'.'*)     bad="that is the masked key from the list (re_ with dots); the real one is only shown once, right after Add. Create a new key and paste it from that box" ;;
   re_*)         ;;
-  *)            bad="it does not start with re_" ;;
+  whsec_*)      bad="that is a webhook signing secret, not an API key" ;;
+  *)            bad="it does not start with re_, so it is not a Resend API key (Create API Key → Add, and copy from the box that opens)" ;;
 esac
+if [ -z "$bad" ] && [ "${#KEY}" -lt 20 ]; then bad="it is too short to be a key"; fi
 if [ -n "$bad" ]; then
   echo "  Not written: $bad."; echo "  Nothing in $ENVFILE was changed."; exit 1
 fi
