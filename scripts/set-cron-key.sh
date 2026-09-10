@@ -69,11 +69,21 @@ LINES="17 4 * * * $CALL $HOST/api/cron >> /var/log/liver-sweep.log 2>&1 $TAG
 echo "  the sweep is scheduled: nightly 04:17, Sunday 09:00, Monday 08:00"
 
 # ── prove it ────────────────────────────────────────────────────────────────
+# The app was restarted a moment ago and takes a few seconds to answer again.
+# A call in that gap gets Caddy's empty 502 and proves nothing, so wait for
+# the front page first, then show the status code with the body.
+printf '  waiting for the app to come back up'
+for _ in $(seq 1 45); do
+  code="$(curl -s -o /dev/null -m 5 -w '%{http_code}' "$HOST/" || true)"
+  case "$code" in 200|3??) break ;; esac
+  printf '.'; sleep 2
+done
+echo
 echo
 echo "  calling the sweep once now:"
 printf '  '
-curl -sS -m 120 -X POST -H "x-cron-key: $KEY" "$HOST/api/cron" || echo "(the call did not go through)"
-echo
+curl -sS -m 120 -X POST -H "x-cron-key: $KEY" -w '\n  HTTP %{http_code}\n' "$HOST/api/cron" || echo "(the call did not go through)"
 echo
 echo '  {"ok":true,...} with "errors":[] means it works.'
-echo '  "not configured" now means SUPABASE_SERVICE_ROLE_KEY is missing:  bash /root/webliver/scripts/set-service-key.sh'
+echo '  "not configured" means SUPABASE_SERVICE_ROLE_KEY is missing:  bash /root/webliver/scripts/set-service-key.sh'
+echo '  an empty answer with HTTP 502 means the app was still starting: run this script again.'

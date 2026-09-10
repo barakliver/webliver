@@ -50,7 +50,11 @@ case "$KEY" in
 esac
 if [ -z "$bad" ] && [ "${#KEY}" -lt 20 ]; then bad="it is too short to be a key"; fi
 if [ -n "$bad" ]; then
-  echo "  Not written: $bad."; echo "  Nothing in $ENVFILE was changed."; exit 1
+  echo "  Not written: $bad."
+  # The shape of what arrived, so the next attempt can be aimed: a prefix
+  # of three characters and a length identify a kind of key, never the key.
+  [ -n "$KEY" ] && echo "  (what arrived starts with '${KEY:0:3}' and is ${#KEY} characters long)"
+  echo "  Nothing in $ENVFILE was changed."; exit 1
 fi
 
 cat <<'EOF'

@@ -59,6 +59,7 @@ if [ -z "$bad" ] && [ "${#KEY}" -lt 40 ]; then bad="it is too short to be a key"
 
 if [ -n "$bad" ]; then
   echo "  Not written: $bad."
+  [ -n "$KEY" ] && echo "  (what arrived starts with '${KEY:0:3}' and is ${#KEY} characters long)"
   echo "  Nothing in $ENVFILE was changed."
   exit 1
 fi
