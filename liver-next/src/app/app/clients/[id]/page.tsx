@@ -63,6 +63,7 @@ import { loadEventSummary } from '@/lib/eventSummary';
 import { Contracts } from '@/components/app/Contracts';
 import { EventFiles } from '@/components/app/EventFiles';
 import { MeetingDrawer, type MeetingLog } from '@/components/app/MeetingDrawer';
+import { QuoteCompare } from '@/components/app/QuoteCompare';
 import { loadMeetingTemplates } from '@/lib/meetingTemplateRows';
 import { Thread } from '@/components/app/Thread';
 
@@ -339,7 +340,7 @@ async function Section({ tab, client, viewerId }: { tab: EventTab; client: Clien
         .select('id,name,role,phone,call_time,fee,notes')
         .eq('client_id', id).order('call_time', { ascending: true, nullsFirst: false })),
       safeRows<EventVendor>('event vendors', sb.from('event_vendors')
-        .select('id,vendor_id,name,category,phone,status,call_time,notes')
+        .select('id,vendor_id,name,category,phone,status,call_time,notes,quote_amount,quote_hours,quote_scope,quote_includes,quote_extras,quote_terms,chosen')
         .eq('client_id', id).order('category')),
       safeRows<DirectoryEntry>('vendor directory', sb.from('vendors')
         .select('id,name,category,phone').is('archived_at', null).order('name')),
@@ -363,6 +364,10 @@ async function Section({ tab, client, viewerId }: { tab: EventTab; client: Clien
           signAs={(await requireLiveProducer()).producer?.brandName || ''}
         />
         <EventVendors clientId={id} vendors={eventVendors} directory={directory} />
+        {/* The quotes, under the list they belong to. The lines are the same
+            rows the HQ reads, so "what leaves the budget" is what the HQ
+            would show leaving. */}
+        <QuoteCompare clientId={id} vendors={eventVendors} lines={hqLines} viewer="producer" />
         <CrewPanel clientId={id} crew={crew} />
       </div>
     );

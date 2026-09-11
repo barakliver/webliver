@@ -16,6 +16,7 @@ import { BeginFlow } from '@/components/app/BeginFlow';
 import { GuestSiteLink } from '@/components/app/GuestSiteLink';
 import { PortalVendors } from '@/components/app/PortalVendors';
 import { PortalMeetings } from '@/components/app/PortalMeetings';
+import { QuoteCompare } from '@/components/app/QuoteCompare';
 import { PortalNav } from '@/components/app/PortalNav';
 import { Ltr } from '@/components/Ltr';
 import type { PortalData, Workspace } from '@/lib/portal';
@@ -213,7 +214,16 @@ export function PortalWorkspace({
         {/* Who is hired. The same rows the producer's suppliers tab shows,
             and where a DJ ticked off the checklist above turns up. */}
         {can('vendors') && (
-          <div id="vendors" className="scroll-mt-28"><PortalVendors vendors={data.vendorsFor(c.id)} c={ui.portal} locale={ui.locale} /></div>
+          <div id="vendors" className="scroll-mt-28 space-y-10">
+            <PortalVendors vendors={data.vendorsFor(c.id)} c={ui.portal} locale={ui.locale} />
+            {/* The quotes, the same table the producer reads, because there
+                is nothing to negotiate between them about what was quoted. */}
+            <QuoteCompare
+              clientId={c.id} viewer="client"
+              vendors={data.vendorsFor(c.id)}
+              lines={budget.map((b) => ({ event_vendor_id: b.event_vendor_id ?? null, estimate: b.estimate, agreed: b.agreed }))}
+            />
+          </div>
         )}
         {/* What was agreed, as the producer chose to share it. After the
             suppliers because a meeting is usually about one of them. */}

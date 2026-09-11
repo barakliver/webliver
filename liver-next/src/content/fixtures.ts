@@ -103,10 +103,18 @@ export const fixtureSeatGuests: SeatGuest[] = [
 
 /* The suppliers as the couple sees them: two closed, one still open. */
 const quiet = { deposit: null, deposit_paid_on: null, balance_due_on: null, last_contact_on: null, waiting_on: null, next_action: '' } as const;
+const noQuote = { quote_amount: null, quote_hours: null, quote_scope: '', quote_includes: '', quote_extras: '', quote_terms: '', chosen: false } as const;
 export const fixturePortalVendors: PortalVendor[] = [
-  { id: 'pv1', client_id: FIXTURE_CLIENT, name: 'קייטרינג השדה', category: 'catering', phone: '0544444444', status: 'booked', notes: '', ...quiet },
-  { id: 'pv2', client_id: FIXTURE_CLIENT, name: 'DJ אורי', category: 'music', phone: '0522222222', status: 'booked', notes: 'איש קשר: אורי', ...quiet },
-  { id: 'pv3', client_id: FIXTURE_CLIENT, name: 'סטודיו לביא', category: 'photo', phone: '0521111111', status: 'shortlist', notes: '', ...quiet },
+  { id: 'pv1', client_id: FIXTURE_CLIENT, name: 'קייטרינג השדה', category: 'catering', phone: '0544444444', status: 'booked', notes: '', ...quiet, ...noQuote },
+  { id: 'pv2', client_id: FIXTURE_CLIENT, name: 'DJ אורי', category: 'music', phone: '0522222222', status: 'booked', notes: 'איש קשר: אורי', ...quiet, ...noQuote },
+  /* Two photographers with quotes, one chosen, and a third with nothing
+     written yet: the comparison the table exists for, with an unknown in it
+     on purpose so the screen shows what unknown looks like. */
+  { id: 'pv3', client_id: FIXTURE_CLIENT, name: 'סטודיו לביא', category: 'photo', phone: '0521111111', status: 'shortlist', notes: '', ...quiet, ...noQuote,
+    quote_amount: 13500, quote_hours: 8, quote_scope: 'סטילס ווידאו', quote_includes: 'אלבום, צלם שני, מגנטים', quote_extras: 'רחפן 900', quote_terms: '30% מקדמה, יתרה שבוע לפני', chosen: true },
+  { id: 'pv4', client_id: FIXTURE_CLIENT, name: 'צלמים בע״מ', category: 'photo', phone: '0523333333', status: 'shortlist', notes: '', ...quiet, ...noQuote,
+    quote_amount: 9800, quote_hours: 6, quote_scope: 'סטילס בלבד', quote_includes: 'אלבום דיגיטלי', quote_extras: 'שעה נוספת 700', quote_terms: '50% מקדמה' },
+  { id: 'pv5', client_id: FIXTURE_CLIENT, name: 'נועם צילום', category: 'photo', phone: '', status: 'shortlist', notes: '', ...quiet, ...noQuote },
 ];
 
 export const fixtureDay: DayItem[] = [

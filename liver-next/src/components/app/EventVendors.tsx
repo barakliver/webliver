@@ -14,6 +14,11 @@ import { hhmm } from '@/lib/runsheet';
 export type EventVendor = {
   id: string; vendor_id: string | null; name: string; category: string;
   phone: string; status: string; call_time: string | null; notes: string;
+  /* The quote as the supplier gave it, and whether this is the one the
+     budget is planned around. Read by the comparison under this list. */
+  quote_amount: number | string | null; quote_hours: number | string | null;
+  quote_scope: string; quote_includes: string; quote_extras: string; quote_terms: string;
+  chosen: boolean;
 };
 
 export type DirectoryEntry = { id: string; name: string; category: string; phone: string };

@@ -17,6 +17,7 @@ import { NextAction } from '@/components/app/NextAction';
 import { BeginFlow } from '@/components/app/BeginFlow';
 import { PortalVendors } from '@/components/app/PortalVendors';
 import { PortalMeetings } from '@/components/app/PortalMeetings';
+import { QuoteCompare } from '@/components/app/QuoteCompare';
 import { PortalNav } from '@/components/app/PortalNav';
 import { ShareSwitches, TabShare } from '@/components/app/ShareSwitch';
 import { TimelineDemo } from './TimelineDemo';
@@ -428,6 +429,18 @@ export default async function DesignPage() {
         {/* The other half of the switch on every meeting form. Shown with
             the one shared fixture and then with none, because the empty
             sentence is the one most couples read first. */}
+        {/* Three photographers: the cheapest quoted, the one chosen, and one
+            with nothing written yet. The sentence under "choose" on the
+            cheaper one says what the press would take out and put in. */}
+        <Panel name="QuoteCompare" note="quotes side by side, one chosen into the budget; an unknown drawn as unknown, and the effect of choosing said before the press">
+          <QuoteCompare
+            clientId={client}
+            viewer="producer"
+            vendors={fixturePortalVendors}
+            lines={[{ event_vendor_id: 'pv3', estimate: 13500, agreed: null }]}
+          />
+        </Panel>
+
         <Panel name="PortalMeetings" note="the meetings a producer shared, as the couple reads them: title, date, what was agreed; and the screen with none shared yet">
           <div className="space-y-5">
             <PortalMeetings ui={appUiFor('he')} meetings={fixtureMeetings.filter((m) => m.visible_to_client).map((m) => ({ id: m.id, client_id: client, kind: m.kind, title: m.title, held_on: m.held_on, summary: m.summary }))} />
@@ -1172,8 +1185,8 @@ export default async function DesignPage() {
           <EventVendors
             clientId={client}
             vendors={[
-              { id: 'ev1', vendor_id: 'v1', name: 'סטודיו לביא', category: 'צילום', phone: '0521111111', status: 'booked', call_time: '15:30', notes: 'מגיע עם שני צלמים' },
-              { id: 'ev2', vendor_id: null, name: 'להקת שדות', category: 'מוזיקה', phone: '0522222222', status: 'shortlist', call_time: null, notes: '' },
+              { id: 'ev1', vendor_id: 'v1', name: 'סטודיו לביא', category: 'צילום', phone: '0521111111', status: 'booked', call_time: '15:30', notes: 'מגיע עם שני צלמים', quote_amount: null, quote_hours: null, quote_scope: '', quote_includes: '', quote_extras: '', quote_terms: '', chosen: false },
+              { id: 'ev2', vendor_id: null, name: 'להקת שדות', category: 'מוזיקה', phone: '0522222222', status: 'shortlist', call_time: null, notes: '', quote_amount: null, quote_hours: null, quote_scope: '', quote_includes: '', quote_extras: '', quote_terms: '', chosen: false },
             ]}
             directory={fixtureVendors.map((v) => ({ id: v.id, name: v.name, category: v.category, phone: v.phone }))}
           />

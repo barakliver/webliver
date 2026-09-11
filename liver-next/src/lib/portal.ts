@@ -67,6 +67,15 @@ export type Vendor = {
   last_contact_on: string | null;
   waiting_on: 'me' | 'them' | null;
   next_action: string;
+  /* The quote, as the supplier gave it; chosen is the one the budget is
+     planned around and is not a booking. */
+  quote_amount: number | string | null;
+  quote_hours: number | string | null;
+  quote_scope: string;
+  quote_includes: string;
+  quote_extras: string;
+  quote_terms: string;
+  chosen: boolean;
 };
 
 /** A meeting the producer shared with the couple. Only rows with
@@ -172,7 +181,7 @@ export async function loadPortal(
     sb.from('day_schedule').select('id,client_id,track,at_time,title,note,owner,audience,duration_min').in('client_id', ids).order('at_time'),
     sb.from('moodboards').select('id,client_id,category,caption,image_path')
       .in('client_id', ids).order('created_at', { ascending: false }),
-    sb.from('event_vendors').select('id,client_id,name,category,phone,status,notes,deposit,deposit_paid_on,balance_due_on,last_contact_on,waiting_on,next_action')
+    sb.from('event_vendors').select('id,client_id,name,category,phone,status,notes,deposit,deposit_paid_on,balance_due_on,last_contact_on,waiting_on,next_action,quote_amount,quote_hours,quote_scope,quote_includes,quote_extras,quote_terms,chosen')
       .in('client_id', ids).order('category').order('name'),
     /* Shared ones only, on both sides. The couple's policy already refuses
        the rest; filtering here too is what makes the producer's preview

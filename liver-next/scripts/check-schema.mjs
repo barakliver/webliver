@@ -748,6 +748,24 @@ try {
       'the couple fills in their own blanks, cannot move the producer\'s date, and a stranger is refused',
       `wrote:${basicsOwn} date:${basicsDate} region:${basicsRegion}`);
 
+    /* 0085: quotes chosen into the budget. Two photographers quoted; the
+       couple chooses A, then B. Exactly one estimate line must remain, B's,
+       and a third supplier's line that carries an agreed figure must not be
+       touched by any of it, because a commitment is not undone by a
+       comparison. Run as the couple, against the real function. */
+    psql('one', `-c "insert into public.event_vendors (id,client_id,name,category,status,quote_amount) values ('a1a1a1a1-0000-4000-8000-000000000001','${cidA}','צלם א','photo','shortlist',9000),('a1a1a1a1-0000-4000-8000-000000000002','${cidA}','צלם ב','photo','shortlist',11000),('a1a1a1a1-0000-4000-8000-000000000003','${cidA}','צלם ג','photo','booked',8000)"`);
+    psql('one', `-c "insert into public.budget_items (client_id,category,label,estimate,agreed,event_vendor_id) values ('${cidA}','צילום','צלם ג',8000,8000,'a1a1a1a1-0000-4000-8000-000000000003')"`);
+    asAccount(uidC, mailC, `select public.choose_vendor_quote('a1a1a1a1-0000-4000-8000-000000000001','צילום')`);
+    const chooseB = asAccount(uidC, mailC, `select public.choose_vendor_quote('a1a1a1a1-0000-4000-8000-000000000002','צילום')`);
+    const photoLines = ask('one', `select string_agg(label||':'||estimate::int||':'||coalesce(agreed::int::text,'-'), ',' order by label) from public.budget_items where client_id='${cidA}' and category='צילום'`);
+    const chosenNow = ask('one', `select string_agg(name, ',' order by name) from public.event_vendors where client_id='${cidA}' and category='photo' and chosen`);
+    say(/"replaced": \["צלם א"\]/.test(chooseB) && photoLines === 'צלם ב:11000:-,צלם ג:8000:8000' && chosenNow === 'צלם ב',
+      'a quote chosen twice is one budget line, and an agreed line is never taken by a comparison',
+      `replaced:${chooseB} lines:${photoLines} chosen:${chosenNow}`);
+    /* Taken back out, so the count of the couple's suppliers below is the
+       count the earlier fixtures made and not these three. */
+    psql('one', `-c "delete from public.budget_items where event_vendor_id::text like 'a1a1a1a1-%'" -c "delete from public.event_vendors where id::text like 'a1a1a1a1-%'"`);
+
     /* And their suppliers: the DJ they ticked off has to be a row they can
        read back, or the form that asked them lied. */
     const coupleVendors = asAccount(uidC, mailC, `select count(*) from public.event_vendors where client_id='${cidA}'`);

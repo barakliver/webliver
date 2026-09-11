@@ -4,7 +4,10 @@ import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { currentAccount } from '@/lib/auth';
 import { VENDOR_STATES, type VendorState } from '@/content/production';
-import { noteFailure } from '@/lib/flash';
+import { noteDone, noteFailure } from '@/lib/flash';
+import { categoryLabel } from '@/content/production';
+import { fill } from '@/lib/copyText';
+import { vendorCopy } from '@/content/site';
 
 export type VendorResult = { ok: boolean; error?: string; id?: string };
 
@@ -233,4 +236,60 @@ export async function promoteToDirectory(form: FormData): Promise<void> {
 
   touchEvent(clientId);
   touchDirectory();
+}
+
+/** The six things on a quote, written down as the supplier said them. Empty
+ *  is unknown and stays unknown: a nought here would be a number the table
+ *  compares against, and it is not one the supplier gave. */
+export async function saveQuote(form: FormData): Promise<void> {
+  const id = String(form.get('event_vendor_id') ?? '');
+  const clientId = String(form.get('client_id') ?? '');
+  if (!id) return;
+  const num = (k: string, hi: number) => {
+    const raw = String(form.get(k) ?? '').trim();
+    if (!raw) return null;
+    const n = Number(raw);
+    return Number.isFinite(n) && n >= 0 ? Math.min(hi, n) : null;
+  };
+  const text = (k: string, max: number) => String(form.get(k) ?? '').trim().slice(0, max);
+
+  const sb = await supabaseServer();
+  const { error } = await sb.from('event_vendors').update({
+    quote_amount: num('quote_amount', 100_000_000),
+    quote_hours: num('quote_hours', 72),
+    quote_scope: text('quote_scope', 300),
+    quote_includes: text('quote_includes', 600),
+    quote_extras: text('quote_extras', 600),
+    quote_terms: text('quote_terms', 600),
+  }).eq('id', id);
+  if (error) {
+    console.error('[vendors] quote failed', error);
+    await noteFailure(vendorCopy.quotes.failed);
+  }
+  touchEvent(clientId);
+}
+
+/** One quote chosen into the budget. The database does the whole move in
+ *  one call, and says back which supplier's estimate it replaced, so the
+ *  line under the button and the sentence after the press agree. */
+export async function chooseQuote(form: FormData): Promise<void> {
+  const id = String(form.get('event_vendor_id') ?? '');
+  const clientId = String(form.get('client_id') ?? '');
+  if (!id) return;
+
+  const sb = await supabaseServer();
+  const { data: row } = await sb.from('event_vendors').select('category').eq('id', id).maybeSingle();
+  const label = categoryLabel(String(row?.category ?? ''));
+  const { data, error } = await sb.rpc('choose_vendor_quote', { p_vendor: id, p_category_label: label });
+  if (error) {
+    console.error('[vendors] choose failed', error);
+    await noteFailure(vendorCopy.quotes.failed);
+  } else {
+    const replaced = ((data as { replaced?: unknown } | null)?.replaced ?? []) as string[];
+    await noteDone(replaced.length
+      ? fill(vendorCopy.quotes.chosenReplaced, { names: replaced.join(', ') })
+      : vendorCopy.quotes.chosen);
+  }
+  touchEvent(clientId);
+  revalidatePath('/app/portal');
 }

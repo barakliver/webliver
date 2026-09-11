@@ -11,6 +11,8 @@ import { ReceiptScan } from '@/components/app/ReceiptScan';
 export type BudgetItem = {
   id: string; category: string; label: string;
   estimate: number; agreed: number | null; vendor: string;
+  /** The supplier this line is money for, when it is one. */
+  event_vendor_id?: string | null;
 };
 
 
