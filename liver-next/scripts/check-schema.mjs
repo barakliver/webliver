@@ -731,6 +731,23 @@ try {
       'the couple picks a brand option on their wedding, a stranger cannot, and the guests\' page carries the brand',
       `own:${pickOwn || 'ok'} picked:${picked} stranger:${strangerPicked} cols:${siteCols}`);
 
+    /* 0082 and 0084: the five questions. The couple fills the blanks on
+       their own event, cannot move a date the producer already set, and a
+       stranger is refused outright. Run as the couple against the real
+       function, because 0082 shipped with an append that raised on the first
+       non-date answer and nothing in this file was exercising it. */
+    const basicsBefore = ask('one', `select event_date::text from public.clients where id='${cidA}'`);
+    const basicsOwn = asAccount(uidC, mailC, `select public.couple_sets_basics('${cidA}','2027-01-01',null,'השרון',250000,null)`);
+    const basicsDate = ask('one', `select event_date::text from public.clients where id='${cidA}'`);
+    const basicsRegion = ask('one', `select region from public.clients where id='${cidA}'`);
+    let basicsStranger = '';
+    try { basicsStranger = asAccount(uidB, mailB, `select public.couple_sets_basics('${cidA}',null,10,null,null,null)`); }
+    catch (e) { basicsStranger = (e.stdout || e.message || '').toString(); }
+    say(/"region"/.test(basicsOwn) && /"budget"/.test(basicsOwn) && !/"date"/.test(basicsOwn)
+        && basicsDate === basicsBefore && basicsRegion === 'השרון' && /אין הרשאה|permission denied/.test(basicsStranger),
+      'the couple fills in their own blanks, cannot move the producer\'s date, and a stranger is refused',
+      `wrote:${basicsOwn} date:${basicsDate} region:${basicsRegion}`);
+
     /* And their suppliers: the DJ they ticked off has to be a row they can
        read back, or the form that asked them lied. */
     const coupleVendors = asAccount(uidC, mailC, `select count(*) from public.event_vendors where client_id='${cidA}'`);
