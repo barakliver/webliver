@@ -1813,6 +1813,9 @@ export const appCopy = {
        to the seating plan without scrolling past the budget. In their words,
        and short — these sit beside a number. */
     rowTasks: 'משימות פתוחות',
+    /* Where a figure has nothing behind it yet. Not zero: zero is a number
+       about the wedding, this is a sentence about the screen. */
+    rowNone: 'טרם הוזן',
     rowPayments: 'נשאר לשלם',
     rowSeating: 'שולחנות',
     rowContracts: 'הסכמים',
@@ -1824,6 +1827,46 @@ export const appCopy = {
     rowTransport: 'רכבים והסעות',
     rowThread: 'הודעות',
     rowRunsheet: 'לוז יום האירוע',
+    /* The card above everything: one thing to do, and why it is that one.
+       A number is not an instruction. "42 משימות פתוחות" tells a couple they
+       are behind without telling them on what, and the only thing it invites
+       is to feel bad about it. Every sentence here names a thing and a
+       reason, and every one of them has a button that works. */
+    next: {
+      title: 'מה עכשיו',
+      /* The meta line under the headline. The date and the amount are drawn
+         by the screen rather than written into a sentence, so the currency
+         and the numerals come out of the one formatter the whole app uses. */
+      by: 'עד',
+      late: 'באיחור',
+      noDue: 'בלי תאריך',
+      also: 'אחר כך',
+      ownerUs: 'עלינו',
+      ownerProducer: 'על ההפקה',
+      go: {
+        tasks: 'למשימות',
+        payments: 'לתשלומים',
+        guests: 'לרשימת האורחים',
+        budget: 'לתקציב',
+        board: 'ללוח ההשראה',
+      },
+      say: {
+        payLate: { head: 'לסדר את התשלום: {s}', why: 'התאריך שנקבע לתשלום כבר עבר.' },
+        taskLate: { head: '{s}', why: 'המשימה הזאת עברה את התאריך שנקבע לה.' },
+        paySoon: { head: 'מתקרב תשלום: {s}', why: 'שווה לוודא שהכסף מוכן לתאריך.' },
+        taskSoon: { head: '{s}', why: 'זאת המשימה הקרובה ביותר ברשימה שלכם.' },
+        guestsChase: { head: 'להזכיר למי שעוד לא אישר', why: '{n} מהאורחים עוד לא ענו, והאולם צריך מספר.' },
+        guestsEmpty: { head: 'להתחיל את רשימת האורחים', why: 'כל שאר המספרים נגזרים ממנה: כמה מנות, כמה שולחנות, כמה זה עולה.' },
+        budgetOver: { head: 'התקציב ב{s} חרג מהתכנון', why: 'שווה להסתכל מאיפה להשלים לפני שנסגר עוד ספק.' },
+        budgetEmpty: { head: 'לפרק את התקציב לסעיפים', why: 'יש סכום יעד, ואין עדיין שורות שמראות לאן הוא הולך.' },
+        boardEmpty: { head: 'לשמור כמה תמונות שאהבתם', why: 'משם מתחיל הסגנון של הערב, וזה מה שמראים לספקים.' },
+        start: { head: 'להוסיף את המשימה הראשונה', why: 'עוד לא נרשם כאן כלום. כל דבר שכתוב כאן רואה גם ההפקה.' },
+        clear: { head: 'הכול מטופל', why: 'אין כרגע משימה, תשלום או אישור שממתינים לכם.' },
+      },
+      /* Said only when there is more than one. One late task is the task; six
+         are a situation, and the difference is worth a line. */
+      moreTasks: 'ועוד {n} משימות באיחור',
+    },
     /* The pills under the header, one per section. */
     nav: 'קפיצה לחלק במסך',
     /* The suppliers list on the couple's screen. */

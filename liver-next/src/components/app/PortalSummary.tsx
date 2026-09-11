@@ -91,8 +91,13 @@ export function summaryRows(opts: {
     { key: 'tasks',     label: c.rowTasks,     value: <Ltr>{opts.openTasks}</Ltr>, href: '#tasks',     shown: opts.can('tasks') },
     {
       key: 'budget',
+      /* Nothing entered is not zero. A couple who has not broken their budget
+         into lines was being shown a budget of nought, which reads as a fact
+         about their wedding rather than as a fact about the screen. */
       label: c.rowBudget,
-      value: opts.budget === null ? <Ltr>0</Ltr> : <Money value={opts.budget} />,
+      value: opts.budget === null
+        ? <span className="text-[14px] font-normal text-ink-mute">{c.rowNone}</span>
+        : <Money value={opts.budget} />,
       href: '#budget',
       shown: opts.can('budget'),
     },

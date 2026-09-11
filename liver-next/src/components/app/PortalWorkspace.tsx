@@ -11,11 +11,15 @@ import { GuestList } from '@/components/app/GuestList';
 import { SeatingPlan } from '@/components/app/SeatingPlan';
 import { DaySchedule } from '@/components/app/DaySchedule';
 import { PortalSummary, summaryRows } from '@/components/app/PortalSummary';
+import { NextAction } from '@/components/app/NextAction';
 import { GuestSiteLink } from '@/components/app/GuestSiteLink';
 import { PortalVendors } from '@/components/app/PortalVendors';
 import { PortalNav } from '@/components/app/PortalNav';
 import { Ltr } from '@/components/Ltr';
 import type { PortalData, Workspace } from '@/lib/portal';
+import { nextAction, upcoming, type TaskFact } from '@/lib/nextAction';
+import { track } from '@/lib/budgetPlan';
+import { todayInZone } from '@/lib/clock';
 
 /** Counts the page loads beside this component rather than inside it —
  *  contracts, halls, files and the two night-of lists — so the summary strip
@@ -63,6 +67,37 @@ export function PortalWorkspace({
      the same answer. */
   const can = (key: string) => data.can(c.id, key as never);
 
+  /* What to do next, worked out from the rows already on this screen. No
+     second query: everything the rule reads is in memory for the panels
+     below, and a dashboard that asks the database six more questions to tell
+     somebody what to do is a slow answer to a simple one. */
+  const openTasks: TaskFact[] = filteredTasks.map((t) => ({
+    title: t.title, due_on: t.due_on, done: t.done, owner: t.owner,
+  }));
+  /* The one area past its plan, from the same arithmetic the tracker below
+     draws — so the card and the table can never disagree about whether the
+     flowers are over. */
+  const overArea = data.can(c.id, 'budget' as never)
+    ? track(budget, c.budget_plan as never).flagged[0]?.key ?? null
+    : null;
+  const action = nextAction({
+    today: todayInZone(),
+    daysLeft: left,
+    tasks: openTasks,
+    payments: payments.map((p) => ({
+      title: p.title, amount: Number(p.amount) || 0, due_on: p.due_on, paid: p.paid,
+    })),
+    guestsInvited: guests.length,
+    guestsAnswered: guests.filter((g) => g.status !== 'pending').length,
+    budgetLines: budget.length,
+    budgetTarget: c.budget_target === null || c.budget_target === undefined ? null : Number(c.budget_target),
+    overArea: overArea ? ui.money.plan.categories[overArea as keyof typeof ui.money.plan.categories] ?? null : null,
+    boardImages: data.boardFor(c.id).length,
+    can,
+  });
+  /* The two after it, and never the one already at the top of the card. */
+  const then = upcoming(openTasks, 3).filter((t) => t.title !== action.subject).slice(0, 2);
+
   const rows = summaryRows({
     budget: agreed > 0 ? agreed : null,
     owed,
@@ -108,6 +143,10 @@ export function PortalWorkspace({
 
         <hr className="rule-gold mt-8" />
       </header>
+
+      {/* Before the figures, because the figures are the answer to a question
+          nobody asked. What to do is the question they arrived with. */}
+      <NextAction action={action} then={then} ui={ui} moneyOn={can('budget')} />
 
       <PortalSummary rows={rows} label={ui.portal.summary} />
 

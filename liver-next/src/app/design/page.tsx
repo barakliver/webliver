@@ -13,6 +13,7 @@ import { SeatingPlan } from '@/components/app/SeatingPlan';
 import { DaySchedule } from '@/components/app/DaySchedule';
 import { RunSheet } from '@/components/app/RunSheet';
 import { PortalWorkspace } from '@/components/app/PortalWorkspace';
+import { NextAction } from '@/components/app/NextAction';
 import { PortalVendors } from '@/components/app/PortalVendors';
 import { PortalNav } from '@/components/app/PortalNav';
 import { ShareSwitches, TabShare } from '@/components/app/ShareSwitch';
@@ -339,6 +340,39 @@ export default async function DesignPage() {
             in this product nobody had ever rendered. Assembled from the same
             fixtures the panels below use, so what appears here is what the
             couple gets. */}
+        {/* The card the whole dashboard now opens with, in the four states
+            worth looking at: money already late, a task this week, an event
+            with nothing on it, and a week where everything is handled. The
+            fourth is the one a screen usually gets wrong by inventing
+            something to nag about. */}
+        <Panel name="NextAction" note="one thing to do, why it is that one, and the button that does it">
+          <div className="space-y-5">
+            <NextAction
+              ui={appUiFor('he')} moneyOn
+              action={{ code: 'payLate', subject: 'מקדמה לאולם', n: 37000, due: '2026-08-20', late: true, section: 'payments' }}
+              then={[
+                { title: 'לבחור שיר לכניסה לחופה', due_on: null, done: false, owner: 'client' },
+                { title: 'תיאום סופי עם הצלם', due_on: '2026-09-22', done: false, owner: 'producer' },
+              ]}
+            />
+            <NextAction
+              ui={appUiFor('he')} moneyOn
+              action={{ code: 'guestsChase', subject: '', n: 30, due: null, late: false, section: 'guests' }}
+              then={[{ title: 'לסגור טעימות עם הקייטרינג', due_on: '2026-09-15', done: false, owner: 'client' }]}
+            />
+            <NextAction
+              ui={appUiFor('he')} moneyOn={false}
+              action={{ code: 'start', subject: '', n: 0, due: null, late: false, section: 'tasks' }}
+              then={[]}
+            />
+            <NextAction
+              ui={appUiFor('he')} moneyOn
+              action={{ code: 'clear', subject: '', n: 0, due: null, late: false, section: 'tasks' }}
+              then={[]}
+            />
+          </div>
+        </Panel>
+
         <Panel name="PortalWorkspace · the couple" note="what a couple opens: the countdown, the four numbers, then the panels">
           <PortalWorkspace
             ui={appUiFor('he')}
