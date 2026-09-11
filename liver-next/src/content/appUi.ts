@@ -5,7 +5,7 @@ import {
   meetingTemplatesCopy, timelineCopy, studioCopy, journalCopy, circleCopy,
   leadsCopy, crewCopy, vendorCopy, templateCopy, barCopy, updateCopy, linkCopy, signCopy,
   siteEditorCopy, hebrewCalCopy, labelCopy, knowledgeCopy, jumpCopy, copilotCopy, archiveCopy,
-  meetingCopy, workflowCopy, referralCopy,
+  meetingCopy, noteCopy, workflowCopy, referralCopy,
 } from './site.ts';
 import {
   noticeCopyEn, ticketCopyEn, companionCopyEn, prepCopyEn, venueCopyEn, envelopesCopyEn, vehiclesCopyEn,
@@ -16,7 +16,7 @@ import {
 import {
   consoleEn, leadEn, crewEn, vendorEn, templateEn, barEn, updateEn, linkEn, signEn,
   siteEditorEn, hebrewCalEn, labelEn, knowledgeEn, jumpEn, copilotEn, archiveEn,
-  meetingEn, workflowEn, referralEn,
+  meetingEn, noteEn, workflowEn, referralEn,
 } from './console.en.ts';
 
 /**
@@ -113,6 +113,7 @@ export type JumpCopy = Wide<typeof jumpCopy>;
 export type CopilotCopy = Wide<typeof copilotCopy>;
 export type ArchiveCopy = Wide<typeof archiveCopy>;
 export type MeetingCopy = Wide<typeof meetingCopy>;
+export type NoteCopy = Wide<typeof noteCopy>;
 export type WorkflowCopy = Wide<typeof workflowCopy>;
 export type ReferralCopy = Wide<typeof referralCopy>;
 
@@ -140,7 +141,7 @@ export type AppUi = {
   bar: BarCopy; update: UpdateCopy; link: LinkCopy; sign: SignCopy;
   siteEditor: SiteEditorCopy; hebrewCal: HebrewCalCopy; label: LabelCopy;
   knowledge: KnowledgeCopy; jump: JumpCopy; copilot: CopilotCopy; archive: ArchiveCopy;
-  meeting: MeetingCopy; workflow: WorkflowCopy; referral: ReferralCopy;
+  meeting: MeetingCopy; note: NoteCopy; workflow: WorkflowCopy; referral: ReferralCopy;
   meetingTemplates: MeetingTemplatesCopy;
   timeline: TimelineCopy;
   studio: StudioCopy;
@@ -170,7 +171,7 @@ export const APP_UI_HE: AppUi = {
   bar: barCopy, update: updateCopy, link: linkCopy, sign: signCopy,
   siteEditor: siteEditorCopy, hebrewCal: hebrewCalCopy, label: labelCopy,
   knowledge: knowledgeCopy, jump: jumpCopy, copilot: copilotCopy, archive: archiveCopy,
-  meeting: meetingCopy, workflow: workflowCopy, referral: referralCopy,
+  meeting: meetingCopy, note: noteCopy, workflow: workflowCopy, referral: referralCopy,
   meetingTemplates: meetingTemplatesCopy,
   timeline: timelineCopy,
   studio: studioCopy,
@@ -190,7 +191,7 @@ const APP_UI_EN: AppUi = {
   bar: barEn, update: updateEn, link: linkEn, sign: signEn,
   siteEditor: siteEditorEn, hebrewCal: hebrewCalEn, label: labelEn,
   knowledge: knowledgeEn, jump: jumpEn, copilot: copilotEn, archive: archiveEn,
-  meeting: meetingEn, workflow: workflowEn, referral: referralEn,
+  meeting: meetingEn, note: noteEn, workflow: workflowEn, referral: referralEn,
   meetingTemplates: meetingTemplatesCopyEn,
   timeline: timelineCopyEn,
   studio: studioCopyEn,

@@ -1,4 +1,4 @@
-import { CalendarPlus, Eye, Hash, ListOrdered, Pencil, Radio, BookOpen, NotebookPen } from 'lucide-react';
+import { CalendarPlus, Eye, Hash, ListOrdered, Pencil, Radio, BookOpen, NotebookPen, PenLine } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { requireLiveProducer } from '@/lib/auth';
@@ -117,6 +117,14 @@ export default async function ClientPage({
             lines above the title. The last one is visibly cut off, which is
             what tells a thumb there is more. */}
         <div className="-mx-4 flex w-[calc(100%+2rem)] items-center gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:w-auto sm:flex-wrap sm:px-0 sm:pb-0">
+          {/* First in the row, because it is the one thing here somebody
+              reaches for while another person is talking. Everything else on
+              this screen asks a question before it lets you write anything
+              down. */}
+          <Link href={`/app/clients/${client.id}/note`} className={link}>
+            <PenLine size={16} aria-hidden strokeWidth={1.5} />
+            {ui.meeting.blank}
+          </Link>
           <a href={`/app/clients/${client.id}/event.ics`} className={link}>
             <CalendarPlus size={16} aria-hidden strokeWidth={1.5} />
             {ui.calendar.addEvent}

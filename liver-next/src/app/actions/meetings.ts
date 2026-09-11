@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import Anthropic from '@anthropic-ai/sdk';
 import { supabaseServer } from '@/lib/supabase/server';
 import { optional } from '@/lib/env';
-import { meetingTemplate, type MeetingTemplate } from '@/content/meetings';
+import { meetingTemplate, noteTitle, NOTE_LIMIT, type MeetingTemplate } from '@/content/meetings';
 import {
   cleanAnswers, writeSummary, summaryPrompt, readModelSummary, joinSummary,
 } from '@/lib/ai/meeting';
@@ -96,6 +96,84 @@ export async function saveMeeting(input: {
 
   refresh(input.clientId);
   return { ok: true, id: data.id as string, summary };
+}
+
+/**
+ * A blank page, saved.
+ *
+ * The same row a templated meeting writes, with no questions in it: the body
+ * goes into `summary`, which is where the templated ones put their record, so
+ * a note is kept by the same version trigger, fenced by the same policies and
+ * listed beside the rest. Nothing about it is a second kind of document.
+ *
+ * `quiet` is what makes it usable during a meeting. This is called every few
+ * seconds while somebody types, and revalidating the event's whole page on
+ * each of those would rebuild eleven panels behind the cursor on a machine
+ * with a gigabyte of memory. The autosaves are quiet; the save on the way out
+ * is not, and that is the one the list is redrawn from.
+ *
+ * A page nobody wrote on is not saved at all. Opening the screen and changing
+ * your mind should not leave an empty meeting in the file.
+ *
+ * `visible_to_client` is deliberately not written here. The column exists and
+ * the meeting forms offer a switch for it, but nothing on the couple's screen
+ * has ever read a meeting log — so the switch shows them nothing, and putting
+ * a second copy of it on this page would be a second control that does
+ * nothing. A note stays on the producer's side until their screen can show
+ * one.
+ */
+export async function saveNote(input: {
+  id?: string;
+  clientId: string;
+  title?: string;
+  heldOn?: string;
+  body: string;
+  quiet?: boolean;
+}): Promise<MeetingResult> {
+  if (!input.clientId) return { ok: false, error: 'חסר מזהה אירוע' };
+
+  const body = String(input.body ?? '').slice(0, NOTE_LIMIT);
+  if (!input.id && !body.trim()) return { ok: true };
+
+  const heldOn = /^\d{4}-\d{2}-\d{2}$/.test(String(input.heldOn ?? ''))
+    ? String(input.heldOn) : null;
+
+  const fields = {
+    kind: 'note',
+    template_id: null,
+    title: noteTitle(body, input.title),
+    held_on: heldOn,
+    answers: {},
+    summary: body,
+    summary_by: body.trim() ? ('person' as const) : ('none' as const),
+  };
+
+  if (input.id) {
+    const { error } = await sbUpdateNote(input.id, fields);
+    if (error) return { ok: false, error: 'לא הצלחנו לשמור את הדף' };
+    if (!input.quiet) refresh(input.clientId);
+    return { ok: true, id: input.id };
+  }
+
+  const sb = await supabaseServer();
+  const { data, error } = await sb
+    .from('meeting_logs')
+    .insert({ ...fields, client_id: input.clientId })
+    .select('id')
+    .maybeSingle();
+
+  if (error || !data) return { ok: false, error: 'לא הצלחנו לשמור את הדף' };
+
+  if (!input.quiet) refresh(input.clientId);
+  return { ok: true, id: data.id as string };
+}
+
+/* Its own line so the update above reads as one thing. Row level security is
+   what decides whether this id is the caller's to write: a note belonging to
+   another producer's event matches nothing. */
+async function sbUpdateNote(id: string, fields: Record<string, unknown>) {
+  const sb = await supabaseServer();
+  return sb.from('meeting_logs').update(fields).eq('id', id).eq('kind', 'note');
 }
 
 /**

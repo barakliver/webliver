@@ -27,9 +27,38 @@ export type Field = {
 
 export type Section = { title: string; fields: readonly Field[] };
 
-/** The compiled-in kinds, plus 'custom' for a producer's own template and
- *  'other' which the database has always allowed and nothing has written. */
-export type MeetingKind = 'intro' | 'production' | 'tasting' | 'venue' | 'design' | 'custom' | 'other';
+/** The compiled-in kinds, plus 'custom' for a producer's own template,
+ *  'note' for a page somebody wrote on with no questions at all, and 'other'
+ *  which the database has always allowed and nothing has written. */
+export type MeetingKind = 'intro' | 'production' | 'tasting' | 'venue' | 'design' | 'custom' | 'note' | 'other';
+
+/** The most a blank page holds, matching the column's own limit. Past it the
+ *  database refuses the whole save, which during a meeting is the worst
+ *  moment to find out. */
+export const NOTE_LIMIT = 20000;
+
+/**
+ * What to call a page nobody named.
+ *
+ * Its first line, the way an untitled document is named after its first line
+ * everywhere else. A meeting note almost always opens with what the meeting
+ * was, so this is usually the right answer and is never a wrong one: the
+ * producer can type a title whenever they want a different one.
+ *
+ * Blank until there is something to take: a page opened and closed again has
+ * no name because it has nothing in it.
+ */
+export function noteTitle(body: string, given?: string): string {
+  const typed = (given ?? '').trim();
+  if (typed) return typed.slice(0, 200);
+  const first = body.split('\n').map((l) => l.trim()).find(Boolean) ?? '';
+  /* Cut on a word where there is one to cut on, so a long first line does not
+     end mid-word in the list. */
+  if (first.length <= 80) return first;
+  const cut = first.slice(0, 80);
+  const space = cut.lastIndexOf(' ');
+  return `${(space > 40 ? cut.slice(0, space) : cut).trimEnd()}…`;
+}
 
 export type MeetingTemplate = {
   kind: MeetingKind;

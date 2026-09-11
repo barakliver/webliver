@@ -1,7 +1,7 @@
 import type {
   ConsoleCopy, LeadCopy, CrewCopy, VendorCopy, TemplateCopy, BarCopy, UpdateCopy, LinkCopy,
   SignCopy, SiteEditorCopy, HebrewCalCopy, LabelCopy, KnowledgeCopy, JumpCopy, CopilotCopy,
-  ArchiveCopy, MeetingCopy, WorkflowCopy, ReferralCopy,
+  ArchiveCopy, MeetingCopy, NoteCopy, WorkflowCopy, ReferralCopy,
 } from './appUi.ts';
 
 /**
@@ -1314,6 +1314,26 @@ export const meetingEn: MeetingCopy = {
   own: 'Your templates',
   buildOwn: 'Build a template of your own',
   noForm: 'The template this meeting was written from no longer exists. The summary remains.',
+  blank: 'Blank page',
+  blankWhen: 'No questions, just write',
+  openNote: 'Open the page',
+};
+
+export const noteEn: NoteCopy = {
+  title: 'Blank page',
+  titlePh: 'A title, if you want one',
+  bodyPh: 'Write here.',
+  held: 'Date',
+  back: 'Back to the event',
+  done: 'Done',
+  saving: 'Saving',
+  saved: 'Saved',
+  savedAt: 'Saved at {at}',
+  unsaved: 'Not saved yet',
+  failed: 'Could not save. Trying again in a moment.',
+  restored: 'Restored what was written and had not been saved.',
+  nearLimit: '{n} characters left on this page.',
+  full: 'The page is full. Worth opening a new one.',
 };
 
 export const workflowEn: WorkflowCopy = {

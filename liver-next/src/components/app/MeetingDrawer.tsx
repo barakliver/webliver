@@ -4,7 +4,7 @@ import { fill } from '@/lib/copyText';
 import type { Locale } from '@/lib/locale';
 import { useState, useTransition } from 'react';
 import Link from 'next/link';
-import { CalendarDays, ChevronDown, Sparkles, Trash2 } from 'lucide-react';
+import { CalendarDays, ChevronDown, PenLine, Sparkles, Trash2 } from 'lucide-react';
 import { saveMeeting, deleteMeeting } from '@/app/actions/meetings';
 import { BUILT_IN_TEMPLATES, meetingTemplate, type Field, type MeetingTemplate } from '@/content/meetings';
 import { completeness } from '@/lib/ai/meeting';
@@ -95,6 +95,21 @@ export function MeetingDrawer({ clientId, logs, own = [] }: {
         </Link>
       </div>
 
+      {/* Before the questionnaires, and drawn as its own thing rather than as
+          one more chip in the row: it is the way past all of them. A page you
+          open and write on, for the meeting that is happening now and is not
+          going in the order any form expects. */}
+      <Link
+        href={`/app/clients/${clientId}/note`}
+        className="mt-5 flex items-center gap-3 rounded-card-sm border border-accent/30 bg-accent-wash px-4 py-3 transition hover:border-accent"
+      >
+        <PenLine size={18} aria-hidden strokeWidth={1.5} className="shrink-0 text-accent" />
+        <span className="min-w-0">
+          <span className="block text-[14.5px] text-ink">{c.blank}</span>
+          <span className="block text-[12.5px] text-ink-mute">{c.blankWhen}</span>
+        </span>
+      </Link>
+
       {/* Buttons rather than a menu. They are the whole feature; hiding them
           behind a select would be hiding the thing the screen is for. Two
           rows once the producer has their own, so theirs read as theirs. */}
@@ -126,33 +141,62 @@ export function MeetingDrawer({ clientId, logs, own = [] }: {
           {logs.map((log) => {
             const t = templateOf(log, own);
             const on = editing === log.id;
+            /* A page has no questions to reopen, so its row is a way back to
+               the page rather than a drawer. */
+            const note = log.kind === 'note';
+            const heading = (
+              <>
+                <p className="text-[15px] text-ink">
+                  {log.title || (note ? c.blank : t?.title) || c.title}
+                </p>
+                <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-[12.5px] text-ink-mute">
+                  {log.held_on && (
+                    <span className="inline-flex items-center gap-1">
+                      <CalendarDays size={13} aria-hidden strokeWidth={1.5} />
+                      {dateFmtFor(locale).format(new Date(log.held_on))}
+                    </span>
+                  )}
+                  {note && <span>{c.blank}</span>}
+                  {t && <span>{answered(c, t, log.answers)}</span>}
+                  {log.visible_to_client && <span className="text-accent">{c.shareWithCouple}</span>}
+                </p>
+              </>
+            );
             return (
               <li key={log.id} className="py-3">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <button
-                    type="button"
-                    onClick={() => { setEditing(on ? null : log.id); setAdding(null); }}
-                    aria-expanded={on}
-                    className="min-w-0 flex-1 text-start"
-                  >
-                    <p className="text-[15px] text-ink">{log.title || t?.title || c.title}</p>
-                    <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-[12.5px] text-ink-mute">
-                      {log.held_on && (
-                        <span className="inline-flex items-center gap-1">
-                          <CalendarDays size={13} aria-hidden strokeWidth={1.5} />
-                          {dateFmtFor(locale).format(new Date(log.held_on))}
-                        </span>
-                      )}
-                      {t && <span>{answered(c, t, log.answers)}</span>}
-                      {log.visible_to_client && <span className="text-accent">{c.shareWithCouple}</span>}
-                    </p>
-                  </button>
+                  {note ? (
+                    <Link
+                      href={`/app/clients/${clientId}/note?id=${log.id}`}
+                      className="min-w-0 flex-1 text-start"
+                    >
+                      {heading}
+                    </Link>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => { setEditing(on ? null : log.id); setAdding(null); }}
+                      aria-expanded={on}
+                      className="min-w-0 flex-1 text-start"
+                    >
+                      {heading}
+                    </button>
+                  )}
 
                   <span className="flex shrink-0 items-center gap-1">
-                    <ChevronDown
-                      size={16} aria-hidden strokeWidth={1.5}
-                      className={`text-ink-mute transition-transform ${on ? 'rotate-180' : ''}`}
-                    />
+                    {note ? (
+                      <Link
+                        href={`/app/clients/${clientId}/note?id=${log.id}`}
+                        className="btn-quiet px-3 text-[13px]"
+                      >
+                        {c.openNote}
+                      </Link>
+                    ) : (
+                      <ChevronDown
+                        size={16} aria-hidden strokeWidth={1.5}
+                        className={`text-ink-mute transition-transform ${on ? 'rotate-180' : ''}`}
+                      />
+                    )}
                     <form action={deleteMeeting} onSubmit={(e) => { if (!confirm(c.removeAsk)) e.preventDefault(); }}>
                       <input type="hidden" name="id" value={log.id} />
                       <input type="hidden" name="client_id" value={clientId} />
@@ -167,7 +211,7 @@ export function MeetingDrawer({ clientId, logs, own = [] }: {
                   </span>
                 </div>
 
-                {!on && log.summary && (
+                {(!on || note) && log.summary && (
                   <p className="mt-2 line-clamp-3 whitespace-pre-line text-[13.5px] text-ink-soft">
                     {log.summary}
                   </p>
@@ -181,7 +225,7 @@ export function MeetingDrawer({ clientId, logs, own = [] }: {
 
                 {/* The questions are gone; the record is not. Shown whole
                     rather than clamped, since there is no form to open. */}
-                {on && !t && (
+                {on && !t && !note && (
                   <div className="mt-3 rounded-card-sm bg-surface-100 p-4">
                     <p className="text-[13px] text-ink-mute">{c.noForm}</p>
                     {log.summary && (

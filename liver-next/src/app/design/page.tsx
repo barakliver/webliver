@@ -55,6 +55,7 @@ import { FunnelChart, Sources, CashPanel, ResponsePanel } from '@/components/app
 import { Referrals } from '@/components/app/Referrals';
 import { WorkflowTemplates } from '@/components/app/WorkflowTemplates';
 import { MeetingDrawer } from '@/components/app/MeetingDrawer';
+import { NotePad } from '@/components/app/NotePad';
 import { MeetingTemplates } from '@/components/app/MeetingTemplates';
 import { DayOfCockpit } from '@/components/app/DayOfCockpit';
 import { CallsPanel } from '@/components/app/CallsPanel';
@@ -657,6 +658,27 @@ export default async function DesignPage() {
 
         <Panel name="MeetingDrawer" note="one meeting written up, one not yet held, one from the producer's own template">
           <MeetingDrawer clientId={client} logs={fixtureMeetings} own={fixtureMeetingTemplates} />
+        </Panel>
+
+        {/* The screen with nothing else on it. Shown here written on rather
+            than empty, because an empty one is a rectangle and tells nobody
+            whether the type on it is readable across a table. */}
+        <Panel name="NotePad" note="the blank page: a date, a title if you want one, and the rest of the screen">
+          <NotePad
+            clientId={client}
+            eventName="נועה ואיתי"
+            /* The real screen puts the cursor in the page the moment it
+               opens. A gallery of ninety panels must not, or opening it
+               scrolls to this one. */
+            takeFocus={false}
+            note={{
+              id: '00000000-0000-4000-8000-0000000000b1',
+              title: 'ישיבה עם ההורים על רשימת האורחים',
+              held_on: '2026-09-08',
+              body: 'אמא של נועה רוצה להוסיף שתי משפחות, בערך 14 איש. סיכמנו שנבדוק מול האולם אם אפשר להגיע ל-230 בלי לשנות את הסידור.\n\nאיתי מבקש שהמוזיקה בקבלת פנים תהיה שקטה יותר. לדבר עם הדי.ג׳יי.\n\nלבדוק הסעה מירושלים.',
+              updated_at: null,
+            }}
+          />
         </Panel>
 
         <Panel name="WorkflowTemplates" note="two templates, steps counted back from the day">

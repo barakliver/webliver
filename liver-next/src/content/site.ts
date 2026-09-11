@@ -3168,6 +3168,40 @@ export const meetingCopy = {
   buildOwn: 'לבנות תבנית משלכם',
   /* A log whose template was deleted before templates learned to archive. */
   noForm: 'התבנית שממנה נכתבה הפגישה כבר לא קיימת. הסיכום נשאר.',
+  /* The way out of all of the above, first in the row on purpose. */
+  blank: 'דף ריק',
+  blankWhen: 'בלי שאלות, פשוט לכתוב',
+  openNote: 'פתיחת הדף',
+} as const;
+
+/**
+ * The page you open and write on.
+ *
+ * Every other way into this product asks a question first: which meeting is
+ * this, then twenty fields in the order the conversation usually goes. That
+ * is worth a great deal when the conversation goes that way, and it is a wall
+ * when somebody is sitting opposite you talking. So: a date, a line for a
+ * title if you want one, and the rest of the screen to write on.
+ */
+export const noteCopy = {
+  title: 'דף ריק',
+  titlePh: 'כותרת, אם רוצים',
+  bodyPh: 'לכתוב כאן.',
+  held: 'תאריך',
+  back: 'חזרה לאירוע',
+  done: 'סיום',
+  saving: 'שומר',
+  saved: 'נשמר',
+  savedAt: 'נשמר ב-{at}',
+  unsaved: 'לא נשמר עדיין',
+  /* The screen says it will try again, and it does: a hall with no signal is
+     the ordinary case, not the edge one. */
+  failed: 'לא הצלחנו לשמור. ננסה שוב עוד רגע.',
+  /* Shown when the tab was closed mid-sentence and the page is reopened. */
+  restored: 'שוחזר מה שנכתב ולא הספיק להישמר.',
+  /* The counter appears only near the ceiling; before that it is noise. */
+  nearLimit: 'נשארו {n} תווים בדף הזה.',
+  full: 'הדף מלא. כדאי לפתוח דף חדש.',
 } as const;
 
 export const workflowCopy = {

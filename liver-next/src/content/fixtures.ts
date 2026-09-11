@@ -428,6 +428,15 @@ export const fixtureMeetings: MeetingLog[] = [
     summary: 'מי אתם\nשמות: מאיה ועידו\n\nהאירוע\nכמה אורחים בערך: 180\nאיך זה אמור להרגיש: שקט, בחוץ, בלי הפתעות',
     summary_by: 'person', visible_to_client: false, updated_at: hoursAgo(4800),
   },
+  /* A page somebody wrote on during the meeting: no template, no questions,
+     the whole of it in the summary. Its row in the drawer is a way back to
+     the page rather than a drawer that opens. */
+  {
+    id: 'mt4', kind: 'note', template_id: null, title: 'ישיבה עם ההורים על רשימת האורחים',
+    held_on: day(-3), answers: {},
+    summary: 'ישיבה עם ההורים על רשימת האורחים\n\nאמא של נועה רוצה להוסיף שתי משפחות, בערך 14 איש. סיכמנו שנבדוק מול האולם אם אפשר להגיע ל-230 בלי לשנות את הסידור.\n\nאיתי מבקש שהמוזיקה בקבלת פנים תהיה שקטה יותר. לדבר עם הדי.ג׳יי.\n\nלבדוק הסעה מירושלים.',
+    summary_by: 'person', visible_to_client: false, updated_at: hoursAgo(70),
+  },
 ];
 
 /* The producer's own meeting forms: one live, one archived because a log
