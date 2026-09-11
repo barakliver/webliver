@@ -2269,6 +2269,42 @@ export const vendorCopy = {
     chosen: 'נבחר. הסכום נכנס לתקציב כהערכה.',
     chosenReplaced: 'נבחר. הסכום נכנס לתקציב במקום {names}.',
     failed: 'לא הצלחנו לשמור. אפשר לנסות שוב.',
+    /* Help that reads the screen it is on: a message to the supplier that
+       asks for what the quote is missing, with the wedding's facts in it.
+       The facts and the suggestion are never in the same box, and nothing
+       is sent by the screen. */
+    assist: {
+      draft: 'לנסח הודעה לספק',
+      draftTo: 'לנסח הודעה ל{name}',
+      drafting: 'מנסח',
+      close: 'סגירה',
+      facts: 'מה ידוע',
+      suggestion: 'ניסוח מוצע',
+      byModel: 'נכתב אוטומטית מהעובדות משמאל. אפשר לערוך.',
+      byTemplate: 'נכתב מתבנית, בלי מודל. אפשר לערוך.',
+      openWhatsApp: 'פתיחה בוואטסאפ',
+      copy: 'העתקה',
+      copied: 'הועתק',
+      noPhone: 'לספק אין טלפון רשום, אז ההודעה להעתקה.',
+      notSent: 'שום דבר לא נשלח מכאן. ההודעה נפתחת בוואטסאפ ואתם לוחצים שליחה.',
+      noSupplier: 'לא מצאנו את הספק.',
+      greeting: 'שלום {name},',
+      about: 'אנחנו מתכננים את {event}',
+      onDate: 'בתאריך {date}',
+      guests: 'כ-{n} אורחים',
+      inRegion: 'באזור {region}',
+      haveQuote: 'קיבלנו את ההצעה שלכם, תודה',
+      askIntro: 'כמה שאלות כדי שנוכל להשוות:',
+      questions: {
+        amount: 'כמה זה עולה, כולל מע״מ?',
+        hours: 'כמה שעות כלולות?',
+        scope: 'מה בדיוק כולל השירות?',
+        includes: 'מה נכלל במחיר?',
+        extras: 'מה בתוספת תשלום?',
+        terms: 'מה תנאי התשלום?',
+      },
+      closing: 'תודה, {sign}',
+    },
   },
 
   dirTitle: 'הספקים שלי',

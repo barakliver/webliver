@@ -18,6 +18,7 @@ import { BeginFlow } from '@/components/app/BeginFlow';
 import { PortalVendors } from '@/components/app/PortalVendors';
 import { PortalMeetings } from '@/components/app/PortalMeetings';
 import { QuoteCompare } from '@/components/app/QuoteCompare';
+import { SupplierDraft } from '@/components/app/SupplierDraft';
 import { PortalNav } from '@/components/app/PortalNav';
 import { ShareSwitches, TabShare } from '@/components/app/ShareSwitch';
 import { TimelineDemo } from './TimelineDemo';
@@ -439,6 +440,25 @@ export default async function DesignPage() {
             vendors={fixturePortalVendors}
             lines={[{ event_vendor_id: 'pv3', estimate: 13500, agreed: null }]}
           />
+        </Panel>
+
+        {/* The help beside a quote, opened on arrival with a template
+            draft: the facts in one box, the editable suggestion in the
+            other, and the author named. */}
+        <Panel name="SupplierDraft" note="a message to the supplier asking for what the quote is missing; facts on one side, an editable draft on the other, sent by a person">
+          <div className="max-w-3xl">
+            <SupplierDraft
+              eventVendorId="pv5"
+              supplierName="נועם צילום"
+              demo={{
+                ok: true,
+                by: 'template',
+                phone: null,
+                facts: ['אנחנו מתכננים את החתונה של נועה ואיתי', 'בתאריך 5.12.26', 'כ-180 אורחים', 'באזור השרון'],
+                draft: 'שלום נועם צילום,\n\nאנחנו מתכננים את החתונה של נועה ואיתי, בתאריך 5.12.26, כ-180 אורחים, באזור השרון.\n\nכמה שאלות כדי שנוכל להשוות:\n• כמה זה עולה, כולל מע״מ?\n• כמה שעות כלולות?\n• מה בדיוק כולל השירות?\n• מה נכלל במחיר?\n• מה בתוספת תשלום?\n• מה תנאי התשלום?\n\nתודה, ברק ליור הפקות',
+              }}
+            />
+          </div>
         </Panel>
 
         <Panel name="PortalMeetings" note="the meetings a producer shared, as the couple reads them: title, date, what was agreed; and the screen with none shared yet">

@@ -7,6 +7,7 @@ import { Money, Ltr } from '@/components/Ltr';
 import { categoryLabelFor } from '@/content/production';
 import { fill } from '@/lib/copyText';
 import { saveQuote, chooseQuote } from '@/app/actions/vendors';
+import { SupplierDraft } from '@/components/app/SupplierDraft';
 import {
   quoteGroups, perHour, amountOf, hoursOf, effectOfChoosing, hasQuote,
   type QuoteVendor, type QuoteLine,
@@ -135,6 +136,15 @@ export function QuoteCompare({ clientId, vendors, lines, viewer }: {
                     })}
                   </tbody>
                 </table>
+              </div>
+              {/* The help that reads this table: a message to each supplier
+                  asking for what their quote is missing, drafted from the
+                  facts above and sent by a person. Under the table rather
+                  than in a cell, because a draft needs room to be read. */}
+              <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1">
+                {g.vendors.map((v) => (
+                  <SupplierDraft key={v.id} eventVendorId={v.id} supplierName={v.name} />
+                ))}
               </div>
               {g.vendors.some((v) => editing === v.id) && (
                 <QuoteForm
