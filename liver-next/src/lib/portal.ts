@@ -69,6 +69,18 @@ export type Vendor = {
   next_action: string;
 };
 
+/** A meeting the producer shared with the couple. Only rows with
+ *  visible_to_client are ever read here, whichever side is reading, so the
+ *  producer's preview shows exactly what the couple would see. */
+export type SharedMeeting = {
+  id: string;
+  client_id: string;
+  kind: string;
+  title: string;
+  held_on: string | null;
+  summary: string;
+};
+
 export type PortalData = {
   workspaces: Workspace[];
   /** Never a reason to hide anything from the producer's own screens: the
@@ -82,6 +94,8 @@ export type PortalData = {
   dayFor: (id: string) => DayItem[];
   boardFor: (id: string) => BoardImage[];
   vendorsFor: (id: string) => Vendor[];
+  /** The meetings the producer chose to share, newest first. */
+  meetingsFor: (id: string) => SharedMeeting[];
   /** In date order, soonest first. Read on the server so the selector does not
    *  have to fetch its own rows and flash a skeleton on every visit. */
   eventsFor: (id: string) => PortalEvent[];
@@ -127,7 +141,7 @@ export async function loadPortal(
     can: () => true,
     tasksFor: () => [], paymentsFor: () => [], budgetFor: () => [],
     guestsFor: () => [], tablesFor: () => [], dayFor: () => [], boardFor: () => [],
-    vendorsFor: () => [], eventsFor: () => [],
+    vendorsFor: () => [], meetingsFor: () => [], eventsFor: () => [],
   };
   if (ids.length === 0) return empty;
 
@@ -143,7 +157,7 @@ export async function loadPortal(
 
   const events = (eventsData ?? []) as PortalEvent[];
 
-  const [tasks, payments, budget, guests, tables, day, boardRows, vendorRows] = await Promise.all([
+  const [tasks, payments, budget, guests, tables, day, boardRows, vendorRows, meetingRows] = await Promise.all([
     sb.from('tasks').select('id,client_id,title,due_on,done,owner,created_by,event_id,category,vendor_id')
       .in('client_id', ids).order('done').order('sort_order')
       .order('due_on', { ascending: true, nullsFirst: false }),
@@ -160,6 +174,12 @@ export async function loadPortal(
       .in('client_id', ids).order('created_at', { ascending: false }),
     sb.from('event_vendors').select('id,client_id,name,category,phone,status,notes,deposit,deposit_paid_on,balance_due_on,last_contact_on,waiting_on,next_action')
       .in('client_id', ids).order('category').order('name'),
+    /* Shared ones only, on both sides. The couple's policy already refuses
+       the rest; filtering here too is what makes the producer's preview
+       honest, since their own policy would hand them everything. */
+    sb.from('meeting_logs').select('id,client_id,kind,title,held_on,summary')
+      .in('client_id', ids).eq('visible_to_client', true)
+      .order('held_on', { ascending: false, nullsFirst: false }).order('created_at', { ascending: false }),
   ]);
 
   /* One row per workspace and module rather than a call per panel. A gate that
@@ -170,7 +190,7 @@ export async function loadPortal(
      platform outage must not silently take features away from a couple three
      days before their wedding: closing a door is a decision somebody made, and
      a failed query is not one. */
-  const modules = ['budget', 'guests', 'seating', 'moodboard', 'runsheet', 'messages', 'files', 'prep', 'venues', 'events', 'envelopes', 'transport'];
+  const modules = ['budget', 'guests', 'seating', 'moodboard', 'runsheet', 'messages', 'files', 'prep', 'venues', 'events', 'envelopes', 'transport', 'meetings'];
   const closed = new Set<string>();
   await Promise.all(
     ids.flatMap((cid) =>
@@ -215,6 +235,7 @@ export async function loadPortal(
     dayFor: (id) => by(day.data as WithClient<DayItem>[], id),
     boardFor: (id) => by(board as WithClient<BoardImage>[], id),
     vendorsFor: (id) => by(vendorRows.data as WithClient<Vendor>[], id),
+    meetingsFor: (id) => by(meetingRows.data as WithClient<SharedMeeting>[], id),
     eventsFor: (id) => events.filter((e) => e.client_id === id),
   };
 }

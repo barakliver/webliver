@@ -1155,6 +1155,18 @@ export const appCopy = {
        the day's tint is the Hebrew calendar's verdict. */
     grid: 'לוח חודשי',
     gridSub: 'כל אירוע, משימה ותשלום ביום שלו, לכל הזוגות. הרקע של היום הוא הלוח העברי: אדום לא מקיימים חתונה, צהוב תלוי במנהג.',
+    /* One month at a time, any year. The arrows are the whole navigation,
+       the way a wall calendar is turned. */
+    prevMonth: 'חודש אחורה',
+    nextMonth: 'חודש קדימה',
+    today: 'היום',
+    /* Two switches, not one: the couple's cousins fly in around Christmas
+       and the hall's staff are off on Independence Day, and neither family
+       of days is the other's business. */
+    holidays: 'חגים',
+    jewishOn: 'חגי ישראל',
+    christianOn: 'חגים נוצריים',
+    holidayLegend: 'חג או מועד',
     more: 'ועוד {n}',
     legendEvent: 'אירוע',
     legendTask: 'משימה',
@@ -1827,6 +1839,16 @@ export const appCopy = {
     rowTransport: 'רכבים והסעות',
     rowThread: 'הודעות',
     rowRunsheet: 'לוז יום האירוע',
+    rowMeetings: 'סיכומי פגישות',
+    /* The meetings the producer shared. The switch on the form promised
+       this from the day it was built; this is the other half of it. */
+    meetings: {
+      title: 'סיכומי פגישות',
+      sub: 'מה סוכם בפגישות ששותפו איתכם. לקריאה; שאלות עליהן, בהודעות למטה.',
+      none: 'עוד לא שותף איתכם סיכום פגישה.',
+      untitled: 'פגישה',
+      noSummary: 'הפגישה תועדה בלי סיכום.',
+    },
     /* The card above everything: one thing to do, and why it is that one.
        A number is not an instruction. "42 משימות פתוחות" tells a couple they
        are behind without telling them on what, and the only thing it invites
@@ -2001,6 +2023,11 @@ export const guestsCopy = {
   none: 'עוד לא נוספו אורחים.',
   copyLink: 'העתקת הקישור',
   copied: 'הועתק',
+  /* The nudge, for a guest with a phone who has not answered. Opens
+     WhatsApp with their own link in the message; nothing is sent by itself.
+     Written as the couple would write it, not as the platform would. */
+  remind: 'תזכורת',
+  remindText: 'היי {name}, נשמח לדעת אם תגיעו לחתונה שלנו. אפשר לענות כאן: {url}',
   remove: 'הסרה',
   markAttending: 'סמנו מגיעים',
   markDeclined: 'סמנו לא מגיעים',
@@ -2939,6 +2966,47 @@ export const hebrewCalCopy = {
     purim: 'פורים',
     roshChodesh: 'ראש חודש',
   },
+} as const;
+
+/** What each day is called, for the cell it falls in. Short, because a
+ *  cell is 88px tall and already carries a deadline or two. */
+export const holidayCopy = {
+  roshHashana: 'ראש השנה',
+  gedalia: 'צום גדליה',
+  yomKippur: 'יום כיפור',
+  sukkot: 'סוכות',
+  cholHamoedSukkot: 'חול המועד סוכות',
+  hoshanaRabba: 'הושענא רבה',
+  shminiAtzeret: 'שמחת תורה',
+  hanukkah: 'חנוכה',
+  tevet10: 'עשרה בטבת',
+  tuBishvat: 'ט״ו בשבט',
+  esther: 'תענית אסתר',
+  purim: 'פורים',
+  shushanPurim: 'שושן פורים',
+  pesach: 'פסח',
+  cholHamoedPesach: 'חול המועד פסח',
+  pesach7: 'שביעי של פסח',
+  yomHashoah: 'יום השואה',
+  yomHazikaron: 'יום הזיכרון',
+  yomHaatzmaut: 'יום העצמאות',
+  lagBaomer: 'ל״ג בעומר',
+  yomYerushalayim: 'יום ירושלים',
+  shavuot: 'שבועות',
+  tamuz17: 'י״ז בתמוז',
+  tishaBav: 'תשעה באב',
+  tuBav: 'ט״ו באב',
+  epiphany: 'התגלות',
+  ashWednesday: 'יום רביעי של האפר',
+  palmSunday: 'יום ראשון של הדקלים',
+  goodFriday: 'יום שישי הטוב',
+  easter: 'פסחא',
+  easterMonday: 'יום שני של הפסחא',
+  ascension: 'עליית ישו',
+  pentecost: 'פנטקוסט',
+  christmasEve: 'ערב חג המולד',
+  christmas: 'חג המולד',
+  newYear: 'ראש השנה האזרחי',
 } as const;
 
 /* The producer's own colours and their own channels. One toolbar, two uses. */

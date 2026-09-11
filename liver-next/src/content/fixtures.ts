@@ -80,7 +80,10 @@ export const fixtureBudget: BudgetItem[] = [
 export const fixtureGuests: Guest[] = [
   { id: 'g1', full_name: 'משפחת כהן', side: 'כלה', phone: '0501234567', status: 'attending', party_size: 4, diet: 'צמחוני', note: '', invite_token: 'demo-1' },
   { id: 'g2', full_name: 'דוד ורונית לוי', side: 'חתן', phone: '0521234567', status: 'attending', party_size: 2, diet: '', note: 'כיסא לתינוק', invite_token: 'demo-2' },
-  { id: 'g3', full_name: 'יעל מהעבודה', side: 'כלה', phone: '', status: 'pending', party_size: 1, diet: '', note: '', invite_token: 'demo-3' },
+  /* A phone on the one guest who has not answered, because that is the row
+     the reminder button exists for: a WhatsApp opens with her own link in
+     it. A pending guest with no phone gets no button, which is the truth. */
+  { id: 'g3', full_name: 'יעל מהעבודה', side: 'כלה', phone: '0547654321', status: 'pending', party_size: 1, diet: '', note: '', invite_token: 'demo-3' },
   { id: 'g4', full_name: 'אבי', side: 'חתן', phone: '0531234567', status: 'declined', party_size: 1, diet: '', note: '', invite_token: 'demo-4' },
   { id: 'g5', full_name: 'סבתא מרים ובני משפחתה מחיפה', side: 'כלה', phone: '', status: 'attending', party_size: 6, diet: 'ללא גלוטן', note: 'להושיב קרוב לחופה', invite_token: 'demo-5' },
 ];

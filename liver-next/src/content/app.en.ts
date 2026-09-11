@@ -62,6 +62,14 @@ export const portalEn: PortalCopy = {
   rowEnvelopes: 'Envelopes',
   rowTransport: 'Cars and rides',
   rowThread: 'Messages',
+  rowMeetings: 'Meeting notes',
+  meetings: {
+    title: 'Meeting notes',
+    sub: 'What was agreed in the meetings shared with you. Read only; questions about them go in the messages below.',
+    none: 'No meeting summary has been shared with you yet.',
+    untitled: 'Meeting',
+    noSummary: 'The meeting was recorded without a summary.',
+  },
   rowRunsheet: 'The day\'s schedule',
   next: {
     title: 'What now',
@@ -434,6 +442,8 @@ export const guestsEn: GuestsCopy = {
   none: 'No guests added yet.',
   copyLink: 'Copy the link',
   copied: 'Copied',
+  remind: 'Remind',
+  remindText: 'Hi {name}, we would love to know if you can make it to our wedding. You can answer here: {url}',
   remove: 'Remove',
   markAttending: 'Mark coming',
   markDeclined: 'Mark not coming',

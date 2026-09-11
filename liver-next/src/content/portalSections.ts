@@ -40,6 +40,7 @@ export const PORTAL_SECTIONS: readonly PortalSection[] = [
   { key: 'prep',      tab: 'prep',     row: 'rowPrep' },
   { key: 'envelopes', tab: 'prep',     row: 'rowEnvelopes' },
   { key: 'transport', tab: 'prep',     row: 'rowTransport' },
+  { key: 'meetings',  tab: 'meetings', row: 'rowMeetings' },
   { key: 'messages',  tab: 'messages', row: 'rowThread' },
 ];
 

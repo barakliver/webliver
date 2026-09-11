@@ -85,13 +85,17 @@ function EntryForm({ day, entry, clients, onDone }: {
   );
 }
 
-export function DayDrawer({ day, dayText, items, entries, clients }: {
+export function DayDrawer({ day, dayText, items, entries, clients, closeHref = '/app/calendar' }: {
   day: string;
   /** The day written out, in the reader's language. */
   dayText: string;
   items: CalItem[];
   entries: DiaryEntryRow[];
   clients: { id: string; name: string }[];
+  /** Where closing goes. The calendar passes the month and the switches it
+   *  was on, so closing a day in 2028 does not throw the reader back to
+   *  today. */
+  closeHref?: string;
 }) {
   const c = useCopy().calendar.day;
   const [adding, setAdding] = useState(items.length === 0);
@@ -105,7 +109,7 @@ export function DayDrawer({ day, dayText, items, entries, clients }: {
           <p className="eyebrow">{c.title}</p>
           <h2 className="mt-1 font-display text-[22px] font-semibold text-ink">{dayText}</h2>
         </div>
-        <Link href="/app/calendar" className="btn-quiet inline-flex items-center gap-1.5 text-[14px]" aria-label={c.close}>
+        <Link href={closeHref} className="btn-quiet inline-flex items-center gap-1.5 text-[14px]" aria-label={c.close}>
           <X size={16} aria-hidden strokeWidth={1.5} />{c.close}
         </Link>
       </div>

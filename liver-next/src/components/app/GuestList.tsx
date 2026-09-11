@@ -1,11 +1,16 @@
 'use client';
 
+import { MessageCircle } from 'lucide-react';
+
 import { useActionState, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { addGuests, deleteGuest, setGuestStatus, type GuestResult } from '@/app/actions/guests';
 import { DIETS } from '@/content/lists';
 import { GuestImport } from '@/components/app/GuestImport';
 import { useCopy } from '@/components/app/CopyProvider';
+import { normalizePhone } from '@/lib/phone';
+import { publicEnv } from '@/lib/env';
+import { fill } from '@/lib/copyText';
 import { Metric } from '@/components/app/Metric';
 
 export type Guest = {
@@ -66,13 +71,39 @@ function StatusChip({ status }: { status: Guest['status'] }) {
   );
 }
 
-/** Copy the invitation, mark them as coming, remove them. Same three actions
- *  wherever the row is drawn. */
+/** The nudge. A guest with a phone who has not answered gets a WhatsApp
+ *  link with their own RSVP address in the message, the way the day-of
+ *  console reaches a supplier. Nothing is sent by itself: the message opens
+ *  in WhatsApp for the couple to press send on, so a reminder is always a
+ *  thing somebody chose to do. The dashboard's "remind whoever has not
+ *  replied" lands here, and until this existed it landed on nothing. */
+function Remind({ guest }: { guest: Guest }) {
+  const c = useCopy().guests;
+  const phone = normalizePhone(guest.phone);
+  if (!phone || guest.status !== 'pending') return null;
+  const url = `${publicEnv.siteUrl.replace(/\/+$/, '')}/rsvp/${guest.invite_token}`;
+  const text = fill(c.remindText, { name: guest.full_name, url });
+  return (
+    <a
+      href={`https://wa.me/${phone.replace('+', '')}?text=${encodeURIComponent(text)}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="btn-quiet inline-flex items-center gap-1 px-2 py-1 text-[13px]"
+    >
+      <MessageCircle size={13} aria-hidden strokeWidth={1.5} />
+      {c.remind}
+    </a>
+  );
+}
+
+/** Copy the invitation, remind them, mark them as coming, remove them. Same
+ *  actions wherever the row is drawn. */
 function RowActions({ guest, clientId }: { guest: Guest; clientId: string }) {
   const c = useCopy().guests;
   return (
     <>
       <CopyLink token={guest.invite_token} />
+      <Remind guest={guest} />
       {guest.status !== 'attending' && (
         <form action={setGuestStatus}>
           <input type="hidden" name="guest_id" value={guest.id} />

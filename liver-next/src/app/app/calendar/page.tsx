@@ -9,7 +9,7 @@ import { PageHead, Empty } from '@/components/app/PageHead';
 import { Live } from '@/components/app/Live';
 import { CalendarFeed } from '@/components/app/CalendarFeed';
 import { HebrewCalendar } from '@/components/app/HebrewCalendar';
-import { MonthGrid } from '@/components/app/MonthGrid';
+import { MonthGrid, calendarHref, type GridSwitches } from '@/components/app/MonthGrid';
 import { LabelToolbar } from '@/components/app/LabelToolbar';
 import { DayDrawer, type DiaryEntryRow } from '@/components/app/DayDrawer';
 import { GoogleSyncCard, type GoogleStatus } from '@/components/app/GoogleSyncCard';
@@ -39,6 +39,7 @@ const TONE: Record<CalItem['kind'], string> = {
 };
 
 const DAY = /^\d{4}-\d{2}-\d{2}$/;
+const MONTH = /^\d{4}-(0[1-9]|1[0-2])$/;
 
 /**
  * The diary.
@@ -48,7 +49,9 @@ const DAY = /^\d{4}-\d{2}-\d{2}$/;
  * word Google sends back both live in the address, so a reload keeps the
  * day and a bookmark of the calendar itself has neither.
  */
-export default async function CalendarPage({ searchParams }: { searchParams: Promise<{ day?: string; google?: string }> }) {
+export default async function CalendarPage({ searchParams }: {
+  searchParams: Promise<{ day?: string; google?: string; m?: string; hj?: string; hc?: string }>;
+}) {
   const ui = await serverCopy();
   const locale = ui.locale;
   const c = ui.calendar;
@@ -57,6 +60,15 @@ export default async function CalendarPage({ searchParams }: { searchParams: Pro
   const params = await searchParams;
   const openDay = DAY.test(params.day ?? '') ? String(params.day) : '';
   const notice = String(params.google ?? '').replace(/[^a-z]/g, '');
+  /* The month on screen and the two holiday switches live in the address,
+     so a reload, a bookmark and the back button all keep them. Jewish days
+     on by default, Christian off: this is a diary for weddings in Israel,
+     and the second switch is there for the couple whose family flies in. */
+  const today = todayInZone();
+  const month = MONTH.test(params.m ?? '') ? String(params.m)
+    : openDay ? openDay.slice(0, 7)
+    : today.slice(0, 7);
+  const switches: GridSwitches = { jewish: params.hj !== '0', christian: params.hc === '1' };
 
   const [all, tags, clients, google] = await Promise.all([
     getCalendar(sb),
@@ -76,8 +88,8 @@ export default async function CalendarPage({ searchParams }: { searchParams: Pro
     : [];
 
   /* Forward-looking by default. What happened last month is on the event's own
-     screen; a diary is for what is coming. */
-  const today = todayInZone();
+     screen; a diary is for what is coming. The grid above is the exception:
+     it shows whichever month was turned to, past or future. */
   const items = all.filter((i) => i.date >= today);
 
   /* Grouped by month, then by day, because that is how somebody scanning for
@@ -108,10 +120,11 @@ export default async function CalendarPage({ searchParams }: { searchParams: Pro
               items={all.filter((i) => i.date === openDay)}
               entries={dayEntries}
               clients={clients.map((k) => ({ id: k.id, name: k.display_name }))}
+              closeHref={calendarHref(month, switches)}
             />
           </div>
         )}
-        <MonthGrid items={all} from={today} months={3} locale={locale} ui={ui} open={openDay} />
+        <MonthGrid items={all} month={month} today={today} locale={locale} ui={ui} open={openDay} switches={switches} />
         <HebrewCalendar from={today} />
         <LabelToolbar kind="event_tag" labels={tags} />
       </div>

@@ -5,7 +5,7 @@ import {
   meetingTemplatesCopy, timelineCopy, studioCopy, journalCopy, circleCopy,
   leadsCopy, crewCopy, vendorCopy, templateCopy, barCopy, updateCopy, linkCopy, signCopy,
   siteEditorCopy, hebrewCalCopy, labelCopy, knowledgeCopy, jumpCopy, copilotCopy, archiveCopy,
-  meetingCopy, noteCopy, workflowCopy, referralCopy,
+  meetingCopy, noteCopy, workflowCopy, referralCopy, holidayCopy,
 } from './site.ts';
 import {
   noticeCopyEn, ticketCopyEn, companionCopyEn, prepCopyEn, venueCopyEn, envelopesCopyEn, vehiclesCopyEn,
@@ -16,7 +16,7 @@ import {
 import {
   consoleEn, leadEn, crewEn, vendorEn, templateEn, barEn, updateEn, linkEn, signEn,
   siteEditorEn, hebrewCalEn, labelEn, knowledgeEn, jumpEn, copilotEn, archiveEn,
-  meetingEn, noteEn, workflowEn, referralEn,
+  meetingEn, noteEn, workflowEn, referralEn, holidayEn,
 } from './console.en.ts';
 
 /**
@@ -114,6 +114,7 @@ export type CopilotCopy = Wide<typeof copilotCopy>;
 export type ArchiveCopy = Wide<typeof archiveCopy>;
 export type MeetingCopy = Wide<typeof meetingCopy>;
 export type NoteCopy = Wide<typeof noteCopy>;
+export type HolidayCopy = Wide<typeof holidayCopy>;
 export type WorkflowCopy = Wide<typeof workflowCopy>;
 export type ReferralCopy = Wide<typeof referralCopy>;
 
@@ -142,6 +143,7 @@ export type AppUi = {
   siteEditor: SiteEditorCopy; hebrewCal: HebrewCalCopy; label: LabelCopy;
   knowledge: KnowledgeCopy; jump: JumpCopy; copilot: CopilotCopy; archive: ArchiveCopy;
   meeting: MeetingCopy; note: NoteCopy; workflow: WorkflowCopy; referral: ReferralCopy;
+  holiday: HolidayCopy;
   meetingTemplates: MeetingTemplatesCopy;
   timeline: TimelineCopy;
   studio: StudioCopy;
@@ -172,6 +174,7 @@ export const APP_UI_HE: AppUi = {
   siteEditor: siteEditorCopy, hebrewCal: hebrewCalCopy, label: labelCopy,
   knowledge: knowledgeCopy, jump: jumpCopy, copilot: copilotCopy, archive: archiveCopy,
   meeting: meetingCopy, note: noteCopy, workflow: workflowCopy, referral: referralCopy,
+  holiday: holidayCopy,
   meetingTemplates: meetingTemplatesCopy,
   timeline: timelineCopy,
   studio: studioCopy,
@@ -192,6 +195,7 @@ const APP_UI_EN: AppUi = {
   siteEditor: siteEditorEn, hebrewCal: hebrewCalEn, label: labelEn,
   knowledge: knowledgeEn, jump: jumpEn, copilot: copilotEn, archive: archiveEn,
   meeting: meetingEn, note: noteEn, workflow: workflowEn, referral: referralEn,
+  holiday: holidayEn,
   meetingTemplates: meetingTemplatesCopyEn,
   timeline: timelineCopyEn,
   studio: studioCopyEn,

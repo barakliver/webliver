@@ -16,6 +16,7 @@ import { PortalWorkspace } from '@/components/app/PortalWorkspace';
 import { NextAction } from '@/components/app/NextAction';
 import { BeginFlow } from '@/components/app/BeginFlow';
 import { PortalVendors } from '@/components/app/PortalVendors';
+import { PortalMeetings } from '@/components/app/PortalMeetings';
 import { PortalNav } from '@/components/app/PortalNav';
 import { ShareSwitches, TabShare } from '@/components/app/ShareSwitch';
 import { TimelineDemo } from './TimelineDemo';
@@ -418,9 +419,20 @@ export default async function DesignPage() {
               dayFor: () => fixtureDay,
               boardFor: () => [],
               vendorsFor: () => fixturePortalVendors,
+              meetingsFor: () => fixtureMeetings.filter((m) => m.visible_to_client).map((m) => ({ id: m.id, client_id: client, kind: m.kind, title: m.title, held_on: m.held_on, summary: m.summary })),
               eventsFor: () => [],
             }}
           />
+        </Panel>
+
+        {/* The other half of the switch on every meeting form. Shown with
+            the one shared fixture and then with none, because the empty
+            sentence is the one most couples read first. */}
+        <Panel name="PortalMeetings" note="the meetings a producer shared, as the couple reads them: title, date, what was agreed; and the screen with none shared yet">
+          <div className="space-y-5">
+            <PortalMeetings ui={appUiFor('he')} meetings={fixtureMeetings.filter((m) => m.visible_to_client).map((m) => ({ id: m.id, client_id: client, kind: m.kind, title: m.title, held_on: m.held_on, summary: m.summary }))} />
+            <PortalMeetings ui={appUiFor('he')} meetings={[]} />
+          </div>
         </Panel>
 
         <Panel name="PortalVendors" note="the couple's suppliers: two booked, one still open, grouped the producer's way">
@@ -548,10 +560,11 @@ export default async function DesignPage() {
           </div>
         </Panel>
 
-        <Panel name="MonthGrid" note="the diary as a table: three months, every couple's deadline in its cell, the day tinted by the Hebrew calendar">
+        <Panel name="MonthGrid" note="one month, any year, with the holidays named: every couple's deadline in its cell, the day tinted by the Hebrew calendar, today in a circle">
           <MonthGrid
-            from="2026-09-10"
-            months={2}
+            month="2026-09"
+            today="2026-09-10"
+            switches={{ jewish: true, christian: true }}
             locale={locale}
             ui={ui}
             items={[
@@ -598,7 +611,7 @@ export default async function DesignPage() {
               rows={summaryRows({
                 budget: 148000, owed: 32000, openTasks: 9,
                 attending: 96, invited: 180, tables: 18,
-                contracts: 2, venues: 3, files: 5, saved: 12, vendors: 7,
+                contracts: 2, venues: 3, files: 5, saved: 12, vendors: 7, meetings: 1,
                 envelopes: 3, vehicles: 2,
                 can: (key) => key !== 'seating',
                 c: ui.portal,
@@ -1134,7 +1147,7 @@ export default async function DesignPage() {
               rows={summaryRows({
                 budget: 148000, owed: 32000, openTasks: 9,
                 attending: 96, invited: 180, tables: 18,
-                contracts: 2, venues: 3, files: 5, saved: 12, vendors: 7,
+                contracts: 2, venues: 3, files: 5, saved: 12, vendors: 7, meetings: 1,
                 envelopes: 3, vehicles: 2,
                 can: (key) => key !== 'seating',
                 c: ui.portal,

@@ -1,7 +1,7 @@
 import type {
   ConsoleCopy, LeadCopy, CrewCopy, VendorCopy, TemplateCopy, BarCopy, UpdateCopy, LinkCopy,
   SignCopy, SiteEditorCopy, HebrewCalCopy, LabelCopy, KnowledgeCopy, JumpCopy, CopilotCopy,
-  ArchiveCopy, MeetingCopy, NoteCopy, WorkflowCopy, ReferralCopy,
+  ArchiveCopy, MeetingCopy, NoteCopy, WorkflowCopy, ReferralCopy, HolidayCopy,
 } from './appUi.ts';
 
 /**
@@ -439,6 +439,13 @@ export const consoleEn: ConsoleCopy = {
     addEvent: 'Add the event to the calendar',
     grid: 'Month view',
     gridSub: 'Every event, task and payment on its day, for every couple. The day\'s tint is the Hebrew calendar: red for no weddings, amber for depends on custom.',
+    prevMonth: 'Previous month',
+    nextMonth: 'Next month',
+    today: 'Today',
+    holidays: 'Holidays',
+    jewishOn: 'Jewish and Israeli holidays',
+    christianOn: 'Christian holidays',
+    holidayLegend: 'Holiday',
     more: 'and {n} more',
     legendEvent: 'Event',
     legendTask: 'Task',
@@ -1279,6 +1286,45 @@ export const archiveEn: ArchiveCopy = {
     passed: 'passed',
   },
   greet: 'Send a greeting',
+};
+
+export const holidayEn: HolidayCopy = {
+  roshHashana: 'Rosh Hashana',
+  gedalia: 'Fast of Gedalia',
+  yomKippur: 'Yom Kippur',
+  sukkot: 'Sukkot',
+  cholHamoedSukkot: 'Chol HaMoed Sukkot',
+  hoshanaRabba: 'Hoshana Rabba',
+  shminiAtzeret: 'Simchat Torah',
+  hanukkah: 'Hanukkah',
+  tevet10: 'Tenth of Tevet',
+  tuBishvat: 'Tu BiShvat',
+  esther: 'Fast of Esther',
+  purim: 'Purim',
+  shushanPurim: 'Shushan Purim',
+  pesach: 'Pesach',
+  cholHamoedPesach: 'Chol HaMoed Pesach',
+  pesach7: 'Seventh of Pesach',
+  yomHashoah: 'Holocaust Remembrance Day',
+  yomHazikaron: 'Memorial Day',
+  yomHaatzmaut: 'Independence Day',
+  lagBaomer: 'Lag BaOmer',
+  yomYerushalayim: 'Jerusalem Day',
+  shavuot: 'Shavuot',
+  tamuz17: 'Seventeenth of Tammuz',
+  tishaBav: 'Tisha B\'Av',
+  tuBav: 'Tu B\'Av',
+  epiphany: 'Epiphany',
+  ashWednesday: 'Ash Wednesday',
+  palmSunday: 'Palm Sunday',
+  goodFriday: 'Good Friday',
+  easter: 'Easter',
+  easterMonday: 'Easter Monday',
+  ascension: 'Ascension',
+  pentecost: 'Pentecost',
+  christmasEve: 'Christmas Eve',
+  christmas: 'Christmas',
+  newYear: 'New Year\'s Day',
 };
 
 export const meetingEn: MeetingCopy = {

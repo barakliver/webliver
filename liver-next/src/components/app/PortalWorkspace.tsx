@@ -15,6 +15,7 @@ import { NextAction } from '@/components/app/NextAction';
 import { BeginFlow } from '@/components/app/BeginFlow';
 import { GuestSiteLink } from '@/components/app/GuestSiteLink';
 import { PortalVendors } from '@/components/app/PortalVendors';
+import { PortalMeetings } from '@/components/app/PortalMeetings';
 import { PortalNav } from '@/components/app/PortalNav';
 import { Ltr } from '@/components/Ltr';
 import type { PortalData, Workspace } from '@/lib/portal';
@@ -108,6 +109,7 @@ export function PortalWorkspace({
     tables: data.tablesFor(c.id).length,
     saved: data.boardFor(c.id).length,
     vendors: data.vendorsFor(c.id).length,
+    meetings: data.meetingsFor(c.id).length,
     ...extra,
     can,
     c: ui.portal,
@@ -212,6 +214,11 @@ export function PortalWorkspace({
             and where a DJ ticked off the checklist above turns up. */}
         {can('vendors') && (
           <div id="vendors" className="scroll-mt-28"><PortalVendors vendors={data.vendorsFor(c.id)} c={ui.portal} locale={ui.locale} /></div>
+        )}
+        {/* What was agreed, as the producer chose to share it. After the
+            suppliers because a meeting is usually about one of them. */}
+        {can('meetings') && (
+          <div id="meetings" className="scroll-mt-28"><PortalMeetings meetings={data.meetingsFor(c.id)} ui={ui} /></div>
         )}
         {can('runsheet') && (
           <div id="runsheet" className="scroll-mt-28"><DaySchedule

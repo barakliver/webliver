@@ -567,6 +567,13 @@
     --tw-rotate: 180deg;
     transform: rotate(180deg);
   }
+  /* And its opposite, "back", for the arrow that turns the calendar to the
+     month before. Drawn as a right chevron, which is back in Hebrew; in
+     English it flips with the page the same way onward does. */
+  [dir='ltr'] .chev-back {
+    --tw-rotate: 180deg;
+    transform: rotate(180deg);
+  }
 
   /* Every heading, every large number, every currency value. Weight 300 and
      never bold: at this size the serif carries by shape, and bolding it turns

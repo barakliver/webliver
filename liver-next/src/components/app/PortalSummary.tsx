@@ -75,7 +75,7 @@ export function summaryRows(opts: {
   attending: number; invited: number;
   tables: number;
   contracts: number; venues: number; files: number;
-  saved: number; vendors: number;
+  saved: number; vendors: number; meetings: number;
   envelopes: number; vehicles: number;
   can: (key: string) => boolean;
   /* Resolved by the caller. This runs on the server for a couple who may be
@@ -111,6 +111,7 @@ export function summaryRows(opts: {
     },
     { key: 'seating',   label: c.rowSeating,   value: <Ltr>{opts.tables}</Ltr>,    href: '#seating',   shown: opts.can('seating') },
     { key: 'vendors',   label: c.rowVendors,   value: <Ltr>{opts.vendors}</Ltr>,   href: '#vendors',   shown: opts.can('vendors') },
+    { key: 'meetings',  label: c.rowMeetings,  value: <Ltr>{opts.meetings}</Ltr>,  href: '#meetings',  shown: opts.can('meetings') },
     { key: 'runsheet',  label: c.rowRunsheet,  value: null,                        href: '#runsheet',  shown: opts.can('runsheet') },
     { key: 'board',     label: c.rowBoard,     value: <Ltr>{opts.saved}</Ltr>,     href: '#board',     shown: opts.can('moodboard') },
     { key: 'contracts', label: c.rowContracts, value: <Ltr>{opts.contracts}</Ltr>, href: '#contracts', shown: opts.can('contracts') },
