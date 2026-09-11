@@ -14,6 +14,7 @@ import { DaySchedule } from '@/components/app/DaySchedule';
 import { RunSheet } from '@/components/app/RunSheet';
 import { PortalWorkspace } from '@/components/app/PortalWorkspace';
 import { NextAction } from '@/components/app/NextAction';
+import { BeginFlow } from '@/components/app/BeginFlow';
 import { PortalVendors } from '@/components/app/PortalVendors';
 import { PortalNav } from '@/components/app/PortalNav';
 import { ShareSwitches, TabShare } from '@/components/app/ShareSwitch';
@@ -345,6 +346,23 @@ export default async function DesignPage() {
             with nothing on it, and a week where everything is handled. The
             fourth is the one a screen usually gets wrong by inventing
             something to nag about. */}
+        {/* The five questions, in the two states that matter: an event nobody
+            has filled in, and one where the producer already agreed a date
+            and a guest count, so only three questions are left. */}
+        <Panel name="BeginFlow" note="five short questions, asked once, built from what the event is still missing">
+          <div className="max-w-3xl space-y-5">
+            <BeginFlow
+              clientId={client}
+              defaultOpen
+              basics={{ eventDate: null, guestEstimate: null, region: '', budgetTarget: null, hasPlan: false }}
+            />
+            <BeginFlow
+              clientId={client}
+              basics={{ eventDate: '2026-12-05', guestEstimate: 180, region: '', budgetTarget: null, hasPlan: false }}
+            />
+          </div>
+        </Panel>
+
         <Panel name="NextAction" note="one thing to do, why it is that one, and the button that does it">
           <div className="space-y-5">
             <NextAction
@@ -385,7 +403,7 @@ export default async function DesignPage() {
                  the largest thing on the couple's screen — and made a working
                  feature look missing. */
               event_date: '2026-12-05',
-              venue: 'אחוזת הכפר', guest_estimate: 180, budget_visible: true, shared_sections: {}, budget_plan: null,
+              venue: 'אחוזת הכפר', guest_estimate: 180, region: 'השרון', budget_visible: true, shared_sections: {}, budget_plan: null,
               budget_target: 260000, track_a_label: 'נועה', track_b_label: 'איתי',
               guest_token: 'demo-token', guest_site_on: true, brand: null,
             }}

@@ -16,6 +16,9 @@ import { readPlan, type BudgetPlan } from '@/lib/budgetPlan';
 export type Workspace = {
   id: string; display_name: string; event_date: string | null;
   venue: string; guest_estimate: number | null; budget_visible: boolean;
+  /** Roughly where, in the couple's words. Distinct from venue, which is one
+   *  hall by name. Empty until somebody says. */
+  region: string;
   budget_target: number | null;
   /** The doors the producer has closed on the couple's screen. Empty means
    *  all open. */
@@ -85,7 +88,7 @@ export type PortalData = {
 };
 
 const WORKSPACE_COLS =
-  'id,display_name,event_date,venue,guest_estimate,budget_visible,budget_target,shared_sections,budget_plan,track_a_label,track_b_label,guest_token,guest_site_on,brand';
+  'id,display_name,event_date,venue,guest_estimate,region,budget_visible,budget_target,shared_sections,budget_plan,track_a_label,track_b_label,guest_token,guest_site_on,brand';
 
 type WithClient<T> = T & { client_id: string };
 const by = <T,>(rows: WithClient<T>[] | null | undefined, id: string): T[] =>

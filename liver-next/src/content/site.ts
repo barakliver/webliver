@@ -1867,6 +1867,42 @@ export const appCopy = {
          are a situation, and the difference is worth a line. */
       moreTasks: 'ועוד {n} משימות באיחור',
     },
+    /* The five questions a couple is worth asking once, and never twice.
+       Built from the blanks on the event rather than from a fixed list, so
+       a date the producer already agreed with a hall is not a question. */
+    begin: {
+      title: 'כמה דברים על החתונה שלכם',
+      sub: 'חמש שאלות קצרות. אפשר לדלג על כל אחת מהן, ומה שלא ידוע עכשיו יישאר פתוח.',
+      of: 'שאלה {n} מתוך {of}',
+      skip: 'עוד לא יודעים',
+      back: 'אחורה',
+      next: 'הבא',
+      finish: 'סיום',
+      saving: 'שומר',
+      failed: 'לא הצלחנו לשמור. אפשר לנסות שוב.',
+      open: 'להתחיל',
+      later: 'לא עכשיו',
+      q: {
+        date: { head: 'מתי החתונה', hint: 'אם עוד אין תאריך סופי, זה בסדר גמור.' },
+        guests: { head: 'כמה אורחים בערך', hint: 'הערכה גסה מספיקה. ממנה נגזרים האולם, המנות והשולחנות.', ph: 'למשל 180' },
+        region: { head: 'איפה בערך', hint: 'אזור, לא אולם. אולם בוחרים אחר כך.', ph: 'למשל השרון' },
+        budget: { head: 'איזה סכום בראש', hint: 'מספר התחלתי. אפשר לשנות אותו בכל שלב.', ph: 'למשל 250,000' },
+        priorities: { head: 'על מה לא מתפשרים', hint: 'עד שלושה. מה שנבחר כאן יקבל נתח גדול יותר בתקציב.' },
+      },
+      /* What was actually written, said back. The flow fills blanks only, so
+         a couple whose producer already set the date is told what changed
+         rather than that everything was saved. */
+      doneTitle: 'נרשם',
+      doneTasks: 'נוספו {n} משימות ראשונות לרשימה שלכם.',
+      doneNone: 'הכול כבר היה רשום, אז לא היה מה להוסיף.',
+      wrote: {
+        date: 'תאריך',
+        guests: 'מספר אורחים',
+        region: 'אזור',
+        budget: 'תקציב',
+        plan: 'סדר עדיפויות',
+      },
+    },
     /* The pills under the header, one per section. */
     nav: 'קפיצה לחלק במסך',
     /* The suppliers list on the couple's screen. */

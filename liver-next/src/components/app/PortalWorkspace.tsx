@@ -12,6 +12,7 @@ import { SeatingPlan } from '@/components/app/SeatingPlan';
 import { DaySchedule } from '@/components/app/DaySchedule';
 import { PortalSummary, summaryRows } from '@/components/app/PortalSummary';
 import { NextAction } from '@/components/app/NextAction';
+import { BeginFlow } from '@/components/app/BeginFlow';
 import { GuestSiteLink } from '@/components/app/GuestSiteLink';
 import { PortalVendors } from '@/components/app/PortalVendors';
 import { PortalNav } from '@/components/app/PortalNav';
@@ -143,6 +144,22 @@ export function PortalWorkspace({
 
         <hr className="rule-gold mt-8" />
       </header>
+
+      {/* The five questions, above everything, and only while any of them is
+          still blank. They are what every panel below is waiting for: a hall
+          cannot be compared without a guest count, a budget cannot be split
+          without a total. It disappears the moment there is nothing left to
+          ask rather than congratulating anybody for finishing it. */}
+      <BeginFlow
+        clientId={c.id}
+        basics={{
+          eventDate: c.event_date,
+          guestEstimate: c.guest_estimate === null || c.guest_estimate === undefined ? null : Number(c.guest_estimate),
+          region: c.region ?? '',
+          budgetTarget: c.budget_target === null || c.budget_target === undefined ? null : Number(c.budget_target),
+          hasPlan: c.budget_plan !== null,
+        }}
+      />
 
       {/* Before the figures, because the figures are the answer to a question
           nobody asked. What to do is the question they arrived with. */}
