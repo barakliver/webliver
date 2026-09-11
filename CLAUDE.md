@@ -45,6 +45,16 @@ that has happened once.
 - A release is made by moving the `release` branch. The agent on the droplet
   checks every five minutes, backs up, applies only migrations the release adds,
   builds, and rolls back on its own if a screen check fails.
+- "Released" is not "live". The agent gives up on a commit after two failed
+  screen checks and says so only in `/var/lib/liver-agent/agent.log` — for five
+  days in September every release was rolled back and nobody knew. The
+  release card on `/app/admin` now reads that directory; look there, or ask
+  him for the log, before saying a release is live. `scripts/verify.mjs`
+  reads its expected palette from `globals.css`, so a design change cannot
+  fail it again; do not put literals back.
+- The deploy builds into `.next-build` and renames it into place, and installs
+  dependencies only when the lockfile changed, so a release does not take the
+  live site down while it builds. Keep it that way.
 - `supabase/setup.sql` builds a database from nothing.
   `supabase/sync.sql` brings an existing one up to date and cannot touch a row.
   Both are generated — edit migrations, then run `build-setup-sql.mjs`.
