@@ -1064,6 +1064,26 @@ export const appCopy = {
     lastSeen: 'נכנס לאחרונה',
     statsFailed: 'לא הצלחנו לקרוא את המספרים כרגע.',
 
+    /* The release agent's last word. It failed silently for five days once,
+       so the console now reads its files and says what happened in words. */
+    release: {
+      title: 'גרסה ושחרור',
+      sub: 'מה שסוכן השחרור בשרת רשם. אם רלוז לא עלה, זה המקום שאומר את זה.',
+      running: 'רץ עכשיו',
+      live: 'שוחרר לאחרונה',
+      previous: 'הגרסה שלפניו',
+      ok: 'עלה, וכל המסכים מציירים',
+      rolledBack: 'נכשל והוחזר לגרסה הקודמת',
+      broken: 'נכשל, וגם החזרה נכשלה. צריך אדם',
+      failed: 'נכשל לפני שהגיע לקוד',
+      unknown: 'עוד לא נרשמה תוצאה',
+      gaveUp: 'הרלוז {tag} נכשל פעמיים והסוכן הפסיק לנסות אותו. תיקון ורלוז חדש יעירו אותו.',
+      mismatch: 'המסך הזה רץ על גרסה שונה ממה שהסוכן רשם כחיה.',
+      none: 'אין רישום של סוכן שחרור במכונה הזו.',
+      log: 'השורות האחרונות ביומן הסוכן',
+      at: 'נרשם ב-{when}',
+    },
+
     /* The screen says out loud what it cannot show. An empty list where a
        list used to be reads as a bug; a sentence reads as a decision. */
     privacy: {

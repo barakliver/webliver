@@ -100,6 +100,8 @@ import { fixtureVenues } from '@/content/fixtures';
 import { PrepView } from '@/components/PrepView';
 import { prepViewFor } from '@/content/prepView';
 import { AdminRow } from '@/components/app/AdminRow';
+import { ReleaseState } from '@/components/app/ReleaseState';
+import { parseAgentState } from '@/lib/release';
 import { NoticeBell } from '@/components/app/NoticeBell';
 import { IssueReporter } from '@/components/app/IssueReporter';
 import { VendorImport } from '@/components/app/VendorImport';
@@ -969,6 +971,33 @@ export default async function DesignPage() {
               ownerId: FIXTURE_CLIENT, ownerRole: 'client', ownerKind: 'diy',
             }} />
           </ul>
+        </Panel>
+
+        {/* The release agent's last word, in the two states that matter:
+            a release that went live, and one the agent gave up on after two
+            rollbacks — which is what five days of releases looked like while
+            nothing on any screen said so. */}
+        <Panel name="ReleaseState" note="what the agent on the droplet wrote down: live, rolled back and given up, and no agent at all">
+          <div className="space-y-4">
+            <ReleaseState state={parseAgentState({
+              deployed: 'c72be07aa41', previous: '5bc5e49aa41',
+              log: [
+                '2026-09-11T09:02:49Z  deploying c72be07aa41 (attempt 1 of 2)',
+                '2026-09-11T09:07:03Z  deployed and every screen draws something',
+              ].join('\n'),
+            }, 'c72be07')} />
+            <ReleaseState state={parseAgentState({
+              deployed: '5bc5e49aa41', gaveUp: '426f79cbb41', tried: '426f79cbb41 2',
+              log: [
+                '2026-09-11T08:41:00Z  deploying 426f79cbb41 (attempt 2 of 2)',
+                '2026-09-11T08:46:30Z  FAIL  the release is up and the check found screens that do not draw.',
+                '2026-09-11T08:46:30Z  putting 5bc5e49aa41 back',
+                '2026-09-11T08:51:10Z  rolled back to 5bc5e49aa41, which is serving now',
+                '2026-09-11T08:51:10Z  giving up on 426f79cbb41 after 2 attempts. It will not be tried again.',
+              ].join('\n'),
+            }, '5bc5e49')} />
+            <ReleaseState state={parseAgentState(null, 'dev')} />
+          </div>
         </Panel>
 
         {/* The two things a supplier needs and a WhatsApp thread never

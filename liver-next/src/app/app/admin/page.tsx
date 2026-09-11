@@ -15,6 +15,8 @@ import { publicEnv } from '@/lib/env';
 import { FeatureFlags } from '@/components/app/FeatureFlags';
 import { MetricBlock } from '@/components/app/Metric';
 import { Live } from '@/components/app/Live';
+import { ReleaseState } from '@/components/app/ReleaseState';
+import { readReleaseState } from '@/lib/releaseFs';
 
 export const dynamic = 'force-dynamic';
 export async function generateMetadata() {
@@ -92,6 +94,11 @@ export default async function AdminPage() {
   const referrals = await safeRows<ReferralRow>('referrals', sb.rpc('referral_stats'));
   const mine = referrals.find((r) => r.producer_id === account.producer?.id)?.referral_code ?? null;
 
+  /* The release agent's own files, read from this machine. On the droplet
+     they say whether the last release went live; anywhere else the card
+     says there is no agent here. */
+  const release = await readReleaseState();
+
   const waiting = producers.filter((p) => p.status === 'pending');
   const rest = producers.filter((p) => p.status !== 'pending');
 
@@ -143,6 +150,8 @@ export default async function AdminPage() {
         </section>
 
         <FeatureFlags flags={flags} />
+
+        <ReleaseState state={release} />
 
         {/* The screen says out loud what it cannot show. An empty list where a
             list used to be reads as a bug; a paragraph reads as a decision. */}

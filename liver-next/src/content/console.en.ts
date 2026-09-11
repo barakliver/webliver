@@ -352,6 +352,24 @@ export const consoleEn: ConsoleCopy = {
     lastSeen: 'Last signed in',
     statsFailed: 'Could not read the numbers right now.',
 
+    release: {
+      title: 'Version and release',
+      sub: 'What the release agent on the server wrote down. If a release did not go live, this is where it says so.',
+      running: 'Running now',
+      live: 'Last released',
+      previous: 'The one before',
+      ok: 'Went live, every screen draws',
+      rolledBack: 'Failed and was rolled back',
+      broken: 'Failed, and the rollback failed too. Needs a person',
+      failed: 'Failed before reaching the code',
+      unknown: 'No result recorded yet',
+      gaveUp: 'Release {tag} failed twice and the agent has stopped trying it. A fix and a new release wake it up.',
+      mismatch: 'This screen is running a different version from the one the agent recorded as live.',
+      none: 'No release agent has written anything on this machine.',
+      log: 'The last lines of the agent\'s log',
+      at: 'written at {when}',
+    },
+
     privacy: {
       title: 'What this screen does not show',
       body: [
