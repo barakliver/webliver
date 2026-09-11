@@ -118,6 +118,28 @@ export const VENDOR_CATEGORIES = [
 
 export type VendorCategory = (typeof VENDOR_CATEGORIES)[number];
 
+/** What a press on a task's circle means.
+ *
+ *  'capture' opens the supplier form first; 'tick' and 'untick' write the row
+ *  and nothing else. Written here, beside the list it reads, because the rule
+ *  decides whether the most-pressed control in the product crosses a line out
+ *  or opens a form — and it got that wrong on the couple's screen for a
+ *  fortnight without anybody being able to say why the button "did nothing".
+ *
+ *  Three things have to be true before a press asks who was hired. It has to
+ *  be a tick and not an untick: nobody unhiring a photographer wants to be
+ *  asked for his phone number. The task has to carry a supplier category.
+ *  And it has to belong to a celebration, because the supplier is filed under
+ *  one. */
+export function pressOnCircle(task: {
+  done: boolean; category?: string | null; event_id?: string | null;
+}): 'tick' | 'untick' | 'capture' {
+  if (task.done) return 'untick';
+  const isSupplier = !!task.category
+    && (VENDOR_CATEGORIES as readonly string[]).includes(task.category);
+  return isSupplier && !!task.event_id ? 'capture' : 'tick';
+}
+
 export type TemplateTask = {
   title: string;
   /** Whether this one is offered as shared. The producer changes any of them

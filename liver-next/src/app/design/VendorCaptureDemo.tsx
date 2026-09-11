@@ -50,6 +50,7 @@ export function VendorCaptureDemo() {
       }}
       onClose={() => {}}
       onSaved={() => {}}
+      onSkip={() => {}}
     />
   );
 }

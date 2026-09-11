@@ -44,11 +44,20 @@ const hoursAgo = (n: number): string => new Date(Date.now() - n * 3_600_000).toI
 
 export const FIXTURE_CLIENT = '00000000-0000-4000-8000-000000000001';
 export const FIXTURE_VIEWER = '00000000-0000-4000-8000-0000000000aa';
+/** The celebration a supplier task is filed under. Without one there is
+ *  nowhere to put the supplier, and ticking the task simply ticks it. */
+export const FIXTURE_EVENT = '00000000-0000-4000-8000-0000000000e1';
 
 export const fixtureTasks: Task[] = [
   { id: 't1', title: 'לסגור טעימות עם הקייטרינג', due_on: day(4), done: false, owner: 'producer', created_by: FIXTURE_VIEWER, visible_to_client: true },
   { id: 't2', title: 'לשלוח להפקה את רשימת האורחים המעודכנת', due_on: day(-3), done: false, owner: 'client', created_by: FIXTURE_VIEWER, visible_to_client: true },
   { id: 't3', title: 'לבחור שיר לכניסה לחופה', due_on: null, done: false, owner: 'client', created_by: null, visible_to_client: true },
+  /* A supplier task, carrying the two things that make ticking it open the
+     form that asks who was hired. Every fixture task was an errand, so the
+     gallery drew the tick a hundred times and never once drew the press that
+     opens a form — which is the press that was broken on the couple's screen
+     for a fortnight. */
+  { id: 't7', title: 'לסגור צלם', due_on: day(9), done: false, owner: 'client', created_by: FIXTURE_VIEWER, visible_to_client: true, category: 'photography', event_id: FIXTURE_EVENT },
   { id: 't4', title: 'תיאום סופי עם הצלם על שעת ההגעה והלוקיישן לצילומי המגזין', due_on: day(11), done: false, owner: 'producer', created_by: FIXTURE_VIEWER, visible_to_client: true },
   { id: 't5', title: 'לחתום על הסכם ההפקה', due_on: day(-20), done: true, owner: 'client', created_by: FIXTURE_VIEWER, visible_to_client: true },
   { id: 't6', title: 'מקדמה לאולם', due_on: day(-14), done: true, owner: 'client', created_by: FIXTURE_VIEWER, visible_to_client: true },

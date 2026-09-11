@@ -23,9 +23,18 @@
  *
  * An action that returns a result is already answering its caller and is left
  * alone.
+ *
+ * A third rule, for the same bug wearing the opposite face: a write that
+ * *succeeded* and that the screen never heard about. The supplier form marked
+ * a task done straight from the browser and then closed itself, so the task
+ * was finished in the database and open on the screen — and a couple pressing
+ * the circle again got the same form again. The tick has one writer,
+ * `toggleTask`, because that is the one that also revalidates the couple's
+ * screen, the producer's and the overview, and that takes the supplier back
+ * when a tick comes off. So no component may write a task's `done` itself.
  */
-import { readdirSync, readFileSync } from 'node:fs';
-import { join, dirname } from 'node:path';
+import { readdirSync, readFileSync, statSync } from 'node:fs';
+import { join, dirname, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -68,8 +77,28 @@ for (const file of readdirSync(dir)) {
   }
 }
 
+/* ── the tick has one writer ────────────────────────────────────────────────
+   Every component under src, so a second supplier form in a year's time is
+   caught the same way. The action file itself is the writer and is skipped. */
+const ticked = [];
+const walk = (d) => {
+  for (const name of readdirSync(d)) {
+    const p = join(d, name);
+    if (statSync(p).isDirectory()) { walk(p); continue; }
+    if (!/\.tsx?$/.test(p) || p.startsWith(dir)) continue;
+    const src = readFileSync(p, 'utf8');
+    /* A write of `done` on the tasks table, however the call is spread over
+       lines: `.from('tasks')` and then `.update({ ... done ... })`. */
+    for (const m of src.matchAll(/from\(['"]tasks['"]\)[\s\S]{0,120}?\.update\(\s*\{([^}]*)\}/g)) {
+      if (/\bdone\b/.test(m[1])) ticked.push(relative(root, p));
+    }
+  }
+};
+walk(join(root, 'src'));
+
 for (const s of blind) console.log(`  never looks    src/app/actions/${s}`);
 for (const s of silent) console.log(`  says nothing   src/app/actions/${s}`);
+for (const s of new Set(ticked)) console.log(`  ticks alone    ${s}`);
 
 /* A reason that has outlived its action is a reason nobody will delete. */
 const stale = Object.keys(QUIET).filter((k) => {
@@ -79,11 +108,15 @@ const stale = Object.keys(QUIET).filter((k) => {
 });
 for (const k of stale) console.log(`  gone           ${k} is excused here and no longer exists`);
 
-if (silent.length + blind.length + stale.length === 0) {
-  console.log(`\na failed write is never silent  (${checked} actions that return nothing, ${Object.keys(QUIET).length} quiet on purpose)\n`);
+const bad = silent.length + blind.length + stale.length + ticked.length;
+if (bad === 0) {
+  console.log(`\na failed write is never silent  (${checked} actions that return nothing, ${Object.keys(QUIET).length} quiet on purpose)`);
+  console.log('a task is ticked through toggleTask and nowhere else\n');
 } else {
   console.log('\nCapture the error, log it, and add `await noteFailure(...)` from @/lib/flash —');
   console.log('or give the action a return type so its own screen can answer.');
-  console.log('If it fires on its own and a banner would be noise, add it to QUIET with a reason.\n');
+  console.log('If it fires on its own and a banner would be noise, add it to QUIET with a reason.');
+  console.log('A tick goes through toggleTask from @/app/actions/tasks, which revalidates the');
+  console.log('screens it changed; a write from the browser leaves the circle as it was.\n');
 }
-process.exit(silent.length + blind.length + stale.length === 0 ? 0 : 1);
+process.exit(bad === 0 ? 0 : 1);

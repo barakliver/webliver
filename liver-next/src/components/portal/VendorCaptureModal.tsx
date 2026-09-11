@@ -41,6 +41,11 @@ interface VendorCaptureModalProps {
   eventId: string;
   onClose: () => void;
   onSaved: (vendorId: string) => void;
+  /** "Tick it, there is no supplier to record." The form does not write the
+   *  tick itself: it wrote `done` straight from the browser once, and the
+   *  screen it was opened from never heard about it, so the task was finished
+   *  in the database and open on the screen. */
+  onSkip: () => void;
 }
 
 /** Who was hired, caught at the moment the task is ticked.
@@ -54,7 +59,7 @@ interface VendorCaptureModalProps {
  *  Skipping is a real answer and stays one press away. A couple who ticked the
  *  task because the hall was booked a year ago should not have to invent a
  *  price to get the tick. */
-export function VendorCaptureModal({ task, template, onClose, onSaved }: VendorCaptureModalProps) {
+export function VendorCaptureModal({ task, template, onClose, onSaved, onSkip }: VendorCaptureModalProps) {
   const [form, setForm] = useState({
     name: '', contactName: '', phone: '', email: '',
     cost: '', location: '', notes: '',
@@ -163,18 +168,11 @@ export function VendorCaptureModal({ task, template, onClose, onSaved }: VendorC
     onSaved(vendorId);
   };
 
-  const skip = async () => {
+  const skip = () => {
     if (saving) return;
     setSaving(true);
     setError(null);
-    const { error: doneError } = await sb
-      .from('tasks').update({ done: true }).eq('id', task.id);
-    if (doneError) {
-      setError('לא הצלחנו לסמן את המשימה. אפשר לנסות שוב.');
-      setSaving(false);
-      return;
-    }
-    onClose();
+    onSkip();
   };
 
   /* There is no ask_email on the template, and inventing a column at this hour

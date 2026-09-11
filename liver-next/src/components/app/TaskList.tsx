@@ -11,7 +11,7 @@ import { isPastDue } from '@/lib/clock';
 import { EyeOff } from 'lucide-react';
 import { PlanOffer } from '@/components/app/PlanOffer';
 import { VendorCaptureModal } from '@/components/portal/VendorCaptureModal';
-import { VENDOR_CATEGORIES } from '@/content/eventFile';
+import { pressOnCircle } from '@/content/eventFile';
 
 export type Task = {
   /** False keeps it on the producer's side. The couple never receives these
@@ -56,33 +56,52 @@ function Row({ task, clientId, viewer, canDelete, grip }: {
   grip?: React.ReactNode;
 }) {
   const [showVendorModal, setShowVendorModal] = useState(false);
+  /* The circle answers the press before the server does. A tick is a server
+     action, a revalidation of three paths and a re-render, which on a phone in
+     a hall is a second or more of a circle that looks exactly as it did — so
+     it gets pressed again, and the second press unticks what the first one
+     ticked. Shown ticked while the call is in flight, and the real answer
+     replaces it when it lands. */
+  const [ticking, setTicking] = useState(false);
   const ui = useCopy();
   const c = ui.tasks;
   const dateFmt = shortDate(ui.locale);
-  const late = !task.done && isOverdue(task.due_on);
+  const done = ticking ? !task.done : task.done;
+  const late = !done && isOverdue(task.due_on);
   const ownerLabel =
     viewer === 'producer'
       ? (task.owner === 'producer' ? c.ownerProducer : c.ownerClient)
       : (task.owner === 'producer' ? c.ownerProducerClientView : c.ownerClientClientView);
 
-  /* One list, in the file that also tags the checklist, so a category can
-     never be seeded that this row does not recognise. It was a second copy
-     here, nine categories long, and it had neither makeup nor a rabbi in it. */
-  const isVendorTask = !!task.category
-    && (VENDOR_CATEGORIES as readonly string[]).includes(task.category);
+  /* What the press means, decided beside the list of supplier categories it
+     reads. It was decided here, against a second copy of that list nine
+     categories long with neither makeup nor a rabbi in it. */
+  const press = pressOnCircle(task);
 
-  const handleToggleClick = async () => {
-    // If marking as done and it's a vendor task, show modal
-    if (!task.done && isVendorTask && task.event_id) {
-      setShowVendorModal(true);
-    } else {
-      // Otherwise just toggle normally
+  /* The one place the tick is written, wherever the press came from: the
+     circle, the supplier form's save, or its "tick without a supplier". It
+     was three places, and two of them wrote the row straight from the browser
+     and then closed the form — the task was done in the database and open on
+     the screen, which is a button that does nothing as far as anybody
+     pressing it can tell. The server action is what revalidates the couple's
+     screen, the producer's, and the overview. */
+  const tick = async () => {
+    if (ticking) return;
+    setTicking(true);
+    try {
       const formData = new FormData();
       formData.append('task_id', task.id);
       formData.append('client_id', clientId);
       formData.append('done', String(task.done));
       await toggleTask(formData);
+    } finally {
+      setTicking(false);
     }
+  };
+
+  const handleToggleClick = async () => {
+    if (press === 'capture') setShowVendorModal(true);
+    else await tick();
   };
 
   return (
@@ -101,23 +120,24 @@ function Row({ task, clientId, viewer, canDelete, grip }: {
           <button
             type="button"
             onClick={handleToggleClick}
+            disabled={ticking}
             aria-label={task.title}
-            aria-pressed={task.done}
+            aria-pressed={done}
             className="-my-2 -mx-1 flex h-11 w-8 items-center justify-center"
           >
             <span
               aria-hidden
               className={`flex h-6 w-6 items-center justify-center rounded-full border text-[13px] transition ${
-                task.done ? 'border-ok/30 bg-ok text-surface' : 'border-line-strong bg-card hover:border-ink'
+                done ? 'border-ok/30 bg-ok text-surface' : 'border-line-strong bg-card hover:border-ink'
               }`}
             >
-              {task.done ? '✓' : ''}
+              {done ? '✓' : ''}
             </span>
           </button>
         </div>
 
       <div className="min-w-0 flex-1">
-        <p className={`text-[15px] ${task.done ? 'text-ink-mute line-through' : 'text-ink'}`}>
+        <p className={`text-[15px] ${done ? 'text-ink-mute line-through' : 'text-ink'}`}>
           {task.title}
           {/* Only ever rendered on the producer's screen: a couple is never
               sent these rows in the first place, so the absence of a badge on
@@ -184,15 +204,10 @@ function Row({ task, clientId, viewer, canDelete, grip }: {
           }}
           eventId={task.event_id}
           onClose={() => setShowVendorModal(false)}
-          onSaved={async () => {
-            setShowVendorModal(false);
-            // Mark task as done
-            const formData = new FormData();
-            formData.append('task_id', task.id);
-            formData.append('client_id', clientId);
-            formData.append('done', String(false));
-            await toggleTask(formData);
-          }}
+          /* Both ways out of the form that mean "it is done" tick the same
+             way. The form's own job ends at the supplier. */
+          onSaved={async () => { setShowVendorModal(false); await tick(); }}
+          onSkip={async () => { setShowVendorModal(false); await tick(); }}
         />
       )}
     </>
