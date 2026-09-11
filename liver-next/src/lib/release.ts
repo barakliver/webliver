@@ -13,7 +13,7 @@
  * the card from fixtures without importing the filesystem.
  */
 
-export type ReleaseResult = 'ok' | 'rolled-back' | 'broken' | 'failed' | 'unknown';
+export type ReleaseResult = 'ok' | 'build-failed' | 'rolled-back' | 'broken' | 'failed' | 'unknown';
 
 export type ReleaseState = {
   /** The agent's state directory exists on this machine. False on a laptop. */
@@ -67,6 +67,7 @@ function resultOf(lines: string[]): ReleaseResult {
   for (let i = lines.length - 1; i >= 0; i--) {
     const l = lines[i];
     if (/deployed and every screen draws something/.test(l)) return 'ok';
+    if (/the build did not finish/.test(l)) return 'build-failed';
     if (/rolled back to/.test(l)) return 'rolled-back';
     if (/needs a person/.test(l)) return 'broken';
     if (/\bFAIL\b/.test(l)) return 'failed';

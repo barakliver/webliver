@@ -116,11 +116,29 @@ export NODE_OPTIONS="--max-old-space-size=2048"
 # as it runs. Built beside it and renamed into place when whole, the site
 # serves the old build until the instant it restarts on the new one. The
 # compiler's cache is carried across so the build is no slower for it.
+# The type check first, alone. It used to run inside `next build`, after
+# the compile, with the compiler's memory still held — and on this machine
+# that is where the build was killed. On its own it fits. A type error stops
+# here, before any build memory is spent, and the site is untouched.
+echo "→ type checking"
+if ! npx tsc --noEmit; then
+  echo "the code does not type check; nothing was built and the site is untouched"
+  exit 2
+fi
+
 echo "→ building"
 rm -rf .next-build
 mkdir -p .next-build
 [ -d .next/cache ] && cp -a .next/cache .next-build/cache
-NEXT_DIST_DIR=.next-build npm run build
+# Exit code 2 is this script's word for "nothing changed": the build did not
+# finish, so nothing was swapped in and the old build is still serving. The
+# agent reads it and does not roll back, because there is nothing to roll
+# back from. "Killed" in the lines above means the kernel ran out of memory.
+if ! NEXT_DIST_DIR=.next-build npm run build; then
+  echo "the build did not finish; nothing was swapped in and the site is untouched"
+  rm -rf .next-build
+  exit 2
+fi
 
 # A commit from before next.config read NEXT_DIST_DIR — which is what a
 # rollback to an older release checks out — ignores the variable and builds

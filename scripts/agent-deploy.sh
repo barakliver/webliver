@@ -59,6 +59,11 @@
 #      bash /root/webliver/scripts/agent-deploy.sh --dry    # decide, do nothing
 #      bash /root/webliver/scripts/agent-deploy.sh --now    # ignore the marker, deploy the branch head
 # ============================================================================
+# Wrapped in { } for the same reason deploy-next.sh is: bash reads a script by
+# byte offset as it runs, and the last thing this script does is move the
+# checkout — including this file — to the newest commit. Parsed whole, it
+# finishes on the version it started with.
+{
 set -euo pipefail
 
 REPO="${REPO:-/root/webliver}"
@@ -361,6 +366,18 @@ if REF="$TARGET" bash "$REPO/deploy-next.sh" >>"$LOG" 2>&1; then
   printf '%s' "$TAG" > "$DEPLOYED"
   RESULT="ok"
 else
+  RC=$?
+  if [ "$RC" -eq 2 ]; then
+    # The deploy script's own word for "nothing changed": the type check
+    # failed or the build died before it finished, so nothing was swapped in
+    # and the previous build never stopped serving. Rebuilding it would be a
+    # second heavy build for no reason on a machine that just ran out of
+    # memory on the first.
+    say "FAIL  the build did not finish, so nothing was swapped in."
+    say "      The site is still serving ${OLD_TAG:-the previous build}, untouched."
+    say "      No rollback is needed. 'Killed' in the lines above means memory."
+    RESULT="build-failed"
+  else
   say "FAIL  the release is up and the check found screens that do not draw."
 
   # Going back. The schema stays where it is and that is correct: setup.sql
@@ -380,6 +397,7 @@ else
     say "no previous release to go back to. The site needs a person."
     RESULT="broken"
   fi
+  fi
 
   if [ "$ATTEMPT" -ge "$TRIES" ]; then
     printf '%s' "$TAG" > "$GAVEUP"
@@ -391,7 +409,13 @@ else
   fi
 fi
 
-git -C "$REPO" checkout --quiet "$BRANCH" 2>/dev/null || true
+# Back to the working branch — and forward to its newest commit. The timer
+# runs this script out of the checkout, and the local branch was never moved
+# by anything, so every change to the agent itself sat on GitHub while the
+# droplet kept running the version from the day it was installed. The next
+# tick now runs whatever the branch says today.
+git -C "$REPO" checkout --quiet -B "$BRANCH" "origin/$BRANCH" 2>/dev/null \
+  || git -C "$REPO" checkout --quiet "$BRANCH" 2>/dev/null || true
 
 # ── telling somebody ────────────────────────────────────────────────────────
 # Only when it matters. A message every five minutes is a message nobody
@@ -411,3 +435,5 @@ fi
 
 printf '%s\n' "$RESULT"
 [ "$RESULT" = "ok" ]
+exit $?
+}

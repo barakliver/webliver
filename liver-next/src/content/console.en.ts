@@ -359,6 +359,7 @@ export const consoleEn: ConsoleCopy = {
       live: 'Last released',
       previous: 'The one before',
       ok: 'Went live, every screen draws',
+      buildFailed: 'The build did not finish; the previous version is still serving',
       rolledBack: 'Failed and was rolled back',
       broken: 'Failed, and the rollback failed too. Needs a person',
       failed: 'Failed before reaching the code',

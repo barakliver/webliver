@@ -40,6 +40,15 @@ const nextConfig = {
      deploy script now builds into `.next-build` and renames it into place
      once it is finished; the server only ever sees a whole build. */
   distDir: process.env.NEXT_DIST_DIR || '.next',
+
+  /* The type check does not run inside the build. On the droplet the build
+     compiled and was then killed at "Running TypeScript": the compiler and
+     the checker together are more than a gigabyte and its swap will hold.
+     The check still runs, twice — `npm run check` before any release, and
+     `tsc --noEmit` in deploy-next.sh as its own step before the build, when
+     nothing else is holding memory. What is skipped here is only the third
+     copy, the one that ran at the worst possible moment. */
+  typescript: { ignoreBuildErrors: true },
   /* Development only. The dev server answers CORS-mode chunk requests from
      an unlisted origin with an empty 403, and a browser opened at 127.0.0.1
      rather than localhost then renders every page from the server and never

@@ -42,6 +42,20 @@ test('a rollback with a gave-up file reads as rolled back, and names the tag', (
   assert.equal(servesLive(s), true);
 });
 
+test('a build that died reads as build-failed, with the old commit still live', () => {
+  const s = parseAgentState({
+    deployed: '6b043900c0', tried: 'c2477444f9 1',
+    log: [
+      '2026-09-11T10:52:15Z  deploying c2477444f9 (attempt 1 of 2)',
+      'Killed',
+      '2026-09-11T11:03:07Z  FAIL  the build did not finish, so nothing was swapped in.',
+      '2026-09-11T11:03:07Z        The site is still serving 6b043900c0, untouched.',
+    ].join('\n'),
+  }, '6b04390');
+  assert.equal(s.result, 'build-failed');
+  assert.equal(servesLive(s), true);
+});
+
 test('a process on a different commit than the agent recorded is noticed', () => {
   const s = parseAgentState({ deployed: 'c72be07aa', log: LOG_OK }, '5bc5e49');
   assert.equal(servesLive(s), false);

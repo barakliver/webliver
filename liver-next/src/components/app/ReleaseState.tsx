@@ -25,6 +25,7 @@ export function ReleaseState({ state }: { state: State }) {
   const serving = servesLive(state);
   const result = {
     'ok': { chip: 'chip-ok', text: c.ok },
+    'build-failed': { chip: 'chip-warn', text: c.buildFailed },
     'rolled-back': { chip: 'chip-bad', text: c.rolledBack },
     'broken': { chip: 'chip-bad', text: c.broken },
     'failed': { chip: 'chip-warn', text: c.failed },
