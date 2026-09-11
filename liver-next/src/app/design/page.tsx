@@ -852,13 +852,23 @@ export default async function DesignPage() {
             only and behind a real session. The decision under it is the one
             this screen exists for: an account is guessed to be a producer on
             sign-up, and about half those guesses are wrong. */}
-        <Panel name="Admin · one account" note="approve or block, and underneath, what the account actually is">
+        <Panel name="Admin · one account" note="a sign-up waiting to be decided, and the same account once it was decided a couple">
           <ul className="list-none space-y-3 p-0">
             <AdminRow p={{
               id: 'p-1', brand: 'שיר', email: 'shir.aeo@gmail.com', status: 'pending',
-              lastSeen: new Date().toISOString(), eventsLive: 0, eventsTotal: 0,
+              lastSeen: '2026-09-08T07:00:00.000Z', eventsLive: 0, eventsTotal: 0,
               leadsTotal: 0, leads30d: 0, signedTotal: 0, isRoot: false,
-              ownerId: FIXTURE_VIEWER, ownerRole: 'producer',
+              ownerId: FIXTURE_VIEWER, ownerRole: 'producer', ownerKind: 'producer',
+            }} />
+            {/* The second state, which is the one that read as a broken
+                button: an account already decided a couple. The approve and
+                reject buttons are gone, because there is no production
+                business to approve, and the choice it is on is marked. */}
+            <AdminRow p={{
+              id: 'p-2', brand: 'דני דנדוש', email: 'dani@example.com', status: 'rejected',
+              lastSeen: '2026-09-07T07:00:00.000Z', eventsLive: 0, eventsTotal: 0,
+              leadsTotal: 0, leads30d: 0, signedTotal: 0, isRoot: false,
+              ownerId: FIXTURE_CLIENT, ownerRole: 'client', ownerKind: 'diy',
             }} />
           </ul>
         </Panel>
@@ -1216,10 +1226,13 @@ export default async function DesignPage() {
 
         {/* What a write that did not happen says. Sixteen server actions used
             to log the failure and redraw the screen exactly as it was. */}
-        <Panel name="Flash" note="the sentence an action leaves behind when the write did not happen">
+        <Panel name="Flash" note="the sentence an action leaves behind: a write that did not happen, and one whose effect is elsewhere">
           <div className="max-w-2xl space-y-3">
             <FlashLine text="הקישור לא בוטל. הוא עדיין פעיל. אפשר לנסות שוב." />
             <FlashLine text="לא הצלחנו להזיז את השורה. אפשר לנסות שוב." />
+            {/* The quiet one. For the few writes that land somewhere the
+                screen cannot show, where silence reads as a dead button. */}
+            <FlashLine tone="ok" text="נרשמו כזוג שמתכנן לבד, ונפתח להם מרחב עבודה משלהם." />
           </div>
         </Panel>
 

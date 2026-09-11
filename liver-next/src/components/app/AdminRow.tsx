@@ -1,7 +1,7 @@
 import { formatDate } from '@/lib/dates';
 import type { Locale } from '@/lib/locale';
 import { Check, Ban, RotateCcw, ShieldCheck } from 'lucide-react';
-import type { ProducerRow } from '@/lib/directory';
+import type { AccountKind, ProducerRow } from '@/lib/directory';
 import { setProducerStatus, setAccountKind } from '@/app/actions/admin';
 import { serverCopy } from '@/lib/serverLocale';
 import { EVENT_ZONE } from '@/lib/clock';
@@ -77,8 +77,14 @@ export async function AdminRow({ p }: { p: ProducerRow }) {
 
         {/* The root account gets no buttons at all. Approving yourself is
             meaningless and suspending yourself is a locked door with the key
-            inside. */}
-        {!p.isRoot && (
+            inside.
+
+            Neither does an account already decided to be a couple. These four
+            act on a production business, and she is not running one: the card
+            offered "אישור" to somebody it said in the next line was a client,
+            and pressing it would have approved a workspace nobody is going to
+            open. What to do with her account is the decision underneath. */}
+        {!p.isRoot && p.ownerKind === 'producer' && (
           <div className="flex flex-wrap gap-2">
             {p.status !== 'approved' && <StatusButton id={p.id} status="approved" label={c.approve} tone="primary" />}
             {p.status === 'pending' && <StatusButton id={p.id} status="rejected" label={c.reject} tone="quiet" />}
@@ -88,7 +94,7 @@ export async function AdminRow({ p }: { p: ProducerRow }) {
         )}
       </div>
 
-      {!p.isRoot && p.ownerId && <KindSwitch ownerId={p.ownerId} role={p.ownerRole} />}
+      {!p.isRoot && p.ownerId && <KindSwitch ownerId={p.ownerId} kind={p.ownerKind} />}
     </li>
   );
 }
@@ -107,21 +113,26 @@ export async function AdminRow({ p }: { p: ProducerRow }) {
  * of them opens a workspace, and a button whose consequence has to be
  * remembered is a button somebody presses once to find out.
  */
-async function KindSwitch({ ownerId, role }: { ownerId: string; role: ProducerRow['ownerRole'] }) {
+async function KindSwitch({ ownerId, kind }: { ownerId: string; kind: AccountKind }) {
   const c = (await serverCopy()).admin;
   const k = c.kind;
+  /* Marked from what was decided, not guessed from the role. Both couple
+     kinds are the same role, so the role can say "a couple" and never which
+     kind — and for a fortnight this marked neither of them, which is why
+     pressing one of the two looked like a button that did nothing. */
   const options = [
-    { kind: 'producer', label: k.producer, note: k.producerNote, on: role !== 'client' },
-    { kind: 'diy', label: k.diy, note: k.diyNote, on: false },
-    { kind: 'managed', label: k.managed, note: k.managedNote, on: false },
-  ];
+    { kind: 'producer', label: k.producer, note: k.producerNote },
+    { kind: 'diy', label: k.diy, note: k.diyNote },
+    { kind: 'managed', label: k.managed, note: k.managedNote },
+  ].map((o) => ({ ...o, on: o.kind === kind }));
+  const nowIs = kind === 'producer' ? k.producer : kind === 'diy' ? k.diy : k.managed;
 
   return (
     <div className="mt-4 border-t border-line pt-4">
       <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
         <h4 className="text-[13.5px] font-medium text-ink">{k.title}</h4>
         <span className="text-[12.5px] text-ink-mute">
-          {k.current}: {role === 'client' ? k.isClient : k.isProducer}
+          {k.current}: {nowIs}
         </span>
       </div>
       <p className="mt-0.5 text-[12.5px] text-ink-mute">{k.sub}</p>

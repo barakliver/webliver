@@ -344,8 +344,6 @@ export const consoleEn: ConsoleCopy = {
       managed: 'A producer\'s couple',
       managedNote: 'Waiting for a producer to invite them to their event.',
       current: 'Currently',
-      isProducer: 'Producer',
-      isClient: 'Client',
     },
     oneLive: 'active event',
     manyLive: 'active events',

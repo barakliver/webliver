@@ -1056,8 +1056,6 @@ export const appCopy = {
       managed: 'זוג של מפיק',
       managedNote: 'ממתינים שמפיק יזמין אותם לאירוע שלו.',
       current: 'כרגע',
-      isProducer: 'מפיקה',
-      isClient: 'לקוחה',
     },
     oneLive: 'אירוע פעיל',
     manyLive: 'אירועים פעילים',

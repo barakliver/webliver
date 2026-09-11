@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { currentAccount } from '@/lib/auth';
-import { noteFailure } from '@/lib/flash';
+import { noteDone, noteFailure } from '@/lib/flash';
 
 const ALLOWED = ['approved', 'rejected', 'suspended', 'pending'] as const;
 type Status = (typeof ALLOWED)[number];
@@ -116,12 +116,27 @@ export async function setAccountKind(formData: FormData): Promise<void> {
   if (!account || account.role !== 'super_admin') return;
 
   const sb = await supabaseServer();
-  const { error } = await sb.rpc('set_account_kind', { p_owner: owner, p_kind: kind });
+  const { data, error } = await sb.rpc('set_account_kind', { p_owner: owner, p_kind: kind });
   if (error) {
     console.error('[admin] kind failed', error);
     await noteFailure('ההרשאה לא השתנתה. אפשר לנסות שוב.');
+  } else {
+    await noteDone(SAID[String(data)] ?? SAID.managed);
   }
 
   revalidatePath('/app/admin');
   revalidatePath('/app/clients');
 }
+
+/* What the database says it did, said back. This is the one screen in the
+   product where the effect of a press is mostly somewhere else — a workspace
+   opened for somebody, an approval queue a name left — so the press that
+   looked like it did nothing gets a sentence saying what it did.
+
+   Keyed by the word the function returns, which is why it returns one. */
+const SAID: Record<string, string> = {
+  producer: 'נרשמה כמפיקה. הסטטוס חזר להמתנה, ואישור ייתן גישה.',
+  managed: 'נרשמו כזוג של מפיק. הם ממתינים שמפיק יזמין אותם לאירוע שלו.',
+  'diy-created': 'נרשמו כזוג שמתכנן לבד, ונפתח להם מרחב עבודה משלהם.',
+  'diy-existing': 'נרשמו כזוג שמתכנן לבד. כבר היה להם אירוע, והוא סומן כשלהם.',
+};

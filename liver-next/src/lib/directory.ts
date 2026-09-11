@@ -49,7 +49,14 @@ export type ProducerRow = {
      nothing about anybody's wedding travels with them. */
   ownerId: string | null;
   ownerRole: 'super_admin' | 'producer' | 'client' | 'staff' | null;
+  /** Which of the three the console last decided this account is. Its own
+   *  fact rather than one read off the role: both couple kinds are the same
+   *  role, so the role cannot tell them apart and the screen that offers the
+   *  choice could not mark the one it was already on. */
+  ownerKind: AccountKind;
 };
+
+export type AccountKind = 'producer' | 'diy' | 'managed';
 
 export type Flag = { key: string; label: string; diy: boolean; managed: boolean };
 
@@ -110,6 +117,11 @@ export async function getConsole(rootEmail: string): Promise<Console> {
     signedTotal: Number(p.signed_total ?? 0),
     ownerId: (p.owner_id as string | null) ?? null,
     ownerRole: (p.owner_role as ProducerRow['ownerRole']) ?? null,
+    /* Falls back the same way the database does, so a console reading an
+       older schema shows what the account is rather than nothing. */
+    ownerKind: (['producer', 'diy', 'managed'].includes(String(p.owner_kind))
+      ? String(p.owner_kind)
+      : p.owner_role === 'client' ? 'managed' : 'producer') as AccountKind,
     /* The root account is not something to approve, suspend or reject. It is
        the thing doing the approving, and offering those buttons against it is
        an invitation to lock yourself out of your own platform. */

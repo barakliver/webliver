@@ -1,5 +1,5 @@
-import { TriangleAlert } from 'lucide-react';
-import { readFlash, FLASH_COOKIE } from '@/lib/flash';
+import { Check, TriangleAlert } from 'lucide-react';
+import { readFlash, FLASH_COOKIE, type FlashTone } from '@/lib/flash';
 import { FlashClear } from './FlashClear';
 
 /**
@@ -12,12 +12,13 @@ import { FlashClear } from './FlashClear';
  *
  * Same visual language as the line above a screen whose data half arrived:
  * this is the other half of the same promise, that the screen does not quietly
- * claim everything is fine.
+ * claim everything is fine. The quiet variant is the same line saying a write
+ * landed, for the few writes whose effect is somewhere the screen cannot show.
  */
 export async function Flash() {
-  const text = await readFlash();
+  const { text, tone } = await readFlash();
   if (!text) return null;
-  return <FlashLine text={text} />;
+  return <FlashLine text={text} tone={tone} />;
 }
 
 /**
@@ -25,13 +26,17 @@ export async function Flash() {
  * same reason the load-trouble line was split. This shows on almost no
  * morning, so it can only be looked at if it can be handed a sentence.
  */
-export function FlashLine({ text }: { text: string }) {
+export function FlashLine({ text, tone = 'bad' }: { text: string; tone?: FlashTone }) {
+  const ok = tone === 'ok';
+  const Icon = ok ? Check : TriangleAlert;
   return (
     <p
       role="status"
-      className="mb-5 flex items-start gap-2.5 rounded-xl2 border border-bad/30 bg-bad-wash px-4 py-3 text-[14px] leading-relaxed text-ink"
+      className={`mb-5 flex items-start gap-2.5 rounded-xl2 border px-4 py-3 text-[14px] leading-relaxed text-ink ${
+        ok ? 'border-ok/30 bg-ok-wash' : 'border-bad/30 bg-bad-wash'
+      }`}
     >
-      <TriangleAlert size={17} strokeWidth={1.5} aria-hidden className="mt-0.5 shrink-0 text-bad" />
+      <Icon size={17} strokeWidth={1.5} aria-hidden className={`mt-0.5 shrink-0 ${ok ? 'text-ok' : 'text-bad'}`} />
       <span>{text}</span>
       <FlashClear name={FLASH_COOKIE} />
     </p>

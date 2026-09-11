@@ -42,9 +42,33 @@ const NAME = '__Host-liver-said';
    back. The client clears it on sight; this is the floor under that. */
 const SECONDS = 30;
 
+/** Which of the two kinds of sentence this is. A failure is a red line; a
+ *  confirmation is a quiet one. The tone travels in the cookie rather than
+ *  being guessed from the words, because the shell that draws it has only the
+ *  words. */
+export type FlashTone = 'bad' | 'ok';
+
 export async function noteFailure(text: string): Promise<void> {
+  return note('bad', text);
+}
+
+/**
+ * What happened, when what happened is not visible on the screen it happened
+ * on.
+ *
+ * Sparingly. A save whose result is the screen redrawing with the new value
+ * needs no sentence, and a product that says "saved" after every press is a
+ * product that has taught everybody to ignore it. This is for the writes
+ * whose effect is real and elsewhere: deciding what an account is opens a
+ * workspace for somebody, on a screen that cannot show it.
+ */
+export async function noteDone(text: string): Promise<void> {
+  return note('ok', text);
+}
+
+async function note(tone: FlashTone, text: string): Promise<void> {
   try {
-    (await cookies()).set(NAME, encodeURIComponent(text), {
+    (await cookies()).set(NAME, encodeURIComponent(`${tone}|${text}`), {
       maxAge: SECONDS,
       path: '/',
       sameSite: 'lax',
@@ -61,13 +85,19 @@ export async function noteFailure(text: string): Promise<void> {
   }
 }
 
-export async function readFlash(): Promise<string> {
+export async function readFlash(): Promise<{ text: string; tone: FlashTone }> {
   const raw = (await cookies()).get(NAME)?.value ?? '';
-  if (!raw) return '';
+  if (!raw) return { text: '', tone: 'bad' };
   try {
-    return decodeURIComponent(raw).slice(0, 200);
+    const said = decodeURIComponent(raw);
+    /* The tone is a prefix rather than a second cookie, and a value written
+       before this existed has none — those were all failures, which is what
+       an unmarked sentence still means. */
+    const cut = said.indexOf('|');
+    const tone: FlashTone = said.slice(0, cut) === 'ok' ? 'ok' : 'bad';
+    return { text: (cut === -1 ? said : said.slice(cut + 1)).slice(0, 200), tone };
   } catch {
-    return '';
+    return { text: '', tone: 'bad' };
   }
 }
 
