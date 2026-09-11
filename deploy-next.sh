@@ -122,9 +122,18 @@ mkdir -p .next-build
 [ -d .next/cache ] && cp -a .next/cache .next-build/cache
 NEXT_DIST_DIR=.next-build npm run build
 
-rm -rf .next-old
-[ -d .next ] && mv .next .next-old
-mv .next-build .next
+# A commit from before next.config read NEXT_DIST_DIR — which is what a
+# rollback to an older release checks out — ignores the variable and builds
+# into `.next` as it always did. Swapping then would put an empty folder
+# where the site is. So the swap happens only when the side build is real.
+if [ -f .next-build/BUILD_ID ]; then
+  rm -rf .next-old
+  [ -d .next ] && mv .next .next-old
+  mv .next-build .next
+else
+  echo "→ this commit built into .next directly (older config); nothing to swap"
+  rm -rf .next-build
+fi
 
 # ── service ────────────────────────────────────────────────────────────────
 cat > /etc/systemd/system/liver-next.service <<EOF
