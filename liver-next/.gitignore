@@ -1,4 +1,6 @@
 node_modules
 .next
+.next-build
+.next-old
 .env.local
 next-env.d.ts

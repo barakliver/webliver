@@ -85,18 +85,46 @@ fi
 chmod 600 "$ENVFILE"
 cp "$ENVFILE" "$APP/.env.local"
 
-# ── build ──────────────────────────────────────────────────────────────────
+# ── dependencies, only when they changed ──────────────────────────────────
+# The live server loads modules from node_modules as requests arrive, and
+# `npm ci` begins by deleting the whole folder. For the minute or two it took
+# to put it back, every screen that needed a module it had not loaded yet
+# answered with an error — on every release, whether or not a dependency had
+# changed, which it almost never has. So: the lockfile is hashed, and the
+# install runs only when the hash moved. When it does, `npm install` brings
+# the folder to the lockfile in place rather than deleting it first.
 cd "$APP"
-echo "→ installing dependencies"
-npm ci --no-audit --no-fund
-echo "→ building"
+LOCK_SHA="$(sha256sum package-lock.json | cut -d' ' -f1)"
+if [ -d node_modules ] && [ -f node_modules/.lock-sha ] && [ "$(cat node_modules/.lock-sha)" = "$LOCK_SHA" ]; then
+  echo "→ dependencies unchanged since the last deploy, leaving them alone"
+else
+  echo "→ installing dependencies"
+  npm install --no-audit --no-fund
+  printf '%s' "$LOCK_SHA" > node_modules/.lock-sha
+fi
+
+# ── build, beside the live one ─────────────────────────────────────────────
 # Node caps its heap at about a quarter of a 1GB machine, and the type-check
 # pass at the end of `next build` now needs more than that: the compile
 # finished in 43s and the checker died at 490MB with "heap out of memory",
 # leaving the old build running and the deploy reported as failed. The swap
 # file above exists for exactly this; the cap just has to let Node use it.
 export NODE_OPTIONS="--max-old-space-size=2048"
-npm run build
+
+# Into `.next-build`, not `.next`. The server is serving out of `.next` right
+# now, and a build that starts by emptying it takes the site down for as long
+# as it runs. Built beside it and renamed into place when whole, the site
+# serves the old build until the instant it restarts on the new one. The
+# compiler's cache is carried across so the build is no slower for it.
+echo "→ building"
+rm -rf .next-build
+mkdir -p .next-build
+[ -d .next/cache ] && cp -a .next/cache .next-build/cache
+NEXT_DIST_DIR=.next-build npm run build
+
+rm -rf .next-old
+[ -d .next ] && mv .next .next-old
+mv .next-build .next
 
 # ── service ────────────────────────────────────────────────────────────────
 cat > /etc/systemd/system/liver-next.service <<EOF

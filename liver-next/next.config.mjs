@@ -32,6 +32,14 @@ const id = version();
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+
+  /* Where a build is written. Unset, it is `.next`, which is also where the
+     running server reads from — and on the droplet those were the same
+     folder, so every release wiped the live site's chunks out from under it
+     for as long as the build took, which on a gigabyte is minutes. The
+     deploy script now builds into `.next-build` and renames it into place
+     once it is finished; the server only ever sees a whole build. */
+  distDir: process.env.NEXT_DIST_DIR || '.next',
   /* Development only. The dev server answers CORS-mode chunk requests from
      an unlisted origin with an empty 403, and a browser opened at 127.0.0.1
      rather than localhost then renders every page from the server and never

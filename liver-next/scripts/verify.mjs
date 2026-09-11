@@ -138,9 +138,31 @@ function checkBuiltCss() {
      with its alpha folded in — so the check reported the ink present in a
      build that no longer contained it anywhere as a colour. A check that
      passes for the wrong reason is worse than one that fails. */
-  record(/--surface-rgb:\s*247 244 238/.test(css), 'the warm ground is in the build');
-  record(/--ink-rgb:\s*23 21 18/.test(css), 'the warm ink is in the build');
-  record(/--accent-rgb:\s*138 97 54/.test(css), 'the brand gold is in the build');
+  /* Read from the source stylesheet, not written here. The three values were
+     literals for a long time, and when the planning design system changed the
+     palette on the tenth of September this file still asked for the old one:
+     every release after it built, answered, drew every screen, failed these
+     three lines, and was rolled back by the agent — twice each, then given
+     up on. Five days of work never went live and nothing said why. What the
+     check is for is "the browser got what the source says", so the source is
+     where the expected value comes from. */
+  const source = readFileSync(join(root, 'src', 'app', 'globals.css'), 'utf8');
+  const declared = (name) => {
+    const m = source.match(new RegExp(`--${name}:\\s*([0-9]+ [0-9]+ [0-9]+)`));
+    return m ? m[1] : null;
+  };
+  for (const [name, label] of [
+    ['surface-rgb', 'the page ground the source declares is in the build'],
+    ['ink-rgb', 'the ink the source declares is in the build'],
+    ['accent-rgb', 'the accent the source declares is in the build'],
+  ]) {
+    const want = declared(name);
+    record(
+      want !== null && new RegExp(`--${name}:\\s*${want}`).test(css),
+      label,
+      want === null ? `globals.css no longer declares --${name}` : `--${name}: ${want}`,
+    );
+  }
   /* And the slate it replaced. The workspace ran on Tailwind's own greys while
      the public site was warm, so signing in changed the temperature of the
      brand; if either of these is back, so is that. */
@@ -200,7 +222,15 @@ function checkBuiltCss() {
   /* And the surfaces. A card in this design is glass: a translucent fill, a
      soft edge and a 24px corner. Its absence is what a flat page looks like. */
   record(/backdrop-filter:\s*blur/.test(css), 'panels are glass rather than flat');
-  record(/border-radius:\s*24px/.test(css), 'a card has the design\'s own corner');
+  /* The card's corner, read from the config for the same reason as the
+     palette above: it was `24px` here for a design that had moved to 16. */
+  const cfg = readFileSync(join(root, 'tailwind.config.ts'), 'utf8');
+  const corner = cfg.match(/\bcard:\s*'(\d+px)'/)?.[1] ?? null;
+  record(
+    corner !== null && new RegExp(`border-radius:\\s*${corner}`).test(css),
+    'a card has the design\'s own corner',
+    corner === null ? 'tailwind.config.ts no longer names a card radius' : corner,
+  );
 
   /* The tones are stored as channels so that an opacity modifier resolves at
      all. Tailwind can only fold an alpha into a custom property holding bare
