@@ -100,7 +100,7 @@ export function IssueReporter({ userId, compact, row, context, copy }: {
           onClick={() => { reset(); setOpen(true); }}
           aria-label={`${c.open}: ${context}`}
           title={c.openHere}
-          className="grid size-7 place-items-center rounded-lg text-ink-mute/70 transition-colors hover:bg-surface-200 hover:text-ink"
+          className="grid size-11 place-items-center rounded-control text-ink-mute transition-colors hover:bg-surface-200 hover:text-ink"
         >
           <Bug size={16} strokeWidth={1.5} aria-hidden />
         </button>

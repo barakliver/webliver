@@ -480,7 +480,7 @@ export const seatingEn: SeatingCopy = {
   peopleShort: 'people',
   needRsvp: 'Nobody has replied yet. Seat people once the answers start coming in.',
   floor: 'Floor plan',
-  floorSub: 'Every circle is a table and every dot around it is a chair. A taken chair is marked in gold.',
+  floorSub: 'Every circle is a table and every dot around it is a chair. A taken chair is a filled dot.',
   openTable: 'Open the table',
   seatFree: 'Free chair',
 };

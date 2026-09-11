@@ -24,33 +24,36 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
     <html lang="he" dir="rtl">
       <body style={{
         margin: 0, minHeight: '100vh', display: 'grid', placeItems: 'center',
-        background: '#F7F4EE', color: '#171512', padding: '24px',
+        /* The planning system's own values, written out: ground, ink, the
+           soft and muted inks, and the deep teal action. If the palette in
+           globals.css moves, these move with it by hand. */
+        background: '#F8F8F0', color: '#292823', padding: '24px',
         fontFamily: 'system-ui, -apple-system, "Segoe UI", sans-serif',
       }}>
         <main style={{ maxWidth: '30rem', textAlign: 'center' }}>
           <h1 style={{ margin: 0, fontSize: '24px', fontWeight: 600, lineHeight: 1.3 }}>
             משהו נפל אצלנו
           </h1>
-          <p style={{ margin: '12px 0 0', fontSize: '15px', lineHeight: 1.6, color: '#655D54' }}>
+          <p style={{ margin: '12px 0 0', fontSize: '15px', lineHeight: 1.6, color: '#65625B' }}>
             התקלה בצד שלנו ולא בצד שלכם. אפשר לרענן את העמוד.
           </p>
-          <p style={{ margin: '6px 0 0', fontSize: '14px', lineHeight: 1.6, color: '#8B8177' }} lang="en" dir="ltr">
+          <p style={{ margin: '6px 0 0', fontSize: '14px', lineHeight: 1.6, color: '#605D56' }} lang="en" dir="ltr">
             Something failed on our side. Reloading the page usually fixes it.
           </p>
 
           <button
             type="button" onClick={reset}
             style={{
-              marginTop: '28px', minHeight: '44px', padding: '0 22px',
-              border: 'none', borderRadius: '10px', cursor: 'pointer',
-              background: '#8C6338', color: '#FCFAF7', fontSize: '15px', fontFamily: 'inherit',
+              marginTop: '28px', minHeight: '48px', padding: '0 24px',
+              border: 'none', borderRadius: '12px', cursor: 'pointer',
+              background: '#205757', color: '#FFFFFF', fontSize: '16px', fontWeight: 600, fontFamily: 'inherit',
             }}
           >
             לנסות שוב
           </button>
 
           {error.digest && (
-            <p style={{ margin: '28px 0 0', fontSize: '12.5px', color: '#8B8177' }}>
+            <p style={{ margin: '28px 0 0', fontSize: '12.5px', color: '#605D56' }}>
               קוד לתקלה:{' '}
               <code dir="ltr" style={{ fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace' }}>
                 {error.digest}
