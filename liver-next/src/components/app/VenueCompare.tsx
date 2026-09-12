@@ -11,6 +11,7 @@ import {
 import {
   saveVenue, removeVenue, tuneVenue, chooseVenue, setGuestCommitment, type VenueResult,
 } from '@/app/actions/venues';
+import { DeleteForm } from '@/components/app/ConfirmDelete';
 
 /**
  * Four halls, one number each.
@@ -182,14 +183,14 @@ function Column({ c, clientId, v, k, guests, isBest, over, quoteUrl, canChoose, 
       <header>
         <div className="flex items-start justify-between gap-2">
           <h3 className="font-display text-[17px] font-semibold text-ink">{v.venueName}</h3>
-          <form action={removeVenue} className="no-print">
+          <DeleteForm action={removeVenue} className="no-print">
             <input type="hidden" name="id" value={v.id} />
             <input type="hidden" name="client_id" value={clientId} />
             <button type="submit" aria-label={c.remove}
               className="rounded-xl2 p-1 text-ink-mute transition hover:bg-bad-wash hover:text-bad">
               <Trash2 size={14} strokeWidth={1.5} aria-hidden />
             </button>
-          </form>
+          </DeleteForm>
         </div>
         {v.location && <p className="text-[13px] text-ink-soft">{v.location}</p>}
 

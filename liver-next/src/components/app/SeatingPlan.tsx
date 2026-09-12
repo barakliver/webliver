@@ -6,6 +6,7 @@ import { addTable, setTableSeats, deleteTable, seatGuest, type SeatResult } from
 import { useCopy } from '@/components/app/CopyProvider';
 import { Ratio } from '@/components/Ltr';
 import { useDragOnto, Grip, Carried } from '@/components/app/DragOnto';
+import { DeleteForm } from '@/components/app/ConfirmDelete';
 
 export type SeatTable = { id: string; name: string; seats: number };
 export type SeatGuest = {
@@ -346,13 +347,13 @@ export function SeatingPlan({ clientId, tables, guests }: {
                     />
                     <button type="submit" className="btn-quiet px-2 py-1 text-[12.5px]">{c.seats}</button>
                   </form>
-                  <form action={deleteTable}>
+                  <DeleteForm action={deleteTable}>
                     <input type="hidden" name="table_id" value={t.id} />
                     <input type="hidden" name="client_id" value={clientId} />
                     <button type="submit" className="btn-quiet px-2 py-1 text-[12.5px]" title={c.removeTableHint}>
                       {c.removeTable}
                     </button>
-                  </form>
+                  </DeleteForm>
                 </div>
               </li>
             );

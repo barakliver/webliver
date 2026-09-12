@@ -4,6 +4,7 @@ import { useActionState, useEffect, useRef, useState } from 'react';
 import { Camera, Loader2, Plus, Scissors, Share2, Trash2, X } from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase/client';
 import { addVip, removeVip, addLook, removeLook, mintShare, revokeShare, type PrepResult } from '@/app/actions/prep';
+import { DeleteForm } from '@/components/app/ConfirmDelete';
 
 /**
  * The two things a supplier needs and a conversation never carries reliably.
@@ -182,14 +183,14 @@ function Faces({ c, clientId, vips }: { c: PrepCopy; clientId: string; vips: Vip
                 {v.relation && <p className="text-[13px] text-ink-soft">{v.relation}</p>}
                 {v.note && <p className="mt-0.5 text-[12.5px] leading-snug text-ink-mute">{v.note}</p>}
               </div>
-              <form action={removeVip}>
+              <DeleteForm action={removeVip}>
                 <input type="hidden" name="id" value={v.id} />
                 <input type="hidden" name="client_id" value={clientId} />
                 <button type="submit" aria-label={c.remove}
                   className="rounded-xl2 p-1.5 text-ink-mute transition hover:bg-bad-wash hover:text-bad">
                   <Trash2 size={15} strokeWidth={1.5} aria-hidden />
                 </button>
-              </form>
+              </DeleteForm>
             </li>
           ))}
         </ul>
@@ -254,14 +255,14 @@ function Looks({ c, clientId, looks }: { c: PrepCopy; clientId: string; looks: L
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   {l.url && <img src={l.url} alt={l.note || c.categories[cat]} className="aspect-square w-full object-cover" />}
                   {l.note && <p className="px-1.5 py-1 text-[11.5px] leading-snug text-ink-soft">{l.note}</p>}
-                  <form action={removeLook} className="absolute end-1.5 top-1.5">
+                  <DeleteForm action={removeLook} className="absolute end-1.5 top-1.5">
                     <input type="hidden" name="id" value={l.id} />
                     <input type="hidden" name="client_id" value={clientId} />
                     <button type="submit" aria-label={c.remove}
                       className="grid size-6 place-items-center rounded-full bg-surface/85 text-ink-mute transition hover:text-bad">
                       <X size={12} strokeWidth={1.5} aria-hidden />
                     </button>
-                  </form>
+                  </DeleteForm>
                 </li>
               ))}
             </ul>

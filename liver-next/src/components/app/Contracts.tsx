@@ -14,6 +14,7 @@ import { supabaseBrowser } from '@/lib/supabase/client';
 import { useCopy } from '@/components/app/CopyProvider';
 import { signedAt } from '@/lib/appDates';
 import { Money, ils } from '@/components/Ltr';
+import { DeleteForm } from '@/components/app/ConfirmDelete';
 
 export type Contract = {
   id: string;
@@ -211,13 +212,13 @@ function Row({ contract: k, clientId, viewer }: {
                   <Send size={15} aria-hidden strokeWidth={1.5} />{c.send}
                 </button>
               </form>
-              <form action={deleteContract}>
+              <DeleteForm action={deleteContract}>
                 <input type="hidden" name="contract_id" value={k.id} />
                 <input type="hidden" name="client_id" value={clientId} />
                 <button type="submit" className="btn-quiet inline-flex items-center gap-1.5 text-[13.5px]">
                   <Trash2 size={15} aria-hidden strokeWidth={1.5} />{c.discard}
                 </button>
-              </form>
+              </DeleteForm>
             </>
           )}
           {/* A supplier has no account and is not going to open one to agree a

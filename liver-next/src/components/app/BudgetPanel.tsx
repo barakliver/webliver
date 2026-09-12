@@ -7,6 +7,7 @@ import { useCopy } from '@/components/app/CopyProvider';
 import { Money, ils } from '@/components/Ltr';
 import { Metric } from '@/components/app/Metric';
 import { ReceiptScan } from '@/components/app/ReceiptScan';
+import { DeleteForm } from '@/components/app/ConfirmDelete';
 
 export type BudgetItem = {
   id: string; category: string; label: string;
@@ -139,11 +140,11 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
                 </div>
               </div>
               {(
-                <form action={deleteBudgetItem} className="mt-2">
+                <DeleteForm action={deleteBudgetItem} className="mt-2">
                   <input type="hidden" name="item_id" value={i.id} />
                   <input type="hidden" name="client_id" value={clientId} />
                   <button type="submit" className="btn-quiet px-2 py-1 text-[13px]">{c.remove}</button>
-                </form>
+                </DeleteForm>
               )}
             </li>
           ))}
@@ -171,11 +172,11 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
                   </td>
                   {(
                     <td className="py-3">
-                      <form action={deleteBudgetItem}>
+                      <DeleteForm action={deleteBudgetItem}>
                         <input type="hidden" name="item_id" value={i.id} />
                         <input type="hidden" name="client_id" value={clientId} />
                         <button type="submit" className="btn-quiet px-2 py-1 text-[13px]">{c.remove}</button>
-                      </form>
+                      </DeleteForm>
                     </td>
                   )}
                 </tr>

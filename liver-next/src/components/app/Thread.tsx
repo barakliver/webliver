@@ -9,6 +9,7 @@ import { useCopy } from '@/components/app/CopyProvider';
 import { clock, dayMonth } from '@/lib/appDates';
 import { dateInZone, daysBetween, todayInZone } from '@/lib/clock';
 import type { ThreadCopy } from '@/content/appUi';
+import { DeleteForm } from '@/components/app/ConfirmDelete';
 
 export type Message = {
   id: string;
@@ -105,13 +106,13 @@ export function Thread({ clientId, messages, viewerId }: {
                     <div className={`mt-1 flex items-center gap-2 text-[12px] text-ink-mute ${mine ? 'justify-end' : ''}`}>
                       <time dateTime={m.created_at}>{timeFmt.format(new Date(m.created_at))}</time>
                       {mine && (
-                        <form action={deleteMessage}>
+                        <DeleteForm action={deleteMessage}>
                           <input type="hidden" name="message_id" value={m.id} />
                           <input type="hidden" name="client_id" value={clientId} />
                           <button type="submit" className="text-ink-mute underline-offset-2 hover:underline">
                             {c.retract}
                           </button>
-                        </form>
+                        </DeleteForm>
                       )}
                     </div>
                   </div>

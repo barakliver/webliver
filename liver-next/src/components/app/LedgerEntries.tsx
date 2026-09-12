@@ -4,6 +4,7 @@ import { useCopy } from '@/components/app/CopyProvider';
 import { Money } from '@/components/Ltr';
 import { shortDate } from '@/lib/appDates';
 import { removeLedgerEntry } from '@/app/actions/ledger';
+import { DeleteForm } from '@/components/app/ConfirmDelete';
 
 export type LedgerEntry = {
   id: string;
@@ -54,11 +55,11 @@ export function LedgerEntries({ entries, showEvent = true }: { entries: LedgerEn
                 <span className={`shrink-0 tabular-nums font-medium ${e.kind === 'income' ? 'text-ok' : 'text-bad'}`}>
                   {e.kind === 'expense' ? '-' : ''}<Money value={e.amount} />
                 </span>
-                <form action={removeLedgerEntry}>
+                <DeleteForm action={removeLedgerEntry}>
                   <input type="hidden" name="id" value={e.id} />
                   <input type="hidden" name="client_id" value={e.client_id ?? ''} />
                   <button type="submit" className="btn-quiet px-2 py-1 text-[13px]">{c.remove}</button>
-                </form>
+                </DeleteForm>
               </li>
             ))}
           </ul>

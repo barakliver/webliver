@@ -6,6 +6,7 @@ import { Loader2, Plus, Check } from 'lucide-react';
 import { addEnvelope, removeEnvelope, toggleDelivered, type EnvelopeResult } from '@/app/actions/envelopes';
 import type { EnvelopesCopy } from '@/content/appUi';
 import { Money } from '@/components/Ltr';
+import { DeleteForm } from '@/components/app/ConfirmDelete';
 
 export type Envelope = {
   id: string;
@@ -93,11 +94,11 @@ export function EnvelopesPanel({ c, clientId, items }: {
                 {e.amount === null ? '·' : <Money value={e.amount} />}
               </span>
 
-              <form action={removeEnvelope}>
+              <DeleteForm action={removeEnvelope}>
                 <input type="hidden" name="id" value={e.id} />
                 <input type="hidden" name="client_id" value={clientId} />
                 <button type="submit" className="btn-quiet px-3 py-1 text-[13px]">{c.remove}</button>
-              </form>
+              </DeleteForm>
             </li>
           ))}
         </ul>

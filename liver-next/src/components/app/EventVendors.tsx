@@ -10,6 +10,7 @@ import {
 import { categoryLabelFor, vendorCategoriesFor, vendorStatesFor } from '@/content/production';
 import { useCopy } from '@/components/app/CopyProvider';
 import { hhmm } from '@/lib/runsheet';
+import { DeleteForm } from '@/components/app/ConfirmDelete';
 
 export type EventVendor = {
   id: string; vendor_id: string | null; name: string; category: string;
@@ -218,7 +219,7 @@ export function EventVendors({ clientId, vendors, directory }: {
                       </form>
                     )}
 
-                    <form action={removeEventVendor}>
+                    <DeleteForm action={removeEventVendor}>
                       <input type="hidden" name="event_vendor_id" value={v.id} />
                       <input type="hidden" name="client_id" value={clientId} />
                       <button
@@ -227,7 +228,7 @@ export function EventVendors({ clientId, vendors, directory }: {
                       >
                         <Trash2 size={15} aria-hidden strokeWidth={1.5} />
                       </button>
-                    </form>
+                    </DeleteForm>
                   </li>
                 ))}
               </ul>

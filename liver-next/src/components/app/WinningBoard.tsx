@@ -6,6 +6,7 @@ import { supabaseBrowser } from '@/lib/supabase/client';
 import { ImagePlus } from 'lucide-react';
 import { BOARD_CATEGORIES } from '@/content/lists';
 import { useCopy } from '@/components/app/CopyProvider';
+import { DeleteForm } from '@/components/app/ConfirmDelete';
 
 export type BoardImage = {
   id: string; category: string; caption: string; url: string;
@@ -196,11 +197,11 @@ export function WinningBoard({ clientId, images, viewer }: {
                     {img.caption && <p className="text-[14px] text-ink">{img.caption}</p>}
                     <p className="text-[12.5px] text-ink-mute">{labelOf(img.category)}</p>
                   </div>
-                  <form action={deleteBoardImage}>
+                  <DeleteForm action={deleteBoardImage}>
                     <input type="hidden" name="image_id" value={img.id} />
                     <input type="hidden" name="client_id" value={clientId} />
                     <button type="submit" className="btn-quiet px-2 py-1 text-[13px]">{c.remove}</button>
-                  </form>
+                  </DeleteForm>
                 </div>
               </li>
             ))}

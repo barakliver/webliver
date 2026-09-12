@@ -10,6 +10,7 @@ import { useCopy } from '@/components/app/CopyProvider';
 import { shortDate } from '@/lib/appDates';
 import { Money, ils } from '@/components/Ltr';
 import { Metric } from '@/components/app/Metric';
+import { DeleteForm } from '@/components/app/ConfirmDelete';
 
 export type Payment = {
   id: string; title: string; amount: number;
@@ -116,11 +117,11 @@ export function PaymentsPanel({ clientId, payments, viewer }: {
                         {p.paid ? c.markUnpaid : c.markPaid}
                       </button>
                     </form>
-                    <form action={deletePayment}>
+                    <DeleteForm action={deletePayment}>
                       <input type="hidden" name="payment_id" value={p.id} />
                       <input type="hidden" name="client_id" value={clientId} />
                       <button type="submit" className="btn-quiet px-2 py-1.5 text-[13px]">{c.remove}</button>
-                    </form>
+                    </DeleteForm>
                   </div>
                 )}
               </li>

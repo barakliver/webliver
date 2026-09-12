@@ -6,6 +6,7 @@ import { Loader2, Plus, Phone } from 'lucide-react';
 import { addVehicle, removeVehicle, type VehicleResult } from '@/app/actions/vehicles';
 import type { VehiclesCopy } from '@/content/appUi';
 import { Ltr } from '@/components/Ltr';
+import { DeleteForm } from '@/components/app/ConfirmDelete';
 
 export type Vehicle = {
   id: string;
@@ -78,11 +79,11 @@ export function VehiclesPanel({ c, clientId, items }: {
                 {v.riders && <p className="mt-1 text-[13.5px] text-ink-soft">{v.riders}</p>}
                 {v.note && <p className="mt-0.5 text-[12.5px] text-ink-mute">{v.note}</p>}
               </div>
-              <form action={removeVehicle}>
+              <DeleteForm action={removeVehicle}>
                 <input type="hidden" name="id" value={v.id} />
                 <input type="hidden" name="client_id" value={clientId} />
                 <button type="submit" className="btn-quiet px-3 py-1 text-[13px]">{c.remove}</button>
-              </form>
+              </DeleteForm>
             </li>
           ))}
         </ul>

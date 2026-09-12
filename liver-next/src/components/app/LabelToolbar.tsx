@@ -6,6 +6,7 @@ import { addLabel, updateLabel, removeLabel, type LabelResult, type LabelKind, t
 import { PALETTE } from '@/content/palette';
 import { useCopy } from '@/components/app/CopyProvider';
 import { cn } from '@/lib/utils';
+import { DeleteForm } from '@/components/app/ConfirmDelete';
 
 /**
  * The producer's own taxonomy, edited where it is read.
@@ -100,7 +101,7 @@ export function LabelToolbar({ kind, labels, builtIn = [] }: {
                   >
                     {l.label}
                   </button>
-                  <form action={removeLabel}>
+                  <DeleteForm action={removeLabel}>
                     <input type="hidden" name="label_id" value={l.id} />
                     <button
                       type="submit" aria-label={`${c.remove}: ${l.label}`}
@@ -108,7 +109,7 @@ export function LabelToolbar({ kind, labels, builtIn = [] }: {
                     >
                       <Trash2 size={12} strokeWidth={1.5} aria-hidden />
                     </button>
-                  </form>
+                  </DeleteForm>
                 </span>
               )}
             </li>

@@ -6,6 +6,7 @@ import type { LucideIcon } from 'lucide-react';
 import { useCopy } from '@/components/app/CopyProvider';
 import { uploadBrandAsset, removeBrandAsset, type BrandAsset, type BrandResult } from '@/app/actions/brand';
 import { cn } from '@/lib/utils';
+import { DeleteForm } from '@/components/app/ConfirmDelete';
 
 
 export type BrandAssetUrls = { logo: string | null; icon: string | null; cover: string | null };
@@ -126,13 +127,13 @@ function Asset({ kind, url }: { kind: BrandAsset; url: string | null }) {
           </button>
         </form>
         {url && !pending && (
-          <form action={removeBrandAsset}>
+          <DeleteForm action={removeBrandAsset}>
             <input type="hidden" name="kind" value={kind} />
             <button type="submit" className="btn-quiet inline-flex min-h-[38px] items-center gap-1.5 px-2 text-[13px]">
               <Trash2 size={14} strokeWidth={1.5} aria-hidden />
               {c.remove}
             </button>
-          </form>
+          </DeleteForm>
         )}
         {state?.ok && !pending && !local && (
           <span className="inline-flex items-center gap-1 text-[13px] text-ok">

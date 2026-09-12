@@ -8,6 +8,7 @@ import { CREW_ROLES } from '@/content/production';
 import { useCopy } from '@/components/app/CopyProvider';
 import { hhmm, inDayOrder } from '@/lib/runsheet';
 import { Money } from '@/components/Ltr';
+import { DeleteForm } from '@/components/app/ConfirmDelete';
 
 export type CrewMember = {
   id: string; name: string; role: string; phone: string;
@@ -139,7 +140,7 @@ function Row({ member, clientId }: { member: CrewMember; clientId: string }) {
         >
           <Pencil size={15} aria-hidden strokeWidth={1.5} />
         </button>
-        <form action={removeCrew}>
+        <DeleteForm action={removeCrew}>
           <input type="hidden" name="crew_id" value={member.id} />
           <input type="hidden" name="client_id" value={clientId} />
           <button
@@ -148,7 +149,7 @@ function Row({ member, clientId }: { member: CrewMember; clientId: string }) {
           >
             <Trash2 size={15} aria-hidden strokeWidth={1.5} />
           </button>
-        </form>
+        </DeleteForm>
       </div>
     </li>
   );
