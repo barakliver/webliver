@@ -23,7 +23,13 @@ export type CircleWho = {
 };
 
 export async function whoAmI(sb: SupabaseClient, account: Account, wanted?: string): Promise<CircleWho> {
-  if (account.producer) return { producerId: account.producer.id, clientId: null, eventName: '' };
+  /* By role, not by whether a producers row exists. A couple who signed up,
+     was guessed to be a producer, and was then decided a couple keeps that
+     row (rejected, never approved) — and this used to stop at it, hand the
+     couple the producer's read-only journal with the producer's "nothing
+     written yet", and offer no way to write. The role is the decision the
+     console made; the row is a leftover of the guess. */
+  if (account.role !== 'client') return { producerId: account.producer?.id ?? null, clientId: null, eventName: '' };
   const rows = await safeRows<{ id: string; producer_id: string; display_name: string }>('circle workspace',
     sb.from('clients').select('id,producer_id,display_name').is('archived_at', null).order('event_date', { ascending: true, nullsFirst: false }));
   const row = rows.find((r) => r.id === wanted) ?? rows[0] ?? null;
