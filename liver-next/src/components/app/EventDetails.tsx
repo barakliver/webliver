@@ -3,7 +3,7 @@
 import { fill } from '@/lib/copyText';
 import { eventKindsFor } from '@/content/ui';
 import type { Locale } from '@/lib/locale';
-import { useActionState, useState } from 'react';
+import { useActionState, useEffect, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { CalendarPlus, Pencil } from 'lucide-react';
 import { updateClientDetails, type ActionResult } from '@/app/actions/clients';
@@ -68,11 +68,34 @@ export function EventDetails({ event }: { event: EventCore }) {
   const [state, action] = useActionState<ActionResult | null, FormData>(
     async (prev, form) => {
       const r = await updateClientDetails(prev, form);
-      if (r.ok) setEditing(false);
+      if (r.ok) close();
       return r;
     },
     null
   );
+
+  /* The pencil beside the event's name at the top of the page points here
+     with `#event-details`. It used to scroll to this card and stop, leaving
+     a person in front of a second, smaller pencil — which read as a button
+     that did nothing. Arriving on the hash now opens the form itself, from
+     this tab or after a full navigation from another, and scrolls to it.
+     Closing clears the hash, so the pencil works a second time too. */
+  useEffect(() => {
+    const arrive = () => {
+      if (window.location.hash !== '#event-details') return;
+      setEditing(true);
+      window.setTimeout(() => document.getElementById('event-details')?.scrollIntoView({ block: 'start' }), 0);
+    };
+    arrive();
+    window.addEventListener('hashchange', arrive);
+    return () => window.removeEventListener('hashchange', arrive);
+  }, []);
+  const close = () => {
+    setEditing(false);
+    if (window.location.hash === '#event-details') {
+      window.history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
+  };
 
   const kind = eventKindsFor(locale).find((k) => k.value === event.kind)?.label ?? event.kind;
   /* Null covers both "no date yet" and "a date nothing can parse", and the
@@ -81,7 +104,9 @@ export function EventDetails({ event }: { event: EventCore }) {
 
   if (editing) {
     return (
-      <section className="card">
+      /* The same id while the form is open, so the pencil's target does not
+         vanish the moment it is used. */
+      <section id="event-details" className="card scroll-mt-24">
         <form action={action} noValidate>
           <h2 className="font-display text-[18px] font-semibold text-ink">{c.edit}</h2>
           <input type="hidden" name="client_id" value={event.id} />
@@ -128,7 +153,7 @@ export function EventDetails({ event }: { event: EventCore }) {
 
           <div className="mt-5 flex flex-wrap gap-3">
             <Save />
-            <button type="button" className="btn-ghost" onClick={() => setEditing(false)}>{c.editCancel}</button>
+            <button type="button" className="btn-ghost" onClick={close}>{c.editCancel}</button>
           </div>
         </form>
       </section>
