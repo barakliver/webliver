@@ -167,7 +167,7 @@ export async function loadPortal(
   const events = (eventsData ?? []) as PortalEvent[];
 
   const [tasks, payments, budget, guests, tables, day, boardRows, vendorRows, meetingRows] = await Promise.all([
-    sb.from('tasks').select('id,client_id,title,due_on,done,owner,created_by,event_id,category,vendor_id')
+    sb.from('tasks').select('id,client_id,title,due_on,done,owner,notes,created_by,event_id,category,vendor_id')
       .in('client_id', ids).order('done').order('sort_order')
       .order('due_on', { ascending: true, nullsFirst: false }),
     sb.from('payments').select('id,client_id,title,amount,due_on,paid,paid_on')

@@ -3,13 +3,13 @@
 import { useState, useActionState } from 'react';
 import { formatDate } from '@/lib/dates';
 import { useFormStatus } from 'react-dom';
-import { addTask, toggleTask, deleteTask, reorderTasks, type TaskResult } from '@/app/actions/tasks';
+import { addTask, toggleTask, deleteTask, updateTask, reorderTasks, type TaskResult } from '@/app/actions/tasks';
 import { Sortable, Handle } from '@/components/app/Sortable';
 import { useCopy } from '@/components/app/CopyProvider';
 import { DeleteForm } from '@/components/app/ConfirmDelete';
 import { shortDate } from '@/lib/appDates';
 import { isPastDue } from '@/lib/clock';
-import { EyeOff } from 'lucide-react';
+import { EyeOff, Pencil } from 'lucide-react';
 import { PlanOffer } from '@/components/app/PlanOffer';
 import { VendorCaptureModal } from '@/components/portal/VendorCaptureModal';
 import { pressOnCircle } from '@/content/eventFile';
@@ -23,6 +23,8 @@ export type Task = {
   due_on: string | null;
   done: boolean;
   owner: 'producer' | 'client';
+  /** A line of context, written when the task is edited. Empty is normal. */
+  notes?: string;
   created_by: string | null;
   event_id?: string;
   category?: string;
@@ -57,6 +59,7 @@ function Row({ task, clientId, viewer, canDelete, grip }: {
   grip?: React.ReactNode;
 }) {
   const [showVendorModal, setShowVendorModal] = useState(false);
+  const [editing, setEditing] = useState(false);
   /* The circle answers the press before the server does. A tick is a server
      action, a revalidation of three paths and a re-render, which on a phone in
      a hall is a second or more of a circle that looks exactly as it did — so
@@ -160,8 +163,23 @@ function Row({ task, clientId, viewer, canDelete, grip }: {
           </span>
           {' · '}{ownerLabel}
         </p>
+        {task.notes && (
+          <p className="mt-1 whitespace-pre-line text-[13px] leading-snug text-ink-soft">{task.notes}</p>
+        )}
       </div>
 
+        {/* Editing after writing: the title, the date, whose it is, and a
+            note. It used to be tick or delete and nothing in between, so a
+            typo in a task was a task deleted and written again. */}
+        <button
+          type="button"
+          onClick={() => setEditing((v) => !v)}
+          aria-expanded={editing}
+          className="btn-quiet inline-flex items-center gap-1 px-2 py-1 text-[13px]"
+        >
+          <Pencil size={13} aria-hidden strokeWidth={1.5} />
+          {c.edit}
+        </button>
         {canDelete && (
           <DeleteForm action={deleteTask}>
             <input type="hidden" name="task_id" value={task.id} />
@@ -170,6 +188,10 @@ function Row({ task, clientId, viewer, canDelete, grip }: {
           </DeleteForm>
         )}
       </div>
+
+      {editing && (
+        <EditForm task={task} clientId={clientId} viewer={viewer} onDone={() => setEditing(false)} />
+      )}
 
       {/* Show vendor capture modal when task marked done */}
       {showVendorModal && task.event_id && task.category && (
@@ -212,6 +234,63 @@ function Row({ task, clientId, viewer, canDelete, grip }: {
         />
       )}
     </>
+  );
+}
+
+function SaveEdit() {
+  const c = useCopy().tasks;
+  const { pending } = useFormStatus();
+  return (
+    <button type="submit" className="btn-primary" disabled={pending}>
+      {pending ? c.editSaving : c.editSave}
+    </button>
+  );
+}
+
+/** The four things a task is, editable in place under its row. The owner
+ *  labels are the viewer's own words for the two sides, the same ones the
+ *  row uses, so "ours" means the same thing above and below the line. */
+function EditForm({ task, clientId, viewer, onDone }: {
+  task: Task; clientId: string; viewer: 'producer' | 'client'; onDone: () => void;
+}) {
+  const c = useCopy().tasks;
+  const [state, action] = useActionState<TaskResult | null, FormData>(
+    async (prev, form) => {
+      const r = await updateTask(prev, form);
+      if (r.ok) onDone();
+      return r;
+    },
+    null,
+  );
+  const ownerLabel = (o: 'producer' | 'client') =>
+    viewer === 'producer'
+      ? (o === 'producer' ? c.ownerProducer : c.ownerClient)
+      : (o === 'producer' ? c.ownerProducerClientView : c.ownerClientClientView);
+
+  return (
+    <form action={action} noValidate className="mt-3 grid gap-3 rounded-xl2 border border-line bg-surface-100 p-4 sm:grid-cols-2">
+      <input type="hidden" name="task_id" value={task.id} />
+      <input type="hidden" name="client_id" value={clientId} />
+      <p className="text-[14px] font-medium text-ink sm:col-span-2">{c.editTitle}</p>
+      {state && !state.ok && state.error && (
+        <p role="alert" className="rounded-control border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad sm:col-span-2">{state.error}</p>
+      )}
+      <label className="grid gap-1 text-[12.5px] text-ink-mute sm:col-span-2">{c.titlePh}
+        <input name="title" required maxLength={200} defaultValue={task.title} className="field" autoComplete="off" /></label>
+      <label className="grid gap-1 text-[12.5px] text-ink-mute">{c.due}
+        <input name="due_on" type="date" defaultValue={task.due_on ?? ''} className="field" /></label>
+      <label className="grid gap-1 text-[12.5px] text-ink-mute">{c.owner}
+        <select name="owner" defaultValue={task.owner} className="field">
+          <option value="producer">{ownerLabel('producer')}</option>
+          <option value="client">{ownerLabel('client')}</option>
+        </select></label>
+      <label className="grid gap-1 text-[12.5px] text-ink-mute sm:col-span-2">{c.notes}
+        <textarea name="notes" rows={2} maxLength={1000} defaultValue={task.notes ?? ''} placeholder={c.notesPh} className="field" /></label>
+      <div className="flex flex-wrap items-center gap-2 sm:col-span-2">
+        <SaveEdit />
+        <button type="button" onClick={onDone} className="btn-ghost">{c.editCancel}</button>
+      </div>
+    </form>
   );
 }
 

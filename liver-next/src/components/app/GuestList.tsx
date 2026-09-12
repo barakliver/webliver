@@ -8,6 +8,7 @@ import { addGuests, deleteGuest, setGuestStatus, type GuestResult } from '@/app/
 import { DIETS } from '@/content/lists';
 import { GuestImport } from '@/components/app/GuestImport';
 import { useCopy } from '@/components/app/CopyProvider';
+import { DeleteForm } from '@/components/app/ConfirmDelete';
 import { normalizePhone } from '@/lib/phone';
 import { publicEnv } from '@/lib/env';
 import { fill } from '@/lib/copyText';
@@ -112,11 +113,11 @@ function RowActions({ guest, clientId }: { guest: Guest; clientId: string }) {
           <button type="submit" className="btn-quiet px-2 py-1 text-[13px]">✓</button>
         </form>
       )}
-      <form action={deleteGuest}>
+      <DeleteForm action={deleteGuest}>
         <input type="hidden" name="guest_id" value={guest.id} />
         <input type="hidden" name="client_id" value={clientId} />
         <button type="submit" className="btn-quiet px-2 py-1 text-[13px]">{c.remove}</button>
-      </form>
+      </DeleteForm>
     </>
   );
 }

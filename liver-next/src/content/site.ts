@@ -1505,6 +1505,13 @@ export const appCopy = {
     remove: 'מחיקה',
     byProducer: 'נכתב על ידי ההפקה',
     byClient: 'נכתב על ידי הזוג',
+    edit: 'עריכה',
+    editTitle: 'עריכת משימה',
+    editSave: 'שמירה',
+    editSaving: 'שומר',
+    editCancel: 'ביטול',
+    notes: 'הערה',
+    notesPh: 'משהו שחשוב לזכור על המשימה הזו',
   },
 
   book: {
@@ -1915,7 +1922,8 @@ export const appCopy = {
        a date the producer already agreed with a hall is not a question. */
     begin: {
       title: 'כמה דברים על החתונה שלכם',
-      sub: 'חמש שאלות קצרות. אפשר לדלג על כל אחת מהן, ומה שלא ידוע עכשיו יישאר פתוח.',
+      sub: '{n} שאלות קצרות. אפשר לדלג על כל אחת מהן, ומה שלא ידוע עכשיו יישאר פתוח.',
+      subOne: 'שאלה אחת קצרה. אפשר לדלג עליה, ומה שלא ידוע עכשיו יישאר פתוח.',
       of: 'שאלה {n} מתוך {of}',
       skip: 'עוד לא יודעים',
       back: 'אחורה',

@@ -80,7 +80,11 @@ export function BeginFlow({ clientId, basics, defaultOpen = false }: {
           <Sparkles size={19} aria-hidden strokeWidth={1.5} className="shrink-0 text-accent" />
           {c.title}
         </h2>
-        <p className="mt-2 max-w-prose2 text-[14.5px] leading-relaxed text-ink-soft">{c.sub}</p>
+        {/* Counted from the questions actually left, so the card and the
+            "question 1 of 2" inside it can never disagree. */}
+        <p className="mt-2 max-w-prose2 text-[14.5px] leading-relaxed text-ink-soft">
+          {steps.length === 1 ? c.subOne : fill(c.sub, { n: steps.length })}
+        </p>
         <div className="mt-5 flex flex-wrap gap-2">
           <button type="button" onClick={() => setOpen(true)} className="btn-primary">{c.open}</button>
         </div>

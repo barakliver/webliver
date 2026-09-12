@@ -198,7 +198,7 @@ export const STANDING_CHECKLIST: TaskGroup[] = [
       { title: 'לפתוח תיק ברבנות', shared: true },
       { title: 'לסגור רב', shared: true, vendor: 'rabbi' },
       { title: 'מקווה', shared: true },
-      { title: 'חינה ?', shared: true },
+      { title: 'חינה?', shared: true },
       { title: 'שבת חתן?', shared: true },
     ],
   },
@@ -246,7 +246,7 @@ export const STANDING_CHECKLIST: TaskGroup[] = [
         note: 'קוקטיילים, ברמן מפעיל בבר, משהו שמוסיף עניין בגדול',
         vendor: 'attraction',
       },
-      { title: 'בטקס- 7 ברכות ?', shared: true, note: 'מי מקריא, ילדות פרחים מי הן ?' },
+      { title: 'בטקס: 7 ברכות?', shared: true, note: 'מי מקריא, ילדות פרחים מי הן?' },
       { title: 'מתנות לאורחים', shared: true },
       /* Carries a rate. Money is producer-only everywhere else in this
          product, and a couple reading what the staff are tipped is the same

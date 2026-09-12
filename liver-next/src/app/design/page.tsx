@@ -121,6 +121,7 @@ import { Metric, MetricRows, MetricBlock } from '@/components/app/Metric';
 import { PageHead, Empty } from '@/components/app/PageHead';
 import { TroubleLine } from '@/components/app/LoadTrouble';
 import { FlashLine } from '@/components/app/Flash';
+import { FlashToast } from '@/components/app/FlashToast';
 import { Avatar } from '@/components/app/Avatar';
 import { ArchiveButton } from '@/components/app/ArchiveButton';
 import { PrintButton } from '@/components/app/PrintButton';
@@ -1372,6 +1373,16 @@ export default async function DesignPage() {
                 screen cannot show, where silence reads as a dead button. */}
             <FlashLine tone="ok" text="נרשמו כזוג שמתכנן לבד, ונפתח להם מרחב עבודה משלהם." />
           </div>
+        </Panel>
+
+        {/* The same sentence where it now lives on a real screen: floating
+            at the foot, beside the thumb. Drawn in the flow here so the
+            gallery can hold it; on a screen it is fixed and a confirmation
+            leaves on its own after a few seconds. */}
+        <Panel name="FlashToast" note="the floating home of the sentence above: bottom of the screen, gone by itself when it is a confirmation">
+          <FlashToast tone="ok" inline>
+            <FlashLine tone="ok" text="המשימה נוספה." className="mb-0 bg-card" />
+          </FlashToast>
         </Panel>
 
         <Panel name="Avatar" note="initials when there is no picture, which is almost always">

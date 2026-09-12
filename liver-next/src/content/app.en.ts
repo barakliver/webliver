@@ -103,7 +103,8 @@ export const portalEn: PortalCopy = {
   },
   begin: {
     title: 'A few things about your wedding',
-    sub: 'Five short questions. Any of them can be skipped, and anything you do not know yet stays open.',
+    sub: '{n} short questions. Any of them can be skipped, and anything you do not know yet stays open.',
+    subOne: 'One short question. It can be skipped, and anything you do not know yet stays open.',
     of: 'Question {n} of {of}',
     skip: 'Not decided yet',
     back: 'Back',
@@ -242,6 +243,13 @@ export const tasksEn: TasksCopy = {
   remove: 'Delete',
   byProducer: 'Written by the production',
   byClient: 'Written by the couple',
+  edit: 'Edit',
+  editTitle: 'Edit task',
+  editSave: 'Save',
+  editSaving: 'Saving',
+  editCancel: 'Cancel',
+  notes: 'Note',
+  notesPh: 'Something worth remembering about this task',
 };
 
 export const moneyEn: MoneyCopy = {

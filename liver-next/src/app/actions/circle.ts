@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { currentAccount } from '@/lib/auth';
-import { noteFailure } from '@/lib/flash';
+import { noteFailure, noteDone } from '@/lib/flash';
 import { isCategory } from '@/content/critique';
 
 export type CircleResult = { ok: boolean; error?: string };
@@ -44,6 +44,7 @@ export async function addCirclePost(_prev: CircleResult | null, form: FormData):
     console.error('[circle] post failed', error);
     return { ok: false, error: 'לא הצלחנו לפרסם. אפשר לנסות שוב.' };
   }
+  await noteDone('הפוסט פורסם במעגל.');
   touch();
   return { ok: true };
 }
@@ -68,6 +69,7 @@ export async function addCircleReply(_prev: CircleResult | null, form: FormData)
     return { ok: false, error: 'לא הצלחנו לשלוח. אפשר לנסות שוב.' };
   }
   touch(postId);
+  await noteDone('התשובה פורסמה.');
   return { ok: true };
 }
 

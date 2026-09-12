@@ -5,6 +5,7 @@ import { useActionState, useEffect, useRef } from 'react';
 import { useFormStatus } from 'react-dom';
 import { ArrowLeft } from 'lucide-react';
 import { useCopy } from '@/components/app/CopyProvider';
+import { DeleteForm } from '@/components/app/ConfirmDelete';
 import { addCircleReply, deleteCircleReply, type CircleResult } from '@/app/actions/circle';
 import { AuthorLine, VoteButton } from '@/components/app/CircleFeed';
 import type { CirclePost, CircleReply } from '@/lib/circle';
@@ -71,11 +72,11 @@ export function CircleThread({ post, replies, clientId, viewer }: {
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <AuthorLine post={r} />
                   {(r.mine || viewer === 'producer') && (
-                    <form action={deleteCircleReply}>
+                    <DeleteForm action={deleteCircleReply}>
                       <input type="hidden" name="id" value={r.id} />
                       <input type="hidden" name="post_id" value={post.id} />
                       <button type="submit" className="btn-quiet px-2 text-[13px]">{c.remove}</button>
-                    </form>
+                    </DeleteForm>
                   )}
                 </div>
                 <p className="mt-2 whitespace-pre-line text-[15px] leading-relaxed text-ink">{r.content}</p>

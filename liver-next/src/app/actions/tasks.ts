@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { currentAccount } from '@/lib/auth';
-import { noteFailure } from '@/lib/flash';
+import { noteFailure, noteDone } from '@/lib/flash';
 
 export type TaskResult = { ok: boolean; error?: string };
 
@@ -34,6 +34,43 @@ export async function addTask(_prev: TaskResult | null, form: FormData): Promise
   });
   if (error) return { ok: false, error: 'לא הצלחנו לשמור את המשימה' };
 
+  await noteDone('המשימה נוספה.');
+  revalidatePath(`/app/clients/${clientId}`);
+  revalidatePath('/app/portal');
+  revalidatePath('/app');
+  return { ok: true };
+}
+
+/** A task, corrected after it was written: the title, the date, whose it
+ *  is, and a line of context. Done and the owner's own checks are not
+ *  touched here; the tick has its own action and the database decides who
+ *  may write the row. */
+export async function updateTask(_prev: TaskResult | null, form: FormData): Promise<TaskResult> {
+  const id = String(form.get('task_id') ?? '');
+  const clientId = String(form.get('client_id') ?? '');
+  const title = String(form.get('title') ?? '').trim();
+  const dueOn = String(form.get('due_on') ?? '').trim();
+  const ownerRaw = String(form.get('owner') ?? 'producer');
+  const owner: Owner = OWNERS.includes(ownerRaw as Owner) ? (ownerRaw as Owner) : 'producer';
+  const notes = String(form.get('notes') ?? '').trim().slice(0, 1000);
+
+  if (!id || !clientId) return { ok: false, error: 'חסר מזהה משימה' };
+  if (title.length < 2) return { ok: false, error: 'נא לכתוב מה צריך לעשות' };
+  if (dueOn && !/^\d{4}-\d{2}-\d{2}$/.test(dueOn)) return { ok: false, error: 'התאריך לא תקין' };
+
+  const account = await currentAccount();
+  if (!account) return { ok: false, error: 'צריך להתחבר' };
+
+  const sb = await supabaseServer();
+  const { error } = await sb.from('tasks')
+    .update({ title: title.slice(0, 200), due_on: dueOn || null, owner, notes })
+    .eq('id', id);
+  if (error) {
+    console.error('[tasks] updateTask failed', error);
+    return { ok: false, error: 'לא הצלחנו לשמור את השינוי' };
+  }
+
+  await noteDone('המשימה עודכנה.');
   revalidatePath(`/app/clients/${clientId}`);
   revalidatePath('/app/portal');
   revalidatePath('/app');
@@ -94,6 +131,8 @@ export async function deleteTask(form: FormData): Promise<void> {
   if (error) {
     console.error('[tasks] deleteTask failed', error);
     await noteFailure('לא הצלחנו למחוק. אפשר לנסות שוב.');
+  } else {
+    await noteDone('המשימה נמחקה.');
   }
 
   revalidatePath(`/app/clients/${clientId}`);

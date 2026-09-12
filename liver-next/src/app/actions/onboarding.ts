@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { currentAccount } from '@/lib/auth';
+import { noteDone } from '@/lib/flash';
 import { shiftDate } from '@/content/timeline';
 import { todayInZone } from '@/lib/clock';
 import { startingTasks, MAX_MUST, type Answers } from '@/lib/onboarding';
@@ -89,6 +90,7 @@ export async function saveBasics(input: {
   const wrote = readWrote(data);
   const tasks = await seedTasks(sb, input.clientId, { date, guests, must });
 
+  await noteDone('התשובות נשמרו.');
   revalidatePath('/app/portal');
   revalidatePath(`/app/clients/${input.clientId}`);
   return { ok: true, wrote, tasks };

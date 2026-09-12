@@ -4,6 +4,7 @@ import { useActionState, useEffect, useRef, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { Plus, ImagePlus, MapPin } from 'lucide-react';
 import { useCopy } from '@/components/app/CopyProvider';
+import { DeleteForm } from '@/components/app/ConfirmDelete';
 import { supabaseBrowser } from '@/lib/supabase/client';
 import { saveCritiqueLog, deleteCritiqueLog, type JournalResult } from '@/app/actions/journal';
 import type { JournalLog } from '@/lib/circle';
@@ -187,10 +188,10 @@ function LogCard({ log, viewer }: { log: JournalLog; viewer: 'producer' | 'clien
           </p>
         </div>
         {viewer === 'client' && (
-          <form action={deleteCritiqueLog}>
+          <DeleteForm action={deleteCritiqueLog}>
             <input type="hidden" name="id" value={log.id} />
             <button type="submit" className="btn-quiet px-2 text-[13px]">{c.remove}</button>
-          </form>
+          </DeleteForm>
         )}
       </div>
 

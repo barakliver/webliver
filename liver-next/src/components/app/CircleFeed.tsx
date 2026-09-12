@@ -5,6 +5,7 @@ import { useActionState, useEffect, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { Plus, MessageCircle, ThumbsUp, BadgeCheck } from 'lucide-react';
 import { useCopy } from '@/components/app/CopyProvider';
+import { DeleteForm } from '@/components/app/ConfirmDelete';
 import { addCirclePost, toggleCircleVote, deleteCirclePost, type CircleResult } from '@/app/actions/circle';
 import type { CirclePost } from '@/lib/circle';
 import { count } from '@/lib/copyText';
@@ -174,10 +175,10 @@ export function CircleFeed({ producerId, clientId, posts, category, viewer }: {
                     {p.replies === 0 ? c.reply.post : count(c.reply.count, p.replies)}
                   </Link>
                   {(p.mine || viewer === 'producer') && (
-                    <form action={deleteCirclePost} className="ms-auto">
+                    <DeleteForm action={deleteCirclePost} className="ms-auto">
                       <input type="hidden" name="id" value={p.id} />
                       <button type="submit" className="btn-quiet px-2 text-[13px]">{c.remove}</button>
-                    </form>
+                    </DeleteForm>
                   )}
                 </div>
                 {p.upvotes > 0 && (

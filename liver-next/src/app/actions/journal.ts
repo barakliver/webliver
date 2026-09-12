@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { currentAccount } from '@/lib/auth';
-import { noteFailure } from '@/lib/flash';
+import { noteFailure, noteDone } from '@/lib/flash';
 import { isProTag, isConTag, isStyle } from '@/content/critique';
 
 export type JournalResult = { ok: boolean; error?: string };
@@ -51,6 +51,7 @@ export async function saveCritiqueLog(_prev: JournalResult | null, form: FormDat
     console.error('[journal] insert failed', error);
     return { ok: false, error: 'לא הצלחנו לשמור. אפשר לנסות שוב.' };
   }
+  await noteDone('החתונה נרשמה ביומן.');
   revalidatePath('/app/portal/journal');
   revalidatePath(`/app/clients/${clientId}`);
   return { ok: true };

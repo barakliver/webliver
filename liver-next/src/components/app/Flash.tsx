@@ -1,6 +1,7 @@
 import { Check, TriangleAlert } from 'lucide-react';
 import { readFlash, FLASH_COOKIE, type FlashTone } from '@/lib/flash';
 import { FlashClear } from './FlashClear';
+import { FlashToast } from './FlashToast';
 
 /**
  * The sentence an action left behind, shown once.
@@ -18,7 +19,13 @@ import { FlashClear } from './FlashClear';
 export async function Flash() {
   const { text, tone } = await readFlash();
   if (!text) return null;
-  return <FlashLine text={text} tone={tone} />;
+  /* Floating at the foot of the screen, beside the thumb, rather than at the
+     top of the content where a long screen hid it. See FlashToast. */
+  return (
+    <FlashToast tone={tone}>
+      <FlashLine text={text} tone={tone} className="mb-0 bg-card" />
+    </FlashToast>
+  );
 }
 
 /**
@@ -26,13 +33,13 @@ export async function Flash() {
  * same reason the load-trouble line was split. This shows on almost no
  * morning, so it can only be looked at if it can be handed a sentence.
  */
-export function FlashLine({ text, tone = 'bad' }: { text: string; tone?: FlashTone }) {
+export function FlashLine({ text, tone = 'bad', className = 'mb-5' }: { text: string; tone?: FlashTone; className?: string }) {
   const ok = tone === 'ok';
   const Icon = ok ? Check : TriangleAlert;
   return (
     <p
       role="status"
-      className={`mb-5 flex items-start gap-2.5 rounded-xl2 border px-4 py-3 text-[14px] leading-relaxed text-ink ${
+      className={`${className} flex items-start gap-2.5 rounded-xl2 border px-4 py-3 text-[14px] leading-relaxed text-ink ${
         ok ? 'border-ok/30 bg-ok-wash' : 'border-bad/30 bg-bad-wash'
       }`}
     >
