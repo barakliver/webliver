@@ -2,13 +2,13 @@ import type { Locale } from '../lib/locale.ts';
 import {
   appCopy, guestsCopy, seatingCopy, dayCopy, threadCopy, partyCopy, contractCopy, eventFileCopy,
   noticeCopy, ticketCopy, companionCopy, prepCopy, venueCopy, envelopesCopy, vehiclesCopy,
-  meetingTemplatesCopy, timelineCopy, studioCopy, journalCopy, circleCopy,
+  meetingTemplatesCopy, timelineCopy, studioCopy, journalCopy, circleCopy, confirmCopy,
   leadsCopy, crewCopy, vendorCopy, templateCopy, barCopy, updateCopy, linkCopy, signCopy,
   siteEditorCopy, hebrewCalCopy, labelCopy, knowledgeCopy, jumpCopy, copilotCopy, archiveCopy,
   meetingCopy, noteCopy, workflowCopy, referralCopy, holidayCopy,
 } from './site.ts';
 import {
-  noticeCopyEn, ticketCopyEn, companionCopyEn, prepCopyEn, venueCopyEn, envelopesCopyEn, vehiclesCopyEn,
+  noticeCopyEn, ticketCopyEn, companionCopyEn, prepCopyEn, venueCopyEn, envelopesCopyEn, vehiclesCopyEn, confirmEn,
   meetingTemplatesCopyEn, timelineCopyEn, studioCopyEn, journalEn, circleEn,
   portalEn, filesEn, sheetsEn, tasksEn, moneyEn, boardEn, bookEn,
   guestsEn, seatingEn, dayEn, threadEn, partyEn, contractEn, eventFileEn,
@@ -83,6 +83,7 @@ export type StudioCopy = Wide<typeof studioCopy>;
    couples around one producer. Both are read from both sides. */
 export type JournalCopy = Wide<typeof journalCopy>;
 export type CircleCopy = Wide<typeof circleCopy>;
+export type ConfirmCopy = Wide<typeof confirmCopy>;
 /* The halls. Both sides edit it and the couple is the side that toured them,
    so it is resolved rather than handed the console's Hebrew. */
 export type VenueCopy = Wide<typeof venueCopy>;
@@ -149,6 +150,8 @@ export type AppUi = {
   studio: StudioCopy;
   journal: JournalCopy;
   circle: CircleCopy;
+  /** The question every delete asks first, and its two answers. */
+  confirm: ConfirmCopy;
 } & ConsoleCopy;
 
 const consoleHe: ConsoleCopy = {
@@ -179,6 +182,7 @@ export const APP_UI_HE: AppUi = {
   timeline: timelineCopy,
   studio: studioCopy,
   journal: journalCopy, circle: circleCopy,
+  confirm: confirmCopy,
   ...consoleHe,
 };
 
@@ -200,6 +204,7 @@ const APP_UI_EN: AppUi = {
   timeline: timelineCopyEn,
   studio: studioCopyEn,
   journal: journalEn, circle: circleEn,
+  confirm: confirmEn,
   ...consoleEn,
 };
 

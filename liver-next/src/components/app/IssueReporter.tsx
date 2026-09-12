@@ -2,7 +2,7 @@
 
 import { useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { Bug, Check, ImagePlus, X } from 'lucide-react';
+import { Flag, Check, ImagePlus, X } from 'lucide-react';
 import { Sheet } from '@/components/app/Sheet';
 import { supabaseBrowser } from '@/lib/supabase/client';
 import { fileTicket } from '@/app/actions/tickets';
@@ -102,7 +102,7 @@ export function IssueReporter({ userId, compact, row, context, copy }: {
           title={c.openHere}
           className="grid size-11 place-items-center rounded-control text-ink-mute transition-colors hover:bg-surface-200 hover:text-ink"
         >
-          <Bug size={16} strokeWidth={1.5} aria-hidden />
+          <Flag size={16} strokeWidth={1.5} aria-hidden />
         </button>
       ) : row ? (
         <button
@@ -110,7 +110,7 @@ export function IssueReporter({ userId, compact, row, context, copy }: {
           onClick={() => { reset(); setOpen(true); }}
           className="flex min-h-[52px] w-full items-center gap-3 border-b border-line px-1 text-start text-[15px] text-ink-soft transition-colors duration-300 hover:text-ink"
         >
-          <Bug size={20} strokeWidth={1.5} aria-hidden />
+          <Flag size={20} strokeWidth={1.5} aria-hidden />
           {c.open}
         </button>
       ) : (
@@ -124,7 +124,7 @@ export function IssueReporter({ userId, compact, row, context, copy }: {
             compact ? 'min-h-[40px] min-w-[40px]' : 'size-9',
           )}
         >
-          <Bug size={compact ? 17 : 16} strokeWidth={1.5} aria-hidden />
+          <Flag size={compact ? 17 : 16} strokeWidth={1.5} aria-hidden />
         </button>
       )}
 

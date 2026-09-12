@@ -5,6 +5,7 @@ import { supabaseServer } from '@/lib/supabase/server';
 import { TRACKS, AUDIENCES, type Track } from '@/content/lists';
 import { templateById } from '@/content/runsheets';
 import { noteFailure } from '@/lib/flash';
+import { normalizeTime } from '@/lib/timeField';
 
 export type DayResult = { ok: boolean; error?: string };
 
@@ -43,11 +44,15 @@ type DayFields = {
 
 function readFields(form: FormData): DayFields | string {
   const title = String(form.get('title') ?? '').trim();
-  const time = String(form.get('at_time') ?? '').trim();
+  /* Whatever shape it was typed in: 19:30, 1930, 7:30, 19.30. The native
+     time input used to submit an empty string on a twelve-hour machine
+     while showing a time, and the answer was "choose a time" over a field
+     that had one. */
+  const time = normalizeTime(String(form.get('at_time') ?? ''));
   const trackRaw = String(form.get('track') ?? 'shared');
 
   if (title.length < 2) return 'נא לכתוב מה קורה';
-  if (!/^\d{2}:\d{2}$/.test(time)) return 'נא לבחור שעה';
+  if (!time) return 'נא לכתוב שעה, למשל 19:30';
 
   return {
     track: TRACKS.includes(trackRaw as Track) ? (trackRaw as Track) : 'shared',

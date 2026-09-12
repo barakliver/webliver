@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { formatDate } from '@/lib/dates';
 import { notFound } from 'next/navigation';
-import { ArrowRight } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { requireAccount } from '@/lib/auth';
 import { supabaseServer } from '@/lib/supabase/server';
 import { serverCopy } from '@/lib/serverLocale';
@@ -102,7 +102,7 @@ export default async function RunsheetPage({
     <>
       <div className="no-print mb-6 flex flex-wrap items-center justify-between gap-3">
         <Link href={`/app/clients/${id}`} className="btn-quiet inline-flex items-center gap-1.5 px-0 text-[14px]">
-          <ArrowRight size={16} aria-hidden strokeWidth={1.5} />
+          <ArrowLeft size={16} aria-hidden strokeWidth={1.5} />
           {c.back}
         </Link>
         <PrintButton label={c.print} />

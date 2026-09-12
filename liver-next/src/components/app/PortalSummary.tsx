@@ -95,9 +95,10 @@ export function summaryRows(opts: {
          into lines was being shown a budget of nought, which reads as a fact
          about their wedding rather than as a fact about the screen. */
       label: c.rowBudget,
-      value: opts.budget === null
-        ? <span className="text-[14px] font-normal text-ink-mute">{c.rowNone}</span>
-        : <Money value={opts.budget} />,
+      /* Nought rather than a dot when nothing is entered: the dot read as a
+         broken figure on the summary, and the row's own link leads to where
+         the budget is set. */
+      value: <Money value={opts.budget ?? 0} className={opts.budget === null ? 'text-ink-mute' : undefined} />,
       href: '#budget',
       shown: opts.can('budget'),
     },

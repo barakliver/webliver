@@ -9,6 +9,7 @@ import {
 } from '@/app/actions/store';
 import { Sortable, Handle } from '@/components/app/Sortable';
 import { storeCopy as c } from '@/content/site';
+import { DeleteForm } from '@/components/app/ConfirmDelete';
 import { Money } from '@/components/Ltr';
 import { storeImageUrl } from '@/lib/store';
 
@@ -223,15 +224,12 @@ export function StoreProducts({ producerId, products }: {
                     {c.edit}
                   </button>
 
-                  <form
-                    action={deleteProduct}
-                    onSubmit={(e) => { if (!confirm(c.removeAsk)) e.preventDefault(); }}
-                  >
+                  <DeleteForm action={deleteProduct} ask={c.removeAsk}>
                     <input type="hidden" name="id" value={p.id} />
                     <button type="submit" className="btn-quiet px-2 py-1 text-[13px]" aria-label={`${c.remove} ${p.name}`}>
                       <Trash2 size={14} aria-hidden strokeWidth={1.5} />
                     </button>
-                  </form>
+                  </DeleteForm>
                 </div>
               </div>
 

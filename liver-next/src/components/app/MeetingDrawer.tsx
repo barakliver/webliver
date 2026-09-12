@@ -10,6 +10,7 @@ import { BUILT_IN_TEMPLATES, meetingTemplate, type Field, type MeetingTemplate }
 import { completeness } from '@/lib/ai/meeting';
 import { templateOf } from '@/lib/meetingTemplates';
 import { useCopy } from '@/components/app/CopyProvider';
+import { DeleteForm } from '@/components/app/ConfirmDelete';
 import type { MeetingCopy } from '@/content/appUi';
 import { EVENT_ZONE } from '@/lib/clock';
 
@@ -197,7 +198,7 @@ export function MeetingDrawer({ clientId, logs, own = [] }: {
                         className={`text-ink-mute transition-transform ${on ? 'rotate-180' : ''}`}
                       />
                     )}
-                    <form action={deleteMeeting} onSubmit={(e) => { if (!confirm(c.removeAsk)) e.preventDefault(); }}>
+                    <DeleteForm action={deleteMeeting} ask={c.removeAsk}>
                       <input type="hidden" name="id" value={log.id} />
                       <input type="hidden" name="client_id" value={clientId} />
                       <button
@@ -207,7 +208,7 @@ export function MeetingDrawer({ clientId, logs, own = [] }: {
                       >
                         <Trash2 size={14} aria-hidden strokeWidth={1.5} />
                       </button>
-                    </form>
+                    </DeleteForm>
                   </span>
                 </div>
 

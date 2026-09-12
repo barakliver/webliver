@@ -128,9 +128,9 @@ export const fixtureDay: DayItem[] = [
 ];
 
 export const fixtureMessages: Message[] = [
-  { id: 'm1', author_id: 'producer', body: 'שלחתי לכם את ההסכם לחתימה. תעברו עליו ותגידו לי אם משהו לא ברור.', created_at: hoursAgo(52), author_name: 'ברק ליור', author_avatar: null },
+  { id: 'm1', author_id: 'producer', body: 'שלחתי לכם את ההסכם לחתימה. תעברו עליו ותגידו לי אם משהו לא ברור.', created_at: hoursAgo(52), author_name: 'ברק ליבר', author_avatar: null },
   { id: 'm2', author_id: FIXTURE_VIEWER, body: 'קראנו, הכל ברור. חתמנו.', created_at: hoursAgo(50), author_name: 'נועה', author_avatar: null },
-  { id: 'm3', author_id: 'producer', body: 'מעולה. הטעימות אצל הקייטרינג ביום שלישי ב-18:00, נתראה שם.', created_at: hoursAgo(3), author_name: 'ברק ליור', author_avatar: null },
+  { id: 'm3', author_id: 'producer', body: 'מעולה. הטעימות אצל הקייטרינג ביום שלישי ב-18:00, נתראה שם.', created_at: hoursAgo(3), author_name: 'ברק ליבר', author_avatar: null },
 ];
 
 export const fixtureContracts: Contract[] = [
@@ -148,7 +148,7 @@ export const fixtureContracts: Contract[] = [
 
 export const fixtureFiles: EventFile[] = [
   { id: 'f1', name: 'הזמנה-סופית.pdf', note: 'הגרסה שיצאה לדפוס', tag: '', mime: 'application/pdf', size_bytes: 840_000, created_at: hoursAgo(70), uploader: 'נועה', mine: true, url: '#' },
-  { id: 'f2', name: 'תוכנית-אולם.xlsx', note: '', tag: '', mime: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', size_bytes: 62_000, created_at: hoursAgo(30), uploader: 'ברק ליור', mine: false, url: '#' },
+  { id: 'f2', name: 'תוכנית-אולם.xlsx', note: '', tag: '', mime: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', size_bytes: 62_000, created_at: hoursAgo(30), uploader: 'ברק ליבר', mine: false, url: '#' },
 ];
 
 /* Pictures for the vault: inline SVG data addresses, so the harness needs no
@@ -160,10 +160,10 @@ const swatch = (a: string, b: string) =>
   )}`;
 
 export const fixtureMedia: EventFile[] = [
-  { id: 'm1', name: 'האולם-מהכניסה.jpg', note: 'הכניסה הראשית, שעת שקיעה', tag: 'venue', mime: 'image/jpeg', size_bytes: 2_400_000, created_at: hoursAgo(90), uploader: 'ברק ליור', mine: false, url: swatch('#c9b79c', '#7a6a55') },
+  { id: 'm1', name: 'האולם-מהכניסה.jpg', note: 'הכניסה הראשית, שעת שקיעה', tag: 'venue', mime: 'image/jpeg', size_bytes: 2_400_000, created_at: hoursAgo(90), uploader: 'ברק ליבר', mine: false, url: swatch('#c9b79c', '#7a6a55') },
   { id: 'm2', name: 'שולחן-ראשי.jpg', note: '', tag: 'design', mime: 'image/jpeg', size_bytes: 1_900_000, created_at: hoursAgo(80), uploader: 'נועה', mine: true, url: swatch('#e8dccb', '#b89b7a') },
   { id: 'm3', name: 'חופה-השראה.png', note: 'משהו בכיוון הזה, בלי הפרחים הכחולים', tag: 'inspiration', mime: 'image/png', size_bytes: 980_000, created_at: hoursAgo(60), uploader: 'נועה', mine: true, url: swatch('#d9e2dc', '#6f8a7c') },
-  { id: 'm4', name: 'הצעת-מחיר-פרחים.jpg', note: '', tag: 'vendors', mime: 'image/jpeg', size_bytes: 1_200_000, created_at: hoursAgo(40), uploader: 'ברק ליור', mine: false, url: swatch('#f0e6e0', '#a07c74') },
+  { id: 'm4', name: 'הצעת-מחיר-פרחים.jpg', note: '', tag: 'vendors', mime: 'image/jpeg', size_bytes: 1_200_000, created_at: hoursAgo(40), uploader: 'ברק ליבר', mine: false, url: swatch('#f0e6e0', '#a07c74') },
   { id: 'm5', name: 'IMG_4412.jpg', note: '', tag: '', mime: 'image/jpeg', size_bytes: 3_100_000, created_at: hoursAgo(5), uploader: 'נועה', mine: true, url: swatch('#e6e9ee', '#7d8794') },
 ];
 

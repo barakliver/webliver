@@ -7,6 +7,7 @@ import { X, Plus, Pencil, CalendarHeart, CheckCircle2, Wallet, NotebookPen } fro
 import type { CalItem } from '@/lib/calendar';
 import { addDiaryEntry, updateDiaryEntry, deleteDiaryEntry, type DiaryResult } from '@/app/actions/diary';
 import { useCopy } from '@/components/app/CopyProvider';
+import { DeleteForm } from '@/components/app/ConfirmDelete';
 import { Money } from '@/components/Ltr';
 
 /**
@@ -143,12 +144,12 @@ export function DayDrawer({ day, dayText, items, entries, clients, closeHref = '
                     <button type="button" onClick={() => setEditing(row.id)} className="grid size-8 place-items-center rounded-xl2 hover:bg-surface-200" aria-label={c.edit} title={c.edit}>
                       <Pencil size={14} aria-hidden strokeWidth={1.5} />
                     </button>
-                    <form action={deleteDiaryEntry}>
+                    <DeleteForm action={deleteDiaryEntry}>
                       <input type="hidden" name="id" value={row.id} />
                       <button type="submit" className="grid size-8 place-items-center rounded-xl2 hover:bg-surface-200" aria-label={c.remove} title={c.remove}>
                         <X size={14} aria-hidden strokeWidth={1.5} />
                       </button>
-                    </form>
+                    </DeleteForm>
                   </span>
                 )}
               </li>

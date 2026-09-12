@@ -5,6 +5,7 @@ import { useState, useTransition } from 'react';
 import { GripVertical, Plus, Trash2, X } from 'lucide-react';
 import { saveTemplate, deleteTemplate, seedMeetingTemplate } from '@/app/actions/workflow';
 import { useCopy } from '@/components/app/CopyProvider';
+import { DeleteForm } from '@/components/app/ConfirmDelete';
 
 export type Step = { title: string; offset_days: number; owner: 'producer' | 'client'; note?: string };
 export type Template = {
@@ -88,15 +89,12 @@ export function WorkflowTemplates({ templates }: { templates: Template[] }) {
                     </p>
                   </button>
 
-                  <form
-                    action={deleteTemplate}
-                    onSubmit={(e) => { if (!confirm(c.removeAsk)) e.preventDefault(); }}
-                  >
+                  <DeleteForm action={deleteTemplate} ask={c.removeAsk}>
                     <input type="hidden" name="id" value={t.id} />
                     <button type="submit" className="btn-quiet px-2 py-1" aria-label={`${c.remove} ${t.name}`}>
                       <Trash2 size={14} aria-hidden strokeWidth={1.5} />
                     </button>
-                  </form>
+                  </DeleteForm>
                 </div>
 
                 {on && <div className="mt-3"><Editor template={t} onDone={() => setEditing(null)} /></div>}

@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useActionState, useEffect, useRef } from 'react';
 import { useFormStatus } from 'react-dom';
-import { ArrowRight } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { useCopy } from '@/components/app/CopyProvider';
 import { addCircleReply, deleteCircleReply, type CircleResult } from '@/app/actions/circle';
 import { AuthorLine, VoteButton } from '@/components/app/CircleFeed';
@@ -38,7 +38,7 @@ export function CircleThread({ post, replies, clientId, viewer }: {
   return (
     <div className="space-y-5">
       <Link href="/app/portal/community" className="btn-quiet inline-flex items-center gap-1.5 px-0 text-[14px]">
-        <ArrowRight size={16} aria-hidden strokeWidth={1.5} />
+        <ArrowLeft size={16} aria-hidden strokeWidth={1.5} />
         {c.title}
       </Link>
 

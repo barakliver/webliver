@@ -46,7 +46,9 @@ export default async function OverviewPage() {
   return (
     <>
       <PageHead
-        title={`${ui.overview.greeting}${first ? ' ' + first : ''}`}
+        /* The name in its own direction: "שלום barak" reordered the Latin
+           name to the wrong side of the greeting without the isolate. */
+        title={first ? <>{ui.overview.greeting} <bdi>{first}</bdi></> : ui.overview.greeting}
         sub={
           items.length
             ? `${items.length} ${items.length === 1 ? 'דבר מחכה' : 'דברים מחכים'} להחלטה שלך`

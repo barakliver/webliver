@@ -19,6 +19,7 @@ import { PortalVendors } from '@/components/app/PortalVendors';
 import { PortalMeetings } from '@/components/app/PortalMeetings';
 import { QuoteCompare } from '@/components/app/QuoteCompare';
 import { SupplierDraft } from '@/components/app/SupplierDraft';
+import { ConfirmDeleteDemo } from '@/components/app/ConfirmDelete';
 import { PortalNav } from '@/components/app/PortalNav';
 import { ShareSwitches, TabShare } from '@/components/app/ShareSwitch';
 import { TimelineDemo } from './TimelineDemo';
@@ -319,7 +320,7 @@ export default async function DesignPage() {
               display_name: 'נועה ואיתי', event_date: '2026-09-04', venue: 'אחוזת הכפר',
               contact_phone: '052-555-0100', contact_email: 'noa@example.com',
             }}
-            brand={{ name: 'ברק ליור', tagline: 'הפקת אירועים' }}
+            brand={{ name: 'ברק ליבר', tagline: 'הפקת אירועים' }}
             standing={{ phase: 'guests', expected: 'final', behind: 1, ahead: 0 }}
             daysToEvent={12}
             guests={{
@@ -447,6 +448,16 @@ export default async function DesignPage() {
         {/* The help beside a quote, opened on arrival with a template
             draft: the facts in one box, the editable suggestion in the
             other, and the author named. */}
+        {/* Every delete asks first, in the page: press the button to see the
+            question, the cancel, and the delete in the error tone. The demo's
+            delete goes nowhere. */}
+        <Panel name="ConfirmDelete" note="the question a delete asks before it happens, in the page rather than in the browser's box">
+          <div className="flex flex-wrap gap-3">
+            <ConfirmDeleteDemo />
+            <ConfirmDeleteDemo ask="למחוק את השורה מהלו״ז?" />
+          </div>
+        </Panel>
+
         <Panel name="SupplierDraft" note="a message to the supplier asking for what the quote is missing; facts on one side, an editable draft on the other, sent by a person">
           <div className="max-w-3xl">
             <SupplierDraft
@@ -457,7 +468,7 @@ export default async function DesignPage() {
                 by: 'template',
                 phone: null,
                 facts: ['אנחנו מתכננים את החתונה של נועה ואיתי', 'בתאריך 5.12.26', 'כ-180 אורחים', 'באזור השרון'],
-                draft: 'שלום נועם צילום,\n\nאנחנו מתכננים את החתונה של נועה ואיתי, בתאריך 5.12.26, כ-180 אורחים, באזור השרון.\n\nכמה שאלות כדי שנוכל להשוות:\n• כמה זה עולה, כולל מע״מ?\n• כמה שעות כלולות?\n• מה בדיוק כולל השירות?\n• מה נכלל במחיר?\n• מה בתוספת תשלום?\n• מה תנאי התשלום?\n\nתודה, ברק ליור הפקות',
+                draft: 'שלום נועם צילום,\n\nאנחנו מתכננים את החתונה של נועה ואיתי, בתאריך 5.12.26, כ-180 אורחים, באזור השרון.\n\nכמה שאלות כדי שנוכל להשוות:\n• כמה זה עולה, כולל מע״מ?\n• כמה שעות כלולות?\n• מה בדיוק כולל השירות?\n• מה נכלל במחיר?\n• מה בתוספת תשלום?\n• מה תנאי התשלום?\n\nתודה, ברק ליבר הפקות',
               }}
             />
           </div>
@@ -659,7 +670,7 @@ export default async function DesignPage() {
           <RunSheet
             c={ui.runsheet}
             client={{ display_name: 'נועה ואיתי', venue: 'אחוזת הכפר' }}
-            brand={{ name: 'ברק ליור', tagline: 'הפקת אירועים' }}
+            brand={{ name: 'ברק ליבר', tagline: 'הפקת אירועים' }}
             lines={fixtureDay.map((d) => ({
               id: d.id, at_time: d.at_time, title: d.title,
               note: d.note ?? '', owner: d.owner ?? '', audience: d.audience ?? [],
@@ -1051,7 +1062,7 @@ export default async function DesignPage() {
               eventName="נועה ואיתי"
               dateLabel="שבת, 5 בדצמבר 2026"
               venue="אחוזת הכפר"
-              producer="ברק ליור"
+              producer="ברק ליבר"
               faces={fixtureVips.map((v) => ({ name: v.name, relation: v.relation, note: v.note, url: v.url }))}
               looks={fixtureLooks.map((l) => ({ category: l.category, note: l.note, url: l.url }))}
             />

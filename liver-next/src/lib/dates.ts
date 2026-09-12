@@ -29,7 +29,10 @@ export function parseDate(value: string | number | Date | null | undefined): Dat
  *  so every call site has decided what an absent date should read as instead of
  *  inheriting somebody else's choice of dash. */
 export function formatDate(
-  fmt: Intl.DateTimeFormat,
+  /* Anything with a `format`: the Intl formatter, or the short date, which
+     writes day/month/year itself so the punctuation is the same in both
+     languages. */
+  fmt: Pick<Intl.DateTimeFormat, 'format'>,
   value: string | number | Date | null | undefined,
   fallback: string
 ): string {

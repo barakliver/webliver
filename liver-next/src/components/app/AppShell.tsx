@@ -227,7 +227,7 @@ export function AppShell({
               stops doing so at the width where the bottom bar goes away. */}
           <main
             id="main"
-            className="mx-auto w-full max-w-content px-4 py-7 pb-32 sm:px-8 sm:py-9 lg:pb-16"
+            className="mx-auto w-full max-w-content px-4 py-7 pb-32 sm:px-8 sm:py-9 lg:pb-24"
           >
             {/* Above the screen rather than inside it: the actions that leave
                 a message are spread over a dozen screens, and half of them are

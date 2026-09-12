@@ -41,7 +41,10 @@ export async function EventTabs({
          every single visit. `-mx-5` lets the strip run to both edges of the
          shell so the last tab is visibly cut off, which is what tells a thumb
          there is more to the right. */
-      className="-mx-5 mb-6 flex gap-1.5 overflow-x-auto border-b border-line px-5 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:flex-wrap sm:px-0"
+      /* One row at every width. With fifteen sections the desktop wrapped
+         onto two or three rows of pills above the content; the strip scrolls
+         sideways there too, and the active pill is the one filled in. */
+      className="-mx-5 mb-6 flex flex-nowrap gap-1.5 overflow-x-auto border-b border-line px-5 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:px-0"
     >
       {EVENT_TABS.map((tab) => {
         const on = tab === active;

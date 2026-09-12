@@ -270,7 +270,7 @@ export function QuickJump({ screens, events, records = [], compact }: {
               </button>
             </div>
 
-            <ul id="jump-list" role="listbox" className="min-h-0 flex-1 overflow-y-auto py-2">
+            <ul id="jump-list" role="listbox" className="min-h-0 flex-1 overflow-y-auto py-2 pe-2 [scrollbar-gutter:stable]">
               {hits.length === 0 && (
                 <li className="px-5 py-8 text-center text-[14px] text-ink-mute">{c.none}</li>
               )}

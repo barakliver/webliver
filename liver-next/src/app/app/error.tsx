@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { RotateCw, ArrowRight } from 'lucide-react';
+import { RotateCw, ArrowLeft } from 'lucide-react';
 
 /** Something in the workspace threw. Without this file the whole screen went
  *  blank with a browser-level message, which told nobody anything: the event
@@ -27,7 +27,7 @@ export default function AppError({ error, reset }: { error: Error & { digest?: s
           <span>לנסות שוב</span>
         </button>
         <a href="/app" className="btn-ghost inline-flex items-center gap-2">
-          <ArrowRight size={17} aria-hidden strokeWidth={1.5} />
+          <ArrowLeft size={17} aria-hidden strokeWidth={1.5} />
           <span>חזרה למסך הראשי</span>
         </a>
       </div>

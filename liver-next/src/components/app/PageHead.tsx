@@ -10,7 +10,9 @@ import { LoadTrouble } from '@/components/app/LoadTrouble';
  * in one place rather than nineteen.
  */
 export function PageHead({ title, sub, actions, report }: {
-  title: string;
+  /** A string almost everywhere; a node where a name inside it needs its
+   *  own direction, as in a greeting to somebody called Barak. */
+  title: React.ReactNode;
   sub?: string;
   /** Buttons that belong to this screen, at the end of the title line. */
   actions?: React.ReactNode;

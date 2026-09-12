@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ArrowRight } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { requireLiveProducer } from '@/lib/auth';
 import { supabaseServer } from '@/lib/supabase/server';
 import { serverCopy } from '@/lib/serverLocale';
@@ -68,7 +68,7 @@ export default async function DayOfPage({ params }: { params: Promise<{ id: stri
   return (
     <>
       <Link href={`/app/clients/${id}`} className="btn-quiet mb-2 -ms-3">
-        <ArrowRight size={16} strokeWidth={1.5} aria-hidden /> {ui.dayOf.toEvent}
+        <ArrowLeft size={16} strokeWidth={1.5} aria-hidden /> {ui.dayOf.toEvent}
       </Link>
 
       <PageHead

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { requireAccount } from '@/lib/auth';
 import { supabaseServer } from '@/lib/supabase/server';
 import { currentLocale } from '@/lib/serverLocale';
@@ -41,7 +41,7 @@ export default async function JournalPage({ searchParams }: { searchParams: Prom
   return (
     <CopyProvider value={ui}>
       <Link href={account.role === 'client' ? '/app/portal' : `/app/clients/${clientId}`} className="btn-quiet mb-4 inline-flex items-center gap-1.5 px-0 text-[14px]">
-        <ArrowRight size={16} aria-hidden strokeWidth={1.5} />
+        <ArrowLeft size={16} aria-hidden strokeWidth={1.5} />
         {c.back}
       </Link>
       <PageHead

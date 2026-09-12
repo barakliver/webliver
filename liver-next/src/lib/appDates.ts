@@ -40,8 +40,22 @@ export const dayMonth = (locale: Locale) =>
 /** `15.10.25` / `15/10/25`, for a column where a written out month would not
  *  fit. Two digit year on purpose: these sit in a due-date column beside a
  *  task, where the century is not in doubt. */
-export const shortDate = (locale: Locale) =>
-  new Intl.DateTimeFormat(tag(locale), zoned({ day: '2-digit', month: '2-digit', year: '2-digit' }));
+/* `05/12/2026`. Israel's own order with the full year and slashes, in both
+   languages, rather than whatever the locale's default punctuation is — the
+   Hebrew default put dots and a two-digit year, which read as a version
+   number in a table of dates. */
+export const shortDate = (locale: Locale) => {
+  const parts = new Intl.DateTimeFormat(tag(locale), zoned({ day: '2-digit', month: '2-digit', year: 'numeric' }));
+  return {
+    format: (d: Date | number) => {
+      const p = Object.fromEntries(parts.formatToParts(d).map((x) => [x.type, x.value]));
+      /* Digits either side of a slash stay in order under bidi (a common
+         separator between two European numbers is treated as part of the
+         number), so the string is safe inside Hebrew as it is. */
+      return [p.day, p.month, p.year].join('/');
+    },
+  };
+};
 
 /** `21:30`. The digits are the same everywhere; the locale still decides
  *  whether a twelve hour clock shows up. */

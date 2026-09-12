@@ -65,7 +65,7 @@ const playfair = Playfair_Display({
 
 /* Generated per request rather than exported flat, because the name and the
    description are two of the strings that change with the language. An English
-   visitor was getting `Privacy policy | ברק ליור` in the tab and a Hebrew
+   visitor was getting `Privacy policy | ברק ליבר` in the tab and a Hebrew
    description in the search result, on a page whose body was entirely English.
 
    `siteEn` and `site` directly rather than through `getSiteCopy`: metadata is

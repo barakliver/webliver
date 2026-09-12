@@ -119,7 +119,12 @@ export function NoticeBell({ notices, copy }: { notices: Notice[]; copy?: Notice
             <div className="flex items-center justify-between gap-2 border-b border-line px-4 py-3">
               <div className="flex items-baseline gap-2">
                 <b className="text-[14.5px] font-medium text-ink">{c.title}</b>
-                {unread > 0 && <span className="text-[12.5px] tabular-nums text-ink-mute">{unread} {c.unread}</span>}
+                {/* The count while there is one; the words "no new
+                    notifications" the moment "mark all read" empties it,
+                    so the header says what just happened. */}
+                <span className="text-[12.5px] tabular-nums text-ink-mute">
+                  {unread > 0 ? `${unread} ${c.unread}` : c.noneNew}
+                </span>
               </div>
               <div className="flex items-center gap-1">
                 {unread > 0 && (

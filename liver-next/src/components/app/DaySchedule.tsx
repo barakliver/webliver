@@ -9,6 +9,7 @@ import {
 import { AUDIENCES, type Track } from '@/content/lists';
 import { RUNSHEET_TEMPLATES } from '@/content/runsheets';
 import { useCopy } from '@/components/app/CopyProvider';
+import { DeleteForm } from '@/components/app/ConfirmDelete';
 import { hhmm, inDayOrder, spanOf, humanSpan, findOverlaps, crossesMidnight } from '@/lib/runsheet';
 
 export type DayItem = {
@@ -52,7 +53,17 @@ function LineFields({ item, labels, showOwner }: {
       <div className="grid gap-3 sm:grid-cols-[110px_1fr_110px]">
         <div>
           <label className="label">{c.time}</label>
-          <input name="at_time" type="time" required defaultValue={item ? hhmm(item.at_time) : ''} className="field" />
+          {/* Typed, not picked. The native time input showed a time and
+              submitted nothing on a twelve-hour machine with no AM/PM
+              chosen, and the form answered "choose a time". Four digits
+              and a colon are faster than a picker on a phone anyway, and
+              the action accepts 1930, 7:30 and 19.30 as well. */}
+          <input
+            name="at_time" type="text" inputMode="numeric" required autoComplete="off"
+            dir="ltr" placeholder="19:30" maxLength={8}
+            defaultValue={item ? hhmm(item.at_time) : ''}
+            className="field text-center tabular-nums"
+          />
         </div>
         <div>
           <label className="label">{c.addTitle}</label>
@@ -230,7 +241,7 @@ function Row({
         >
           <Pencil size={15} aria-hidden strokeWidth={1.5} />
         </button>
-        <form action={deleteDayItem}>
+        <DeleteForm action={deleteDayItem}>
           <input type="hidden" name="item_id" value={item.id} />
           <input type="hidden" name="client_id" value={clientId} />
           <button
@@ -240,7 +251,7 @@ function Row({
           >
             <Trash2 size={15} aria-hidden strokeWidth={1.5} />
           </button>
-        </form>
+        </DeleteForm>
       </div>
     </li>
   );

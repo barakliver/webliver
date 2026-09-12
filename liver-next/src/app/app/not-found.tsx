@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { notFoundFor } from '@/content/ui';
 import { currentLocale } from '@/lib/serverLocale';
 
@@ -24,7 +24,7 @@ export default async function WorkspaceNotFound() {
       <h1 className="font-display text-title font-semibold text-ink">{c.title}</h1>
       <p className="mt-3 text-[15.5px] text-ink-soft">{c.body}</p>
       <Link href="/app/clients" className="btn-primary mt-7 inline-flex items-center gap-2">
-        <ArrowRight size={17} strokeWidth={1.5} aria-hidden />
+        <ArrowLeft size={17} strokeWidth={1.5} aria-hidden />
         <span>{c.back}</span>
       </Link>
     </div>

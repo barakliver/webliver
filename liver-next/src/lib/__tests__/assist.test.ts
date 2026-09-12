@@ -29,7 +29,7 @@ const copy: DraftCopy = {
 };
 
 const facts: EventFactsForDraft = {
-  eventName: 'החתונה של נועה ואיתי', eventDate: '2026-12-05', guests: 180, region: 'השרון', signAs: 'ברק ליור הפקות',
+  eventName: 'החתונה של נועה ואיתי', eventDate: '2026-12-05', guests: 180, region: 'השרון', signAs: 'ברק ליבר הפקות',
 };
 
 test('a question is asked only about a blank', () => {
@@ -45,7 +45,7 @@ test('the draft carries the facts, the questions as a list, and a name to reply 
   assert.ok(d.includes('קיבלנו את ההצעה שלכם.'), 'an amount was given, so there is a quote to refer to');
   assert.ok(!d.includes('כמה זה עולה'), 'the amount is known and is not asked');
   assert.ok(d.includes('• כמה שעות כלולות?'));
-  assert.ok(d.endsWith('תודה, ברק ליור הפקות'));
+  assert.ok(d.endsWith('תודה, ברק ליבר הפקות'));
 });
 
 test('a supplier who has told us nothing is not thanked for a quote', () => {

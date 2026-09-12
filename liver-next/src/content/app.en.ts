@@ -766,8 +766,16 @@ export const venueCopyEn: VenueCopy = {
   tooBig: 'That file is too large. Up to 10MB.',
 };
 
+export const confirmEn = {
+  ask: 'Delete this item?',
+  sub: 'A deletion cannot be undone.',
+  cancel: 'Cancel',
+  delete: 'Delete',
+} as const;
+
 export const noticeCopyEn: NoticeCopy = {
   title: 'Updates',
+  noneNew: 'No new notifications',
   none: 'Nothing new.',
   noneSub: 'When something happens on your event, it will appear here.',
   markAll: 'Mark all as read',

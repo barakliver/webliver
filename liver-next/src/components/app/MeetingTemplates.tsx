@@ -8,6 +8,7 @@ import {
 import { BUILT_IN_TEMPLATES, FIELD_KINDS, type FieldKind, type MeetingTemplate } from '@/content/meetings';
 import { questionCount } from '@/lib/meetingTemplates';
 import type { MeetingTemplatesCopy } from '@/content/appUi';
+import { DeleteForm } from '@/components/app/ConfirmDelete';
 
 /**
  * The producer's own meeting forms, built here and offered on every event.
@@ -123,15 +124,12 @@ export function MeetingTemplates({ c, own }: { c: MeetingTemplatesCopy; own: Mee
                       </p>
                     </button>
 
-                    <form
-                      action={removeMeetingTemplate}
-                      onSubmit={(e) => { if (!confirm(c.removeAsk)) e.preventDefault(); }}
-                    >
+                    <DeleteForm action={removeMeetingTemplate} ask={c.removeAsk}>
                       <input type="hidden" name="id" value={t.id} />
                       <button type="submit" className="btn-quiet px-2 py-1" aria-label={`${c.remove} ${t.title}`}>
                         <Trash2 size={14} aria-hidden strokeWidth={1.5} />
                       </button>
-                    </form>
+                    </DeleteForm>
                   </div>
 
                   {on && (

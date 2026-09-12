@@ -6,6 +6,7 @@ import { useFormStatus } from 'react-dom';
 import { addTask, toggleTask, deleteTask, reorderTasks, type TaskResult } from '@/app/actions/tasks';
 import { Sortable, Handle } from '@/components/app/Sortable';
 import { useCopy } from '@/components/app/CopyProvider';
+import { DeleteForm } from '@/components/app/ConfirmDelete';
 import { shortDate } from '@/lib/appDates';
 import { isPastDue } from '@/lib/clock';
 import { EyeOff } from 'lucide-react';
@@ -162,11 +163,11 @@ function Row({ task, clientId, viewer, canDelete, grip }: {
       </div>
 
         {canDelete && (
-          <form action={deleteTask}>
+          <DeleteForm action={deleteTask}>
             <input type="hidden" name="task_id" value={task.id} />
             <input type="hidden" name="client_id" value={clientId} />
             <button type="submit" className="btn-quiet px-3 py-1 text-[13px]">{c.remove}</button>
-          </form>
+          </DeleteForm>
         )}
       </div>
 

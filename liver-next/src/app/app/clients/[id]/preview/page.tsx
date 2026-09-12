@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { Eye, ArrowRight } from 'lucide-react';
+import { Eye, ArrowLeft } from 'lucide-react';
 import { requireLiveProducer } from '@/lib/auth';
 import { supabaseServer } from '@/lib/supabase/server';
 import { Live } from '@/components/app/Live';
@@ -67,7 +67,7 @@ export default async function PreviewPage({ params }: { params: Promise<{ id: st
             href={`/app/clients/${id}`}
             className="inline-flex items-center gap-1.5 rounded-xl2 border border-accent/30 bg-card/70 px-3.5 py-1.5 text-[13.5px] font-medium text-accent transition hover:bg-card"
           >
-            <ArrowRight size={15} aria-hidden strokeWidth={1.5} />
+            <ArrowLeft size={15} aria-hidden strokeWidth={1.5} />
             {c.exit}
           </Link>
         </div>
