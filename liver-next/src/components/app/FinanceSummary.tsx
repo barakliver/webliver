@@ -175,7 +175,7 @@ export function FinanceSummary({ clientId, viewer, target, items, payments }: {
               <div>
                 <label className="label" htmlFor={`target-${clientId}`}>{c.target}</label>
                 <input
-                  id={`target-${clientId}`} name="budget_target" type="number" min={0} step="100" inputMode="numeric"
+                  id={`target-${clientId}`} name="budget_target" type="number" min={0} step="0.01" inputMode="decimal"
                   defaultValue={target ?? ''} dir="ltr" className="field w-[200px]" autoFocus
                 />
               </div>

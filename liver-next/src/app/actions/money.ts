@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { noteFailure } from '@/lib/flash';
+import { parseIls } from '@/lib/money';
 
 export type MoneyResult = { ok: boolean; error?: string };
 
@@ -12,9 +13,13 @@ function touch(clientId: string) {
   revalidatePath('/app');
 }
 
+/* One parser for every amount in the product, in `lib/money`, because there
+   were four of these and they disagreed: one stripped the minus sign, one
+   kept it, and one rounded to the whole shekel. A payment is the one that
+   has to be positive, which is the only thing left here. */
 function amountOf(raw: string): number | null {
-  const n = Number(String(raw).replace(/[^\d.-]/g, ''));
-  return Number.isFinite(n) && n > 0 ? n : null;
+  const n = parseIls(raw);
+  return n !== null && n > 0 ? n : null;
 }
 
 export async function addPayment(_prev: MoneyResult | null, form: FormData): Promise<MoneyResult> {
@@ -72,15 +77,15 @@ export async function deletePayment(form: FormData): Promise<void> {
 export async function addBudgetItem(_prev: MoneyResult | null, form: FormData): Promise<MoneyResult> {
   const clientId = String(form.get('client_id') ?? '');
   const label = String(form.get('label') ?? '').trim();
-  const estimate = Number(String(form.get('estimate') ?? '').replace(/[^\d.-]/g, ''));
+  const estimate = parseIls(form.get('estimate') as string | null);
   const agreedRaw = String(form.get('agreed') ?? '').trim();
 
   if (!clientId) return { ok: false, error: 'חסר מזהה אירוע' };
   if (label.length < 2) return { ok: false, error: 'נא לכתוב על מה הסעיף' };
-  if (!Number.isFinite(estimate) || estimate < 0) return { ok: false, error: 'אומדן לא תקין' };
+  if (estimate === null || estimate < 0) return { ok: false, error: 'אומדן לא תקין' };
 
-  const agreed = agreedRaw ? Number(agreedRaw.replace(/[^\d.-]/g, '')) : null;
-  if (agreed !== null && (!Number.isFinite(agreed) || agreed < 0)) {
+  const agreed = agreedRaw ? parseIls(agreedRaw) : null;
+  if (agreedRaw && (agreed === null || agreed < 0)) {
     return { ok: false, error: 'סכום שנסגר לא תקין' };
   }
 
@@ -135,9 +140,14 @@ export async function setBudgetTarget(_prev: MoneyResult | null, form: FormData)
 
   let target: number | null = null;
   if (raw) {
-    const n = Number(raw.replace(/[^\d.]/g, ''));
-    if (!Number.isFinite(n) || n < 0) return { ok: false, error: 'תקציב היעד צריך להיות מספר' };
-    target = Math.round(n);
+    const n = parseIls(raw);
+    if (n === null || n < 0) return { ok: false, error: 'תקציב היעד צריך להיות מספר' };
+    /* Kept to the agora rather than rounded to the shekel. It was rounded
+       here, which is defensible for a planning figure and indefensible once
+       the field beside it accepts agorot: two money fields on one screen
+       that treat a decimal point differently is the kind of inconsistency
+       somebody spends an afternoon not believing. */
+    target = n;
   }
 
   const sb = await supabaseServer();

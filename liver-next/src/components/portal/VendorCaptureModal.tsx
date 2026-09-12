@@ -224,7 +224,7 @@ export function VendorCaptureModal({ task, template, onClose, onSaved, onSkip }:
           )}
           {template.ask_cost && (
             <input
-              type="number" inputMode="decimal" min="0" name="cost" value={form.cost} onChange={change}
+              type="number" inputMode="decimal" min="0" step="0.01" name="cost" value={form.cost} onChange={change}
               placeholder="עלות" aria-label="עלות" className="field"
             />
           )}

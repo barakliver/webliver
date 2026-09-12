@@ -69,7 +69,7 @@ export function QuickLedger({ events, compact = false }: { events: JumpEvent[]; 
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="text-[12.5px] text-ink-mute">
               {c.amount}
-              <input name="amount" type="number" inputMode="decimal" min={0} step="1" required autoFocus className="field mt-1 w-full" />
+              <input name="amount" type="number" inputMode="decimal" min={0} step="0.01" required autoFocus className="field mt-1 w-full" />
             </label>
             <label className="text-[12.5px] text-ink-mute">
               {c.date}

@@ -107,7 +107,7 @@ export function BudgetPlanner({ clientId, current, target, guestEstimate, defaul
       <div className="mt-5 grid gap-4 sm:grid-cols-2">
         <label className="text-[12.5px] text-ink-mute">
           {c.total}
-          <input type="number" inputMode="numeric" min={0} step={1000} value={total}
+          <input type="number" inputMode="decimal" min={0} step="0.01" value={total}
             onChange={(e) => setTotal(e.target.value)} className="field mt-1 w-full" />
         </label>
         <label className="text-[12.5px] text-ink-mute">

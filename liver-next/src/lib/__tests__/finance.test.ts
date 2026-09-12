@@ -190,6 +190,12 @@ test('a negative amount puts the sign before the currency, not inside it', () =>
   assert.equal(ils(0), '₪0');
   assert.equal(ils(null), '₪0');
   /* Rounding happens before the sign is chosen, so a value that rounds to
-     zero is not written as minus zero. */
-  assert.equal(ils(-0.4), '₪0');
+     zero is not written as minus zero.
+     This line used to read `ils(-0.4) === '₪0'`, and it was right while the
+     formatter rounded to the whole shekel. It does not any more: forty
+     agorot is an amount, and the reason the rounding went is that a deposit
+     of 1,250.50 was being shown as 1,251. What is still true is the rule
+     this test is about, one order of magnitude down. */
+  assert.equal(ils(-0.4), '-₪0.40');
+  assert.equal(ils(-0.001), '₪0');
 });

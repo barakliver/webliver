@@ -1,6 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { safeRows } from '@/lib/safe';
 import { isOverdue } from '@/lib/dates';
+import { sumIls } from '@/lib/money';
 
 /**
  * The event in numbers, for the top of its file.
@@ -60,8 +61,8 @@ export async function loadEventSummary(
   };
 
   const money = {
-    paid: paymentRows.filter((p) => p.paid).reduce((s, p) => s + (p.amount ?? 0), 0),
-    owed: paymentRows.filter((p) => !p.paid).reduce((s, p) => s + (p.amount ?? 0), 0),
+    paid: sumIls(paymentRows.filter((p) => p.paid).map((p) => p.amount)),
+    owed: sumIls(paymentRows.filter((p) => !p.paid).map((p) => p.amount)),
     overdue: paymentRows
       .filter((p) => !p.paid && isOverdue(p.due_on))
       .reduce((s, p) => s + (p.amount ?? 0), 0),

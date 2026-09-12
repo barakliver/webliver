@@ -181,7 +181,7 @@ function QuoteForm({ clientId, vendor, onDone }: { clientId: string; vendor: Quo
       <input type="hidden" name="client_id" value={clientId} />
       <p className="text-[14px] font-medium text-ink sm:col-span-3">{vendor.name}</p>
       <label className="grid gap-1 text-[12.5px] text-ink-mute">{c.amount}
-        <input name="quote_amount" type="number" inputMode="decimal" min="0" step="1" defaultValue={vendor.quote_amount ?? ''} className="field" /></label>
+        <input name="quote_amount" type="number" inputMode="decimal" min="0" step="0.01" defaultValue={vendor.quote_amount ?? ''} className="field" /></label>
       <label className="grid gap-1 text-[12.5px] text-ink-mute">{c.hours}
         <input name="quote_hours" type="number" inputMode="decimal" min="0.5" max="72" step="0.5" defaultValue={vendor.quote_hours ?? ''} className="field" /></label>
       <label className="grid gap-1 text-[12.5px] text-ink-mute">{c.scope}

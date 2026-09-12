@@ -70,7 +70,7 @@ function Fields({ member }: { member?: CrewMember }) {
         <div>
           <label className="label">{c.fee}</label>
           <input
-            name="fee" type="number" min={0} step="10" inputMode="decimal"
+            name="fee" type="number" min={0} step="0.01" inputMode="decimal"
             defaultValue={member?.fee ?? ''} placeholder={c.feePh} className="field"
           />
         </div>

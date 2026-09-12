@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { currentAccount } from '@/lib/auth';
 import { noteFailure } from '@/lib/flash';
+import { parseIls } from '@/lib/money';
 
 /** The envelopes: cash that changes hands on the night, one row each.
  *
@@ -22,11 +23,14 @@ function touch(clientId: string) {
   revalidatePath('/app/portal');
 }
 
+/* An empty field is null, which is "no amount written down"; anything that
+   is not a number is NaN, which the caller reports. The shared parser does
+   the reading, so an envelope of 1,250.50 is the same 1,250.50 the budget
+   would have stored. */
 const money = (raw: string): number | null => {
-  const s = raw.trim().replace(/[^\d.]/g, '');
-  if (!s) return null;
-  const n = Number(s);
-  return Number.isFinite(n) && n >= 0 ? n : NaN;
+  if (!raw.trim()) return null;
+  const n = parseIls(raw);
+  return n !== null && n >= 0 ? n : NaN;
 };
 
 export async function addEnvelope(_prev: EnvelopeResult | null, form: FormData): Promise<EnvelopeResult> {

@@ -103,6 +103,7 @@ import { prepViewFor } from '@/content/prepView';
 import { AdminRow } from '@/components/app/AdminRow';
 import { ReleaseState } from '@/components/app/ReleaseState';
 import { ThemeToggle } from '@/components/app/ThemeToggle';
+import { WorkspaceSwitcher } from '@/components/portal/WorkspaceSwitcher';
 import { parseAgentState } from '@/lib/release';
 import { NoticeBell } from '@/components/app/NoticeBell';
 import { IssueReporter } from '@/components/app/IssueReporter';
@@ -457,6 +458,23 @@ export default async function DesignPage() {
             it changes is in the same shot as the control that changes it:
             press it here and this panel, and every other panel on this page,
             turns over. */}
+        {/* The control that came out of the stacked-workspaces defect. One
+            celebration is drawn at a time now, so the screen has to say which
+            one; a single workspace draws nothing here at all. */}
+        <Panel name="WorkspaceSwitcher" note="which celebration this screen is about, when a couple has more than one; silent when they have one">
+          <div className="max-w-2xl">
+            <WorkspaceSwitcher
+              workspaces={[
+                { id: 'w1', display_name: 'נועה ואיתי', event_date: '05/12/2026' },
+                { id: 'w2', display_name: 'החינה', event_date: null },
+              ]}
+              selectedId="w1"
+              label="האירועים שלכם"
+              dateless="טרם נקבע תאריך"
+            />
+          </div>
+        </Panel>
+
         <Panel name="ThemeToggle" note="light or dark in one press, the switch that sits in the app header beside the language one">
           <div className="flex items-center gap-4">
             <ThemeToggle label={{ toLight: 'מעבר לתצוגה בהירה', toDark: 'מעבר לתצוגה כהה' }} />

@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { withParam } from '@/lib/portalScope';
 import { supabaseBrowser } from '@/lib/supabase/client';
 import type { PortalEvent } from '@/lib/portal';
 
@@ -25,16 +26,19 @@ export function EventSelector({ clientId, events, selectedId, labels }: {
 }) {
   const router = useRouter();
   const pathname = usePathname();
+  const params = useSearchParams();
   const [showForm, setShowForm] = useState(false);
 
   /* One celebration is not a choice, so there is nothing to choose between —
      but the button that adds a second one still has to be there. */
   const soleEvent = events.length <= 1;
 
+  /* Everything else in the address is kept. This used to build a fresh set
+     carrying only the celebration, which dropped the workspace it belonged
+     to — so choosing the henna sent the reader back to the first workspace,
+     and the tabs they had just used disappeared. */
   const open = (id: string) => {
-    const next = new URLSearchParams();
-    next.set('event', id);
-    router.push(`${pathname}?${next}`, { scroll: false });
+    router.push(`${pathname}?${withParam(params.toString(), 'event', id)}`, { scroll: false });
   };
 
   return (
@@ -54,7 +58,7 @@ export function EventSelector({ clientId, events, selectedId, labels }: {
                 role="tab"
                 aria-selected={on}
                 onClick={() => open(e.id)}
-                className={`whitespace-nowrap rounded-xl2 border px-3 py-2 text-[14px] transition ${
+                className={`flex min-h-[48px] items-center whitespace-nowrap rounded-control border px-4 text-[14.5px] transition ${
                   on
                     ? 'border-ink bg-ink text-surface'
                     : 'border-line bg-card text-ink-soft hover:border-ink'

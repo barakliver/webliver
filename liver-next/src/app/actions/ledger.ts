@@ -5,6 +5,7 @@ import { supabaseServer } from '@/lib/supabase/server';
 import { requireLiveProducer } from '@/lib/auth';
 import { noteFailure } from '@/lib/flash';
 import { todayInZone } from '@/lib/clock';
+import { parseIls } from '@/lib/money';
 
 export type LedgerResult = { ok: boolean; error?: string };
 
@@ -22,7 +23,7 @@ export async function addLedgerEntry(_prev: LedgerResult | null, form: FormData)
   if (!producerId) return { ok: false, error: 'אין מרחב הפקה פעיל' };
 
   const kind = String(form.get('kind') ?? '') === 'expense' ? 'expense' : 'income';
-  const amount = Number(String(form.get('amount') ?? '').replace(/[^\d.]/g, ''));
+  const amount = parseIls(form.get('amount') as string | null) ?? NaN;
   const label = String(form.get('label') ?? '').trim().slice(0, 120);
   const clientId = String(form.get('client_id') ?? '').trim() || null;
   const party = String(form.get('party') ?? '').trim().slice(0, 120);

@@ -27,6 +27,8 @@ import { VenueCompare } from '@/components/app/VenueCompare';
 import { loadVenues, venuesOf } from '@/lib/venueRows';
 import { publicEnv } from '@/lib/env';
 import { EventSelector } from '@/components/portal/EventSelector';
+import { WorkspaceSwitcher } from '@/components/portal/WorkspaceSwitcher';
+import { pickWorkspace } from '@/lib/portalScope';
 import { loadEnvelopes, envelopesOf } from '@/lib/envelopes';
 import { loadVehicles, vehiclesOf } from '@/lib/vehicles';
 import { EnvelopesPanel } from '@/components/app/EnvelopesPanel';
@@ -53,8 +55,16 @@ export default async function PortalPage({ searchParams }: {
      than in the browser. Trusted only as far as the next few lines: it is
      matched against the events this reader may actually read, and anything
      else falls back to the first. */
-  const wanted = (await searchParams).event;
+  const params = await searchParams;
+  const wanted = params.event;
   const openEventId = typeof wanted === 'string' ? wanted : null;
+
+  /* And which celebration's workspace. This screen used to draw every
+     workspace the reader could open, stacked, which put two of every anchor
+     on the page: each one rendered `id="budget"` and each one's navigation
+     linked to `#budget`, so every link in the second event opened the
+     first event's panel. One at a time, named in the address. */
+  const wantedWorkspace = typeof params.w === 'string' ? params.w : null;
 
   /* The couple's own language. Everything below reads its words from here, and
      the panels read theirs from the provider, so one cookie decides the whole
@@ -111,6 +121,12 @@ export default async function PortalPage({ searchParams }: {
     );
   }
 
+  /* The one workspace this screen is about. Matched against the ones this
+     reader may actually read, so an id naming somebody else's event resolves
+     to their own first workspace rather than to anything of anybody else's. */
+  const open = pickWorkspace(data.workspaces, wantedWorkspace);
+  const shown = open ? [open] : [];
+
   /* One provider over the whole screen. Every panel below is a client
      component, and the alternative was threading the same prop through
      thirteen of them and through the producer's console on the way. The
@@ -142,8 +158,17 @@ export default async function PortalPage({ searchParams }: {
         </Link>
       </nav>
 
+      <WorkspaceSwitcher
+        workspaces={data.workspaces.map((w) => ({
+          id: w.id, display_name: w.display_name, event_date: w.event_date,
+        }))}
+        selectedId={open?.id ?? null}
+        label={ui.portal.eventPick}
+        dateless={ui.portal.noDate}
+      />
+
       <div className="space-y-6">
-        {data.workspaces.map((w) => {
+        {shown.map((w) => {
           const sheet = prepOf(prep, w.id);
           const venues = venuesOf(halls, w.id);
           /* An address naming an event on somebody else's workspace, or one
@@ -264,8 +289,10 @@ export default async function PortalPage({ searchParams }: {
       </div>
 
       {/* The two things wanted at a moment nobody plans for: reaching the
-          producer, and saying something is wrong. Bound to the first
-          workspace, which is the one the couple is looking at. */}
+          producer, and saying something is wrong. Bound to the workspace on
+          screen rather than to the first one in the list — with several open
+          at once those were the same thing, and once they are not, a report
+          filed from the henna belongs to the henna. */}
       <PortalActions
         producerName={brand.name}
         phone={brand.whatsapp}
@@ -273,7 +300,7 @@ export default async function PortalPage({ searchParams }: {
         bookingUrl={brand.bookingUrl}
         onReport={async (topic, body) => {
           'use server';
-          return fileReport(data.workspaces[0].id, topic, body);
+          return fileReport((open ?? data.workspaces[0]).id, topic, body);
         }}
       />
       <Live sources={PORTAL_LIVE_SOURCES} />

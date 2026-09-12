@@ -8,6 +8,7 @@ import { Money, ils } from '@/components/Ltr';
 import { Metric } from '@/components/app/Metric';
 import { ReceiptScan } from '@/components/app/ReceiptScan';
 import { DeleteForm } from '@/components/app/ConfirmDelete';
+import { sumIls } from '@/lib/money';
 
 export type BudgetItem = {
   id: string; category: string; label: string;
@@ -37,13 +38,13 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
      than one. */
   const formId = `budget-${clientId}`;
 
-  const totalEst = items.reduce((a, i) => a + (Number(i.estimate) || 0), 0);
+  const totalEst = sumIls(items.map((i) => i.estimate));
   /* A line with nothing agreed yet still costs its estimate, so the comparison
      is like for like instead of flattering whatever has not been booked. */
   /* One missing number would otherwise make the whole column read ₪NaN,
      which is worse than reading zero because it looks like a bug in the app
      rather than a gap in the data. */
-  const totalAgreed = items.reduce((a, i) => a + (Number(i.agreed ?? i.estimate) || 0), 0);
+  const totalAgreed = sumIls(items.map((i) => i.agreed ?? i.estimate));
   const diff = totalEst - totalAgreed;
 
   return (
@@ -91,8 +92,8 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
           <input type="hidden" name="client_id" value={clientId} />
           <input name="label" required placeholder={c.budLabelPh} autoComplete="off" className="field" aria-label={c.budLabel} />
           <input name="vendor" placeholder={c.budVendor} autoComplete="off" className="field" aria-label={c.budVendor} />
-          <input name="estimate" required type="number" min={0} inputMode="numeric" placeholder={c.budEstimate} className="field" aria-label={c.budEstimate} />
-          <input name="agreed" type="number" min={0} inputMode="numeric" placeholder={c.budAgreed} className="field" aria-label={c.budAgreed} />
+          <input name="estimate" required type="number" min={0} step="0.01" inputMode="decimal" placeholder={c.budEstimate} className="field" aria-label={c.budEstimate} />
+          <input name="agreed" type="number" min={0} step="0.01" inputMode="decimal" placeholder={c.budAgreed} className="field" aria-label={c.budAgreed} />
           <Add />
         </form>
       )}

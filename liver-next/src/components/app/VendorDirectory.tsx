@@ -70,11 +70,11 @@ function Fields({ vendor }: { vendor?: Vendor }) {
       <div className="mt-3 grid gap-3 sm:grid-cols-2">
         <div>
           <label className="label">{c.agreedPrice}</label>
-          <input name="agreed_price" type="number" inputMode="decimal" min={0} step="1" dir="ltr" defaultValue={vendor?.agreed_price ?? ''} className="field" />
+          <input name="agreed_price" type="number" inputMode="decimal" min={0} step="0.01" dir="ltr" defaultValue={vendor?.agreed_price ?? ''} className="field" />
         </div>
         <div>
           <label className="label">{c.depositPaid}</label>
-          <input name="deposit_paid" type="number" inputMode="decimal" min={0} step="1" dir="ltr" defaultValue={vendor?.deposit_paid ?? ''} className="field" />
+          <input name="deposit_paid" type="number" inputMode="decimal" min={0} step="0.01" dir="ltr" defaultValue={vendor?.deposit_paid ?? ''} className="field" />
         </div>
       </div>
       <div className="mt-3">

@@ -117,7 +117,7 @@ export function EnvelopesPanel({ c, clientId, items }: {
           </label>
           <label>
             <span className="label">{c.amount}</span>
-            <input name="amount" type="number" inputMode="decimal" min={0} className="field mt-1 w-full" />
+            <input name="amount" type="number" inputMode="decimal" min={0} step="0.01" className="field mt-1 w-full" />
           </label>
         </div>
         <div className="mt-3 grid gap-3 sm:grid-cols-[150px_1fr]">

@@ -64,7 +64,7 @@ export function PaymentsPanel({ clientId, payments, viewer }: {
         <form action={action} className="mt-5 grid gap-3 sm:grid-cols-[1fr_140px_150px_auto]">
           <input type="hidden" name="client_id" value={clientId} />
           <input name="title" required placeholder={c.payWhatPh} autoComplete="off" className="field" aria-label={c.payWhat} />
-          <input name="amount" required type="number" min={1} inputMode="numeric" placeholder={c.payAmount} className="field" aria-label={c.payAmount} />
+          <input name="amount" required type="number" min="0.01" step="0.01" inputMode="decimal" placeholder={c.payAmount} className="field" aria-label={c.payAmount} />
           <input name="due_on" type="date" className="field" aria-label={c.payDue} />
           <Add />
         </form>

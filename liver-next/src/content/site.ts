@@ -1862,6 +1862,9 @@ export const appCopy = {
        these are their events, not "workspaces" or "entities". */
     eventAdd: 'אירוע נוסף',
     eventPick: 'האירועים שלכם',
+    /* Under a celebration that has no date yet, in the switcher. An empty
+       space there reads as a date that failed to load. */
+    noDate: 'טרם נקבע תאריך',
     /* The strip at the top is a table of contents for the whole screen: one
        row per section, in the order the sections appear, so a couple can get
        to the seating plan without scrolling past the budget. In their words,

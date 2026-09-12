@@ -50,6 +50,7 @@ export const portalEn: PortalCopy = {
   rowVendors: 'Suppliers',
   eventAdd: 'Add an event',
   eventPick: 'Your events',
+  noDate: 'No date yet',
   rowTasks: 'Open tasks',
   rowNone: 'Not entered yet',
   rowPayments: 'Still to pay',

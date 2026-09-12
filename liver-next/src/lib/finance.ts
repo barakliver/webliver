@@ -13,6 +13,13 @@
  * it must render as five zeros rather than as ₪NaN.
  */
 
+/* The one import this module takes, and it takes it for the reason the
+   module exists: a column of money added with ordinary addition drifts, and
+   a total that does not equal the sum of its own rows is the figure a couple
+   stops trusting. `sumIls` adds in agorot. It is dependency-free itself, so
+   this file is still a plain module that node can test on its own. */
+import { sumIls } from './money.ts';
+
 /** What a budget line contributes. A line with nothing agreed yet still
  *  costs its estimate, so the comparison is like for like instead of
  *  flattering whatever has not been booked. */
@@ -54,8 +61,8 @@ export function summarise(
   payments: readonly PaidLine[],
   target: number | null,
 ): Finance {
-  const committed = items.reduce((a, i) => a + num(i.agreed ?? i.estimate), 0);
-  const paid = payments.reduce((a, p) => (p.paid ? a + num(p.amount) : a), 0);
+  const committed = sumIls(items.map((i) => num(i.agreed ?? i.estimate)));
+  const paid = sumIls(payments.filter((p) => p.paid).map((p) => num(p.amount)));
   const remaining = Math.max(committed - paid, 0);
 
   const cap = target === null || !Number.isFinite(Number(target)) ? null : num(target);
@@ -140,11 +147,11 @@ export function ledgerOf(
   items: readonly CostLine[],
   crewLines: readonly CrewLine[],
 ): Ledger {
-  const billed = payments.reduce((a, p) => a + num(p.amount), 0);
-  const received = payments.reduce((a, p) => (p.paid ? a + num(p.amount) : a), 0);
+  const billed = sumIls(payments.map((p) => num(p.amount)));
+  const received = sumIls(payments.filter((p) => p.paid).map((p) => num(p.amount)));
 
-  const suppliers = items.reduce((a, i) => a + num(i.agreed ?? i.estimate), 0);
-  const crew = crewLines.reduce((a, m) => a + num(m.fee), 0);
+  const suppliers = sumIls(items.map((i) => num(i.agreed ?? i.estimate)));
+  const crew = sumIls(crewLines.map((m) => num(m.fee)));
   const costs = suppliers + crew;
 
   const margin = billed - costs;

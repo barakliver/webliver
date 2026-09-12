@@ -161,7 +161,7 @@ export function VendorHq({ clientId, vendors, contracts, lines, couple, date, si
                         <input type="hidden" name="id" value={r.vendor.id} />
                         <input type="hidden" name="client_id" value={clientId} />
                         <label className="text-[12px] text-ink-mute">{c.depositAmount}
-                          <input name="deposit" type="number" min={0} inputMode="numeric" defaultValue={r.vendor.deposit ?? ''} className="field mt-0.5 w-full" />
+                          <input name="deposit" type="number" min={0} step="0.01" inputMode="decimal" defaultValue={r.vendor.deposit ?? ''} className="field mt-0.5 w-full" />
                         </label>
                         <label className="text-[12px] text-ink-mute">{c.depositPaidOn}
                           <input name="deposit_paid_on" type="date" defaultValue={r.vendor.deposit_paid_on ?? ''} className="field mt-0.5 w-full" />
