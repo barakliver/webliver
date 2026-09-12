@@ -58,6 +58,14 @@ that has happened once.
   second. The agent reads that file out of the commit it deploys and writes
   the number beside it, so the card on `/app/admin` says "ליבר 2.1" with the
   commit underneath in small print. Talk to him in numbers, not hashes.
+- The platform has a light palette and a dark one, chosen in the accessibility
+  menu: follow the device, light, dark. It is one class on `<html>` and a block
+  of token overrides in `globals.css`, so no component knows it exists. It
+  applies to `/app` and `/design` and deliberately not to the public site or
+  the guests' page: their headlines are ivory because they lie on a
+  photograph, so flipping the palette under them draws a near-black title on
+  a picture of a bride. Every tone in both palettes is measured by
+  `npm run contrast`, the producers' accents included.
 - The deploy builds into `.next-build` and renames it into place, and installs
   dependencies only when the lockfile changed, so a release does not take the
   live site down while it builds. Keep it that way.

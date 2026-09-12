@@ -72,6 +72,11 @@ const config: Config = {
           /* the page behind the artboards */
           200:     'rgb(var(--surface-200-rgb, 226 232 240) / <alpha-value>)',
         },
+        /* The veil under a modal, and never the ink: on the dark palette the
+           ink is near-white, and a scrim made of it lights the page instead
+           of dimming it. */
+        scrim: 'rgb(var(--scrim-rgb, 41 40 35) / <alpha-value>)',
+
         /* Kept as a name because a hundred components ask for it. On this
            palette a "card" is the ground with a line above it, not a box. */
         card: 'rgb(var(--surface-100-rgb, 255 253 249) / <alpha-value>)',
@@ -114,16 +119,35 @@ const config: Config = {
         /* The two soft tones of the planning system, grounds only: sage
            under a planning moment, blush under an editorial one. Neither
            ever carries words in its own hue; the ink goes on top. */
-        sage:  { DEFAULT: '#CED7C4', wash: '#E6EBDF' },
-        blush: { DEFAULT: '#F4E4E4', wash: '#FAF1F1' },
+        sage:  {
+          DEFAULT: 'rgb(var(--sage-rgb, 206 215 196) / <alpha-value>)',
+          wash:    'rgb(var(--sage-wash-rgb, 230 235 223) / <alpha-value>)',
+        },
+        blush: {
+          DEFAULT: 'rgb(var(--blush-rgb, 244 228 228) / <alpha-value>)',
+          wash:    'rgb(var(--blush-wash-rgb, 250 241 241) / <alpha-value>)',
+        },
 
         /* State, deliberately nowhere near the accent. On a gold system a gold
            "good" is unreadable as good, so good is green, waiting is amber and
            wrong is red, each measured against this ivory rather than against
            the white it was measured on before. */
-        ok:   { DEFAULT: '#285A3F', wash: '#EDF2E9' },
-        warn: { DEFAULT: '#78520F', wash: '#FBF0D8' },
-        bad:  { DEFAULT: '#953D35', wash: '#F9E9E6' },
+        /* Through properties like everything else, because a dark palette has
+           to reach them: a green solved against ivory is 2.3:1 on charcoal,
+           which is not a quieter green, it is an invisible one. Channels, so
+           `border-ok/40` still compiles. */
+        ok: {
+          DEFAULT: 'rgb(var(--ok-rgb, 40 90 63) / <alpha-value>)',
+          wash:    'rgb(var(--ok-wash-rgb, 237 242 233) / <alpha-value>)',
+        },
+        warn: {
+          DEFAULT: 'rgb(var(--warn-rgb, 120 82 15) / <alpha-value>)',
+          wash:    'rgb(var(--warn-wash-rgb, 251 240 216) / <alpha-value>)',
+        },
+        bad: {
+          DEFAULT: 'rgb(var(--bad-rgb, 149 61 53) / <alpha-value>)',
+          wash:    'rgb(var(--bad-wash-rgb, 249 233 230) / <alpha-value>)',
+        },
       },
       /* Two families again, and this time by his ruling rather than by a
          document's. The comment that used to sit here said "the day a display

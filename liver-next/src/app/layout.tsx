@@ -12,6 +12,8 @@ import { A11yPanel } from '@/components/a11y/A11yPanel';
 import { a11yFor } from '@/content/ui';
 import { cookies } from 'next/headers';
 import { LOCALE_COOKIE, dirOf, readLocale } from '@/lib/locale';
+import { BOOT_SCRIPT } from '@/lib/theme';
+import { ThemeScope } from '@/components/ThemeScope';
 
 /* Three families now: Assistant for the headings (below), Frank Ruhl Libre
    for the promise line, Heebo for the body. The two earlier moves are worth
@@ -184,8 +186,23 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const dir = dirOf(locale);
 
   return (
-    <html lang={locale} dir={dir} className={`${assistant.variable} ${heebo.variable} ${frank.variable} ${lato.variable} ${playfair.variable}`}>
+    /* The theme is a class this element does not have until a line of script
+       in the head puts it there, before the first paint. React compares what
+       it rendered against what is in the document, and would report the
+       class it did not write as a mismatch; this says that on this one
+       element the difference is on purpose. */
+    <html
+      suppressHydrationWarning
+      lang={locale}
+      dir={dir}
+      className={`${assistant.variable} ${heebo.variable} ${frank.variable} ${lato.variable} ${playfair.variable}`}
+    >
       <head>
+        {/* First thing in the document, ahead of the stylesheet. Anything
+            later than this means the page draws the light palette and then
+            corrects itself, which is a white flash on every navigation for
+            the one person who asked not to have one. */}
+        <script dangerouslySetInnerHTML={{ __html: BOOT_SCRIPT }} />
         {/* Written by hand rather than through `metadata.manifest`, for one
             attribute: a manifest is fetched without cookies unless the link
             says `use-credentials`, and the manifest route needs the session
@@ -204,6 +221,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         {/* Required on every screen, not only the marketing pages: the menu
             has to reach the app and the couple's portal too. */}
         <A11yPanel copy={a11yFor(locale)} />
+        <ThemeScope />
         <ServiceWorker />
         <VersionWatch />
       </body>

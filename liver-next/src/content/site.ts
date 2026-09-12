@@ -630,6 +630,12 @@ export const a11yCopy = {
   open: 'תפריט נגישות',
   title: 'הגדרות נגישות',
   sub: 'התאימו את התצוגה לצרכים שלכם. ההגדרות חלות על כל המסכים ונשמרות בדפדפן הזה.',
+  /* The palette. Worded as what the screen will be rather than as a setting
+     name, because "מצב כהה" is a term and "כהה" is what somebody sees. */
+  theme: 'צבעי המסך',
+  themeAuto: 'לפי המכשיר',
+  themeLight: 'בהיר',
+  themeDark: 'כהה',
   font: 'הגדלת טקסט',
   smaller: 'הקטנת טקסט',
   bigger: 'הגדלת טקסט',

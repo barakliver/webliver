@@ -188,7 +188,7 @@ export function VendorCaptureModal({ task, template, onClose, onSaved, onSkip }:
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-scrim/40 p-4"
       onClick={(e) => { if (e.target === e.currentTarget) cancel(); }}
     >
       <div role="dialog" aria-modal="true" aria-labelledby="vendor-capture-title" className="w-full max-w-md rounded-xl2 border border-line bg-card p-6">

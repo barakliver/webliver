@@ -24,6 +24,7 @@
  *   bright  large serif numerals only, 24px and up, where 3:1 is the bar
  *   line    hairlines and rules. Decoration, never carrying meaning alone
  *   light   on the dark ground only, where the ratios invert
+ *   night   the accent on the dark palette, solved against its step up
  */
 
 /** The page's own ground, which the browser chrome continues on the
@@ -40,6 +41,14 @@ export type Accent = {
   bright: string;
   line: string;
   light: string;
+  /** On the dark palette, where the ratios invert again. `light` was solved
+   *  against the one dark band this product used to have, #1D1E20, and four
+   *  of the six fall under 4.5:1 on the card and the step up of the dark
+   *  palette, which are lighter grounds than that band was. The checker
+   *  found all four. Lowering those grounds far enough would have flattened
+   *  the canvas, the card and the step up into one tone, so the tone moves
+   *  instead of the ground. */
+  night: string;
   wash: string;
 };
 
@@ -51,6 +60,7 @@ export const ACCENTS: Accent[] = [
     bright: '#9E7F4E',
     line:   '#B08D57',
     light:  '#B08D57',
+    night:  '#B08D57',
     wash:   'rgba(176, 141, 87, .07)',
   },
   {
@@ -60,6 +70,7 @@ export const ACCENTS: Accent[] = [
     bright: '#7B8E4F',
     line:   '#7A8C4E',
     light:  '#7A8C4E',
+    night:  '#899961',
     wash:   'rgba(122, 140, 78, .07)',
   },
   {
@@ -73,6 +84,7 @@ export const ACCENTS: Accent[] = [
     bright: '#C2724D',
     line:   '#C0714C',
     light:  '#C0714C',
+    night:  '#C88261',
     wash:   'rgba(192, 113, 76, .07)',
   },
   {
@@ -82,6 +94,7 @@ export const ACCENTS: Accent[] = [
     bright: '#B76DA9',
     line:   '#9A5C8E',
     light:  '#AA76A0',
+    night:  '#B384AA',
     wash:   'rgba(154, 92, 142, .07)',
   },
   {
@@ -91,6 +104,7 @@ export const ACCENTS: Accent[] = [
     bright: '#2E7676',
     line:   '#5E9F9B',
     light:  '#8FC4C1',
+    night:  '#8FC4C1',
     wash:   'rgba(32, 87, 87, .08)',
   },
   {
@@ -100,6 +114,7 @@ export const ACCENTS: Accent[] = [
     bright: '#828792',
     line:   '#6B6F78',
     light:  '#83868E',
+    night:  '#91939A',
     wash:   'rgba(107, 111, 120, .07)',
   },
 ];
@@ -149,12 +164,14 @@ export function accentVars(a: Accent): Record<string, string> {
     '--accent-bright-rgb': channels(a.bright),
     '--accent-line-rgb': channels(a.line),
     '--accent-light-rgb': channels(a.light),
+    '--accent-night-rgb': channels(a.night),
 
     '--accent': `rgb(${channels(a.base)})`,
     '--accent-hover': `rgb(${channels(darker(a.base))})`,
     '--accent-bright': `rgb(${channels(a.bright)})`,
     '--accent-line': `rgb(${channels(a.line)})`,
     '--accent-light': `rgb(${channels(a.light)})`,
+    '--accent-night': `rgb(${channels(a.night)})`,
     /* Translucent by definition, so it stays whole. */
     '--accent-wash': a.wash,
   };

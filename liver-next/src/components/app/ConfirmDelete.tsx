@@ -58,7 +58,7 @@ export function DeleteForm({ action, ask, className, children }: {
       </form>
       <dialog
         ref={dialog}
-        className="w-[min(92vw,22rem)] rounded-card border border-line bg-card p-6 text-ink shadow-lift backdrop:bg-ink/30"
+        className="w-[min(92vw,22rem)] rounded-card border border-line bg-card p-6 text-ink shadow-lift backdrop:bg-scrim/30"
         aria-labelledby="confirm-delete-title"
       >
         <p id="confirm-delete-title" className="flex items-start gap-2.5 text-[15.5px] font-medium leading-snug text-ink">

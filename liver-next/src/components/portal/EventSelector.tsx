@@ -173,7 +173,7 @@ function CreateEventModal({ clientId, onClose, onCreated }: {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-scrim/40 p-4">
       <div className="w-full max-w-md rounded-xl2 border border-line bg-card p-6">
         <h2 className="font-display text-[18px] font-semibold text-ink">אירוע נוסף</h2>
         <p className="mt-1 text-[14px] text-ink-soft">

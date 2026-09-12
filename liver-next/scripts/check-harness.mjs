@@ -51,6 +51,7 @@ const NOT_DRAWN = {
   'app/DragOnto': 'the other half of that behaviour, and a drop target draws nothing until something is dragged',
   ChatDock: 'the chat shell itself, looked at through both assistants that mount it',
   'app/FlashClear': 'deletes the message once it has been seen and renders nothing',
+  ThemeScope: 'puts the palette back in step on every navigation and renders nothing; what it does is visible as the whole page, not as a panel',
   'brand/Pieces': 'the seven printed pieces, drawn fourteen times inside the BrandStudio panel and never on their own',
 };
 

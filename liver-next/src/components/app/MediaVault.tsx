@@ -222,7 +222,7 @@ function Lightbox({ items, index, onIndex, onClose, onRetag }: {
   return (
     <div
       role="dialog" aria-modal="true" aria-label={f.note || f.name}
-      className="fixed inset-0 z-[80] flex flex-col bg-ink/90 backdrop-blur-sm"
+      className="fixed inset-0 z-[80] flex flex-col bg-scrim/90 backdrop-blur-sm"
       onClick={onClose}
     >
       <div className="flex items-center justify-between gap-3 px-4 py-3 text-surface" onClick={(e) => e.stopPropagation()}>

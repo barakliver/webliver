@@ -438,7 +438,7 @@ function Broadcast({ sheet, late }: { sheet: Caller[]; late: Caller[] }) {
             type="button"
             aria-label={c.broadcast.cancel}
             onClick={() => setOpen(false)}
-            className="absolute inset-0 h-full w-full cursor-default bg-ink/30 backdrop-blur-[2px]"
+            className="absolute inset-0 h-full w-full cursor-default bg-scrim/30 backdrop-blur-[2px]"
           />
           <div
             role="dialog"

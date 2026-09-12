@@ -2,12 +2,14 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Accessibility, Minus, Plus, RotateCcw, X } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import { Accessibility, Minus, Monitor, Moon, Plus, RotateCcw, Sun, X } from 'lucide-react';
 import type { A11yCopy } from '@/content/ui';
 import {
   CLASSES, DEFAULTS, MAX_FONT_STEP, STORAGE_KEY,
   clampStep, read, scaleOf, type A11ySettings,
 } from '@/lib/a11y';
+import { THEME_KEY, apply as applyTheme, isPlatform, readTheme, type Theme } from '@/lib/theme';
 
 /**
  * The accessibility menu, on every screen.
@@ -32,10 +34,40 @@ export function A11yPanel({ copy: c }: { copy: A11yCopy }) {
      paint cannot flash the default palette at somebody who chose otherwise. */
   const [ready, setReady] = useState(false);
 
+  /* Light or dark. Kept beside these rather than inside them because it is
+     not an accessibility setting: somebody choosing a dark screen at two in
+     the morning is expressing a preference, not working around a barrier,
+     and the reset button below leaves it alone for that reason. It is only
+     in this panel because this panel is the one control that is on every
+     screen in the product. */
+  const [theme, setTheme] = useState<Theme>('auto');
+  /* The palette is the platform's, not the public site's, so the control is
+     shown where it does something. A switch that is present and inert is a
+     worse answer than an absent one: somebody presses it, nothing moves, and
+     now they do not trust the rest of the menu either. */
+  const onPlatform = isPlatform(usePathname() ?? '');
+
   useEffect(() => {
     try { setS(read(window.localStorage.getItem(STORAGE_KEY))); } catch { /* private window */ }
+    try { setTheme(readTheme(window.localStorage.getItem(THEME_KEY))); } catch { /* private window */ }
     setReady(true);
   }, []);
+
+  /* The palette is already on the page: a line in the head applied it before
+     the first paint. This only has to keep it in step with a press, and to
+     follow the device while the choice is to follow the device — somebody who
+     turns their phone dark at sunset should watch this turn with it, not on
+     the next reload. */
+  useEffect(() => {
+    if (!ready) return;
+    applyTheme(theme);
+    try { window.localStorage.setItem(THEME_KEY, theme); } catch { /* private window */ }
+    if (theme !== 'auto') return;
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    const onChange = () => applyTheme('auto');
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, [theme, ready]);
 
   useEffect(() => {
     if (!ready) return;
@@ -94,7 +126,7 @@ export function A11yPanel({ copy: c }: { copy: A11yCopy }) {
           role="dialog"
           aria-modal="true"
           aria-label={c.title}
-          className="fixed inset-0 z-[70] flex items-end justify-center bg-ink/40 p-0 sm:items-center sm:p-6"
+          className="fixed inset-0 z-[70] flex items-end justify-center bg-scrim/40 p-0 sm:items-center sm:p-6"
           onClick={(e) => { if (e.target === e.currentTarget) setOpen(false); }}
         >
           <div className="max-h-[86svh] w-full overflow-y-auto rounded-t-sheet border border-line-strong bg-card p-6 shadow-pop sm:max-w-[28rem] sm:rounded-sheet">
@@ -112,6 +144,21 @@ export function A11yPanel({ copy: c }: { copy: A11yCopy }) {
             </div>
 
             <hr className="rule-gold my-5" />
+
+            {/* First, because it is the one people came for. */}
+            {onPlatform && (
+            <div className="border-b border-line pb-4">
+              <span id="a11y-theme" className="text-[14.5px] text-ink">{c.theme}</span>
+              <div role="radiogroup" aria-labelledby="a11y-theme" className="mt-2.5 grid grid-cols-3 gap-2">
+                <Pick on={theme === 'auto'} onClick={() => setTheme('auto')}
+                  icon={<Monitor size={16} strokeWidth={1.5} aria-hidden />} label={c.themeAuto} />
+                <Pick on={theme === 'light'} onClick={() => setTheme('light')}
+                  icon={<Sun size={16} strokeWidth={1.5} aria-hidden />} label={c.themeLight} />
+                <Pick on={theme === 'dark'} onClick={() => setTheme('dark')}
+                  icon={<Moon size={16} strokeWidth={1.5} aria-hidden />} label={c.themeDark} />
+              </div>
+            </div>
+            )}
 
             {/* Text size */}
             <div className="flex items-center justify-between gap-4 border-b border-line py-3">
@@ -161,6 +208,28 @@ export function A11yPanel({ copy: c }: { copy: A11yCopy }) {
         </div>
       )}
     </>
+  );
+}
+
+/** One of three, announced as a radio so a screen reader says "2 of 3" and
+ *  says which is selected. The chosen one is not only the accent: it carries
+ *  a filled ground and a heavier border, because a colour alone is not a
+ *  state. */
+function Pick({ on, onClick, icon, label }: {
+  on: boolean; onClick: () => void; icon: React.ReactNode; label: string;
+}) {
+  return (
+    <button
+      type="button" role="radio" aria-checked={on} onClick={onClick}
+      className={`flex min-h-[44px] flex-col items-center justify-center gap-1 rounded-control border px-2 py-2 text-[12.5px] transition-colors ${
+        on
+          ? 'border-accent bg-accent-wash font-medium text-ink'
+          : 'border-line-strong text-ink-soft hover:border-accent/50 hover:text-ink'
+      }`}
+    >
+      {icon}
+      {label}
+    </button>
   );
 }
 

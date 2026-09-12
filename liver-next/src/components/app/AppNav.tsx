@@ -141,7 +141,7 @@ export function MobileTabBar({ items, extra }: {
             type="button"
             aria-label={ui.nav.close}
             onClick={() => setOpen(false)}
-            className="absolute inset-0 h-full w-full cursor-default bg-ink/25 backdrop-blur-[2px]"
+            className="absolute inset-0 h-full w-full cursor-default bg-scrim/25 backdrop-blur-[2px]"
           />
           <div
             role="dialog"

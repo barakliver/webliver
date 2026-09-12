@@ -171,6 +171,87 @@ line('gold as words there',              c.accentLight,                   c.dark
 line('an inverted hairline',             over2(c.surface, 0.12, c.dark),  c.dark, 1.15);
 line('an inverted control edge',         over2(c.surface, 0.45, c.dark),  c.dark, 3.0);
 
+/* ── the dark palette ──────────────────────────────────────────────────────
+   The same product after dark, and exactly as able to be unreadable as the
+   light one. Every pairing above is asked again here against its own
+   grounds, because a tone that clears 4.5:1 on ivory tells you nothing about
+   what it does on charcoal: the light palette's green reads 2.3:1 here, and
+   the deep teal that is the whole product's action colour reads 2.16:1.
+
+   Two pairings exist only in this palette and are the ones a dark mode
+   usually gets wrong. The accent becomes a pale fill, so its label is no
+   longer white but the page's own near-black. And the band that used to be
+   the dark one becomes the step up, so what is written on it is ordinary
+   ink rather than the inverted kind. */
+const d = {
+  ink: '#F2F0E8', inkSoft: '#C3BFB4', inkMid: '#918C82', inkMute: '#ABA69B',
+  surface: '#191816', surface100: '#232120', surface200: '#2D2A28',
+  card: '#232120',
+  /* The band, which in this palette is the step up. */
+  dark: '#2D2A28',
+  line: '#3A3733', lineStrong: '#4A4641', lineControl: '#7C766C',
+  /* The accent's light tone, promoted to the main one. */
+  accent: '#8FC4C1',
+  accentLine: '#5E9F9B',
+  /* 8% of that pale tone over the canvas, which is what --accent-wash
+     resolves to once --accent-rgb has moved. */
+  accentWash: '#26302F',
+  ok: '#7FB894', okWash: '#1E2A22',
+  warn: '#D9A94A', warnWash: '#2B2416',
+  bad: '#E08278', badWash: '#2E1F1D',
+  sage: '#2A3128', blush: '#322A2A',
+};
+
+console.log('\n  כהה');
+line('body text on the ground',        d.ink,      d.surface,    4.5);
+line('body text on the card',          d.ink,      d.card,       4.5);
+line('secondary text',                 d.inkSoft,  d.surface,    4.5);
+line('secondary on the card',          d.inkSoft,  d.card,       4.5);
+line('mid ink, large text only',       d.inkMid,   d.surface,    3.0);
+line('kickers and meta',               d.inkMute,  d.surface,    4.5);
+line('kickers on the card',            d.inkMute,  d.card,       4.5);
+line('kickers on the step above',      d.inkMute,  d.surface200, 4.5);
+line('accent as words, on ground',     d.accent,   d.surface,    4.5);
+line('accent as words, on the card',   d.accent,   d.card,       4.5);
+line('accent on the step up',          d.accent,   d.surface200, 4.5);
+line('accent on its own wash',         d.accent,   d.accentWash, 4.5);
+/* The one that catches a dark mode built by inverting: a pale fill cannot
+   carry a pale label, so the label is the page's ground. */
+line('a button label on the accent',   d.surface,  d.accent,     4.5);
+line('a button label on ink',          d.surface,  d.ink,        4.5);
+line('good, on its wash',              d.ok,       d.okWash,     4.5);
+line('waiting, on its wash',           d.warn,     d.warnWash,   4.5);
+line('wrong, on its wash',             d.bad,      d.badWash,    4.5);
+line('good, on the card',              d.ok,       d.card,       4.5);
+line('waiting, on the card',           d.warn,     d.card,       4.5);
+line('wrong, on the card',             d.bad,      d.card,       4.5);
+line('a label on good',                d.surface,  d.ok,         4.5);
+line('a label on waiting',             d.surface,  d.warn,       4.5);
+line('a label on wrong',               d.surface,  d.bad,        4.5);
+/* The two soft grounds carry ink and never words in their own hue. */
+line('ink on the sage ground',         d.ink,      d.sage,       4.5);
+line('ink on the blush ground',        d.ink,      d.blush,      4.5);
+/* The band, now the step up, with ordinary ink on it. */
+line('body on the band',               d.ink,      d.dark,       4.5);
+line('the accent as words there',      d.accent,   d.dark,       4.5);
+line('a hairline on the ground',       d.line,       d.surface,  1.15);
+line('a strong line on the ground',    d.lineStrong, d.surface,  1.35);
+line('the edge of a field',            d.lineControl, d.surface, 3.0);
+
+/* Every producer's accent, after dark. Their `light` tone becomes the main
+   one, which is the tone already solved for a dark ground — so this is not a
+   new colour to pick, it is one they already have. What has to be checked is
+   the half that is new: that tone as a fill with the page's ground on it. */
+if (brand) {
+  for (const a of brand.ACCENTS) {
+    console.log(`\n  כהה — ${a.key}`);
+    line(`${a.key}: as words, on the ground`, a.night, d.surface,    4.5);
+    line(`${a.key}: as words, on the card`,   a.night, d.card,       4.5);
+    line(`${a.key}: as words, on the step up`, a.night, d.surface200, 4.5);
+    line(`${a.key}: a button label on it`,    d.surface, a.night,    4.5);
+  }
+}
+
 /* ── high contrast ─────────────────────────────────────────────────────────
    The accessibility menu's contrast mode is a second palette, and somebody
    switches it on precisely because the first one is not working for them. It

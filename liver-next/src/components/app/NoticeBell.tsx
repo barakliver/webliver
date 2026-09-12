@@ -101,7 +101,7 @@ export function NoticeBell({ notices, copy }: { notices: Notice[]; copy?: Notice
           {/* a click anywhere else closes it, without trapping focus */}
           <button
             type="button" aria-hidden tabIndex={-1}
-            className="fixed inset-0 z-40 cursor-default bg-ink/20 backdrop-blur-[2px] sm:bg-transparent sm:backdrop-blur-none"
+            className="fixed inset-0 z-40 cursor-default bg-scrim/20 backdrop-blur-[2px] sm:bg-transparent sm:backdrop-blur-none"
             onClick={() => setOpen(false)}
           />
           <div

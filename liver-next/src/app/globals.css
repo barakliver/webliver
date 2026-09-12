@@ -78,6 +78,31 @@
     --surface-200: rgb(var(--surface-200-rgb));
     --dark: rgb(var(--dark-rgb));
 
+    /* State and the two soft grounds, as properties rather than as literals
+       in the config. They were literals until the dark palette needed them:
+       a green solved against ivory reads 2.3:1 on charcoal, and a status
+       nobody can see is worse than no status at all. */
+    /* Channels, washes included. They were hex here for one commit and the
+       class checker caught what that costs: eight `bg-bad-wash/40` and the
+       like across the product, each compiling to no declaration at all. A
+       wash a modifier cannot reach is a row that stops being tinted. */
+    --ok-rgb: 40 90 63;              /* #285A3F */
+    --ok-wash-rgb: 237 242 233;      /* #EDF2E9 */
+    --warn-rgb: 120 82 15;           /* #78520F */
+    --warn-wash-rgb: 251 240 216;    /* #FBF0D8 */
+    --bad-rgb: 149 61 53;            /* #953D35 */
+    --bad-wash-rgb: 249 233 230;     /* #F9E9E6 */
+    --sage-rgb: 206 215 196;         /* #CED7C4 */
+    --sage-wash-rgb: 230 235 223;    /* #E6EBDF */
+    --blush-rgb: 244 228 228;        /* #F4E4E4 */
+    --blush-wash-rgb: 250 241 241;   /* #FAF1F1 */
+
+    /* The veil under a modal. Its own token rather than the ink at 40%,
+       which is what it used to be: on the dark palette the ink is near-white,
+       so every scrim in the product lit the page up instead of dimming it.
+       A scrim darkens in both palettes or it is not a scrim. */
+    --scrim-rgb: 41 40 35;           /* the ink, in daylight */
+
     --line: #E2DFD5;
     --line-strong: #CFCBC0;
     /* The design source's own two: a panel edge and the glass it edges. Not
@@ -116,12 +141,17 @@
     --accent-bright-rgb: 46 118 118; /* #2E7676, 4.4:1 for large numerals */
     --accent-line-rgb: 94 159 155;   /* #5E9F9B, 5.6:1 as words on the dark */
     --accent-light-rgb: 143 196 193; /* #8FC4C1, on the dark ground only */
+    /* And the accent on the dark palette, which is a different question from
+       the dark band: that band was darker than the dark palette's own card,
+       so four of the six white-label tones clear 4.5:1 on it and not here. */
+    --accent-night-rgb: 143 196 193; /* #8FC4C1 */
 
     --accent: rgb(var(--accent-rgb));
     --accent-hover: rgb(var(--accent-hover-rgb));
     --accent-bright: rgb(var(--accent-bright-rgb));
     --accent-line: rgb(var(--accent-line-rgb));
     --accent-light: rgb(var(--accent-light-rgb));
+    --accent-night: rgb(var(--accent-night-rgb));
     /* A wash is translucent by definition, so it stays whole and takes no
        opacity modifier of its own. */
     --accent-wash: rgb(var(--accent-rgb) / .08);
@@ -584,6 +614,161 @@
     font-family: theme('fontFamily.display');
     font-weight: 300;
     letter-spacing: .015em;
+  }
+}
+
+/* ══ כהה ══════════════════════════════════════════════════════════════════
+   The same product at night.
+
+   One class on <html> and every token moves. Nothing else in the codebase
+   knows this palette exists: a component asks for `text-ink` on `bg-card`
+   and gets warm near-black on ivory or warm near-white on charcoal without
+   a line of its own. That is the whole reason the palette was built out of
+   properties in the first place, and this is the first thing to actually
+   collect on it.
+
+   Warm, like the light one. The obvious dark palette is Tailwind's slate and
+   it is the wrong answer here for the same reason it was wrong in daylight:
+   the business is warm ivory and gold, and a cool grey night mode reads as a
+   different product rather than the same one after dark. Every ground below
+   carries a little red and yellow.
+
+   Three things a dark palette gets wrong if nobody says otherwise, all three
+   handled below rather than left to be discovered:
+
+   The accent inverts its role. A deep teal solved for words on ivory reads
+   2.16:1 on charcoal, so it is not a quieter accent, it is an absent one.
+   Each accent in this product already carries a `light` tone solved against
+   the dark ground, for the panels that were always dark, and dark mode is
+   simply that tone promoted to the main one. Which means a producer's own
+   accent follows into dark mode without anybody choosing a second colour:
+   the tone was already there and already measured.
+
+   A pale fill cannot carry a pale label. `btn-primary` is `text-white`, and
+   white on the light teal is 1.94:1. The label flips to the page's own
+   near-black, which is 9.15:1 on it.
+
+   And the dark band stops being dark. `.panel-dark` is a surface that
+   inverts against a light page; against a dark one it would vanish, so here
+   it becomes the step up and its text becomes the ordinary ink.
+
+   The accessibility menu's contrast mode is deliberately declared after this
+   block and therefore wins it. Somebody who asks for maximum contrast has
+   asked for black on white, and a dark palette is a preference while that is
+   a requirement. */
+@layer base {
+  :root.theme-dark {
+    /* The browser's own drawings — scrollbar, date picker, native select —
+       read this rather than our tokens. The boot script sets it too, before
+       any stylesheet has arrived; this is the copy that survives a cached
+       page with scripting off. */
+    color-scheme: dark;
+
+    --ink-rgb: 242 240 232;          /* #F2F0E8, 15.6:1 on the ground */
+    --ink-soft-rgb: 195 191 180;     /* #C3BFB4,  9.7:1 */
+    --ink-mid-rgb: 145 140 130;      /* #918C82,  5.3:1, large text only */
+    --ink-mute-rgb: 171 166 155;     /* #ABA69B, 5.9:1 on the step up, the
+                                        darkest ground a kicker sits on */
+
+    --surface-rgb: 25 24 22;         /* #191816, the canvas */
+    --surface-100-rgb: 35 33 32;     /* #232120, the card, lifted off it */
+    --surface-200-rgb: 45 42 40;     /* #2D2A28, the step up */
+    /* The band that was the dark one. Now the step up, because a charcoal
+       panel on a charcoal page is not a panel. */
+    --dark-rgb: 45 42 40;
+
+    /* Black, not the ink. The ink is near-white here. */
+    --scrim-rgb: 0 0 0;
+
+    --line: #3A3733;
+    --line-strong: #4A4641;
+    --line-soft: rgba(58, 55, 51, .7);
+    /* The edge of a control, held to the same 3:1 it is held to in daylight.
+       This one measures 3.94:1 on the canvas. */
+    --line-control: #7C766C;
+    --surface-glass: rgba(35, 33, 32, .86);
+    --field-bg: rgb(35 33 32 / .9);
+
+    /* The accent's own night tone. Written as a reference rather
+       than as a value so a producer's accent follows: their five tones
+       arrive as a style attribute on the shell, and this reads whichever of
+       them is on the element it lands on. */
+    --accent-rgb: var(--accent-night-rgb);
+    --accent-bright-rgb: var(--accent-night-rgb);
+    --accent-hover-rgb: var(--accent-night-rgb);
+
+    /* State. Solved against this ground rather than carried over: the light
+       palette's green is 2.3:1 here. */
+    --ok-rgb: 127 184 148;           /* #7FB894, 7.8:1 */
+    --ok-wash-rgb: 30 42 34;         /* #1E2A22 */
+    --warn-rgb: 217 169 74;          /* #D9A94A, 8.2:1 */
+    --warn-wash-rgb: 43 36 22;       /* #2B2416 */
+    --bad-rgb: 224 130 120;          /* #E08278, 6.5:1 */
+    --bad-wash-rgb: 46 31 29;        /* #2E1F1D */
+    /* Grounds only, never carrying words in their own hue. */
+    --sage-rgb: 42 49 40;            /* #2A3128 */
+    --sage-wash-rgb: 34 40 32;       /* #222820 */
+    --blush-rgb: 50 42 42;           /* #322A2A */
+    --blush-wash-rgb: 42 35 36;      /* #2A2324 */
+  }
+
+  /* A producer's own accent arrives as a style attribute, which outranks any
+     stylesheet, so this is the one place `!important` is the honest tool: the
+     theme is not overruling their colour, it is choosing which of the five
+     tones they already gave us is the readable one tonight. On the app's own
+     shell, which carries the class and no attribute, it resolves to exactly
+     what the block above already said. */
+  :root.theme-dark .brand-scope {
+    --accent-rgb: var(--accent-night-rgb) !important;
+    --accent-bright-rgb: var(--accent-night-rgb) !important;
+    --accent-hover-rgb: var(--accent-night-rgb) !important;
+  }
+
+  :root.theme-dark body {
+    background-color: rgb(var(--surface-rgb));
+    background-image: radial-gradient(120% 80% at 80% 0%, #232120 0%, #1d1c1a 45%, #141311 100%);
+  }
+
+  /* The label on a filled control. White is the right label on a deep teal
+     and the wrong one on a pale one, so it becomes the page's own ground:
+     near-black on the accent, 9.15:1. The hover had been a darker fill, and
+     the darker fill is now the same colour as the rest, so the feedback
+     comes from the fill itself dimming. */
+  :root.theme-dark .btn-primary {
+    color: rgb(var(--surface-rgb));
+  }
+  :root.theme-dark .btn-primary:hover {
+    filter: brightness(.92);
+  }
+
+  /* It inverted against a light page. Here it is a step up with ordinary
+     ink on it, which is the same idea drawn the other way round. */
+  :root.theme-dark .panel-dark {
+    color: rgb(var(--ink-rgb));
+  }
+
+  /* Paper is white whatever the screen is. Printing a run sheet in dark mode
+     would put a charcoal rectangle through somebody's printer, and the one
+     thing every printable page in this product is for is being carried
+     around on paper at an event. */
+  @media print {
+    :root.theme-dark {
+      --ink-rgb: 0 0 0;
+      --ink-soft-rgb: 40 40 40;
+      --ink-mid-rgb: 70 70 70;
+      --ink-mute-rgb: 60 60 60;
+      --surface-rgb: 255 255 255;
+      --surface-100-rgb: 255 255 255;
+      --surface-200-rgb: 240 240 240;
+      --dark-rgb: 240 240 240;
+      --line: #cccccc;
+      --line-strong: #999999;
+      --line-control: #666666;
+      --accent-rgb: var(--accent-line-rgb);
+    }
+    :root.theme-dark body { background: #fff; background-image: none; }
+    :root.theme-dark .panel-dark { color: #000; }
+    :root.theme-dark .btn-primary { color: #fff; }
   }
 }
 

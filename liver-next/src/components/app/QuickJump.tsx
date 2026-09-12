@@ -246,7 +246,7 @@ export function QuickJump({ screens, events, records = [], compact }: {
           <button
             type="button" aria-label={c.close} tabIndex={-1}
             onClick={() => setOpen(false)}
-            className="absolute inset-0 cursor-default bg-ink/30 backdrop-blur-[2px]"
+            className="absolute inset-0 cursor-default bg-scrim/30 backdrop-blur-[2px]"
           />
           <div
             role="dialog" aria-modal="true" aria-label={c.title}
