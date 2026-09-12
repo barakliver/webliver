@@ -169,10 +169,12 @@ function checkBuiltCss() {
   record(!has('#f1f5f9') && !/--surface-rgb:\s*241 245 249/.test(css), 'the slate ground is gone');
   record(!/--ink-rgb:\s*15 23 42/.test(css), 'the slate ink is gone');
 
-  /* And the two palettes it replaced. The ground is slate again, deliberately,
-     but these are the *first* app's values and neither belongs in a build of
-     this one: a blue-grey page ground and a blue accent. The accent here is
-     gold on every palette this product has ever shipped. */
+  /* The first app's own two values. The ground is a pale blue again, which is
+     deliberate and was asked for by name, so this is no longer "no blue here":
+     it is "not that blue". #F3F6FA was a grey that had gone slightly cold and
+     #2E5F8C was a blue accent, and the accent has been gold or teal on every
+     palette this product has actually shipped. The current ground is #F2F6FC,
+     which these two lines do not match and must not start matching. */
   record(!has('#f3f6fa'), 'the old page ground is gone');
   record(!has('#2e5f8c'), 'the blue accent is gone');
 

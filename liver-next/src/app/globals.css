@@ -29,41 +29,49 @@
 
        Tones that are translucent by definition stay whole further down. An
        opacity modifier on a hairline is a mistake either way. */
-    /* Warm, not cool. The workspace ran on Tailwind's slate — #0F172A over
-       #F1F5F9 — while the public site the same people arrive from is warm, so
-       signing in changed the temperature of the brand. That is the one thing a
-       white-labelled product cannot afford: the two halves stop reading as one
-       business.
+    /* Cool, not warm. This line has now moved three times, and the rule the
+       file has always used to settle it is that the later instruction wins.
 
-       Two documents in this repo disagreed about this and the instruction that
-       settles it is always the later one. `LUX_DIRECTION.md` named the warm
-       design the successor; an instruction after it asked for the cooler of
-       the two, and this comment used to say so. The instruction after *that*
-       supplied these values by name and asked that the app and the public
-       brand feel related. So the temperature moves back.
+       Slate first, from the first app. Then warm ivory, because the public
+       site the same people arrive from was warm and signing in changed the
+       temperature of the brand — which is the one thing a white-labelled
+       product cannot afford, the two halves reading as two businesses.
+       Then this: he asked for a light blue ground, elegant, a hint rather
+       than a statement, and asked for it everywhere rather than in the app
+       alone. Everywhere is what keeps the previous lesson intact: the
+       shopfront and the workspace move together, so neither can drift away
+       from the other again.
 
-       Structure is untouched, as it was last time. Hairlines instead of cards,
-       square buttons, the serif on every figure: that is the Lux direction and
-       it stands. Every value below was re-solved against the new ground rather
-       than carried across, and all twenty-six pairings in check-contrast pass;
-       a warm palette that quietly loses a ratio is not a nicer design, it is
-       an unreadable one. */
-    --ink-rgb: 41 40 35;             /* #292823, 14.9:1 on the ground */
-    --ink-soft-rgb: 101 98 91;       /* #65625B,  5.6:1 */
-    --ink-mid-rgb: 139 135 125;      /* #8B877D,  3.3:1, large text only */
-    --ink-mute-rgb: 96 93 86;        /* #605D56. Solved against #EEEDE3, the
-                                        darkest ground a kicker sits on: 5.3:1
-                                        there and 5.9:1 on the page itself. */
+       It is not the first app's ground coming back. That one was #F3F6FA, a
+       blue-grey; this is #F2F6FC, which carries ten points of blue over red
+       rather than seven, so it reads as a colour somebody chose instead of a
+       grey that went slightly cold. The release checker still refuses the old
+       value by name.
 
-    --surface-rgb: 248 248 240;      /* #F8F8F0, the canvas */
-    --surface-100-rgb: 255 253 249;  /* #FFFDF9, the card */
-    --surface-200-rgb: 238 237 227;  /* #EEEDE3, the step up */
+       Every tone below was re-solved against this ground rather than carried
+       across, which is the part that is never optional: the ratios are a
+       property of the pair, not of the ink. All of them pass, and so do the
+       six white-label accents, which this time needed no new values — the
+       ground got lighter, and lighter grounds are kinder to dark text.
+
+       Structure is untouched, as it was the last two times. Hairlines instead
+       of cards, square buttons, the serif on every figure. */
+    --ink-rgb: 35 39 46;             /* #23272E, 13.9:1 on the ground */
+    --ink-soft-rgb: 90 97 107;       /* #5A616B,  5.8:1 */
+    --ink-mid-rgb: 131 138 148;      /* #838A94,  3.2:1, large text only */
+    --ink-mute-rgb: 86 93 103;       /* #565D67. Solved against #E4EBF4, the
+                                        darkest ground a kicker sits on: 5.7:1
+                                        there and 6.2:1 on the page itself. */
+
+    --surface-rgb: 242 246 252;      /* #F2F6FC, the canvas */
+    --surface-100-rgb: 251 252 255;  /* #FBFCFF, the card */
+    --surface-200-rgb: 228 235 244;  /* #E4EBF4, the step up */
     /* Lifted off the ink rather than equal to it, but only barely. The dark
        band is a surface somebody reads a paragraph on, and it also carries
        each producer's own accent as words: the six white-label accents are
        checked against it, and the palest of them needs the ground this dark
        to clear 4.5. A warmer, lighter band failed three of the six. */
-    --dark-rgb: 29 30 32;            /* #1D1E20, charcoal */
+    --dark-rgb: 27 30 34;            /* #1B1E22, charcoal with a little blue in it */
 
     /* The whole-colour forms, derived. Anything that needs a colour rather
        than a Tailwind class reads these: a gradient stop, `accent-color`, an
@@ -87,29 +95,29 @@
        like across the product, each compiling to no declaration at all. A
        wash a modifier cannot reach is a row that stops being tinted. */
     --ok-rgb: 40 90 63;              /* #285A3F */
-    --ok-wash-rgb: 237 242 233;      /* #EDF2E9 */
+    --ok-wash-rgb: 232 240 235;      /* #E8F0EB */
     --warn-rgb: 120 82 15;           /* #78520F */
-    --warn-wash-rgb: 251 240 216;    /* #FBF0D8 */
+    --warn-wash-rgb: 247 240 220;    /* #F7F0DC */
     --bad-rgb: 149 61 53;            /* #953D35 */
-    --bad-wash-rgb: 249 233 230;     /* #F9E9E6 */
-    --sage-rgb: 206 215 196;         /* #CED7C4 */
-    --sage-wash-rgb: 230 235 223;    /* #E6EBDF */
-    --blush-rgb: 244 228 228;        /* #F4E4E4 */
-    --blush-wash-rgb: 250 241 241;   /* #FAF1F1 */
+    --bad-wash-rgb: 248 232 231;     /* #F8E8E7 */
+    --sage-rgb: 203 213 206;         /* #CBD5CE */
+    --sage-wash-rgb: 228 235 230;    /* #E4EBE6 */
+    --blush-rgb: 240 228 233;        /* #F0E4E9 */
+    --blush-wash-rgb: 247 239 242;   /* #F7EFF2 */
 
     /* The veil under a modal. Its own token rather than the ink at 40%,
        which is what it used to be: on the dark palette the ink is near-white,
        so every scrim in the product lit the page up instead of dimming it.
        A scrim darkens in both palettes or it is not a scrim. */
-    --scrim-rgb: 41 40 35;           /* the ink, in daylight */
+    --scrim-rgb: 35 39 46;           /* the ink, in daylight */
 
-    --line: #E2DFD5;
-    --line-strong: #CFCBC0;
+    --line: #DCE3EB;
+    --line-strong: #C4CEDA;
     /* The design source's own two: a panel edge and the glass it edges. Not
        derived from the ink like the separators above, because these are the
        slate line colour itself rather than a percentage of the text. */
-    --line-soft: rgba(226, 223, 213, .7);
-    --surface-glass: rgba(255, 253, 249, .86);
+    --line-soft: rgba(220, 227, 235, .7);
+    --surface-glass: rgba(251, 252, 255, .86);
     /* The visible edge of a control, which is a different job from separating
        two rows. The handoff's hairlines read 1.2:1 and 1.4:1 against ivory,
        which is right for a separator and wrong for the only thing telling
@@ -118,12 +126,12 @@
        the lightest value that clears it. */
     /* .46 reads 2.97:1 on this ground, just under the 3 a control edge needs.
        The warm palette cleared it at .48; a cooler, lighter ground does not. */
-    --line-control: #878579;
+    --line-control: #7E8794;
     /* The inside of an input. A token rather than a literal because one
        section of this product inverts the whole palette for a dark band, and
        a hardcoded white here meant a near-white label inside a light grey box
        on that band: 1.44:1, which is not dim, it is gone. */
-    --field-bg: rgb(255 253 249 / .9);
+    --field-bg: rgb(251 252 255 / .9);
 
     /* The gold is the one thing both designs share, and it moves only as far
        as the cooler ground makes it. Re-solved against #F1F5F9 rather than
@@ -256,7 +264,7 @@
        token above it went warm: the type and the gold were ivory and the
        ground behind them was still slate, which reads as a colour bug
        rather than a palette. A hex here answers to nothing. */
-    background-image: radial-gradient(120% 80% at 80% 0%, #fffdf9 0%, #faf9f2 45%, #f1f0e6 100%);
+    background-image: radial-gradient(120% 80% at 80% 0%, #ffffff 0%, #f7fafd 45%, #eaf1f9 100%);
     background-attachment: fixed;
     /* Installed, this is an app rather than a page: a tap should not flash a
        grey rectangle, and a scroll that reaches the end should not rubber band
@@ -627,11 +635,12 @@
    properties in the first place, and this is the first thing to actually
    collect on it.
 
-   Warm, like the light one. The obvious dark palette is Tailwind's slate and
-   it is the wrong answer here for the same reason it was wrong in daylight:
-   the business is warm ivory and gold, and a cool grey night mode reads as a
-   different product rather than the same one after dark. Every ground below
-   carries a little red and yellow.
+   Cool, like the light one, and for the same reason the light one is: the
+   two have to be the same product at two times of day. When the ground went
+   from ivory to a pale blue these grounds followed it, because a warm night
+   mode under a cool daylight one is the temperature split all over again,
+   just spread across a switch instead of across a sign-in. Every ground
+   below carries a little blue.
 
    Three things a dark palette gets wrong if nobody says otherwise, all three
    handled below rather than left to be discovered:
@@ -664,30 +673,30 @@
        page with scripting off. */
     color-scheme: dark;
 
-    --ink-rgb: 242 240 232;          /* #F2F0E8, 15.6:1 on the ground */
-    --ink-soft-rgb: 195 191 180;     /* #C3BFB4,  9.7:1 */
-    --ink-mid-rgb: 145 140 130;      /* #918C82,  5.3:1, large text only */
-    --ink-mute-rgb: 171 166 155;     /* #ABA69B, 5.9:1 on the step up, the
+    --ink-rgb: 237 241 246;          /* #EDF1F6, 14.8:1 on the ground */
+    --ink-soft-rgb: 186 193 203;     /* #BAC1CB,  9.2:1 */
+    --ink-mid-rgb: 138 145 156;      /* #8A919C,  5.0:1, large text only */
+    --ink-mute-rgb: 163 170 181;     /* #A3AAB5, 5.6:1 on the step up, the
                                         darkest ground a kicker sits on */
 
-    --surface-rgb: 25 24 22;         /* #191816, the canvas */
-    --surface-100-rgb: 35 33 32;     /* #232120, the card, lifted off it */
-    --surface-200-rgb: 45 42 40;     /* #2D2A28, the step up */
+    --surface-rgb: 22 24 28;         /* #16181C, the canvas */
+    --surface-100-rgb: 31 34 40;     /* #1F2228, the card, lifted off it */
+    --surface-200-rgb: 37 40 46;     /* #25282E, the step up */
     /* The band that was the dark one. Now the step up, because a charcoal
        panel on a charcoal page is not a panel. */
-    --dark-rgb: 45 42 40;
+    --dark-rgb: 37 40 46;
 
     /* Black, not the ink. The ink is near-white here. */
     --scrim-rgb: 0 0 0;
 
-    --line: #3A3733;
-    --line-strong: #4A4641;
-    --line-soft: rgba(58, 55, 51, .7);
+    --line: #343942;
+    --line-strong: #444A55;
+    --line-soft: rgba(52, 57, 66, .7);
     /* The edge of a control, held to the same 3:1 it is held to in daylight.
-       This one measures 3.94:1 on the canvas. */
-    --line-control: #7C766C;
-    --surface-glass: rgba(35, 33, 32, .86);
-    --field-bg: rgb(35 33 32 / .9);
+       This one measures 4.09:1 on the canvas. */
+    --line-control: #757E8B;
+    --surface-glass: rgba(31, 34, 40, .86);
+    --field-bg: rgb(31 34 40 / .9);
 
     /* The accent's own night tone. Written as a reference rather
        than as a value so a producer's accent follows: their five tones
@@ -700,16 +709,16 @@
     /* State. Solved against this ground rather than carried over: the light
        palette's green is 2.3:1 here. */
     --ok-rgb: 127 184 148;           /* #7FB894, 7.8:1 */
-    --ok-wash-rgb: 30 42 34;         /* #1E2A22 */
+    --ok-wash-rgb: 27 41 34;         /* #1B2922 */
     --warn-rgb: 217 169 74;          /* #D9A94A, 8.2:1 */
-    --warn-wash-rgb: 43 36 22;       /* #2B2416 */
+    --warn-wash-rgb: 41 36 22;       /* #292416 */
     --bad-rgb: 224 130 120;          /* #E08278, 6.5:1 */
-    --bad-wash-rgb: 46 31 29;        /* #2E1F1D */
+    --bad-wash-rgb: 44 31 30;        /* #2C1F1E */
     /* Grounds only, never carrying words in their own hue. */
-    --sage-rgb: 42 49 40;            /* #2A3128 */
-    --sage-wash-rgb: 34 40 32;       /* #222820 */
-    --blush-rgb: 50 42 42;           /* #322A2A */
-    --blush-wash-rgb: 42 35 36;      /* #2A2324 */
+    --sage-rgb: 39 46 43;            /* #272E2B */
+    --sage-wash-rgb: 32 39 36;       /* #202724 */
+    --blush-rgb: 46 37 41;           /* #2E2529 */
+    --blush-wash-rgb: 39 31 35;      /* #271F23 */
   }
 
   /* A producer's own accent arrives as a style attribute, which outranks any
@@ -726,7 +735,7 @@
 
   :root.theme-dark body {
     background-color: rgb(var(--surface-rgb));
-    background-image: radial-gradient(120% 80% at 80% 0%, #232120 0%, #1d1c1a 45%, #141311 100%);
+    background-image: radial-gradient(120% 80% at 80% 0%, #1f2228 0%, #1a1d21 45%, #121417 100%);
   }
 
   /* The label on a filled control. White is the right label on a deep teal

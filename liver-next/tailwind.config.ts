@@ -1,7 +1,9 @@
 import type { Config } from 'tailwindcss';
 
 /* ── Liver Productions design system · Lux ─────────────────────────────────
-   Warm near-black on ivory, structured by hairlines rather than by cards.
+   A cool near-black on a pale blue ground, structured by hairlines rather
+   than by cards. The ground was ivory until he asked for the blue, and the
+   history of that decision is written where the values are, in globals.css.
 
    The change from the slate version is not a repaint, it is a change of
    construction. There are no cards, no glass, no shadows on content and no
@@ -43,9 +45,10 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        /* Text, darkest first. Warm near-black rather than blue-black: the
-           whole palette sits on ivory, and a cool ink on a warm ground reads
-           as a mistake rather than as a choice.
+        /* Text, darkest first. A cool near-black, because the whole palette
+           now sits on a pale blue and an ink of the other temperature reads
+           as a mistake rather than as a choice. It was the warm one while the
+           ground was ivory, for exactly the same reason.
 
            Every solid tone is `rgb(var(--x-rgb) / <alpha-value>)` rather than
            `var(--x)`. The indirection buys one thing and it is not tidiness:
@@ -64,7 +67,9 @@ const config: Config = {
           mute:    'rgb(var(--ink-mute-rgb, 90 104 125) / <alpha-value>)',
         },
 
-        /* The ground and the two steps around it. No white anywhere. */
+        /* The ground and the two steps around it. The card is near enough to
+           white to be called one now; on the blue ground a warm off-white
+           read as a stain rather than as a surface. */
         surface: {
           DEFAULT: 'rgb(var(--surface-rgb, 241 245 249) / <alpha-value>)',
           /* the producer dashboard sits a shade brighter */

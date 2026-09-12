@@ -27,27 +27,34 @@ const ratio = (a, b) => {
   return (hi + 0.05) / (lo + 0.05);
 };
 
-/* The palette. Cool: navy-black over slate greys, with the gold on top. The
-   marked values are darker than the design's own, because the design's fail
-   the text they are used for on this ground. */
+/* The palette. A pale blue ground with a cool near-black on it, and the deep
+   teal as the action. The marked values are darker than the design's own,
+   because the design's fail the text they are used for on this ground.
+
+   These are copied from globals.css on purpose rather than read out of it.
+   Reading them would mean this file passes whenever the stylesheet is
+   self-consistent, which is not the question being asked: the question is
+   whether the numbers somebody wrote down are the numbers that are readable.
+   The cost of the copy is that a palette change has to be made twice, and
+   that cost is the point — it is the second pair of eyes. */
 const c = {
-  ink: '#292823', inkSoft: '#65625B', inkMid: '#8B877D',
-  inkMute: '#605D56',              /* solved against the step up */
-  surface: '#F8F8F0', surface100: '#FFFDF9', surface200: '#EEEDE3',
-  card: '#FFFDF9',
-  dark: '#1D1E20',
-  line: '#E2DFD5', lineStrong: '#CFCBC0',
-  lineControl: '#878579',
+  ink: '#23272E', inkSoft: '#5A616B', inkMid: '#838A94',
+  inkMute: '#565D67',              /* solved against the step up */
+  surface: '#F2F6FC', surface100: '#FBFCFF', surface200: '#E4EBF4',
+  card: '#FBFCFF',
+  dark: '#1B1E22',
+  line: '#DCE3EB', lineStrong: '#C4CEDA',
+  lineControl: '#7E8794',
   accent: '#205757',               /* the primary action, safe as words */
   accentHover: '#174444',
   accentBright: '#2E7676',         /* large numerals only, 3:1 bar   */
   accentLine: '#5E9F9B',           /* words on the dark ground       */
   accentLight: '#8FC4C1',
   /* The teal at 8% over the canvas, which is what --accent-wash ships. */
-  accentWash: '#E7EBE4',
-  ok: '#285A3F', okWash: '#EDF2E9',
-  warn: '#78520F', warnWash: '#FBF0D8',
-  bad: '#953D35', badWash: '#F9E9E6',
+  accentWash: '#E1E9EF',
+  ok: '#285A3F', okWash: '#E8F0EB',
+  warn: '#78520F', warnWash: '#F7F0DC',
+  bad: '#953D35', badWash: '#F8E8E7',
   white: '#FFFFFF',
 };
 
@@ -184,22 +191,22 @@ line('an inverted control edge',         over2(c.surface, 0.45, c.dark),  c.dark
    the dark one becomes the step up, so what is written on it is ordinary
    ink rather than the inverted kind. */
 const d = {
-  ink: '#F2F0E8', inkSoft: '#C3BFB4', inkMid: '#918C82', inkMute: '#ABA69B',
-  surface: '#191816', surface100: '#232120', surface200: '#2D2A28',
-  card: '#232120',
+  ink: '#EDF1F6', inkSoft: '#BAC1CB', inkMid: '#8A919C', inkMute: '#A3AAB5',
+  surface: '#16181C', surface100: '#1F2228', surface200: '#25282E',
+  card: '#1F2228',
   /* The band, which in this palette is the step up. */
-  dark: '#2D2A28',
-  line: '#3A3733', lineStrong: '#4A4641', lineControl: '#7C766C',
+  dark: '#25282E',
+  line: '#343942', lineStrong: '#444A55', lineControl: '#757E8B',
   /* The accent's light tone, promoted to the main one. */
   accent: '#8FC4C1',
   accentLine: '#5E9F9B',
   /* 8% of that pale tone over the canvas, which is what --accent-wash
      resolves to once --accent-rgb has moved. */
-  accentWash: '#26302F',
-  ok: '#7FB894', okWash: '#1E2A22',
-  warn: '#D9A94A', warnWash: '#2B2416',
-  bad: '#E08278', badWash: '#2E1F1D',
-  sage: '#2A3128', blush: '#322A2A',
+  accentWash: '#202629',
+  ok: '#7FB894', okWash: '#1B2922',
+  warn: '#D9A94A', warnWash: '#292416',
+  bad: '#E08278', badWash: '#2C1F1E',
+  sage: '#272E2B', blush: '#2E2529',
 };
 
 console.log('\n  כהה');

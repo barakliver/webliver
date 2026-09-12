@@ -241,10 +241,66 @@ failed += report(
   + '  (`rgb(var(--x-rgb) / <alpha-value>)`) the way the solid tones have.',
 );
 
+/* ── the stylesheet still parses ───────────────────────────────────────────
+   This suite reads globals.css as text and never as CSS, so for one commit
+   it passed on a file the build could not parse at all: an edit cut a
+   two-line comment in half and left its tail sitting in the middle of a
+   block. Every checker was green and `next dev` answered 500 on every page.
+
+   Two rules catch that whole family without pulling in a parser. Comments
+   have to be well formed, which is what a stray closing marker breaks. And
+   once the comments are gone, every line inside a block has to end like a
+   line of CSS, which is what the orphan's leftover words break.
+
+   This comment says "closing marker" rather than showing one, because
+   writing the two characters here would end this comment in the middle of
+   the sentence and turn the rest of it into code. That is not a joke about
+   the bug, it is the same bug: it happened while this check was being
+   written, and the file would not parse. */
+const cssText = readFileSync(join(root, 'src/app/globals.css'), 'utf8');
+const stripped = cssText.replace(/\/\*[\s\S]*?\*\//g, '');
+const strays = [];
+if (stripped.includes('*/') || stripped.includes('/*')) {
+  strays.push({ where: 'src/app/globals.css', line: '?', cls: 'a comment is opened or closed on its own' });
+}
+let depth = 0;
+/* A declaration may run over several lines — an `@apply` list, a gradient
+   with a stop per line — so a line that does not end in a semicolon is not
+   by itself wrong. Only the first line of a new statement is judged, and the
+   thing being asked of it is that it look like CSS at all: a declaration has
+   a colon, a selector opens a brace, an at-rule starts with an at sign.
+   Leftover prose from a halved comment has none of the three. */
+let pending = false;
+stripped.split('\n').forEach((raw, i) => {
+  const l = raw.trim();
+  const opens = l.split('{').length - 1;
+  const closes = l.split('}').length - 1;
+  const startsStatement = !pending;
+  const before = depth;
+  depth += opens - closes;
+  if (l) pending = !/[;{}]$/.test(l);
+  if (!l || before === 0) return;
+  if (!startsStatement) return;
+  /* A selector list is written one selector per line and each carries a
+     trailing comma, so that shape is CSS too. */
+  if (l.includes(':') || l.includes('{') || l.startsWith('}') || l.startsWith('@')) return;
+  if (l.endsWith(',')) return;
+  strays.push({ where: 'src/app/globals.css', line: i + 1, cls: l.slice(0, 60) });
+});
+if (depth !== 0) {
+  strays.push({ where: 'src/app/globals.css', line: '?', cls: `${depth} brace(s) left open` });
+}
+failed += report(
+  strays, 'FAIL  globals.css does not parse',
+  'The suite reads this file as text, so a broken one reaches the build\n'
+  + '  rather than this checker. Open it at the line named.',
+);
+
 if (failed === 0) {
   console.log(
     `every palette class resolves  (${solid.size} tones take an opacity `
     + `modifier, ${whole.size} are whole and do not)`,
   );
+  console.log('and the stylesheet parses');
 }
 process.exit(failed === 0 ? 0 : 1);

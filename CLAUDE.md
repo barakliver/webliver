@@ -58,14 +58,24 @@ that has happened once.
   second. The agent reads that file out of the commit it deploys and writes
   the number beside it, so the card on `/app/admin` says "ליבר 2.1" with the
   commit underneath in small print. Talk to him in numbers, not hashes.
-- The platform has a light palette and a dark one, chosen in the accessibility
-  menu: follow the device, light, dark. It is one class on `<html>` and a block
-  of token overrides in `globals.css`, so no component knows it exists. It
+- The ground is a pale blue, #F2F6FC, everywhere: the app, the public site and
+  the guests' page alike. It was warm ivory before, and slate before that; the
+  rule that settles it is that his latest instruction wins, and the reasoning
+  for each move is written above the values in `globals.css`. Everywhere,
+  rather than in the app alone, because the whole point of the ivory move was
+  that the shopfront and the workspace must not read as two businesses.
+- The platform also has a dark palette, chosen in the accessibility menu:
+  follow the device, light, dark. It is one class on `<html>` and a block of
+  token overrides in `globals.css`, so no component knows it exists. It
   applies to `/app` and `/design` and deliberately not to the public site or
-  the guests' page: their headlines are ivory because they lie on a
+  the guests' page: their headlines are light because they lie on a
   photograph, so flipping the palette under them draws a near-black title on
   a picture of a bride. Every tone in both palettes is measured by
   `npm run contrast`, the producers' accents included.
+- `npm run classes` now also checks that `globals.css` parses. The suite reads
+  that file as text and never as CSS, and for one commit everything was green
+  on a stylesheet the build could not read at all: an edit had cut a two-line
+  comment in half. Do not write a comment terminator inside a comment.
 - The deploy builds into `.next-build` and renames it into place, and installs
   dependencies only when the lockfile changed, so a release does not take the
   live site down while it builds. Keep it that way.

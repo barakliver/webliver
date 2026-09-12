@@ -31,8 +31,12 @@
  *  platform's address, and which every accent above is solved against. Left
  *  behind by a palette change twice now — the second time it was still naming
  *  a slate ground while the page had gone warm, so the six white-label tones
- *  were being checked against a colour nobody could see any more. */
-export const PAGE_GROUND = '#F8F8F0';
+ *  were being checked against a colour nobody could see any more. Moved a
+ *  third time when the ground became a pale blue; every tone below was
+ *  re-measured against it and all six survived unchanged, because the new
+ *  ground is lighter than the ivory and a lighter ground is kinder to dark
+ *  text than a darker one. */
+export const PAGE_GROUND = '#F2F6FC';
 
 export type Accent = {
   key: string;
