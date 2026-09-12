@@ -23,6 +23,11 @@ export type ReleaseState = {
   /** The commit the agent says is live, full. */
   live: string | null;
   previous: string | null;
+  /** The version number of each, as that commit's own version.json spelled
+   *  it. Null for a release made before the file existed, and for a machine
+   *  whose agent has not run since. The card then falls back to the commit. */
+  liveVersion: string | null;
+  previousVersion: string | null;
   /** A commit that failed twice and will not be tried again until it changes. */
   gaveUp: string | null;
   tried: { tag: string; n: number } | null;
@@ -37,6 +42,8 @@ export type ReleaseState = {
 export type AgentFiles = {
   deployed?: string | null;
   previous?: string | null;
+  deployedVersion?: string | null;
+  previousVersion?: string | null;
   gaveUp?: string | null;
   tried?: string | null;
   log?: string | null;
@@ -77,7 +84,8 @@ function resultOf(lines: string[]): ReleaseResult {
 
 export function parseAgentState(files: AgentFiles | null, running: string, keep = 12): ReleaseState {
   const none: ReleaseState = {
-    found: false, running, live: null, previous: null, gaveUp: null, tried: null,
+    found: false, running, live: null, previous: null,
+    liveVersion: null, previousVersion: null, gaveUp: null, tried: null,
     result: 'unknown', at: null, lines: [],
   };
   if (!files) return none;
@@ -105,6 +113,8 @@ export function parseAgentState(files: AgentFiles | null, running: string, keep 
     running,
     live: clean(files.deployed),
     previous: clean(files.previous),
+    liveVersion: clean(files.deployedVersion),
+    previousVersion: clean(files.previousVersion),
     gaveUp: clean(files.gaveUp),
     tried,
     result: resultOf(all),

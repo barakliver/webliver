@@ -358,6 +358,7 @@ export const consoleEn: ConsoleCopy = {
       running: 'Running now',
       live: 'Last released',
       previous: 'The one before',
+      version: 'Liver {v}',
       ok: 'Went live, every screen draws',
       buildFailed: 'The build did not finish; the previous version is still serving',
       rolledBack: 'Failed and was rolled back',

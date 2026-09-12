@@ -5,6 +5,7 @@ import { useCopy } from '@/components/app/CopyProvider';
 import { Ltr } from '@/components/Ltr';
 import { fill } from '@/lib/copyText';
 import { servesLive, shortSha, type ReleaseState as State } from '@/lib/release';
+import { VERSION } from '@/lib/version';
 
 /**
  * The release agent's last word, on the owner's console.
@@ -49,10 +50,16 @@ export function ReleaseState({ state }: { state: State }) {
         <p className="mt-4 text-[14px] text-ink-mute">{c.none}</p>
       ) : (
         <>
-          <dl className="mt-4 grid gap-x-8 gap-y-2 text-[14px] sm:grid-cols-3">
-            <Row label={c.running} value={state.running} />
-            <Row label={c.live} value={shortSha(state.live) || '·'} />
-            <Row label={c.previous} value={shortSha(state.previous) || '·'} />
+          {/* The number first, the commit under it in small print. Seven
+              characters of hexadecimal are the exact truth and unsayable:
+              nobody asks to be put back on efd086d. The version is what a
+              person reads, and the commit stays visible because it is what
+              actually gets deployed. A release made before version.json
+              existed has no number, and then the commit is all there is. */}
+          <dl className="mt-4 grid gap-x-8 gap-y-3 text-[14px] sm:grid-cols-3">
+            <Row label={c.running} version={VERSION} value={state.running} />
+            <Row label={c.live} version={state.liveVersion} value={shortSha(state.live) || '·'} />
+            <Row label={c.previous} version={state.previousVersion} value={shortSha(state.previous) || '·'} />
           </dl>
 
           {state.gaveUp && (
@@ -82,11 +89,23 @@ export function ReleaseState({ state }: { state: State }) {
   );
 }
 
-function Row({ label, value }: { label: string; value: string }) {
+function Row({ label, version, value }: { label: string; version?: string | null; value: string }) {
+  const c = useCopy().admin.release;
   return (
     <div className="flex items-baseline justify-between gap-3 border-b border-line py-1.5 sm:block sm:border-0 sm:py-0">
       <dt className="text-[12.5px] text-ink-mute">{label}</dt>
-      <dd className="m-0 font-mono text-[13.5px] text-ink"><Ltr>{value}</Ltr></dd>
+      <dd className="m-0 text-end sm:text-start">
+        {version ? (
+          <>
+            <span className="block font-display text-[15.5px] font-semibold text-ink">
+              {fill(c.version, { v: version })}
+            </span>
+            <span className="block font-mono text-[12px] text-ink-mute"><Ltr>{value}</Ltr></span>
+          </>
+        ) : (
+          <span className="block font-mono text-[13.5px] text-ink"><Ltr>{value}</Ltr></span>
+        )}
+      </dd>
     </div>
   );
 }

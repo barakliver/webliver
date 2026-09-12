@@ -52,6 +52,12 @@ that has happened once.
   him for the log, before saying a release is live. `scripts/verify.mjs`
   reads its expected palette from `globals.css`, so a design change cannot
   fail it again; do not put literals back.
+- Releases have numbers, because a commit hash is not a thing he can say out
+  loud. `liver-next/version.json` holds the current one and is bumped by hand
+  in the commit worth a number: a fix is the third digit, a batch of work the
+  second. The agent reads that file out of the commit it deploys and writes
+  the number beside it, so the card on `/app/admin` says "ליבר 2.1" with the
+  commit underneath in small print. Talk to him in numbers, not hashes.
 - The deploy builds into `.next-build` and renames it into place, and installs
   dependencies only when the lockfile changed, so a release does not take the
   live site down while it builds. Keep it that way.

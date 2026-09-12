@@ -1072,6 +1072,9 @@ export const appCopy = {
       running: 'רץ עכשיו',
       live: 'שוחרר לאחרונה',
       previous: 'הגרסה שלפניו',
+      /* The name a person says out loud. The commit stays under it, in
+         small print, because that is the thing that gets deployed. */
+      version: 'ליבר {v}',
       ok: 'עלה, וכל המסכים מציירים',
       buildFailed: 'הבנייה לא הסתיימה, האתר נשאר על הגרסה הקודמת',
       rolledBack: 'נכשל והוחזר לגרסה הקודמת',

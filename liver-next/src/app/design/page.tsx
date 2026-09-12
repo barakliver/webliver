@@ -993,6 +993,7 @@ export default async function DesignPage() {
           <div className="space-y-4">
             <ReleaseState state={parseAgentState({
               deployed: 'c72be07aa41', previous: '5bc5e49aa41',
+              deployedVersion: '2.0', previousVersion: '1.9',
               log: [
                 '2026-09-11T09:02:49Z  deploying c72be07aa41 (attempt 1 of 2)',
                 '2026-09-11T09:07:03Z  deployed and every screen draws something',

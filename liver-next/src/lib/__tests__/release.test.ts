@@ -31,6 +31,27 @@ test('a clean release reads as ok, with the commits and the time', () => {
   assert.equal(servesLive(s), true);
 });
 
+test('the version beside each commit is carried through, and its absence is not an error', () => {
+  const named = parseAgentState(
+    { deployed: 'c72be07aa', previous: '5bc5e49aa', deployedVersion: '2.0\n', previousVersion: '1.9', log: LOG_OK },
+    'c72be07',
+  );
+  assert.equal(named.liveVersion, '2.0');
+  assert.equal(named.previousVersion, '1.9');
+
+  /* A release from before version.json existed. The card falls back to the
+     commit rather than inventing a number for it. */
+  const bare = parseAgentState({ deployed: 'c72be07aa', previous: '5bc5e49aa', log: LOG_OK }, 'c72be07');
+  assert.equal(bare.liveVersion, null);
+  assert.equal(bare.previousVersion, null);
+  assert.equal(bare.live, 'c72be07aa');
+
+  /* An empty file is the same as no file: the agent writes one when the
+     commit it deployed carries no version, and "" must not print as a name. */
+  const empty = parseAgentState({ deployed: 'c72be07aa', deployedVersion: '  \n', log: LOG_OK }, 'c72be07');
+  assert.equal(empty.liveVersion, null);
+});
+
 test('a rollback with a gave-up file reads as rolled back, and names the tag', () => {
   const s = parseAgentState(
     { deployed: '5bc5e49aa', gaveUp: '426f79cbb', tried: '426f79cbb 2', log: LOG_BACK },

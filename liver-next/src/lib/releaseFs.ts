@@ -19,8 +19,12 @@ export async function readReleaseState(): Promise<ReleaseState> {
   if (!exists) return parseAgentState(null, running);
 
   const read = (name: string) => readFile(join(dir, name), 'utf8').catch(() => null);
-  const [deployed, previous, gaveUp, tried, log] = await Promise.all([
-    read('deployed'), read('previous'), read('gave-up'), read('tried'), read('agent.log'),
+  const [deployed, previous, deployedVersion, previousVersion, gaveUp, tried, log] = await Promise.all([
+    read('deployed'), read('previous'),
+    /* Written by the agent from each commit's own version.json. Absent until
+       the first release that carries one, which the card handles. */
+    read('deployed-version'), read('previous-version'),
+    read('gave-up'), read('tried'), read('agent.log'),
   ]);
   /* The log grows for as long as the machine lives. Only its tail is wanted,
      and the parser keeps the last lines, so the whole file is not sent on. */

@@ -76,6 +76,12 @@ STATE_DIR="${STATE_DIR:-/var/lib/liver-agent}"
 BACKUP_DIR="${BACKUP_DIR:-$STATE_DIR/backups}"
 DEPLOYED="$STATE_DIR/deployed"     # the tag that is live
 PREVIOUS="$STATE_DIR/previous"     # the tag before it, for going back
+# The same two, as a number a person can say. A commit is the truth and
+# unsayable: nobody asks to be put back on efd086d. Each release carries its
+# own version.json, so the number is read out of the commit rather than
+# guessed, and a release from before that file existed simply has none.
+DEPLOYED_V="$STATE_DIR/deployed-version"
+PREVIOUS_V="$STATE_DIR/previous-version"
 GAVEUP="$STATE_DIR/gave-up"        # a tag that failed twice and will not be tried again
 TRIED="$STATE_DIR/tried"           # "<tag> <count>", how many goes this one has had
 LOG="$STATE_DIR/agent.log"
@@ -112,6 +118,19 @@ done
 mkdir -p "$STATE_DIR" "$BACKUP_DIR"
 
 say() { printf '%s  %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$*" | tee -a "$LOG"; }
+
+# The version a commit calls itself, read out of that commit rather than out
+# of the working tree: the tree is moved around by this script and by the
+# deploy, and the answer must belong to the thing being released. Empty for a
+# commit from before the file existed, which is not an error anywhere.
+version_of() {
+  git -C "$REPO" show "$1:liver-next/version.json" 2>/dev/null | node -e '
+    let s = "";
+    process.stdin.on("data", (d) => (s += d)).on("end", () => {
+      try { process.stdout.write(String(JSON.parse(s).version ?? "")); } catch { /* none */ }
+    });
+  ' 2>/dev/null || true
+}
 
 # ── one at a time ───────────────────────────────────────────────────────────
 exec 9>"$LOCK"
@@ -183,7 +202,9 @@ fi
 # history, which is a confusing thing to hand somebody who is reading the log
 # precisely because something went wrong.
 SHA="$(git rev-parse --short "$TARGET^{commit}")"
+NEW_V="$(version_of "$TARGET^{commit}")"
 say "release $TAG ($SHA) is not live yet"
+[ -n "$NEW_V" ] && say "this one calls itself version $NEW_V"
 
 if [ "$DRY" -eq 1 ]; then
   say "dry run, stopping here"
@@ -362,8 +383,15 @@ if REF="$TARGET" bash "$REPO/deploy-next.sh" >>"$LOG" 2>&1; then
   # until somebody noticed. Quiet, idempotent, and silent about a key it
   # does not have.
   bash "$REPO/scripts/ensure-schedule.sh" >>"$LOG" 2>&1 || say "the schedule could not be brought up to date"
-  [ -n "$OLD_TAG" ] && printf '%s' "$OLD_TAG" > "$PREVIOUS"
+  if [ -n "$OLD_TAG" ]; then
+    printf '%s' "$OLD_TAG" > "$PREVIOUS"
+    # What was live a moment ago becomes what was live before. Moved rather
+    # than looked up, so the pair on the console can never disagree: the
+    # number beside "the one before" is the number that machine was serving.
+    if [ -f "$DEPLOYED_V" ]; then cp -f "$DEPLOYED_V" "$PREVIOUS_V"; else rm -f "$PREVIOUS_V"; fi
+  fi
   printf '%s' "$TAG" > "$DEPLOYED"
+  if [ -n "$NEW_V" ]; then printf '%s' "$NEW_V" > "$DEPLOYED_V"; else rm -f "$DEPLOYED_V"; fi
   RESULT="ok"
 else
   RC=$?
