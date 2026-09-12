@@ -11,6 +11,7 @@ import { shortDate } from '@/lib/appDates';
 import { Money, ils } from '@/components/Ltr';
 import { Metric } from '@/components/app/Metric';
 import { DeleteForm } from '@/components/app/ConfirmDelete';
+import { sumIls } from '@/lib/money';
 
 export type Payment = {
   id: string; title: string; amount: number;
@@ -52,11 +53,18 @@ export function PaymentsPanel({ clientId, payments, viewer }: {
         {viewer === 'producer' ? c.paySubProducer : c.paySubClient}
       </p>
 
-      <div className="mt-6 grid gap-x-8 gap-y-8 sm:grid-cols-3">
-        <Metric kicker={c.totalPaid} value={<Money value={paid} />} tone="ok" />
-        <Metric kicker={c.totalOwed} value={<Money value={owed} />} tone="warn" />
-        <Metric kicker={c.totalAll} value={<Money value={paid + owed} />} />
-      </div>
+      {/* Suppressed until a payment exists, for the same reason the budget's
+          totals are: a paid total and an outstanding total, both written as
+          zero, on an event where no payment has been recorded at all. Three
+          figures describing nothing, and one of them a reassurance about
+          owing nothing that nobody has earned yet. */}
+      {payments.length > 0 && (
+        <div className="mt-6 grid gap-x-8 gap-y-8 sm:grid-cols-3">
+          <Metric kicker={c.totalPaid} value={<Money value={paid} />} tone="ok" />
+          <Metric kicker={c.totalOwed} value={<Money value={owed} />} tone="warn" />
+          <Metric kicker={c.totalAll} value={<Money value={sumIls([paid, owed])} />} />
+        </div>
+      )}
 
       {/* Both sides may add a payment and mark one paid: the couple is the
           one who made the transfer. */}

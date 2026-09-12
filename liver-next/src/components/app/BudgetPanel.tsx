@@ -72,15 +72,24 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
         <p className="mt-4 rounded-xl2 bg-surface-200 px-4 py-3 text-[13.5px] text-ink-soft">{c.budHiddenNote}</p>
       )}
 
-      <div className="mt-6 grid gap-x-8 gap-y-8 sm:grid-cols-3">
-        <Metric kicker={c.budTotalEst} value={<Money value={totalEst} />} />
-        <Metric kicker={c.budTotalAgreed} value={<Money value={totalAgreed} />} tone="accent" />
-        <Metric
-          kicker={diff >= 0 ? c.budUnder : c.budOver}
-          value={<Money value={Math.abs(diff)} />}
-          tone={diff >= 0 ? 'ok' : 'bad'}
-        />
-      </div>
+      {/* Only once there is something to total. An empty budget used to draw
+          these three anyway: nothing estimated, nothing agreed, and nothing
+          over — written as three zeroes, which read as three measured figures
+          on a budget nobody had started, the last of them congratulating the
+          couple on being inside a budget that did not exist. Zero is a number
+          somebody arrived at. Nothing is a different state and has to look
+          like one. */}
+      {items.length > 0 && (
+        <div className="mt-6 grid gap-x-8 gap-y-8 sm:grid-cols-3">
+          <Metric kicker={c.budTotalEst} value={<Money value={totalEst} />} />
+          <Metric kicker={c.budTotalAgreed} value={<Money value={totalAgreed} />} tone="accent" />
+          <Metric
+            kicker={diff >= 0 ? c.budUnder : c.budOver}
+            value={<Money value={Math.abs(diff)} />}
+            tone={diff >= 0 ? 'ok' : 'bad'}
+          />
+        </div>
+      )}
 
       {/* Both sides. The couple is the one who knows what the hall quoted;
           a table they can read but not type into sends the number back to

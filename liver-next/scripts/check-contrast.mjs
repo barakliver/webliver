@@ -27,9 +27,11 @@ const ratio = (a, b) => {
   return (hi + 0.05) / (lo + 0.05);
 };
 
-/* The palette. A pale blue ground with a cool near-black on it, and the deep
-   teal as the action. The marked values are darker than the design's own,
-   because the design's fail the text they are used for on this ground.
+/* The palette. A near-white ground with a warm near-black on it, and bronze
+   as the action. Arrived as a specification and every pairing in it cleared
+   its bar unchanged, which is rare enough to say out loud; what needed
+   solving were the tones a specification does not carry — the middle ink,
+   the muted ink, the accent's three other roles, the washes and the veil.
 
    These are copied from globals.css on purpose rather than read out of it.
    Reading them would mean this file passes whenever the stylesheet is
@@ -38,23 +40,27 @@ const ratio = (a, b) => {
    The cost of the copy is that a palette change has to be made twice, and
    that cost is the point — it is the second pair of eyes. */
 const c = {
-  ink: '#23272E', inkSoft: '#5A616B', inkMid: '#838A94',
-  inkMute: '#565D67',              /* solved against the step up */
-  surface: '#F2F6FC', surface100: '#FBFCFF', surface200: '#E4EBF4',
-  card: '#FBFCFF',
-  dark: '#1B1E22',
-  line: '#DCE3EB', lineStrong: '#C4CEDA',
-  lineControl: '#7E8794',
-  accent: '#205757',               /* the primary action, safe as words */
-  accentHover: '#174444',
-  accentBright: '#2E7676',         /* large numerals only, 3:1 bar   */
-  accentLine: '#5E9F9B',           /* words on the dark ground       */
-  accentLight: '#8FC4C1',
-  /* The teal at 8% over the canvas, which is what --accent-wash ships. */
-  accentWash: '#E1E9EF',
-  ok: '#285A3F', okWash: '#E8F0EB',
-  warn: '#78520F', warnWash: '#F7F0DC',
-  bad: '#953D35', badWash: '#F8E8E7',
+  ink: '#292823', inkSoft: '#68665F', inkMid: '#8D887F',
+  inkMute: '#6E6C64',              /* solved against the step up */
+  surface: '#FCFCFA', surface100: '#FFFFFF', surface200: '#F6F6F2',
+  card: '#FFFFFF',
+  dark: '#1E1C18',
+  line: '#E8E6E0', lineStrong: '#D6D3CB',
+  lineControl: '#8D887F',
+  /* The focus ring, which is not the accent and is measured as a control
+     boundary: a ring nobody can find is the accessibility failure this
+     token exists to prevent. */
+  focus: '#3569A5',
+  accent: '#806646',               /* the primary action, safe as words */
+  accentHover: '#6D5539',
+  accentBright: '#9E7F4E',         /* large numerals only, 3:1 bar   */
+  accentLine: '#B08D57',           /* words on the dark ground       */
+  accentLight: '#C2A472',
+  /* The bronze at 8% over the canvas, which is what --accent-wash ships. */
+  accentWash: '#F2F0EC',
+  ok: '#35654B', okWash: '#EAF1EC',
+  warn: '#865B1D', warnWash: '#FBF2E0',
+  bad: '#A83A3A', badWash: '#FAEAEA',
   white: '#FFFFFF',
 };
 
@@ -113,6 +119,16 @@ const checks = [
   /* An input's own edge is the only thing saying where to type, so it is a
      control boundary and carries the 3:1 that comes with one. */
   ['the edge of a field',          over(c.lineControl, c.surface), c.surface, 3.0],
+  /* A keyboard user has to find this on every ground it can land on. Those
+     are the page grounds and not the controls themselves: the ring is drawn
+     with `outline-offset: 2px`, so there are two pixels of page between it
+     and whatever it is around. It was briefly checked against the accent
+     fill as well, at 1.05:1, and that is a pairing the interface never
+     renders — the check was wrong rather than the colour. What keeps it
+     true is the offset, so if that ever goes, these three go with it. */
+  ['the focus ring, on the ground', c.focus,     c.surface,     3.0],
+  ['the focus ring, on the card',  c.focus,      c.card,        3.0],
+  ['the focus ring, on the step up', c.focus,    c.surface200,  3.0],
 ];
 
 let failed = 0;
@@ -191,22 +207,23 @@ line('an inverted control edge',         over2(c.surface, 0.45, c.dark),  c.dark
    the dark one becomes the step up, so what is written on it is ordinary
    ink rather than the inverted kind. */
 const d = {
-  ink: '#EDF1F6', inkSoft: '#BAC1CB', inkMid: '#8A919C', inkMute: '#A3AAB5',
-  surface: '#16181C', surface100: '#1F2228', surface200: '#25282E',
-  card: '#1F2228',
+  ink: '#F2F0E8', inkSoft: '#C3BFB4', inkMid: '#918C82', inkMute: '#ABA69B',
+  surface: '#191816', surface100: '#232120', surface200: '#26231F',
+  card: '#232120',
   /* The band, which in this palette is the step up. */
-  dark: '#25282E',
-  line: '#343942', lineStrong: '#444A55', lineControl: '#757E8B',
-  /* The accent's light tone, promoted to the main one. */
-  accent: '#8FC4C1',
-  accentLine: '#5E9F9B',
+  dark: '#26231F',
+  line: '#3A3733', lineStrong: '#4A4641', lineControl: '#7C766C',
+  focus: '#7AA9DE',
+  /* The accent's night tone, promoted to the main one. */
+  accent: '#C2A472',
+  accentLine: '#B08D57',
   /* 8% of that pale tone over the canvas, which is what --accent-wash
      resolves to once --accent-rgb has moved. */
-  accentWash: '#202629',
-  ok: '#7FB894', okWash: '#1B2922',
-  warn: '#D9A94A', warnWash: '#292416',
-  bad: '#E08278', badWash: '#2C1F1E',
-  sage: '#272E2B', blush: '#2E2529',
+  accentWash: '#27241F',
+  ok: '#7FB894', okWash: '#1B2921',
+  warn: '#D9A94A', warnWash: '#2B2416',
+  bad: '#E08278', badWash: '#2E1F1D',
+  sage: '#2A3128', blush: '#322A2A',
 };
 
 console.log('\n  כהה');
@@ -244,6 +261,9 @@ line('the accent as words there',      d.accent,   d.dark,       4.5);
 line('a hairline on the ground',       d.line,       d.surface,  1.15);
 line('a strong line on the ground',    d.lineStrong, d.surface,  1.35);
 line('the edge of a field',            d.lineControl, d.surface, 3.0);
+line('the focus ring, on the ground',  d.focus,       d.surface, 3.0);
+line('the focus ring, on the card',    d.focus,       d.card,    3.0);
+line('the focus ring, on the step up', d.focus,       d.surface200, 3.0);
 
 /* Every producer's accent, after dark. Their `light` tone becomes the main
    one, which is the tone already solved for a dark ground — so this is not a
