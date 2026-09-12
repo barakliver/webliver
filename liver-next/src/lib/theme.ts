@@ -106,3 +106,26 @@ export function apply(theme: Theme): void {
 export function stored(): Theme {
   try { return readTheme(window.localStorage.getItem(THEME_KEY)); } catch { return 'auto'; }
 }
+
+/**
+ * The choice now lives in two places on screen at once — a switch in the
+ * header and a three-way control in the accessibility menu — and the one
+ * thing that must never happen is the two of them disagreeing. Neither owns
+ * the state: this does. Both write through here and both listen for this
+ * event, so a press on either is a press on both.
+ */
+export const THEME_EVENT = 'liver:theme';
+
+export function setTheme(theme: Theme): void {
+  try { window.localStorage.setItem(THEME_KEY, theme); } catch { /* private window */ }
+  apply(theme);
+  window.dispatchEvent(new CustomEvent(THEME_EVENT, { detail: theme }));
+}
+
+/** Whether the dark palette is what is actually on the page right now. Read
+ *  from the element rather than worked out again: the boot script, the route
+ *  scope and the device preference all have a say, and the class is where
+ *  all three have already been resolved. */
+export function showingDark(): boolean {
+  return document.documentElement.classList.contains(DARK_CLASS);
+}

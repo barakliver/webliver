@@ -284,6 +284,8 @@ export const consoleEn: ConsoleCopy = {
     admin: 'Administration',
     portal: 'Our area',
     more: 'More',
+    toLight: 'Switch to the light display',
+    toDark: 'Switch to the dark display',
     moreTitle: 'More screens',
     close: 'Close',
   },

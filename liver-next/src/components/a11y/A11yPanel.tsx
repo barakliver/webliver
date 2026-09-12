@@ -9,7 +9,8 @@ import {
   CLASSES, DEFAULTS, MAX_FONT_STEP, STORAGE_KEY,
   clampStep, read, scaleOf, type A11ySettings,
 } from '@/lib/a11y';
-import { THEME_KEY, apply as applyTheme, isPlatform, readTheme, type Theme } from '@/lib/theme';
+import { isPlatform } from '@/lib/theme';
+import { useTheme } from '@/lib/useTheme';
 
 /**
  * The accessibility menu, on every screen.
@@ -37,10 +38,13 @@ export function A11yPanel({ copy: c }: { copy: A11yCopy }) {
   /* Light or dark. Kept beside these rather than inside them because it is
      not an accessibility setting: somebody choosing a dark screen at two in
      the morning is expressing a preference, not working around a barrier,
-     and the reset button below leaves it alone for that reason. It is only
-     in this panel because this panel is the one control that is on every
-     screen in the product. */
-  const [theme, setTheme] = useState<Theme>('auto');
+     and the reset button below leaves it alone for that reason.
+
+     This is the three-way form of the same control the header carries as a
+     single switch. Neither of them holds the state — `useTheme` does, and
+     both listen to it — so a press in the header moves the selection here
+     while this panel is open, and the other way round. */
+  const { theme, set: setTheme } = useTheme();
   /* The palette is the platform's, not the public site's, so the control is
      shown where it does something. A switch that is present and inert is a
      worse answer than an absent one: somebody presses it, nothing moves, and
@@ -49,25 +53,8 @@ export function A11yPanel({ copy: c }: { copy: A11yCopy }) {
 
   useEffect(() => {
     try { setS(read(window.localStorage.getItem(STORAGE_KEY))); } catch { /* private window */ }
-    try { setTheme(readTheme(window.localStorage.getItem(THEME_KEY))); } catch { /* private window */ }
     setReady(true);
   }, []);
-
-  /* The palette is already on the page: a line in the head applied it before
-     the first paint. This only has to keep it in step with a press, and to
-     follow the device while the choice is to follow the device — somebody who
-     turns their phone dark at sunset should watch this turn with it, not on
-     the next reload. */
-  useEffect(() => {
-    if (!ready) return;
-    applyTheme(theme);
-    try { window.localStorage.setItem(THEME_KEY, theme); } catch { /* private window */ }
-    if (theme !== 'auto') return;
-    const mq = window.matchMedia('(prefers-color-scheme: dark)');
-    const onChange = () => applyTheme('auto');
-    mq.addEventListener('change', onChange);
-    return () => mq.removeEventListener('change', onChange);
-  }, [theme, ready]);
 
   useEffect(() => {
     if (!ready) return;

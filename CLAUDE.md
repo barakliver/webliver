@@ -64,8 +64,11 @@ that has happened once.
   for each move is written above the values in `globals.css`. Everywhere,
   rather than in the app alone, because the whole point of the ivory move was
   that the shopfront and the workspace must not read as two businesses.
-- The platform also has a dark palette, chosen in the accessibility menu:
-  follow the device, light, dark. It is one class on `<html>` and a block of
+- The platform also has a dark palette. There are two controls for it and
+  neither owns the state: a one-press switch in the app header beside the
+  language one, and the full three-way choice in the accessibility menu —
+  follow the device, light, dark. Both go through `useTheme`, so pressing
+  either moves the other. It is one class on `<html>` and a block of
   token overrides in `globals.css`, so no component knows it exists. It
   applies to `/app` and `/design` and deliberately not to the public site or
   the guests' page: their headlines are light because they lie on a

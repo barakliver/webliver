@@ -12,6 +12,7 @@ import { ProducerCopilot } from './ProducerCopilot';
 import { CoupleCompanion } from './CoupleCompanion';
 import { Flash } from './Flash';
 import { QuickJump, type JumpEvent } from './QuickJump';
+import { ThemeToggle } from './ThemeToggle';
 import { QuickLedger } from './QuickLedger';
 import type { JumpRecord } from '@/lib/jump';
 import { cn } from '@/lib/utils';
@@ -197,6 +198,7 @@ export function AppShell({
                     disagree about what the cookie means. The producer does not
                     get one, because the console has nothing to switch to. */}
                 <LangToggle current={locale} className="me-1" />
+                <ThemeToggle label={ui.nav} />
                 <NoticeBell notices={notices} copy={notice} />
                 <Link
                   href="/app/me"
@@ -219,6 +221,7 @@ export function AppShell({
               {isProducer && <QuickJump screens={items} events={events} records={records} />}
               {isProducer && <QuickLedger events={events} />}
               <IssueReporter userId={account.id} copy={ticket} />
+              <ThemeToggle label={ui.nav} />
               <NoticeBell notices={notices} copy={notice} />
             </div>
           </header>

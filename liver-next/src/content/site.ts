@@ -999,6 +999,11 @@ export const appCopy = {
     more: 'עוד',
     moreTitle: 'עוד מסכים',
     close: 'סגירה',
+    /* The header switch. Worded as what pressing it does, not as what is on
+       now: a button labelled "כהה" reads to half the people as the state it
+       is in and to the other half as the state it will move to. */
+    toLight: 'מעבר לתצוגה בהירה',
+    toDark: 'מעבר לתצוגה כהה',
   },
   pending: {
     title: 'החשבון ממתין לאישור',

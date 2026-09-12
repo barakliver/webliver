@@ -102,6 +102,7 @@ import { PrepView } from '@/components/PrepView';
 import { prepViewFor } from '@/content/prepView';
 import { AdminRow } from '@/components/app/AdminRow';
 import { ReleaseState } from '@/components/app/ReleaseState';
+import { ThemeToggle } from '@/components/app/ThemeToggle';
 import { parseAgentState } from '@/lib/release';
 import { NoticeBell } from '@/components/app/NoticeBell';
 import { IssueReporter } from '@/components/app/IssueReporter';
@@ -452,6 +453,20 @@ export default async function DesignPage() {
         {/* Every delete asks first, in the page: press the button to see the
             question, the cancel, and the delete in the error tone. The demo's
             delete goes nowhere. */}
+        {/* The header's own switch. Drawn beside a line of type so the thing
+            it changes is in the same shot as the control that changes it:
+            press it here and this panel, and every other panel on this page,
+            turns over. */}
+        <Panel name="ThemeToggle" note="light or dark in one press, the switch that sits in the app header beside the language one">
+          <div className="flex items-center gap-4">
+            <ThemeToggle label={{ toLight: 'מעבר לתצוגה בהירה', toDark: 'מעבר לתצוגה כהה' }} />
+            <p className="text-[14px] text-ink-soft">
+              הכפתור מראה לאן הוא לוקח אתכם, לא איפה אתם. הבחירה המלאה, כולל
+              לפי המכשיר, נמצאת בתפריט הנגישות.
+            </p>
+          </div>
+        </Panel>
+
         <Panel name="ConfirmDelete" note="the question a delete asks before it happens, in the page rather than in the browser's box">
           <div className="flex flex-wrap gap-3">
             <ConfirmDeleteDemo />
