@@ -16,9 +16,15 @@ import type {
  * The shape is `SiteCopy`, the same type the Hebrew uses, so the two cannot
  * drift: a field added to one is a compile error until it exists in the other.
  *
- * The name is Barak Liver in English and ברק ליבר in Hebrew. Not a
+ * The name is Barak Liver in English and ברק ליור in Hebrew. Not a
  * transliteration of one into the other: it is how he writes it in each, and it
  * is the name on the domain and on every email this business sends.
+ *
+ * The Hebrew is ליור. It has been "corrected" to ליבר once, on the reasoning
+ * that it should match the English and the domain, and it went out across
+ * twenty-five strings including his own name on the couples' screens. The
+ * English being Liver is not evidence about the Hebrew. If the two ever look
+ * wrong together again, they are not wrong: leave them.
  */
 export const siteEn: SiteCopy = {
   brand: 'Barak Liver',

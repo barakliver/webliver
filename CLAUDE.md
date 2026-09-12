@@ -29,6 +29,14 @@ Two rules that follow from it:
 - **One block, one place.** Never mix a server command and an SQL statement in
   the same block.
 
+## His name
+
+ברק ליור in Hebrew, Barak Liver in English. The two do not match and that is
+not a mistake to fix. The Hebrew was changed to ליבר once, to agree with the
+domain, and it reached twenty-five strings including the name couples read on
+their own screens. `STATE.md` had said ליור the whole time. Read it there
+before touching it anywhere.
+
 ## Secrets
 
 API keys, passwords and connection strings go into `/etc/liver-next.env` on the
@@ -56,7 +64,7 @@ that has happened once.
   loud. `liver-next/version.json` holds the current one and is bumped by hand
   in the commit worth a number: a fix is the third digit, a batch of work the
   second. The agent reads that file out of the commit it deploys and writes
-  the number beside it, so the card on `/app/admin` says "ליבר 2.1" with the
+  the number beside it, so the card on `/app/admin` says "ליור 2.1" with the
   commit underneath in small print. Talk to him in numbers, not hashes.
 - The ground is a pale blue, #F2F6FC, everywhere: the app, the public site and
   the guests' page alike. It was warm ivory before, and slate before that; the

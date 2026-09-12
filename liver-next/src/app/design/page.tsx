@@ -322,7 +322,7 @@ export default async function DesignPage() {
               display_name: 'נועה ואיתי', event_date: '2026-09-04', venue: 'אחוזת הכפר',
               contact_phone: '052-555-0100', contact_email: 'noa@example.com',
             }}
-            brand={{ name: 'ברק ליבר', tagline: 'הפקת אירועים' }}
+            brand={{ name: 'ברק ליור', tagline: 'הפקת אירועים' }}
             standing={{ phase: 'guests', expected: 'final', behind: 1, ahead: 0 }}
             daysToEvent={12}
             guests={{
@@ -484,7 +484,7 @@ export default async function DesignPage() {
                 by: 'template',
                 phone: null,
                 facts: ['אנחנו מתכננים את החתונה של נועה ואיתי', 'בתאריך 5.12.26', 'כ-180 אורחים', 'באזור השרון'],
-                draft: 'שלום נועם צילום,\n\nאנחנו מתכננים את החתונה של נועה ואיתי, בתאריך 5.12.26, כ-180 אורחים, באזור השרון.\n\nכמה שאלות כדי שנוכל להשוות:\n• כמה זה עולה, כולל מע״מ?\n• כמה שעות כלולות?\n• מה בדיוק כולל השירות?\n• מה נכלל במחיר?\n• מה בתוספת תשלום?\n• מה תנאי התשלום?\n\nתודה, ברק ליבר הפקות',
+                draft: 'שלום נועם צילום,\n\nאנחנו מתכננים את החתונה של נועה ואיתי, בתאריך 5.12.26, כ-180 אורחים, באזור השרון.\n\nכמה שאלות כדי שנוכל להשוות:\n• כמה זה עולה, כולל מע״מ?\n• כמה שעות כלולות?\n• מה בדיוק כולל השירות?\n• מה נכלל במחיר?\n• מה בתוספת תשלום?\n• מה תנאי התשלום?\n\nתודה, ברק ליור הפקות',
               }}
             />
           </div>
@@ -686,7 +686,7 @@ export default async function DesignPage() {
           <RunSheet
             c={ui.runsheet}
             client={{ display_name: 'נועה ואיתי', venue: 'אחוזת הכפר' }}
-            brand={{ name: 'ברק ליבר', tagline: 'הפקת אירועים' }}
+            brand={{ name: 'ברק ליור', tagline: 'הפקת אירועים' }}
             lines={fixtureDay.map((d) => ({
               id: d.id, at_time: d.at_time, title: d.title,
               note: d.note ?? '', owner: d.owner ?? '', audience: d.audience ?? [],
@@ -1079,7 +1079,7 @@ export default async function DesignPage() {
               eventName="נועה ואיתי"
               dateLabel="שבת, 5 בדצמבר 2026"
               venue="אחוזת הכפר"
-              producer="ברק ליבר"
+              producer="ברק ליור"
               faces={fixtureVips.map((v) => ({ name: v.name, relation: v.relation, note: v.note, url: v.url }))}
               looks={fixtureLooks.map((l) => ({ category: l.category, note: l.note, url: l.url }))}
             />

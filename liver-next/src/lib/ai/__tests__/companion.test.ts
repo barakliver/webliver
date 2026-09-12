@@ -111,15 +111,15 @@ test('amounts that arrive as strings still add up', () => {
 /* ── whose voice it is ───────────────────────────────────────────────────── */
 
 test('the instructions carry the producer name and never the platform', () => {
-  const s = companionSystem('ברק ליבר', 'כתבו לנו כאן ונחזור אליכם');
-  assert.ok(s.includes('ברק ליבר'));
+  const s = companionSystem('ברק ליור', 'כתבו לנו כאן ונחזור אליכם');
+  assert.ok(s.includes('ברק ליור'));
   for (const forbidden of ['EventOS', 'liver', 'פלטפורמה שלנו', 'Claude', 'Anthropic']) {
     assert.ok(!s.includes(forbidden), `the prompt names ${forbidden}`);
   }
 });
 
 test('the instructions forbid inventing and forbid promising', () => {
-  const s = companionSystem('ברק ליבר', 'כתבו לנו');
+  const s = companionSystem('ברק ליור', 'כתבו לנו');
   assert.ok(s.includes('אל תמציא'));
   assert.ok(s.includes('אל תבטיח'));
   /* It must not offer to do the thing later instead of answering now. */
