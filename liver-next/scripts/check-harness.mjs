@@ -26,7 +26,7 @@
  * part that fetches, which is what happened to LoadTrouble.
  */
 import { readdirSync, readFileSync } from 'node:fs';
-import { join, dirname } from 'node:path';
+import { join, dirname, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -81,59 +81,80 @@ const harness = readdirSync(HARNESS_DIR)
   .join('\n');
 const imported = new Set([...harness.matchAll(/from '@\/components\/([A-Za-z0-9_/]+)'/g)].map((m) => m[1]));
 
-/* Components the directory bug hid, which drew nothing for anybody to see.
+/* Drawn on a public route rather than in the harness.
  *
- * These are not excused. Every one of them draws something and every one of
- * them wants a panel; they are here because making the scan honest surfaced
- * twenty-three of them in one go, and twenty-three fixtures written in a hurry
- * to turn a check green is how a check stops meaning anything.
- *
- * The rule this buys: the gap cannot grow. A component added from here on has
- * to be in the harness, because it will not be in this list and nothing may be
- * added to it. The list only ever gets shorter, and the count below is printed
- * every run so it is not somewhere quiet. */
-const BACKLOG = new Set([
-  'a11y/A11yPanel', 'guest/FindInvite',
-  'marketing/AiConcierge', 'marketing/AmbientBackdrop', 'marketing/BeginPath',
-  'marketing/BookMeeting', 'marketing/BudgetSimulator', 'marketing/DarkBand',
-  'marketing/FabDock', 'marketing/Hero', 'marketing/Journey', 'marketing/LangToggle',
-  'marketing/LeadForm', 'marketing/Nav', 'marketing/Parallax', 'marketing/PhoneStage',
-  'marketing/Portfolio', 'marketing/Portrait', 'marketing/Prose', 'marketing/Section',
-  'marketing/SiteFooter', 'marketing/Steps', 'marketing/StructuredData',
-]);
+ * The marketing site's pieces, the floating accessibility button and the
+ * guests' find-me form are looked at by pointing a browser at the route
+ * that draws them, not through a fixture; a hero with a photograph and a
+ * scroll effect is meaningless in a 1280px panel. Each line names the
+ * route, and each component is verified to be imported somewhere under
+ * src — so a line here cannot outlive its component, and a component
+ * nobody imports any more shows up as unseen rather than hiding behind a
+ * route it is not on. Nothing may be added here that a panel could hold. */
+const DRAWN_ON_ROUTE = {
+  'a11y/A11yPanel': 'every page: the floating accessibility button',
+  'guest/FindInvite': "/w/[token], the guests' site",
+  'marketing/AiConcierge': '/ and /app/guide',
+  'marketing/AmbientBackdrop': '/, inside the hero',
+  'marketing/BeginPath': '/',
+  'marketing/BookMeeting': '/',
+  'marketing/BudgetSimulator': '/',
+  'marketing/DarkBand': '/ and /eventos',
+  'marketing/FabDock': '/',
+  'marketing/Hero': '/',
+  'marketing/LangToggle': 'every page: the top bar',
+  'marketing/LeadForm': '/',
+  'marketing/Nav': '/, /eventos and /store',
+  'marketing/Parallax': '/, inside the hero',
+  'marketing/PhoneStage': '/',
+  'marketing/Portfolio': '/',
+  'marketing/Portrait': '/',
+  'marketing/Prose': '/',
+  'marketing/Section': '/, /eventos and /store',
+  'marketing/SiteFooter': '/, /eventos and /store',
+  'marketing/Steps': '/',
+  'marketing/StructuredData': '/, as JSON-LD in the head',
+};
 
-const unseen = files.filter((f) => !imported.has(f) && !(f in NOT_DRAWN) && !BACKLOG.has(f));
-/* A backlog line that has been dealt with is a line to delete, same as a
-   reason that has outlived its component. */
-const settled = [...BACKLOG].filter((f) => imported.has(f) || !files.includes(f));
+/* Every import of a component anywhere under src, so "drawn on a route"
+   can be checked rather than believed. Both spellings count: the alias a
+   page uses (`@/components/marketing/Hero`) and the relative one a
+   neighbour uses (`./Parallax` from inside the hero). */
+const srcImports = new Set();
+const walkSrc = (dir) => {
+  for (const entry of readdirSync(join(root, dir), { withFileTypes: true })) {
+    if (entry.isDirectory()) walkSrc(join(dir, entry.name));
+    else if (/\.(tsx?|mjs)$/.test(entry.name)) {
+      const text = readFileSync(join(root, dir, entry.name), 'utf8');
+      for (const m of text.matchAll(/from '([^']+)'/g)) {
+        const spec = m[1];
+        const resolved = spec.startsWith('@/components/')
+          ? spec.slice('@/components/'.length)
+          : spec.startsWith('.')
+            ? relative(join(root, 'src', 'components'), join(root, dir, spec))
+            : null;
+        if (resolved && !resolved.startsWith('..')) srcImports.add(resolved.split(sep).join('/'));
+      }
+    }
+  }
+};
+walkSrc('src');
+
+const unseen = files.filter((f) => !imported.has(f) && !(f in NOT_DRAWN) && !(f in DRAWN_ON_ROUTE));
+/* A route line for a component nobody imports, or that no longer exists. */
+const unrouted = Object.keys(DRAWN_ON_ROUTE).filter((f) => !files.includes(f) || !srcImports.has(f));
 /* A reason that has outlived its component is a reason nobody will delete. */
 const stale = Object.keys(NOT_DRAWN).filter((f) => !files.includes(f));
 const contradicted = Object.keys(NOT_DRAWN).filter((f) => imported.has(f));
 
-for (const f of unseen) {
-  console.log(`  never looked at   src/components/${f}.tsx`);
-}
-for (const f of stale) {
-  console.log(`  gone              ${f} is excused in check-harness.mjs and no longer exists`);
-}
-for (const f of contradicted) {
-  console.log(`  excused anyway    ${f} is in the harness; drop its line from NOT_DRAWN`);
-}
+for (const f of unseen) console.log(`  never looked at   src/components/${f}.tsx`);
+for (const f of stale) console.log(`  stale reason      ${f} is in NOT_DRAWN and no longer exists`);
+for (const f of contradicted) console.log(`  excused anyway    ${f} is in the harness; drop its line from NOT_DRAWN`);
+for (const f of unrouted) console.log(`  not on its route  ${f} is in DRAWN_ON_ROUTE and nothing imports it`);
 
-for (const f of settled) {
-  console.log(`  done              ${f} is in the harness now; drop its line from BACKLOG`);
-}
-
-const waiting = [...BACKLOG].filter((f) => !settled.includes(f));
-const failures = unseen.length + stale.length + contradicted.length + settled.length;
+const failures = unseen.length + stale.length + contradicted.length + unrouted.length;
 if (failures === 0) {
-  console.log(`\nevery component can be looked at  (${imported.size} in the harness, ${Object.keys(NOT_DRAWN).length} that draw nothing)`);
-  if (waiting.length > 0) {
-    console.log(`${waiting.length} still waiting for a panel, from before the scan walked every directory:`);
-    console.log(`  ${waiting.join(', ')}\n`);
-  } else {
-    console.log('');
-  }
+  console.log(`\nevery component can be looked at  (${imported.size} in the harness, ${Object.keys(NOT_DRAWN).length} that draw nothing, ${Object.keys(DRAWN_ON_ROUTE).length} on public routes)\n`);
 } else {
   console.log(`\nAdd a panel to src/app/design/page.tsx, or a reason to NOT_DRAWN in this file.`);
   console.log(`A panel is nearly always the right answer: the ones nobody adds are the ones nobody sees.\n`);
