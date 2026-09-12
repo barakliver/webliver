@@ -140,8 +140,8 @@ const config: Config = {
          the product. The Hebrew faces sit behind every stack so an English
          page's Latin faces never leave a Hebrew glyph to the system. */
       fontFamily: {
-        sans:    ['var(--font-ui)', 'var(--font-heebo)', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif'],
-        display: ['var(--font-display)', 'var(--font-heebo)', '-apple-system', 'system-ui', 'sans-serif'],
+        sans:    ['var(--font-ui)', 'var(--font-assistant)', 'var(--font-heebo)', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif'],
+        display: ['var(--font-display)', 'var(--font-assistant)', 'var(--font-heebo)', '-apple-system', 'system-ui', 'sans-serif'],
         serif:   ['var(--font-editorial)', 'var(--font-frank)', 'Georgia', 'serif'],
       },
       fontSize: {

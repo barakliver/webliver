@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Heebo, Frank_Ruhl_Libre, Lato, Playfair_Display } from 'next/font/google';
+import { Assistant, Heebo, Frank_Ruhl_Libre, Lato, Playfair_Display } from 'next/font/google';
 import { site } from '@/content/site';
 import { siteEn } from '@/content/site.en';
 import { brandForHost } from '@/lib/branding';
@@ -34,6 +34,15 @@ import { LOCALE_COOKIE, dirOf, readLocale } from '@/lib/locale';
    The display tracking in tailwind.config.ts is positive again, .01 to .02em:
    a light serif closes up without air, the opposite of what Heebo needed. The
    two sets of values are both in the git history of that file. */
+/* The body face, by his choice from six pairings drawn side by side on the
+   same screen: number three, the serif kept on the headings and the body
+   moved from Heebo to Assistant, which reads more openly at the 13 to 16px
+   the whole console is read at. Heebo stays loaded and behind it in every
+   stack, for any glyph Assistant lacks. */
+const assistant = Assistant({
+  subsets: ['hebrew', 'latin'], variable: '--font-assistant',
+  display: 'swap', weight: ['400', '500', '600', '700'],
+});
 const heebo = Heebo({
   subsets: ['hebrew', 'latin'], variable: '--font-heebo',
   display: 'swap', weight: ['400', '500', '600', '700'],
@@ -175,7 +184,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const dir = dirOf(locale);
 
   return (
-    <html lang={locale} dir={dir} className={`${heebo.variable} ${frank.variable} ${lato.variable} ${playfair.variable}`}>
+    <html lang={locale} dir={dir} className={`${assistant.variable} ${heebo.variable} ${frank.variable} ${lato.variable} ${playfair.variable}`}>
       <head>
         {/* Written by hand rather than through `metadata.manifest`, for one
             attribute: a manifest is fetched without cookies unless the link

@@ -134,7 +134,9 @@
        Playfair Display, with the Hebrew faces behind them for any glyph
        they lack. `--font-display` is what `font-display` resolves to: the
        editorial face on the public site, the UI face inside the app. */
-    --font-ui: var(--font-heebo);
+    /* Assistant on the body, by his choice of pairing three on the
+       comparison sheet; Heebo behind it for any glyph it lacks. */
+    --font-ui: var(--font-assistant), var(--font-heebo);
     --font-editorial: var(--font-frank);
     --font-display: var(--font-editorial);
     /* A light serif wants air; a bold sans wants none. Each display size
@@ -144,7 +146,7 @@
   }
 
   html[lang='en'] {
-    --font-ui: var(--font-lato), var(--font-heebo);
+    --font-ui: var(--font-lato), var(--font-assistant), var(--font-heebo);
     --font-editorial: var(--font-playfair), var(--font-frank);
   }
 
