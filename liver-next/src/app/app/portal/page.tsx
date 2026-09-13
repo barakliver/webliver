@@ -28,6 +28,7 @@ import { loadVenues, venuesOf } from '@/lib/venueRows';
 import { publicEnv } from '@/lib/env';
 import { EventSelector } from '@/components/portal/EventSelector';
 import { WorkspaceSwitcher } from '@/components/portal/WorkspaceSwitcher';
+import { PortalJump } from '@/components/portal/PortalJump';
 import { pickWorkspace } from '@/lib/portalScope';
 import { loadEnvelopes, envelopesOf } from '@/lib/envelopes';
 import { loadVehicles, vehiclesOf } from '@/lib/vehicles';
@@ -137,27 +138,6 @@ export default async function PortalPage({ searchParams }: {
       <PageHead title={ui.portal.title} sub={ui.portal.sub}
           report={<IssueReporter userId={account.id} context={ui.portal.title} copy={ticketFor(locale)} />}
         />
-      {/* The two rooms that are not a section of one event: the journal of
-          other people's weddings, and the circle of couples around this
-          producer. Links rather than panels, because both are screens
-          somebody sits with rather than glances at. */}
-      <nav aria-label={ui.circle.title} className="mb-6 grid gap-3 sm:grid-cols-2">
-        <Link href="/app/portal/journal" className="card flex items-start gap-3 transition hover:border-accent/40">
-          <NotebookPen size={20} aria-hidden strokeWidth={1.5} className="mt-0.5 shrink-0 text-accent" />
-          <span>
-            <span className="block text-[15.5px] font-semibold text-ink">{ui.journal.title}</span>
-            <span className="mt-0.5 block text-[13.5px] leading-relaxed text-ink-soft">{ui.journal.sub}</span>
-          </span>
-        </Link>
-        <Link href="/app/portal/community" className="card flex items-start gap-3 transition hover:border-accent/40">
-          <Users size={20} aria-hidden strokeWidth={1.5} className="mt-0.5 shrink-0 text-accent" />
-          <span>
-            <span className="block text-[15.5px] font-semibold text-ink">{ui.circle.title}</span>
-            <span className="mt-0.5 block text-[13.5px] leading-relaxed text-ink-soft">{ui.circle.sub}</span>
-          </span>
-        </Link>
-      </nav>
-
       <WorkspaceSwitcher
         workspaces={data.workspaces.map((w) => ({
           id: w.id, display_name: w.display_name, event_date: w.event_date,
@@ -201,7 +181,7 @@ export default async function PortalPage({ searchParams }: {
                 }}
               />
               {data.can(w.id, 'vendors') && data.vendorsFor(w.id).length > 0 && (
-                <div id="vendorhq" className="scroll-mt-28"><VendorHq
+                <div id="vendorhq" data-jump={ui.portal.jumpVendorHq} data-jump-group="event" className="scroll-mt-28"><VendorHq
                   clientId={w.id} viewer="client"
                   vendors={data.vendorsFor(w.id)}
                   contracts={(contracts.get(w.id) ?? []).map((k) => ({ party_name: k.party_name ?? '', status: k.status, signed_at: k.signed_at }))}
@@ -210,14 +190,14 @@ export default async function PortalPage({ searchParams }: {
                 /></div>
               )}
               {data.can(w.id, 'moodboard') && studios.get(w.id) && (
-                <div id="studio" className="scroll-mt-28"><BrandStudio
+                <div id="studio" data-jump={ui.portal.jumpStudio} data-jump-group="event" className="scroll-mt-28"><BrandStudio
                   clientId={w.id} viewer="client"
                   brand={studios.get(w.id)!.brand} images={[]} data={studios.get(w.id)!.data}
                   canAi={false} printBase="" siteUrl={studios.get(w.id)!.siteUrl}
                 /></div>
               )}
               {data.can(w.id, 'contracts') && (
-                <div id="contracts" className="scroll-mt-28"><Contracts clientId={w.id} contracts={contracts.get(w.id) ?? []} viewer="client" /></div>
+                <div id="contracts" data-jump={ui.portal.rowContracts} data-jump-group="event" className="scroll-mt-28"><Contracts clientId={w.id} contracts={contracts.get(w.id) ?? []} viewer="client" /></div>
               )}
               {/* While the hall is still open, or once there is something to
                   compare. Gating it on the halls alone was wrong in the way that
@@ -228,7 +208,7 @@ export default async function PortalPage({ searchParams }: {
                   whose hall was booked a year ago is a panel asking them to redo
                   a decision they have made. */}
               {data.can(w.id, 'venues') && (venues.venues.length > 0 || !w.venue) && (
-                <div id="venues" className="scroll-mt-28"><VenueCompare
+                <div id="venues" data-jump={ui.portal.rowVenues} data-jump-group="event" className="scroll-mt-28"><VenueCompare
                   c={venuesFor(locale)}
                   clientId={w.id}
                   venues={venues.venues}
@@ -239,12 +219,12 @@ export default async function PortalPage({ searchParams }: {
               {/* Behind the same gate every other module is behind, so a plan
                   that does not include it does not quietly include it here. */}
               {data.can(w.id, 'files') && (
-                <div id="files" className="scroll-mt-28"><EventFiles clientId={w.id} files={files.get(w.id) ?? []} viewer="client" /></div>
+                <div id="files" data-jump={ui.portal.rowFiles} data-jump-group="event" className="scroll-mt-28"><EventFiles clientId={w.id} files={files.get(w.id) ?? []} viewer="client" /></div>
               )}
               {/* Theirs to fill in. The equipment is read only for them — it is
                   the producer's logistics — and the component knows that. */}
               {data.can(w.id, 'lists') && (
-                <div id="lists" className="scroll-mt-28"><EventFileLists
+                <div id="lists" data-jump={ui.portal.rowLists} data-jump-group="event" className="scroll-mt-28"><EventFileLists
                   clientId={w.id}
                   songs={eventFiles.get(w.id)?.songs ?? []}
                   kit={eventFiles.get(w.id)?.kit ?? []}
@@ -259,7 +239,7 @@ export default async function PortalPage({ searchParams }: {
                   screen that sends them back to WhatsApp — which is the
                   conversation this whole module exists to end. */}
               {data.can(w.id, 'prep') && (
-                <div id="prep" className="scroll-mt-28"><PrepSheet
+                <div id="prep" data-jump={ui.portal.rowPrep} data-jump-group="event" className="scroll-mt-28"><PrepSheet
                   c={prepFor(locale)}
                   clientId={w.id}
                   vips={sheet.vips}
@@ -271,18 +251,18 @@ export default async function PortalPage({ searchParams }: {
               {/* The two lists the event manager needs in hand on the night.
                   Written by either side, gated like everything else. */}
               {data.can(w.id, 'envelopes') && (
-                <div id="envelopes" className="scroll-mt-28"><EnvelopesPanel c={envelopesFor(locale)} clientId={w.id} items={envs} /></div>
+                <div id="envelopes" data-jump={ui.portal.rowEnvelopes} data-jump-group="event" className="scroll-mt-28"><EnvelopesPanel c={envelopesFor(locale)} clientId={w.id} items={envs} /></div>
               )}
               {data.can(w.id, 'transport') && (
-                <div id="transport" className="scroll-mt-28"><VehiclesPanel c={vehiclesFor(locale)} clientId={w.id} items={cars} /></div>
+                <div id="transport" data-jump={ui.portal.rowTransport} data-jump-group="event" className="scroll-mt-28"><VehiclesPanel c={vehiclesFor(locale)} clientId={w.id} items={cars} /></div>
               )}
               {data.can(w.id, 'messages') && (
-                <div id="thread" className="scroll-mt-28"><Thread clientId={w.id} messages={threads.get(w.id) ?? []} viewerId={account.id} /></div>
+                <div id="thread" data-jump={ui.portal.rowThread} data-jump-group="me" className="scroll-mt-28"><Thread clientId={w.id} messages={threads.get(w.id) ?? []} viewerId={account.id} /></div>
               )}
               {/* Their deadlines and their day, in the calendar on their
                   phone, updating on its own. The link is a credential and
                   the card says so. */}
-              <div id="calendar" className="scroll-mt-28"><CalendarFeed clientId={w.id} /></div>
+              <div id="calendar" data-jump={ui.portal.jumpCalendar} data-jump-group="event" className="scroll-mt-28"><CalendarFeed clientId={w.id} /></div>
             </div>
           );
         })}
@@ -293,7 +273,45 @@ export default async function PortalPage({ searchParams }: {
           screen rather than to the first one in the list — with several open
           at once those were the same thing, and once they are not, a report
           filed from the henna belongs to the henna. */}
+      {/* The two rooms that are not a section of one event: the journal of
+          other people's weddings, and the circle of couples around this
+          producer.
+
+          Under the event rather than over it. They were the first thing on
+          the screen, above the couple's own names and above the countdown,
+          which put two optional reading rooms in front of the thing they
+          opened the app for. They are worth having and they are not worth
+          arriving to. */}
+      <nav aria-label={ui.circle.title} className="mt-12 grid gap-3 sm:grid-cols-2">
+        <Link href="/app/portal/journal" className="card flex items-start gap-3 transition hover:border-accent/40">
+          <NotebookPen size={20} aria-hidden strokeWidth={1.5} className="mt-0.5 shrink-0 text-accent" />
+          <span>
+            <span className="block text-[15.5px] font-semibold text-ink">{ui.journal.title}</span>
+            <span className="mt-0.5 block text-[13.5px] leading-relaxed text-ink-soft">{ui.journal.sub}</span>
+          </span>
+        </Link>
+        <Link href="/app/portal/community" className="card flex items-start gap-3 transition hover:border-accent/40">
+          <Users size={20} aria-hidden strokeWidth={1.5} className="mt-0.5 shrink-0 text-accent" />
+          <span>
+            <span className="block text-[15.5px] font-semibold text-ink">{ui.circle.title}</span>
+            <span className="mt-0.5 block text-[13.5px] leading-relaxed text-ink-soft">{ui.circle.sub}</span>
+          </span>
+        </Link>
+      </nav>
+
       <PortalActions
+        jump={<PortalJump c={{
+          open: ui.portal.jumpOpen,
+          title: ui.portal.jumpTitle,
+          sub: ui.portal.jumpSub,
+          close: ui.portal.jumpClose,
+          groups: {
+            me: ui.portal.jumpMine,
+            money: ui.portal.jumpMoney,
+            guests: ui.portal.jumpGuests,
+            event: ui.portal.jumpEvent,
+          },
+        }} />}
         producerName={brand.name}
         phone={brand.whatsapp}
         whatsapp={brand.whatsapp}

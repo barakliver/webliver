@@ -20,7 +20,6 @@ import { PortalMeetings } from '@/components/app/PortalMeetings';
 import { QuoteCompare } from '@/components/app/QuoteCompare';
 import { SupplierDraft } from '@/components/app/SupplierDraft';
 import { ConfirmDeleteDemo } from '@/components/app/ConfirmDelete';
-import { PortalNav } from '@/components/app/PortalNav';
 import { ShareSwitches, TabShare } from '@/components/app/ShareSwitch';
 import { TimelineDemo } from './TimelineDemo';
 import { BudgetPlannerDemo } from './BudgetPlannerDemo';
@@ -104,6 +103,7 @@ import { AdminRow } from '@/components/app/AdminRow';
 import { ReleaseState } from '@/components/app/ReleaseState';
 import { ThemeToggle } from '@/components/app/ThemeToggle';
 import { WorkspaceSwitcher } from '@/components/portal/WorkspaceSwitcher';
+import { PortalJump } from '@/components/portal/PortalJump';
 import { parseAgentState } from '@/lib/release';
 import { NoticeBell } from '@/components/app/NoticeBell';
 import { IssueReporter } from '@/components/app/IssueReporter';
@@ -461,6 +461,27 @@ export default async function DesignPage() {
         {/* The control that came out of the stacked-workspaces defect. One
             celebration is drawn at a time now, so the screen has to say which
             one; a single workspace draws nothing here at all. */}
+        {/* The way around the couple's screen, from the bottom. It reads the
+            page it is on, so on this gallery it lists the panels below. */}
+        <Panel name="PortalJump" note="the dock's way around a long screen: where am I, and one tap to anywhere else">
+          <div className="flex flex-wrap items-center gap-4">
+            <PortalJump c={{
+              open: 'לאן', title: 'לאן תרצו לעבור',
+              sub: 'כל מה שיש באירוע שלכם, במקום אחד.', close: 'סגירה',
+              groups: { me: 'מה שמחכה לכם', money: 'כסף', guests: 'אורחים', event: 'האירוע' },
+            }} />
+            <p className="max-w-prose2 text-[14px] text-ink-soft">
+              על מסך הזוג הוא יושב בעוגן התחתון ואומר באיזה חלק הם נמצאים.
+              הוא קורא את הדף עצמו, אז מודול שהמפיק סגר פשוט לא נמצא ברשימה.
+            </p>
+            {/* No fixture sections here on purpose. The gallery already
+                draws the couple's own workspace further down this page, so
+                what this lists is the real thing reading real markup — which
+                is the only question worth asking of a component whose whole
+                job is reading the page it is on. */}
+          </div>
+        </Panel>
+
         <Panel name="WorkspaceSwitcher" note="which celebration this screen is about, when a couple has more than one; silent when they have one">
           <div className="max-w-2xl">
             <WorkspaceSwitcher
@@ -683,22 +704,6 @@ export default async function DesignPage() {
           </div>
         </Panel>
 
-        <Panel name="PortalNav" note="the pills under the header on the couple's screen, one per open section">
-          <div className="max-w-2xl">
-            <PortalNav
-              sticky={false}
-              label={ui.portal.nav}
-              rows={summaryRows({
-                budget: 148000, owed: 32000, openTasks: 9,
-                attending: 96, invited: 180, tables: 18,
-                contracts: 2, venues: 3, files: 5, saved: 12, vendors: 7, meetings: 1,
-                envelopes: 3, vehicles: 2,
-                can: (key) => key !== 'seating',
-                c: ui.portal,
-              })}
-            />
-          </div>
-        </Panel>
 
         <Panel name="RunSheet · printed" note="the page somebody holds at eleven at night: big clock, tick boxes, numbers">
           <RunSheet

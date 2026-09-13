@@ -17,7 +17,6 @@ import { GuestSiteLink } from '@/components/app/GuestSiteLink';
 import { PortalVendors } from '@/components/app/PortalVendors';
 import { PortalMeetings } from '@/components/app/PortalMeetings';
 import { QuoteCompare } from '@/components/app/QuoteCompare';
-import { PortalNav } from '@/components/app/PortalNav';
 import { Ltr } from '@/components/Ltr';
 import type { PortalData, Workspace } from '@/lib/portal';
 import { nextAction, upcoming, type TaskFact } from '@/lib/nextAction';
@@ -39,11 +38,9 @@ const NO_EXTRA: PortalExtra = { contracts: 0, venues: 0, files: 0, envelopes: 0,
  *  is only nearly right is worse than none: it invites decisions about what
  *  the couple can see, based on a screen they never saw. */
 export function PortalWorkspace({
-  workspace, data, viewerId, ui, currentEventId, extra = NO_EXTRA, stickyNav = true,
+  workspace, data, viewerId, ui, currentEventId, extra = NO_EXTRA,
 }: {
   workspace: Workspace; data: PortalData; viewerId: string; ui: AppUi; currentEventId?: string; extra?: PortalExtra;
-  /** Off on the producer's preview, which has a banner stuck up there already. */
-  stickyNav?: boolean;
 }) {
   const c = workspace;
   const dateFmt = weekdayDate(ui.locale);
@@ -118,9 +115,13 @@ export function PortalWorkspace({
 
   return (
     <div>
-      {/* The way around, before anything else: a couple who came for the
-          seating plan should not have to find it by scrolling. */}
-      <PortalNav rows={rows} label={ui.portal.nav} sticky={stickyNav} />
+      {/* The way around used to be here, as a strip of seventeen chips stuck
+          under the header. It is in the dock at the bottom of the screen now.
+          A strip at the top is only at the top: it scrolls away with
+          everything else, and a couple halfway down their own wedding was
+          scrolling back up to navigate — which is the motion this was
+          supposed to save. The dock travels with them, says which section
+          they are in, and is in the corner a thumb is already resting in. */}
 
       {/* The names in serif over the image, then the count. The countdown is
           the largest thing on the couple's screen on purpose: it is the one
@@ -176,7 +177,7 @@ export function PortalWorkspace({
             usually the first thing the couple wants to do. */}
         {c.guest_site_on && c.guest_token && <GuestSiteLink token={c.guest_token} />}
         {can('tasks') && (
-          <div id="tasks" className="scroll-mt-28"><TaskList clientId={c.id} tasks={filteredTasks} viewer="client" viewerId={viewerId} /></div>
+          <div id="tasks" data-jump={ui.portal.rowTasks} data-jump-group="me" className="scroll-mt-28"><TaskList clientId={c.id} tasks={filteredTasks} viewer="client" viewerId={viewerId} /></div>
         )}
         {/* The working shown before the lists, and only once there is a
             budget to show: without lines the five figures are five zeros. */}
@@ -192,10 +193,10 @@ export function PortalWorkspace({
             sales screen wearing the clothes of a tool. Money is one door for
             both the payments and the budget. */}
         {can('budget') && (
-          <div id="payments" className="scroll-mt-28"><PaymentsPanel clientId={c.id} payments={payments} viewer="client" /></div>
+          <div id="payments" data-jump={ui.portal.rowPayments} data-jump-group="money" className="scroll-mt-28"><PaymentsPanel clientId={c.id} payments={payments} viewer="client" /></div>
         )}
         {can('budget') && (
-          <div id="budget" className="scroll-mt-28 space-y-10">
+          <div id="budget" data-jump={ui.portal.rowBudget} data-jump-group="money" className="scroll-mt-28 space-y-10">
             <BudgetTracker
               items={budget}
               payments={payments}
@@ -206,15 +207,15 @@ export function PortalWorkspace({
           </div>
         )}
         {can('guests') && (
-          <div id="guests" className="scroll-mt-28"><GuestList clientId={c.id} guests={guests} /></div>
+          <div id="guests" data-jump={ui.portal.rowRsvp} data-jump-group="guests" className="scroll-mt-28"><GuestList clientId={c.id} guests={guests} /></div>
         )}
         {can('seating') && (
-          <div id="seating" className="scroll-mt-28"><SeatingPlan clientId={c.id} tables={data.tablesFor(c.id)} guests={data.guestsFor(c.id) as never} /></div>
+          <div id="seating" data-jump={ui.portal.rowSeating} data-jump-group="guests" className="scroll-mt-28"><SeatingPlan clientId={c.id} tables={data.tablesFor(c.id)} guests={data.guestsFor(c.id) as never} /></div>
         )}
         {/* Who is hired. The same rows the producer's suppliers tab shows,
             and where a DJ ticked off the checklist above turns up. */}
         {can('vendors') && (
-          <div id="vendors" className="scroll-mt-28 space-y-10">
+          <div id="vendors" data-jump={ui.portal.rowVendors} data-jump-group="event" className="scroll-mt-28 space-y-10">
             <PortalVendors vendors={data.vendorsFor(c.id)} c={ui.portal} locale={ui.locale} />
             {/* The quotes, the same table the producer reads, because there
                 is nothing to negotiate between them about what was quoted. */}
@@ -228,10 +229,10 @@ export function PortalWorkspace({
         {/* What was agreed, as the producer chose to share it. After the
             suppliers because a meeting is usually about one of them. */}
         {can('meetings') && (
-          <div id="meetings" className="scroll-mt-28"><PortalMeetings meetings={data.meetingsFor(c.id)} ui={ui} /></div>
+          <div id="meetings" data-jump={ui.portal.rowMeetings} data-jump-group="event" className="scroll-mt-28"><PortalMeetings meetings={data.meetingsFor(c.id)} ui={ui} /></div>
         )}
         {can('runsheet') && (
-          <div id="runsheet" className="scroll-mt-28"><DaySchedule
+          <div id="runsheet" data-jump={ui.portal.rowRunsheet} data-jump-group="event" className="scroll-mt-28"><DaySchedule
             clientId={c.id}
             items={data.dayFor(c.id)}
             labelA={c.track_a_label}
@@ -240,7 +241,7 @@ export function PortalWorkspace({
           /></div>
         )}
         {can('moodboard') && (
-          <div id="board" className="scroll-mt-28"><WinningBoard clientId={c.id} images={data.boardFor(c.id)} viewer="client" /></div>
+          <div id="board" data-jump={ui.portal.rowBoard} data-jump-group="event" className="scroll-mt-28"><WinningBoard clientId={c.id} images={data.boardFor(c.id)} viewer="client" /></div>
         )}
       </div>
     </div>

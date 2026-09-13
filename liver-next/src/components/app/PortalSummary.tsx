@@ -27,10 +27,23 @@ export type SummaryRow = {
    *  advertising something they were not sold is a sales screen wearing the
    *  clothes of a tool. */
   shown: boolean;
+  /** Whether this row carries a number worth reading on arrival.
+   *
+   *  This list grew from four rows to seventeen, one per section, and in
+   *  doing so it stopped being a summary and became a second table of
+   *  contents — printed in full, above the fold, on a screen that already
+   *  had one. Thirteen of the seventeen had no figure on them at all: they
+   *  were links wearing the shape of a statistic.
+   *
+   *  The way around lives in the dock now. What is left here is what the
+   *  file was named for: the few numbers a couple opens the app to see.
+   *  Nothing is lost — every section is one tap away in the dock and every
+   *  panel is still on the page. */
+  figure?: boolean;
 };
 
 export function PortalSummary({ rows, label }: { rows: SummaryRow[]; label: string }) {
-  const live = rows.filter((r) => r.shown);
+  const live = rows.filter((r) => r.shown && r.figure);
   if (live.length === 0) return null;
 
   return (
@@ -88,7 +101,7 @@ export function summaryRows(opts: {
      whose module is switched off for this plan is left out rather than shown
      locked; a row with nothing to count carries no figure. */
   return [
-    { key: 'tasks',     label: c.rowTasks,     value: <Ltr>{opts.openTasks}</Ltr>, href: '#tasks',     shown: opts.can('tasks') },
+    { key: 'tasks',     label: c.rowTasks,     value: <Ltr>{opts.openTasks}</Ltr>, href: '#tasks',     shown: opts.can('tasks'), figure: true },
     {
       key: 'budget',
       /* Nothing entered is not zero. A couple who has not broken their budget
@@ -100,14 +113,16 @@ export function summaryRows(opts: {
          the budget is set. */
       value: <Money value={opts.budget ?? 0} className={opts.budget === null ? 'text-ink-mute' : undefined} />,
       href: '#budget',
+      figure: true,
       shown: opts.can('budget'),
     },
-    { key: 'payments',  label: c.rowPayments,  value: <Money value={opts.owed} />, href: '#payments',  shown: opts.can('budget') },
+    { key: 'payments',  label: c.rowPayments,  value: <Money value={opts.owed} />, href: '#payments',  shown: opts.can('budget'), figure: true },
     {
       key: 'rsvp',
       label: c.rowRsvp,
       value: <Ratio of={opts.attending} total={opts.invited} />,
       href: '#guests',
+      figure: true,
       shown: opts.can('guests'),
     },
     { key: 'seating',   label: c.rowSeating,   value: <Ltr>{opts.tables}</Ltr>,    href: '#seating',   shown: opts.can('seating') },

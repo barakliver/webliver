@@ -80,7 +80,7 @@ export default async function PreviewPage({ params }: { params: Promise<{ id: st
         <div className="mb-8">
           <ShareSwitches clientId={id} shares={workspace.shared_sections} moneyOn={workspace.budget_visible} />
         </div>
-        <PortalWorkspace workspace={workspace} data={data} viewerId={account.id} ui={ui} stickyNav={false} />
+        <PortalWorkspace workspace={workspace} data={data} viewerId={account.id} ui={ui} />
         {studio && (
           <div className="mt-6"><BrandStudio
             clientId={workspace.id} viewer="client"

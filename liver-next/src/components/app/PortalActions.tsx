@@ -22,8 +22,13 @@ import { cn } from '@/lib/utils';
  * volume is a screen that expects things to be broken.
  */
 export function PortalActions({
+  /** The way around the screen, dropped into the same dock. A slot rather
+   *  than an import, because what it lists is read off the page it is on and
+   *  this component does not know what page that is. */
+  jump,
   producerName, phone, whatsapp, bookingUrl, onReport,
 }: {
+  jump?: React.ReactNode;
   producerName: string;
   phone: string;
   whatsapp: string;
@@ -37,11 +42,20 @@ export function PortalActions({
 
   return (
     <>
-      {/* Clear of the bottom bar and of the home indicator under it. */}
+      {/* One dock, centred, clear of the bottom bar and of the home
+          indicator under it.
+          These two used to sit at the far edges of the screen, and the one on
+          the start edge was in exactly the same place as the accessibility
+          button the layout puts on every screen — two controls stacked on one
+          another, the lower of them unreachable. Grouped in the middle they
+          cannot collide with it, they read as one thing rather than as
+          debris, and there is room between them for the way around, which is
+          what a long screen was actually missing. */}
       <div
-        className="pointer-events-none fixed inset-x-0 z-30 flex items-center justify-between px-5"
+        className="pointer-events-none fixed inset-x-0 z-30 flex items-center justify-center gap-2 px-5"
         style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 5.5rem)' }}
       >
+        {jump}
         <button
           type="button"
           onClick={() => setSheet('contact')}

@@ -1862,6 +1862,22 @@ export const appCopy = {
        these are their events, not "workspaces" or "entities". */
     eventAdd: 'אירוע נוסף',
     eventPick: 'האירועים שלכם',
+    /* The way around the screen, from the dock at the bottom. Worded as a
+       place rather than as a feature: "לאן" is the question somebody halfway
+       down a long page is actually asking. */
+    jumpOpen: 'לאן',
+    jumpTitle: 'לאן תרצו לעבור',
+    jumpSub: 'כל מה שיש באירוע שלכם, במקום אחד.',
+    jumpClose: 'סגירה',
+    jumpMine: 'מה שמחכה לכם',
+    jumpMoney: 'כסף',
+    jumpGuests: 'אורחים',
+    jumpEvent: 'האירוע',
+    /* Three panels that have no row in the summary strip and still need a
+       name in the list. */
+    jumpVendorHq: 'מטה הספקים',
+    jumpStudio: 'הסטודיו',
+    jumpCalendar: 'היומן שלכם',
     /* Under a celebration that has no date yet, in the switcher. An empty
        space there reads as a date that failed to load. */
     noDate: 'טרם נקבע תאריך',
