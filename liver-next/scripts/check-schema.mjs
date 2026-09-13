@@ -186,6 +186,37 @@ try {
     say(before === after, 'and every row is exactly as it was, twice over',
       before === after ? '' : `\n        before ${before}\n        after  ${after}`);
 
+    // ── 3a. one old row cannot stop every release ────────────────────────────
+    /* The failure this section exists for cost three releases and two days.
+       sync.sql runs with ON_ERROR_STOP, which is the property that makes it
+       safe; it also means one refused statement ends the run and nothing
+       after it is applied. A check constraint added to a table that already
+       has rows in it is exactly that statement, and `meeting_kind` was it:
+       a log written before the constraint carried a kind outside the list,
+       so the add failed, the deploy stopped at line 8591 of ten thousand,
+       and the build was never reached. Every five minutes. Forever.
+
+       Every check here ran against a database built from these same files,
+       where no such row can exist — so the whole suite was green while the
+       live deploy had not worked since Friday. A fixture that cannot hold a
+       bad row cannot find this class of bug, so this one plants one. */
+    psql('one', '-c "alter table public.meeting_logs drop constraint if exists meeting_kind"');
+    psql('one', `-c "insert into public.meeting_logs (client_id, kind, title) values ('${cid}','שיחה ראשונה','מפגש')"`);
+    const wedged = apply('one', 'sync.sql');
+    say(!wedged, 'sync.sql levels a database carrying a row no constraint would accept', wedged ?? '');
+
+    /* And the constraint is really there afterwards, doing its job on what
+       gets written from now on. NOT VALID is not "switched off": the old row
+       stays exactly as it was, and a new bad one is refused. */
+    const stray = ask('one', "select count(*)::text from public.meeting_logs where kind='שיחה ראשונה'");
+    let refusedKind = false;
+    try {
+      psql('one', `-c "insert into public.meeting_logs (client_id, kind) values ('${cid}','לא קיים')"`);
+    } catch { refusedKind = true; }
+    say(stray === '1' && refusedKind,
+      'the old row is untouched and the next bad one is refused',
+      `kept:${stray} refused:${refusedKind}`);
+
     // ── 3b. the migrations, applied the way the agent applies them ───────────
     /* Everything above tests the two generated files. The agent runs a third
        thing that neither of them is: after levelling with sync.sql, it applies

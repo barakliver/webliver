@@ -112,6 +112,14 @@ that has happened once.
 - The deploy builds into `.next-build` and renames it into place, and installs
   dependencies only when the lockfile changed, so a release does not take the
   live site down while it builds. Keep it that way.
+- A check constraint added to a table that already has rows must be written
+  `not valid`, and validated separately. sync.sql replays every migration on
+  every deploy with ON_ERROR_STOP, so one old row that refuses one constraint
+  does not fail once — it fails every five minutes forever and takes the
+  thousands of lines after it with it. That is what stopped 2.6 and 2.7:
+  `meeting_kind` on `meeting_logs`, refused by a log older than the
+  constraint, and the whole suite stayed green because a database built from
+  these files cannot contain such a row. `npm run schema` now plants one.
 - `supabase/setup.sql` builds a database from nothing.
   `supabase/sync.sql` brings an existing one up to date and cannot touch a row.
   Both are generated — edit migrations, then run `build-setup-sql.mjs`.

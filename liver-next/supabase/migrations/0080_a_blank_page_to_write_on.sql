@@ -18,9 +18,13 @@
 --  Nothing here touches a row.
 -- ============================================================================
 
+/* NOT VALID for the reason written out in 0088: replayed by sync.sql on
+   every deploy, this exact statement was refused by one old row and stopped
+   every release for three of them. */
 alter table public.meeting_logs drop constraint if exists meeting_kind;
 alter table public.meeting_logs add constraint meeting_kind
-  check (kind in ('production', 'tasting', 'venue', 'design', 'intro', 'custom', 'note', 'other'));
+  check (kind in ('production', 'tasting', 'venue', 'design', 'intro', 'custom', 'note', 'other'))
+  not valid;
 
 comment on column public.meeting_logs.kind is
   'Which questions this log answered. ''custom'' points at one of the '

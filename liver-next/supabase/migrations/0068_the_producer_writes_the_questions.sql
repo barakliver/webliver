@@ -83,10 +83,19 @@ create index if not exists meeting_logs_template_idx
 /* Two kinds join the four: 'intro' is the first call, compiled in like the
    others; 'custom' is a log written from a producer's own template, and the
    pointer above says which. Dropping and recreating the check touches no
-   row: every kind already stored is still on the list. */
+   row: every kind already stored is still on the list.
+
+   NOT VALID, added later and not as a shrug — see 0088. These files are
+   replayed in full by sync.sql on every deploy, so a statement here that one
+   old row can refuse does not fail once: it fails every five minutes forever,
+   and takes the ten thousand lines after it down with it. That is what
+   happened, on this constraint, for three releases. NOT VALID applies the
+   rule to everything written from now on and leaves what is already stored
+   exactly as it is; 0088 then validates it where the rows allow. */
 alter table public.meeting_logs drop constraint if exists meeting_kind;
 alter table public.meeting_logs add constraint meeting_kind
-  check (kind in ('production', 'tasting', 'venue', 'design', 'intro', 'custom', 'other'));
+  check (kind in ('production', 'tasting', 'venue', 'design', 'intro', 'custom', 'other'))
+  not valid;
 
 -- ── comments ───────────────────────────────────────────────────────────────
 comment on table public.meeting_templates is
