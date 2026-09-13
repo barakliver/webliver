@@ -22,7 +22,12 @@ export function PortalNav({ rows, label, sticky = true }: { rows: SummaryRow[]; 
         <a
           key={r.key}
           href={r.href}
-          className="inline-flex min-h-[40px] shrink-0 items-center whitespace-nowrap rounded-xl2 border border-line bg-card px-3.5 text-[13.5px] text-ink-soft transition hover:border-accent/40 hover:text-accent sm:min-h-[34px]"
+          /* 48px on a phone, which is the product's touch target and was not
+             being met: these were 40px, and 34px from the small breakpoint up
+             where they were being thumbed on a tablet just the same. A chip
+             the width of a word is already a small target horizontally; there
+             is no argument for making it small vertically as well. */
+          className="inline-flex min-h-[48px] shrink-0 items-center whitespace-nowrap rounded-control border border-line bg-card px-4 text-[14px] text-ink-soft transition hover:border-accent/40 hover:text-accent"
         >
           {r.label}
         </a>

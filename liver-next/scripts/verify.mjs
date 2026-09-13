@@ -119,7 +119,14 @@ function checkBuiltCss() {
       else if (entry.name.endsWith('.css')) found.push(full);
     }
   };
-  walk(join(root, '.next', 'static'));
+  /* The directory the build actually went to. The deploy builds into
+     `.next-build` and renames it into place, so on the droplet this is
+     `.next` by the time the check runs — but run by hand against a side
+     build it was reading the previous build's stylesheet and reporting the
+     palette as missing from a build that contained it. A checker that fails
+     for the wrong reason is how five days of releases got rolled back once
+     already. */
+  walk(join(root, process.env.NEXT_DIST_DIR || '.next', 'static'));
 
   if (found.length === 0) {
     return record(false, 'built stylesheet', 'no css under .next/static — has it been built?');
@@ -527,7 +534,14 @@ async function main() {
         else if (entry.name.endsWith('.js')) chunks.push(full);
       }
     };
-    walk(join(root, '.next', 'static'));
+    /* The directory the build actually went to. The deploy builds into
+     `.next-build` and renames it into place, so on the droplet this is
+     `.next` by the time the check runs — but run by hand against a side
+     build it was reading the previous build's stylesheet and reporting the
+     palette as missing from a build that contained it. A checker that fails
+     for the wrong reason is how five days of releases got rolled back once
+     already. */
+  walk(join(root, process.env.NEXT_DIST_DIR || '.next', 'static'));
     const js = chunks.map((f) => readFileSync(f, 'utf8')).join('');
     record(js.includes('גוררים לכאן'), 'the shared folder shipped to the browser');
     /* Dragging is written on pointer events rather than the HTML drag and drop
