@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { requireRoot, ROOT_ADMIN_EMAIL } from '@/lib/auth';
 import { getConsole, type Stats } from '@/lib/directory';
 import { AdminRow } from '@/components/app/AdminRow';
+import { AccountSearch } from '@/components/app/AccountSearch';
 import { Fold } from '@/components/Fold';
 import { FoldReveal } from '@/components/portal/FoldReveal';
 
@@ -150,9 +151,12 @@ export default async function AdminPage() {
           {rest.length === 0 ? (
             <Empty text={c.empty} />
           ) : (
-            <ul className="list-none space-y-3 p-0">
-              {rest.map((p) => <AdminRow key={p.id} p={p} />)}
-            </ul>
+            <>
+              <AccountSearch scope="account-list" />
+              <ul id="account-list" className="list-none space-y-2 p-0">
+                {rest.map((p) => <AdminRow key={p.id} p={p} />)}
+              </ul>
+            </>
           )}
         </Fold>
 

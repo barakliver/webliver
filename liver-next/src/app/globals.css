@@ -3,6 +3,15 @@
 @tailwind utilities;
 
 @layer base {
+  /* `hidden` has to win.
+     The browser's own rule for the attribute is `[hidden] { display: none }`,
+     and any class that sets a display beats it — so an element carrying both
+     `hidden` and `flex` stays on the screen while every script reading the
+     page believes it is gone. The account filter set the attribute on rows
+     that had a display class, and the count said "1 of 3" above three
+     visible rows. Attribute wins, everywhere, once. */
+  [hidden] { display: none !important; }
+
   /* The accent, as properties the producer's own brand can replace. Defined
      here rather than only in the config so a page that sets nothing still has
      a complete palette, and so the override is one style attribute on the

@@ -1063,6 +1063,13 @@ export const appCopy = {
     reject: 'דחייה',
     suspend: 'השהיה',
     restore: 'החזרה לפעילות',
+    /* The box above the accounts. Fifteen today and the number only goes
+       one way; the console acts on one account at a time, so finding that
+       one has to be three letters. */
+    search: 'חיפוש לפי שם או מייל',
+    searchClear: 'ניקוי החיפוש',
+    searchCount: '{n} מתוך {total}',
+    searchNone: 'אין חשבון שמתאים לחיפוש.',
     rootBadge: 'בעל המערכת',
     /* The decision the console could not make. Everybody who signs up is
        guessed to be a producer, and roughly half the time that is wrong —

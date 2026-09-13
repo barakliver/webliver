@@ -1,6 +1,6 @@
 import { formatDate } from '@/lib/dates';
 import type { Locale } from '@/lib/locale';
-import { Check, Ban, RotateCcw, ShieldCheck } from 'lucide-react';
+import { Check, Ban, RotateCcw, ShieldCheck, ChevronDown } from 'lucide-react';
 import type { AccountKind, ProducerRow } from '@/lib/directory';
 import { setProducerStatus, setAccountKind } from '@/app/actions/admin';
 import { serverCopy } from '@/lib/serverLocale';
@@ -45,56 +45,80 @@ export async function AdminRow({ p }: { p: ProducerRow }) {
   const ui = await serverCopy();
   const c = (await serverCopy()).admin;
   return (
-    <li className="card">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="min-w-0">
-          <h3 className="flex flex-wrap items-center gap-2 font-display text-[17.5px] font-semibold text-ink">
-            {p.brand}
-            {p.isRoot && (
-              <span className="inline-flex items-center gap-1 rounded-xl2 bg-accent-wash px-2.5 py-0.5 text-[12px] font-medium text-accent">
-                <ShieldCheck size={13} aria-hidden strokeWidth={1.5} />
-                {c.rootBadge}
+    /* One account, closed.
+     *
+     * Every card printed the name, the address, four counts, a last-seen date,
+     * four buttons and three tiles explaining what somebody is — the better
+     * part of a screen each, on a list whose length only goes one way. What
+     * identifies the account is on the row; every decision about it is one
+     * press away, on the one account being decided about.
+     *
+     * `data-account` carries the name and the address, so the search above
+     * reads the page instead of being handed a second list of what is on it. */
+    <li data-account={`${p.brand} ${p.email}`}>
+      <details className="group rounded-card border border-line-soft bg-card shadow-soft">
+        <summary className="flex min-h-[68px] cursor-pointer list-none items-center justify-between gap-4 p-4 transition-colors hover:border-accent sm:p-5 [&::-webkit-details-marker]:hidden">
+          <div className="min-w-0">
+            <h3 className="flex flex-wrap items-center gap-2 font-display text-[17.5px] font-semibold text-ink">
+              {p.brand}
+              {p.isRoot && (
+                <span className="inline-flex items-center gap-1 rounded-xl2 bg-accent-wash px-2.5 py-0.5 text-[12px] font-medium text-accent">
+                  <ShieldCheck size={13} aria-hidden strokeWidth={1.5} />
+                  {c.rootBadge}
+                </span>
+              )}
+              <span className={`rounded-xl2 px-2.5 py-0.5 text-[12px] font-medium ${STATUS_TONE[p.status]}`}>
+                {ui.pending.statuses[p.status]}
               </span>
-            )}
-            <span className={`rounded-xl2 px-2.5 py-0.5 text-[12px] font-medium ${STATUS_TONE[p.status]}`}>
-              {ui.pending.statuses[p.status]}
-            </span>
-          </h3>
-
-          <p className="mt-1.5 text-[14px] text-ink-soft" dir="ltr">{p.email}</p>
-
-          <p className="mt-1 text-[13px] text-ink-mute">
-            {p.eventsLive} {p.eventsLive === 1 ? c.oneLive : c.manyLive}
-            {p.eventsTotal !== p.eventsLive && ` · ${c.ofTotal} ${p.eventsTotal}`}
-            {' · '}{c.board.leads} {p.leadsTotal}
-            {' · '}{c.board.signed} {p.signedTotal}
-          </p>
-
-          <p className="mt-0.5 text-[13px] text-ink-mute">
-            {p.lastSeen ? `${c.lastSeen} ${formatDate(dateFmtFor(locale), p.lastSeen, '·')}` : c.never}
-          </p>
-        </div>
-
-        {/* The root account gets no buttons at all. Approving yourself is
-            meaningless and suspending yourself is a locked door with the key
-            inside.
-
-            Neither does an account already decided to be a couple. These four
-            act on a production business, and she is not running one: the card
-            offered "אישור" to somebody it said in the next line was a client,
-            and pressing it would have approved a workspace nobody is going to
-            open. What to do with her account is the decision underneath. */}
-        {!p.isRoot && p.ownerKind === 'producer' && (
-          <div className="flex flex-wrap gap-2">
-            {p.status !== 'approved' && <StatusButton id={p.id} status="approved" label={c.approve} tone="primary" />}
-            {p.status === 'pending' && <StatusButton id={p.id} status="rejected" label={c.reject} tone="quiet" />}
-            {p.status === 'approved' && <StatusButton id={p.id} status="suspended" label={c.suspend} tone="quiet" />}
-            {p.status === 'suspended' && <StatusButton id={p.id} status="approved" label={c.restore} tone="ghost" />}
+            </h3>
+            {/* The address stays on the closed row: it is what tells two
+                accounts of the same name apart, and it is what gets typed
+                into the search. */}
+            <p className="mt-1 truncate text-[13.5px] text-ink-soft" dir="ltr">{p.email}</p>
           </div>
-        )}
-      </div>
+          <ChevronDown
+            size={20} strokeWidth={1.5} aria-hidden
+            className="shrink-0 text-ink-mute transition-transform duration-200 group-open:rotate-180"
+          />
+        </summary>
 
-      {!p.isRoot && p.ownerId && <KindSwitch ownerId={p.ownerId} kind={p.ownerKind} />}
+        <div className="border-t border-line p-4 sm:p-5">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="min-w-0">
+              <p className="text-[13px] text-ink-mute">
+                {p.eventsLive} {p.eventsLive === 1 ? c.oneLive : c.manyLive}
+                {p.eventsTotal !== p.eventsLive && ` · ${c.ofTotal} ${p.eventsTotal}`}
+                {' · '}{c.board.leads} {p.leadsTotal}
+                {' · '}{c.board.signed} {p.signedTotal}
+              </p>
+
+              <p className="mt-0.5 text-[13px] text-ink-mute">
+                {p.lastSeen ? `${c.lastSeen} ${formatDate(dateFmtFor(locale), p.lastSeen, '·')}` : c.never}
+              </p>
+            </div>
+
+            {/* The root account gets no buttons at all. Approving yourself is
+                meaningless and suspending yourself is a locked door with the key
+                inside.
+
+                Neither does an account already decided to be a couple. These four
+                act on a production business, and she is not running one: the card
+                offered "אישור" to somebody it said in the next line was a client,
+                and pressing it would have approved a workspace nobody is going to
+                open. What to do with her account is the decision underneath. */}
+            {!p.isRoot && p.ownerKind === 'producer' && (
+              <div className="flex flex-wrap gap-2">
+                {p.status !== 'approved' && <StatusButton id={p.id} status="approved" label={c.approve} tone="primary" />}
+                {p.status === 'pending' && <StatusButton id={p.id} status="rejected" label={c.reject} tone="quiet" />}
+                {p.status === 'approved' && <StatusButton id={p.id} status="suspended" label={c.suspend} tone="quiet" />}
+                {p.status === 'suspended' && <StatusButton id={p.id} status="approved" label={c.restore} tone="ghost" />}
+              </div>
+            )}
+          </div>
+
+          {!p.isRoot && p.ownerId && <KindSwitch ownerId={p.ownerId} kind={p.ownerKind} />}
+        </div>
+      </details>
     </li>
   );
 }

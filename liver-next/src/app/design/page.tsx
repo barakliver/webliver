@@ -101,6 +101,7 @@ import { PrepView } from '@/components/PrepView';
 import { prepViewFor } from '@/content/prepView';
 import { AdminRow } from '@/components/app/AdminRow';
 import { ReleaseState } from '@/components/app/ReleaseState';
+import { AccountSearch } from '@/components/app/AccountSearch';
 import { ThemeToggle } from '@/components/app/ThemeToggle';
 import { WorkspaceSwitcher } from '@/components/portal/WorkspaceSwitcher';
 import { PortalJump } from '@/components/portal/PortalJump';
@@ -1099,6 +1100,29 @@ export default async function DesignPage() {
             a release that went live, and one the agent gave up on after two
             rollbacks — which is what five days of releases looked like while
             nothing on any screen said so. */}
+        {/* The box over the accounts list. It reads the page rather than a
+            list handed to it, so here it filters the three rows under it —
+            which is the only question worth asking of a component whose job
+            is reading the page it is on. */}
+        <Panel name="AccountSearch · finding one account" note="every word has to appear, in any order; a filtered row leaves the accessibility tree too">
+          <div className="max-w-2xl">
+            <AccountSearch scope="design-accounts" />
+            <ul id="design-accounts" className="list-none space-y-2 p-0">
+              {[
+                ['ברק ליור', 'barakliver@gmail.com'],
+                ['Eden Haimov Events', 'edenhaimov4@gmail.com'],
+                ['נמרוד שני', 'nimrodshanny@gmail.com'],
+              ].map(([name, mail]) => (
+                <li key={mail} data-account={`${name} ${mail}`}
+                    className="flex flex-wrap items-center justify-between gap-3 rounded-card border border-line-soft bg-card px-4 py-3">
+                  <span className="text-[15px] text-ink">{name}</span>
+                  <span className="text-[13.5px] text-ink-soft" dir="ltr">{mail}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </Panel>
+
         <Panel name="ReleaseState" note="what the agent on the droplet wrote down: live, rolled back and given up, and no agent at all">
           <div className="space-y-4">
             <ReleaseState state={parseAgentState({

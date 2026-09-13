@@ -340,6 +340,10 @@ export const consoleEn: ConsoleCopy = {
     reject: 'Decline',
     suspend: 'Suspend',
     restore: 'Restore',
+    search: 'Search by name or address',
+    searchClear: 'Clear the search',
+    searchCount: '{n} of {total}',
+    searchNone: 'No account matches that.',
     rootBadge: 'Platform owner',
     kind: {
       title: 'What this account is',

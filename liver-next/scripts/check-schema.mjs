@@ -186,6 +186,27 @@ try {
     say(before === after, 'and every row is exactly as it was, twice over',
       before === after ? '' : `\n        before ${before}\n        after  ${after}`);
 
+    // ── 3z. one address, one account ─────────────────────────────────────────
+    /* He asked to make sure an address can only sign up once, and the answer
+       is that it already cannot — 0001 puts a unique index on lower(email)
+       and a check that the stored value is already lower-cased. That is a
+       claim worth proving rather than reading, because the case-insensitive
+       half is the half that is easy to get wrong: Barak@… and barak@… are
+       the same person to everybody except a plain unique index. */
+    const uid2 = '33333333-3333-3333-3333-333333333333';
+    psql('one', `-c "insert into auth.users (id, email) values ('${uid2}','twice@example.com') on conflict do nothing"`);
+    let secondRefused = false;
+    try {
+      psql('one', `-c "insert into public.profiles (id, email) values ('${uid2}','barakliver@gmail.com')"`);
+    } catch { secondRefused = true; }
+    let casedRefused = false;
+    try {
+      psql('one', `-c "insert into public.profiles (id, email) values ('${uid2}','BarakLiver@gmail.com')"`);
+    } catch { casedRefused = true; }
+    say(secondRefused && casedRefused,
+      'one address is one account, whatever it is capitalised as',
+      `same:${secondRefused} cased:${casedRefused}`);
+
     // ── 3a. one old row cannot stop every release ────────────────────────────
     /* The failure this section exists for cost three releases and two days.
        sync.sql runs with ON_ERROR_STOP, which is the property that makes it
