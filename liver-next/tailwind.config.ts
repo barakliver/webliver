@@ -1,9 +1,10 @@
 import type { Config } from 'tailwindcss';
 
 /* ── Liver Productions design system · Lux ─────────────────────────────────
-   A cool near-black on a pale blue ground, structured by hairlines rather
-   than by cards. The ground was ivory until he asked for the blue, and the
-   history of that decision is written where the values are, in globals.css.
+   A warm near-black on a near-white ground, structured by hairlines rather
+   than by cards. The ground has been slate, ivory and a pale blue before
+   this; the history of every move is written where the values are, in
+   globals.css.
 
    The change from the slate version is not a repaint, it is a change of
    construction. There are no cards, no glass, no shadows on content and no
@@ -45,10 +46,10 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        /* Text, darkest first. A cool near-black, because the whole palette
-           now sits on a pale blue and an ink of the other temperature reads
-           as a mistake rather than as a choice. It was the warm one while the
-           ground was ivory, for exactly the same reason.
+        /* Text, darkest first. A warm near-black, because the whole palette
+           sits on a near-white with warmth in it and an ink of the other
+           temperature reads as a mistake rather than as a choice. It was the
+           cool one while the ground was blue, for exactly the same reason.
 
            Every solid tone is `rgb(var(--x-rgb) / <alpha-value>)` rather than
            `var(--x)`. The indirection buys one thing and it is not tidiness:
@@ -67,9 +68,9 @@ const config: Config = {
           mute:    'rgb(var(--ink-mute-rgb, 90 104 125) / <alpha-value>)',
         },
 
-        /* The ground and the two steps around it. The card is near enough to
-           white to be called one now; on the blue ground a warm off-white
-           read as a stain rather than as a surface. */
+        /* The ground and the two steps around it. The card is white outright
+           and the canvas is the near-white under it, which is what makes a
+           card read as lifted without a shadow doing the work. */
         surface: {
           DEFAULT: 'rgb(var(--surface-rgb, 241 245 249) / <alpha-value>)',
           /* the producer dashboard sits a shade brighter */
@@ -169,8 +170,8 @@ const config: Config = {
          the product. The Hebrew faces sit behind every stack so an English
          page's Latin faces never leave a Hebrew glyph to the system. */
       fontFamily: {
-        sans:    ['var(--font-ui)', 'var(--font-assistant)', 'var(--font-heebo)', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif'],
-        display: ['var(--font-display)', 'var(--font-assistant)', 'var(--font-heebo)', '-apple-system', 'system-ui', 'sans-serif'],
+        sans:    ['var(--font-ui)', 'var(--font-heebo)', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif'],
+        display: ['var(--font-display)', 'var(--font-heebo)', '-apple-system', 'system-ui', 'sans-serif'],
         serif:   ['var(--font-editorial)', 'var(--font-frank)', 'Georgia', 'serif'],
       },
       fontSize: {

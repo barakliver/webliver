@@ -192,9 +192,14 @@
        Playfair Display, with the Hebrew faces behind them for any glyph
        they lack. `--font-display` is what `font-display` resolves to: the
        editorial face on the public site, the UI face inside the app. */
-    /* Assistant on the body, by his choice of pairing three on the
-       comparison sheet; Heebo behind it for any glyph it lacks. */
-    --font-ui: var(--font-assistant), var(--font-heebo);
+    /* Heebo carries the interface: titles, tables, forms, amounts, statuses,
+       tasks. It has been Heebo, then Assistant — chosen by eye from six
+       pairings drawn side by side — and it is Heebo again because he asked
+       for it by name after seeing both in the product rather than on a
+       comparison sheet. A face is judged on the screen it has to work on.
+       The system stack behind it in tailwind.config.ts is the fallback now;
+       Assistant is no longer downloaded at all. */
+    --font-ui: var(--font-heebo);
     --font-editorial: var(--font-frank);
     --font-display: var(--font-editorial);
     /* A light serif wants air; a bold sans wants none. Each display size
@@ -204,7 +209,7 @@
   }
 
   html[lang='en'] {
-    --font-ui: var(--font-lato), var(--font-assistant), var(--font-heebo);
+    --font-ui: var(--font-lato), var(--font-heebo);
     --font-editorial: var(--font-playfair), var(--font-frank);
   }
 
