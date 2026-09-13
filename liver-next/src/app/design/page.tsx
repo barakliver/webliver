@@ -104,8 +104,9 @@ import { ReleaseState } from '@/components/app/ReleaseState';
 import { ThemeToggle } from '@/components/app/ThemeToggle';
 import { WorkspaceSwitcher } from '@/components/portal/WorkspaceSwitcher';
 import { PortalJump } from '@/components/portal/PortalJump';
-import { Fold } from '@/components/portal/Fold';
-import { MyTasks } from '@/components/app/MyTasks';
+import { Fold } from '@/components/Fold';
+import { MyTasks, MyTaskQuickAdd } from '@/components/app/MyTasks';
+import { TaskTick } from '@/components/app/TaskTick';
 import { FoldReveal } from '@/components/portal/FoldReveal';
 import { parseAgentState } from '@/lib/release';
 import { NoticeBell } from '@/components/app/NoticeBell';
@@ -243,8 +244,29 @@ export default async function DesignPage() {
             is the routine: its circle carries the repeat mark rather than an
             empty tick, since pressing it moves the date on instead of
             removing the row. */}
+        {/* The tick that finishes a task from the pile it is listed in, and
+            the plus that writes a new one without leaving the screen. Both
+            were three navigations away before, which is how a list of nine
+            things stays a list of nine things all week. */}
+        <Panel name="TaskTick · finishing from the pile" note="on his own tasks only: one row, and the tick means one thing">
+          <div className="flex items-center gap-4">
+            <TaskTick taskId="fixture-task" clientId={client} label="לחזור לחברת התאורה" />
+            <p className="max-w-prose2 text-[14px] text-ink-soft">
+              העיגול נסגר מיד, לפני שהשרת עונה. תשלום, ליד או אירוע שנמצא בפיגור לא
+              מקבלים אותו: לכל אחד מהם יש פועל אחר, ולוח בקרה הוא לא המקום להחליט
+              שכסף נכנס.
+            </p>
+          </div>
+        </Panel>
+
+        <Panel name="MyTaskQuickAdd · the plus on the pile" note="closed until pressed; the same fields the panel uses, so the repeat list cannot drift">
+          <div className="flex max-w-2xl flex-wrap items-center gap-4">
+            <MyTaskQuickAdd />
+          </div>
+        </Panel>
+
         <Panel name="MyTasks · the producer's own list" note="his own work rather than any event's: late, due today, a routine that comes back, one with no date, one finished">
-          <MyTasks today="2026-09-13" tasks={[
+          <MyTasks today="2026-09-13" showAdd tasks={[
             { id: 'm1', title: 'לשלם מע״מ', note: '', due_on: '2026-09-01', repeat_every: 'monthly', done: false, done_on: '2026-08-15' },
             { id: 'm2', title: 'לחזור לחברת התאורה', note: 'הם ביקשו תשובה על ההצעה', due_on: '2026-09-13', repeat_every: 'none', done: false, done_on: null },
             { id: 'm3', title: 'לעבור על הרשימות לשבוע הבא', note: '', due_on: '2026-09-20', repeat_every: 'weekly', done: false, done_on: null },

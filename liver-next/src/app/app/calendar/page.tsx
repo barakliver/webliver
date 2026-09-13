@@ -11,6 +11,7 @@ import { CalendarFeed } from '@/components/app/CalendarFeed';
 import { HebrewCalendar } from '@/components/app/HebrewCalendar';
 import { MonthGrid, calendarHref, type GridSwitches } from '@/components/app/MonthGrid';
 import { LabelToolbar } from '@/components/app/LabelToolbar';
+import { Fold } from '@/components/Fold';
 import { DayDrawer, type DiaryEntryRow } from '@/components/app/DayDrawer';
 import { GoogleSyncCard, type GoogleStatus } from '@/components/app/GoogleSyncCard';
 import { loadLabels } from '@/lib/labels';
@@ -125,26 +126,34 @@ export default async function CalendarPage({ searchParams }: {
           </div>
         )}
         <MonthGrid items={all} month={month} today={today} locale={locale} ui={ui} open={openDay} switches={switches} />
-        <HebrewCalendar from={today} />
-        <LabelToolbar kind="event_tag" labels={tags} />
       </div>
 
+      {/* One month on one board, and nothing else drawn.
+          Everything under it is worth having and none of it is worth
+          scrolling past to reach the thing this screen is for. Each row says
+          what is behind it, so a drawer can be read rather than opened. */}
       <div className="mb-7 space-y-3">
-        <GoogleSyncCard ui={ui} status={google} configured={googleConfigured()} notice={notice} />
-        {/* The file first, because it is the thing that works with no setup at
-            all, and the subscription under it for the people who want the
-            diary to stay right without being re-saved. */}
-        <a href="/app/calendar.ics" className="btn-ghost inline-flex items-center gap-2 text-[14px]">
-          <CalendarPlus size={16} aria-hidden strokeWidth={1.5} />
-          {c.subscribe}
-        </a>
-        <CalendarFeed />
-      </div>
+        <Fold id="fold-hebrew" title={c.foldHebrew} sub={c.foldHebrewSub}>
+          <HebrewCalendar from={today} />
+        </Fold>
+        <Fold id="fold-labels" title={c.foldLabels} sub={c.foldLabelsSub}>
+          <LabelToolbar kind="event_tag" labels={tags} />
+        </Fold>
+        <Fold id="fold-sync" title={c.foldSync} sub={c.foldSyncSub}>
+          <GoogleSyncCard ui={ui} status={google} configured={googleConfigured()} notice={notice} />
+          {/* The file first, because it is the thing that works with no setup at
+              all, and the subscription under it for the people who want the
+              diary to stay right without being re-saved. */}
+          <a href="/app/calendar.ics" className="btn-ghost inline-flex items-center gap-2 text-[14px]">
+            <CalendarPlus size={16} aria-hidden strokeWidth={1.5} />
+            {c.subscribe}
+          </a>
+          <CalendarFeed />
+        </Fold>
 
-      {items.length === 0 ? (
-        <Empty text={c.empty} />
-      ) : (
-        <div className="space-y-9">
+        {items.length === 0 ? null : (
+          <Fold id="fold-list" title={c.foldList} sub={c.foldListSub}>
+            <div className="space-y-9">
           {[...byMonth.entries()].map(([month, monthItems]) => {
             const byDay = new Map<string, CalItem[]>();
             for (const i of monthItems) byDay.set(i.date, [...(byDay.get(i.date) ?? []), i]);
@@ -194,10 +203,14 @@ export default async function CalendarPage({ searchParams }: {
                   ))}
                 </div>
               </section>
-            );
-          })}
-        </div>
-      )}
+              );
+            })}
+            </div>
+          </Fold>
+        )}
+      </div>
+
+      {items.length === 0 && <Empty text={c.empty} />}
 
       <Live sources={[{ table: 'clients' }, { table: 'tasks' }, { table: 'payments' }, { table: 'diary_entries' }]} />
     </>

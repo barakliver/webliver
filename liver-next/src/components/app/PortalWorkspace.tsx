@@ -17,7 +17,7 @@ import { GuestSiteLink } from '@/components/app/GuestSiteLink';
 import { PortalVendors } from '@/components/app/PortalVendors';
 import { PortalMeetings } from '@/components/app/PortalMeetings';
 import { QuoteCompare } from '@/components/app/QuoteCompare';
-import { Fold } from '@/components/portal/Fold';
+import { Fold } from '@/components/Fold';
 import { Ltr } from '@/components/Ltr';
 import type { PortalData, Workspace } from '@/lib/portal';
 import { nextAction, upcoming, type TaskFact } from '@/lib/nextAction';

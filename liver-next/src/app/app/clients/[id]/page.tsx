@@ -1,4 +1,4 @@
-import { CalendarPlus, Eye, Hash, ListOrdered, Pencil, Radio, BookOpen, NotebookPen, PenLine } from 'lucide-react';
+import { CalendarPlus, Eye, Hash, ListOrdered, Pencil, Radio, BookOpen, NotebookPen, PenLine , Ellipsis } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { requireLiveProducer } from '@/lib/auth';
@@ -114,18 +114,31 @@ export default async function ClientPage({
     <>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <Link href="/app/clients" className="btn-quiet inline-block px-0 text-[14px]">← {c.back}</Link>
-        {/* One row that scrolls on a phone rather than five buttons on three
-            lines above the title. The last one is visibly cut off, which is
-            what tells a thumb there is more. */}
-        <div className="-mx-4 flex w-[calc(100%+2rem)] items-center gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:w-auto sm:flex-wrap sm:px-0 sm:pb-0">
-          {/* First in the row, because it is the one thing here somebody
-              reaches for while another person is talking. Everything else on
-              this screen asks a question before it lets you write anything
-              down. */}
+        {/* Eight buttons were standing above the couple's own name, in a row
+            that scrolled sideways, above a row of tags, above the sections.
+            Three bands of chrome before the event itself begins, and he said
+            so: only what is really needed, and nothing beside it.
+
+            One stays out here — the blank page, because it is the thing
+            somebody reaches for while another person is still talking, and
+            everything else on this screen asks a question before it lets you
+            write anything down. The other seven are printouts and views: real,
+            wanted, and not wanted at this second. They are one press away
+            behind the summary below, which says what they are. */}
+        <div className="flex items-center gap-2">
           <Link href={`/app/clients/${client.id}/note`} className={link}>
             <PenLine size={16} aria-hidden strokeWidth={1.5} />
             {ui.meeting.blank}
           </Link>
+          <details className="group relative">
+            <summary className="btn-quiet inline-flex min-h-[44px] cursor-pointer list-none items-center gap-1.5 px-3 text-[14px] [&::-webkit-details-marker]:hidden">
+              <Ellipsis size={16} aria-hidden strokeWidth={1.5} />
+              {c.tools}
+            </summary>
+            {/* Over the page rather than pushing it: a disclosure that moves
+                the couple's name down every time it opens is a disclosure
+                that makes the screen jump under a reading eye. */}
+            <div className="absolute end-0 z-50 mt-2 flex w-[16rem] flex-col items-stretch gap-1 rounded-sheet border border-line-strong bg-card p-2 shadow-pop">
           <a href={`/app/clients/${client.id}/event.ics`} className={link}>
             <CalendarPlus size={16} aria-hidden strokeWidth={1.5} />
             {ui.calendar.addEvent}
@@ -167,6 +180,8 @@ export default async function ClientPage({
             <Eye size={16} aria-hidden strokeWidth={1.5} />
             {ui.preview.open}
           </Link>
+            </div>
+          </details>
         </div>
       </div>
 
@@ -198,13 +213,30 @@ export default async function ClientPage({
       <div className="-mt-4 mb-5">
         <EventTagPicker clientId={client.id} labels={tags} current={client.label_id ?? null} />
       </div>
-      <div className="flex items-start gap-2">
+      {/* Stuck to the top, because the sections are the way around this file
+          and a way around that scrolls off the screen is no way around at
+          all. Fourteen sections, each of them long: he was scrolling back to
+          the top of a page to reach the top of a page. It travels with him
+          now, and the strip still scrolls sideways inside it. */}
+      <div
+        /* Under the phone's own header, which is already stuck to the top at
+           z-40 and is 56px tall, 64 from the small breakpoint up. Landing on
+           top of it would have hidden the brand and the search; landing at
+           zero on a phone would have put the sections behind it. On a wide
+           screen that header is not rendered at all and this is the only
+           thing at the top. */
+        /* The producer's shell grounds itself in surface-100, not surface. A
+           sticky bar painted the other one is a band of the wrong tone
+           sliding over the page, which reads as a rendering fault rather
+           than as a bar. */
+        className="sticky top-14 z-30 -mx-5 mb-6 flex items-start gap-2 border-b border-line bg-surface-100 px-5 pt-3 sm:top-16 sm:mx-0 sm:px-0 lg:top-0"
+      >
         <div className="min-w-0 flex-1">
           <EventTabs clientId={client.id} active={tab} />
         </div>
         {/* Named by the open tab, so a report from the money tab arrives
             saying so rather than costing a round trip to find out. */}
-        <div className="mt-1 shrink-0">
+        <div className="mt-1 shrink-0 pb-3">
           <IssueReporter userId={account.id} context={`${client.display_name} · ${ui.clientPage.tabs[tab]}`} />
         </div>
       </div>

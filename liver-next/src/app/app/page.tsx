@@ -15,7 +15,7 @@ import { supabaseServer } from '@/lib/supabase/server';
 import { loadAnniversaries } from '@/lib/workflow';
 import { BeginHere } from '@/components/app/BeginHere';
 import { IssueReporter } from '@/components/app/IssueReporter';
-import { MyTasks } from '@/components/app/MyTasks';
+import { MyTasks, MyTaskQuickAdd } from '@/components/app/MyTasks';
 import { loadMyTasks } from '@/lib/producerTasksLoad';
 import { todayInZone } from '@/lib/clock';
 
@@ -80,7 +80,14 @@ export default async function OverviewPage() {
             </>
           ) : (
             <>
-              <h2 id="needs-you" className="eyebrow mb-3">{c.needsYou}</h2>
+              {/* The plus sits on this heading and not on the panel below,
+                  because the thought "I have to call the lighting company
+                  back" arrives while reading the pile — and a thing you have
+                  to scroll to write down gets written on paper instead. */}
+              <div className="mb-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                <h2 id="needs-you" className="eyebrow">{c.needsYou}</h2>
+                <MyTaskQuickAdd />
+              </div>
               <AttentionList items={items} />
             </>
           )}
@@ -92,7 +99,7 @@ export default async function OverviewPage() {
               the pile is what is new since yesterday and this is what was
               already true. */}
           <div className="mt-8">
-            <MyTasks tasks={myTasks} today={todayInZone()} />
+            <MyTasks tasks={myTasks} today={todayInZone()} showAdd={false} />
           </div>
         </section>
 

@@ -25,6 +25,13 @@ export type AttentionItem = {
   urgency: Urgency;
   /** Sorts within a group. Lower is more urgent. */
   rank: number;
+  /* What it takes to finish this one where it is being read, on the rows
+     that can be finished at all. A task can: it is his, it is one row, and
+     the tick means exactly one thing. A payment, a lead or an event running
+     behind cannot — "done" is a different verb for each of them, and a
+     one-tap on a dashboard is the wrong place to decide that money arrived. */
+  taskId?: string;
+  clientId?: string;
 };
 
 export type Overview = {
@@ -144,6 +151,8 @@ export async function getOverview(): Promise<Overview> {
       href: `/app/clients/${t.client_id}`,
       urgency: d <= 0 ? 'now' : 'soon',
       rank: d,
+      taskId: t.id,
+      clientId: t.client_id,
     });
   }
 

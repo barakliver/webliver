@@ -40,34 +40,47 @@ export async function EventSummary({ clientId, summary }: { clientId: string; su
   const t = c.at;
   const { guests, money, next } = summary;
 
+  /* Only the figures that are figures.
+   *
+   * There were four tiles and they were always all four, so an event early in
+   * its life drew one number and three dots — and a row that is three
+   * quarters punctuation reads as a screen that failed to load rather than as
+   * an event nobody has filled in yet. A tile with nothing behind it says
+   * nothing worth the width, so it is not drawn, and when none of them has
+   * anything the row is gone entirely.
+   *
+   * "נותר לגבות" is not here at all any more: he asked for it off, and he is
+   * right that it does not belong. It is a standing balance, not a decision —
+   * the money that actually needs him is money that is late, and that has its
+   * own line underneath which appears only when there is some. */
+  const tiles = [
+    guests.total > 0 && (
+      <Tile key="guests"
+        label={t.guests}
+        value={String(guests.confirmed)}
+        sub={`${t.confirmed} · ${guests.seats} ${t.seats} · ${guests.pending} ${t.pending}`}
+        tone={guests.confirmed > 0 ? 'good' : 'plain'}
+      />
+    ),
+    summary.tasksOpen > 0 && (
+      <Tile key="tasks" label={t.tasksOpen} value={String(summary.tasksOpen)} />
+    ),
+    summary.dayLines > 0 && (
+      <Tile key="day"
+        label={t.dayLines}
+        value={String(summary.dayLines)}
+        sub={summary.contracts.total > 0
+          ? <>{t.contracts} <Ratio of={summary.contracts.signed} total={summary.contracts.total} /></>
+          : undefined}
+      />
+    ),
+  ].filter(Boolean);
+
   return (
     <section className="space-y-6">
-      <div className="grid grid-cols-2 gap-x-8 gap-y-8 lg:grid-cols-4">
-        <Tile
-          label={t.guests}
-          value={guests.total === 0 ? t.none : String(guests.confirmed)}
-          sub={guests.total === 0 ? undefined
-            : `${t.confirmed} · ${guests.seats} ${t.seats} · ${guests.pending} ${t.pending}`}
-          tone={guests.confirmed > 0 ? 'good' : 'plain'}
-        />
-        <Tile
-          label={t.owed}
-          value={money.owed === 0 ? t.none : <Money value={money.owed} />}
-          sub={money.paid > 0 ? <>{t.paid} <Money value={money.paid} /></> : undefined}
-          tone={money.overdue > 0 ? 'warn' : 'plain'}
-        />
-        <Tile
-          label={t.tasksOpen}
-          value={summary.tasksOpen === 0 ? t.none : String(summary.tasksOpen)}
-        />
-        <Tile
-          label={t.dayLines}
-          value={summary.dayLines === 0 ? t.none : String(summary.dayLines)}
-          sub={summary.contracts.total > 0
-            ? <>{t.contracts} <Ratio of={summary.contracts.signed} total={summary.contracts.total} /></>
-            : undefined}
-        />
-      </div>
+      {tiles.length > 0 && (
+        <div className="grid grid-cols-2 gap-x-8 gap-y-8 lg:grid-cols-3">{tiles}</div>
+      )}
 
       {money.overdue > 0 && (
         <p className="inline-flex items-center gap-2 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">

@@ -2,7 +2,7 @@
 
 import { useActionState, useState } from 'react';
 import { useFormStatus } from 'react-dom';
-import { CheckCheck, Pencil, Repeat as RepeatIcon } from 'lucide-react';
+import { CheckCheck, Pencil, Plus, Repeat as RepeatIcon, X } from 'lucide-react';
 import { formatDate } from '@/lib/dates';
 import { shortDate } from '@/lib/appDates';
 import { fill } from '@/lib/copyText';
@@ -34,7 +34,13 @@ import {
  * mark, because pressing it does not remove the row and a control that looks
  * like it will is a control that gets pressed once and never again.
  */
-export function MyTasks({ tasks, today }: { tasks: ProducerTask[]; today: string }) {
+export function MyTasks({ tasks, today, showAdd = true }: {
+  tasks: ProducerTask[]; today: string;
+  /** False where the plus above the pile already carries the form. Exactly
+   *  one add form on a screen: two of them is two places to type the same
+   *  thing and one of them always ends up the wrong one. */
+  showAdd?: boolean;
+}) {
   const ui = useCopy();
   const c = ui.myTasks;
 
@@ -54,7 +60,7 @@ export function MyTasks({ tasks, today }: { tasks: ProducerTask[]; today: string
       </div>
       <p className="mt-1 text-[14px] text-ink-soft">{c.sub}</p>
 
-      <AddForm />
+      {showAdd && <AddForm />}
 
       {open.length === 0 ? (
         <p className="mt-5 rounded-xl2 bg-surface-100 px-4 py-3 text-[14.5px] text-ink-mute">{c.empty}</p>
@@ -136,10 +142,19 @@ function Fields({ task, withNote }: { task?: ProducerTask; withNote?: boolean })
   );
 }
 
-function AddForm() {
+function AddForm({ onDone }: { onDone?: () => void }) {
   const ui = useCopy();
   const c = ui.myTasks;
-  const [state, action] = useActionState<MyTaskResult | null, FormData>(addMyTask, null);
+  const [state, action] = useActionState<MyTaskResult | null, FormData>(
+    async (prev, form) => {
+      const result = await addMyTask(prev, form);
+      /* Closes only on a save. A form that shuts on a refusal takes the
+         error message with it. */
+      if (result.ok) onDone?.();
+      return result;
+    },
+    null,
+  );
   return (
     <form action={action} className="mt-5 flex flex-wrap items-center gap-2">
       <Fields />
@@ -259,5 +274,45 @@ function EditForm({ task, onDone }: { task: ProducerTask; onDone: () => void }) 
       <button type="button" onClick={onDone} className="btn-quiet px-3 py-1 text-[13.5px]">{c.cancel}</button>
       {state?.error && <p className="w-full text-[13.5px] text-bad">{state.error}</p>}
     </form>
+  );
+}
+
+/**
+ * The plus beside "מחכה להחלטה שלך".
+ *
+ * He asked for it there and not in the panel below, and he is right: the
+ * thought "I have to call the lighting company back" arrives while reading
+ * the pile, not while scrolled past it. A thing you have to scroll to write
+ * down is a thing that gets written on paper instead.
+ *
+ * Closed until pressed, because a form standing open at the top of the
+ * morning screen is a form that is in the way three hundred and sixty days a
+ * year. Open, it is the same fields as everywhere else — one component, so
+ * the repeat list cannot drift between two copies of it.
+ */
+export function MyTaskQuickAdd() {
+  const ui = useCopy();
+  const c = ui.myTasks;
+  const o = ui.overview2;
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        aria-controls="quick-add-mine"
+        className="btn-quiet inline-flex min-h-[44px] items-center gap-1.5 px-2 text-[13.5px]"
+      >
+        {open ? <X size={16} aria-hidden strokeWidth={1.5} /> : <Plus size={16} aria-hidden strokeWidth={1.5} />}
+        {open ? o.addMineClose : o.addMine}
+      </button>
+      {open && (
+        <div id="quick-add-mine" className="w-full">
+          <AddForm onDone={() => setOpen(false)} />
+        </div>
+      )}
+    </>
   );
 }

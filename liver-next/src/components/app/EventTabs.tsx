@@ -44,7 +44,11 @@ export async function EventTabs({
       /* One row at every width. With fifteen sections the desktop wrapped
          onto two or three rows of pills above the content; the strip scrolls
          sideways there too, and the active pill is the one filled in. */
-      className="-mx-5 mb-6 flex flex-nowrap gap-1.5 overflow-x-auto border-b border-line px-5 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:px-0"
+      /* The bleed, the rule under it and the space below now belong to the
+         sticky bar this sits inside, on the event screen — one element can
+         either scroll its own contents sideways or stick to the top of the
+         page, and this one has to do the first. */
+      className="flex flex-nowrap gap-1.5 overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
     >
       {EVENT_TABS.map((tab) => {
         const on = tab === active;

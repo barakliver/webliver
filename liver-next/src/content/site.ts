@@ -699,6 +699,11 @@ export const appCopy = {
       book: 'ספר ההפעלה המלא',
     },
     needsYou: 'מחכה להחלטה שלך',
+    /* On the circle beside a task in the pile, and on the plus that opens
+       the form. Both are verbs: what the press does, not what the thing is. */
+    markDone: 'לסמן שבוצע',
+    addMine: 'משימה לעצמי',
+    addMineClose: 'סגירה',
     now: 'דחוף',
     soon: 'השבוע',
     nextEvent: 'האירוע הקרוב',
@@ -1216,6 +1221,21 @@ export const appCopy = {
     legendTask: 'משימה',
     legendPayment: 'תשלום',
     list: 'הרשימה',
+    /* The four drawers under the month board.
+       The screen opened with the month, and then kept going: the Hebrew
+       calendar, the colours, the Google card, the subscription, and a list of
+       every month ahead. All of it is worth having and none of it is worth
+       scrolling past to reach the thing he opened the screen for, which is
+       one month on one board. Each row says what is behind it, so a drawer is
+       read rather than tried. */
+    foldHebrew: 'לוח עברי ומועדים',
+    foldHebrewSub: 'אילו ערבים פנויים לחתונה, ואילו סגורים לפי הלכה',
+    foldLabels: 'צבעים ותוויות',
+    foldLabelsSub: 'הצבע שכל אירוע מקבל על הלוח',
+    foldSync: 'סנכרון והורדה',
+    foldSyncSub: 'היומן בטלפון, בגוגל או כקובץ',
+    foldList: 'הכל קדימה, לפי חודש',
+    foldListSub: 'כל אירוע, משימה ותשלום ברשימה אחת',
 
     feed: {
       title: 'יומן מתעדכן לבד',
@@ -1418,6 +1438,11 @@ export const appCopy = {
   clientPage: {
     back: 'חזרה לאירועים',
     details: 'פרטי האירוע',
+    /* The one button that now holds the seven printouts and views that used
+       to stand in a row above the couple's own name. Named for what is behind
+       it rather than "עוד": a menu called "more" is a menu nobody opens
+       twice. */
+    tools: 'הדפסות ותצוגות',
     /* On the pencil beside the name at the top of the page. */
     rename: 'עריכת שם ופרטי האירוע',
 

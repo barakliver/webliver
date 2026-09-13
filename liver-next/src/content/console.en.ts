@@ -34,6 +34,9 @@ export const consoleEn: ConsoleCopy = {
       book: 'The full operating book',
     },
     needsYou: 'Waiting on you',
+    markDone: 'Mark as done',
+    addMine: 'A task for myself',
+    addMineClose: 'Close',
     now: 'Urgent',
     soon: 'This week',
     nextEvent: 'Next event',
@@ -475,6 +478,14 @@ export const consoleEn: ConsoleCopy = {
     legendTask: 'Task',
     legendPayment: 'Payment',
     list: 'The list',
+    foldHebrew: 'Hebrew calendar and holidays',
+    foldHebrewSub: 'Which evenings are free for a wedding, and which are closed',
+    foldLabels: 'Colours and labels',
+    foldLabelsSub: 'The colour each event carries on the board',
+    foldSync: 'Sync and download',
+    foldSyncSub: 'The diary on a phone, in Google, or as a file',
+    foldList: 'Everything ahead, month by month',
+    foldListSub: 'Every event, task and payment in one list',
 
     feed: {
       title: 'A calendar that updates itself',
@@ -664,6 +675,7 @@ export const consoleEn: ConsoleCopy = {
   clientPage: {
     back: 'Back to events',
     details: 'Event details',
+    tools: 'Printouts and views',
     rename: 'Edit the name and details',
 
     tabs: {

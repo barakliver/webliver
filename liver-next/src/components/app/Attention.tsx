@@ -3,6 +3,7 @@ import { CalendarClock, ChevronLeft, CircleCheck, CreditCard, Target, TriangleAl
 import type { AttentionItem } from '@/lib/attention';
 import { serverCopy } from '@/lib/serverLocale';
 import { cn } from '@/lib/utils';
+import { TaskTick } from '@/components/app/TaskTick';
 
 const ICON = {
   lead:    Target,
@@ -47,11 +48,18 @@ export async function AttentionList({ items }: { items: AttentionItem[] }) {
         const urgent = it.urgency === 'now';
         return (
           <li key={it.id} className="min-w-0">
-            <Link
-              href={it.href}
-              className="group flex items-center gap-3.5 rounded-xl2 border border-line bg-card
-                         p-4 transition-colors duration-200 ease-out hover:border-accent"
+            {/* The row is a box with a link stretched over it rather than a
+                link wrapping everything, because one of the things in it is
+                now a button. A button inside a link is a control the keyboard
+                and the screen reader both have to guess about; a stretched
+                link leaves the whole row clickable and lets the tick sit on
+                top of it, which is what both of them expect. */}
+            <div
+              className="group relative flex items-center gap-3.5 rounded-xl2 border border-line bg-card
+                         p-4 transition-colors duration-200 ease-out hover:border-accent
+                         focus-within:border-accent"
             >
+              <Link href={it.href} className="flex min-w-0 flex-1 items-center gap-3.5 after:absolute after:inset-0">
               <span
                 aria-hidden
                 className={cn(
@@ -66,12 +74,22 @@ export async function AttentionList({ items }: { items: AttentionItem[] }) {
                 <span className="block truncate text-[15.5px] font-medium text-ink">{it.title}</span>
                 <span className="block truncate text-[13.5px] text-ink-soft">{it.detail}</span>
               </span>
+              </Link>
 
               {/* Urgency is a word as well as a colour, so it survives
                   greyscale and colour blindness. */}
               <span className={urgent ? 'chip-bad' : 'chip-mute'}>
                 {urgent ? c.now : c.soon}
               </span>
+
+              {/* Finished, from here. Only on his own tasks: those are one
+                  row and the tick means one thing. An overdue payment, an
+                  unanswered enquiry and an event running behind each need a
+                  different verb, and a dashboard is the wrong place to
+                  decide that money arrived. */}
+              {it.taskId && it.clientId && (
+                <TaskTick taskId={it.taskId} clientId={it.clientId} label={it.title} />
+              )}
 
               <ChevronLeft
                 size={17}
@@ -80,7 +98,7 @@ export async function AttentionList({ items }: { items: AttentionItem[] }) {
                 className="chev-onward shrink-0 text-ink-mute transition-transform duration-200
                            group-hover:-translate-x-0.5"
               />
-            </Link>
+            </div>
           </li>
         );
       })}
