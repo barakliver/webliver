@@ -698,7 +698,14 @@ export const appCopy = {
       cta: 'למסך המיתוג',
       book: 'ספר ההפעלה המלא',
     },
-    needsYou: 'מחכה להחלטה שלך',
+    /* His words, and a better name than the one it had. "מחכה להחלטה שלך"
+       describes the pile; this says whose work it is. The producer's own
+       list is above it now and this is the other half of the morning — the
+       half that belongs to somebody else's wedding. */
+    needsYou: 'להחליט ללקוחות שלך',
+    /* Under the row, so a folded pile still says how much is in it. */
+    needsYouSub: '{n} דברים מחכים',
+    needsYouOne: 'דבר אחד מחכה',
     /* On the circle beside a task in the pile, and on the plus that opens
        the form. Both are verbs: what the press does, not what the thing is. */
     markDone: 'לסמן שבוצע',

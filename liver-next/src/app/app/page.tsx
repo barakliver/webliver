@@ -15,7 +15,9 @@ import { supabaseServer } from '@/lib/supabase/server';
 import { loadAnniversaries } from '@/lib/workflow';
 import { BeginHere } from '@/components/app/BeginHere';
 import { IssueReporter } from '@/components/app/IssueReporter';
-import { MyTasks, MyTaskQuickAdd } from '@/components/app/MyTasks';
+import { MyTasks } from '@/components/app/MyTasks';
+import { Fold } from '@/components/Fold';
+import { FoldReveal } from '@/components/portal/FoldReveal';
 import { loadMyTasks } from '@/lib/producerTasksLoad';
 import { todayInZone } from '@/lib/clock';
 
@@ -57,50 +59,47 @@ export default async function OverviewPage() {
         /* The name in its own direction: "שלום barak" reordered the Latin
            name to the wrong side of the greeting without the isolate. */
         title={first ? <>{ui.overview.greeting} <bdi>{first}</bdi></> : ui.overview.greeting}
-        sub={
-          items.length
-            ? `${items.length} ${items.length === 1 ? 'דבר מחכה' : 'דברים מחכים'} להחלטה שלך`
-            : c.clearSub
-        }
+        /* The count moved down to the row that holds the pile, where it
+           belongs now, so this line does not repeat it one line above. Left
+           with the quiet morning's own sentence and nothing on a busy one.
+           It was also the last hard-coded Hebrew sentence on this screen: an
+           English producer read the greeting in English and this in
+           Hebrew. */
+        sub={items.length ? undefined : c.clearSub}
         report={<IssueReporter userId={account.id} context={ui.overview.greeting} />}
       />
 
       <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr] lg:gap-8">
         {/* The pile, first and biggest, because it is the reason to open the
             screen at all. */}
-        <section aria-labelledby="needs-you" className="min-w-0">
+        <section aria-labelledby="needs-you" className="min-w-0 space-y-4">
+          {/* First, because it is his. */}
+          <MyTasks tasks={myTasks} today={todayInZone()} />
+
           {fresh && items.length === 0 ? (
             /* The book's own first steps, on the first screen of the first
                visit, so nobody has to find the book to learn there is an
                order. The heading id stays: it is the same slot on the page,
                holding the version of "what needs you" that a beginning has. */
-            <>
+            <div>
               <h2 id="needs-you" className="eyebrow mb-3">{c.begin.eyebrow}</h2>
               <BeginHere />
-            </>
+            </div>
           ) : (
-            <>
-              {/* The plus sits on this heading and not on the panel below,
-                  because the thought "I have to call the lighting company
-                  back" arrives while reading the pile — and a thing you have
-                  to scroll to write down gets written on paper instead. */}
-              <div className="mb-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-                <h2 id="needs-you" className="eyebrow">{c.needsYou}</h2>
-                <MyTaskQuickAdd />
-              </div>
+            /* His own list first and open, the clients' pile under it behind
+               a row. It was the other way round, and he turned it over: what
+               he opens this screen to do is his own morning, and the pile is
+               everybody else's — real, and not the thing he came for. The
+               count rides on the row, so a folded pile still says how much is
+               in it and nothing goes quiet by being closed. */
+            <Fold
+              id="fold-clients"
+              title={c.needsYou}
+              sub={items.length === 1 ? c.needsYouOne : fill(c.needsYouSub, { n: items.length })}
+            >
               <AttentionList items={items} />
-            </>
+            </Fold>
           )}
-
-          {/* His own list, under the pile and not beside it. The pile is
-              things the product worked out that he should look at; this is
-              the things he decided himself, which is the other half of a
-              working morning and lived on paper until now. Under, because
-              the pile is what is new since yesterday and this is what was
-              already true. */}
-          <div className="mt-8">
-            <MyTasks tasks={myTasks} today={todayInZone()} showAdd={false} />
-          </div>
         </section>
 
         <div className="grid min-w-0 content-start gap-5">
@@ -160,6 +159,8 @@ export default async function OverviewPage() {
           </section>
         </div>
       </div>
+      {/* A link into the folded pile opens it on the way. */}
+      <FoldReveal />
       <Live sources={[{ table: 'leads' }, { table: 'tasks' }, { table: 'payments' }, { table: 'clients' }, { table: 'producer_tasks' }]} />
     </>
   );

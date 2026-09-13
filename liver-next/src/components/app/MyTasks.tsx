@@ -36,9 +36,9 @@ import {
  */
 export function MyTasks({ tasks, today, showAdd = true }: {
   tasks: ProducerTask[]; today: string;
-  /** False where the plus above the pile already carries the form. Exactly
-   *  one add form on a screen: two of them is two places to type the same
-   *  thing and one of them always ends up the wrong one. */
+  /** The plus on the header. False only where something else on the screen
+   *  already carries it — exactly one add form on a screen, or one of them
+   *  always ends up being the wrong one. */
   showAdd?: boolean;
 }) {
   const ui = useCopy();
@@ -50,17 +50,21 @@ export function MyTasks({ tasks, today, showAdd = true }: {
 
   return (
     <section className="card" aria-labelledby="my-tasks">
-      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-        <h2 id="my-tasks" className="font-display text-[22px] font-semibold text-ink">{c.title}</h2>
-        {/* Only while it is not zero. A standing "0 להיום" is a number that
-            trains people to stop reading the line it is on. */}
-        {waiting > 0 && (
-          <span className="text-[13px] font-semibold text-accent">{fill(c.waiting, { n: waiting })}</span>
-        )}
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          <h2 id="my-tasks" className="font-display text-[22px] font-semibold text-ink">{c.title}</h2>
+          {/* Only while it is not zero. A standing "0 להיום" is a number that
+              trains people to stop reading the line it is on. */}
+          {waiting > 0 && (
+            <span className="text-[13px] font-semibold text-accent">{fill(c.waiting, { n: waiting })}</span>
+          )}
+        </div>
+        {/* The plus lives on this panel's own header now. It stood on the
+            pile's heading while the pile was first; the panel is first, so
+            the control that writes a line into it belongs to it. */}
+        {showAdd && <MyTaskQuickAdd />}
       </div>
       <p className="mt-1 text-[14px] text-ink-soft">{c.sub}</p>
-
-      {showAdd && <AddForm />}
 
       {open.length === 0 ? (
         <p className="mt-5 rounded-xl2 bg-surface-100 px-4 py-3 text-[14.5px] text-ink-mute">{c.empty}</p>
