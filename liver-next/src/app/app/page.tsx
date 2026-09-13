@@ -15,6 +15,9 @@ import { supabaseServer } from '@/lib/supabase/server';
 import { loadAnniversaries } from '@/lib/workflow';
 import { BeginHere } from '@/components/app/BeginHere';
 import { IssueReporter } from '@/components/app/IssueReporter';
+import { MyTasks } from '@/components/app/MyTasks';
+import { loadMyTasks } from '@/lib/producerTasksLoad';
+import { todayInZone } from '@/lib/clock';
 
 export async function generateMetadata() {
   return { title: (await serverCopy()).nav.overview };
@@ -36,6 +39,11 @@ export default async function OverviewPage() {
      is a panel that trains people to skip that column. */
   const sb = await supabaseServer();
   const anniversaries = await loadAnniversaries(sb);
+
+  /* His own list. Read here rather than inside the component so the screen
+     arrives whole: a panel that fetches after it mounts is a panel that
+     flashes empty on every visit, and this one is read every morning. */
+  const myTasks = await loadMyTasks(sb);
 
   /* A producer with no events yet is not "all clear", they are before the
      beginning. The head count is enough to know which of the two mornings
@@ -76,6 +84,16 @@ export default async function OverviewPage() {
               <AttentionList items={items} />
             </>
           )}
+
+          {/* His own list, under the pile and not beside it. The pile is
+              things the product worked out that he should look at; this is
+              the things he decided himself, which is the other half of a
+              working morning and lived on paper until now. Under, because
+              the pile is what is new since yesterday and this is what was
+              already true. */}
+          <div className="mt-8">
+            <MyTasks tasks={myTasks} today={todayInZone()} />
+          </div>
         </section>
 
         <div className="grid min-w-0 content-start gap-5">
@@ -135,7 +153,7 @@ export default async function OverviewPage() {
           </section>
         </div>
       </div>
-      <Live sources={[{ table: 'leads' }, { table: 'tasks' }, { table: 'payments' }, { table: 'clients' }]} />
+      <Live sources={[{ table: 'leads' }, { table: 'tasks' }, { table: 'payments' }, { table: 'clients' }, { table: 'producer_tasks' }]} />
     </>
   );
 }

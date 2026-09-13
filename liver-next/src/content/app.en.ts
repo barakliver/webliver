@@ -4,7 +4,7 @@ import type {
   MeetingTemplatesCopy,
 } from './appUi.ts';
 import type {
-  PortalCopy, FilesCopy, SheetsCopy, TasksCopy, MoneyCopy, BoardCopy,
+  PortalCopy, FilesCopy, SheetsCopy, TasksCopy, MyTasksCopy, MoneyCopy, BoardCopy,
   GuestsCopy, SeatingCopy, DayCopy, ThreadCopy, PartyCopy, ContractCopy, EventFileCopy,
 } from './appUi.ts';
 
@@ -271,6 +271,33 @@ export const tasksEn: TasksCopy = {
   editCancel: 'Cancel',
   notes: 'Note',
   notesPh: 'Something worth remembering about this task',
+};
+
+export const myTasksEn: MyTasksCopy = {
+  title: 'My own list',
+  sub: 'The work that belongs to the business rather than to an event. No couple sees this.',
+  titlePh: 'What needs doing',
+  notesPh: 'A note, if there is one',
+  due: 'By when',
+  add: 'Add',
+  adding: 'Adding',
+  repeat: 'How often',
+  repeatNone: 'Once',
+  repeatDaily: 'Every day',
+  repeatWeekly: 'Every week',
+  repeatMonthly: 'Every month',
+  noDue: 'No date',
+  overdue: 'Overdue',
+  today: 'Today',
+  lastDone: 'Done {date}',
+  waiting: '{n} for today',
+  edit: 'Edit',
+  save: 'Save',
+  saving: 'Saving',
+  cancel: 'Cancel',
+  remove: 'Delete',
+  doneOnes: 'Finished',
+  empty: 'Nothing on your own list yet. This is the place for what belongs to the business rather than to one event.',
 };
 
 export const moneyEn: MoneyCopy = {

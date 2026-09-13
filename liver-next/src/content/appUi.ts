@@ -10,7 +10,7 @@ import {
 import {
   noticeCopyEn, ticketCopyEn, companionCopyEn, prepCopyEn, venueCopyEn, envelopesCopyEn, vehiclesCopyEn, confirmEn,
   meetingTemplatesCopyEn, timelineCopyEn, studioCopyEn, journalEn, circleEn,
-  portalEn, filesEn, sheetsEn, tasksEn, moneyEn, boardEn, bookEn,
+  portalEn, filesEn, sheetsEn, tasksEn, myTasksEn, moneyEn, boardEn, bookEn,
   guestsEn, seatingEn, dayEn, threadEn, partyEn, contractEn, eventFileEn,
 } from './app.en.ts';
 import {
@@ -51,6 +51,10 @@ export type PortalCopy = Wide<typeof appCopy.portal>;
 export type FilesCopy = Wide<typeof appCopy.files>;
 export type SheetsCopy = Wide<typeof appCopy.sheets>;
 export type TasksCopy = Wide<typeof appCopy.tasks>;
+/* The producer's own list, separate from the wedding tasks above because it
+   is a different list with different words: a wedding task has an owner and
+   this one cannot, and this one repeats and a wedding task cannot. */
+export type MyTasksCopy = Wide<typeof appCopy.myTasks>;
 export type BookCopy = Wide<typeof appCopy.book>;
 export type MoneyCopy = Wide<typeof appCopy.money>;
 export type BoardCopy = Wide<typeof appCopy.board>;
@@ -133,7 +137,7 @@ export type AppUi = {
      reading as a fact about the event. */
   loadTrouble: string;
   portal: PortalCopy; files: FilesCopy; sheets: SheetsCopy;
-  tasks: TasksCopy; money: MoneyCopy; board: BoardCopy; book: BookCopy;
+  tasks: TasksCopy; myTasks: MyTasksCopy; money: MoneyCopy; board: BoardCopy; book: BookCopy;
   guests: GuestsCopy; seating: SeatingCopy; day: DayCopy;
   thread: ThreadCopy; party: PartyCopy; contract: ContractCopy;
   eventFile: EventFileCopy;
@@ -168,7 +172,7 @@ export const APP_UI_HE: AppUi = {
   locale: 'he',
   loadTrouble: appCopy.loadTrouble,
   portal: appCopy.portal, files: appCopy.files, sheets: appCopy.sheets,
-  tasks: appCopy.tasks, money: appCopy.money, board: appCopy.board, book: appCopy.book,
+  tasks: appCopy.tasks, myTasks: appCopy.myTasks, money: appCopy.money, board: appCopy.board, book: appCopy.book,
   guests: guestsCopy, seating: seatingCopy, day: dayCopy,
   thread: threadCopy, party: partyCopy, contract: contractCopy,
   eventFile: eventFileCopy,
@@ -190,7 +194,7 @@ const APP_UI_EN: AppUi = {
   locale: 'en',
   loadTrouble: 'Some of this screen did not load. Things may be missing, so do not trust an empty list until you refresh.',
   portal: portalEn, files: filesEn, sheets: sheetsEn,
-  tasks: tasksEn, money: moneyEn, board: boardEn, book: bookEn,
+  tasks: tasksEn, myTasks: myTasksEn, money: moneyEn, board: boardEn, book: bookEn,
   guests: guestsEn, seating: seatingEn, day: dayEn,
   thread: threadEn, party: partyEn, contract: contractEn,
   eventFile: eventFileEn,

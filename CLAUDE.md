@@ -79,6 +79,15 @@ that has happened once.
   opens it first — the quick-jump uses it and so does `FoldReveal`, which
   catches every ordinary `#` link on the page. Without it the button on "מה
   עכשיו" scrolls nowhere in most browsers.
+- The producer has a list of his own, separate from every wedding's:
+  `producer_tasks`, drawn by `components/app/MyTasks.tsx` on `/app` under the
+  attention pile, and on the calendar for whatever carries a date. The part
+  that is not another task list is `repeat_every`: a routine is never done, so
+  ticking it writes the day and moves `due_on` to the next occurrence, and one
+  row carries "every month" for its whole life. The date arithmetic is in
+  `lib/producerTasks.ts` and is pure so it can be tested — the 31st of January
+  plus a month is the 28th of February, and a routine ticked eleven days late
+  comes back in the future rather than already overdue.
 - The ground is a pale blue, #F2F6FC, everywhere: the app, the public site and
   the guests' page alike. It was warm ivory before, and slate before that; the
   rule that settles it is that his latest instruction wins, and the reasoning

@@ -105,6 +105,7 @@ import { ThemeToggle } from '@/components/app/ThemeToggle';
 import { WorkspaceSwitcher } from '@/components/portal/WorkspaceSwitcher';
 import { PortalJump } from '@/components/portal/PortalJump';
 import { Fold } from '@/components/portal/Fold';
+import { MyTasks } from '@/components/app/MyTasks';
 import { FoldReveal } from '@/components/portal/FoldReveal';
 import { parseAgentState } from '@/lib/release';
 import { NoticeBell } from '@/components/app/NoticeBell';
@@ -235,6 +236,21 @@ export default async function DesignPage() {
 
         <Panel name="TaskList · client" note="the same list, the couple's wording">
           <TaskList clientId={client} tasks={fixtureTasks} viewer="client" viewerId={FIXTURE_VIEWER} />
+        </Panel>
+
+        {/* The producer's own list, which belongs to no wedding. Drawn with
+            one of each state the row can be in, because the interesting one
+            is the routine: its circle carries the repeat mark rather than an
+            empty tick, since pressing it moves the date on instead of
+            removing the row. */}
+        <Panel name="MyTasks · the producer's own list" note="his own work rather than any event's: late, due today, a routine that comes back, one with no date, one finished">
+          <MyTasks today="2026-09-13" tasks={[
+            { id: 'm1', title: 'לשלם מע״מ', note: '', due_on: '2026-09-01', repeat_every: 'monthly', done: false, done_on: '2026-08-15' },
+            { id: 'm2', title: 'לחזור לחברת התאורה', note: 'הם ביקשו תשובה על ההצעה', due_on: '2026-09-13', repeat_every: 'none', done: false, done_on: null },
+            { id: 'm3', title: 'לעבור על הרשימות לשבוע הבא', note: '', due_on: '2026-09-20', repeat_every: 'weekly', done: false, done_on: null },
+            { id: 'm4', title: 'לרוקן את הרכב', note: '', due_on: null, repeat_every: 'none', done: false, done_on: null },
+            { id: 'm5', title: 'לחדש את הביטוח', note: '', due_on: '2026-09-05', repeat_every: 'none', done: true, done_on: '2026-09-04' },
+          ]} />
         </Panel>
 
         <Panel name="PaymentsPanel · client" note="one paid, one overdue, one ahead">

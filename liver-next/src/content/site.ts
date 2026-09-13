@@ -1528,6 +1528,47 @@ export const appCopy = {
     notesPh: 'משהו שחשוב לזכור על המשימה הזו',
   },
 
+  /* The producer's own list, which is not any wedding's.
+     Half the work of running this business belongs to no event — המע״מ,
+     הביטוח, לחזור לחברת התאורה, לרוקן את הרכב — and until now every task in
+     the product had to belong to a couple. So that half was living on paper
+     and in the phone's reminders, which is the same drift the diary was built
+     to stop.
+     The words say "שלי" throughout rather than "של המפיק": this list is read
+     by the one person it belongs to, and nobody refers to their own to-do
+     list in the third person. */
+  myTasks: {
+    title: 'המשימות שלי',
+    sub: 'מה שצריך לעשות בעסק עצמו. אף זוג לא רואה את זה.',
+    titlePh: 'מה צריך לעשות',
+    notesPh: 'הערה, אם יש',
+    due: 'עד מתי',
+    add: 'הוספה',
+    adding: 'מוסיף',
+    /* A one-off says "פעם אחת" rather than "בלי חזרה": the list is full of
+       things that happen once, and naming the normal case by what it is
+       missing reads as a setting somebody forgot to fill in. */
+    repeat: 'כל כמה זמן',
+    repeatNone: 'פעם אחת',
+    repeatDaily: 'כל יום',
+    repeatWeekly: 'כל שבוע',
+    repeatMonthly: 'כל חודש',
+    noDue: 'בלי תאריך',
+    overdue: 'באיחור',
+    today: 'היום',
+    /* On a routine, the only record that it ever happened. */
+    lastDone: 'בוצע {date}',
+    /* The count beside the heading, and only while it is not zero. */
+    waiting: '{n} להיום',
+    edit: 'עריכה',
+    save: 'שמירה',
+    saving: 'שומר',
+    cancel: 'ביטול',
+    remove: 'מחיקה',
+    doneOnes: 'הושלמו',
+    empty: 'עוד לא רשמת לעצמך כלום כאן. זה המקום לדברים שהם של העסק ולא של אירוע מסוים.',
+  },
+
   book: {
     title: 'ספר ההפקה',
     sub: 'כל האירוע על דף אחד, להדפסה ולתיקייה.',

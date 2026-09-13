@@ -67,6 +67,9 @@ export async function getCalendar(sb: SupabaseClient): Promise<CalItem[]> {
      on no event is still on the diary. */
   const entriesQ = await sb.from('diary_entries')
     .select('id,client_id,title,on_date,at_time,note').order('at_time', { ascending: true, nullsFirst: true });
+  /* And the producer's own list, scoped by the same row policy. */
+  const mineQ = await sb.from('producer_tasks')
+    .select('id,title,note,due_on').eq('done', false).not('due_on', 'is', null);
 
   const items: CalItem[] = [];
 
@@ -126,6 +129,27 @@ export async function getCalendar(sb: SupabaseClient): Promise<CalItem[]> {
       href: `/app/calendar?day=${e.on_date}`,
       clientId: e.client_id ?? '',
       color: e.client_id ? colorOf.get(e.client_id) ?? null : null,
+    });
+  }
+
+  /* His own list, on the day each one is due.
+     A routine that is only on the overview is a routine he meets on the
+     morning it is already late; on the calendar it is visible while there is
+     still a week to do it in. Only the ones with a date — a standing
+     intention with no date has no day to be drawn on — and only the ones
+     still open, because a finished one-off is a record rather than a plan.
+     It goes to the overview, because that is where the list is. */
+  for (const t of mineQ.data ?? []) {
+    items.push({
+      id: `mine-${t.id}`,
+      kind: 'task',
+      date: t.due_on!,
+      title: t.title,
+      detail: t.note || '',
+      href: '/app',
+      clientId: '',
+      color: null,
+      done: false,
     });
   }
 
