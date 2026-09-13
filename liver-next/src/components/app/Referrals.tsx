@@ -24,8 +24,10 @@ export type ReferralRow = {
  * one. No couple, no event name and no money crosses this table, and the panel
  * says so on the screen rather than only in a migration.
  */
-export function Referrals({ rows, siteUrl, mine }: {
+export function Referrals({ rows, siteUrl, mine, bare = false }: {
   rows: ReferralRow[]; siteUrl: string; mine: string | null;
+  /** True when a fold above already names this panel. */
+  bare?: boolean;
 }) {
   const c = useCopy().referral;
   const [copied, setCopied] = useState(false);
@@ -45,9 +47,14 @@ export function Referrals({ rows, siteUrl, mine }: {
   const sorted = [...rows].sort((a, b) => b.invited_total - a.invited_total);
 
   return (
-    <section className="card">
-      <h2 className="font-display text-[17px] font-semibold text-ink">{c.title}</h2>
-      <p className="mt-1 text-[13.5px] text-ink-soft">{c.sub}</p>
+    <section className={bare ? '' : 'card'}>
+      {/* Skipped when a fold above already carries the name and the line
+          under it. Two headings saying the same thing, one inside the
+          other, is what wrapping a self-titled panel produces. */}
+      {!bare && <>
+        <h2 className="font-display text-[17px] font-semibold text-ink">{c.title}</h2>
+        <p className="mt-1 text-[13.5px] text-ink-soft">{c.sub}</p>
+      </>}
 
       {link && (
         <div className="mt-4 flex flex-wrap items-center gap-2 rounded-card-sm bg-surface-100 p-3">

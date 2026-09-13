@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { requireRoot, ROOT_ADMIN_EMAIL } from '@/lib/auth';
 import { getConsole, type Stats } from '@/lib/directory';
 import { AdminRow } from '@/components/app/AdminRow';
+import { Fold } from '@/components/Fold';
+import { FoldReveal } from '@/components/portal/FoldReveal';
 
 import { ticketCopy } from '@/content/site';
 import { serverCopy } from '@/lib/serverLocale';
@@ -47,7 +49,8 @@ function Band({ title, rows, href }: {
 }
 
 async function Telemetry({ s }: { s: Stats }) {
-  const c = (await serverCopy()).admin;
+  const ui = await serverCopy();
+  const c = ui.admin;
   return (
     <section>
       <h2 className="eyebrow mb-3">{c.stats.title}</h2>
@@ -83,7 +86,8 @@ async function Telemetry({ s }: { s: Stats }) {
 }
 
 export default async function AdminPage() {
-  const c = (await serverCopy()).admin;
+  const ui = await serverCopy();
+  const c = ui.admin;
   const account = await requireRoot();
   const { stats, producers, flags } = await getConsole(ROOT_ADMIN_EMAIL);
 
@@ -108,13 +112,21 @@ export default async function AdminPage() {
         report={<IssueReporter userId={account.id} context={c.title} />}
       />
 
-      <div className="space-y-8">
-        {stats ? <Telemetry s={stats} /> : <Empty text={c.statsFailed} />}
+      {/* Seven sections, each of them a whole screen's worth, and the page is
+          read for one thing at a time — almost always whether a release went
+          up. So two things are open and the rest are rows that say what is
+          behind them.
 
+          The release card is first now, and it was sixth. It is the answer to
+          the question this screen gets asked most, and it was under four
+          blocks of numbers, a list of fifteen accounts and two panels. */}
+      <div className="space-y-3">
         {/* Ahead of everything, because an account waiting for approval is the
-            only thing on this screen that is costing somebody time right now. */}
+            only thing on this screen that is costing somebody time right now.
+            Never folded: a queue behind a closed row is a queue nobody
+            empties. */}
         {waiting.length > 0 && (
-          <section>
+          <section className="mb-5">
             <h2 className="eyebrow mb-3">{c.waiting} · {waiting.length}</h2>
             <ul className="list-none space-y-3 p-0">
               {waiting.map((p) => <AdminRow key={p.id} p={p} />)}
@@ -122,9 +134,19 @@ export default async function AdminPage() {
           </section>
         )}
 
-        <section id="producers" className="scroll-mt-8">
-          <h2 className="eyebrow mb-1">{c.board.title}</h2>
-          <p className="mb-3 text-[13.5px] text-ink-soft">{c.board.sub}</p>
+        <div className="mb-5">
+          <ReleaseState state={release} />
+        </div>
+
+        {stats ? (
+          <Fold id="fold-stats" title={c.stats.title} sub={c.stats.sub}>
+            <Telemetry s={stats} />
+          </Fold>
+        ) : <Empty text={c.statsFailed} />}
+
+        {/* The id stays on the fold, so the arrow on the producers figure
+            still lands here — and FoldReveal below opens it on the way. */}
+        <Fold id="producers" title={c.board.title} sub={c.board.sub}>
           {rest.length === 0 ? (
             <Empty text={c.empty} />
           ) : (
@@ -132,39 +154,38 @@ export default async function AdminPage() {
               {rest.map((p) => <AdminRow key={p.id} p={p} />)}
             </ul>
           )}
-        </section>
+        </Fold>
 
-        <Referrals rows={referrals} siteUrl={publicEnv.siteUrl} mine={mine} />
+        <Fold id="fold-referrals" title={ui.referral.title} sub={ui.referral.sub}>
+          <Referrals rows={referrals} siteUrl={publicEnv.siteUrl} mine={mine} bare />
+        </Fold>
 
         {/* What people reported from inside the platform. Its own screen,
             because a list of bugs under a list of producers is two lists. */}
-        <section className="card flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h2 className="inline-flex items-center gap-2 font-display text-[17px] font-semibold text-ink">
-              <LifeBuoy size={17} strokeWidth={1.5} aria-hidden />
-              {ticketCopy.admin.title}
-            </h2>
-            <p className="mt-1 text-[13.5px] text-ink-soft">{ticketCopy.admin.sub}</p>
-          </div>
-          <Link href="/app/admin/tickets" className="btn-ghost min-h-[38px] px-3.5 text-[13.5px]">{ticketCopy.admin.title}</Link>
-        </section>
+        <Fold id="fold-tickets" title={ticketCopy.admin.title} sub={ticketCopy.admin.sub}>
+          <Link href="/app/admin/tickets" className="btn-ghost inline-flex min-h-[44px] items-center gap-2 px-3.5 text-[14px]">
+            <LifeBuoy size={17} strokeWidth={1.5} aria-hidden />
+            {ticketCopy.admin.title}
+          </Link>
+        </Fold>
 
-        <FeatureFlags flags={flags} />
-
-        <ReleaseState state={release} />
+        {flags.length > 0 && (
+          <Fold id="fold-flags" title={ui.admin.flags.title} sub={ui.admin.flags.sub}>
+            <FeatureFlags flags={flags} bare />
+          </Fold>
+        )}
 
         {/* The screen says out loud what it cannot show. An empty list where a
             list used to be reads as a bug; a paragraph reads as a decision. */}
-        <section className="card">
-          <h2 className="flex items-center gap-2 font-display text-[17px] font-semibold text-ink">
-            <Lock size={16} aria-hidden strokeWidth={1.5} />
-            {c.privacy.title}
-          </h2>
-          <ul className="mt-2 list-none space-y-1.5 p-0 text-[14px] text-ink-soft">
+        <Fold id="fold-privacy" title={c.privacy.title} sub={c.privacy.sub}>
+          <ul className="list-none space-y-1.5 p-0 text-[14px] text-ink-soft">
             {c.privacy.body.map((line) => <li key={line}>{line}</li>)}
           </ul>
-        </section>
+        </Fold>
       </div>
+
+      {/* The arrow on the producers figure points into a folded section. */}
+      <FoldReveal />
 
       <Live sources={[{ table: 'producers' }]} />
     </>

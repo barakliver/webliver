@@ -1116,6 +1116,7 @@ export const appCopy = {
     /* The screen says out loud what it cannot show. An empty list where a
        list used to be reads as a bug; a sentence reads as a decision. */
     privacy: {
+      sub: 'למה יש כאן מספרים ולא שמות',
       title: 'מה המסך הזה לא מראה',
       body: [
         'אירועים, אורחים, תקציבים, חוזים והודעות של מפיקים אחרים אינם נגישים מכאן, וגם לא דרך שאילתה ישירה.',
@@ -1125,6 +1126,10 @@ export const appCopy = {
     },
 
     stats: {
+      /* Under the fold that holds the four bands. The page is read for one
+         thing at a time — usually whether a release went up — and four
+         blocks of numbers before that is four blocks in the way. */
+      sub: 'משתמשים, מפיקים, זוגות ואירועים, במספרים',
       title: 'תמונת מצב',
       users: 'משתמשים',
       active30: 'פעילים ב-30 יום',

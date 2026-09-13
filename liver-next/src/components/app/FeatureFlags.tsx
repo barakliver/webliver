@@ -22,13 +22,16 @@ import { cn } from '@/lib/utils';
  * somebody is reading it, and a governance screen that lies about what is
  * switched on is worse than no screen.
  */
-export function FeatureFlags({ flags }: { flags: Flag[] }) {
+export function FeatureFlags({ flags, bare = false }: { flags: Flag[]; bare?: boolean }) {
   const c = useCopy().admin.flags;
   if (flags.length === 0) return null;
   return (
     <section>
-      <h2 className="eyebrow mb-1">{c.title}</h2>
-      <p className="mb-3 text-[13.5px] text-ink-soft">{c.sub}</p>
+      {/* Skipped when a fold already carries both. */}
+      {!bare && <>
+        <h2 className="eyebrow mb-1">{c.title}</h2>
+        <p className="mb-3 text-[13.5px] text-ink-soft">{c.sub}</p>
+      </>}
 
       <div className="card">
         <ul className="list-none space-y-1 p-0">

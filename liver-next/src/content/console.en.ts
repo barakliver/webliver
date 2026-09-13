@@ -380,6 +380,7 @@ export const consoleEn: ConsoleCopy = {
     },
 
     privacy: {
+      sub: 'Why there are numbers here and not names',
       title: 'What this screen does not show',
       body: [
         'Other producers\' events, guests, budgets, contracts and messages are not reachable from here, nor through a direct query.',
@@ -389,6 +390,7 @@ export const consoleEn: ConsoleCopy = {
     },
 
     stats: {
+      sub: 'Users, producers, couples and events, in numbers',
       title: 'Snapshot',
       users: 'Users',
       active30: 'Active in 30 days',
