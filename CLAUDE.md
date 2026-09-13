@@ -117,9 +117,12 @@ that has happened once.
   every deploy with ON_ERROR_STOP, so one old row that refuses one constraint
   does not fail once — it fails every five minutes forever and takes the
   thousands of lines after it with it. That is what stopped 2.6 and 2.7:
-  `meeting_kind` on `meeting_logs`, refused by a log older than the
-  constraint, and the whole suite stayed green because a database built from
-  these files cannot contain such a row. `npm run schema` now plants one.
+  0068 adds `meeting_kind` without 'note' and 0080 adds it with, so a blank
+  page he wrote on is refused by the earlier line and allowed by the later
+  one — which never runs, eleven hundred lines down. The data was never
+  wrong. The whole suite stayed green because a database built from these
+  files replays them in the same order and can never hold a row from the
+  future; `npm run schema` now plants one.
 - `supabase/setup.sql` builds a database from nothing.
   `supabase/sync.sql` brings an existing one up to date and cannot touch a row.
   Both are generated — edit migrations, then run `build-setup-sql.mjs`.

@@ -15,12 +15,18 @@
 --  that — "נכשל לפני שהגיע לקוד" — and it was right; I read it as a guess
 --  rather than as the answer it was.
 --
---  The row is older than the constraint. 0068 and 0080 each dropped and
---  re-added `meeting_kind` to widen the list of kinds, and on this database
---  neither add ever succeeded: something in `meeting_logs` carries a kind
---  outside the list, so every attempt since has failed on the same row, and
---  will keep failing every five minutes forever. A levelling file that can
---  be wedged permanently by one row is not a levelling file.
+--  And the data was never wrong. 0068 widened the list of kinds to seven and
+--  0080 widened it to eight by adding 'note', the blank page somebody writes
+--  on during a meeting. He has written on one. sync.sql replays both, in
+--  order, so 0068's narrower list meets a row that only 0080's list allows —
+--  and 0080, eleven hundred lines further down, never runs. Every statement
+--  between them is skipped too, which is why a release stopped reaching the
+--  build at all.
+--
+--  So the row is not a mistake to correct. It is a perfectly good meeting
+--  log, refused by a rule that a later line of the same file repeals. A
+--  levelling file that replays its own history has to survive its own
+--  history.
 --
 --  NOT VALID is the way out, and it is not a shrug. Postgres applies it to
 --  everything written from now on and simply does not go back over what is
