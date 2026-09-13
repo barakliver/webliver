@@ -4,7 +4,7 @@ import { Rocket } from 'lucide-react';
 import { useCopy } from '@/components/app/CopyProvider';
 import { Ltr } from '@/components/Ltr';
 import { fill } from '@/lib/copyText';
-import { servesLive, shortSha, type ReleaseState as State } from '@/lib/release';
+import { servesLive, shortSha, stuckOn, type ReleaseState as State } from '@/lib/release';
 import { VERSION } from '@/lib/version';
 
 /**
@@ -24,6 +24,7 @@ import { VERSION } from '@/lib/version';
 export function ReleaseState({ state }: { state: State }) {
   const c = useCopy().admin.release;
   const serving = servesLive(state);
+  const stuck = stuckOn(state);
   const result = {
     'ok': { chip: 'chip-ok', text: c.ok },
     'build-failed': { chip: 'chip-warn', text: c.buildFailed },
@@ -62,9 +63,22 @@ export function ReleaseState({ state }: { state: State }) {
             <Row label={c.previous} version={state.previousVersion} value={shortSha(state.previous) || '·'} />
           </dl>
 
-          {state.gaveUp && (
+          {/* What it last reached for, and which go that was. The card knew
+              this all along and never said it, which is the difference
+              between "a release is not live" and "the agent has not seen the
+              release at all" — two very different mornings, and the only
+              way to tell them apart was a log on the machine. */}
+          {state.tried && (
+            <p className="mt-3 text-[13.5px] text-ink-soft">
+              {c.attempt}{' '}
+              <span className="font-mono text-ink"><Ltr>{shortSha(state.tried.tag)}</Ltr></span>
+              {' · '}{fill(c.attemptNo, { n: state.tried.n })}
+            </p>
+          )}
+
+          {stuck && (
             <p role="alert" className="mt-4 rounded-control border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
-              {fill(c.gaveUp, { tag: shortSha(state.gaveUp) })}
+              {fill(c.gaveUp, { tag: shortSha(stuck) })}
             </p>
           )}
           {serving === false && (

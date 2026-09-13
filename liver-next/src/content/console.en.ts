@@ -368,6 +368,8 @@ export const consoleEn: ConsoleCopy = {
       failed: 'Failed before reaching the code',
       unknown: 'No result recorded yet',
       gaveUp: 'Release {tag} failed twice and the agent has stopped trying it. A fix and a new release wake it up.',
+      attempt: 'Last attempt:',
+      attemptNo: 'go {n}',
       mismatch: 'This screen is running a different version from the one the agent recorded as live.',
       none: 'No release agent has written anything on this machine.',
       log: 'The last lines of the agent\'s log',

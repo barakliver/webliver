@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { parseAgentState, redact, servesLive, shortSha } from '../release.ts';
+import { parseAgentState, redact, servesLive, shortSha, stuckOn } from '../release.ts';
 
 const LOG_OK = [
   '2026-09-11T09:02:11Z  release c72be07aa (c72be07) is not live yet',
@@ -107,4 +107,36 @@ test('a connection string in the log never reaches the screen', () => {
 test('seven characters, and nothing from nothing', () => {
   assert.equal(shortSha('c72be07aa1234'), 'c72be07');
   assert.equal(shortSha(null), '');
+});
+
+/* The state the live droplet was actually in, and the reason this exists.
+   The give-up file named a commit from two days and two good releases back,
+   and the console printed it in red above three rows saying something newer
+   was live. Both were read out of the same directory; only one was true. */
+test('a give-up the agent has moved past is not shown as a give-up', () => {
+  const s = parseAgentState({
+    deployed: '63a8445772e1', gaveUp: 'c2477444f90e', tried: '7b2819b16aa3 1', log: LOG_OK,
+  }, '63a8445');
+  assert.equal(s.gaveUp, 'c2477444f90e');
+  assert.equal(stuckOn(s), null);
+});
+
+test('and one it is still sitting on is', () => {
+  const s = parseAgentState({
+    deployed: '63a8445772e1', gaveUp: 'c2477444f90e', tried: 'c2477444f90e 2', log: LOG_OK,
+  }, '63a8445');
+  assert.equal(stuckOn(s), 'c2477444f90e');
+});
+
+/* No record of an attempt rules nothing out, and a false alarm on this card
+   costs a look while a missed one cost five days. */
+test('with no attempt recorded, the warning stands', () => {
+  const s = parseAgentState({ gaveUp: 'c2477444f90e', log: LOG_OK }, 'dev');
+  assert.equal(stuckOn(s), 'c2477444f90e');
+  assert.equal(stuckOn(parseAgentState({ log: LOG_OK }, 'dev')), null);
+});
+
+test('the attempt is read as a commit and a count', () => {
+  const s = parseAgentState({ tried: '7b2819b16aa3 2', log: LOG_OK }, 'dev');
+  assert.deepEqual(s.tried, { tag: '7b2819b16aa3', n: 2 });
 });

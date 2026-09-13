@@ -392,6 +392,13 @@ if REF="$TARGET" bash "$REPO/deploy-next.sh" >>"$LOG" 2>&1; then
   fi
   printf '%s' "$TAG" > "$DEPLOYED"
   if [ -n "$NEW_V" ]; then printf '%s' "$NEW_V" > "$DEPLOYED_V"; else rm -f "$DEPLOYED_V"; fi
+  # A commit it gave up on before something newer went live is history, not
+  # news. The file outlived its subject by two days and two good releases,
+  # and the console went on printing "the agent has stopped trying c247744"
+  # in red above a card that also said a later release was live — which is
+  # the console lying on the one screen built so that a failed release is
+  # never silent. Cleared on the way past.
+  rm -f "$GAVEUP"
   RESULT="ok"
 else
   RC=$?

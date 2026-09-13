@@ -1097,6 +1097,21 @@ export default async function DesignPage() {
                 '2026-09-11T08:51:10Z  giving up on 426f79cbb41 after 2 attempts. It will not be tried again.',
               ].join('\n'),
             }, '5bc5e49')} />
+            {/* The state the live machine was actually in when this was
+                written: a give-up file naming a commit from two days and two
+                good releases back, still printed in red above three rows
+                saying something newer was live. The attempt line is what
+                separates "the release failed" from "the agent never saw the
+                release", and the card could answer that all along. */}
+            <ReleaseState state={parseAgentState({
+              deployed: '63a8445772e', deployedVersion: '2.5',
+              previous: '9970e28aa41', previousVersion: '2.4',
+              gaveUp: 'c2477444f90', tried: '7b2819b16aa 1',
+              log: [
+                '2026-09-13T09:29:41Z  deploying 7b2819b16aa (attempt 1 of 2)',
+                '2026-09-13T09:34:37Z  the build did not finish; nothing was swapped in',
+              ].join('\n'),
+            }, '63a8445')} />
             <ReleaseState state={parseAgentState(null, 'dev')} />
           </div>
         </Panel>

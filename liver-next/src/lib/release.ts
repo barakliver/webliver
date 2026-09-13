@@ -123,6 +123,30 @@ export function parseAgentState(files: AgentFiles | null, running: string, keep 
   };
 }
 
+/**
+ * The commit the agent is actually stuck on, or null when it is not stuck.
+ *
+ * The give-up marker is a file, and a file outlives the situation that wrote
+ * it. On the live machine it named a commit from two days and two successful
+ * releases ago, and the console printed "the agent has stopped trying this"
+ * in red above three rows saying a later release was live. Both were read
+ * from the same directory; only one of them was still true.
+ *
+ * The agent clears the marker on a success now, so this is the reading for
+ * state written before it learned to. The last attempt is the tell: if the
+ * agent has since tried a different commit, it is not waiting on this one.
+ * When there is no record of an attempt at all, nothing can be ruled out and
+ * the warning stands — a false alarm on this card costs a look, and a missed
+ * one costs five days.
+ */
+export function stuckOn(s: ReleaseState): string | null {
+  if (!s.gaveUp) return null;
+  if (!s.tried) return s.gaveUp;
+  const a = shortSha(s.gaveUp);
+  const b = shortSha(s.tried.tag);
+  return a === b ? s.gaveUp : null;
+}
+
 /** Is the process serving the commit the agent believes is live? Unknown
  *  in development and wherever the agent has not written anything yet. */
 export function servesLive(s: ReleaseState): boolean | null {

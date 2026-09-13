@@ -1079,7 +1079,7 @@ export const appCopy = {
        so the console now reads its files and says what happened in words. */
     release: {
       title: 'גרסה ושחרור',
-      sub: 'מה שסוכן השחרור בשרת רשם. אם רלוז לא עלה, זה המקום שאומר את זה.',
+      sub: 'מה שסוכן השחרור בשרת רשם. אם שחרור לא עלה, זה המקום שאומר את זה.',
       running: 'רץ עכשיו',
       live: 'שוחרר לאחרונה',
       previous: 'הגרסה שלפניו',
@@ -1092,7 +1092,16 @@ export const appCopy = {
       broken: 'נכשל, וגם החזרה נכשלה. צריך אדם',
       failed: 'נכשל לפני שהגיע לקוד',
       unknown: 'עוד לא נרשמה תוצאה',
-      gaveUp: 'הרלוז {tag} נכשל פעמיים והסוכן הפסיק לנסות אותו. תיקון ורלוז חדש יעירו אותו.',
+      /* "רלוז" was here twice, in this line and in the sub above, and it is
+         not a word: it is "release" spelled in Hebrew letters, on his own
+         console, in the one sentence that has to be understood in a hurry.
+         The card's own title already says שחרור. */
+      gaveUp: 'השחרור {tag} נכשל פעמיים והסוכן הפסיק לנסות אותו. תיקון ושחרור חדש יעירו אותו.',
+      /* What the agent last reached for. The difference between a release
+         that failed and a release the agent never saw, which the card could
+         answer all along and did not. */
+      attempt: 'הניסיון האחרון:',
+      attemptNo: 'ניסיון {n}',
       mismatch: 'המסך הזה רץ על גרסה שונה ממה שהסוכן רשם כחיה.',
       none: 'אין רישום של סוכן שחרור במכונה הזו.',
       log: 'השורות האחרונות ביומן הסוכן',
