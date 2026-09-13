@@ -17,6 +17,7 @@ import { GuestSiteLink } from '@/components/app/GuestSiteLink';
 import { PortalVendors } from '@/components/app/PortalVendors';
 import { PortalMeetings } from '@/components/app/PortalMeetings';
 import { QuoteCompare } from '@/components/app/QuoteCompare';
+import { Fold } from '@/components/portal/Fold';
 import { Ltr } from '@/components/Ltr';
 import type { PortalData, Workspace } from '@/lib/portal';
 import { nextAction, upcoming, type TaskFact } from '@/lib/nextAction';
@@ -30,6 +31,28 @@ import { todayInZone } from '@/lib/clock';
 export type PortalExtra = { contracts: number; venues: number; files: number; envelopes: number; vehicles: number };
 const NO_EXTRA: PortalExtra = { contracts: 0, venues: 0, files: 0, envelopes: 0, vehicles: 0 };
 
+/** The panels the portal page loads for itself, handed back here to be filed
+ *  in the right drawer.
+ *
+ *  They used to be printed under this component, which meant the order of the
+ *  couple's screen was decided in two files: the suppliers were here and the
+ *  supplier desk was there, with the contracts between them. One component
+ *  owns the order now. Each one is null when its module is closed, and a
+ *  drawer with nothing in it is not drawn. */
+export type PortalSlots = {
+  vendorhq?: React.ReactNode;
+  contracts?: React.ReactNode;
+  venues?: React.ReactNode;
+  studio?: React.ReactNode;
+  files?: React.ReactNode;
+  lists?: React.ReactNode;
+  prep?: React.ReactNode;
+  envelopes?: React.ReactNode;
+  transport?: React.ReactNode;
+  thread?: React.ReactNode;
+  calendar?: React.ReactNode;
+};
+
 /** One event, as the couple sees it.
  *
  *  This is the couple's screen and the producer's preview of it, the same
@@ -38,9 +61,10 @@ const NO_EXTRA: PortalExtra = { contracts: 0, venues: 0, files: 0, envelopes: 0,
  *  is only nearly right is worse than none: it invites decisions about what
  *  the couple can see, based on a screen they never saw. */
 export function PortalWorkspace({
-  workspace, data, viewerId, ui, currentEventId, extra = NO_EXTRA,
+  workspace, data, viewerId, ui, currentEventId, extra = NO_EXTRA, slots = {},
 }: {
-  workspace: Workspace; data: PortalData; viewerId: string; ui: AppUi; currentEventId?: string; extra?: PortalExtra;
+  workspace: Workspace; data: PortalData; viewerId: string; ui: AppUi; currentEventId?: string;
+  extra?: PortalExtra; slots?: PortalSlots;
 }) {
   const c = workspace;
   const dateFmt = weekdayDate(ui.locale);
@@ -171,77 +195,136 @@ export function PortalWorkspace({
 
       <PortalSummary rows={rows} label={ui.portal.summary} />
 
-      <div className="mt-10 space-y-10">
-        {/* The link they paste into the family group, once the producer has
-            switched the page on. Above the tasks because sending it is
-            usually the first thing the couple wants to do. */}
-        {c.guest_site_on && c.guest_token && <GuestSiteLink token={c.guest_token} />}
+      {/* The drawers. Tighter between them than inside them: closed, they
+          should read as one short list rather than as six more sections. A
+          drawer whose modules are all closed to this couple is not drawn at
+          all — the same rule every panel here already followed, one level up.
+
+          Nothing above this line is a list. The countdown, the five opening
+          questions, the one thing to do next and four figures: that is the
+          whole of what a couple is shown at rest, and all of it fits on a
+          phone without scrolling past their own names. The lists — theirs,
+          the money's, the guests' — are behind rows they can read.
+
+          Their own tasks are the first drawer and not an exception to it. The
+          card above already names the next one, with its date and the two
+          after it; the panel underneath is where that gets done, and a list
+          of sixteen open tasks is the single heaviest thing on this screen to
+          arrive to. */}
+      <div className="mt-10 space-y-3">
         {can('tasks') && (
-          <div id="tasks" data-jump={ui.portal.rowTasks} data-jump-group="me" className="scroll-mt-28"><TaskList clientId={c.id} tasks={filteredTasks} viewer="client" viewerId={viewerId} /></div>
+          <Fold id="fold-mine" title={ui.portal.jumpMine} sub={ui.portal.foldMineSub}>
+            <div id="tasks" data-jump={ui.portal.rowTasks} data-jump-group="me" className="scroll-mt-28"><TaskList clientId={c.id} tasks={filteredTasks} viewer="client" viewerId={viewerId} /></div>
+          </Fold>
         )}
-        {/* The working shown before the lists, and only once there is a
-            budget to show: without lines the five figures are five zeros. */}
-        {can('budget') && budget.length > 0 && (
-          <FinanceSummary
-            clientId={c.id} viewer="client"
-            target={c.budget_target === null || c.budget_target === undefined ? null : Number(c.budget_target)}
-            items={budget} payments={data.paymentsFor(c.id)}
-          />
-        )}
+
         {/* Gated modules. A closed one is absent rather than greyed out: a
             locked panel advertising something the couple was not sold is a
             sales screen wearing the clothes of a tool. Money is one door for
             both the payments and the budget. */}
         {can('budget') && (
-          <div id="payments" data-jump={ui.portal.rowPayments} data-jump-group="money" className="scroll-mt-28"><PaymentsPanel clientId={c.id} payments={payments} viewer="client" /></div>
+          <Fold id="fold-money" title={ui.portal.jumpMoney} sub={ui.portal.foldMoneySub}>
+            {/* The working shown before the lists, and only once there is a
+                budget to show: without lines the five figures are five
+                zeros. */}
+            {budget.length > 0 && (
+              <FinanceSummary
+                clientId={c.id} viewer="client"
+                target={c.budget_target === null || c.budget_target === undefined ? null : Number(c.budget_target)}
+                items={budget} payments={data.paymentsFor(c.id)}
+              />
+            )}
+            <div id="payments" data-jump={ui.portal.rowPayments} data-jump-group="money" className="scroll-mt-28"><PaymentsPanel clientId={c.id} payments={payments} viewer="client" /></div>
+            <div id="budget" data-jump={ui.portal.rowBudget} data-jump-group="money" className="scroll-mt-28 space-y-10">
+              <BudgetTracker
+                items={budget}
+                payments={payments}
+                plan={c.budget_plan}
+                target={c.budget_target === null || c.budget_target === undefined ? null : Number(c.budget_target)}
+              />
+              <BudgetPanel clientId={c.id} items={budget} viewer="client" visible />
+            </div>
+          </Fold>
         )}
-        {can('budget') && (
-          <div id="budget" data-jump={ui.portal.rowBudget} data-jump-group="money" className="scroll-mt-28 space-y-10">
-            <BudgetTracker
-              items={budget}
-              payments={payments}
-              plan={c.budget_plan}
-              target={c.budget_target === null || c.budget_target === undefined ? null : Number(c.budget_target)}
-            />
-            <BudgetPanel clientId={c.id} items={budget} viewer="client" visible />
-          </div>
+
+        {(can('guests') || can('seating') || (c.guest_site_on && c.guest_token)) && (
+          <Fold id="fold-guests" title={ui.portal.jumpGuests} sub={ui.portal.foldGuestsSub}>
+            {/* The link they paste into the family group, once the producer
+                has switched the page on. First in this drawer because
+                sending it is what a couple comes here to do before anybody
+                has replied to anything. */}
+            {c.guest_site_on && c.guest_token && <GuestSiteLink token={c.guest_token} />}
+            {can('guests') && (
+              <div id="guests" data-jump={ui.portal.rowRsvp} data-jump-group="guests" className="scroll-mt-28"><GuestList clientId={c.id} guests={guests} /></div>
+            )}
+            {can('seating') && (
+              <div id="seating" data-jump={ui.portal.rowSeating} data-jump-group="guests" className="scroll-mt-28"><SeatingPlan clientId={c.id} tables={data.tablesFor(c.id)} guests={data.guestsFor(c.id) as never} /></div>
+            )}
+          </Fold>
         )}
-        {can('guests') && (
-          <div id="guests" data-jump={ui.portal.rowRsvp} data-jump-group="guests" className="scroll-mt-28"><GuestList clientId={c.id} guests={guests} /></div>
+
+        {/* Everything about who is hired: the suppliers, the desk the
+            producer works them from, what was signed, the halls still being
+            compared and what was agreed in a meeting. They were spread over
+            two files and five places on the screen; a couple looking for
+            "the photographer" was never going to guess which. */}
+        {(can('vendors') || can('meetings') || slots.vendorhq || slots.contracts || slots.venues) && (
+          <Fold id="fold-vendors" title={ui.portal.jumpVendors} sub={ui.portal.foldVendorsSub}>
+            {can('vendors') && (
+              <div id="vendors" data-jump={ui.portal.rowVendors} data-jump-group="vendors" className="scroll-mt-28 space-y-10">
+                <PortalVendors vendors={data.vendorsFor(c.id)} c={ui.portal} locale={ui.locale} />
+                {/* The quotes, the same table the producer reads, because there
+                    is nothing to negotiate between them about what was quoted. */}
+                <QuoteCompare
+                  clientId={c.id} viewer="client"
+                  vendors={data.vendorsFor(c.id)}
+                  lines={budget.map((b) => ({ event_vendor_id: b.event_vendor_id ?? null, estimate: b.estimate, agreed: b.agreed }))}
+                />
+              </div>
+            )}
+            {slots.vendorhq}
+            {slots.contracts}
+            {slots.venues}
+            {/* What was agreed, as the producer chose to share it. After the
+                suppliers because a meeting is usually about one of them. */}
+            {can('meetings') && (
+              <div id="meetings" data-jump={ui.portal.rowMeetings} data-jump-group="vendors" className="scroll-mt-28"><PortalMeetings meetings={data.meetingsFor(c.id)} ui={ui} /></div>
+            )}
+          </Fold>
         )}
-        {can('seating') && (
-          <div id="seating" data-jump={ui.portal.rowSeating} data-jump-group="guests" className="scroll-mt-28"><SeatingPlan clientId={c.id} tables={data.tablesFor(c.id)} guests={data.guestsFor(c.id) as never} /></div>
+
+        {/* The day itself and everything that dresses it: the hour-by-hour,
+            the look, the songs, the faces, the cars, the envelopes — and the
+            calendar that carries the dates onto their phones. */}
+        {(can('runsheet') || can('moodboard') || slots.studio || slots.files || slots.lists
+          || slots.prep || slots.envelopes || slots.transport || slots.calendar) && (
+          <Fold id="fold-day" title={ui.portal.jumpDay} sub={ui.portal.foldDaySub}>
+            {can('runsheet') && (
+              <div id="runsheet" data-jump={ui.portal.rowRunsheet} data-jump-group="day" className="scroll-mt-28"><DaySchedule
+                clientId={c.id}
+                items={data.dayFor(c.id)}
+                labelA={c.track_a_label}
+                labelB={c.track_b_label}
+                viewer="client"
+              /></div>
+            )}
+            {can('moodboard') && (
+              <div id="board" data-jump={ui.portal.rowBoard} data-jump-group="day" className="scroll-mt-28"><WinningBoard clientId={c.id} images={data.boardFor(c.id)} viewer="client" /></div>
+            )}
+            {slots.studio}
+            {slots.lists}
+            {slots.prep}
+            {slots.envelopes}
+            {slots.transport}
+            {slots.files}
+            {slots.calendar}
+          </Fold>
         )}
-        {/* Who is hired. The same rows the producer's suppliers tab shows,
-            and where a DJ ticked off the checklist above turns up. */}
-        {can('vendors') && (
-          <div id="vendors" data-jump={ui.portal.rowVendors} data-jump-group="event" className="scroll-mt-28 space-y-10">
-            <PortalVendors vendors={data.vendorsFor(c.id)} c={ui.portal} locale={ui.locale} />
-            {/* The quotes, the same table the producer reads, because there
-                is nothing to negotiate between them about what was quoted. */}
-            <QuoteCompare
-              clientId={c.id} viewer="client"
-              vendors={data.vendorsFor(c.id)}
-              lines={budget.map((b) => ({ event_vendor_id: b.event_vendor_id ?? null, estimate: b.estimate, agreed: b.agreed }))}
-            />
-          </div>
-        )}
-        {/* What was agreed, as the producer chose to share it. After the
-            suppliers because a meeting is usually about one of them. */}
-        {can('meetings') && (
-          <div id="meetings" data-jump={ui.portal.rowMeetings} data-jump-group="event" className="scroll-mt-28"><PortalMeetings meetings={data.meetingsFor(c.id)} ui={ui} /></div>
-        )}
-        {can('runsheet') && (
-          <div id="runsheet" data-jump={ui.portal.rowRunsheet} data-jump-group="event" className="scroll-mt-28"><DaySchedule
-            clientId={c.id}
-            items={data.dayFor(c.id)}
-            labelA={c.track_a_label}
-            labelB={c.track_b_label}
-            viewer="client"
-          /></div>
-        )}
-        {can('moodboard') && (
-          <div id="board" data-jump={ui.portal.rowBoard} data-jump-group="event" className="scroll-mt-28"><WinningBoard clientId={c.id} images={data.boardFor(c.id)} viewer="client" /></div>
+
+        {slots.thread && (
+          <Fold id="fold-talk" title={ui.portal.jumpTalk} sub={ui.portal.foldTalkSub}>
+            {slots.thread}
+          </Fold>
         )}
       </div>
     </div>

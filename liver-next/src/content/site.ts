@@ -1873,6 +1873,26 @@ export const appCopy = {
     jumpMoney: 'כסף',
     jumpGuests: 'אורחים',
     jumpEvent: 'האירוע',
+    /* The five drawers the screen folds into, and the one line under each
+       that says what is inside it.
+       Nothing was taken off this screen and nothing is drawn at rest either.
+       Twenty panels stacked open is everything about a wedding shown at once
+       to two people who came to look at one thing, and the feeling that
+       produces is not "how thorough", it is "how much is left". So the
+       countdown, the one thing to do next, the four figures and their own
+       tasks stay open, and the rest waits behind a row that can be read
+       without being opened. The subtitles do that work: a drawer somebody has
+       to open to find out whether it is worth opening is not folded, it is
+       hidden. */
+    jumpVendors: 'ספקים',
+    jumpDay: 'היום עצמו',
+    jumpTalk: 'הודעות',
+    foldMineSub: 'המשימות שלכם, והוספה של חדשה',
+    foldMoneySub: 'תשלומים, תקציב ומה שכבר שולם',
+    foldGuestsSub: 'מי מגיע, ואיפה כולם יושבים',
+    foldVendorsSub: 'מי מפיק אתכם, ההסכמים והסיכומים',
+    foldDaySub: 'הלו״ז, ההשראה והפרטים הקטנים',
+    foldTalkSub: 'שיחה עם ההפקה',
     /* Three panels that have no row in the summary strip and still need a
        name in the list. */
     jumpVendorHq: 'מטה הספקים',

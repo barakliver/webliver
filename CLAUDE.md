@@ -66,6 +66,19 @@ that has happened once.
   second. The agent reads that file out of the commit it deploys and writes
   the number beside it, so the card on `/app/admin` says "ליור 2.1" with the
   commit underneath in small print. Talk to him in numbers, not hashes.
+- The couple's screen shows almost nothing at rest and has lost nothing. Open
+  on arrival: the countdown, the five opening questions, the one thing to do
+  next, and four figures. Everything else — their tasks included — is behind
+  six rows that say what is inside them, in `components/portal/Fold.tsx`.
+  Closed it is 1,871px on a phone and open it is 15,746, which is the whole
+  argument. Two rules come with it. The order of that screen is decided in
+  `PortalWorkspace` alone: the portal page hands its own panels in as `slots`
+  rather than printing them under it, because when it printed them the
+  suppliers were in one file and the supplier desk in the other. And every
+  link into a section now points inside something closed, so `lib/reveal.ts`
+  opens it first — the quick-jump uses it and so does `FoldReveal`, which
+  catches every ordinary `#` link on the page. Without it the button on "מה
+  עכשיו" scrolls nowhere in most browsers.
 - The ground is a pale blue, #F2F6FC, everywhere: the app, the public site and
   the guests' page alike. It was warm ivory before, and slate before that; the
   rule that settles it is that his latest instruction wins, and the reasoning

@@ -104,6 +104,8 @@ import { ReleaseState } from '@/components/app/ReleaseState';
 import { ThemeToggle } from '@/components/app/ThemeToggle';
 import { WorkspaceSwitcher } from '@/components/portal/WorkspaceSwitcher';
 import { PortalJump } from '@/components/portal/PortalJump';
+import { Fold } from '@/components/portal/Fold';
+import { FoldReveal } from '@/components/portal/FoldReveal';
 import { parseAgentState } from '@/lib/release';
 import { NoticeBell } from '@/components/app/NoticeBell';
 import { IssueReporter } from '@/components/app/IssueReporter';
@@ -461,6 +463,35 @@ export default async function DesignPage() {
         {/* The control that came out of the stacked-workspaces defect. One
             celebration is drawn at a time now, so the screen has to say which
             one; a single workspace draws nothing here at all. */}
+        {/* The drawer the couple's screen folds into. Drawn twice on purpose:
+            what a closed row looks like is the whole point of it, and what an
+            open one looks like is the thing that has to not be a surprise. */}
+        <Panel name="Fold · the couple's drawers" note="closed at rest, readable without opening: the name, one line saying what is inside, and a chevron">
+          <div className="max-w-2xl space-y-3">
+            <Fold id="design-fold-a" title="כסף" sub="תשלומים, תקציב ומה שכבר שולם">
+              <p className="card text-[14.5px] text-ink-soft">
+                מה שיושב בפנים הוא בדיוק הפאנלים שהיו שם קודם, עם הכותרות שלהם.
+                השורה למעלה היא שם המגירה, לא כותרת שנייה.
+              </p>
+            </Fold>
+            <Fold id="design-fold-b" title="היום עצמו" sub="הלו״ז, ההשראה והפרטים הקטנים" open>
+              <p className="card text-[14.5px] text-ink-soft" id="design-fold-inside">
+                כך זה נראה פתוח. ברירת המחדל היא סגור, ועל מסך הזוג אף מגירה לא
+                נפתחת מעצמה.
+              </p>
+            </Fold>
+            {/* The other half of the drawers, and the reason this panel has a
+                link in it: the button on "מה עכשיו" is an ordinary link to a
+                section, and every section is now inside something closed.
+                FoldReveal is what opens it on the way. Pressing this opens
+                the first drawer above. */}
+            <FoldReveal />
+            <a href="#design-fold-a" className="btn-quiet inline-flex text-[13.5px]">
+              לפתוח את המגירה הראשונה מקישור
+            </a>
+          </div>
+        </Panel>
+
         {/* The way around the couple's screen, from the bottom. It reads the
             page it is on, so on this gallery it lists the panels below. */}
         <Panel name="PortalJump" note="the dock's way around a long screen: where am I, and one tap to anywhere else">
@@ -468,7 +499,10 @@ export default async function DesignPage() {
             <PortalJump c={{
               open: 'לאן', title: 'לאן תרצו לעבור',
               sub: 'כל מה שיש באירוע שלכם, במקום אחד.', close: 'סגירה',
-              groups: { me: 'מה שמחכה לכם', money: 'כסף', guests: 'אורחים', event: 'האירוע' },
+              groups: {
+                me: 'מה שמחכה לכם', money: 'כסף', guests: 'אורחים',
+                vendors: 'ספקים', day: 'היום עצמו', talk: 'הודעות', event: 'האירוע',
+              },
             }} />
             <p className="max-w-prose2 text-[14px] text-ink-soft">
               על מסך הזוג הוא יושב בעוגן התחתון ואומר באיזה חלק הם נמצאים.

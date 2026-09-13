@@ -29,6 +29,7 @@ import { publicEnv } from '@/lib/env';
 import { EventSelector } from '@/components/portal/EventSelector';
 import { WorkspaceSwitcher } from '@/components/portal/WorkspaceSwitcher';
 import { PortalJump } from '@/components/portal/PortalJump';
+import { FoldReveal } from '@/components/portal/FoldReveal';
 import { pickWorkspace } from '@/lib/portalScope';
 import { loadEnvelopes, envelopesOf } from '@/lib/envelopes';
 import { loadVehicles, vehiclesOf } from '@/lib/vehicles';
@@ -169,6 +170,11 @@ export default async function PortalPage({ searchParams }: {
                   labels={{ add: ui.portal.eventAdd, empty: ui.portal.eventPick }}
                 />
               )}
+              {/* Handed in rather than printed here. These are sections of
+                  the couple's event like every other one, and the order of
+                  that screen is decided in one place — so the supplier desk
+                  lands beside the suppliers instead of four panels below
+                  them, and each one goes into the drawer it belongs in. */}
               <PortalWorkspace
                 workspace={w} data={data} viewerId={account.id} ui={ui}
                 currentEventId={openEvent?.id}
@@ -179,90 +185,94 @@ export default async function PortalPage({ searchParams }: {
                   envelopes: envs.length,
                   vehicles: cars.length,
                 }}
+                slots={{
+                  vendorhq: data.can(w.id, 'vendors') && data.vendorsFor(w.id).length > 0 ? (
+                    <div id="vendorhq" data-jump={ui.portal.jumpVendorHq} data-jump-group="vendors" className="scroll-mt-28"><VendorHq
+                      clientId={w.id} viewer="client"
+                      vendors={data.vendorsFor(w.id)}
+                      contracts={(contracts.get(w.id) ?? []).map((k) => ({ party_name: k.party_name ?? '', status: k.status, signed_at: k.signed_at }))}
+                      lines={data.budgetFor(w.id).map((b) => ({ event_vendor_id: (b as { event_vendor_id?: string | null }).event_vendor_id ?? null, estimate: b.estimate, agreed: b.agreed }))}
+                      couple={w.display_name} date={w.event_date} signAs={brand.name}
+                    /></div>
+                  ) : null,
+                  studio: data.can(w.id, 'moodboard') && studios.get(w.id) ? (
+                    <div id="studio" data-jump={ui.portal.jumpStudio} data-jump-group="day" className="scroll-mt-28"><BrandStudio
+                      clientId={w.id} viewer="client"
+                      brand={studios.get(w.id)!.brand} images={[]} data={studios.get(w.id)!.data}
+                      canAi={false} printBase="" siteUrl={studios.get(w.id)!.siteUrl}
+                    /></div>
+                  ) : null,
+                  contracts: data.can(w.id, 'contracts') ? (
+                    <div id="contracts" data-jump={ui.portal.rowContracts} data-jump-group="vendors" className="scroll-mt-28"><Contracts clientId={w.id} contracts={contracts.get(w.id) ?? []} viewer="client" /></div>
+                  ) : null,
+                  /* While the hall is still open, or once there is something to
+                     compare. Gating it on the halls alone was wrong in the way that
+                     only shows up from the couple's side: they are the ones touring
+                     venues, and a panel that appears only after somebody else has
+                     added one is a panel they can never start. Gating it on nothing
+                     is wrong the other way — a comparison on the screen of a couple
+                     whose hall was booked a year ago is a panel asking them to redo
+                     a decision they have made. */
+                  venues: data.can(w.id, 'venues') && (venues.venues.length > 0 || !w.venue) ? (
+                    <div id="venues" data-jump={ui.portal.rowVenues} data-jump-group="vendors" className="scroll-mt-28"><VenueCompare
+                      c={venuesFor(locale)}
+                      clientId={w.id}
+                      venues={venues.venues}
+                      quoteUrls={venues.quoteUrls}
+                      guestEstimate={w.guest_estimate ?? 0}
+                    /></div>
+                  ) : null,
+                  /* Behind the same gate every other module is behind, so a plan
+                     that does not include it does not quietly include it here. */
+                  files: data.can(w.id, 'files') ? (
+                    <div id="files" data-jump={ui.portal.rowFiles} data-jump-group="day" className="scroll-mt-28"><EventFiles clientId={w.id} files={files.get(w.id) ?? []} viewer="client" /></div>
+                  ) : null,
+                  /* Theirs to fill in. The equipment is read only for them — it is
+                     the producer's logistics — and the component knows that. */
+                  lists: data.can(w.id, 'lists') ? (
+                    <div id="lists" data-jump={ui.portal.rowLists} data-jump-group="day" className="scroll-mt-28"><EventFileLists
+                      clientId={w.id}
+                      songs={eventFiles.get(w.id)?.songs ?? []}
+                      kit={eventFiles.get(w.id)?.kit ?? []}
+                      people={eventFiles.get(w.id)?.people ?? []}
+                      viewer="client"
+                    /></div>
+                  ) : null,
+                  /* The same panel the producer has on the event file, not a
+                     read-only copy of it. Who the aunt is and what the dress
+                     should look like are things only the couple knows, and a
+                     screen where they can see the roster but not fix a name is a
+                     screen that sends them back to WhatsApp — which is the
+                     conversation this whole module exists to end. */
+                  prep: data.can(w.id, 'prep') ? (
+                    <div id="prep" data-jump={ui.portal.rowPrep} data-jump-group="day" className="scroll-mt-28"><PrepSheet
+                      c={prepFor(locale)}
+                      clientId={w.id}
+                      vips={sheet.vips}
+                      looks={sheet.looks}
+                      shares={sheet.shares}
+                      siteUrl={publicEnv.siteUrl}
+                    /></div>
+                  ) : null,
+                  /* The two lists the event manager needs in hand on the night.
+                     Written by either side, gated like everything else. */
+                  envelopes: data.can(w.id, 'envelopes') ? (
+                    <div id="envelopes" data-jump={ui.portal.rowEnvelopes} data-jump-group="day" className="scroll-mt-28"><EnvelopesPanel c={envelopesFor(locale)} clientId={w.id} items={envs} /></div>
+                  ) : null,
+                  transport: data.can(w.id, 'transport') ? (
+                    <div id="transport" data-jump={ui.portal.rowTransport} data-jump-group="day" className="scroll-mt-28"><VehiclesPanel c={vehiclesFor(locale)} clientId={w.id} items={cars} /></div>
+                  ) : null,
+                  thread: data.can(w.id, 'messages') ? (
+                    <div id="thread" data-jump={ui.portal.rowThread} data-jump-group="talk" className="scroll-mt-28"><Thread clientId={w.id} messages={threads.get(w.id) ?? []} viewerId={account.id} /></div>
+                  ) : null,
+                  /* Their deadlines and their day, in the calendar on their
+                     phone, updating on its own. The link is a credential and
+                     the card says so. */
+                  calendar: (
+                    <div id="calendar" data-jump={ui.portal.jumpCalendar} data-jump-group="day" className="scroll-mt-28"><CalendarFeed clientId={w.id} /></div>
+                  ),
+                }}
               />
-              {data.can(w.id, 'vendors') && data.vendorsFor(w.id).length > 0 && (
-                <div id="vendorhq" data-jump={ui.portal.jumpVendorHq} data-jump-group="event" className="scroll-mt-28"><VendorHq
-                  clientId={w.id} viewer="client"
-                  vendors={data.vendorsFor(w.id)}
-                  contracts={(contracts.get(w.id) ?? []).map((k) => ({ party_name: k.party_name ?? '', status: k.status, signed_at: k.signed_at }))}
-                  lines={data.budgetFor(w.id).map((b) => ({ event_vendor_id: (b as { event_vendor_id?: string | null }).event_vendor_id ?? null, estimate: b.estimate, agreed: b.agreed }))}
-                  couple={w.display_name} date={w.event_date} signAs={brand.name}
-                /></div>
-              )}
-              {data.can(w.id, 'moodboard') && studios.get(w.id) && (
-                <div id="studio" data-jump={ui.portal.jumpStudio} data-jump-group="event" className="scroll-mt-28"><BrandStudio
-                  clientId={w.id} viewer="client"
-                  brand={studios.get(w.id)!.brand} images={[]} data={studios.get(w.id)!.data}
-                  canAi={false} printBase="" siteUrl={studios.get(w.id)!.siteUrl}
-                /></div>
-              )}
-              {data.can(w.id, 'contracts') && (
-                <div id="contracts" data-jump={ui.portal.rowContracts} data-jump-group="event" className="scroll-mt-28"><Contracts clientId={w.id} contracts={contracts.get(w.id) ?? []} viewer="client" /></div>
-              )}
-              {/* While the hall is still open, or once there is something to
-                  compare. Gating it on the halls alone was wrong in the way that
-                  only shows up from the couple's side: they are the ones touring
-                  venues, and a panel that appears only after somebody else has
-                  added one is a panel they can never start. Gating it on nothing
-                  is wrong the other way — a comparison on the screen of a couple
-                  whose hall was booked a year ago is a panel asking them to redo
-                  a decision they have made. */}
-              {data.can(w.id, 'venues') && (venues.venues.length > 0 || !w.venue) && (
-                <div id="venues" data-jump={ui.portal.rowVenues} data-jump-group="event" className="scroll-mt-28"><VenueCompare
-                  c={venuesFor(locale)}
-                  clientId={w.id}
-                  venues={venues.venues}
-                  quoteUrls={venues.quoteUrls}
-                  guestEstimate={w.guest_estimate ?? 0}
-                /></div>
-              )}
-              {/* Behind the same gate every other module is behind, so a plan
-                  that does not include it does not quietly include it here. */}
-              {data.can(w.id, 'files') && (
-                <div id="files" data-jump={ui.portal.rowFiles} data-jump-group="event" className="scroll-mt-28"><EventFiles clientId={w.id} files={files.get(w.id) ?? []} viewer="client" /></div>
-              )}
-              {/* Theirs to fill in. The equipment is read only for them — it is
-                  the producer's logistics — and the component knows that. */}
-              {data.can(w.id, 'lists') && (
-                <div id="lists" data-jump={ui.portal.rowLists} data-jump-group="event" className="scroll-mt-28"><EventFileLists
-                  clientId={w.id}
-                  songs={eventFiles.get(w.id)?.songs ?? []}
-                  kit={eventFiles.get(w.id)?.kit ?? []}
-                  people={eventFiles.get(w.id)?.people ?? []}
-                  viewer="client"
-                /></div>
-              )}
-              {/* The same panel the producer has on the event file, not a
-                  read-only copy of it. Who the aunt is and what the dress
-                  should look like are things only the couple knows, and a
-                  screen where they can see the roster but not fix a name is a
-                  screen that sends them back to WhatsApp — which is the
-                  conversation this whole module exists to end. */}
-              {data.can(w.id, 'prep') && (
-                <div id="prep" data-jump={ui.portal.rowPrep} data-jump-group="event" className="scroll-mt-28"><PrepSheet
-                  c={prepFor(locale)}
-                  clientId={w.id}
-                  vips={sheet.vips}
-                  looks={sheet.looks}
-                  shares={sheet.shares}
-                  siteUrl={publicEnv.siteUrl}
-                /></div>
-              )}
-              {/* The two lists the event manager needs in hand on the night.
-                  Written by either side, gated like everything else. */}
-              {data.can(w.id, 'envelopes') && (
-                <div id="envelopes" data-jump={ui.portal.rowEnvelopes} data-jump-group="event" className="scroll-mt-28"><EnvelopesPanel c={envelopesFor(locale)} clientId={w.id} items={envs} /></div>
-              )}
-              {data.can(w.id, 'transport') && (
-                <div id="transport" data-jump={ui.portal.rowTransport} data-jump-group="event" className="scroll-mt-28"><VehiclesPanel c={vehiclesFor(locale)} clientId={w.id} items={cars} /></div>
-              )}
-              {data.can(w.id, 'messages') && (
-                <div id="thread" data-jump={ui.portal.rowThread} data-jump-group="me" className="scroll-mt-28"><Thread clientId={w.id} messages={threads.get(w.id) ?? []} viewerId={account.id} /></div>
-              )}
-              {/* Their deadlines and their day, in the calendar on their
-                  phone, updating on its own. The link is a credential and
-                  the card says so. */}
-              <div id="calendar" data-jump={ui.portal.jumpCalendar} data-jump-group="event" className="scroll-mt-28"><CalendarFeed clientId={w.id} /></div>
             </div>
           );
         })}
@@ -305,10 +315,18 @@ export default async function PortalPage({ searchParams }: {
           title: ui.portal.jumpTitle,
           sub: ui.portal.jumpSub,
           close: ui.portal.jumpClose,
+          /* The same five names the drawers carry, so the list somebody
+             opens to find something is grouped exactly the way the screen
+             they are looking at is. `event` stays as the fallback the
+             component reaches for when a section names a group nobody
+             defined. */
           groups: {
             me: ui.portal.jumpMine,
             money: ui.portal.jumpMoney,
             guests: ui.portal.jumpGuests,
+            vendors: ui.portal.jumpVendors,
+            day: ui.portal.jumpDay,
+            talk: ui.portal.jumpTalk,
             event: ui.portal.jumpEvent,
           },
         }} />}
@@ -321,6 +339,9 @@ export default async function PortalPage({ searchParams }: {
           return fileReport((open ?? data.workspaces[0]).id, topic, body);
         }}
       />
+      {/* Every `#` link on this screen now points into a folded section.
+          This is what keeps them working. */}
+      <FoldReveal />
       <Live sources={PORTAL_LIVE_SOURCES} />
     </CopyProvider>
   );

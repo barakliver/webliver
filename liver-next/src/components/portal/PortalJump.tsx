@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { List, X } from 'lucide-react';
+import { unfold } from '@/lib/reveal';
 
 export type JumpCopy = {
   /** On the pill, before anything has scrolled into view. */
@@ -91,11 +92,7 @@ export function PortalJump({ c }: { c: JumpCopy }) {
     if (!el) return;
     /* Unfold whatever it is inside first. Scrolling to a heading that is
        still closed reads as the link being broken. */
-    let p: HTMLElement | null = el;
-    while (p) {
-      if (p instanceof HTMLDetailsElement) p.open = true;
-      p = p.parentElement;
-    }
+    unfold(el);
     requestAnimationFrame(() => {
       el.scrollIntoView({ behavior: 'smooth', block: 'start' });
       /* Focus follows the jump, or a keyboard user is left where they were
