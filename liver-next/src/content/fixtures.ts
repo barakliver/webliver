@@ -12,6 +12,7 @@ import type { EventFile } from '@/components/app/EventFiles';
 import type { Song, Kit, Person } from '@/components/app/EventFileLists';
 import type { CrewPerson } from '@/components/app/CrewDesk';
 import type { Shift, ShiftDetail } from '@/lib/crewPortal';
+import type { BoardEvent, BoardAssignment } from '@/components/app/CrewBoard';
 import type { ShopItem } from '@/components/marketing/Shop';
 import { MUSIC_MOMENTS, EQUIPMENT_CHECK, COUPLE_DETAIL_FIELDS } from '@/content/eventFile';
 
@@ -375,6 +376,21 @@ export const fixtureShift: ShiftDetail = {
     { name: 'עידן שגב', slot: 'assistant', role: '' },
   ],
 };
+
+/* Three evenings to staff: one big and one assistant short, one small and
+   complete, one with no guest count written yet. */
+export const fixtureBoardEvents: BoardEvent[] = [
+  { id: 'm1e', name: 'נועה ואיתי', date: day(2), guests: 420 },
+  { id: 'm2e', name: 'שיר ותומר', date: day(120), guests: 180 },
+  { id: 'm3e', name: 'ערב חברה', date: day(240), guests: null },
+];
+
+export const fixtureBoardAssignments: BoardAssignment[] = [
+  { clientId: 'm1e', memberId: 'm1', slot: 'manager' },
+  { clientId: 'm1e', memberId: 'm2', slot: 'assistant' },
+  { clientId: 'm2e', memberId: 'm1', slot: 'manager' },
+  { clientId: 'm2e', memberId: 'm3', slot: 'assistant' },
+];
 
 export const fixtureLeads: Lead[] = [
   {

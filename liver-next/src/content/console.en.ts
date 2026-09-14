@@ -914,6 +914,20 @@ export const crewEn: CrewCopy = {
   inviteNoEmail: 'An email address is needed to send an invitation.',
   inviteFailed: 'We could not send the invitation.',
   inviteAgain: 'Send again',
+
+  boardTitle: 'The season',
+  boardSub: 'Every event ahead and who is in each role. Drag somebody onto a cell, or press them and then press the cell.',
+  boardPool: 'Who I have',
+  boardPick: 'Pick for assignment',
+  boardPicked: 'Picked. Now press the cell to assign them to.',
+  boardCancel: 'Cancel',
+  boardPlace: 'Assign here',
+  boardRemove: 'Remove from the assignment',
+  boardEmpty: 'Empty',
+  boardNoEvents: 'No events ahead to staff.',
+  boardGuests: 'guests',
+  boardShort: 'Short',
+  boardFull: 'Full',
 };
 
 export const vendorEn: VendorCopy = {

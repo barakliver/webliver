@@ -2481,6 +2481,21 @@ export const crewCopy = {
   inviteNoEmail: 'צריך מייל כדי לשלוח הזמנה.',
   inviteFailed: 'לא הצלחנו לשלוח את ההזמנה.',
   inviteAgain: 'שליחה שוב',
+
+  /* The season board. */
+  boardTitle: 'שיבוץ לעונה',
+  boardSub: 'כל האירועים הקרובים ומי משובץ לכל תפקיד. אפשר לגרור אדם לתא, או ללחוץ עליו ואז על התא.',
+  boardPool: 'מי יש לי',
+  boardPick: 'בחירה לשיבוץ',
+  boardPicked: 'נבחר. עכשיו ללחוץ על התא שאליו לשבץ.',
+  boardCancel: 'ביטול',
+  boardPlace: 'שיבוץ כאן',
+  boardRemove: 'הסרה מהשיבוץ',
+  boardEmpty: 'ריק',
+  boardNoEvents: 'אין אירועים קרובים לשבץ אליהם.',
+  boardGuests: 'אורחים',
+  boardShort: 'חסר',
+  boardFull: 'מלא',
 } as const;
 
 export const vendorCopy = {

@@ -130,6 +130,15 @@ that has happened once.
   land on `/app/shifts` through `requireCrew`, and the invitation email carries
   no token at all — the address is the invitation, and the sign-in page mails a
   code to whoever owns that inbox.
+- The season board at the bottom of `/app/crew` is every open event by three
+  role columns, with each person's load beside their name. It moves people two
+  ways on purpose: dragging, which is right with a mouse, and press-a-person
+  then press-a-cell, which is the same two targets and is the one that works on
+  a phone, with a keyboard and with a screen reader. The press path is the
+  implementation and the drag is decoration over it — a long press on a phone
+  is text selection and a drag is a scroll, and he works from a phone. The
+  board moves first and the server catches up, because a staffing screen that
+  waits a round trip per drag is a screen somebody drags twice.
 - The ground is a pale blue, #F2F6FC, everywhere: the app, the public site and
   the guests' page alike. It was warm ivory before, and slate before that; the
   rule that settles it is that his latest instruction wins, and the reasoning

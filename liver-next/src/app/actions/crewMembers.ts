@@ -280,3 +280,28 @@ export async function saveCrewNote(
   touchEvent(clientId);
   return { ok: true, id: clientId };
 }
+
+/**
+ * Off the evening, by person rather than by row.
+ *
+ * The board knows who is where, not which `crew` row it is looking at, and
+ * asking it to carry both would mean a second identifier through every drag.
+ * Deletes the assignment, not the person: the directory row is untouched.
+ */
+export async function unassignCrew(form: FormData): Promise<void> {
+  const clientId = String(form.get('client_id') ?? '');
+  const memberId = String(form.get('member_id') ?? '');
+  if (!clientId || !memberId) return;
+
+  const sb = await supabaseServer();
+  const { error } = await sb
+    .from('crew').delete().eq('client_id', clientId).eq('crew_member_id', memberId);
+
+  if (error) {
+    console.error('[crew] unassign failed', error);
+    await noteFailure('לא הצלחנו להוריד מהשיבוץ');
+    return;
+  }
+  touchEvent(clientId);
+  touchDirectory();
+}

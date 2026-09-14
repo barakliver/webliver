@@ -53,6 +53,7 @@ import { CrewNeeds } from '@/components/app/CrewNeeds';
 import { CrewNote } from '@/components/app/CrewNote';
 import { todayInZone } from '@/lib/clock';
 import { CrewShifts } from '@/components/app/CrewShifts';
+import { CrewBoard } from '@/components/app/CrewBoard';
 import { CrewShift } from '@/components/app/CrewShift';
 import { LeadRow } from '@/components/app/LeadRow';
 import { VendorDirectory } from '@/components/app/VendorDirectory';
@@ -81,6 +82,7 @@ import {
   fixtureSongs, fixtureKit, fixturePeople, fixtureBoard, fixtureShopItems,
   fixtureStatus, fixtureAttention, fixtureOrders, fixtureShelf, fixtureCrew,
   fixtureCrewPeople, fixtureAssigned, fixtureShifts, fixtureShift,
+  fixtureBoardEvents, fixtureBoardAssignments,
   fixtureLeads, fixtureCalls, fixtureVendors,
   fixtureAnniversaries, fixtureEventSummary, fixtureFunnel, fixtureSources,
   fixtureResponse, fixtureCash, fixtureReferrals, fixtureTemplates,
@@ -881,6 +883,13 @@ export default async function DesignPage() {
 
         <Panel name="CrewNote" note="written to the crew, never to the couple, and never the brief">
           <CrewNote clientId={client} note="חניה מאחורי המתחם, הכניסה מהשער הצפוני." />
+        </Panel>
+
+        <Panel name="CrewBoard" note="the season: drag on a mouse, press-then-press on a phone, and one evening short an assistant">
+          <CrewBoard
+            events={fixtureBoardEvents} people={fixtureCrewPeople}
+            assignments={fixtureBoardAssignments}
+          />
         </Panel>
 
         <Panel name="CrewShifts" note="what a crew member opens: one tonight, one ahead, one already over">
