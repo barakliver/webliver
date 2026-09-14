@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import type { Locale } from '@/lib/locale';
-import { ChevronLeft, CalendarX2, Users, Wallet } from 'lucide-react';
+import { ChevronLeft, ChevronDown, CalendarX2, Users, Wallet } from 'lucide-react';
 import { serverCopy } from '@/lib/serverLocale';
 import type { ClientStatus } from '@/lib/status';
 import { ArchiveButton } from '@/components/app/ArchiveButton';
@@ -181,19 +181,34 @@ export async function StatusBoard({ items }: { items: ClientStatus[] }) {
     );
   }
 
+  /* Each year is a drawer, and only the nearest one is open. A season that is
+     eighteen months out is a thing to know exists, not a thing to scroll past
+     every morning on the way to the wedding that is in five weeks — and the
+     row itself says how many are inside, so closing it hides nothing. Same
+     native `<details>` as the couple's screen: it works before the JavaScript
+     lands and the keyboard already knows it. */
   return (
-    <div className="space-y-10">
-      {groups.map((g) => (
-        <section key={g.year ?? 'none'} aria-labelledby={`year-${g.year ?? 'none'}`}>
-          <h2
-            id={`year-${g.year ?? 'none'}`}
-            className="mb-4 font-display text-[26px] font-semibold leading-none text-ink"
+    <div className="space-y-8">
+      {groups.map((g, i) => (
+        <details key={g.year ?? 'none'} open={i === 0} className="group">
+          <summary
+            className="mb-4 flex cursor-pointer list-none items-center gap-3 py-1
+                       [&::-webkit-details-marker]:hidden"
           >
-            {g.year ? <Ltr>{g.year}</Ltr> : c.noYear}
-            <span className="ms-3 align-middle text-[13px] font-normal text-ink-mute">
+            <h2 className="font-display text-[26px] font-semibold leading-none text-ink">
+              {g.year ? <Ltr>{g.year}</Ltr> : c.noYear}
+            </h2>
+            <span className="text-[13px] text-ink-mute">
               {g.rows.length} {g.rows.length === 1 ? c.oneEvent : c.manyEvents}
             </span>
-          </h2>
+            {/* Down when closed, up when open, and the only thing on the row
+                that moves. It points the same way in both directions of
+                text, which is why it is this arrow and not a sideways one. */}
+            <ChevronDown
+              size={20} strokeWidth={1.5} aria-hidden
+              className="shrink-0 text-ink-mute transition-transform duration-200 group-open:rotate-180"
+            />
+          </summary>
 
           <div className="space-y-6">
             {g.services.map((sv) => (
@@ -214,7 +229,7 @@ export async function StatusBoard({ items }: { items: ClientStatus[] }) {
               </div>
             ))}
           </div>
-        </section>
+        </details>
       ))}
     </div>
   );

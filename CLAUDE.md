@@ -99,7 +99,11 @@ that has happened once.
   the engagement rather than of the account — `account_kind` already answers
   the different question of whether somebody has a producer at all. Anything
   that is not one of the two reads as a production rather than vanishing off
-  the screen, and a heading is never drawn over nothing.
+  the screen, and a heading is never drawn over nothing. Each year is a
+  `<details>` and only the nearest one is open, for the same reason the
+  couple's screen is folded: a season eighteen months out is a thing to know
+  exists, not a thing to scroll past on the way to the wedding in five weeks.
+  The row says how many are inside it, so closing one hides nothing.
 - The ground is a pale blue, #F2F6FC, everywhere: the app, the public site and
   the guests' page alike. It was warm ivory before, and slate before that; the
   rule that settles it is that his latest instruction wins, and the reasoning
