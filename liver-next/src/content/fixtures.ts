@@ -10,6 +10,7 @@ import type { Message } from '@/components/app/Thread';
 import type { Contract } from '@/components/app/Contracts';
 import type { EventFile } from '@/components/app/EventFiles';
 import type { Song, Kit, Person } from '@/components/app/EventFileLists';
+import type { CrewPerson } from '@/components/app/CrewDesk';
 import type { ShopItem } from '@/components/marketing/Shop';
 import { MUSIC_MOMENTS, EQUIPMENT_CHECK, COUPLE_DETAIL_FIELDS } from '@/content/eventFile';
 
@@ -302,6 +303,36 @@ export const fixtureShelf: Shelf[] = [
 export const fixtureCrew: CrewMember[] = [
   { id: 'c1', name: 'רותם ברזילי', role: 'מנהלת אירוע', phone: '0543333333', call_time: '15:00', fee: 1800, notes: '' },
   { id: 'c2', name: 'עידן', role: 'לוגיסטיקה', phone: '', call_time: null, fee: null, notes: 'מגיע עם הטנדר' },
+];
+
+/* A crew of four: one who does everything, one who only assists, one social,
+   and one retired. Enough for the picker to have something to sort and for the
+   archive fold to have something in it. */
+export const fixtureCrewPeople: CrewPerson[] = [
+  {
+    id: 'm1', name: 'טל אבני', phone: '0541111111', email: 'tal@example.com',
+    roles: ['manager', 'assistant', 'social'], notes: 'לא זמינה בימי שישי.',
+    archived_at: null, events: 9,
+  },
+  {
+    id: 'm2', name: 'עידן שגב', phone: '0522222222', email: '',
+    roles: ['assistant'], notes: '', archived_at: null, events: 3,
+  },
+  {
+    id: 'm3', name: 'נועה גל', phone: '', email: 'noa@example.com',
+    roles: ['social'], notes: '', archived_at: null, events: 0,
+  },
+  {
+    id: 'm4', name: 'דור כהן', phone: '0533333333', email: '',
+    roles: ['assistant'], notes: 'עבר לחו״ל.', archived_at: '2025-04-02T09:00:00Z', events: 5,
+  },
+];
+
+/* A big evening, so the rule asks for two assistants: a manager is on it, one
+   assistant, and nobody on social. One role full, one short, one offered. */
+export const fixtureAssigned = [
+  { id: 'a1', name: 'טל אבני', slot: 'manager', crew_member_id: 'm1' },
+  { id: 'a2', name: 'עידן שגב', slot: 'assistant', crew_member_id: 'm2' },
 ];
 
 export const fixtureLeads: Lead[] = [

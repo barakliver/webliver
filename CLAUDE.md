@@ -104,6 +104,17 @@ that has happened once.
   couple's screen is folded: a season eighteen months out is a thing to know
   exists, not a thing to scroll past on the way to the wedding in five weeks.
   The row says how many are inside it, so closing one hides nothing.
+- The crew is two tables, the same way suppliers are. `crew_members` is the
+  producer's own people, `crew` is one of them working one evening, and the
+  booking keeps its own copy of the name so renaming somebody cannot rewrite
+  what last August says happened. What has no parallel on the supplier side is
+  `roles`: a person is several answers at once, so it is a set of three, closed
+  because a rule is written about it. The rule is `lib/crewNeeds.ts` and it is
+  pure: up to 350 guests a manager and an assistant, above 350 a manager and
+  two, social offered at every evening and required at none. It is staffed
+  against the larger of the producer's estimate and the guest list, because
+  one assistant over costs a fee and one under costs the evening. `crew.role`
+  next door stays free text on purpose, for the twelfth job nobody listed.
 - The ground is a pale blue, #F2F6FC, everywhere: the app, the public site and
   the guests' page alike. It was warm ivory before, and slate before that; the
   rule that settles it is that his latest instruction wins, and the reasoning

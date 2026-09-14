@@ -999,6 +999,7 @@ export const appCopy = {
     insights: 'נתונים',
     brand: 'מיתוג',
     vendors: 'ספקים',
+    crew: 'צוות',
     store: 'חנות',
     sop: 'מדריכים',
     /* One entry where there were two. The playbook and the system's own
@@ -2400,6 +2401,48 @@ export const crewCopy = {
   totalFee: 'סה״כ עלות צוות',
   noTime: 'ללא שעה',
   privateNote: 'צוות ועלויות גלויים למפיק בלבד.',
+
+  /* The three roles the staffing rule is written about. Everything else a
+     person does on an evening stays in the free-text role beside them. */
+  slotManager: 'מנהל אירוע',
+  slotAssistant: 'עוזר מנהל אירוע',
+  slotSocial: 'סושיאל',
+  slotNone: 'בלי תפקיד מהרשימה',
+
+  /* The rule itself, on the event. */
+  ruleTitle: 'מה האירוע הזה צריך',
+  ruleBy: 'לפי מספר האורחים',
+  ruleUnsure: 'עוד אין מספר אורחים, אז זו דרישת המינימום. מעל 350 אורחים צריך עוזר שני.',
+  ruleOptional: 'לא חובה',
+  ruleFilled: 'מאויש',
+  ruleShort: 'חסר',
+  ruleDone: 'הצוות מלא.',
+  assign: 'שיבוץ',
+  assignTo: 'שיבוץ לתפקיד',
+  fromDirectory: 'מהצוות שלי',
+  noDirectory: 'עוד אין אנשי צוות בספרייה.',
+  toDirectory: 'למסך הצוות',
+
+  /* The directory screen. */
+  deskTitle: 'הצוות שלי',
+  deskSub: 'האנשים שאתה עובד איתם, ובאילו תפקידים אפשר לשבץ כל אחד.',
+  deskAdd: 'הוספת איש צוות',
+  deskSearch: 'חיפוש איש צוות',
+  deskSearchPh: 'שם, טלפון או מייל',
+  deskNone: 'עוד לא הוספת אנשי צוות.',
+  deskNoneHint: 'מי שנמצא כאן אפשר לשבץ לאירוע בלחיצה אחת, בלי להקליד את הפרטים מחדש.',
+  deskNoMatch: 'אין איש צוות שמתאים לחיפוש.',
+  deskRoles: 'תפקידים',
+  deskRolesNone: 'בלי תפקיד קבוע',
+  deskEmail: 'מייל',
+  deskNoEmail: 'בלי מייל',
+  deskArchive: 'העברה לארכיון',
+  deskRestore: 'החזרה מהארכיון',
+  deskArchived: 'בארכיון',
+  deskArchivedTitle: 'ארכיון',
+  deskArchivedSub: 'מי שכבר לא עובד איתך. נשאר כאן כדי שאירועים ישנים לא יתרוקנו.',
+  deskEvents: 'אירועים',
+  deskNoEvents: 'עוד לא שובץ',
 } as const;
 
 export const vendorCopy = {

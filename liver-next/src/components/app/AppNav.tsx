@@ -3,13 +3,13 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BookOpen, CalendarDays, Ellipsis, Globe, HeartHandshake, LayoutGrid, LifeBuoy, Palette, ShieldCheck, Sparkles, Store, Target, TrendingUp, Truck, X, type LucideIcon } from 'lucide-react';
+import { BookOpen, CalendarDays, Ellipsis, Globe, HeartHandshake, LayoutGrid, LifeBuoy, Palette, ShieldCheck, Sparkles, Store, Target, TrendingUp, Truck, UsersRound, X, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useCopy } from '@/components/app/CopyProvider';
 import { LinkHint } from './LinkHint';
 
 export type NavItem = { href: string; label: string; icon: IconName };
-export type IconName = 'overview' | 'leads' | 'clients' | 'calendar' | 'insights' | 'brand' | 'vendors' | 'store' | 'sop' | 'guide' | 'site' | 'admin' | 'portal';
+export type IconName = 'overview' | 'leads' | 'clients' | 'calendar' | 'insights' | 'brand' | 'vendors' | 'crew' | 'store' | 'sop' | 'guide' | 'site' | 'admin' | 'portal';
 
 /* Real icons rather than emoji. The old app labelled every tab with one, and
    emoji cannot inherit colour or weight, render differently on every platform,
@@ -22,6 +22,7 @@ const ICONS: Record<IconName, LucideIcon> = {
   insights: TrendingUp,
   brand:    Palette,
   vendors:  Truck,
+  crew:     UsersRound,
   store:    Store,
   sop:      BookOpen,
   guide:    LifeBuoy,

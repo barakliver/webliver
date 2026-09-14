@@ -40,6 +40,9 @@ import { GuestSiteCard } from '@/components/app/GuestSiteCard';
 import { SeatingPlan, type SeatTable } from '@/components/app/SeatingPlan';
 import { DaySchedule, type DayItem } from '@/components/app/DaySchedule';
 import { CrewPanel, type CrewMember } from '@/components/app/CrewPanel';
+import { CrewNeeds } from '@/components/app/CrewNeeds';
+import type { CrewPerson } from '@/components/app/CrewDesk';
+import { expectedGuests } from '@/lib/crewNeeds';
 import { BarCalculator } from '@/components/app/BarCalculator';
 import { EventVendors, type EventVendor, type DirectoryEntry } from '@/components/app/EventVendors';
 import { signBoardImages } from '@/lib/board';
@@ -375,9 +378,9 @@ async function Section({ tab, client, viewerId }: { tab: EventTab; client: Clien
        the event. It is the producer's own book and row level security already
        scopes it to them; the archived ones are left out because booking a
        retired supplier is not a thing anybody means to do. */
-    const [crew, eventVendors, directory, hqVendors, hqContracts, hqLines] = await Promise.all([
-      safeRows<CrewMember>('crew', sb.from('crew')
-        .select('id,name,role,phone,call_time,fee,notes')
+    const [crew, eventVendors, directory, hqVendors, hqContracts, hqLines, crewPeople, invited] = await Promise.all([
+      safeRows<CrewMember & { slot: string | null; crew_member_id: string | null }>('crew', sb.from('crew')
+        .select('id,name,role,phone,call_time,fee,notes,slot,crew_member_id')
         .eq('client_id', id).order('call_time', { ascending: true, nullsFirst: false })),
       safeRows<EventVendor>('event vendors', sb.from('event_vendors')
         .select('id,vendor_id,name,category,phone,status,call_time,notes,quote_amount,quote_hours,quote_scope,quote_includes,quote_extras,quote_terms,chosen')
@@ -394,7 +397,23 @@ async function Section({ tab, client, viewerId }: { tab: EventTab; client: Clien
         .select('party_name,status,signed_at').eq('client_id', id)),
       safeRows<HqLine>('supplier lines', sb.from('budget_items')
         .select('event_vendor_id,estimate,agreed').eq('client_id', id).not('event_vendor_id', 'is', null)),
+      /* The crew directory, so somebody can be put on the evening without
+         leaving it. Archived people are left out: assigning somebody who no
+         longer works with you is not a thing anybody means to do. */
+      safeRows<CrewPerson>('crew directory', sb.from('crew_members')
+        .select('id,name,phone,email,roles,notes,archived_at')
+        .is('archived_at', null).order('name')),
+      /* The size of the guest list, which together with the producer's own
+         estimate is what the staffing rule is applied to. */
+      safeRows<{ party_size: number | null }>('guest list', sb.from('guests_rsvp')
+        .select('party_size').eq('client_id', id)),
     ]);
+
+    /* Staff against the larger of the estimate and the list. Being one
+       assistant over on a 340-guest evening costs a fee; being one under on a
+       360-guest evening costs the evening. */
+    const listSize = invited.reduce((t, g) => t + Math.max(1, g.party_size ?? 1), 0);
+    const guests = expectedGuests({ estimate: client.guest_estimate, invited: listSize });
     return (
       <div className="space-y-6">
         <VendorHq
@@ -408,6 +427,13 @@ async function Section({ tab, client, viewerId }: { tab: EventTab; client: Clien
             rows the HQ reads, so "what leaves the budget" is what the HQ
             would show leaving. */}
         <QuoteCompare clientId={id} vendors={eventVendors} lines={hqLines} viewer="producer" />
+        <CrewNeeds
+          clientId={id} guests={guests}
+          assigned={crew.map((m) => ({
+            id: m.id, name: m.name, slot: m.slot ?? null, crew_member_id: m.crew_member_id ?? null,
+          }))}
+          people={crewPeople.map((p) => ({ ...p, roles: Array.isArray(p.roles) ? p.roles : [] }))}
+        />
         <CrewPanel clientId={id} crew={crew} />
       </div>
     );

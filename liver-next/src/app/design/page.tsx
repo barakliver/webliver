@@ -48,6 +48,8 @@ import { AttentionList } from '@/components/app/Attention';
 import { OrdersBoard } from '@/components/app/OrdersBoard';
 import { ArchiveShelf } from '@/components/app/ArchiveShelf';
 import { CrewPanel } from '@/components/app/CrewPanel';
+import { CrewDesk } from '@/components/app/CrewDesk';
+import { CrewNeeds } from '@/components/app/CrewNeeds';
 import { LeadRow } from '@/components/app/LeadRow';
 import { VendorDirectory } from '@/components/app/VendorDirectory';
 import { GuideBookView } from '@/components/app/GuideBook';
@@ -74,6 +76,7 @@ import {
   fixtureSeatGuests, fixtureDay, fixtureMessages, fixtureContracts, fixtureFiles, fixtureMedia,
   fixtureSongs, fixtureKit, fixturePeople, fixtureBoard, fixtureShopItems,
   fixtureStatus, fixtureAttention, fixtureOrders, fixtureShelf, fixtureCrew,
+  fixtureCrewPeople, fixtureAssigned,
   fixtureLeads, fixtureCalls, fixtureVendors,
   fixtureAnniversaries, fixtureEventSummary, fixtureFunnel, fixtureSources,
   fixtureResponse, fixtureCash, fixtureReferrals, fixtureTemplates,
@@ -855,6 +858,21 @@ export default async function DesignPage() {
 
         <Panel name="CrewPanel" note="producer only: fees are visible here and nowhere else">
           <CrewPanel clientId={client} crew={fixtureCrew} />
+        </Panel>
+
+        <Panel name="CrewDesk" note="four people, one of them retired, and the roles each can fill">
+          <CrewDesk people={fixtureCrewPeople} />
+        </Panel>
+
+        <Panel name="CrewNeeds" note="an evening of 420: one role full, one short of an assistant, social on offer">
+          <CrewNeeds
+            clientId={client} guests={420}
+            assigned={fixtureAssigned} people={fixtureCrewPeople}
+          />
+        </Panel>
+
+        <Panel name="CrewNeeds · no guest count yet" note="the minimum, and the sentence about 350">
+          <CrewNeeds clientId={client} guests={null} assigned={[]} people={fixtureCrewPeople} />
         </Panel>
 
         <Panel name="OrdersBoard" note="pending, paid and a draft">
