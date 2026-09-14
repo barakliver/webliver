@@ -2,7 +2,7 @@
 
 import { useActionState, useMemo, useState } from 'react';
 import { useFormStatus } from 'react-dom';
-import { Check, ChevronDown, Mail, Phone, Plus, Search, Send, UserPlus, Wallet, X } from 'lucide-react';
+import { Check, ChevronDown, Mail, Phone, Plus, Search, Send, TriangleAlert, UserPlus, Wallet, X } from 'lucide-react';
 import {
   addCrewMember, updateCrewMember, archiveCrewMember, inviteCrewMember,
   type CrewMemberResult,
@@ -25,6 +25,15 @@ export type CrewPerson = {
   /** How many events this person is on. Read once on the server rather than
    *  counted here, so the row can say it without a second request. */
   events?: number;
+  /** Everything they have been paid across all of it. Producer-only, like
+   *  every other fee in this product: the crew's own two functions in 0091
+   *  select neither the fee nor the rate. */
+  earned?: number;
+  /** How many nights they are booked twice on. */
+  clashes?: number;
+  /** Whether this person has ever signed in, so the invitation can be seen to
+   *  have worked rather than assumed to have. */
+  signedIn?: boolean;
 };
 
 /** The three roles, in their fixed order, with the words for them. */
@@ -255,8 +264,21 @@ function PersonRow({ person }: { person: CrewPerson }) {
         >
           <span className="min-w-0 flex-1">
             <span className="block font-display text-[17px] font-semibold text-ink">{person.name}</span>
-            <span className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1.5">
+            <span className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1.5">
               <RoleBadges roles={person.roles} />
+              {/* The clash, on the person rather than only in the list above:
+                  this is the row somebody opens to fix it. */}
+              {!!person.clashes && person.clashes > 0 && (
+                <span className="inline-flex items-center gap-1 rounded-xl2 bg-bad-wash px-2 py-0.5 text-[12.5px] text-bad">
+                  <TriangleAlert size={12} aria-hidden strokeWidth={1.5} />
+                  {c.clashBadge}
+                </span>
+              )}
+              {person.email && (
+                <span className={`text-[12.5px] ${person.signedIn ? 'text-good' : 'text-ink-mute'}`}>
+                  {person.signedIn ? c.deskSignedIn : c.deskNotSignedIn}
+                </span>
+              )}
             </span>
             <span className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-[13px] text-ink-mute">
               {person.phone && (
@@ -269,6 +291,12 @@ function PersonRow({ person }: { person: CrewPerson }) {
                 <Mail size={13} aria-hidden strokeWidth={1.5} />
                 {person.email ? <Ltr>{person.email}</Ltr> : c.deskNoEmail}
               </span>
+              {typeof person.earned === 'number' && person.earned > 0 && (
+                <span className="inline-flex items-center gap-1.5">
+                  <dfn className="not-italic text-ink-mute">{c.deskEarned}</dfn>
+                  <Money value={person.earned} />
+                </span>
+              )}
               {person.rate !== null && person.rate !== undefined && (
                 <span className="inline-flex items-center gap-1.5">
                   <Wallet size={13} aria-hidden strokeWidth={1.5} />
@@ -329,6 +357,9 @@ export function CrewDesk({ people }: { people: CrewPerson[] }) {
         <div className="min-w-0">
           <h2 id="crew-desk" className="font-display text-[22px] font-semibold text-ink">{c.deskTitle}</h2>
           <p className="mt-1 text-[14px] text-ink-soft">{c.deskSub}</p>
+        {/* Said out loud, because it is the one thing on this screen somebody
+            would otherwise have to assume. */}
+        <p className="mt-1 text-[12.5px] text-ink-mute">{c.deskMoneyPrivate}</p>
         </div>
         <button
           type="button" onClick={() => setAdding((v) => !v)}

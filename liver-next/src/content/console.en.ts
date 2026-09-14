@@ -938,6 +938,13 @@ export const crewEn: CrewCopy = {
   seasonIn: 'Total income',
   seasonOut: 'Total costs',
   seasonMargin: 'Total margin',
+  clashOne: 'A crew member is on two events on the same evening',
+  clashMany: 'Crew members are on two events on the same evening',
+  clashBadge: 'Double booked',
+  deskEarned: 'Earned',
+  deskSignedIn: 'Signed in',
+  deskNotSignedIn: 'Not signed in yet',
+  deskMoneyPrivate: 'The rates and totals on this screen are visible to you alone. The crew do not see them, not even their own.',
 };
 
 export const vendorEn: VendorCopy = {

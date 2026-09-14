@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Check, TriangleAlert, X } from 'lucide-react';
 import { assignCrew, unassignCrew } from '@/app/actions/crewMembers';
 import { crewState, CREW_SLOTS, type CrewSlot } from '@/lib/crewNeeds';
+import { clashingMembers } from '@/lib/crewLoad';
 import { useCopy } from '@/components/app/CopyProvider';
 import { Ltr, Money } from '@/components/Ltr';
 import { EVENT_ZONE } from '@/lib/clock';
@@ -103,6 +104,19 @@ export function CrewBoard({
    *  number the season view exists to show. */
   const load = (id: string) => rows.filter((r) => r.memberId === id).length;
 
+  /* Worked out from the board's own state rather than passed in, so the mark
+     appears the moment somebody is dropped onto a second event on the same
+     night — which is exactly when it is worth seeing, rather than after a
+     reload. */
+  const doubled = clashingMembers(
+    rows.map((r) => ({ clientId: r.clientId, memberId: r.memberId })),
+    new Map(events.map((e) => [e.id, e.date] as const)),
+  );
+  const clashDays = new Set(
+    rows.filter((r) => doubled.has(r.memberId))
+      .map((r) => `${r.memberId}|${events.find((e) => e.id === r.clientId)?.date?.slice(0, 10) ?? ''}`),
+  );
+
   if (events.length === 0) {
     return <p className="text-[14px] text-ink-mute">{c.boardNoEvents}</p>;
   }
@@ -128,9 +142,14 @@ export function CrewBoard({
                   className={`inline-flex cursor-grab items-center gap-2 rounded-xl2 border px-3 py-2 text-[14px] transition-colors ${
                     on
                       ? 'border-accent bg-accent-wash text-ink'
-                      : 'border-line-soft bg-card text-ink-soft hover:border-accent/40'
+                      : doubled.has(p.id)
+                        ? 'border-bad/40 bg-bad-wash text-ink'
+                        : 'border-line-soft bg-card text-ink-soft hover:border-accent/40'
                   }`}
                 >
+                  {doubled.has(p.id) && (
+                    <TriangleAlert size={13} aria-hidden strokeWidth={1.5} className="text-bad" />
+                  )}
                   {p.name}
                   <span className="tabular-nums text-[12px] text-ink-mute"><Ltr>{String(load(p.id))}</Ltr></span>
                 </button>
@@ -232,8 +251,20 @@ export function CrewBoard({
 
                         <ul className="mt-2 list-none space-y-1.5 p-0">
                           {inSlot.map((r) => (
-                            <li key={r.memberId} className="flex items-center justify-between gap-2 rounded-xl2 bg-card px-2.5 py-1.5">
-                              <span className="min-w-0 truncate text-[13.5px] text-ink">{nameOf(r.memberId)}</span>
+                            <li
+                              key={r.memberId}
+                              className={`flex items-center justify-between gap-2 rounded-xl2 px-2.5 py-1.5 ${
+                                clashDays.has(`${r.memberId}|${ev.date?.slice(0, 10) ?? ''}`)
+                                  ? 'bg-bad-wash ring-1 ring-bad/30'
+                                  : 'bg-card'
+                              }`}
+                            >
+                              <span className="flex min-w-0 items-center gap-1.5 truncate text-[13.5px] text-ink">
+                                {clashDays.has(`${r.memberId}|${ev.date?.slice(0, 10) ?? ''}`) && (
+                                  <TriangleAlert size={12} aria-hidden strokeWidth={1.5} className="shrink-0 text-bad" />
+                                )}
+                                {nameOf(r.memberId)}
+                              </span>
                               <button
                                 type="button"
                                 onClick={() => lift(ev.id, r.memberId)}

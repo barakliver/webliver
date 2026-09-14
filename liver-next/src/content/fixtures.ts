@@ -13,6 +13,7 @@ import type { Song, Kit, Person } from '@/components/app/EventFileLists';
 import type { CrewPerson } from '@/components/app/CrewDesk';
 import type { Shift, ShiftDetail } from '@/lib/crewPortal';
 import type { BoardEvent, BoardAssignment } from '@/components/app/CrewBoard';
+import type { ClashRow } from '@/components/app/CrewClashes';
 import type { ShopItem } from '@/components/marketing/Shop';
 import { MUSIC_MOMENTS, EQUIPMENT_CHECK, COUPLE_DETAIL_FIELDS } from '@/content/eventFile';
 
@@ -315,14 +316,17 @@ export const fixtureCrewPeople: CrewPerson[] = [
     id: 'm1', name: 'טל אבני', phone: '0541111111', email: 'tal@example.com',
     roles: ['manager', 'assistant', 'social'], notes: 'לא זמינה בימי שישי.',
     rate: 1800, archived_at: null, events: 9,
+    earned: 16200, clashes: 1, signedIn: true,
   },
   {
     id: 'm2', name: 'עידן שגב', phone: '0522222222', email: '',
     roles: ['assistant'], notes: '', rate: 900, archived_at: null, events: 3,
+    earned: 2700, clashes: 0, signedIn: false,
   },
   {
     id: 'm3', name: 'נועה גל', phone: '', email: 'noa@example.com',
     roles: ['social'], notes: '', rate: null, archived_at: null, events: 0,
+    earned: 0, clashes: 0, signedIn: false,
   },
   {
     id: 'm4', name: 'דור כהן', phone: '0533333333', email: '',
@@ -402,6 +406,15 @@ export const fixtureBoardAssignments: BoardAssignment[] = [
   { clientId: 'm1e', memberId: 'm2', slot: 'assistant' },
   { clientId: 'm2e', memberId: 'm1', slot: 'manager' },
   { clientId: 'm2e', memberId: 'm3', slot: 'assistant' },
+];
+
+/* One person on two weddings on one night: the mistake neither event can
+   see on its own. */
+export const fixtureClashes: ClashRow[] = [
+  {
+    memberId: 'm1', name: 'טל אבני', date: day(2),
+    events: [{ id: 'm1e', name: 'נועה ואיתי' }, { id: 'm4e', name: 'ליאת ורן' }],
+  },
 ];
 
 export const fixtureLeads: Lead[] = [

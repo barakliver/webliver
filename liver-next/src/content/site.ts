@@ -2506,6 +2506,13 @@ export const crewCopy = {
   seasonIn: 'סך הכנסה',
   seasonOut: 'סך עלויות',
   seasonMargin: 'סך רווח',
+  clashOne: 'איש צוות משובץ לשני אירועים באותו ערב',
+  clashMany: 'יש אנשי צוות ששובצו לשני אירועים באותו ערב',
+  clashBadge: 'כפילות בתאריך',
+  deskEarned: 'הרוויח',
+  deskSignedIn: 'נכנס למערכת',
+  deskNotSignedIn: 'טרם נכנס',
+  deskMoneyPrivate: 'התעריפים והסכומים במסך הזה גלויים לך בלבד. אנשי הצוות לא רואים אותם, גם לא את של עצמם.',
 } as const;
 
 export const vendorCopy = {

@@ -149,7 +149,16 @@ that has happened once.
   `crew.fee`, the same copy-on-write as the name: raising a rate next March
   must not rewrite what last August cost. Neither word reaches a crew
   member — `crewDoor.test.ts` fails if `rate` or `fee` appears in their two
-  functions.
+  functions. Two things the season knows that no evening does are in
+  `lib/crewLoad.ts`, pure and tested: a person booked on two events on one
+  night — which neither event can see, because each is perfectly staffed on
+  its own — and what each person has been paid across the year. An undated
+  event never clashes, or every half-opened file would carry a red mark. The
+  warning sits at the top of `/app/crew`, names both events as links, and has
+  no dismiss button: it goes away when it is fixed.
+  A crew member reaches their own screen through `crew.crew_member_id`, so
+  somebody typed straight onto an event without going through the directory
+  cannot see it. That is the trade for not matching people by name.
 - The ground is a pale blue, #F2F6FC, everywhere: the app, the public site and
   the guests' page alike. It was warm ivory before, and slate before that; the
   rule that settles it is that his latest instruction wins, and the reasoning

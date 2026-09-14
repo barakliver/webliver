@@ -6,6 +6,8 @@ import { CrewDesk, type CrewPerson } from '@/components/app/CrewDesk';
 import { CrewBoard, type BoardEvent, type BoardAssignment } from '@/components/app/CrewBoard';
 import { expectedGuests } from '@/lib/crewNeeds';
 import { ledgerOf, type PaidLine, type CostLine, type CrewLine } from '@/lib/finance';
+import { clashes, earningsBy, clashingMembers } from '@/lib/crewLoad';
+import { CrewClashes, type ClashRow } from '@/components/app/CrewClashes';
 import { Fold } from '@/components/Fold';
 import { safeRows } from '@/lib/safe';
 import { serverCopy } from '@/lib/serverLocale';
@@ -31,7 +33,7 @@ export default async function CrewPage() {
   const [people, assignments, events, guestRows, payRows, costRows, feeRows] = await Promise.all([
     safeRows<CrewPerson>('crew_members', sb
       .from('crew_members')
-      .select('id,name,phone,email,roles,rate,notes,archived_at')
+      .select('id,name,phone,email,roles,rate,notes,archived_at,profile_id')
       .order('name')),
     /* How many evenings each of them is on. Counted here, once, rather than
        by every row asking for itself: fifteen people is fifteen requests, and
@@ -57,8 +59,8 @@ export default async function CrewPage() {
       .from('payments').select('client_id,amount,paid')),
     safeRows<CostLine & { client_id: string }>('budget lines', sb
       .from('budget_items').select('client_id,estimate,agreed')),
-    safeRows<CrewLine & { client_id: string }>('crew fees', sb
-      .from('crew').select('client_id,fee')),
+    safeRows<CrewLine & { client_id: string; crew_member_id: string | null }>('crew fees', sb
+      .from('crew').select('client_id,crew_member_id,fee')),
   ]);
 
   /* Grouped once. Fifteen events reading their own money is forty-five
@@ -97,6 +99,25 @@ export default async function CrewPage() {
     };
   });
 
+  /* The two things the season knows that no single evening does: who is
+     booked twice on one night, and what each person has been paid across all
+     of it. Both are worked out from the rows already read. */
+  const paidPer = feeRows
+    .filter((f) => f.crew_member_id)
+    .map((f) => ({ clientId: f.client_id, memberId: f.crew_member_id as string, fee: f.fee }));
+
+  const dateOf = new Map(events.map((e) => [e.id, e.event_date] as const));
+  const nameOf = new Map(events.map((e) => [e.id, e.display_name] as const));
+  const earned = earningsBy(paidPer);
+  const doubled = clashingMembers(paidPer, dateOf);
+
+  const clashRows: ClashRow[] = clashes(paidPer, dateOf).map((x) => ({
+    memberId: x.memberId,
+    name: people.find((p) => p.id === x.memberId)?.name ?? '',
+    date: x.date,
+    events: x.clientIds.map((id) => ({ id, name: nameOf.get(id) ?? '' })),
+  }));
+
   const placed: BoardAssignment[] = assignments
     .filter((a) => a.crew_member_id)
     .map((a) => ({ clientId: a.client_id, memberId: a.crew_member_id as string, slot: a.slot }));
@@ -105,6 +126,9 @@ export default async function CrewPage() {
     ...p,
     roles: Array.isArray(p.roles) ? p.roles : [],
     events: tally.get(p.id) ?? 0,
+    earned: earned.get(p.id) ?? 0,
+    clashes: doubled.has(p.id) ? 1 : 0,
+    signedIn: !!(p as { profile_id?: string | null }).profile_id,
   }));
 
   return (
@@ -113,6 +137,12 @@ export default async function CrewPage() {
         title={ui.crew.deskTitle} sub={ui.crew.deskSub}
         report={<IssueReporter userId={account.id} context={ui.crew.deskTitle} />}
       />
+      {/* First on the screen, because it is the only thing on it that has a
+          deadline. It disappears when it is fixed. */}
+      {clashRows.length > 0 && (
+        <div className="mb-5"><CrewClashes rows={clashRows} /></div>
+      )}
+
       <CrewDesk people={rows} />
 
       {/* The season, under the people it is staffed from. Folded, like
