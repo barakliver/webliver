@@ -315,3 +315,48 @@ export async function unassignCrew(form: FormData): Promise<void> {
   touchEvent(clientId);
   touchDirectory();
 }
+
+/**
+ * The hours the fee did not cover.
+ *
+ * Hours and a rate rather than a lump sum, because the amount is what gets
+ * forgotten and the hours are what get argued about: a number of hours beside
+ * an hourly rate can be checked against somebody's memory of a night that ran
+ * until three, and a round figure cannot.
+ *
+ * Both blank is a real state and clears the row back to the agreed fee alone.
+ */
+export async function setCrewHours(
+  _prev: CrewMemberResult | null, form: FormData,
+): Promise<CrewMemberResult> {
+  const id = String(form.get('crew_id') ?? '');
+  const clientId = String(form.get('client_id') ?? '');
+  if (!id) return { ok: false, error: 'חסר מזהה' };
+
+  const money = (key: string): number | null => {
+    const raw = String(form.get(key) ?? '').replace(/[^\d.]/g, '');
+    if (!raw) return null;
+    const n = Number(raw);
+    return Number.isFinite(n) && n >= 0 ? Math.round(n * 100) / 100 : null;
+  };
+
+  const hours = money('extra_hours');
+  if (hours !== null && hours > 24) {
+    return { ok: false, error: 'ערב אחד הוא עד 24 שעות' };
+  }
+
+  const sb = await supabaseServer();
+  const { error } = await sb
+    .from('crew')
+    .update({ extra_hours: hours, hour_rate: money('hour_rate') })
+    .eq('id', id);
+
+  if (error) {
+    console.error('[crew] hours failed', error);
+    return { ok: false, error: 'לא הצלחנו לשמור' };
+  }
+
+  if (clientId) touchEvent(clientId);
+  touchDirectory();
+  return { ok: true, id };
+}

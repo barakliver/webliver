@@ -159,6 +159,16 @@ that has happened once.
   A crew member reaches their own screen through `crew.crew_member_id`, so
   somebody typed straight onto an event without going through the directory
   cannot see it. That is the trade for not matching people by name.
+  Every cell on the board opens its own searchable list of the whole crew.
+  There is no "add a slot" control because there are no slots: a cell holds as
+  many people as are put in it and the rule only says how many it expects, so
+  a third assistant is just a third assistant. What somebody is owed for an
+  evening is `crewPay` in `lib/finance.ts` — `fee + extra_hours × hour_rate` —
+  in one place because three screens add it up. Hours rather than a lump sum:
+  the amount is what gets forgotten, the hours are what can be checked against
+  somebody's memory of a night that ran until three. `monthsOf` groups it the
+  way the paying happens, newest month first, and the hours are edited there
+  rather than inside nine event files.
 - The ground is a pale blue, #F2F6FC, everywhere: the app, the public site and
   the guests' page alike. It was warm ivory before, and slate before that; the
   rule that settles it is that his latest instruction wins, and the reasoning

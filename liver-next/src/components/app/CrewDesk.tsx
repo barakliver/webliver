@@ -373,10 +373,10 @@ export function CrewDesk({ people }: { people: CrewPerson[] }) {
 
       {adding && <AddForm onDone={() => setAdding(false)} />}
 
-      {/* The search appears when there is enough to lose something in. Below
-          that it is a box that costs a line and finds what is already on the
-          screen. */}
-      {live.length > 6 && (
+      {/* Always, now. It was hidden below six people on the theory that a
+          short list finds itself, which is true until the day it is not and
+          somebody has learnt there is no search here. */}
+      {live.length > 0 && (
         <div className="relative mt-5">
           <Search
             size={16} strokeWidth={1.5} aria-hidden
@@ -399,9 +399,26 @@ export function CrewDesk({ people }: { people: CrewPerson[] }) {
       ) : shown.length === 0 ? (
         <p className="mt-5 text-[14px] text-ink-mute">{c.deskNoMatch}</p>
       ) : (
-        <ul id="crew-list" className="mt-5 list-none space-y-3 p-0">
-          {shown.map((p) => <PersonRow key={p.id} person={p} />)}
-        </ul>
+        /* The list folds too. Fifteen people is a long way to scroll past on
+           the way to the season board, and the row says how many are inside
+           so closing it hides nothing. Open by default: this is the screen
+           they are the subject of. */
+        <details open className="group/list mt-5">
+          <summary
+            className="flex cursor-pointer list-none items-center gap-3 py-1
+                       [&::-webkit-details-marker]:hidden"
+          >
+            <span className="font-display text-[16px] font-semibold text-ink">{c.deskPeople}</span>
+            <span className="text-[13px] text-ink-mute"><Ltr>{String(shown.length)}</Ltr></span>
+            <ChevronDown
+              size={17} strokeWidth={1.5} aria-hidden
+              className="shrink-0 text-ink-mute transition-transform duration-200 group-open/list:rotate-180"
+            />
+          </summary>
+          <ul id="crew-list" className="mt-3 list-none space-y-3 p-0">
+            {shown.map((p) => <PersonRow key={p.id} person={p} />)}
+          </ul>
+        </details>
       )}
 
       {archived.length > 0 && (

@@ -105,8 +105,32 @@ export function summarise(
  */
 
 /** What a crew member costs for the evening. Null is a real value: plenty of
- *  people are on a crew list before anybody has agreed a fee. */
-export type CrewLine = { fee: number | string | null };
+ *  people are on a crew list before anybody has agreed a fee.
+ *
+ *  The hours are what the fee did not cover — the wedding ran until three and
+ *  everybody stayed — and they are paid at the rate copied onto the
+ *  assignment. Both optional, because most evenings have neither. */
+export type CrewLine = {
+  fee?: number | string | null;
+  extra_hours?: number | string | null;
+  hour_rate?: number | string | null;
+};
+
+/**
+ * What one person is owed for one evening.
+ *
+ * Here rather than in the screen that draws it, because three screens add
+ * this up — the money tab, the season board and the monthly statement — and
+ * three copies of `fee + hours × rate` is three chances to disagree in front
+ * of somebody who is waiting to be paid.
+ *
+ * Hours with no rate are worth nothing to a total. They are still worth
+ * recording: the hours are the fact, and the rate is a decision somebody has
+ * not made yet.
+ */
+export function crewPay(line: CrewLine): number {
+  return num(line.fee) + num(line.extra_hours) * num(line.hour_rate);
+}
 
 export type Ledger = {
   /** Everything the couple has agreed to pay, whether it has arrived or not. */
@@ -151,7 +175,7 @@ export function ledgerOf(
   const received = sumIls(payments.filter((p) => p.paid).map((p) => num(p.amount)));
 
   const suppliers = sumIls(items.map((i) => num(i.agreed ?? i.estimate)));
-  const crew = sumIls(crewLines.map((m) => num(m.fee)));
+  const crew = sumIls(crewLines.map(crewPay));
   const costs = suppliers + crew;
 
   const margin = billed - costs;

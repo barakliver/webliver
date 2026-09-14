@@ -6,7 +6,9 @@ import { CrewDesk, type CrewPerson } from '@/components/app/CrewDesk';
 import { CrewBoard, type BoardEvent, type BoardAssignment } from '@/components/app/CrewBoard';
 import { expectedGuests } from '@/lib/crewNeeds';
 import { ledgerOf, type PaidLine, type CostLine, type CrewLine } from '@/lib/finance';
-import { clashes, earningsBy, clashingMembers } from '@/lib/crewLoad';
+import { clashes, earningsBy, clashingMembers, monthsOf } from '@/lib/crewLoad';
+import { crewPay } from '@/lib/finance';
+import { CrewMonths, type MonthRow } from '@/components/app/CrewMonths';
 import { CrewClashes, type ClashRow } from '@/components/app/CrewClashes';
 import { Fold } from '@/components/Fold';
 import { safeRows } from '@/lib/safe';
@@ -59,8 +61,8 @@ export default async function CrewPage() {
       .from('payments').select('client_id,amount,paid')),
     safeRows<CostLine & { client_id: string }>('budget lines', sb
       .from('budget_items').select('client_id,estimate,agreed')),
-    safeRows<CrewLine & { client_id: string; crew_member_id: string | null }>('crew fees', sb
-      .from('crew').select('client_id,crew_member_id,fee')),
+    safeRows<CrewLine & { id: string; client_id: string; crew_member_id: string | null }>('crew fees', sb
+      .from('crew').select('id,client_id,crew_member_id,fee,extra_hours,hour_rate')),
   ]);
 
   /* Grouped once. Fifteen events reading their own money is forty-five
@@ -104,7 +106,10 @@ export default async function CrewPage() {
      of it. Both are worked out from the rows already read. */
   const paidPer = feeRows
     .filter((f) => f.crew_member_id)
-    .map((f) => ({ clientId: f.client_id, memberId: f.crew_member_id as string, fee: f.fee }));
+    .map((f) => ({
+      clientId: f.client_id, memberId: f.crew_member_id as string,
+      fee: f.fee, extra_hours: f.extra_hours, hour_rate: f.hour_rate,
+    }));
 
   const dateOf = new Map(events.map((e) => [e.id, e.event_date] as const));
   const nameOf = new Map(events.map((e) => [e.id, e.display_name] as const));
@@ -116,6 +121,37 @@ export default async function CrewPage() {
     name: people.find((p) => p.id === x.memberId)?.name ?? '',
     date: x.date,
     events: x.clientIds.map((id) => ({ id, name: nameOf.get(id) ?? '' })),
+  }));
+
+  /* The payment sheet: the same rows, grouped the way the paying happens.
+     The crew row's own id comes along because the hours are written on it. */
+  const crewRowFor = new Map(
+    feeRows.filter((f) => f.crew_member_id)
+      .map((f) => [`${f.client_id}|${f.crew_member_id}`, f] as const),
+  );
+  const nameOfPerson = new Map(people.map((p) => [p.id, p.name] as const));
+
+  const months: MonthRow[] = monthsOf(paidPer, dateOf).map((m) => ({
+    month: m.month,
+    total: m.total,
+    people: m.people.map((per) => ({
+      memberId: per.memberId,
+      name: nameOfPerson.get(per.memberId) ?? '',
+      total: per.total,
+      evenings: per.lines.map((l) => {
+        const row = crewRowFor.get(`${l.clientId}|${per.memberId}`);
+        return {
+          crewId: row?.id ?? '',
+          clientId: l.clientId,
+          clientName: nameOf.get(l.clientId) ?? '',
+          date: l.date,
+          fee: Number(row?.fee ?? 0),
+          hours: row?.extra_hours === null || row?.extra_hours === undefined ? null : Number(row.extra_hours),
+          hourRate: row?.hour_rate === null || row?.hour_rate === undefined ? null : Number(row.hour_rate),
+          pay: row ? crewPay(row) : l.pay,
+        };
+      }),
+    })),
   }));
 
   const placed: BoardAssignment[] = assignments
@@ -153,6 +189,14 @@ export default async function CrewPage() {
           <CrewBoard events={board} people={rows} assignments={placed} />
         </Fold>
       </div>
+      {/* What to pay, under the season it was earned in. Folded, and closed
+          at rest: it is a once-a-month screen sitting on a weekly one. */}
+      <div className="mt-8">
+        <Fold id="crew-months" title={ui.crew.monthsTitle} sub={ui.crew.monthsSub}>
+          <CrewMonths months={months} />
+        </Fold>
+      </div>
+
       <Live sources={[{ table: 'crew_members' }, { table: 'crew' }]} />
     </>
   );

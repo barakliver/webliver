@@ -55,6 +55,7 @@ import { todayInZone } from '@/lib/clock';
 import { CrewShifts } from '@/components/app/CrewShifts';
 import { CrewBoard } from '@/components/app/CrewBoard';
 import { CrewClashes } from '@/components/app/CrewClashes';
+import { CrewMonths } from '@/components/app/CrewMonths';
 import { CrewShift } from '@/components/app/CrewShift';
 import { LeadRow } from '@/components/app/LeadRow';
 import { VendorDirectory } from '@/components/app/VendorDirectory';
@@ -83,7 +84,7 @@ import {
   fixtureSongs, fixtureKit, fixturePeople, fixtureBoard, fixtureShopItems,
   fixtureStatus, fixtureAttention, fixtureOrders, fixtureShelf, fixtureCrew,
   fixtureCrewPeople, fixtureAssigned, fixtureShifts, fixtureShift,
-  fixtureBoardEvents, fixtureBoardAssignments, fixtureClashes,
+  fixtureBoardEvents, fixtureBoardAssignments, fixtureClashes, fixtureMonths,
   fixtureLeads, fixtureCalls, fixtureVendors,
   fixtureAnniversaries, fixtureEventSummary, fixtureFunnel, fixtureSources,
   fixtureResponse, fixtureCash, fixtureReferrals, fixtureTemplates,
@@ -884,6 +885,10 @@ export default async function DesignPage() {
 
         <Panel name="CrewNote" note="written to the crew, never to the couple, and never the brief">
           <CrewNote clientId={client} note="חניה מאחורי המתחם, הכניסה מהשער הצפוני." />
+        </Panel>
+
+        <Panel name="CrewMonths" note="what to pay each person for the month, with the evenings behind it and the hours">
+          <CrewMonths months={fixtureMonths} />
         </Panel>
 
         <Panel name="CrewClashes" note="the one mistake neither event can see on its own; it disappears when it is fixed">

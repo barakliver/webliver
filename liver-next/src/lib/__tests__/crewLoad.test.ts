@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { clashes, clashingMembers, earningsBy } from '../crewLoad.ts';
+import { clashes, clashingMembers, earningsBy, monthsOf } from '../crewLoad.ts';
 
 const when = (pairs: [string, string | null][]) => new Map(pairs);
 
@@ -129,4 +129,76 @@ test('an assignment with no fee contributes nothing rather than breaking the sum
 
 test('nobody assigned is an empty tally rather than a zero for everybody', () => {
   assert.equal(earningsBy([]).size, 0);
+});
+
+/* ── hours on top of the fee, and the month they are paid in ─────────────── */
+
+test('the hours are paid at the rate on the assignment, on top of the fee', () => {
+  const out = earningsBy([
+    { clientId: 'a', memberId: 'tal', fee: 1800, extra_hours: 3, hour_rate: 120 },
+  ]);
+  assert.equal(out.get('tal'), 2160);
+});
+
+/* The hours are the fact and the rate is a decision somebody has not made
+   yet. Recording one without the other must not invent money. */
+test('hours with no rate are worth nothing, and a rate with no hours likewise', () => {
+  assert.equal(earningsBy([{ clientId: 'a', memberId: 'tal', fee: 1000, extra_hours: 4 }]).get('tal'), 1000);
+  assert.equal(earningsBy([{ clientId: 'a', memberId: 'tal', fee: 1000, hour_rate: 120 }]).get('tal'), 1000);
+});
+
+test('the evenings are grouped by the month they fell in, newest month first', () => {
+  const out = monthsOf(
+    [
+      { clientId: 'a', memberId: 'tal', fee: 1800 },
+      { clientId: 'b', memberId: 'tal', fee: 1500 },
+      { clientId: 'c', memberId: 'tal', fee: 900 },
+    ],
+    when([['a', '2026-09-04'], ['b', '2026-09-28'], ['c', '2026-08-11']]),
+  );
+  assert.deepEqual(out.map((m) => m.month), ['2026-09', '2026-08']);
+  assert.equal(out[0].people[0].total, 3300);
+  assert.equal(out[1].total, 900);
+});
+
+/* The list is worked down while making transfers, so the evenings behind a
+   figure have to be in the order they happened. */
+test('inside a month, a person’s evenings run in date order', () => {
+  const out = monthsOf(
+    [
+      { clientId: 'b', memberId: 'tal', fee: 1000 },
+      { clientId: 'a', memberId: 'tal', fee: 1000 },
+    ],
+    when([['a', '2026-09-04'], ['b', '2026-09-28']]),
+  );
+  assert.deepEqual(out[0].people[0].lines.map((l) => l.clientId), ['a', 'b']);
+});
+
+test('the largest bill of the month comes first', () => {
+  const out = monthsOf(
+    [
+      { clientId: 'a', memberId: 'small', fee: 500 },
+      { clientId: 'a', memberId: 'big', fee: 5000 },
+    ],
+    when([['a', '2026-09-04']]),
+  );
+  assert.deepEqual(out[0].people.map((p) => p.memberId), ['big', 'small']);
+});
+
+/* It has not happened, so nobody is owed for it. */
+test('an evening with no date belongs to no month', () => {
+  const out = monthsOf([{ clientId: 'a', memberId: 'tal', fee: 1800 }], when([['a', null]]));
+  assert.deepEqual(out, []);
+});
+
+test('a month total is the sum of the people in it, hours included', () => {
+  const out = monthsOf(
+    [
+      { clientId: 'a', memberId: 'tal', fee: 1800, extra_hours: 2, hour_rate: 100 },
+      { clientId: 'a', memberId: 'idan', fee: 900 },
+    ],
+    when([['a', '2026-09-04']]),
+  );
+  assert.equal(out[0].total, 2900);
+  assert.equal(out[0].people.find((p) => p.memberId === 'tal')!.lines[0].hours, 2);
 });

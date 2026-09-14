@@ -14,6 +14,7 @@ import type { CrewPerson } from '@/components/app/CrewDesk';
 import type { Shift, ShiftDetail } from '@/lib/crewPortal';
 import type { BoardEvent, BoardAssignment } from '@/components/app/CrewBoard';
 import type { ClashRow } from '@/components/app/CrewClashes';
+import type { MonthRow } from '@/components/app/CrewMonths';
 import type { ShopItem } from '@/components/marketing/Shop';
 import { MUSIC_MOMENTS, EQUIPMENT_CHECK, COUPLE_DETAIL_FIELDS } from '@/content/eventFile';
 
@@ -414,6 +415,56 @@ export const fixtureClashes: ClashRow[] = [
   {
     memberId: 'm1', name: 'טל אבני', date: day(2),
     events: [{ id: 'm1e', name: 'נועה ואיתי' }, { id: 'm4e', name: 'ליאת ורן' }],
+  },
+];
+
+/* Two months of work: the one that just ended, open, and the one before it.
+   One evening ran late and carries hours. */
+export const fixtureMonths: MonthRow[] = [
+  {
+    month: '2026-09', total: 6060,
+    people: [
+      {
+        memberId: 'm1', name: 'טל אבני', total: 3960,
+        evenings: [
+          {
+            crewId: 'w1', clientId: 'm1e', clientName: 'נועה ואיתי', date: '2026-09-04',
+            fee: 1800, hours: 3, hourRate: 120, pay: 2160,
+          },
+          {
+            crewId: 'w2', clientId: 'm2e', clientName: 'שיר ותומר', date: '2026-09-26',
+            fee: 1800, hours: null, hourRate: 120, pay: 1800,
+          },
+        ],
+      },
+      {
+        memberId: 'm2', name: 'עידן שגב', total: 2100,
+        evenings: [
+          {
+            crewId: 'w3', clientId: 'm1e', clientName: 'נועה ואיתי', date: '2026-09-04',
+            fee: 900, hours: null, hourRate: null, pay: 900,
+          },
+          {
+            crewId: 'w4', clientId: 'm2e', clientName: 'שיר ותומר', date: '2026-09-26',
+            fee: 1200, hours: null, hourRate: null, pay: 1200,
+          },
+        ],
+      },
+    ],
+  },
+  {
+    month: '2026-08', total: 1800,
+    people: [
+      {
+        memberId: 'm1', name: 'טל אבני', total: 1800,
+        evenings: [
+          {
+            crewId: 'w5', clientId: 'm3e', clientName: 'ערב חברה', date: '2026-08-11',
+            fee: 1800, hours: null, hourRate: null, pay: 1800,
+          },
+        ],
+      },
+    ],
   },
 ];
 

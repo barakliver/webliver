@@ -944,6 +944,16 @@ export const crewEn: CrewCopy = {
   deskEarned: 'Earned',
   deskSignedIn: 'Signed in',
   deskNotSignedIn: 'Not signed in yet',
+  boardAdd: 'Add',
+  deskPeople: 'The crew',
+  monthsTitle: 'Payments by month',
+  monthsSub: 'What each person is owed for the month, and the events behind the figure. Hours can be added on any evening.',
+  monthsNone: 'No assigned events yet to work a payment out from.',
+  monthsTotal: 'Month total',
+  monthsPay: 'To pay',
+  hoursAdd: 'Extra hours',
+  hoursExtra: 'How many',
+  hoursRate: 'Per hour',
   deskMoneyPrivate: 'The rates and totals on this screen are visible to you alone. The crew do not see them, not even their own.',
 };
 

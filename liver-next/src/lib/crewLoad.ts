@@ -1,3 +1,5 @@
+import { crewPay } from './finance.ts';
+
 /**
  * Two things the season knows that no single evening does.
  *
@@ -20,6 +22,9 @@ export type Placement = {
   /** What this person is paid for that evening. Null is a real value and
    *  contributes nothing rather than breaking the sum. */
   fee?: number | string | null;
+  /** Hours the fee did not cover, at the rate copied onto the assignment. */
+  extra_hours?: number | string | null;
+  hour_rate?: number | string | null;
 };
 
 /** Only what the clash needs: which day each event falls on. */
@@ -95,7 +100,77 @@ export function clashingMembers(placements: readonly Placement[], when: WhenBy):
 export function earningsBy(placements: readonly Placement[]): Map<string, number> {
   const out = new Map<string, number>();
   for (const p of placements) {
-    out.set(p.memberId, (out.get(p.memberId) ?? 0) + num(p.fee));
+    out.set(p.memberId, (out.get(p.memberId) ?? 0) + crewPay(p));
   }
   return out;
+}
+
+/* ── what to pay, month by month ──────────────────────────────────────────
+ *
+ * The question this answers is the one asked at the start of every month:
+ * what do I owe each of these people for last month. It is not a report — it
+ * is a list somebody works down while making transfers, so it is grouped the
+ * way the paying happens: the month first, then the person, then the evenings
+ * that make up their figure, so a number that looks wrong can be argued with
+ * rather than just doubted.
+ */
+
+export type MonthLine = {
+  clientId: string;
+  date: string;
+  pay: number;
+  hours: number;
+};
+
+export type MonthPerson = {
+  memberId: string;
+  lines: MonthLine[];
+  total: number;
+};
+
+export type MonthGroup = {
+  /** Four digits, a dash, two digits. */
+  month: string;
+  people: MonthPerson[];
+  total: number;
+};
+
+/**
+ * Every evening worked, by month and then by person, most recent month first.
+ *
+ * Most recent first because the month being paid is almost always the one
+ * that just ended, and making somebody scroll past last February to reach it
+ * is making them scroll every single month.
+ *
+ * An evening with no date belongs to no month and is left out: it has not
+ * happened, so nobody is owed for it yet.
+ */
+export function monthsOf(placements: readonly Placement[], when: WhenBy): MonthGroup[] {
+  const byMonth = new Map<string, Map<string, MonthLine[]>>();
+
+  for (const p of placements) {
+    const d = day(when.get(p.clientId));
+    if (!d) continue;
+    const month = d.slice(0, 7);
+    const people = byMonth.get(month) ?? new Map<string, MonthLine[]>();
+    people.set(p.memberId, [
+      ...(people.get(p.memberId) ?? []),
+      { clientId: p.clientId, date: d, pay: crewPay(p), hours: num(p.extra_hours) },
+    ]);
+    byMonth.set(month, people);
+  }
+
+  return [...byMonth.entries()]
+    .sort((a, b) => b[0].localeCompare(a[0]))
+    .map(([month, people]) => {
+      const rows: MonthPerson[] = [...people.entries()]
+        .map(([memberId, lines]) => ({
+          memberId,
+          lines: [...lines].sort((a, b) => a.date.localeCompare(b.date)),
+          total: lines.reduce((t, l) => t + l.pay, 0),
+        }))
+        /* The largest bill first: it is the transfer worth checking. */
+        .sort((a, b) => b.total - a.total);
+      return { month, people: rows, total: rows.reduce((t, r) => t + r.total, 0) };
+    });
 }

@@ -2,9 +2,9 @@
 
 import { useState, useTransition } from 'react';
 import Link from 'next/link';
-import { Check, TriangleAlert, X } from 'lucide-react';
+import { Check, ChevronDown, Plus, Search, TriangleAlert, X } from 'lucide-react';
 import { assignCrew, unassignCrew } from '@/app/actions/crewMembers';
-import { crewState, CREW_SLOTS, type CrewSlot } from '@/lib/crewNeeds';
+import { crewState, candidatesFor, CREW_SLOTS, type CrewSlot } from '@/lib/crewNeeds';
 import { clashingMembers } from '@/lib/crewLoad';
 import { useCopy } from '@/components/app/CopyProvider';
 import { Ltr, Money } from '@/components/Ltr';
@@ -37,6 +37,87 @@ export type BoardEvent = {
 };
 
 export type BoardAssignment = { clientId: string; memberId: string; slot: string | null };
+
+/**
+ * Every name, behind one chevron, per cell.
+ *
+ * The board could already take somebody from the pool at the top, which works
+ * when the pool is four people and stops working at fifteen: the chip you want
+ * is off the side of a phone. So each cell opens its own list — searchable,
+ * everybody in it, the people who do that job first.
+ *
+ * It is also how a role gets more people than the rule asks for. There is no
+ * separate "add a slot" control because there are no slots: a cell holds as
+ * many people as are put in it, and the rule only ever says how many it
+ * expects. Wanting a third assistant is just assigning a third assistant.
+ */
+function SlotPicker({
+  label, people, onPick,
+}: {
+  label: string;
+  people: CrewPerson[];
+  onPick: (memberId: string) => void;
+}) {
+  const c = useCopy().crew;
+  const [q, setQ] = useState('');
+
+  const shown = q.trim()
+    ? people.filter((p) => p.name.toLowerCase().includes(q.trim().toLowerCase()))
+    : people;
+
+  return (
+    <details className="group/pick mt-2">
+      <summary
+        className="flex cursor-pointer list-none items-center justify-center gap-1.5 rounded-xl2
+                   border border-dashed border-line px-2 py-1.5 text-[12.5px] text-ink-soft
+                   transition-colors hover:border-accent/50 hover:text-accent
+                   [&::-webkit-details-marker]:hidden"
+      >
+        <Plus size={13} aria-hidden strokeWidth={1.5} />
+        {c.boardAdd}
+        <ChevronDown
+          size={13} aria-hidden strokeWidth={1.5}
+          className="transition-transform duration-200 group-open/pick:rotate-180"
+        />
+      </summary>
+
+      <div className="mt-2">
+        {people.length > 5 && (
+          <div className="relative">
+            <Search
+              size={13} strokeWidth={1.5} aria-hidden
+              className="pointer-events-none absolute inset-y-0 my-auto start-2.5 text-ink-mute"
+            />
+            <input
+              type="search" value={q} onChange={(e) => setQ(e.target.value)}
+              aria-label={`${c.deskSearch}: ${label}`} placeholder={c.deskSearchPh}
+              className="field ps-8 text-[13px] [&::-webkit-search-cancel-button]:appearance-none"
+            />
+          </div>
+        )}
+
+        {shown.length === 0 ? (
+          <p className="mt-2 text-[12.5px] text-ink-mute">{c.deskNoMatch}</p>
+        ) : (
+          <ul className="mt-2 max-h-56 list-none space-y-1 overflow-y-auto p-0">
+            {shown.map((p) => (
+              <li key={p.id}>
+                <button
+                  type="button"
+                  onClick={() => { onPick(p.id); setQ(''); }}
+                  className="w-full rounded-xl2 px-2.5 py-1.5 text-start text-[13.5px] text-ink
+                             transition-colors hover:bg-accent-wash"
+                >
+                  {p.name}
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </details>
+  );
+}
 
 /**
  * The season on one screen.
@@ -277,9 +358,9 @@ export function CrewBoard({
                           ))}
                         </ul>
 
-                        {/* The drop target, which is also the press target.
-                            It only offers itself when somebody is in hand, so
-                            the board is not a grid of empty buttons at rest. */}
+                        {/* Two ways in, and they do not compete: the drop
+                            target appears only while somebody is in hand, and
+                            the chevron is always there for the other path. */}
                         {picked ? (
                           <button
                             type="button"
@@ -289,9 +370,16 @@ export function CrewBoard({
                           >
                             {c.boardPlace}
                           </button>
-                        ) : inSlot.length === 0 ? (
-                          <p className="mt-2 text-[12.5px] text-ink-mute">{c.boardEmpty}</p>
-                        ) : null}
+                        ) : (
+                          <SlotPicker
+                            label={labels[slot]}
+                            people={candidatesFor(
+                              live.filter((p) => !here.some((r) => r.memberId === p.id)),
+                              slot,
+                            )}
+                            onPick={(id) => place(ev.id, id, slot)}
+                          />
+                        )}
                       </div>
                     );
                   })}

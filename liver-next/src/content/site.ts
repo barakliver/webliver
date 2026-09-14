@@ -2512,6 +2512,16 @@ export const crewCopy = {
   deskEarned: 'הרוויח',
   deskSignedIn: 'נכנס למערכת',
   deskNotSignedIn: 'טרם נכנס',
+  boardAdd: 'הוספה',
+  deskPeople: 'אנשי הצוות',
+  monthsTitle: 'תשלומים לפי חודש',
+  monthsSub: 'מה מגיע לכל אחד על החודש, והאירועים שמאחורי הסכום. אפשר להוסיף שעות על כל ערב.',
+  monthsNone: 'עוד אין אירועים עם שיבוץ שאפשר לחשב עליהם תשלום.',
+  monthsTotal: 'סך החודש',
+  monthsPay: 'לתשלום',
+  hoursAdd: 'שעות נוספות',
+  hoursExtra: 'כמה שעות',
+  hoursRate: 'לשעה',
   deskMoneyPrivate: 'התעריפים והסכומים במסך הזה גלויים לך בלבד. אנשי הצוות לא רואים אותם, גם לא את של עצמם.',
 } as const;
 
