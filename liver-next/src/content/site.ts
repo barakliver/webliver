@@ -1390,6 +1390,20 @@ export const appCopy = {
   },
 
   statusBoard: {
+    /* The headings the list groups itself under. Nothing is configured:
+       the years are whatever years the events fall in, so an event opened
+       for 2028 makes that year appear the moment it is saved, and a year
+       nobody has an event in does not exist.
+
+       And the two things a couple can be buying, which are not the same job:
+       the whole production is a year of suppliers, budget and decisions; the
+       night itself is running an evening somebody else planned. They were
+       drawn identically, so the only way to tell them apart was to remember. */
+    noYear: 'בלי תאריך',
+    oneEvent: 'אירוע',
+    manyEvents: 'אירועים',
+    serviceProduction: 'הפקה',
+    serviceManagement: 'ניהול אירוע',
     noDate: 'ללא תאריך',
     daysLeft: 'ימים',
     daysAgo: 'ימים',
@@ -1462,6 +1476,8 @@ export const appCopy = {
        it rather than "עוד": a menu called "more" is a menu nobody opens
        twice. */
     tools: 'הדפסות ותצוגות',
+    /* On the switch beside the event's colour. */
+    service: 'סוג הליווי',
     /* On the pencil beside the name at the top of the page. */
     rename: 'עריכת שם ופרטי האירוע',
 

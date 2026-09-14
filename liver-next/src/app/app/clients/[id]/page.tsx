@@ -10,6 +10,8 @@ import { PageHead } from '@/components/app/PageHead';
 import { EventTabs, readTab, type EventTab } from '@/components/app/EventTabs';
 import { IssueReporter } from '@/components/app/IssueReporter';
 import { EventTagPicker } from '@/components/app/EventTagPicker';
+import { ServiceSwitch } from '@/components/app/ServiceSwitch';
+import { isService } from '@/lib/eventGroups';
 import { loadLabels } from '@/lib/labels';
 import { EventDetails } from '@/components/app/EventDetails';
 import { EventSummary } from '@/components/app/EventSummary';
@@ -99,7 +101,7 @@ export default async function ClientPage({
   const sb = await supabaseServer();
   const { data: client } = await sb
     .from('clients')
-    .select('id,display_name,kind,event_date,venue,guest_estimate,budget_visible,budget_target,shared_sections,budget_plan,label_id,track_a_label,track_b_label,guest_token,guest_site_on,guest_note,contact_email,contact_phone,brief,brand')
+    .select('id,display_name,kind,event_date,venue,guest_estimate,budget_visible,budget_target,shared_sections,budget_plan,label_id,track_a_label,track_b_label,guest_token,guest_site_on,guest_note,contact_email,contact_phone,brief,brand,service')
     .eq('id', id)
     .maybeSingle();
 
@@ -210,8 +212,13 @@ export default async function ClientPage({
 
       {/* Above the tabs and outside them: which kind of thing this event is
           does not belong to any one section of its file. */}
-      <div className="-mt-4 mb-5">
+      {/* The colour and the kind of engagement, side by side. Neither belongs
+          to a section of the file: one says which event this is at a glance,
+          the other says what was actually sold, and both govern the whole of
+          it rather than any one tab. */}
+      <div className="-mt-4 mb-5 flex flex-wrap items-center gap-3">
         <EventTagPicker clientId={client.id} labels={tags} current={client.label_id ?? null} />
+        <ServiceSwitch clientId={client.id} service={isService(client.service) ? client.service : 'production'} />
       </div>
       {/* Stuck to the top, because the sections are the way around this file
           and a way around that scrolls off the screen is no way around at
@@ -265,6 +272,7 @@ type Client = {
   shared_sections: unknown;
   budget_plan: unknown;
   label_id: string | null;
+  service: string | null;
   guest_token: string | null; guest_site_on: boolean | null; guest_note: string | null;
   track_a_label: string; track_b_label: string;
   brand: unknown;

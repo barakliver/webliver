@@ -1,6 +1,7 @@
 import 'server-only';
 import { supabaseServer } from '@/lib/supabase/server';
 import { assess, type Gap } from '@/lib/gaps';
+import { isService, type Service } from '@/lib/eventGroups';
 
 export type { Gap, GapLevel } from '@/lib/gaps';
 
@@ -34,6 +35,11 @@ export type ClientStatus = {
   needsClosing: boolean;
   /** The producer's own colour for this event, when they gave it one. */
   color: string | null;
+  /** The whole production, or the evening itself. Read defensively: a row
+   *  written before 0089 has the default, and the board would rather draw an
+   *  unknown value as the thing the business has always sold than drop the
+   *  event off the screen. */
+  service: Service;
 };
 
 /* Supabase embeds a to-one relation as an object, but the generated types
@@ -59,13 +65,14 @@ export async function getBoard(opts: { archived?: boolean } = {}): Promise<Clien
 
   let q = sb
     .from('clients')
-    .select('id,display_name,kind,event_date,venue,guest_estimate,archived_at,producer_labels(color)');
+    .select('id,display_name,kind,event_date,venue,guest_estimate,archived_at,service,producer_labels(color)');
   q = opts.archived ? q.not('archived_at', 'is', null) : q.is('archived_at', null);
 
   const { data } = await q.order('event_date', { ascending: true, nullsFirst: false });
   const rows = (data ?? []) as {
     id: string; display_name: string; kind: string; event_date: string | null;
     venue: string; guest_estimate: number | null; archived_at: string | null;
+    service: string | null;
     /* Embedded through the foreign key rather than fetched per row. */
     producer_labels: unknown;
   }[];
@@ -154,6 +161,7 @@ export async function getBoard(opts: { archived?: boolean } = {}): Promise<Clien
       money: { owed, overdue },
       needsClosing,
       color: embeddedColor(r.producer_labels),
+      service: isService(r.service) ? r.service : 'production',
     };
   });
 }

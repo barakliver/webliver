@@ -88,6 +88,18 @@ that has happened once.
   `lib/producerTasks.ts` and is pure so it can be tested — the 31st of January
   plus a month is the 28th of February, and a routine ticked eleven days late
   comes back in the future rather than already overdue.
+- The list of events is read by season, not as one run of cards: years first,
+  soonest first, dateless last, and inside a year the two things a couple can
+  be buying. Nothing about that is configured — `lib/eventGroups.ts` reads the
+  years off the dates, so opening an event in 2028 makes a 2028 heading exist
+  and the year nobody has an event in does not. A list of years somebody has
+  to maintain is wrong the first time nobody maintains it. The two kinds are
+  `clients.service`: `production` is the whole year of it, `management` is the
+  evening itself for a couple who planned their own, and it is a property of
+  the engagement rather than of the account — `account_kind` already answers
+  the different question of whether somebody has a producer at all. Anything
+  that is not one of the two reads as a production rather than vanishing off
+  the screen, and a heading is never drawn over nothing.
 - The ground is a pale blue, #F2F6FC, everywhere: the app, the public site and
   the guests' page alike. It was warm ivory before, and slate before that; the
   rule that settles it is that his latest instruction wins, and the reasoning

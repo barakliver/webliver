@@ -227,7 +227,7 @@ export const fixtureStatus: ClientStatus[] = [
     nextTask: { title: 'לסגור טעימות עם הקייטרינג', dueOn: day(4) },
     guests: { invited: 340, attending: 218 },
     money: { owed: 95000, overdue: 40000 },
-    needsClosing: false, color: null,
+    needsClosing: false, color: null, service: 'production',
   },
   {
     id: '00000000-0000-4000-8000-000000000002', name: 'שיר ותומר', kind: 'wedding', eventDate: day(160),
@@ -235,7 +235,7 @@ export const fixtureStatus: ClientStatus[] = [
     gaps: [], nextTask: null,
     guests: { invited: 0, attending: 0 },
     money: { owed: 0, overdue: 0 },
-    needsClosing: false, color: null,
+    needsClosing: false, color: null, service: 'production',
   },
   {
     id: '00000000-0000-4000-8000-000000000003', name: 'ערב חברה, לקוח עסקי עם שם ארוך במיוחד בע״מ', kind: 'corporate',
@@ -243,7 +243,7 @@ export const fixtureStatus: ClientStatus[] = [
     gaps: [], nextTask: null,
     guests: { invited: 120, attending: 104 },
     money: { owed: 12000, overdue: 12000 },
-    needsClosing: true, color: null,
+    needsClosing: true, color: null, service: 'management',
   },
 ];
 

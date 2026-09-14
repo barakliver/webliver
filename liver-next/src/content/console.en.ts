@@ -621,6 +621,11 @@ export const consoleEn: ConsoleCopy = {
   },
 
   statusBoard: {
+    noYear: 'No date yet',
+    oneEvent: 'event',
+    manyEvents: 'events',
+    serviceProduction: 'Full production',
+    serviceManagement: 'Event management',
     noDate: 'No date',
     daysLeft: 'days',
     daysAgo: 'days',
@@ -684,6 +689,7 @@ export const consoleEn: ConsoleCopy = {
     back: 'Back to events',
     details: 'Event details',
     tools: 'Printouts and views',
+    service: 'Kind of engagement',
     rename: 'Edit the name and details',
 
     tabs: {

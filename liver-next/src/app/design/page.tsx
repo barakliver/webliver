@@ -102,6 +102,7 @@ import { prepViewFor } from '@/content/prepView';
 import { AdminRow } from '@/components/app/AdminRow';
 import { ReleaseState } from '@/components/app/ReleaseState';
 import { AccountSearch } from '@/components/app/AccountSearch';
+import { ServiceSwitch } from '@/components/app/ServiceSwitch';
 import { ThemeToggle } from '@/components/app/ThemeToggle';
 import { WorkspaceSwitcher } from '@/components/portal/WorkspaceSwitcher';
 import { PortalJump } from '@/components/portal/PortalJump';
@@ -1104,6 +1105,16 @@ export default async function DesignPage() {
             list handed to it, so here it filters the three rows under it —
             which is the only question worth asking of a component whose job
             is reading the page it is on. */}
+        {/* The two words that say what was actually sold. A switch rather
+            than a decision made once: a couple who booked the evening and
+            later asked for the year is one press, not a new file. */}
+        <Panel name="ServiceSwitch · production or the night itself" note="beside the event's colour, because it governs the whole file rather than one tab of it">
+          <div className="flex flex-wrap items-center gap-4">
+            <ServiceSwitch clientId={client} service="production" />
+            <ServiceSwitch clientId={client} service="management" />
+          </div>
+        </Panel>
+
         <Panel name="AccountSearch · finding one account" note="every word has to appear, in any order; a filtered row leaves the accessibility tree too">
           <div className="max-w-2xl">
             <AccountSearch scope="design-accounts" />

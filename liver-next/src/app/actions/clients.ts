@@ -12,6 +12,7 @@ import { MIN_EVENT_DATE, MAX_GUESTS } from '@/content/site';
 import { STANDING_CHECKLIST } from '@/content/eventFile';
 import { explainRefusal } from '@/lib/rls';
 import { noteFailure } from '@/lib/flash';
+import { isService } from '@/lib/eventGroups';
 
 export type ActionResult = { ok: boolean; error?: string; id?: string };
 
@@ -323,6 +324,38 @@ export async function setArchived(form: FormData): Promise<void> {
 
   revalidatePath('/app/clients');
   revalidatePath('/app/clients/archive');
+  revalidatePath(`/app/clients/${id}`);
+  revalidatePath('/app');
+}
+
+/**
+ * What this couple is buying: the whole production, or the evening itself.
+ *
+ * A property of the engagement and nothing else — it moves no data, opens no
+ * workspace and changes nobody's permissions. It changes what the list calls
+ * this event and where it files it, and it changes what the producer expects
+ * of himself when he opens it. Which is why it is a switch on the event and
+ * not a decision made once at the start: a couple who took the evening and
+ * then asked for the year is one press, not a new file.
+ *
+ * The row policy on `clients` is the whole of the authorisation. A producer
+ * may write their own events and nobody else's, which is the same rule that
+ * governs renaming one.
+ */
+export async function setClientService(form: FormData): Promise<void> {
+  const id = String(form.get('client_id') ?? '');
+  const raw = String(form.get('service') ?? '');
+  if (!id || !isService(raw)) return;
+
+  const sb = await supabaseServer();
+  const { error } = await sb.from('clients').update({ service: raw }).eq('id', id);
+  if (error) {
+    console.error('[clients] service failed', { message: error.message });
+    await noteFailure('לא הצלחנו לשנות את סוג הליווי. אפשר לנסות שוב.');
+    return;
+  }
+
+  revalidatePath('/app/clients');
   revalidatePath(`/app/clients/${id}`);
   revalidatePath('/app');
 }

@@ -5,7 +5,8 @@ import { serverCopy } from '@/lib/serverLocale';
 import type { ClientStatus } from '@/lib/status';
 import { ArchiveButton } from '@/components/app/ArchiveButton';
 import { formatDate } from '@/lib/dates';
-import { Money, Ratio, ils } from '@/components/Ltr';
+import { Money, Ratio, ils, Ltr } from '@/components/Ltr';
+import { groupByYear } from '@/lib/eventGroups';
 import { EVENT_ZONE } from '@/lib/clock';
 
 const dateFmtFor = (l: Locale) => new Intl.DateTimeFormat(l === 'en' ? 'en-GB' : 'he-IL', { timeZone: EVENT_ZONE, day: 'numeric', month: 'short', year: 'numeric' });
@@ -148,7 +149,8 @@ async function Row({ s }: { s: ClientStatus }) {
   );
 }
 
-export function StatusBoard({ items }: { items: ClientStatus[] }) {
+export async function StatusBoard({ items }: { items: ClientStatus[] }) {
+  const c = (await serverCopy()).statusBoard;
   /* Anything with a red gap floats up, then by how soon the event is, then
      the undated. Sorting on urgency rather than date alone is the difference
      between a list of events and a list of work. */
@@ -160,9 +162,60 @@ export function StatusBoard({ items }: { items: ClientStatus[] }) {
     return a.daysLeft - b.daysLeft;
   });
 
+  /* Years, and inside a year the two things a couple can be buying. Nothing
+     is configured: the headings are whatever the events say, so opening one
+     for 2028 makes that year appear the moment it is saved, and a year with
+     nothing in it does not exist. The sort above still decides the order
+     inside each group — urgency first, then how soon — because that is the
+     same question and it should not have two answers. */
+  const groups = groupByYear(sorted);
+
+  /* One year and one kind is not a grouping, it is two headings over a list.
+     The board stays flat until there is something to separate. */
+  const flat = groups.length <= 1 && (groups[0]?.services.length ?? 0) <= 1;
+  if (flat) {
+    return (
+      <ul className="list-none space-y-3.5 p-0">
+        {sorted.map((s) => <Row key={s.id} s={s} />)}
+      </ul>
+    );
+  }
+
   return (
-    <ul className="space-y-3.5">
-      {sorted.map((s) => <Row key={s.id} s={s} />)}
-    </ul>
+    <div className="space-y-10">
+      {groups.map((g) => (
+        <section key={g.year ?? 'none'} aria-labelledby={`year-${g.year ?? 'none'}`}>
+          <h2
+            id={`year-${g.year ?? 'none'}`}
+            className="mb-4 font-display text-[26px] font-semibold leading-none text-ink"
+          >
+            {g.year ? <Ltr>{g.year}</Ltr> : c.noYear}
+            <span className="ms-3 align-middle text-[13px] font-normal text-ink-mute">
+              {g.rows.length} {g.rows.length === 1 ? c.oneEvent : c.manyEvents}
+            </span>
+          </h2>
+
+          <div className="space-y-6">
+            {g.services.map((sv) => (
+              <div key={sv.service}>
+                {/* The second heading only when both kinds are in this year.
+                    One kind needs no label saying which one, and a subheading
+                    over the whole group is a line that teaches somebody to
+                    stop reading subheadings. */}
+                {g.services.length > 1 && (
+                  <h3 className="eyebrow mb-2.5">
+                    {sv.service === 'production' ? c.serviceProduction : c.serviceManagement}
+                    {' · '}{sv.rows.length}
+                  </h3>
+                )}
+                <ul className="list-none space-y-3.5 p-0">
+                  {sv.rows.map((s) => <Row key={s.id} s={s} />)}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
   );
 }
