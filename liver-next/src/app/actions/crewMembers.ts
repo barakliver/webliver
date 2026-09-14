@@ -35,6 +35,15 @@ function readEmail(form: FormData): string {
   return /^[^@\s]+@[^@\s.]+\.[^@\s]+$/.test(raw) ? raw.slice(0, 160) : '';
 }
 
+/** A rate, or nothing. Nothing is a real answer and is stored as one: zero
+ *  would mean "works for free", which is a different claim. */
+function readRate(form: FormData): number | null {
+  const raw = String(form.get('rate') ?? '').replace(/[^\d.]/g, '');
+  if (!raw) return null;
+  const n = Number(raw);
+  return Number.isFinite(n) && n >= 0 ? Math.round(n * 100) / 100 : null;
+}
+
 /** The roles ticked on the form, in the fixed order, with anything unknown
  *  dropped rather than saved for the database to refuse. */
 function readRoles(form: FormData): string[] {
@@ -55,6 +64,7 @@ function memberFields(form: FormData) {
     phone: String(form.get('phone') ?? '').trim().slice(0, 40),
     email: clean,
     roles: readRoles(form),
+    rate: readRate(form),
     notes: String(form.get('notes') ?? '').trim().slice(0, 1000),
   };
 }

@@ -6,7 +6,7 @@ import { Check, TriangleAlert, X } from 'lucide-react';
 import { assignCrew, unassignCrew } from '@/app/actions/crewMembers';
 import { crewState, CREW_SLOTS, type CrewSlot } from '@/lib/crewNeeds';
 import { useCopy } from '@/components/app/CopyProvider';
-import { Ltr } from '@/components/Ltr';
+import { Ltr, Money } from '@/components/Ltr';
 import { EVENT_ZONE } from '@/lib/clock';
 import type { CrewPerson } from '@/components/app/CrewDesk';
 
@@ -17,6 +17,22 @@ export type BoardEvent = {
   /** The number the staffing rule is applied to, worked out on the server so
    *  the board and the event screen cannot disagree about it. */
   guests: number | null;
+  /** The producer's own position on this evening, from `ledgerOf` on the
+   *  server — the same arithmetic the money tab shows, so the two screens can
+   *  never answer the question differently. */
+  money: {
+    /** Everything the couple has agreed to pay, arrived or not. */
+    billed: number;
+    /** Suppliers plus crew. */
+    costs: number;
+    /** Just the crew's share of it, which is the half this screen moves. */
+    crew: number;
+    /** Billed minus costs. Negative is a real answer and is shown as one. */
+    margin: number;
+    /** Costs recorded before anybody has been billed: the ordinary shape of
+     *  an event three months out, not a business in trouble. */
+    early: boolean;
+  };
 };
 
 export type BoardAssignment = { clientId: string; memberId: string; slot: string | null };
@@ -160,6 +176,38 @@ export function CrewBoard({
                   </p>
                 </div>
 
+                {/* The money, beside the people it is mostly spent on. The
+                    same three figures the money tab shows and from the same
+                    function, so staffing an evening and reading what is left
+                    of it are one glance rather than two screens. */}
+                <dl className="mt-2.5 flex flex-wrap items-baseline gap-x-5 gap-y-1 text-[13px]">
+                  <div className="flex items-baseline gap-1.5">
+                    <dt className="text-ink-mute">{c.moneyIn}</dt>
+                    <dd className="text-ink"><Money value={ev.money.billed} /></dd>
+                  </div>
+                  <div className="flex items-baseline gap-1.5">
+                    <dt className="text-ink-mute">{c.moneyCrew}</dt>
+                    <dd className="text-ink"><Money value={ev.money.crew} /></dd>
+                  </div>
+                  <div className="flex items-baseline gap-1.5">
+                    <dt className="text-ink-mute">{c.moneyOut}</dt>
+                    <dd className="text-ink"><Money value={ev.money.costs} /></dd>
+                  </div>
+                  {/* A margin before anything is billed is not a loss, it is
+                      an invoice nobody has raised yet. Saying "loss" there is
+                      how somebody learns to stop reading this line. */}
+                  {ev.money.early ? (
+                    <div className="text-ink-mute">{c.moneyEarly}</div>
+                  ) : (
+                    <div className="flex items-baseline gap-1.5">
+                      <dt className="text-ink-mute">{c.moneyMargin}</dt>
+                      <dd className={ev.money.margin < 0 ? 'font-medium text-bad' : 'font-medium text-ink'}>
+                        <Money value={ev.money.margin} />
+                      </dd>
+                    </div>
+                  )}
+                </dl>
+
                 <div className="mt-3 grid gap-3 sm:grid-cols-3">
                   {CREW_SLOTS.map((slot) => {
                     const inSlot = here.filter((r) => r.slot === slot);
@@ -222,6 +270,38 @@ export function CrewBoard({
           })}
         </ul>
       </div>
+
+      {/* The season added up. One line, because the question it answers is
+          one question: what does the whole year in front of me come to. */}
+      {(() => {
+        const t = events.reduce(
+          (a, e) => ({
+            billed: a.billed + e.money.billed,
+            costs: a.costs + e.money.costs,
+            margin: a.margin + e.money.margin,
+          }),
+          { billed: 0, costs: 0, margin: 0 },
+        );
+        if (t.billed === 0 && t.costs === 0) return null;
+        return (
+          <dl className="flex flex-wrap items-baseline gap-x-6 gap-y-1.5 border-t border-line pt-4 text-[14px]">
+            <div className="flex items-baseline gap-2">
+              <dt className="text-ink-mute">{c.seasonIn}</dt>
+              <dd className="text-ink"><Money value={t.billed} /></dd>
+            </div>
+            <div className="flex items-baseline gap-2">
+              <dt className="text-ink-mute">{c.seasonOut}</dt>
+              <dd className="text-ink"><Money value={t.costs} /></dd>
+            </div>
+            <div className="flex items-baseline gap-2">
+              <dt className="text-ink-mute">{c.seasonMargin}</dt>
+              <dd className={t.margin < 0 ? 'font-semibold text-bad' : 'font-semibold text-ink'}>
+                <Money value={t.margin} />
+              </dd>
+            </div>
+          </dl>
+        );
+      })()}
     </div>
   );
 }

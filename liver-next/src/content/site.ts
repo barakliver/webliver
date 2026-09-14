@@ -2496,6 +2496,16 @@ export const crewCopy = {
   boardGuests: 'אורחים',
   boardShort: 'חסר',
   boardFull: 'מלא',
+  deskRate: 'תעריף לערב',
+  deskRateHint: 'נשמר לשיבוץ ברגע ששיבצת. שינוי התעריף לא משנה אירועים קודמים.',
+  moneyIn: 'הכנסה',
+  moneyOut: 'עלויות',
+  moneyCrew: 'צוות',
+  moneyMargin: 'רווח',
+  moneyEarly: 'עוד לא חויב, אז אין עדיין רווח לחשב.',
+  seasonIn: 'סך הכנסה',
+  seasonOut: 'סך עלויות',
+  seasonMargin: 'סך רווח',
 } as const;
 
 export const vendorCopy = {

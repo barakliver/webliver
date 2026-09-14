@@ -2,14 +2,14 @@
 
 import { useActionState, useMemo, useState } from 'react';
 import { useFormStatus } from 'react-dom';
-import { Check, ChevronDown, Mail, Phone, Plus, Search, Send, UserPlus, X } from 'lucide-react';
+import { Check, ChevronDown, Mail, Phone, Plus, Search, Send, UserPlus, Wallet, X } from 'lucide-react';
 import {
   addCrewMember, updateCrewMember, archiveCrewMember, inviteCrewMember,
   type CrewMemberResult,
 } from '@/app/actions/crewMembers';
 import { CREW_SLOTS, type CrewSlot } from '@/lib/crewNeeds';
 import { useCopy } from '@/components/app/CopyProvider';
-import { Ltr } from '@/components/Ltr';
+import { Ltr, Money } from '@/components/Ltr';
 
 export type CrewPerson = {
   id: string;
@@ -18,6 +18,9 @@ export type CrewPerson = {
   email: string;
   roles: string[];
   notes: string;
+  /** What this person usually costs for an evening, or null when nobody has
+   *  agreed one yet. Null is a real answer and stays one. */
+  rate: number | string | null;
   archived_at: string | null;
   /** How many events this person is on. Read once on the server rather than
    *  counted here, so the row can say it without a second request. */
@@ -83,7 +86,7 @@ function Fields({ person }: { person?: CrewPerson }) {
   const c = useCopy().crew;
   return (
     <div className="space-y-3">
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <div>
           <label className="label" htmlFor={`n-${person?.id ?? 'new'}`}>{c.name}</label>
           <input
@@ -104,6 +107,19 @@ function Fields({ person }: { person?: CrewPerson }) {
             id={`e-${person?.id ?? 'new'}`} name="email" type="email" defaultValue={person?.email}
             autoComplete="off" className="field" dir="ltr"
           />
+        </div>
+        {/* The usual rate, which the assignment takes a copy of. Blank is a
+            real answer: plenty of a crew is on a day rate agreed by message
+            and not written down yet, and a field that insists on a number is
+            a field that gets a made-up one. */}
+        <div>
+          <label className="label" htmlFor={`r-${person?.id ?? 'new'}`}>{c.deskRate}</label>
+          <input
+            id={`r-${person?.id ?? 'new'}`} name="rate" type="number" min="0" step="50"
+            defaultValue={person?.rate === null || person?.rate === undefined ? '' : String(person.rate)}
+            placeholder={c.feePh} autoComplete="off" className="field" inputMode="numeric"
+          />
+          <p className="mt-1 text-[12px] text-ink-mute">{c.deskRateHint}</p>
         </div>
       </div>
 
@@ -253,6 +269,12 @@ function PersonRow({ person }: { person: CrewPerson }) {
                 <Mail size={13} aria-hidden strokeWidth={1.5} />
                 {person.email ? <Ltr>{person.email}</Ltr> : c.deskNoEmail}
               </span>
+              {person.rate !== null && person.rate !== undefined && (
+                <span className="inline-flex items-center gap-1.5">
+                  <Wallet size={13} aria-hidden strokeWidth={1.5} />
+                  <Money value={Number(person.rate)} />
+                </span>
+              )}
               {typeof person.events === 'number' && (
                 <span>
                   {person.events > 0 ? `${person.events} ${c.deskEvents}` : c.deskNoEvents}

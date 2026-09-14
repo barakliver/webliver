@@ -41,7 +41,7 @@ function door(): string {
 
 test('nothing a crew member reads carries money', () => {
   const body = door();
-  for (const word of ['fee', 'budget', 'agreed', 'deposit', 'balance', 'price']) {
+  for (const word of ['fee', 'rate', 'budget', 'agreed', 'deposit', 'balance', 'price']) {
     assert.equal(
       new RegExp(`\\b${word}\\b`, 'i').test(body), false,
       `the crew's own functions mention "${word}"`,

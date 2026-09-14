@@ -928,6 +928,16 @@ export const crewEn: CrewCopy = {
   boardGuests: 'guests',
   boardShort: 'Short',
   boardFull: 'Full',
+  deskRate: 'Rate per evening',
+  deskRateHint: 'Copied onto the assignment the moment you assign them. Changing it does not change past events.',
+  moneyIn: 'Income',
+  moneyOut: 'Costs',
+  moneyCrew: 'Crew',
+  moneyMargin: 'Margin',
+  moneyEarly: 'Nothing billed yet, so there is no margin to work out.',
+  seasonIn: 'Total income',
+  seasonOut: 'Total costs',
+  seasonMargin: 'Total margin',
 };
 
 export const vendorEn: VendorCopy = {

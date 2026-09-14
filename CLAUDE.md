@@ -138,7 +138,18 @@ that has happened once.
   implementation and the drag is decoration over it — a long press on a phone
   is text selection and a drag is a scroll, and he works from a phone. The
   board moves first and the server catches up, because a staffing screen that
-  waits a round trip per drag is a screen somebody drags twice.
+  waits a round trip per drag is a screen somebody drags twice. It also
+  carries the money: income, crew, costs and margin per event and for the
+  whole season, from `ledgerOf` in `lib/finance.ts` — the same function the
+  money tab uses, so staffing an evening and reading what is left of it can
+  never disagree. Income is the couple's payment schedule; before anything is
+  billed the board says so rather than reporting a loss, because costs before
+  billing is the ordinary shape of an event three months out.
+  `crew_members.rate` is the usual fee and `assign_crew` copies it onto
+  `crew.fee`, the same copy-on-write as the name: raising a rate next March
+  must not rewrite what last August cost. Neither word reaches a crew
+  member — `crewDoor.test.ts` fails if `rate` or `fee` appears in their two
+  functions.
 - The ground is a pale blue, #F2F6FC, everywhere: the app, the public site and
   the guests' page alike. It was warm ivory before, and slate before that; the
   rule that settles it is that his latest instruction wins, and the reasoning

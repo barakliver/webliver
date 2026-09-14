@@ -314,19 +314,20 @@ export const fixtureCrewPeople: CrewPerson[] = [
   {
     id: 'm1', name: 'טל אבני', phone: '0541111111', email: 'tal@example.com',
     roles: ['manager', 'assistant', 'social'], notes: 'לא זמינה בימי שישי.',
-    archived_at: null, events: 9,
+    rate: 1800, archived_at: null, events: 9,
   },
   {
     id: 'm2', name: 'עידן שגב', phone: '0522222222', email: '',
-    roles: ['assistant'], notes: '', archived_at: null, events: 3,
+    roles: ['assistant'], notes: '', rate: 900, archived_at: null, events: 3,
   },
   {
     id: 'm3', name: 'נועה גל', phone: '', email: 'noa@example.com',
-    roles: ['social'], notes: '', archived_at: null, events: 0,
+    roles: ['social'], notes: '', rate: null, archived_at: null, events: 0,
   },
   {
     id: 'm4', name: 'דור כהן', phone: '0533333333', email: '',
-    roles: ['assistant'], notes: 'עבר לחו״ל.', archived_at: '2025-04-02T09:00:00Z', events: 5,
+    roles: ['assistant'], notes: 'עבר לחו״ל.', rate: 850,
+    archived_at: '2025-04-02T09:00:00Z', events: 5,
   },
 ];
 
@@ -380,9 +381,20 @@ export const fixtureShift: ShiftDetail = {
 /* Three evenings to staff: one big and one assistant short, one small and
    complete, one with no guest count written yet. */
 export const fixtureBoardEvents: BoardEvent[] = [
-  { id: 'm1e', name: 'נועה ואיתי', date: day(2), guests: 420 },
-  { id: 'm2e', name: 'שיר ותומר', date: day(120), guests: 180 },
-  { id: 'm3e', name: 'ערב חברה', date: day(240), guests: null },
+  {
+    id: 'm1e', name: 'נועה ואיתי', date: day(2), guests: 420,
+    money: { billed: 95000, costs: 61700, crew: 2700, margin: 33300, early: false },
+  },
+  {
+    id: 'm2e', name: 'שיר ותומר', date: day(120), guests: 180,
+    money: { billed: 48000, costs: 52400, crew: 2700, margin: -4400, early: false },
+  },
+  /* Costs before any billing: the ordinary shape of an event eight months
+     out, and the one case where a margin is not a loss. */
+  {
+    id: 'm3e', name: 'ערב חברה', date: day(240), guests: null,
+    money: { billed: 0, costs: 4200, crew: 0, margin: -4200, early: true },
+  },
 ];
 
 export const fixtureBoardAssignments: BoardAssignment[] = [
