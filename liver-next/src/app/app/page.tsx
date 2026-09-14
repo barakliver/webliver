@@ -31,6 +31,7 @@ export default async function OverviewPage() {
   const c = (await serverCopy()).overview2;
   const account = await requireAccount();
   if (account.role === 'client') redirect('/app/portal');
+  if (account.role === 'staff') redirect('/app/shifts');
   if (!isLive(account)) redirect('/app/pending');
 
   const { items, next, money } = await getOverview();

@@ -33,6 +33,12 @@ function navFor(a: Account, nav: AppUi['nav'], clientNav?: ClientNavLabels): Nav
       { href: '/app/guide', label: clientNav?.guide ?? nav.guide, icon: 'guide' },
     ];
   }
+  if (a.role === 'staff') {
+    /* One destination. A crew member is not running a business here: they are
+       looking up where to be and when, and a menu of eleven things they
+       cannot open would be a menu of eleven dead ends. */
+    return [{ href: '/app/shifts', label: nav.crew, icon: 'crew' }];
+  }
   /* Ordered by how often a producer opens them, not by when each was built.
      The first four are the phone's bottom bar and the rest go behind "more",
      so the order here is a decision about a thumb rather than a list.

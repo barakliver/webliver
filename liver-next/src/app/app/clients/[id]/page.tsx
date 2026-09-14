@@ -41,6 +41,7 @@ import { SeatingPlan, type SeatTable } from '@/components/app/SeatingPlan';
 import { DaySchedule, type DayItem } from '@/components/app/DaySchedule';
 import { CrewPanel, type CrewMember } from '@/components/app/CrewPanel';
 import { CrewNeeds } from '@/components/app/CrewNeeds';
+import { CrewNote } from '@/components/app/CrewNote';
 import type { CrewPerson } from '@/components/app/CrewDesk';
 import { expectedGuests } from '@/lib/crewNeeds';
 import { BarCalculator } from '@/components/app/BarCalculator';
@@ -104,7 +105,7 @@ export default async function ClientPage({
   const sb = await supabaseServer();
   const { data: client } = await sb
     .from('clients')
-    .select('id,display_name,kind,event_date,venue,guest_estimate,budget_visible,budget_target,shared_sections,budget_plan,label_id,track_a_label,track_b_label,guest_token,guest_site_on,guest_note,contact_email,contact_phone,brief,brand,service')
+    .select('id,display_name,kind,event_date,venue,guest_estimate,budget_visible,budget_target,shared_sections,crew_note,budget_plan,label_id,track_a_label,track_b_label,guest_token,guest_site_on,guest_note,contact_email,contact_phone,brief,brand,service')
     .eq('id', id)
     .maybeSingle();
 
@@ -271,6 +272,7 @@ export default async function ClientPage({
 type Client = {
   id: string; display_name: string; kind: string; event_date: string | null;
   venue: string | null; guest_estimate: number | null; budget_visible: boolean | null;
+  crew_note: string | null;
   budget_target: number | null;
   shared_sections: unknown;
   budget_plan: unknown;
@@ -435,6 +437,7 @@ async function Section({ tab, client, viewerId }: { tab: EventTab; client: Clien
           people={crewPeople.map((p) => ({ ...p, roles: Array.isArray(p.roles) ? p.roles : [] }))}
         />
         <CrewPanel clientId={id} crew={crew} />
+        <CrewNote clientId={id} note={client.crew_note ?? ''} />
       </div>
     );
   }

@@ -5,6 +5,9 @@ import { supabaseServer } from '@/lib/supabase/server';
 import { currentAccount } from '@/lib/auth';
 import { CREW_SLOTS, isSlot } from '@/lib/crewNeeds';
 import { noteFailure } from '@/lib/flash';
+import { sendMail } from '@/lib/notify/mail';
+import { publicEnv } from '@/lib/env';
+import { crewInviteEmail } from '@/lib/notify/templates';
 
 export type CrewMemberResult = { ok: boolean; error?: string; id?: string };
 
@@ -194,4 +197,86 @@ export async function setCrewSlot(form: FormData): Promise<void> {
   }
   touchEvent(clientId);
   touchDirectory();
+}
+
+/* ── the invitation ─────────────────────────────────────────────────────── */
+
+/**
+ * Tell somebody they are on the crew, and how to get in.
+ *
+ * There is no token in this letter and there is no link that logs anybody in.
+ * The address itself is the invitation: it is on the producer's crew list, and
+ * the sign-in page sends a code to whoever owns that inbox. A link carrying a
+ * secret is a link that lives in a WhatsApp group for three years, and this
+ * area shows a run sheet and a venue.
+ *
+ * It can be sent again as often as the producer likes, because it says nothing
+ * that expires.
+ */
+export async function inviteCrewMember(
+  _prev: CrewMemberResult | null, form: FormData,
+): Promise<CrewMemberResult> {
+  const id = String(form.get('member_id') ?? '');
+  if (!id) return { ok: false, error: 'חסר מזהה' };
+
+  const account = await currentAccount();
+  if (!account?.producer) return { ok: false, error: 'אין מרחב הפקה משויך לחשבון' };
+
+  const sb = await supabaseServer();
+  const { data: person, error } = await sb
+    .from('crew_members').select('name,email').eq('id', id).maybeSingle();
+
+  if (error || !person) {
+    console.error('[crew_members] invite read failed', error);
+    return { ok: false, error: 'לא הצלחנו לשלוח את ההזמנה.' };
+  }
+  const to = String(person.email ?? '').trim();
+  if (!to) return { ok: false, error: 'צריך מייל כדי לשלוח הזמנה.' };
+
+  const brand = account.producer.brandName || account.fullName || '';
+  const url = `${publicEnv.siteUrl}/login`;
+  const html = crewInviteEmail({ name: String(person.name ?? ''), brand, signInUrl: url });
+
+  const sent = await sendMail({
+    to,
+    subject: `${brand}: הצטרפת לצוות`,
+    html,
+    replyTo: account.email || undefined,
+  });
+
+  if (!sent.sent) {
+    console.error('[crew_members] invite send failed', sent.error);
+    return { ok: false, error: 'לא הצלחנו לשלוח את ההזמנה.' };
+  }
+
+  touchDirectory();
+  return { ok: true, id };
+}
+
+/**
+ * The note the whole crew reads.
+ *
+ * Written to `clients.crew_note`, which exists so that the crew screen never
+ * has to point at `brief` — the producer's own note about the couple, with
+ * money in it. Two fields rather than one is the difference between "what I
+ * want them to know" and "everything I have ever written down".
+ */
+export async function saveCrewNote(
+  _prev: CrewMemberResult | null, form: FormData,
+): Promise<CrewMemberResult> {
+  const clientId = String(form.get('client_id') ?? '');
+  if (!clientId) return { ok: false, error: 'חסר מזהה אירוע' };
+
+  const sb = await supabaseServer();
+  const { error } = await sb
+    .from('clients')
+    .update({ crew_note: String(form.get('crew_note') ?? '').trim().slice(0, 2000) })
+    .eq('id', clientId);
+
+  if (error) {
+    console.error('[crew] note failed', error);
+    return { ok: false, error: 'לא הצלחנו לשמור' };
+  }
+  touchEvent(clientId);
+  return { ok: true, id: clientId };
 }

@@ -2,9 +2,10 @@
 
 import { useActionState, useMemo, useState } from 'react';
 import { useFormStatus } from 'react-dom';
-import { ChevronDown, Mail, Phone, Plus, Search, UserPlus, X } from 'lucide-react';
+import { Check, ChevronDown, Mail, Phone, Plus, Search, Send, UserPlus, X } from 'lucide-react';
 import {
-  addCrewMember, updateCrewMember, archiveCrewMember, type CrewMemberResult,
+  addCrewMember, updateCrewMember, archiveCrewMember, inviteCrewMember,
+  type CrewMemberResult,
 } from '@/app/actions/crewMembers';
 import { CREW_SLOTS, type CrewSlot } from '@/lib/crewNeeds';
 import { useCopy } from '@/components/app/CopyProvider';
@@ -152,9 +153,13 @@ function EditForm({ person }: { person: CrewPerson }) {
         <div className="mt-4"><Save /></div>
       </form>
 
+      <div className="mt-3 border-t border-line-soft pt-3">
+        <InviteButton person={person} />
+      </div>
+
       {/* Retire rather than delete, which is why this is not a delete dialog:
           nothing is lost and last August's event keeps its crew. */}
-      <form action={archiveCrewMember} className="mt-3 border-t border-line-soft pt-3">
+      <form action={archiveCrewMember} className="mt-2">
         <input type="hidden" name="member_id" value={person.id} />
         <input type="hidden" name="archived" value={person.archived_at ? '0' : '1'} />
         <button type="submit" className="btn-ghost text-[13.5px]">
@@ -162,6 +167,43 @@ function EditForm({ person }: { person: CrewPerson }) {
         </button>
       </form>
     </>
+  );
+}
+
+/* The invitation, which is only ever an invitation: no token, nothing that
+   expires, and nothing that works if it is forwarded. It can be sent again as
+   often as he likes, which is why the button stays after it succeeds. */
+/* Its own component so `useFormStatus` reads the form it is inside, which is
+   the only place that hook answers anything. */
+function SendInvite({ sent, disabled }: { sent: boolean; disabled: boolean }) {
+  const c = useCopy().crew;
+  const { pending } = useFormStatus();
+  return (
+    <button
+      type="submit" className="btn-ghost inline-flex items-center gap-1.5 text-[13.5px]"
+      disabled={pending || disabled}
+    >
+      <Send size={14} aria-hidden strokeWidth={1.5} />
+      {pending ? c.inviteSending : sent ? c.inviteAgain : c.invite}
+    </button>
+  );
+}
+
+function InviteButton({ person }: { person: CrewPerson }) {
+  const c = useCopy().crew;
+  const [state, action] = useActionState<CrewMemberResult | null, FormData>(inviteCrewMember, null);
+  return (
+    <form action={action} className="inline-flex flex-wrap items-center gap-2">
+      <input type="hidden" name="member_id" value={person.id} />
+      <SendInvite sent={!!state?.ok} disabled={!person.email} />
+      {state?.ok && (
+        <span className="inline-flex items-center gap-1 text-[13px] text-good">
+          <Check size={14} aria-hidden strokeWidth={1.5} />{c.inviteSent}
+        </span>
+      )}
+      {state?.error && <span className="text-[13px] text-bad">{state.error}</span>}
+      {!person.email && <span className="text-[13px] text-ink-mute">{c.inviteNoEmail}</span>}
+    </form>
   );
 }
 

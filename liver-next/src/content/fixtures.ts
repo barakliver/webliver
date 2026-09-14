@@ -11,6 +11,7 @@ import type { Contract } from '@/components/app/Contracts';
 import type { EventFile } from '@/components/app/EventFiles';
 import type { Song, Kit, Person } from '@/components/app/EventFileLists';
 import type { CrewPerson } from '@/components/app/CrewDesk';
+import type { Shift, ShiftDetail } from '@/lib/crewPortal';
 import type { ShopItem } from '@/components/marketing/Shop';
 import { MUSIC_MOMENTS, EQUIPMENT_CHECK, COUPLE_DETAIL_FIELDS } from '@/content/eventFile';
 
@@ -334,6 +335,46 @@ export const fixtureAssigned = [
   { id: 'a1', name: 'טל אבני', slot: 'manager', crew_member_id: 'm1' },
   { id: 'a2', name: 'עידן שגב', slot: 'assistant', crew_member_id: 'm2' },
 ];
+
+/* One evening tonight, one ahead, one already over: the three states the
+   crew's own list has to draw differently. */
+export const fixtureShifts: Shift[] = [
+  {
+    client_id: 'm1e', display_name: 'נועה ואיתי', event_date: day(2), venue: 'גני ורדים',
+    slot: 'manager', role: 'מנהל אירוע', call_time: '15:00', note: 'להביא את הרדיו הנוסף.',
+    brand: 'ברק ליור',
+  },
+  {
+    client_id: 'm2e', display_name: 'שיר ותומר', event_date: day(120), venue: '',
+    slot: 'assistant', role: '', call_time: null, note: '', brand: 'ברק ליור',
+  },
+  {
+    client_id: 'm3e', display_name: 'ערב חברה', event_date: day(-9), venue: 'חוף הצוק',
+    slot: 'social', role: '', call_time: '18:30', note: '', brand: 'ברק ליור',
+  },
+];
+
+export const fixtureShift: ShiftDetail = {
+  event: {
+    id: 'm1e', name: 'נועה ואיתי', date: day(2), venue: 'גני ורדים',
+    crewNote: 'חניה מאחורי המתחם, הכניסה מהשער הצפוני.\nהזוג מבקש בלי צילום בחופה.',
+    brand: 'ברק ליור',
+  },
+  mine: { slot: 'manager', role: 'מנהל אירוע', callTime: '15:00', note: 'להביא את הרדיו הנוסף.' },
+  schedule: [
+    { id: 's1', at: '15:00', title: 'הגעת צוות', note: '', track: 'shared' },
+    { id: 's2', at: '18:30', title: 'קבלת פנים', note: 'בר פתוח מהדקה הראשונה', track: 'shared' },
+    { id: 's3', at: '20:00', title: 'חופה', note: '', track: 'shared' },
+  ],
+  kit: [
+    { id: 'k1', item: 'רדיו קשר', needed: true, sorted: false, note: 'שניים' },
+    { id: 'k2', item: 'ערכת עזרה ראשונה', needed: true, sorted: true, note: '' },
+  ],
+  crew: [
+    { name: 'טל אבני', slot: 'manager', role: 'מנהל אירוע' },
+    { name: 'עידן שגב', slot: 'assistant', role: '' },
+  ],
+};
 
 export const fixtureLeads: Lead[] = [
   {

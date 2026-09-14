@@ -115,6 +115,21 @@ that has happened once.
   against the larger of the producer's estimate and the guest list, because
   one assistant over costs a fee and one under costs the evening. `crew.role`
   next door stays free text on purpose, for the twelfth job nobody listed.
+- A crew member is the third audience, after the producer and the couple, and
+  the narrowest. **No row level security policy was widened for them.** They
+  read through two security-definer functions in 0091, `crew_my_events` and
+  `crew_my_event`, which return exactly the columns they may see. That is the
+  whole design, and it is deliberate: a policy grants rows, and rows carry
+  columns, so "staff may read clients they are crewed on" would also hand over
+  the budget target, the couple's phone and the brief. The sharpest case is the
+  fee on their own crew row — two people on the same evening for different
+  money is normal — so the functions never select it, and a node test reads the
+  migration and fails if any of those words appears in them. `clients.crew_note`
+  is a field written *to* the crew for the same reason: pointing their screen at
+  `brief` would publish nine months of private notes in a one-word diff. They
+  land on `/app/shifts` through `requireCrew`, and the invitation email carries
+  no token at all — the address is the invitation, and the sign-in page mails a
+  code to whoever owns that inbox.
 - The ground is a pale blue, #F2F6FC, everywhere: the app, the public site and
   the guests' page alike. It was warm ivory before, and slate before that; the
   rule that settles it is that his latest instruction wins, and the reasoning

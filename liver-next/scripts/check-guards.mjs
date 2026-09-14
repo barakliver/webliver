@@ -28,7 +28,7 @@
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 
-const GUARDS = ['requireRoot', 'requireLiveProducer', 'requireAccount'];
+const GUARDS = ['requireRoot', 'requireLiveProducer', 'requireCrew', 'requireAccount'];
 
 /* Routes a signed-in person of any role may open, with what each one is.
    Everything else under /app has to be producer-only or root-only.
@@ -96,6 +96,15 @@ for (const file of pages) {
 const auth = readFileSync('src/lib/auth.ts', 'utf8');
 if (!/requireLiveProducer[\s\S]{0,400}role === 'client'[\s\S]{0,120}redirect\('\/app\/portal'\)/.test(auth)) {
   problems.push("src/lib/auth.ts\n    requireLiveProducer no longer sends a couple to their own portal");
+}
+/* The crew guard is the newest and the narrowest, and the one whose failure
+   would be quietest: dropped, every producer and every couple would open a
+   screen built for somebody else, and nothing on it would look wrong. */
+if (!/requireCrew[\s\S]{0,300}role !== 'staff'[\s\S]{0,80}redirect/.test(auth)) {
+  problems.push("src/lib/auth.ts\n    requireCrew no longer turns away anybody who is not crew");
+}
+if (!/requireLiveProducer[\s\S]{0,400}role === 'staff'[\s\S]{0,120}redirect\('\/app\/shifts'\)/.test(auth)) {
+  problems.push("src/lib/auth.ts\n    requireLiveProducer no longer sends a crew member to their own screen");
 }
 if (!/requireRoot[\s\S]{0,300}role !== 'super_admin'[\s\S]{0,80}redirect/.test(auth)) {
   problems.push("src/lib/auth.ts\n    requireRoot no longer turns away anybody who is not the root admin");

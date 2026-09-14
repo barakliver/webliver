@@ -315,3 +315,44 @@ export function supplierDigestEmail(opts: {
     <p style="margin:0"><a href="${opts.url}" style="display:inline-block;padding:10px 18px;border-radius:12px;background:#0e1620;color:#fff;text-decoration:none;font-size:14.5px">למצב הספקים</a></p>
   `, opts.brand);
 }
+
+/**
+ * "You are on the crew."
+ *
+ * Deliberately short and deliberately without a token. The address itself is
+ * the invitation — it is on the producer's crew list, and the sign-in screen
+ * sends a code to whoever owns that inbox — so this letter carries nothing
+ * that would still work if it were forwarded, and can be sent again as often
+ * as the producer likes. A link that logs somebody in lives in a WhatsApp
+ * group for three years, and what it opens here is a run sheet and a venue.
+ *
+ * Signed in the producer's name rather than the platform's, like every other
+ * letter that goes out of a white-labelled workspace.
+ */
+export function crewInviteEmail(opts: { name: string; brand: string; signInUrl: string }) {
+  const hello = opts.name ? `${opts.name},` : 'שלום,';
+  return shell(`
+    <h2 style="margin:0 0 10px;font-size:20px;color:#0e1620">הצטרפת לצוות</h2>
+    <p style="margin:0 0 14px;font-size:15px;line-height:1.8;color:#47566a">
+      ${hello} ${opts.brand} הוסיף אותך לצוות.
+    </p>
+    <p style="margin:0 0 6px;font-size:15px;line-height:1.8;color:#47566a">
+      בכניסה תראה את האירועים ששובצת אליהם, ולכל אחד מהם:
+    </p>
+    <ul style="margin:0 0 18px;padding-inline-start:20px;font-size:15px;line-height:1.9;color:#47566a">
+      <li>התאריך והמקום</li>
+      <li>שעת ההגעה שלך והתפקיד שלך</li>
+      <li>הלוז של הערב</li>
+      <li>רשימת הציוד</li>
+      <li>והערות חשובות לצוות</li>
+    </ul>
+    <a href="${opts.signInUrl}"
+       style="display:inline-block;background:#0e1620;color:#fff;text-decoration:none;
+              border-radius:999px;padding:14px 28px;font-size:15px;font-weight:600">
+      כניסה
+    </a>
+    <p style="margin:16px 0 0;font-size:13.5px;line-height:1.8;color:#6b7686">
+      הכניסה היא עם כתובת המייל הזו. נשלח אליך קוד קצר וזהו, בלי סיסמה לזכור.
+    </p>
+  `, { name: opts.brand, tagline: '', promise: '' });
+}

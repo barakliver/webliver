@@ -102,15 +102,31 @@ export async function requireAccount(): Promise<Account> {
   return a;
 }
 
-/** A producer may only work once the root admin has approved them. */
+/** A producer may only work once the root admin has approved them. A crew
+ *  member has nothing to approve: they are somebody else's staff, and their
+ *  one screen is the list of evenings they were put on. */
 export function isLive(a: Account): boolean {
-  return a.role === 'super_admin' || a.role === 'client' || a.producer?.status === 'approved';
+  return a.role === 'super_admin' || a.role === 'client' || a.role === 'staff'
+    || a.producer?.status === 'approved';
 }
+
+/** Where an account belongs when it has wandered into somebody else's area. */
+export const homeFor = (role: Role): string =>
+  role === 'client' ? '/app/portal' : role === 'staff' ? '/app/shifts' : '/app';
 
 export async function requireLiveProducer(): Promise<Account> {
   const a = await requireAccount();
   if (a.role === 'client') redirect('/app/portal');
+  if (a.role === 'staff') redirect('/app/shifts');
   if (!isLive(a)) redirect('/app/pending');
+  return a;
+}
+
+/** A crew member, and only a crew member. The producer has his own screens
+ *  for all of this and the couple has no business here at all. */
+export async function requireCrew(): Promise<Account> {
+  const a = await requireAccount();
+  if (a.role !== 'staff') redirect(homeFor(a.role));
   return a;
 }
 

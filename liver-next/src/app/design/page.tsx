@@ -50,6 +50,10 @@ import { ArchiveShelf } from '@/components/app/ArchiveShelf';
 import { CrewPanel } from '@/components/app/CrewPanel';
 import { CrewDesk } from '@/components/app/CrewDesk';
 import { CrewNeeds } from '@/components/app/CrewNeeds';
+import { CrewNote } from '@/components/app/CrewNote';
+import { todayInZone } from '@/lib/clock';
+import { CrewShifts } from '@/components/app/CrewShifts';
+import { CrewShift } from '@/components/app/CrewShift';
 import { LeadRow } from '@/components/app/LeadRow';
 import { VendorDirectory } from '@/components/app/VendorDirectory';
 import { GuideBookView } from '@/components/app/GuideBook';
@@ -76,7 +80,7 @@ import {
   fixtureSeatGuests, fixtureDay, fixtureMessages, fixtureContracts, fixtureFiles, fixtureMedia,
   fixtureSongs, fixtureKit, fixturePeople, fixtureBoard, fixtureShopItems,
   fixtureStatus, fixtureAttention, fixtureOrders, fixtureShelf, fixtureCrew,
-  fixtureCrewPeople, fixtureAssigned,
+  fixtureCrewPeople, fixtureAssigned, fixtureShifts, fixtureShift,
   fixtureLeads, fixtureCalls, fixtureVendors,
   fixtureAnniversaries, fixtureEventSummary, fixtureFunnel, fixtureSources,
   fixtureResponse, fixtureCash, fixtureReferrals, fixtureTemplates,
@@ -873,6 +877,18 @@ export default async function DesignPage() {
 
         <Panel name="CrewNeeds · no guest count yet" note="the minimum, and the sentence about 350">
           <CrewNeeds clientId={client} guests={null} assigned={[]} people={fixtureCrewPeople} />
+        </Panel>
+
+        <Panel name="CrewNote" note="written to the crew, never to the couple, and never the brief">
+          <CrewNote clientId={client} note="חניה מאחורי המתחם, הכניסה מהשער הצפוני." />
+        </Panel>
+
+        <Panel name="CrewShifts" note="what a crew member opens: one tonight, one ahead, one already over">
+          <CrewShifts shifts={fixtureShifts} today={todayInZone()} />
+        </Panel>
+
+        <Panel name="CrewShift" note="one evening, for the person working it. No money anywhere on it">
+          <CrewShift detail={fixtureShift} today={todayInZone()} />
         </Panel>
 
         <Panel name="OrdersBoard" note="pending, paid and a draft">
