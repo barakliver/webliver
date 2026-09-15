@@ -24,13 +24,17 @@ import type { MoneyCopy } from '@/content/appUi';
  * an event running under water until the week of the wedding is worse than
  * no figure at all.
  */
-export function ProducerLedger({ c, payments, items, crew }: {
+export function ProducerLedger({ c, payments, items, crew, fee }: {
   c: MoneyCopy['ledger'];
   payments: readonly PaidLine[];
   items: readonly CostLine[];
   crew: readonly CrewLine[];
+  /** What the producer typed this event is worth. When set it is the billed
+   *  figure here too, not only on the season board — one answer to "what is
+   *  this event worth", or the two screens disagree by next week. */
+  fee?: number | string | null;
 }) {
-  const l = ledgerOf(payments, items, crew);
+  const l = ledgerOf(payments, items, crew, fee);
 
   const nothingYet = l.billed === 0 && l.costs === 0;
 

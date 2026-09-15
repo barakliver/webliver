@@ -170,8 +170,23 @@ export function ledgerOf(
   payments: readonly PaidLine[],
   items: readonly CostLine[],
   crewLines: readonly CrewLine[],
+  /**
+   * What the event is worth, when somebody has typed it.
+   *
+   * The schedule is the right answer when it exists and a perfectly wrong one
+   * when it does not — which is most events for most of their life, because
+   * the figure is agreed on a phone call months before anybody breaks it into
+   * payments. So a figure typed once wins over a schedule nobody has built,
+   * and it wins on both screens rather than on one, because two places that
+   * each answer "what is this event worth" disagree within a week.
+   *
+   * Zero is a real answer and is kept: an event given away is a fact, and
+   * falling back to the schedule there would report it as revenue.
+   */
+  fee?: number | string | null,
 ): Ledger {
-  const billed = sumIls(payments.map((p) => num(p.amount)));
+  const typed = fee === null || fee === undefined || fee === '' ? null : num(fee);
+  const billed = typed !== null ? typed : sumIls(payments.map((p) => num(p.amount)));
   const received = sumIls(payments.filter((p) => p.paid).map((p) => num(p.amount)));
 
   const suppliers = sumIls(items.map((i) => num(i.agreed ?? i.estimate)));

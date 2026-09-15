@@ -388,25 +388,26 @@ export const fixtureShift: ShiftDetail = {
 export const fixtureBoardEvents: BoardEvent[] = [
   {
     id: 'm1e', name: 'נועה ואיתי', date: day(2), guests: 420,
-    money: { billed: 95000, costs: 61700, crew: 2700, margin: 33300, early: false },
+    money: { billed: 95000, costs: 61700, crew: 2700, margin: 33300, early: false, fee: 95000 },
   },
   {
     id: 'm2e', name: 'שיר ותומר', date: day(120), guests: 180,
-    money: { billed: 48000, costs: 52400, crew: 2700, margin: -4400, early: false },
+    money: { billed: 48000, costs: 52400, crew: 2700, margin: -4400, early: false, fee: null },
   },
   /* Costs before any billing: the ordinary shape of an event eight months
      out, and the one case where a margin is not a loss. */
   {
     id: 'm3e', name: 'ערב חברה', date: day(240), guests: null,
-    money: { billed: 0, costs: 4200, crew: 0, margin: -4200, early: true },
+    money: { billed: 0, costs: 4200, crew: 0, margin: -4200, early: true, fee: null },
   },
 ];
 
 export const fixtureBoardAssignments: BoardAssignment[] = [
-  { clientId: 'm1e', memberId: 'm1', slot: 'manager' },
-  { clientId: 'm1e', memberId: 'm2', slot: 'assistant' },
-  { clientId: 'm2e', memberId: 'm1', slot: 'manager' },
-  { clientId: 'm2e', memberId: 'm3', slot: 'assistant' },
+  { clientId: 'm1e', memberId: 'm1', slot: 'manager', crewId: 'w1', fee: 1800 },
+  { clientId: 'm1e', memberId: 'm2', slot: 'assistant', crewId: 'w3', fee: 900 },
+  { clientId: 'm2e', memberId: 'm1', slot: 'manager', crewId: 'w2', fee: 1800 },
+  /* Nothing agreed yet on this one: the field is empty rather than zero. */
+  { clientId: 'm2e', memberId: 'm3', slot: 'assistant', crewId: 'w6', fee: null },
 ];
 
 /* One person on two weddings on one night: the mistake neither event can

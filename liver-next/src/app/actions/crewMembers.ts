@@ -419,3 +419,44 @@ export async function setCrewFee(
   touchDirectory();
   return { ok: true, id };
 }
+
+/**
+ * What the event is worth, typed once.
+ *
+ * The margin was always billed minus costs, and billed was always read off
+ * the couple's payment schedule — right when the schedule exists, and wrong
+ * on most events for most of their life, because the figure is agreed on a
+ * phone call months before anybody breaks it into payments. So the board read
+ * zero income and zero margin on an evening with three people working it.
+ *
+ * Blank clears it and the schedule answers again. Zero does not: an event
+ * given away is a fact, and falling back there would report a favour as
+ * revenue.
+ */
+export async function setProducerFee(
+  _prev: CrewMemberResult | null, form: FormData,
+): Promise<CrewMemberResult> {
+  const clientId = String(form.get('client_id') ?? '');
+  if (!clientId) return { ok: false, error: 'חסר מזהה אירוע' };
+
+  const raw = String(form.get('producer_fee') ?? '').replace(/[^\d.]/g, '');
+  const n = raw === '' ? null : Number(raw);
+  if (n !== null && (!Number.isFinite(n) || n < 0)) {
+    return { ok: false, error: 'סכום לא תקין' };
+  }
+
+  const sb = await supabaseServer();
+  const { error } = await sb
+    .from('clients')
+    .update({ producer_fee: n === null ? null : Math.round(n * 100) / 100 })
+    .eq('id', clientId);
+
+  if (error) {
+    console.error('[crew] producer fee failed', error);
+    return { ok: false, error: 'לא הצלחנו לשמור' };
+  }
+
+  touchEvent(clientId);
+  touchDirectory();
+  return { ok: true, id: clientId };
+}

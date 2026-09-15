@@ -1,10 +1,13 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useActionState, useState, useTransition } from 'react';
+import { useFormStatus } from 'react-dom';
 import Link from 'next/link';
 import { Check, ChevronDown, Plus, Search, TriangleAlert, X } from 'lucide-react';
 import { useDragOnto, Grip, Carried } from '@/components/app/DragOnto';
-import { assignCrew, unassignCrew } from '@/app/actions/crewMembers';
+import {
+  assignCrew, unassignCrew, setProducerFee, setCrewFee, type CrewMemberResult,
+} from '@/app/actions/crewMembers';
 import { crewState, candidatesFor, isSlot, CREW_SLOTS, type CrewSlot } from '@/lib/crewNeeds';
 import { clashingMembers } from '@/lib/crewLoad';
 import { useCopy } from '@/components/app/CopyProvider';
@@ -34,10 +37,94 @@ export type BoardEvent = {
     /** Costs recorded before anybody has been billed: the ordinary shape of
      *  an event three months out, not a business in trouble. */
     early: boolean;
+    /** What the producer typed this event is worth, or null when the payment
+     *  schedule is still answering. */
+    fee: number | null;
   };
 };
 
-export type BoardAssignment = { clientId: string; memberId: string; slot: string | null };
+export type BoardAssignment = {
+  clientId: string;
+  memberId: string;
+  slot: string | null;
+  /** The crew row, so a cost can be corrected where it is read. */
+  crewId?: string;
+  /** What this person is paid for this evening. Null when nothing is agreed,
+   *  which is a different thing from free. */
+  fee?: number | null;
+};
+
+function Saving() {
+  const c = useCopy().crew;
+  const { pending } = useFormStatus();
+  return (
+    <button type="submit" className="btn-ghost shrink-0 text-[12.5px]" disabled={pending}>
+      {pending ? c.saving : c.save}
+    </button>
+  );
+}
+
+/**
+ * What the event is worth, typed on the row it decides.
+ *
+ * Not a second home for money: `ledgerOf` prefers this figure over the
+ * payment schedule, and both this board and the money tab read `ledgerOf`, so
+ * there is one answer to "what is this event worth" rather than two that
+ * disagree by next week.
+ */
+function EventIncome({ clientId, fee }: { clientId: string; fee: number | null }) {
+  const c = useCopy().crew;
+  const [state, action] = useActionState<CrewMemberResult | null, FormData>(setProducerFee, null);
+  return (
+    <form action={action} className="mt-2 flex flex-wrap items-end gap-2">
+      <input type="hidden" name="client_id" value={clientId} />
+      <div>
+        <label className="label text-[11.5px]" htmlFor={`inc-${clientId}`}>{c.incomeSet}</label>
+        <input
+          id={`inc-${clientId}`} name="producer_fee" type="number" min="0" step="500"
+          defaultValue={fee === null ? '' : String(fee)}
+          placeholder={c.incomePh} className="field w-32 text-[13px]" inputMode="numeric"
+        />
+      </div>
+      <Saving />
+      {state?.ok && (
+        <span className="inline-flex items-center gap-1 pb-2 text-[12px] text-good">
+          <Check size={12} aria-hidden strokeWidth={1.5} />{c.crewNoteSaved}
+        </span>
+      )}
+      {state?.error && <span className="pb-2 text-[12px] text-bad">{state.error}</span>}
+    </form>
+  );
+}
+
+/**
+ * One person's cost on one evening.
+ *
+ * The directory rate is the usual figure and this is the one that actually
+ * applies tonight: a long evening, a favour, a different job. Editable here
+ * because this is the screen the total is read on, and correcting a number
+ * three screens away from where it looked wrong is how it stays wrong.
+ */
+function PersonFee({ row }: { row: BoardAssignment }) {
+  const c = useCopy().crew;
+  const [state, action] = useActionState<CrewMemberResult | null, FormData>(setCrewFee, null);
+  if (!row.crewId) return null;
+  return (
+    <form action={action} className="mt-1.5 flex flex-wrap items-end gap-1.5">
+      <input type="hidden" name="crew_id" value={row.crewId} />
+      <input type="hidden" name="client_id" value={row.clientId} />
+      <input
+        name="fee" type="number" min="0" step="50"
+        defaultValue={row.fee ? String(row.fee) : ''}
+        placeholder={c.fee} aria-label={c.fee}
+        className="field w-24 text-[12.5px]" inputMode="numeric"
+      />
+      <Saving />
+      {state?.ok && <Check size={12} aria-hidden strokeWidth={1.5} className="mb-2 text-good" />}
+      {state?.error && <span className="mb-2 text-[12px] text-bad">{state.error}</span>}
+    </form>
+  );
+}
 
 /**
  * Every name, behind one chevron, per cell.
@@ -322,6 +409,9 @@ export function CrewBoard({
                   {/* A margin before anything is billed is not a loss, it is
                       an invoice nobody has raised yet. Saying "loss" there is
                       how somebody learns to stop reading this line. */}
+                  {ev.money.fee === null && ev.money.billed > 0 && (
+                    <div className="text-ink-mute">{c.incomeFromPlan}</div>
+                  )}
                   {ev.money.early ? (
                     <div className="text-ink-mute">{c.moneyEarly}</div>
                   ) : (
@@ -333,6 +423,8 @@ export function CrewBoard({
                     </div>
                   )}
                 </dl>
+
+                <EventIncome clientId={ev.id} fee={ev.money.fee} />
 
                 <div className="mt-3 grid gap-3 sm:grid-cols-3">
                   {CREW_SLOTS.map((slot) => {
@@ -359,12 +451,13 @@ export function CrewBoard({
                           {inSlot.map((r) => (
                             <li
                               key={r.memberId}
-                              className={`flex items-center justify-between gap-2 rounded-xl2 px-2.5 py-1.5 ${
+                              className={`rounded-xl2 px-2.5 py-1.5 ${
                                 clashDays.has(`${r.memberId}|${ev.date?.slice(0, 10) ?? ''}`)
                                   ? 'bg-bad-wash ring-1 ring-bad/30'
                                   : 'bg-card'
                               }`}
                             >
+                              <span className="flex items-center justify-between gap-2">
                               <span className="flex min-w-0 items-center gap-1.5 truncate text-[13.5px] text-ink">
                                 {clashDays.has(`${r.memberId}|${ev.date?.slice(0, 10) ?? ''}`) && (
                                   <TriangleAlert size={12} aria-hidden strokeWidth={1.5} className="shrink-0 text-bad" />
@@ -379,6 +472,11 @@ export function CrewBoard({
                               >
                                 <X size={13} aria-hidden strokeWidth={1.5} />
                               </button>
+                              </span>
+                              {/* The cost that actually applies tonight. The
+                                  directory rate is the usual one; this is a
+                                  long evening, a favour, a different job. */}
+                              <PersonFee row={r} />
                             </li>
                           ))}
                         </ul>

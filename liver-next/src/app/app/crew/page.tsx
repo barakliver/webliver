@@ -45,9 +45,12 @@ export default async function CrewPage() {
       .from('crew').select('client_id,crew_member_id,slot').not('crew_member_id', 'is', null)),
     /* The season: every open event, soonest first. Archived ones are gone
        because staffing a finished wedding is not a thing anybody means. */
-    safeRows<{ id: string; display_name: string; event_date: string | null; guest_estimate: number | null }>(
+    safeRows<{
+      id: string; display_name: string; event_date: string | null;
+      guest_estimate: number | null; producer_fee: number | string | null;
+    }>(
       'events', sb.from('clients')
-        .select('id,display_name,event_date,guest_estimate')
+        .select('id,display_name,event_date,guest_estimate,producer_fee')
         .is('archived_at', null)
         .order('event_date', { ascending: true, nullsFirst: false })),
     /* The guest lists, so the rule here is applied to the same number the
@@ -89,7 +92,9 @@ export default async function CrewPage() {
   }
 
   const board: BoardEvent[] = events.map((e) => {
-    const l = ledgerOf(pays.get(e.id) ?? [], costs.get(e.id) ?? [], fees.get(e.id) ?? []);
+    const l = ledgerOf(
+      pays.get(e.id) ?? [], costs.get(e.id) ?? [], fees.get(e.id) ?? [], e.producer_fee,
+    );
     return {
       id: e.id,
       name: e.display_name,
@@ -98,6 +103,7 @@ export default async function CrewPage() {
       money: {
         billed: l.billed, costs: l.costs, crew: l.crew,
         margin: l.margin, early: l.costsWithoutBilling,
+        fee: e.producer_fee === null || e.producer_fee === undefined ? null : Number(e.producer_fee),
       },
     };
   });
@@ -167,7 +173,16 @@ export default async function CrewPage() {
 
   const placed: BoardAssignment[] = assignments
     .filter((a) => a.crew_member_id)
-    .map((a) => ({ clientId: a.client_id, memberId: a.crew_member_id as string, slot: a.slot }));
+    .map((a) => {
+      const row = crewRowFor.get(`${a.client_id}|${a.crew_member_id}`);
+      return {
+        clientId: a.client_id,
+        memberId: a.crew_member_id as string,
+        slot: a.slot,
+        crewId: row?.id,
+        fee: row?.fee === null || row?.fee === undefined ? null : Number(row.fee),
+      };
+    });
 
   const rows: CrewPerson[] = people.map((p) => ({
     ...p,

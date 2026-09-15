@@ -105,7 +105,7 @@ export default async function ClientPage({
   const sb = await supabaseServer();
   const { data: client } = await sb
     .from('clients')
-    .select('id,display_name,kind,event_date,venue,guest_estimate,budget_visible,budget_target,shared_sections,crew_note,budget_plan,label_id,track_a_label,track_b_label,guest_token,guest_site_on,guest_note,contact_email,contact_phone,brief,brand,service')
+    .select('id,display_name,kind,event_date,venue,guest_estimate,budget_visible,budget_target,shared_sections,crew_note,producer_fee,budget_plan,label_id,track_a_label,track_b_label,guest_token,guest_site_on,guest_note,contact_email,contact_phone,brief,brand,service')
     .eq('id', id)
     .maybeSingle();
 
@@ -272,7 +272,7 @@ export default async function ClientPage({
 type Client = {
   id: string; display_name: string; kind: string; event_date: string | null;
   venue: string | null; guest_estimate: number | null; budget_visible: boolean | null;
-  crew_note: string | null;
+  crew_note: string | null; producer_fee: number | string | null;
   budget_target: number | null;
   shared_sections: unknown;
   budget_plan: unknown;
@@ -464,8 +464,8 @@ async function Section({ tab, client, viewerId }: { tab: EventTab; client: Clien
         .select('id,category,label,estimate,agreed,vendor,created_at').eq('client_id', id).order('created_at')),
       /* Fees only. The names belong on the crew screen; what this needs is a
          column that until now nothing anywhere had ever added up. */
-      safeRows<{ fee: number | string | null }>('crew fees', sb.from('crew')
-        .select('fee').eq('client_id', id)),
+      safeRows<{ fee: number | string | null; extra_hours: number | string | null; hour_rate: number | string | null }>('crew fees', sb.from('crew')
+        .select('fee,extra_hours,hour_rate').eq('client_id', id)),
       loadLedger(sb, { clientId: id }),
     ]);
     return (
@@ -479,7 +479,10 @@ async function Section({ tab, client, viewerId }: { tab: EventTab; client: Clien
         {/* The couple's five figures above; the producer's bottom line here.
             Two ledgers on purpose, from one module, so they cannot be derived
             differently — and only this one is ever rendered for the couple. */}
-        <ProducerLedger c={ui.money.ledger} payments={payments} items={budget} crew={crewFees} />
+        <ProducerLedger
+          c={ui.money.ledger} payments={payments} items={budget} crew={crewFees}
+          fee={client.producer_fee}
+        />
         {/* The intention, then the drift from it. The planner collapses to a
             button; the tracker is only there once there is a plan or a line. */}
         <BudgetPlanner

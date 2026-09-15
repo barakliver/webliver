@@ -199,3 +199,38 @@ test('a negative amount puts the sign before the currency, not inside it', () =>
   assert.equal(ils(-0.4), '-₪0.40');
   assert.equal(ils(-0.001), '₪0');
 });
+
+/* ── what the event is worth, when somebody has typed it ─────────────────── */
+
+test('a fee typed on the event is the billed figure, schedule or no schedule', () => {
+  const l = ledgerOf([], [line(20000)], [crew(3000)], 95000);
+  assert.equal(l.billed, 95000);
+  assert.equal(l.margin, 95000 - 23000);
+});
+
+/* The schedule is the right answer when it exists and a wrong one when it
+   does not. A figure typed once is the producer saying which. */
+test('the typed figure wins over the schedule, so two screens cannot disagree', () => {
+  const l = ledgerOf([pay(40000)], [], [], 95000);
+  assert.equal(l.billed, 95000);
+});
+
+test('nothing typed leaves the schedule answering, exactly as before', () => {
+  assert.equal(ledgerOf([pay(40000)], [], []).billed, 40000);
+  assert.equal(ledgerOf([pay(40000)], [], [], null).billed, 40000);
+  assert.equal(ledgerOf([pay(40000)], [], [], '').billed, 40000);
+});
+
+/* An event given away is a fact. Falling back to the schedule there would
+   report a favour as revenue. */
+test('a fee of zero is an answer and is kept', () => {
+  const l = ledgerOf([pay(40000)], [line(1000)], [], 0);
+  assert.equal(l.billed, 0);
+  assert.equal(l.costsWithoutBilling, true);
+});
+
+test('received and outstanding still come from the payments, not the fee', () => {
+  const l = ledgerOf([pay(30000), pay(20000, false)], [], [], 95000);
+  assert.equal(l.received, 30000);
+  assert.equal(l.outstanding, 65000);
+});

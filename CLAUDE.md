@@ -176,6 +176,16 @@ that has happened once.
   replacing it would undo the negotiation the copy exists to protect. The
   month sheet marks an evening with no cost rather than letting it contribute
   a quiet zero, and the cost is editable there, beside the total it feeds.
+  Income is `clients.producer_fee` when it is typed and the couple's payment
+  schedule when it is not — and that choice is made inside `ledgerOf`, which
+  both the season board and the money tab read, so there is one answer to
+  "what is this event worth" rather than two that disagree by next week. The
+  schedule is right when it exists and wrong on most events for most of their
+  life, because the figure is agreed on a phone call months before anybody
+  breaks it into payments. A fee of zero is kept rather than falling back: an
+  event given away is a fact, not a missing number. The cost of one person on
+  one evening is editable on the board's own chip, because the directory rate
+  is the usual figure and tonight is sometimes a different one.
 - The ground is a pale blue, #F2F6FC, everywhere: the app, the public site and
   the guests' page alike. It was warm ivory before, and slate before that; the
   rule that settles it is that his latest instruction wins, and the reasoning
