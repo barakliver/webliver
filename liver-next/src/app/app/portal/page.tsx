@@ -205,15 +205,19 @@ export default async function PortalPage({ searchParams }: {
                   contracts: data.can(w.id, 'contracts') ? (
                     <div id="contracts" data-jump={ui.portal.rowContracts} data-jump-group="vendors" className="scroll-mt-28"><Contracts clientId={w.id} contracts={contracts.get(w.id) ?? []} viewer="client" /></div>
                   ) : null,
-                  /* While the hall is still open, or once there is something to
-                     compare. Gating it on the halls alone was wrong in the way that
-                     only shows up from the couple's side: they are the ones touring
-                     venues, and a panel that appears only after somebody else has
-                     added one is a panel they can never start. Gating it on nothing
-                     is wrong the other way — a comparison on the screen of a couple
-                     whose hall was booked a year ago is a panel asking them to redo
-                     a decision they have made. */
-                  venues: data.can(w.id, 'venues') && (venues.venues.length > 0 || !w.venue) ? (
+                  /* Always, behind the share switch and nothing else.
+                     It used to hide itself once a hall was typed on the event and
+                     nothing had been added to compare, on the reasoning that a
+                     comparison in front of a couple who booked a year ago is a
+                     panel asking them to redo a decision. He overruled that, and
+                     the reason he is right is the case the rule could not see: an
+                     event carries a venue from the moment somebody types a
+                     candidate into it, long before anything is signed, and from
+                     that moment the couple lost the screen they tour halls with —
+                     silently, with no row and no way back in. A drawer they can
+                     open and find empty costs them one press; a drawer that is not
+                     there costs them the feature. */
+                  venues: data.can(w.id, 'venues') ? (
                     <div id="venues" data-jump={ui.portal.rowVenues} data-jump-group="vendors" className="scroll-mt-28"><VenueCompare
                       c={venuesFor(locale)}
                       clientId={w.id}
