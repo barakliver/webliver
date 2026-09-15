@@ -32,6 +32,13 @@ export const PORTAL_SECTIONS: readonly PortalSection[] = [
   { key: 'seating',   tab: 'guests',   row: 'rowSeating' },
   { key: 'vendors',   tab: 'crew',     row: 'rowVendors' },
   { key: 'runsheet',  tab: 'day',      row: 'rowRunsheet' },
+  /* The alcohol calculator. It had a feature flag from 0030 and never had a
+     section, so it was the one producer tab with no way to reach the couple
+     at all — and it is the tab a couple most wants, because "how much do we
+     buy" is a question they are the ones standing in the shop with. Safe to
+     hand over: the component takes a guest count and nothing else, so there
+     is no supplier price and no margin anywhere near it. */
+  { key: 'bar',       tab: 'bar',      row: 'rowBar' },
   { key: 'moodboard', tab: 'board',    row: 'rowBoard' },
   { key: 'contracts', tab: 'docs',     row: 'rowContracts' },
   { key: 'venues',    tab: 'venues',   row: 'rowVenues' },

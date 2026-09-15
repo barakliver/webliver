@@ -24,6 +24,7 @@ import { ticketFor, prepFor, venuesFor } from '@/content/appUi';
 import { PrepSheet } from '@/components/app/PrepSheet';
 import { loadPrep, prepOf } from '@/lib/prep';
 import { VenueCompare } from '@/components/app/VenueCompare';
+import { BarCalculator } from '@/components/app/BarCalculator';
 import { loadVenues, venuesOf } from '@/lib/venueRows';
 import { publicEnv } from '@/lib/env';
 import { EventSelector } from '@/components/portal/EventSelector';
@@ -186,7 +187,11 @@ export default async function PortalPage({ searchParams }: {
                   vehicles: cars.length,
                 }}
                 slots={{
-                  vendorhq: data.can(w.id, 'vendors') && data.vendorsFor(w.id).length > 0 ? (
+                  /* Behind the switch and nothing else. It used to need a
+                     supplier to exist before it would draw, which hid the desk
+                     from exactly the couple who has not booked anybody yet —
+                     the ones it is for. */
+                  vendorhq: data.can(w.id, 'vendors') ? (
                     <div id="vendorhq" data-jump={ui.portal.jumpVendorHq} data-jump-group="vendors" className="scroll-mt-28"><VendorHq
                       clientId={w.id} viewer="client"
                       vendors={data.vendorsFor(w.id)}
@@ -228,6 +233,19 @@ export default async function PortalPage({ searchParams }: {
                   ) : null,
                   /* Behind the same gate every other module is behind, so a plan
                      that does not include it does not quietly include it here. */
+                  /* How much drink to buy, behind its own switch. Reads the
+                     seats already confirmed rather than the invitations, which
+                     is the number a bar is stocked for, and falls back to the
+                     estimate while nobody has replied. No query of its own:
+                     the guest rows are already on this page. */
+                  bar: data.can(w.id, 'bar') ? (
+                    <div id="bar" data-jump={ui.portal.rowBar} data-jump-group="day" className="scroll-mt-28"><BarCalculator
+                      guestEstimate={w.guest_estimate ?? null}
+                      confirmedGuests={data.guestsFor(w.id)
+                        .filter((g) => g.status === 'attending')
+                        .reduce((sum, g) => sum + (g.party_size ?? 1), 0)}
+                    /></div>
+                  ) : null,
                   files: data.can(w.id, 'files') ? (
                     <div id="files" data-jump={ui.portal.rowFiles} data-jump-group="day" className="scroll-mt-28"><EventFiles clientId={w.id} files={files.get(w.id) ?? []} viewer="client" /></div>
                   ) : null,

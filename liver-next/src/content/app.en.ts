@@ -77,6 +77,7 @@ export const portalEn: PortalCopy = {
   rowSeating: 'Tables',
   rowContracts: 'Contracts',
   rowVenues: 'Halls to compare',
+  rowBar: 'How much drink to buy',
   rowFiles: 'Files and photos',
   rowLists: 'Songs, kit and details',
   rowPrep: 'Faces and looks',

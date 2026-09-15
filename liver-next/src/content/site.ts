@@ -2024,6 +2024,7 @@ export const appCopy = {
     rowSeating: 'שולחנות',
     rowContracts: 'הסכמים',
     rowVenues: 'אולמות להשוואה',
+    rowBar: 'כמה אלכוהול לקנות',
     rowFiles: 'קבצים ותמונות',
     rowLists: 'שירים, ציוד ופרטים',
     rowPrep: 'פנים ולוקים',

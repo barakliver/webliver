@@ -43,6 +43,7 @@ export type PortalSlots = {
   vendorhq?: React.ReactNode;
   contracts?: React.ReactNode;
   venues?: React.ReactNode;
+  bar?: React.ReactNode;
   studio?: React.ReactNode;
   files?: React.ReactNode;
   lists?: React.ReactNode;
@@ -297,7 +298,7 @@ export function PortalWorkspace({
             the look, the songs, the faces, the cars, the envelopes — and the
             calendar that carries the dates onto their phones. */}
         {(can('runsheet') || can('moodboard') || slots.studio || slots.files || slots.lists
-          || slots.prep || slots.envelopes || slots.transport || slots.calendar) && (
+          || slots.prep || slots.envelopes || slots.transport || slots.calendar || slots.bar) && (
           <Fold id="fold-day" title={ui.portal.jumpDay} sub={ui.portal.foldDaySub}>
             {can('runsheet') && (
               <div id="runsheet" data-jump={ui.portal.rowRunsheet} data-jump-group="day" className="scroll-mt-28"><DaySchedule
@@ -313,6 +314,9 @@ export function PortalWorkspace({
             )}
             {slots.studio}
             {slots.lists}
+            {/* Beside the songs and the kit rather than near the money: for a
+                couple this is a shopping list, not a budget line. */}
+            {slots.bar}
             {slots.prep}
             {slots.envelopes}
             {slots.transport}

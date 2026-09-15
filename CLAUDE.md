@@ -79,6 +79,24 @@ that has happened once.
   opens it first — the quick-jump uses it and so does `FoldReveal`, which
   catches every ordinary `#` link on the page. Without it the button on "מה
   עכשיו" scrolls nowhere in most browsers.
+- **What the couple sees is decided by a switch and by nothing else.** Every
+  section of their screen is a row in `content/portalSections.ts`, and that one
+  list is read by four things: the couple's screen, the producer's preview of
+  it, the switches he flips, and the couple's assistant. Adding a row there is
+  the whole of adding a shareable section - the switch board, the per-tab
+  switch and the save action all derive from it, which is how the alcohol
+  calculator went from producer-only to shared in one line. The rule that was
+  learned the hard way is the second half: **a panel must never hide itself on
+  its own data.** Two did. The hall comparison vanished once a venue was typed
+  on the event, which is months before anything is signed, so couples touring
+  halls lost the screen for touring halls. The supplier desk needed a supplier
+  to exist before it would draw, so it was missing for exactly the couple who
+  has booked nobody. Both looked like a switch that did not work, and neither
+  was reportable, because nobody reports a screen they never knew was there. A
+  drawer opened and found empty costs one press; a drawer that is not there
+  costs the feature. The one honest exception is a panel whose props cannot be
+  built without a row at all - the brand studio - and that is a missing object
+  rather than a hidden one.
 - The producer has a list of his own, separate from every wedding's:
   `producer_tasks`, drawn by `components/app/MyTasks.tsx` on `/app` under the
   attention pile, and on the calendar for whatever carries a date. The part
