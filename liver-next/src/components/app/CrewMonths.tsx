@@ -3,8 +3,8 @@
 import { useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
 import Link from 'next/link';
-import { Check, ChevronDown, Clock } from 'lucide-react';
-import { setCrewHours, type CrewMemberResult } from '@/app/actions/crewMembers';
+import { Check, ChevronDown, Clock, TriangleAlert } from 'lucide-react';
+import { setCrewHours, setCrewFee, type CrewMemberResult } from '@/app/actions/crewMembers';
 import { useCopy } from '@/components/app/CopyProvider';
 import { Ltr, Money } from '@/components/Ltr';
 import { EVENT_ZONE } from '@/lib/clock';
@@ -52,6 +52,40 @@ function Save() {
  * open nine event files to record nine overruns is what keeps the overruns in
  * a WhatsApp thread.
  */
+/**
+ * The agreed fee, where the total that uses it is read.
+ *
+ * Separate form from the hours, because they answer different questions and
+ * are corrected at different times: the fee is what was agreed, the hours are
+ * what happened. Its own row so an evening with nothing agreed says so
+ * loudly — a zero in a payment list is the one number nobody notices.
+ */
+function Fee({ e }: { e: MonthEvening }) {
+  const c = useCopy().crew;
+  const [state, action] = useActionState<CrewMemberResult | null, FormData>(setCrewFee, null);
+  return (
+    <form action={action} className="mt-1.5 flex flex-wrap items-end gap-2">
+      <input type="hidden" name="crew_id" value={e.crewId} />
+      <input type="hidden" name="client_id" value={e.clientId} />
+      <div>
+        <label className="label text-[11.5px]" htmlFor={`f-${e.crewId}`}>{c.fee}</label>
+        <input
+          id={`f-${e.crewId}`} name="fee" type="number" min="0" step="50"
+          defaultValue={e.fee ? String(e.fee) : ''}
+          className="field w-28 text-[13px]" inputMode="numeric"
+        />
+      </div>
+      <Save />
+      {state?.ok && (
+        <span className="inline-flex items-center gap-1 pb-2 text-[12.5px] text-good">
+          <Check size={13} aria-hidden strokeWidth={1.5} />{c.crewNoteSaved}
+        </span>
+      )}
+      {state?.error && <span className="pb-2 text-[12.5px] text-bad">{state.error}</span>}
+    </form>
+  );
+}
+
 function Hours({ e }: { e: MonthEvening }) {
   const c = useCopy().crew;
   const [state, action] = useActionState<CrewMemberResult | null, FormData>(setCrewHours, null);
@@ -189,6 +223,16 @@ export function CrewMonths({ months }: { months: MonthRow[] }) {
                           <span className="text-ink"><Money value={e.pay} /></span>
                         </span>
                       </div>
+                      {/* An evening with nothing agreed is the reason a month
+                          adds up to less than it should, so it says so rather
+                          than contributing a quiet zero. */}
+                      {!e.fee && (
+                        <p className="mt-1 inline-flex items-center gap-1.5 text-[12.5px] text-warn">
+                          <TriangleAlert size={12} aria-hidden strokeWidth={1.5} />
+                          {c.feeMissing}
+                        </p>
+                      )}
+                      <Fee e={e} />
                       <Hours e={e} />
                     </li>
                   ))}

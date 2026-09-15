@@ -55,6 +55,7 @@ import { todayInZone } from '@/lib/clock';
 import { CrewShifts } from '@/components/app/CrewShifts';
 import { CrewBoard } from '@/components/app/CrewBoard';
 import { CrewClashes } from '@/components/app/CrewClashes';
+import { FillFees } from '@/components/app/FillFees';
 import { CrewMonths } from '@/components/app/CrewMonths';
 import { CrewShift } from '@/components/app/CrewShift';
 import { LeadRow } from '@/components/app/LeadRow';
@@ -885,6 +886,10 @@ export default async function DesignPage() {
 
         <Panel name="CrewNote" note="written to the crew, never to the couple, and never the brief">
           <CrewNote clientId={client} note="חניה מאחורי המתחם, הכניסה מהשער הצפוני." />
+        </Panel>
+
+        <Panel name="FillFees" note="the rates reaching assignments made before them; blanks only, never a figure already agreed">
+          <FillFees missing={11} />
         </Panel>
 
         <Panel name="CrewMonths" note="what to pay each person for the month, with the evenings behind it and the hours">

@@ -360,3 +360,62 @@ export async function setCrewHours(
   touchDirectory();
   return { ok: true, id };
 }
+
+/**
+ * Fill in the fees that were never copied.
+ *
+ * The rate is copied onto an assignment when somebody is assigned, which is
+ * right — raising a rate next March must not rewrite what last August cost.
+ * What that missed is the order things happen in: a season is staffed first
+ * and the money is typed afterwards, so every assignment made before the
+ * rates existed carries nothing, and the board adds those evenings up to zero
+ * and calls them free.
+ *
+ * This fills the blanks and only the blanks. A fee that is already written
+ * down was agreed for that evening and is not replaced, which is the whole
+ * point of the copy.
+ */
+export async function fillCrewFees(
+  _prev: CrewMemberResult | null, _form: FormData,
+): Promise<CrewMemberResult & { filled?: number }> {
+  const sb = await supabaseServer();
+  const { data, error } = await sb.rpc('fill_crew_fees');
+
+  if (error) {
+    console.error('[crew] fill fees failed', error);
+    return { ok: false, error: 'לא הצלחנו למלא את התעריפים' };
+  }
+
+  touchDirectory();
+  return { ok: true, filled: Number(data ?? 0) };
+}
+
+/** The agreed fee for one evening, edited where it is read. */
+export async function setCrewFee(
+  _prev: CrewMemberResult | null, form: FormData,
+): Promise<CrewMemberResult> {
+  const id = String(form.get('crew_id') ?? '');
+  const clientId = String(form.get('client_id') ?? '');
+  if (!id) return { ok: false, error: 'חסר מזהה' };
+
+  const raw = String(form.get('fee') ?? '').replace(/[^\d.]/g, '');
+  const n = raw ? Number(raw) : null;
+  if (n !== null && (!Number.isFinite(n) || n < 0)) {
+    return { ok: false, error: 'סכום לא תקין' };
+  }
+
+  const sb = await supabaseServer();
+  const { error } = await sb
+    .from('crew')
+    .update({ fee: n === null ? null : Math.round(n * 100) / 100 })
+    .eq('id', id);
+
+  if (error) {
+    console.error('[crew] fee failed', error);
+    return { ok: false, error: 'לא הצלחנו לשמור' };
+  }
+
+  if (clientId) touchEvent(clientId);
+  touchDirectory();
+  return { ok: true, id };
+}

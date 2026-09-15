@@ -10,6 +10,7 @@ import { clashes, earningsBy, clashingMembers, monthsOf } from '@/lib/crewLoad';
 import { crewPay } from '@/lib/finance';
 import { CrewMonths, type MonthRow } from '@/components/app/CrewMonths';
 import { CrewClashes, type ClashRow } from '@/components/app/CrewClashes';
+import { FillFees } from '@/components/app/FillFees';
 import { Fold } from '@/components/Fold';
 import { safeRows } from '@/lib/safe';
 import { serverCopy } from '@/lib/serverLocale';
@@ -131,6 +132,16 @@ export default async function CrewPage() {
   );
   const nameOfPerson = new Map(people.map((p) => [p.id, p.name] as const));
 
+  /* Assignments the rate never reached, because they were made before it was
+     typed. Counted so the button can say how many rather than "done". */
+  const rateOf = new Map(people.map((p) => [p.id, p.rate] as const));
+  const missingFees = feeRows.filter((f) =>
+    f.crew_member_id
+    && (f.fee === null || f.fee === undefined)
+    && rateOf.get(f.crew_member_id) !== null
+    && rateOf.get(f.crew_member_id) !== undefined,
+  ).length;
+
   const months: MonthRow[] = monthsOf(paidPer, dateOf).map((m) => ({
     month: m.month,
     total: m.total,
@@ -193,6 +204,9 @@ export default async function CrewPage() {
           at rest: it is a once-a-month screen sitting on a weekly one. */}
       <div className="mt-8">
         <Fold id="crew-months" title={ui.crew.monthsTitle} sub={ui.crew.monthsSub}>
+          {/* First inside the drawer, because a month that adds up wrong adds
+              up wrong for this reason nine times out of ten. */}
+          <div className="mb-4"><FillFees missing={missingFees} /></div>
           <CrewMonths months={months} />
         </Fold>
       </div>

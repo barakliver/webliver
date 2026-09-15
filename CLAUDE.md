@@ -168,7 +168,14 @@ that has happened once.
   the amount is what gets forgotten, the hours are what can be checked against
   somebody's memory of a night that ran until three. `monthsOf` groups it the
   way the paying happens, newest month first, and the hours are edited there
-  rather than inside nine event files.
+  rather than inside nine event files. The copy-on-write has one cost worth
+  knowing: a season is staffed before the money is typed, so assignments made
+  before the rates existed carry nothing and read as free evenings.
+  `fill_crew_fees()` fills those blanks from the directory and **only** the
+  blanks — a figure already written was agreed for that evening, and
+  replacing it would undo the negotiation the copy exists to protect. The
+  month sheet marks an evening with no cost rather than letting it contribute
+  a quiet zero, and the cost is editable there, beside the total it feeds.
 - The ground is a pale blue, #F2F6FC, everywhere: the app, the public site and
   the guests' page alike. It was warm ivory before, and slate before that; the
   rule that settles it is that his latest instruction wins, and the reasoning
