@@ -193,6 +193,16 @@ that has happened once.
 - The deploy builds into `.next-build` and renames it into place, and installs
   dependencies only when the lockfile changed, so a release does not take the
   live site down while it builds. Keep it that way.
+- The deploy clears `.next/types` before the standalone type check, and that
+  line is load-bearing. Those route types are generated and belong to the
+  build that is currently serving, and `tsconfig.json` includes them — fine
+  going forwards, fatal going backwards. Rolling back to a commit with fewer
+  screens left `.next/types/validator.ts` importing pages the checked-out
+  source no longer has, so `tsc` died on TS2307 and **no rollback could ever
+  build**. That is how 2.16 became "failed, and the rollback also failed,
+  needs a person": the release was recoverable and the recovery was not. The
+  file is compiler-facing output, `next build` writes it again, and the
+  running server never reads it.
 - A check constraint added to a table that already has rows must be written
   `not valid`, and validated separately. sync.sql replays every migration on
   every deploy with ON_ERROR_STOP, so one old row that refuses one constraint
