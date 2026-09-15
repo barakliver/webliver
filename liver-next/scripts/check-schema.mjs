@@ -825,6 +825,43 @@ try {
       'an invited couple reads their event, their suppliers, and no lead',
       `event:${coupleClient} guests:${coupleGuests} vendors:${coupleVendors} leads:${coupleLeads}`);
 
+    /* 0096: the card game's door. The switch that opens it is the root
+       address's alone, and that is a claim about the database rather than
+       about a screen — the button is root-only too, but a button is a
+       suggestion. So it is proved here from both sides, using the same
+       account twice: A with A's own address is an approved producer who owns
+       this very event and must still be refused, and A with the root address
+       is the super admin and must get through. One fixture, both branches,
+       and no way for the refusal to be an accident of ownership. */
+    const gameToken = ask('one', `select game_token from public.clients where id='${cidA}'`);
+    let gameDenied = '';
+    try { gameDenied = asAccount(uidA, mailA, `update public.clients set game_on=true where id='${cidA}'`); }
+    catch (e) { gameDenied = (e.stdout || e.message || '').toString(); }
+    const gameStillOff = ask('one', `select game_on from public.clients where id='${cidA}'`);
+    say(/platform owner only|insufficient/i.test(gameDenied) && gameStillOff === 'f',
+      'a producer cannot open the card game on their own event',
+      `refused:${/platform owner only/i.test(gameDenied)} on:${gameStillOff}`);
+
+    asAccount(uidA, 'barakliver@gmail.com', `update public.clients set game_on=true where id='${cidA}'`);
+    const gameNowOn = ask('one', `select game_on from public.clients where id='${cidA}'`);
+    /* Read as somebody else entirely, because the page behind the link has no
+       session at all: the token is the whole credential. */
+    const gameOpen = asAccount(uidB, mailB, `select couple from public.wedding_game('${gameToken}')`);
+    const gameWrongToken = asAccount(uidB, mailB, "select count(*) from public.wedding_game('deadbeef')");
+    say(gameNowOn === 't' && gameOpen !== '' && gameWrongToken === '0',
+      'the owner opens it, and the link answers only the right token',
+      `on:${gameNowOn} couple:${gameOpen} wrong:${gameWrongToken}`);
+
+    /* The address must survive an ordinary save, or a link already sent to a
+       couple stops working the next time somebody edits the venue. */
+    asAccount(uidA, mailA, `update public.clients set venue='אולם' where id='${cidA}'`);
+    const gameTokenAfter = ask('one', `select game_token from public.clients where id='${cidA}'`);
+    asAccount(uidA, 'barakliver@gmail.com', `update public.clients set game_on=false where id='${cidA}'`);
+    const gameShut = asAccount(uidB, mailB, `select count(*) from public.wedding_game('${gameToken}')`);
+    say(gameTokenAfter === gameToken && gameShut === '0',
+      'the address outlives an edit, and a shut game answers nobody',
+      `token:${gameTokenAfter === gameToken} shut:${gameShut}`);
+
     /* The platform owner. Every tenant policy above was written without a
        root branch, and this is the line that keeps it that way: the root
        account, with its own claim and its own address, reading a producer's

@@ -9,6 +9,7 @@ import { workspaceSources } from '@/lib/liveSources';
 import { PageHead } from '@/components/app/PageHead';
 import { EventTabs, readTab, type EventTab } from '@/components/app/EventTabs';
 import { IssueReporter } from '@/components/app/IssueReporter';
+import { GameSwitch } from '@/components/app/GameSwitch';
 import { EventTagPicker } from '@/components/app/EventTagPicker';
 import { ServiceSwitch } from '@/components/app/ServiceSwitch';
 import { isService } from '@/lib/eventGroups';
@@ -105,7 +106,7 @@ export default async function ClientPage({
   const sb = await supabaseServer();
   const { data: client } = await sb
     .from('clients')
-    .select('id,display_name,kind,event_date,venue,guest_estimate,budget_visible,budget_target,shared_sections,crew_note,producer_fee,budget_plan,label_id,track_a_label,track_b_label,guest_token,guest_site_on,guest_note,contact_email,contact_phone,brief,brand,service')
+    .select('id,display_name,kind,event_date,venue,guest_estimate,budget_visible,budget_target,shared_sections,crew_note,producer_fee,budget_plan,label_id,track_a_label,track_b_label,guest_token,guest_site_on,guest_note,game_token,game_on,contact_email,contact_phone,brief,brand,service')
     .eq('id', id)
     .maybeSingle();
 
@@ -262,7 +263,7 @@ export default async function ClientPage({
         moneyOn={!!client.budget_visible}
       />
 
-      <Section tab={tab} client={client} viewerId={account.id} />
+      <Section tab={tab} client={client} viewerId={account.id} isRoot={account.role === 'super_admin'} />
 
       <Live sources={workspaceSources(client.id)} />
     </>
@@ -279,6 +280,7 @@ type Client = {
   label_id: string | null;
   service: string | null;
   guest_token: string | null; guest_site_on: boolean | null; guest_note: string | null;
+  game_token: string | null; game_on: boolean | null;
   track_a_label: string; track_b_label: string;
   brand: unknown;
 };
@@ -286,7 +288,9 @@ type Client = {
 /** One section's own data and markup. Splitting the fetches per section is the
  *  point of the sections: the guest list and the seating plan are the two
  *  heaviest reads on this page and most visits never open them. */
-async function Section({ tab, client, viewerId }: { tab: EventTab; client: Client; viewerId: string }) {
+async function Section({ tab, client, viewerId, isRoot }: {
+  tab: EventTab; client: Client; viewerId: string; isRoot: boolean;
+}) {
   const ui = await serverCopy();
   const sb = await supabaseServer();
   const id = client.id;
@@ -314,6 +318,14 @@ async function Section({ tab, client, viewerId }: { tab: EventTab; client: Clien
           <EventDetails event={client} />
           <InviteBox clientId={id} invites={invites} />
         </div>
+        {/* The card game, and only for the address that owns the platform.
+            Last on the overview because it is opened once per couple and then
+            never touched again, and hidden entirely from every other producer
+            — the database refuses them too, but a switch somebody cannot use
+            is still a switch they should not have to read past. */}
+        {isRoot && (
+          <GameSwitch clientId={id} token={client.game_token} on={!!client.game_on} />
+        )}
       </div>
     );
   }

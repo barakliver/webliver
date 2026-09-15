@@ -982,3 +982,51 @@
   .print-wide { page: wide; }
   @page wide { size: A4 landscape; margin: 12mm; }
 }
+
+/* ── the card game's flip ───────────────────────────────────────────────────
+   Three classes, because a card that turns over is the one thing in this
+   product that genuinely needs the third dimension and Tailwind has no token
+   for it. Written here rather than as arbitrary values in the markup for the
+   same reason every other structural rule is: the checker reads this file,
+   and a string like [transform-style:preserve-3d] scattered through a
+   component is a rule nothing can find again.
+
+   `backface-visibility` is what makes it a card rather than two stacked
+   pictures - without it the face shows through the back, mirrored, and the
+   whole illusion is a smear. Prefixed as well as plain: Safari on the phones
+   this is played on still wants the prefix, and a phone is the only device
+   anybody will ever open this on.
+
+   Reduced motion gets the same two states with no turn between them. The
+   person still opens the card; it simply appears rather than rotating. */
+.flip {
+  perspective: 1400px;
+}
+
+.flip-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform .62s cubic-bezier(.22, .68, .36, 1);
+}
+
+.flip.is-open .flip-inner {
+  transform: rotateY(180deg);
+}
+
+.flip-face {
+  position: absolute;
+  inset: 0;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  overflow: hidden;
+}
+
+.flip-face.is-back {
+  transform: rotateY(180deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flip-inner { transition: none; }
+}

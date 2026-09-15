@@ -385,3 +385,30 @@ export async function setGuestSite(_prev: ActionResult | null, form: FormData): 
   revalidatePath('/app/portal');
   return { ok: true };
 }
+
+/** The card game: open it for one couple, or shut it again.
+ *
+ *  The root address's alone. Checked here so the person gets a sentence back
+ *  rather than a database error, and checked again in the database by the
+ *  trigger in 0096, which is the line that actually holds: this function is
+ *  the courtesy, `guard_game_token` is the fence. The token is never touched —
+ *  the same trigger freezes it — so a link already sent to a couple keeps
+ *  working through every later edit of the event.
+ */
+export async function setWeddingGame(_prev: ActionResult | null, form: FormData): Promise<ActionResult> {
+  const clientId = String(form.get('client_id') ?? '');
+  const on = String(form.get('on') ?? '') === '1';
+  if (!clientId) return { ok: false, error: 'חסר מזהה אירוע' };
+
+  const account = await currentAccount();
+  if (!account) return { ok: false, error: 'צריך להתחבר' };
+  if (account.role !== 'super_admin') return { ok: false, error: 'המשחק נפתח על ידי בעל הפלטפורמה בלבד' };
+
+  const sb = await supabaseServer();
+  const { error } = await sb.from('clients').update({ game_on: on }).eq('id', clientId);
+  if (error) return { ok: false, error: readable(error.message) };
+
+  revalidatePath(`/app/clients/${clientId}`);
+  revalidatePath('/app/portal');
+  return { ok: true };
+}

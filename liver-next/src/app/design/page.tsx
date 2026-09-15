@@ -13,6 +13,9 @@ import { SeatingPlan } from '@/components/app/SeatingPlan';
 import { DaySchedule } from '@/components/app/DaySchedule';
 import { RunSheet } from '@/components/app/RunSheet';
 import { PortalWorkspace } from '@/components/app/PortalWorkspace';
+import { GameTable } from '@/components/game/GameTable';
+import { GameSwitch } from '@/components/app/GameSwitch';
+import { dealDeck } from '@/lib/game';
 import { NextAction } from '@/components/app/NextAction';
 import { BeginFlow } from '@/components/app/BeginFlow';
 import { PortalVendors } from '@/components/app/PortalVendors';
@@ -450,6 +453,27 @@ export default async function DesignPage() {
               ui={appUiFor('he')} moneyOn
               action={{ code: 'clear', subject: '', n: 0, due: null, late: false, section: 'tasks' }}
               then={[]}
+            />
+          </div>
+        </Panel>
+
+        {/* The card game. Two panels because they are two audiences: the
+            switch is the one control only the root address ever sees, and the
+            table is the whole screen a couple gets instead of the platform.
+            The table is shown inside a phone-width frame rather than at its
+            own full height, because that is the only device it is ever opened
+            on and the gallery is not the place to scroll a viewport. */}
+        <Panel name="GameSwitch · the root-only switch" note="opens the deck for one couple; hidden from every other producer, and refused by the database as well">
+          <GameSwitch clientId={client} token="0123456789abcdef0123456789abcdef" on={false} />
+        </Panel>
+
+        <Panel name="GameTable · the door" note="what the link opens: two names, two doors, and no way back into the app">
+          <div className="mx-auto w-[380px] overflow-hidden rounded-xl2 border border-line">
+            <GameTable
+              token="0123456789abcdef0123456789abcdef"
+              names={['נועה', 'איתי']}
+              producer="ליור הפקות"
+              deck={dealDeck('0123456789abcdef0123456789abcdef')}
             />
           </div>
         </Panel>

@@ -186,6 +186,34 @@ that has happened once.
   event given away is a fact, not a missing number. The cost of one person on
   one evening is editable on the board's own chip, because the directory rate
   is the usual figure and tonight is sometimes a different one.
+- The card game is the fourth audience and the only one that is not the
+  platform. Seventy-four cards he drew himself, in `public/game/cards`, played
+  at `/play/<token>` — a route outside `/app` on purpose, because that is the
+  whole of how "they are in the game and not in the site" is built: no header,
+  no tabs, no bell. The switch that opens it is the root address's alone, and
+  that is a fact about the database rather than about a screen: the trigger in
+  0096 refuses a change to `clients.game_on` from anybody but the super admin,
+  so hiding the button is the second line and not the only one, and
+  `check-schema.mjs` proves both branches against a real Postgres using one
+  producer twice — with their own address, refused; with the root address,
+  through. The link is anonymous like the guests' page, for the reason a
+  wedding always gives: two people, one account between them. Three things in
+  it are load-bearing. Both partners get **the same deck order** from the same
+  token, because "answer the next card as your partner" is a game only if
+  they are looking at the same next card; the two doors give each of them
+  their own place in the deck, not their own deck. The three rule cards each
+  talk about a neighbour, so `lib/game.ts` deals them into interior positions
+  instead of shuffling them — never first, never last, never two in a row,
+  which a plain shuffle breaks in about one game in twelve. And the table has
+  a **definite** `h-[100svh]`, not a minimum: a percentage height inside a
+  flex column only resolves when the column's height is definite, and under
+  `min-h` the card computed to nothing and the screen drew a blue dot. The
+  words are Hebrew only, in `content/game.ts`, because the cards are pictures
+  with Hebrew set into them and English chrome around Hebrew artwork is a
+  half-translation. Nothing is saved: open a card, talk, press next. Twelve of
+  his eighty-six drawn cards are not in the deck and `content/cards.ts` says
+  which and why — four answered themselves, six repeated another card, one was
+  a heading, and one told the couple which supplier to hire.
 - The ground is a pale blue, #F2F6FC, everywhere: the app, the public site and
   the guests' page alike. It was warm ivory before, and slate before that; the
   rule that settles it is that his latest instruction wins, and the reasoning
