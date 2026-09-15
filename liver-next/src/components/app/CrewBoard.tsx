@@ -3,8 +3,9 @@
 import { useState, useTransition } from 'react';
 import Link from 'next/link';
 import { Check, ChevronDown, Plus, Search, TriangleAlert, X } from 'lucide-react';
+import { useDragOnto, Grip, Carried } from '@/components/app/DragOnto';
 import { assignCrew, unassignCrew } from '@/app/actions/crewMembers';
-import { crewState, candidatesFor, CREW_SLOTS, type CrewSlot } from '@/lib/crewNeeds';
+import { crewState, candidatesFor, isSlot, CREW_SLOTS, type CrewSlot } from '@/lib/crewNeeds';
 import { clashingMembers } from '@/lib/crewLoad';
 import { useCopy } from '@/components/app/CopyProvider';
 import { Ltr, Money } from '@/components/Ltr';
@@ -128,12 +129,20 @@ function SlotPicker({
  * nobody running it.
  *
  * Two ways to move somebody, deliberately, and the same two targets take
- * both. Dragging is the one he asked for and it is the right gesture with a
- * mouse. It is also useless on a phone, where a long-press is the browser's
- * text selection and a drag is a scroll — and he works from a phone. So every
- * chip is also a button: press a person, press a cell, done. The press path
- * is the one that works with a keyboard and a screen reader too, which is why
- * it is the real implementation and the drag is the decoration on top of it.
+ * both: press a person then press a cell, or drag them onto it.
+ *
+ * The drag is on pointer events through `useDragOnto`, which is the standing
+ * rule for every drag in this app and is not a style preference: `dragstart`
+ * never fires on a touch screen, so the HTML drag and drop API does nothing
+ * at all on a phone. The seating plan shipped on it for months and was dead
+ * on the one device it is used from, standing in a venue. `verify.mjs` fails
+ * a build that carries `dataTransfer` for that reason, and it caught this
+ * board doing exactly that — the comment here said the drag was decoration
+ * over a press, and the code had written the decoration in the API that
+ * breaks.
+ *
+ * The press path is still the real one: it is what works with a keyboard and
+ * a screen reader, and it is what a finger gets.
  */
 export function CrewBoard({
   events, people, assignments: initial,
@@ -185,6 +194,16 @@ export function CrewBoard({
    *  number the season view exists to show. */
   const load = (id: string) => rows.filter((r) => r.memberId === id).length;
 
+  /* The drag, on pointer events. The zone id carries both halves of the
+     target — which evening and which role — because a cell is only a cell
+     inside its own row, and one string is what the helper hands back. */
+  const drag = useDragOnto<string>({
+    onDrop: (memberId, zone) => {
+      const [clientId, slot] = zone.split('|');
+      if (clientId && isSlot(slot)) place(clientId, memberId, slot);
+    },
+  });
+
   /* Worked out from the board's own state rather than passed in, so the mark
      appears the moment somebody is dropped onto a second event on the same
      night — which is exactly when it is worth seeing, rather than after a
@@ -213,14 +232,12 @@ export function CrewBoard({
             const on = picked === p.id;
             return (
               <li key={p.id}>
-                <button
-                  type="button"
-                  draggable
-                  onDragStart={(e) => e.dataTransfer.setData('text/plain', p.id)}
-                  onClick={() => setPicked(on ? null : p.id)}
-                  aria-pressed={on}
-                  aria-label={`${on ? c.boardCancel : c.boardPick}: ${p.name}`}
-                  className={`inline-flex cursor-grab items-center gap-2 rounded-xl2 border px-3 py-2 text-[14px] transition-colors ${
+                {/* The grip lifts and the rest of the chip presses. A finger
+                    landing anywhere but the grip is scrolling a long pool,
+                    which is the one thing a drag must never break. */}
+                <span
+                  {...drag.row(p.id)}
+                  className={`inline-flex items-center gap-1 rounded-xl2 border ps-1 pe-3 text-[14px] transition-colors ${
                     on
                       ? 'border-accent bg-accent-wash text-ink'
                       : doubled.has(p.id)
@@ -228,12 +245,21 @@ export function CrewBoard({
                         : 'border-line-soft bg-card text-ink-soft hover:border-accent/40'
                   }`}
                 >
-                  {doubled.has(p.id) && (
-                    <TriangleAlert size={13} aria-hidden strokeWidth={1.5} className="text-bad" />
-                  )}
-                  {p.name}
-                  <span className="tabular-nums text-[12px] text-ink-mute"><Ltr>{String(load(p.id))}</Ltr></span>
-                </button>
+                  <Grip label={`${c.boardPick}: ${p.name}`} {...drag.grip(p.id)} />
+                  <button
+                    type="button"
+                    onClick={() => setPicked(on ? null : p.id)}
+                    aria-pressed={on}
+                    aria-label={`${on ? c.boardCancel : c.boardPick}: ${p.name}`}
+                    className="inline-flex items-center gap-2 py-2"
+                  >
+                    {doubled.has(p.id) && (
+                      <TriangleAlert size={13} aria-hidden strokeWidth={1.5} className="text-bad" />
+                    )}
+                    {p.name}
+                    <span className="tabular-nums text-[12px] text-ink-mute"><Ltr>{String(load(p.id))}</Ltr></span>
+                  </button>
+                </span>
               </li>
             );
           })}
@@ -315,14 +341,13 @@ export function CrewBoard({
                     return (
                       <div
                         key={slot}
-                        onDragOver={(e) => e.preventDefault()}
-                        onDrop={(e) => {
-                          e.preventDefault();
-                          const id = e.dataTransfer.getData('text/plain');
-                          if (id) place(ev.id, id, slot);
-                        }}
-                        className={`rounded-xl2 border p-2.5 ${
-                          state.short > 0 ? 'border-bad/30 bg-bad-wash/40' : 'border-line-soft bg-surface-100'
+                        {...drag.zone(`${ev.id}|${slot}`)}
+                        className={`rounded-xl2 border p-2.5 transition-colors ${
+                          drag.over === `${ev.id}|${slot}`
+                            ? 'border-accent bg-accent-wash'
+                            : state.short > 0
+                              ? 'border-bad/30 bg-bad-wash/40'
+                              : 'border-line-soft bg-surface-100'
                         }`}
                       >
                         <p className="text-[12.5px] text-ink-mute">
@@ -421,6 +446,10 @@ export function CrewBoard({
           </dl>
         );
       })()}
+
+      {/* What the pointer is carrying, drawn at the pointer and out of hit
+          testing so the document answers with the cell underneath. */}
+      <Carried at={drag.at}>{drag.item ? nameOf(drag.item) : null}</Carried>
     </div>
   );
 }

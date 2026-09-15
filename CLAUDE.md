@@ -203,6 +203,16 @@ that has happened once.
   needs a person": the release was recoverable and the recovery was not. The
   file is compiler-facing output, `next build` writes it again, and the
   running server never reads it.
+- **Every drag in this app is written on pointer events**, through
+  `useDragOnto` in `components/app/DragOnto.tsx`. Not a style preference:
+  `dragstart` never fires on a touch screen, so the HTML drag and drop API
+  does nothing at all on a phone, and the seating plan shipped on it for
+  months while being dead on the one device it is used from — standing in a
+  venue. `verify.mjs` fails any build whose bundle carries
+  `dataTransfer.setData`, and that check is what caught 2.16: the crew board's
+  own comment said the drag was decoration over a press, and the code had
+  written the decoration in the API that breaks. A grip lifts and the rest of
+  the row presses, because a finger landing on the row is scrolling.
 - A check constraint added to a table that already has rows must be written
   `not valid`, and validated separately. sync.sql replays every migration on
   every deploy with ON_ERROR_STOP, so one old row that refuses one constraint
