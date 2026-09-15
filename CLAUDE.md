@@ -210,7 +210,15 @@ that has happened once.
   `min-h` the card computed to nothing and the screen drew a blue dot. The
   words are Hebrew only, in `content/game.ts`, because the cards are pictures
   with Hebrew set into them and English chrome around Hebrew artwork is a
-  half-translation. Nothing is saved: open a card, talk, press next. Twelve of
+  half-translation. The notebook in 0097 is the one thing the deck keeps: one
+  note per card per player, upserted so the table can never hold more than a
+  hundred and forty-eight rows for a wedding, which is what makes an
+  anonymous write endpoint a bounded object rather than an open one.
+  `game_notes` has row level security on and **not one policy** - no producer
+  reads it and neither does he - and `check-rls.mjs` grew a
+  `SEALED_BY_DESIGN` list so that stays a decision rather than looking like a
+  forgotten one. An empty note is a delete, decided in the database so the
+  screen and the table cannot disagree about what "never mind" means. Twelve of
   his eighty-six drawn cards are not in the deck and `content/cards.ts` says
   which and why — four answered themselves, six repeated another card, one was
   a heading, and one told the couple which supplier to hire.

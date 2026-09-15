@@ -43,6 +43,27 @@ const PUBLIC_BY_DESIGN = {
   products: 'the shop, and its policy shows a stranger only what is switched on',
 };
 
+/**
+ * Tables nobody reaches at all, each with the reason and the door.
+ *
+ * The opposite mistake to the one above, and the reason this list exists
+ * separately: row level security on with no policy usually means somebody
+ * forgot, and it should keep failing loudly when they did. But it is also how
+ * you say "this is reached through named functions and through nothing else",
+ * which is a stronger fence than any policy — a policy grants rows, and rows
+ * carry every column on them, while a security-definer function hands back
+ * exactly what it selects.
+ *
+ * So a sealed table is allowed, and is allowed the same way a public one is:
+ * by being written down here, with the functions that open it named, so the
+ * next person reads a decision rather than an omission.
+ */
+const SEALED_BY_DESIGN = {
+  game_notes: 'what a couple wrote to themselves while playing; reached only '
+    + 'through game_notes_of() and game_note_write(), both of which demand the '
+    + 'game\'s own token. No producer and no owner reads these.',
+};
+
 const files = readdirSync(DIR).filter((f) => f.endsWith('.sql')).sort();
 const sql = files.map((f) => readFileSync(join(DIR, f), 'utf8')).join('\n');
 
@@ -70,6 +91,10 @@ for (const m of code.matchAll(/create\s+policy\s+[^\n]*?\s+on\s+public\.([a-z_]+
 
 const problems = [];
 const notes = [];
+/* Kept apart from `notes` rather than folded into it: a sealed table and a
+   public one are opposite decisions, and a summary line that counts them
+   together would report the notebook as open to strangers. */
+const sealed = [];
 
 for (const table of [...created].sort()) {
   if (!guarded.has(table)) {
@@ -77,6 +102,10 @@ for (const table of [...created].sort()) {
     continue;
   }
   if (!policied.has(table)) {
+    if (table in SEALED_BY_DESIGN) {
+      sealed.push([table, SEALED_BY_DESIGN[table]]);
+      continue;
+    }
     problems.push([table, 'has row level security and no policy, so nothing can read it, including this app']);
   }
 }
@@ -116,24 +145,32 @@ for (const { name, table, body } of live.values()) {
 const width = Math.max(20, ...[...created].map((t) => t.length));
 console.log(`\n${created.size} tables, ${guarded.size} fenced, ${[...policied.values()].reduce((a, b) => a + b, 0)} policies\n`);
 
-if (notes.length > 0) {
+const list = (rows, label) => {
+  if (rows.length === 0) return;
   const seen = new Set();
-  for (const [table, why] of notes) {
+  for (const [table, why] of rows) {
     if (seen.has(table)) continue;
     seen.add(table);
-    console.log(`  public  ${table.padEnd(width)}  ${why}`);
+    console.log(`  ${label}  ${table.padEnd(width)}  ${why}`);
   }
   console.log('');
-}
+};
+list(notes, 'public');
+list(sealed, 'sealed');
 
 if (problems.length === 0) {
   const open = new Set(notes.map(([t]) => t)).size;
-  console.log(`every table is fenced, and ${open} of them ${open === 1 ? 'is' : 'are'} open on purpose\n`);
+  const shut = new Set(sealed.map(([t]) => t)).size;
+  const parts = [`${open} open on purpose`];
+  if (shut > 0) parts.push(`${shut} reached only through named functions`);
+  console.log(`every table is fenced: ${parts.join(', ')}\n`);
   process.exit(0);
 }
 
 for (const [table, why] of problems) console.error(`  FAIL  ${table.padEnd(width)}  ${why}`);
 console.error('\nA table here holds somebody\'s wedding. If it is meant to be public,');
-console.error('add it to PUBLIC_BY_DESIGN in this file with the reason, so the next');
-console.error('person reads a decision rather than an omission.\n');
+console.error('add it to PUBLIC_BY_DESIGN in this file with the reason; if it is meant');
+console.error('to be reached only through security-definer functions, add it to');
+console.error('SEALED_BY_DESIGN and name them. Either way the next person reads a');
+console.error('decision rather than an omission.\n');
 process.exit(1);

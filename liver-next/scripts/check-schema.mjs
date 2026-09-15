@@ -862,6 +862,47 @@ try {
       'the address outlives an edit, and a shut game answers nobody',
       `token:${gameTokenAfter === gameToken} shut:${gameShut}`);
 
+    /* 0097: the notebook. The table has row level security on and not one
+       policy, which is the whole access design, so the first thing to prove
+       is that the fence is real: a signed-in stranger reading the table
+       directly gets nothing, and so does the producer who owns the event.
+       Everything else goes through the two token functions. */
+    asAccount(uidA, 'barakliver@gmail.com', `update public.clients set game_on=true where id='${cidA}'`);
+    asAccount(uidB, mailB, `select public.game_note_write('${gameToken}','a',12,'הגן, בלי ספק')`);
+    asAccount(uidB, mailB, `select public.game_note_write('${gameToken}','b',12,'האולם')`);
+    const noteMine = asAccount(uidB, mailB, `select body from public.game_notes_of('${gameToken}','a')`);
+    const noteRows = asAccount(uidB, mailB, `select count(*) from public.game_notes_of('${gameToken}','a')`);
+    const noteRaw = asAccount(uidB, mailB, "select count(*) from public.game_notes");
+    const noteOwner = asAccount(uidA, mailA, "select count(*) from public.game_notes");
+    say(noteMine === 'הגן, בלי ספק' && noteRows === '1' && noteRaw === '0' && noteOwner === '0',
+      'a note comes back to its own side, and the table itself answers nobody',
+      `mine:${noteMine} rows:${noteRows} raw:${noteRaw} owner:${noteOwner}`);
+
+    /* Keyed on the card, so writing the same card twice is one row and the
+       table cannot grow past two per card however hard somebody leans on it. */
+    asAccount(uidB, mailB, `select public.game_note_write('${gameToken}','a',12,'שינינו את דעתנו')`);
+    const noteOnce = ask('one', `select count(*)||':'||max(body) from public.game_notes where client_id='${cidA}' and side='a'`);
+    /* An empty body is "never mind" and deletes, rather than leaving a blank
+       line in the notebook for somebody to tidy up by hand. */
+    asAccount(uidB, mailB, `select public.game_note_write('${gameToken}','a',12,'   ')`);
+    const noteGone = ask('one', `select count(*) from public.game_notes where client_id='${cidA}' and side='a'`);
+    say(noteOnce === '1:שינינו את דעתנו' && noteGone === '0',
+      'writing the same card twice is one note, and clearing it deletes it',
+      `once:${noteOnce} cleared:${noteGone}`);
+
+    /* Closing the game closes the notebook: every function re-checks the
+       switch rather than trusting that the caller came by the token honestly. */
+    asAccount(uidA, 'barakliver@gmail.com', `update public.clients set game_on=false where id='${cidA}'`);
+    const noteShut = asAccount(uidB, mailB, `select count(*) from public.game_notes_of('${gameToken}','b')`);
+    let noteWriteShut = '';
+    try { noteWriteShut = asAccount(uidB, mailB, `select public.game_note_write('${gameToken}','b',13,'אחרי הסגירה')`); }
+    catch (e) { noteWriteShut = (e.stdout || e.message || '').toString(); }
+    const noteAfter = ask('one', `select count(*) from public.game_notes where client_id='${cidA}' and card_id=13`);
+    say(noteShut === '0' && noteAfter === '0',
+      'a shut game closes the notebook too, for reading and for writing',
+      `read:${noteShut} wroteAnyway:${noteAfter} said:${noteWriteShut.split('\n')[0].slice(0, 40)}`);
+    psql('one', `-c "delete from public.game_notes where client_id='${cidA}'"`);
+
     /* The platform owner. Every tenant policy above was written without a
        root branch, and this is the line that keeps it that way: the root
        account, with its own claim and its own address, reading a producer's

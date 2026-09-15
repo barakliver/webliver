@@ -1,13 +1,15 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
+import { NotebookPen, X } from 'lucide-react';
 import { game } from '@/content/game';
 import { altOf, imageOf, type Card } from '@/content/cards';
 import { progressOf } from '@/lib/game';
+import { loadGameNotes, saveGameNote } from '@/app/actions/game';
 import { Ltr } from '@/components/Ltr';
 
 type Side = 'a' | 'b';
-type Screen = 'door' | 'rules' | 'play';
+type Screen = 'door' | 'rules' | 'play' | 'notebook';
 
 export type GameTableProps = {
   token: string;
@@ -41,6 +43,10 @@ export function GameTable({ token, names, producer, deck }: GameTableProps) {
   const [side, setSide] = useState<Side | null>(null);
   const [at, setAt] = useState(0);
   const [open, setOpen] = useState(false);
+  /* The notebook, by card. A Map rather than an array because every read of
+     it is "what did I write on this one", and the only writer is the pad. */
+  const [notes, setNotes] = useState<Map<number, string>>(new Map());
+  const [padOpen, setPadOpen] = useState(false);
 
   const key = side ? `liver.game.${token}.${side}` : '';
 
@@ -77,10 +83,35 @@ export function GameTable({ token, names, producer, deck }: GameTableProps) {
     );
   }, [deck.length]);
 
+  /* Fetched once a side is chosen, and only that side's. Both of them are in
+     the same room and can read each other's screens all they like; what this
+     avoids is one partner's device quietly holding the other's answers. A
+     notebook that will not load is not worth a red screen in the middle of a
+     game, so a failure leaves it empty and the pad still writes. */
+  useEffect(() => {
+    if (!side) return;
+    let live = true;
+    void loadGameNotes(token, side).then((r) => {
+      if (live && r.ok) setNotes(new Map(r.notes.map((n) => [n.card_id, n.body])));
+    });
+    return () => { live = false; };
+  }, [token, side]);
+
   const enter = (which: Side) => { setSide(which); setScreen('play'); };
 
   if (screen === 'rules') {
     return <Rules onBack={() => setScreen(side ? 'play' : 'door')} />;
+  }
+
+  if (screen === 'notebook' && side) {
+    return (
+      <Notebook
+        deck={deck}
+        notes={notes}
+        onBack={() => setScreen('play')}
+        onGo={(i) => { setAt(i); setOpen(true); setScreen('play'); }}
+      />
+    );
   }
 
   if (screen === 'door' || !side) {
@@ -96,6 +127,7 @@ export function GameTable({ token, names, producer, deck }: GameTableProps) {
 
   const finished = at >= deck.length;
   const card = finished ? null : deck[at];
+  const hasNote = !!(card && (notes.get(card.id) ?? '').trim());
 
   /* A definite height rather than a minimum, and this is the line the card's
      size hangs off: a percentage height inside a flex column only resolves
@@ -109,7 +141,13 @@ export function GameTable({ token, names, producer, deck }: GameTableProps) {
         <button type="button" onClick={() => setScreen('door')} className="rounded-xl2 px-2 py-1 hover:text-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-light">
           {game.switchSide}
         </button>
-        <span aria-hidden className="truncate">{producer}</span>
+        {/* The producer's name was here and the notebook is worth more: the
+            name is already on the back of every card and on the door. */}
+        <button type="button" onClick={() => setScreen('notebook')} className="inline-flex items-center gap-1.5 rounded-xl2 px-2 py-1 hover:text-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-light">
+          <NotebookPen size={13} strokeWidth={1.5} aria-hidden />
+          {game.notebook}
+          {notes.size > 0 && <Ltr className="text-accent-light">{notes.size}</Ltr>}
+        </button>
         <button type="button" onClick={() => setScreen('rules')} className="rounded-xl2 px-2 py-1 hover:text-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-light">
           {game.rulesLink}
         </button>
@@ -141,15 +179,48 @@ export function GameTable({ token, names, producer, deck }: GameTableProps) {
               </p>
             </div>
 
-            <button
-              type="button"
-              onClick={open ? advance : () => setOpen(true)}
-              className="w-full rounded-xl2 bg-surface px-5 py-3.5 text-[15px] font-semibold text-dark transition hover:bg-surface/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-light"
-            >
-              {open ? game.next : game.tapToOpen}
-            </button>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={open ? advance : () => setOpen(true)}
+                className="flex-1 rounded-xl2 bg-surface px-5 py-3.5 text-[15px] font-semibold text-dark transition hover:bg-surface/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-light"
+              >
+                {open ? game.next : game.tapToOpen}
+              </button>
+              {/* Beside the next button rather than on the card: the card is
+                  one target that turns over, and a second target on top of it
+                  is a card that sometimes does not turn. */}
+              <button
+                type="button"
+                onClick={() => { setOpen(true); setPadOpen(true); }}
+                aria-label={hasNote ? game.noteEdit : game.noteAdd}
+                className={`inline-flex shrink-0 items-center gap-1.5 rounded-xl2 border px-4 py-3.5 text-[14px] font-medium transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-light ${hasNote ? 'border-accent-light bg-accent-light/15 text-accent-light' : 'border-surface/25 text-surface/75 hover:border-surface/50'}`}
+              >
+                <NotebookPen size={15} strokeWidth={1.5} aria-hidden />
+                {game.noteAdd}
+              </button>
+            </div>
           </div>
         </>
+      )}
+
+      {padOpen && card && (
+        <NotePad
+          card={card}
+          value={notes.get(card.id) ?? ''}
+          onClose={() => setPadOpen(false)}
+          onSave={async (body) => {
+            const r = await saveGameNote(token, side, card.id, body);
+            if (!r.ok) return false;
+            setNotes((prev) => {
+              const next = new Map(prev);
+              if (body.trim()) next.set(card.id, body.trim());
+              else next.delete(card.id);
+              return next;
+            });
+            return true;
+          }}
+        />
       )}
     </div>
   );
@@ -295,6 +366,205 @@ function Finished({ onRestart }: { onRestart: () => void }) {
       >
         {game.restart}
       </button>
+    </div>
+  );
+}
+
+/* ── the pad, over the card ───────────────────────────────────────────────── */
+
+/**
+ * One note, on one card.
+ *
+ * A sheet over the table rather than a screen of its own, because the thing
+ * being written about has to stay visible behind it — the note is "what we
+ * said about *this*", and a pad that hides the card is a pad you fill in from
+ * memory. The card's own words are repeated at the top for the same reason,
+ * and because on a short phone the sheet covers most of the picture anyway.
+ *
+ * Saves on a press and not on every keystroke. A note is a sentence somebody
+ * is in the middle of writing; sending each letter to a server would fill the
+ * log with drafts and still lose the last word if the connection went.
+ */
+function NotePad({ card, value, onClose, onSave }: {
+  card: Card;
+  value: string;
+  onClose: () => void;
+  onSave: (body: string) => Promise<boolean>;
+}) {
+  const [text, setText] = useState(value);
+  const [failed, setFailed] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [pending, start] = useTransition();
+  const panel = useRef<HTMLDivElement>(null);
+  /* The caller passes a fresh arrow every render, so naming `onClose` in the
+     dependency list below re-runs the whole effect on every keystroke — which
+     tears down and rebuilds the listener, and, far worse, runs the cleanup's
+     `opener.focus()` and pulls the caret straight back out of the textarea.
+     The pad was unusable after one character. Held in a ref so the effect runs
+     once and still calls the current one. */
+  const close = useRef(onClose);
+  close.current = onClose;
+
+  /* The four things `components/app/Sheet.tsx` gets right, written again here
+     rather than imported. Not an oversight: that component reads its close
+     label from `useCopy()`, which means a CopyProvider, which means shipping
+     the whole app's copy to a route whose entire design is that it is not the
+     app. Twenty lines of behaviour is the cheaper of the two.
+       Escape closes it, because a modal with no keyboard exit is a trap.
+       Focus moves in on open and back to the opener on close.
+       The page behind stops scrolling.
+       The backdrop closes it and the panel does not. */
+  useEffect(() => {
+    const opener = document.activeElement as HTMLElement | null;
+    const { overflow } = document.body.style;
+    document.body.style.overflow = 'hidden';
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { e.stopPropagation(); close.current(); }
+    };
+    window.addEventListener('keydown', onKey);
+    const id = requestAnimationFrame(() => panel.current?.querySelector('textarea')?.focus());
+    return () => {
+      cancelAnimationFrame(id);
+      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = overflow;
+      opener?.focus?.();
+    };
+    /* Once, on open. Everything it needs that can change is read through a
+       ref, so there is nothing here that should re-run it. */
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const save = () => {
+    setFailed(false);
+    start(async () => {
+      const ok = await onSave(text);
+      if (!ok) { setFailed(true); return; }
+      setSaved(true);
+      window.setTimeout(onClose, 550);
+    });
+  };
+
+  return (
+    <div className="absolute inset-0 z-20 flex flex-col justify-end bg-scrim/70 px-4 pb-[calc(env(safe-area-inset-bottom,0px)+1rem)] pt-10">
+      {/* The ground behind it closes it, the way a sheet does everywhere else
+          in this product. */}
+      <button
+        type="button" aria-label={game.noteClose} onClick={onClose}
+        className="absolute inset-0 cursor-default"
+      />
+      <div
+        ref={panel}
+        role="dialog"
+        aria-modal="true"
+        aria-label={game.noteEdit}
+        className="relative mx-auto w-full max-w-md rounded-xl2 bg-surface p-5 text-ink shadow-pop"
+      >
+        <div className="flex items-start justify-between gap-3">
+          <p className="text-[13px] leading-snug text-ink-soft">{altOf(card)}</p>
+          <button
+            type="button" onClick={onClose} aria-label={game.noteClose}
+            className="-me-1 -mt-1 shrink-0 rounded-xl2 p-1.5 text-ink-mute hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          >
+            <X size={18} strokeWidth={1.5} aria-hidden />
+          </button>
+        </div>
+
+        <label className="label mt-4 block" htmlFor="game-note">{game.noteEdit}</label>
+        <textarea
+          id="game-note" rows={4} maxLength={600}
+          value={text} onChange={(e) => { setText(e.target.value); setSaved(false); }}
+          placeholder={game.notePlaceholder}
+          className="field resize-y"
+        />
+
+        {failed && (
+          <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+            {game.noteTrouble}
+          </p>
+        )}
+
+        <div className="mt-4 flex flex-wrap items-center gap-3">
+          <button type="button" onClick={save} disabled={pending} className="btn-primary">
+            {pending ? game.noteSaving : game.noteSave}
+          </button>
+          {value && (
+            /* Clearing the box is how somebody says "never mind", and the
+               database turns an empty body into a delete, so this is the same
+               path as a save rather than a second one. */
+            <button
+              type="button" disabled={pending}
+              onClick={() => { setText(''); start(async () => { await onSave(''); onClose(); }); }}
+              className="btn-ghost"
+            >
+              {game.noteClear}
+            </button>
+          )}
+          {saved && <span className="text-[13.5px] text-ok">{game.noteSaved}</span>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── everything written so far ────────────────────────────────────────────── */
+
+/**
+ * The notebook.
+ *
+ * In the order the cards are dealt rather than the order they were written,
+ * so it reads as a pass through the deck and a card's note sits where the card
+ * does. Each entry names the card it belongs to and opens it: a note that says
+ * "the garden" is worth nothing six weeks later without the question above it.
+ */
+function Notebook({ deck, notes, onBack, onGo }: {
+  deck: readonly Card[];
+  notes: Map<number, string>;
+  onBack: () => void;
+  onGo: (index: number) => void;
+}) {
+  const written = deck
+    .map((card, index) => ({ card, index, body: (notes.get(card.id) ?? '').trim() }))
+    .filter((r) => r.body);
+
+  return (
+    <div className="min-h-[100svh] bg-dark px-6 py-12 text-surface">
+      <div className="mx-auto w-full max-w-md">
+        <h1 className="font-display text-3xl font-medium">{game.notebook}</h1>
+        <p className="mt-2 text-[13px] text-surface/55">{game.notebookMine}</p>
+
+        {written.length === 0 ? (
+          <div className="mt-10">
+            <p className="text-[17px] font-medium">{game.notebookEmpty}</p>
+            <p className="mt-2 text-[15px] leading-relaxed text-surface/70">{game.notebookEmptyBody}</p>
+          </div>
+        ) : (
+          <ul className="mt-8 space-y-6">
+            {written.map(({ card, index, body }) => (
+              <li key={card.id} className="border-t border-surface/15 pt-5">
+                <p className="text-[13px] leading-snug text-accent-light">{altOf(card)}</p>
+                {/* Their own words, kept exactly as typed, line breaks and
+                    all. `whitespace-pre-line` rather than a paragraph per
+                    line: somebody writing three things under each other means
+                    three things under each other. */}
+                <p className="mt-2 whitespace-pre-line text-[15px] leading-relaxed">{body}</p>
+                <button
+                  type="button" onClick={() => onGo(index)}
+                  className="mt-2 text-[13px] text-surface/60 underline underline-offset-4 hover:text-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-light"
+                >
+                  {game.goToCard} <Ltr>{index + 1}</Ltr>
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        <button
+          type="button" onClick={onBack}
+          className="mt-10 w-full rounded-xl2 bg-surface px-5 py-3.5 text-[15px] font-semibold text-dark transition hover:bg-surface/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-light"
+        >
+          {game.notebookBack}
+        </button>
+      </div>
     </div>
   );
 }
