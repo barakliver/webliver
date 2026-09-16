@@ -579,7 +579,15 @@
        of 8% ink in its place, which measures 1.18:1 against the page. The
        indicator on every field in the app was a 1px border changing colour.
        Now a field focuses like everything else does. */
-    @apply min-h-[48px] w-full rounded-control border border-line-control
+    /* min-w-0 is not tidiness. A grid or flex item defaults to
+       `min-width: auto`, which means it refuses to shrink below its own
+       intrinsic width - and `input type=date` on iOS has a wide intrinsic
+       width, wider than a phone's column. So one date field in a row of three
+       pushed its track past the edge of the card and the three fields came
+       out different lengths, on a form whose grid says they are equal. Every
+       form in this app is built out of this class, so this is the one place
+       to say it. */
+    @apply min-h-[48px] w-full min-w-0 rounded-control border border-line-control
            px-4 py-2.5 text-[16px] text-ink placeholder:text-ink-mute
            focus:border-accent;
     background: var(--field-bg);
