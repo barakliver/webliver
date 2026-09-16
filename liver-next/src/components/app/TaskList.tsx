@@ -194,12 +194,12 @@ function Row({ task, clientId, viewer, canDelete, grip }: {
       )}
 
       {/* Show vendor capture modal when task marked done */}
-      {showVendorModal && task.event_id && task.category && (
+      {showVendorModal && task.category && (
         <VendorCaptureModal
           task={{
             id: task.id,
             client_id: clientId,
-            event_id: task.event_id,
+            event_id: task.event_id ?? null,
             title: task.title,
             due_on: task.due_on,
             done: task.done,
@@ -225,7 +225,6 @@ function Row({ task, clientId, viewer, canDelete, grip }: {
             sort_order: 0,
             created_at: new Date().toISOString(),
           }}
-          eventId={task.event_id}
           onClose={() => setShowVendorModal(false)}
           /* Both ways out of the form that mean "it is done" tick the same
              way. The form's own job ends at the supplier. */

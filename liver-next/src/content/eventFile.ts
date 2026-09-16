@@ -126,18 +126,26 @@ export type VendorCategory = (typeof VENDOR_CATEGORIES)[number];
  *  or opens a form — and it got that wrong on the couple's screen for a
  *  fortnight without anybody being able to say why the button "did nothing".
  *
- *  Three things have to be true before a press asks who was hired. It has to
- *  be a tick and not an untick: nobody unhiring a photographer wants to be
- *  asked for his phone number. The task has to carry a supplier category.
- *  And it has to belong to a celebration, because the supplier is filed under
- *  one. */
+ *  Two things have to be true before a press asks who was hired. It has to be
+ *  a tick and not an untick: nobody unhiring a photographer wants to be asked
+ *  for his phone number. And the task has to carry a supplier category.
+ *
+ *  There used to be a third, that the task belong to a celebration, on the
+ *  reasoning that the supplier is filed under one. That reasoning was simply
+ *  false: `event_vendors` is keyed on the client and has no celebration
+ *  column at all, and the form threaded the id through and never used it. So
+ *  the condition gated the whole feature on a field that changes nothing —
+ *  and since most events never split into separate celebrations, most tasks
+ *  carry no celebration, and on those the circle crossed the line out and
+ *  asked nothing. The supplier form existed, worked, wrote the supplier and
+ *  the budget line, and could not be reached. */
 export function pressOnCircle(task: {
-  done: boolean; category?: string | null; event_id?: string | null;
+  done: boolean; category?: string | null;
 }): 'tick' | 'untick' | 'capture' {
   if (task.done) return 'untick';
   const isSupplier = !!task.category
     && (VENDOR_CATEGORIES as readonly string[]).includes(task.category);
-  return isSupplier && !!task.event_id ? 'capture' : 'tick';
+  return isSupplier ? 'capture' : 'tick';
 }
 
 export type TemplateTask = {

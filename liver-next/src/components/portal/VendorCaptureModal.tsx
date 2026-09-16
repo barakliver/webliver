@@ -7,7 +7,7 @@ import { productionCategoryOf, categoryLabel } from '@/content/production';
 type Task = {
   id: string;
   client_id: string;
-  event_id: string;
+  event_id: string | null;
   title: string;
   due_on: string | null;
   done: boolean;
@@ -38,7 +38,6 @@ type TaskTemplate = {
 interface VendorCaptureModalProps {
   task: Task;
   template: TaskTemplate;
-  eventId: string;
   onClose: () => void;
   onSaved: (vendorId: string) => void;
   /** "Tick it, there is no supplier to record." The form does not write the

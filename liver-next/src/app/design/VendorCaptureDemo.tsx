@@ -18,7 +18,6 @@ import { VendorCaptureModal } from '@/components/portal/VendorCaptureModal';
 export function VendorCaptureDemo() {
   return (
     <VendorCaptureModal
-      eventId="00000000-0000-4000-8000-000000000001"
       task={{
         id: '00000000-0000-4000-8000-000000000002',
         client_id: '00000000-0000-4000-8000-000000000003',
