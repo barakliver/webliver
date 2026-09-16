@@ -2028,7 +2028,7 @@ export const appCopy = {
     rowContracts: 'הסכמים',
     /* The deck's own name, in Latin in both languages because it is a name. */
     gameCta: 'שחקו ב-Before I Do',
-    gameSub: 'משחק קלפים לשניכם. שבעים וארבעה קלפים על החתונה ועליכם, כל אחד בטלפון שלו.',
+    gameSub: 'משחק קלפים לשניכם. שישים ושישה קלפים על החתונה ועליכם, כל אחד בטלפון שלו.',
     rowVenues: 'אולמות להשוואה',
     rowBar: 'כמה אלכוהול לקנות',
     rowFiles: 'קבצים ותמונות',

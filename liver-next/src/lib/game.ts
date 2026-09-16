@@ -5,18 +5,18 @@
  * the one rule in it is a rule about a bug nobody would ever see in testing
  * and every twelfth couple would hit in play.
  *
- * Three of the seventy-four cards are rule cards, and each one talks about
- * its neighbour: "כל אחד עונה על הקלף **הבא**", "מה ההורים היו עונים על
- * הקלף **הקודם**". A straight shuffle will eventually put two of them next to
- * each other, or put one of them first or last, and then the card points at
- * nothing and the couple is holding an instruction it cannot carry out. With
- * three rule cards in seventy-four that happens in roughly one game in
- * twelve — often enough to be somebody's first impression of the game.
+ * Two of the sixty-six cards are rule cards, and each one talks about the card
+ * beside it: "כל אחד עונה על הקלף **הבא**", "מותר לבטל תשובה אחת". A straight
+ * shuffle will eventually put the two of them next to each other, or put one
+ * of them last, and then the card points at nothing and the couple is holding
+ * an instruction it cannot carry out. Rarer with two rule cards than it was
+ * with three, which is worse rather than better: rare enough never to show up
+ * while anybody is looking, common enough to be somebody's first impression.
  *
- * So the deal is not one shuffle. The seventy-one ordinary cards are shuffled
- * and the three rule cards are then placed into it at three distinct
- * interior positions, which makes both failures impossible rather than
- * unlikely: never first, never last, never two in a row.
+ * So the deal is not one shuffle. The sixty-four ordinary cards are shuffled
+ * and the two rule cards are then placed into them at two distinct interior
+ * positions, which makes both failures impossible rather than unlikely: never
+ * first, never last, never two in a row.
  *
  * Both partners get the same order, from the same seed. That is not an
  * accident of implementation — it is what makes the rule cards mean anything.

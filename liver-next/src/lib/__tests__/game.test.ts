@@ -1,13 +1,14 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { existsSync } from 'node:fs';
 import { dealDeck, seedFrom, progressOf } from '../game.ts';
-import { CARDS, type Card } from '../../content/cards.ts';
+import { CARDS, HOW_TO_PLAY_IMAGE, imageOf, type Card } from '../../content/cards.ts';
 
 /* The bug this file exists for. A rule card talks about the card beside it —
-   "הקלף הבא", "הקלף הקודם" — so a deal that puts two of them together, or
-   puts one at an end, hands the couple an instruction pointing at nothing.
-   A straight shuffle does that in about one game in twelve, which is often
-   enough to be somebody's first impression. Every seed, not one. */
+   "הקלף הבא" — so a deal that puts the two of them together, or puts one at an
+   end, hands the couple an instruction pointing at nothing. A straight shuffle
+   does that often enough to be somebody's first impression and rarely enough
+   never to happen while anybody is watching. Every seed, not one. */
 test('a rule card is never first, never last, and never beside another', () => {
   for (let i = 0; i < 400; i++) {
     const deck = dealDeck(`token-${i}`);
@@ -44,7 +45,7 @@ test('two weddings do not share an order', () => {
 });
 
 /* The placement rule has to hold on a deck barely big enough to hold it,
-   which is the shape the 74-card deck can never show us. */
+   which is the shape the real deck can never show us. */
 test('a deck with only just enough room still places the rules legally', () => {
   const tiny: Card[] = [
     { id: 1, kind: 'question', q: 'a' },
@@ -82,8 +83,34 @@ test('the same token always hashes to the same seed', () => {
 });
 
 test('progress never runs past the end', () => {
-  assert.equal(progressOf(0, 74), 0);
-  assert.equal(progressOf(74, 74), 100);
-  assert.equal(progressOf(99, 74), 100);
+  assert.equal(progressOf(0, 66), 0);
+  assert.equal(progressOf(66, 66), 100);
+  assert.equal(progressOf(99, 66), 100);
   assert.equal(progressOf(3, 0), 0);
+});
+
+/* The ids are his file names now, so the deck and the folder can disagree in
+   a way the old self-numbered deck could not: a card whose id has no picture
+   draws a broken image inside his frame and nothing anywhere says why. Two
+   cards on one file is the same accident from the other side. */
+test('every card names a picture, and no two cards name the same one', () => {
+  const files = new Set<string>();
+  for (const card of CARDS) {
+    const src = imageOf(card);
+    assert.ok(!files.has(src), `${src} is used by two cards`);
+    files.add(src);
+    assert.ok(
+      existsSync(new URL(`../../../public${src}`, import.meta.url)),
+      `card ${card.id} has no ${src}`,
+    );
+  }
+  assert.equal(files.size, CARDS.length);
+});
+
+/* The instruction card is drawn on the rules screen and must never be dealt:
+   a deck that deals its own instructions in the middle of a game is a bug
+   somebody would have to explain. */
+test('the instruction card exists and is not in the deck', () => {
+  assert.ok(existsSync(new URL(`../../../public${HOW_TO_PLAY_IMAGE}`, import.meta.url)));
+  assert.ok(!CARDS.some((c) => imageOf(c) === HOW_TO_PLAY_IMAGE));
 });

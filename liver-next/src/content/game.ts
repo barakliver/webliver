@@ -1,20 +1,20 @@
 /**
  * The words around the deck.
  *
- * Hebrew only, and that is a decision rather than an omission. The seventy-four
- * cards are pictures with Hebrew set into them; English chrome around Hebrew
- * artwork is a half-translation, and a half-translation reads worse than none.
- * The rest of the platform switches language because the rest of the platform
- * is text. If the deck is ever redrawn in English this file grows a second
- * export and the route reads the cookie like everything else.
+ * Hebrew only, and that is a decision rather than an omission. The cards are
+ * pictures with Hebrew set into them; English chrome around Hebrew artwork is
+ * a half-translation, and a half-translation reads worse than none. The rest
+ * of the platform switches language because the rest of the platform is text.
+ * If the deck is ever redrawn in English this file grows a second export and
+ * the route reads the cookie like everything else.
  *
- * The rules screen is the one piece of this that is not in the box. Seventy-four
- * cards arrived with no card saying how to play, so what is written here was
- * read off the three rule cards themselves: "הקלף הבא" and "הקלף הקודם" mean
- * the deck is played in order, one card at a time; "לבטל תשובה אחת" means both
- * of you answer and the answers stand. Everything below follows from that, and
- * the last line of it is the one to change first if he plays it and it is
- * wrong.
+ * The rules screen used to be the one piece of this that was not in the box:
+ * the drafts arrived with no card saying how to play, so five paragraphs were
+ * inferred from what the rule cards said about their neighbours. The final
+ * deck came with card 102, "איך משחקים?", in his own words, so the rules
+ * screen now shows that card and the words below it only cover what a printed
+ * card cannot know: that there are two phones, that the notebook is the עט ודף
+ * it asks for, and that the deck remembers where you stopped.
  */
 
 export const game = {
@@ -23,7 +23,7 @@ export const game = {
   /* The deck's name, and it stays in Latin in a Hebrew screen because it is
      a name rather than a phrase to translate. */
   title: 'Before I Do',
-  intro: 'שבעים וארבעה קלפים על החתונה שלכם ועליכם. כל אחד פותח בטלפון שלו, שניכם על אותו קלף.',
+  intro: 'שישים ושישה קלפים על החתונה שלכם ועליכם. כל אחד פותח בטלפון שלו, שניכם על אותו קלף.',
   who: 'מי פותח עכשיו?',
   sideA: 'אני הראשון/ה',
   sideB: 'אני השני/ה',
@@ -34,6 +34,9 @@ export const game = {
   /* ── the rules ─────────────────────────────────────────────────────────── */
   rulesTitle: 'איך משחקים',
   rulesBack: 'חזרה למשחק',
+  /* The card says the rest. These four cover only what a printed card has no
+     way to know: that this is a screen, that there are two of them, and that
+     the עט ודף it asks for is built in. */
   rules: [
     {
       h: 'שניכם, כל אחד במכשיר שלו',
@@ -42,23 +45,20 @@ export const game = {
     },
     {
       h: 'קלף אחד בכל פעם',
-      p: 'לוחצים על הקלף והוא נפתח. עונים שניכם, בקול ולא במסך, ואז לוחצים על "הקלף הבא". '
-        + 'אין ניקוד ואין מנצח. מה שיוצא מזה זו השיחה.',
+      p: 'לוחצים על הקלף והוא נפתח. עונים שניכם בקול ולא במסך, ואז לוחצים על "הקלף הבא". '
+        + 'אין ניקוד ואין מנצח.',
     },
     {
-      h: 'שלושה סוגי קלפים',
-      p: 'קלף "או" הוא בחירה בין שתי אפשרויות. קלף שאלה הוא שאלה פתוחה שכל אחד עונה עליה בעצמו. '
-        + 'ושלושה קלפים הם חוקים: הם משנים איך משחקים את הקלף שלידם, וכשאחד כזה עולה כדאי לקרוא אותו בקול.',
+      h: 'שני קלפי חוק',
+      p: 'שניים מהקלפים הם לא שאלה אלא חוק: החלפת תפקידים, ווטו. '
+        + 'הם משנים איך משחקים את הקלף שאחריהם, וכשאחד כזה עולה כדאי לקרוא אותו בקול.',
     },
     {
-      h: 'יש מחברת',
+      h: 'העט והדף כאן',
       p: 'בכל קלף אפשר לרשום לעצמכם הערה, וכל מה שרשמתם מחכה ב"מחברת" למעלה. '
         + 'זה שווה: חצי מהקלפים הם החלטה אמיתית על הערב, והשיחה הזאת נשכחת עד מרץ. '
-        + 'המחברת היא שלכם בלבד, גם בן או בת הזוג לא רואים אותה.',
-    },
-    {
-      h: 'אין צורך לסיים בישיבה אחת',
-      p: 'המשחק זוכר איפה עצרתם במכשיר הזה. סוגרים וממשיכים מתי שבא לכם.',
+        + 'המחברת היא שלכם בלבד, גם בן או בת הזוג לא רואים אותה. '
+        + 'המשחק גם זוכר איפה עצרתם, אז אפשר לסגור ולהמשיך מתי שבא לכם.',
     },
   ],
 
@@ -66,7 +66,7 @@ export const game = {
   tapToOpen: 'לחצו כדי לפתוח',
   next: 'הקלף הבא',
   done: 'סיימתם את החפיסה',
-  doneBody: 'שבעים וארבעה קלפים. אפשר להתחיל מחדש מתי שתרצו.',
+  doneBody: 'שישים ושישה קלפים. אפשר להתחיל מחדש מתי שתרצו.',
   restart: 'להתחיל מחדש',
   leave: 'יציאה',
   ofDeck: 'מתוך',
@@ -108,7 +108,7 @@ export type GameCopy = typeof game;
  */
 export const gameAdmin = {
   title: 'Before I Do',
-  sub: 'שבעים וארבעה קלפים לזוג, על מסך משלהם. נפתח מכאן בלבד.',
+  sub: 'שישים ושישה קלפים לזוג, על מסך משלהם. נפתח מכאן בלבד.',
   on: 'פתוח',
   off: 'סגור',
   turnOn: 'לפתוח לזוג',

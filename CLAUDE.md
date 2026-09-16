@@ -205,7 +205,7 @@ that has happened once.
   one evening is editable on the board's own chip, because the directory rate
   is the usual figure and tonight is sometimes a different one.
 - The card game is the fourth audience and the only one that is not the
-  platform. Seventy-four cards he drew himself, in `public/game/cards`, played
+  platform. Sixty-six cards he drew himself, in `public/game/cards`, played
   at `/play/<token>` — a route outside `/app` on purpose, because that is the
   whole of how "they are in the game and not in the site" is built: no header,
   no tabs, no bell. The switch that opens it is the root address's alone, and
@@ -219,10 +219,11 @@ that has happened once.
   it are load-bearing. Both partners get **the same deck order** from the same
   token, because "answer the next card as your partner" is a game only if
   they are looking at the same next card; the two doors give each of them
-  their own place in the deck, not their own deck. The three rule cards each
+  their own place in the deck, not their own deck. The two rule cards each
   talk about a neighbour, so `lib/game.ts` deals them into interior positions
   instead of shuffling them — never first, never last, never two in a row,
-  which a plain shuffle breaks in about one game in twelve. And the table has
+  which a plain shuffle breaks rarely enough never to show up while anybody is
+  watching and often enough to be somebody's first game. And the table has
   a **definite** `h-[100svh]`, not a minimum: a percentage height inside a
   flex column only resolves when the column's height is definite, and under
   `min-h` the card computed to nothing and the screen drew a blue dot. The
@@ -230,16 +231,28 @@ that has happened once.
   with Hebrew set into them and English chrome around Hebrew artwork is a
   half-translation. The notebook in 0097 is the one thing the deck keeps: one
   note per card per player, upserted so the table can never hold more than a
-  hundred and forty-eight rows for a wedding, which is what makes an
+  hundred and thirty-two rows for a wedding, which is what makes an
   anonymous write endpoint a bounded object rather than an open one.
   `game_notes` has row level security on and **not one policy** - no producer
   reads it and neither does he - and `check-rls.mjs` grew a
   `SEALED_BY_DESIGN` list so that stays a decision rather than looking like a
   forgotten one. An empty note is a delete, decided in the database so the
-  screen and the table cannot disagree about what "never mind" means. Twelve of
-  his eighty-six drawn cards are not in the deck and `content/cards.ts` says
-  which and why — four answered themselves, six repeated another card, one was
-  a heading, and one told the couple which supplier to hire.
+  screen and the table cannot disagree about what "never mind" means. The
+  drafts were filtered here once, twelve of eighty-six cut and the reasons
+  written down; that whole exercise is gone, because he sent the finished deck
+  and the finished deck is the deck. Two things came out of the replacement
+  worth keeping. **The ids in `content/cards.ts` are his file names**, not a
+  numbering of our own: the drafts had none and got one invented for them,
+  the final cards arrived numbered, and card 37 is `37.webp` is the 37th card
+  he drew, so "look at 37" survives the trip from a phone call to a file. That
+  is also why the rule cards are 100 and 101 with a gap in front of them, and
+  closing that gap to make the list tidy would undo the only thing the ids are
+  for. And card 102, "איך משחקים?", is **the rules screen and not a card**:
+  it is drawn at the top of the rules and deliberately kept out of `CARDS`,
+  because a deck that deals its own instructions halfway through a game is a
+  bug somebody has to explain. A test walks every id to its file and back, so
+  a card without a picture fails the build rather than drawing a broken image
+  inside his frame.
 - The ground is a pale blue, #F2F6FC, everywhere: the app, the public site and
   the guests' page alike. It was warm ivory before, and slate before that; the
   rule that settles it is that his latest instruction wins, and the reasoning

@@ -77,7 +77,7 @@ export const portalEn: PortalCopy = {
   rowSeating: 'Tables',
   rowContracts: 'Contracts',
   gameCta: 'Play Before I Do',
-  gameSub: 'A card game for the two of you. Seventy-four cards about the wedding and about you, each on your own phone.',
+  gameSub: 'A card game for the two of you. Sixty-six cards about the wedding and about you, each on your own phone.',
   rowVenues: 'Halls to compare',
   rowBar: 'How much drink to buy',
   rowFiles: 'Files and photos',

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
 import { NotebookPen, X } from 'lucide-react';
 import { game } from '@/content/game';
-import { altOf, imageOf, type Card } from '@/content/cards';
+import { altOf, imageOf, HOW_TO_PLAY_IMAGE, type Card } from '@/content/cards';
 import { progressOf } from '@/lib/game';
 import { loadGameNotes, saveGameNote } from '@/app/actions/game';
 import { Ltr } from '@/components/Ltr';
@@ -280,7 +280,21 @@ function Rules({ onBack }: { onBack: () => void }) {
     <div className="min-h-[100svh] bg-dark px-6 py-12 text-surface">
       <div className="mx-auto w-full max-w-md">
         <h1 className="font-display text-3xl font-medium">{game.rulesTitle}</h1>
-        <div className="mt-8 space-y-7">
+        {/* His own instruction card, card 102, rather than a paragraph saying
+            the same thing worse. It carries the whole of how the game is
+            played, in his handwriting and his frame, so the sections under it
+            only add what a printed card cannot know. It is not in CARDS and is
+            never dealt: a deck that deals its own instructions mid-game has a
+            bug in it. */}
+        <img
+          src={HOW_TO_PLAY_IMAGE}
+          alt="איך משחקים? פותחים בקבוק יין, ונותנים לשיחה לזרום. שולפים קלף מהחפיסה ובוחרים באחת משתי האפשרויות. בשאלה פתוחה, כל אחד עונה בתורו. עט ודף ליד היין לתובנות שלא תרצו לשכוח. אין תשובות נכונות, יש רק שיחות טובות."
+          width={944}
+          height={1417}
+          className="mx-auto mt-7 w-full max-w-[17rem] rounded-xl2"
+          draggable={false}
+        />
+        <div className="mt-9 space-y-7">
           {game.rules.map((r) => (
             <section key={r.h}>
               <h2 className="text-[15px] font-semibold text-accent-light">{r.h}</h2>
@@ -342,7 +356,7 @@ function Flip({ card, open, onOpen, producer }: {
             height={1417}
             /* Plain img and not next/image on purpose: these are already the
                right size and already WebP, and asking the droplet to
-               re-encode seventy-four of them on demand is work for nothing. */
+               re-encode sixty-six of them on demand is work for nothing. */
             className="size-full object-contain"
             draggable={false}
           />
