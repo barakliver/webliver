@@ -3,7 +3,7 @@
 import { useState, useActionState } from 'react';
 import { formatDate } from '@/lib/dates';
 import { useFormStatus } from 'react-dom';
-import { addTask, toggleTask, deleteTask, updateTask, reorderTasks, type TaskResult } from '@/app/actions/tasks';
+import { addTask, deleteTask, updateTask, reorderTasks, type TaskResult } from '@/app/actions/tasks';
 import { Sortable, Handle } from '@/components/app/Sortable';
 import { useCopy } from '@/components/app/CopyProvider';
 import { DeleteForm } from '@/components/app/ConfirmDelete';
@@ -11,8 +11,7 @@ import { shortDate } from '@/lib/appDates';
 import { isPastDue } from '@/lib/clock';
 import { EyeOff, Pencil } from 'lucide-react';
 import { PlanOffer } from '@/components/app/PlanOffer';
-import { VendorCaptureModal } from '@/components/portal/VendorCaptureModal';
-import { pressOnCircle } from '@/content/eventFile';
+import { useTaskPress } from '@/components/app/TaskPress';
 
 export type Task = {
   /** False keeps it on the producer's side. The couple never receives these
@@ -58,55 +57,20 @@ function Row({ task, clientId, viewer, canDelete, grip }: {
   task: Task; clientId: string; viewer: 'producer' | 'client'; canDelete: boolean;
   grip?: React.ReactNode;
 }) {
-  const [showVendorModal, setShowVendorModal] = useState(false);
   const [editing, setEditing] = useState(false);
-  /* The circle answers the press before the server does. A tick is a server
-     action, a revalidation of three paths and a re-render, which on a phone in
-     a hall is a second or more of a circle that looks exactly as it did — so
-     it gets pressed again, and the second press unticks what the first one
-     ticked. Shown ticked while the call is in flight, and the real answer
-     replaces it when it lands. */
-  const [ticking, setTicking] = useState(false);
+  /* What the press means, what it draws while the server catches up, and the
+     supplier form behind a supplier task: all of it beside the tick itself,
+     because the bingo board presses the same rows and the two screens must
+     never disagree about what pressing one does. */
+  const { done, ticking, press, captureForm } = useTaskPress(task, clientId);
   const ui = useCopy();
   const c = ui.tasks;
   const dateFmt = shortDate(ui.locale);
-  const done = ticking ? !task.done : task.done;
   const late = !done && isOverdue(task.due_on);
   const ownerLabel =
     viewer === 'producer'
       ? (task.owner === 'producer' ? c.ownerProducer : c.ownerClient)
       : (task.owner === 'producer' ? c.ownerProducerClientView : c.ownerClientClientView);
-
-  /* What the press means, decided beside the list of supplier categories it
-     reads. It was decided here, against a second copy of that list nine
-     categories long with neither makeup nor a rabbi in it. */
-  const press = pressOnCircle(task);
-
-  /* The one place the tick is written, wherever the press came from: the
-     circle, the supplier form's save, or its "tick without a supplier". It
-     was three places, and two of them wrote the row straight from the browser
-     and then closed the form — the task was done in the database and open on
-     the screen, which is a button that does nothing as far as anybody
-     pressing it can tell. The server action is what revalidates the couple's
-     screen, the producer's, and the overview. */
-  const tick = async () => {
-    if (ticking) return;
-    setTicking(true);
-    try {
-      const formData = new FormData();
-      formData.append('task_id', task.id);
-      formData.append('client_id', clientId);
-      formData.append('done', String(task.done));
-      await toggleTask(formData);
-    } finally {
-      setTicking(false);
-    }
-  };
-
-  const handleToggleClick = async () => {
-    if (press === 'capture') setShowVendorModal(true);
-    else await tick();
-  };
 
   return (
     <>
@@ -123,7 +87,7 @@ function Row({ task, clientId, viewer, canDelete, grip }: {
               every task title into wrapping a line earlier. */}
           <button
             type="button"
-            onClick={handleToggleClick}
+            onClick={press}
             disabled={ticking}
             aria-label={task.title}
             aria-pressed={done}
@@ -193,45 +157,7 @@ function Row({ task, clientId, viewer, canDelete, grip }: {
         <EditForm task={task} clientId={clientId} viewer={viewer} onDone={() => setEditing(false)} />
       )}
 
-      {/* Show vendor capture modal when task marked done */}
-      {showVendorModal && task.category && (
-        <VendorCaptureModal
-          task={{
-            id: task.id,
-            client_id: clientId,
-            event_id: task.event_id ?? null,
-            title: task.title,
-            due_on: task.due_on,
-            done: task.done,
-            owner: task.owner,
-            created_by: task.created_by,
-            created_at: new Date().toISOString(),
-            category: task.category,
-            vendor_id: task.vendor_id ?? null,
-          }}
-          template={{
-            id: '',
-            event_type: task.category,
-            title: task.title,
-            description: '',
-            is_vendor_task: true,
-            vendor_category: task.category,
-            ask_name: true,
-            ask_cost: true,
-            ask_phone: true,
-            ask_contact_name: false,
-            ask_location: false,
-            ask_notes: true,
-            sort_order: 0,
-            created_at: new Date().toISOString(),
-          }}
-          onClose={() => setShowVendorModal(false)}
-          /* Both ways out of the form that mean "it is done" tick the same
-             way. The form's own job ends at the supplier. */
-          onSaved={async () => { setShowVendorModal(false); await tick(); }}
-          onSkip={async () => { setShowVendorModal(false); await tick(); }}
-        />
-      )}
+      {captureForm}
     </>
   );
 }

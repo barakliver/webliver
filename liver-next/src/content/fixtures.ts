@@ -68,6 +68,38 @@ export const fixtureTasks: Task[] = [
   { id: 't6', title: 'מקדמה לאולם', due_on: day(-14), done: true, owner: 'client', created_by: FIXTURE_VIEWER, visible_to_client: true },
 ];
 
+/**
+ * Enough tasks to fill a bingo board, with a line already won.
+ *
+ * The seven above make no board at all, which is a state worth looking at and
+ * is the only one the gallery could draw from them. A game whose grid, whose
+ * ticked cell, whose supplier cell and whose won line had never been rendered
+ * would be shipped on the strength of a unit test, and a unit test has never
+ * once noticed that a cell is too small to read.
+ *
+ * Sixteen rather than nine so the four by four is what is drawn: the three by
+ * three is the easy case and the four is where a Hebrew title has to survive
+ * an 84px cell on a phone.
+ */
+export const fixtureBingoTasks: Task[] = [
+  ...([
+    ['אולם', 'venue'], ['קייטרינג', 'catering'], ['צלם סטילס', 'photography'],
+    ['צלם וידאו', 'video'], ['די־ג׳יי', 'dj'], ['עיצוב ופרחים', 'flowers'],
+    ['שמלה', 'attire'], ['חליפה', 'attire'], ['איפור ושיער', 'makeup'],
+    ['רב', 'rabbi'], ['הזמנות', 'printing'], ['מגנטים', 'magnets'],
+    ['הגברה ותאורה', 'sound'], ['אישורי הגעה', 'rsvp'],
+  ] as const).map(([title, category], i) => ({
+    id: `b${i}`, title, category, due_on: day(i * 7 - 20),
+    /* Ticked often enough that a line lands, and with the untouched ones left
+       alone so the two states sit side by side in the same picture. */
+    done: i % 3 !== 2,
+    owner: 'client' as const, created_by: FIXTURE_VIEWER, visible_to_client: true,
+    event_id: FIXTURE_EVENT,
+  })),
+  { id: 'b14', title: 'לכתוב את הנדרים', due_on: day(30), done: false, owner: 'client', created_by: FIXTURE_VIEWER, visible_to_client: true },
+  { id: 'b15', title: 'לסדר טבעות', due_on: day(12), done: true, owner: 'client', created_by: FIXTURE_VIEWER, visible_to_client: true },
+];
+
 export const fixturePayments: Payment[] = [
   { id: 'p1', title: 'מקדמה', amount: 15000, due_on: day(-30), paid: true, paid_on: day(-29) },
   { id: 'p2', title: 'תשלום שני', amount: 40000, due_on: day(-2), paid: false, paid_on: null },

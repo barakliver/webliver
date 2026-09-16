@@ -97,6 +97,25 @@ that has happened once.
   costs the feature. The one honest exception is a panel whose props cannot be
   built without a row at all - the brand studio - and that is a missing object
   rather than a hidden one.
+- The wedding bingo is that list drawn as a game, and **its squares are real
+  tasks and its press is the real tick**. Nothing about it is stored: no
+  table, no row, not even the layout. `lib/bingo.ts` computes the board from
+  the tasks already on the screen and `useTaskPress` does the pressing, which
+  is the same hook the checklist row uses — so a supplier square opens the
+  same form asking who was hired, and filling it in still writes the supplier
+  and the budget line. A bingo with a list of its own would be a second
+  checklist, and by the end of the first week a couple would have two answers
+  to "did we book the photographer" and no way to tell which one is the
+  wedding. Three rules are in `lib/bingo.ts` and tested because each is the
+  kind that is obviously right and quietly wrong. The board is only ever a
+  full square, three or four a side: a blank cell sits on lines, and a line
+  that can never complete makes a board unwinnable while looking exactly like
+  a board, so under nine tasks the panel says so in a sentence instead. What
+  goes on it is decided without ever reading `done` — selecting on what a tick
+  changes means winning a line rebuilds the board under the finger that won
+  it. And each task's place comes from a hash of the wedding and the task
+  rather than from shuffling the array, because a shuffle re-runs whole and a
+  seventeenth task would move the sixteen already there.
 - The producer has a list of his own, separate from every wedding's:
   `producer_tasks`, drawn by `components/app/MyTasks.tsx` on `/app` under the
   attention pile, and on the calendar for whatever carries a date. The part

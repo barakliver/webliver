@@ -2031,6 +2031,23 @@ export const appCopy = {
     gameSub: 'משחק קלפים לשניכם. שישים ושישה קלפים על החתונה ועליכם, כל אחד בטלפון שלו.',
     rowVenues: 'אולמות להשוואה',
     rowBar: 'כמה אלכוהול לקנות',
+    rowBingo: 'בינגו החתונה',
+    /* The same tasks as the list above it, in a square. It is a game and it
+       is also the shortest way anybody has drawn a checklist: sixteen
+       decisions in one look, with what is done filled in. */
+    bingo: {
+      title: 'בינגו החתונה',
+      sub: 'ההחלטות הגדולות שלכם, בלוח אחד. שורה, טור או אלכסון זה בינגו.',
+      /* Said once, under the board, because the first press is the moment
+         somebody wonders whether this is a game or the real list. */
+      note: 'כל משבצת היא משימה אמיתית מהרשימה שלכם, וסימון כאן מסמן אותה גם שם.',
+      marked: 'סומן',
+      bingo: 'בינגו!',
+      bingoMany: 'בינגו! {n} שורות',
+      full: 'לוח מלא. הכול סגור.',
+      tooFew: 'עוד {n} משימות ויהיה לכם לוח. הלוח נבנה מהמשימות שלכם, אז הוא ממתין שתהיה מהן חפיסה.',
+      toTasks: 'לרשימת המשימות',
+    },
     rowFiles: 'קבצים ותמונות',
     rowLists: 'שירים, ציוד ופרטים',
     rowPrep: 'פנים ולוקים',

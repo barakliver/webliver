@@ -27,6 +27,12 @@ export type PortalSection = {
 
 export const PORTAL_SECTIONS: readonly PortalSection[] = [
   { key: 'tasks',     tab: 'tasks',    row: 'rowTasks' },
+  /* The same rows as the checklist, in a square. Its own switch rather than
+     riding on 'tasks': a producer who wants the list without the game, or the
+     game without a second list on the screen, is a reasonable person, and a
+     section that cannot be turned off on its own is a section somebody turns
+     the whole tab off to be rid of. */
+  { key: 'bingo',     tab: 'tasks',    row: 'rowBingo' },
   { key: 'budget',    tab: 'money',    row: 'rowBudget', money: true },
   { key: 'guests',    tab: 'guests',   row: 'rowRsvp' },
   { key: 'seating',   tab: 'guests',   row: 'rowSeating' },

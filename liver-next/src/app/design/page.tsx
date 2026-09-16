@@ -4,6 +4,7 @@ import { appUiFor, prepFor, envelopesFor, vehiclesFor, meetingTemplatesFor } fro
 import { CopyProvider } from '@/components/app/CopyProvider';
 import { currentLocale } from '@/lib/serverLocale';
 import { TaskList } from '@/components/app/TaskList';
+import { WeddingBingo } from '@/components/app/WeddingBingo';
 import { PaymentsPanel } from '@/components/app/PaymentsPanel';
 import { BudgetPanel } from '@/components/app/BudgetPanel';
 import { BudgetPlanner } from '@/components/app/BudgetPlanner';
@@ -83,7 +84,7 @@ import { NewLeadForm } from '@/components/app/NewLeadForm';
 import { CalendarFeed } from '@/components/app/CalendarFeed';
 import {
   FIXTURE_CLIENT, FIXTURE_VIEWER,
-  fixtureTasks, fixturePayments, fixtureBudget, fixtureGuests, fixtureTables,
+  fixtureTasks, fixtureBingoTasks, fixturePayments, fixtureBudget, fixtureGuests, fixtureTables,
   fixtureSeatGuests, fixtureDay, fixtureMessages, fixtureContracts, fixtureFiles, fixtureMedia,
   fixtureSongs, fixtureKit, fixturePeople, fixtureBoard, fixtureShopItems,
   fixtureStatus, fixtureAttention, fixtureOrders, fixtureShelf, fixtureCrew,
@@ -254,6 +255,19 @@ export default async function DesignPage() {
 
         <Panel name="TaskList · client" note="the same list, the couple's wording">
           <TaskList clientId={client} tasks={fixtureTasks} viewer="client" viewerId={FIXTURE_VIEWER} />
+        </Panel>
+
+        {/* The same rows in a square. Drawn twice because the interesting
+            half is the second one: a board needs nine tasks before it is a
+            board at all, and what it says below that is the difference
+            between a panel that explains itself and a row that looks
+            broken. */}
+        <Panel name="WeddingBingo · the board" note="the couple's critical tasks as a four by four, with a line already won; pressing a supplier square opens the same form the list does">
+          <WeddingBingo clientId={client} tasks={fixtureBingoTasks} />
+        </Panel>
+
+        <Panel name="WeddingBingo · not yet a board" note="under nine tasks there is no grid that is not a broken grid, so it says how many are missing rather than removing itself">
+          <WeddingBingo clientId={client} tasks={fixtureTasks} />
         </Panel>
 
         {/* The producer's own list, which belongs to no wedding. Drawn with

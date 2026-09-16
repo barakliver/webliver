@@ -50,6 +50,7 @@ const NOT_DRAWN = {
   'app/Sortable': 'a drag behaviour that wraps rows; the rows it wraps are in the run sheet and the seating plan',
   'app/DragOnto': 'the other half of that behaviour, and a drop target draws nothing until something is dragged',
   ChatDock: 'the chat shell itself, looked at through both assistants that mount it',
+  'app/TaskPress': 'a hook rather than a component: what pressing a task means, shared by the checklist row and the bingo square, and looked at through both',
   'app/FlashClear': 'deletes the message once it has been seen and renders nothing',
   ThemeScope: 'puts the palette back in step on every navigation and renders nothing; what it does is visible as the whole page, not as a panel',
   'brand/Pieces': 'the seven printed pieces, drawn fourteen times inside the BrandStudio panel and never on their own',

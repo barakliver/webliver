@@ -2,6 +2,7 @@ import type { AppUi } from '@/content/appUi';
 import { weekdayDate } from '@/lib/appDates';
 import { formatDate, daysUntil } from '@/lib/dates';
 import { TaskList } from '@/components/app/TaskList';
+import { WeddingBingo } from '@/components/app/WeddingBingo';
 import { PaymentsPanel } from '@/components/app/PaymentsPanel';
 import { BudgetPanel } from '@/components/app/BudgetPanel';
 import { BudgetTracker } from '@/components/app/BudgetTracker';
@@ -216,6 +217,19 @@ export function PortalWorkspace({
         {can('tasks') && (
           <Fold id="fold-mine" title={ui.portal.jumpMine} sub={ui.portal.foldMineSub}>
             <div id="tasks" data-jump={ui.portal.rowTasks} data-jump-group="me" className="scroll-mt-28"><TaskList clientId={c.id} tasks={filteredTasks} viewer="client" viewerId={viewerId} /></div>
+          </Fold>
+        )}
+
+        {/* The same rows in a square, behind their own row. Under the tasks
+            rather than over them because it is the lighter of the two and the
+            list is where the work is done; and behind a fold of its own rather
+            than inside the list's, because a game stacked on top of a
+            checklist is a checklist that got longer. */}
+        {can('bingo') && (
+          <Fold id="fold-bingo" title={ui.portal.rowBingo} sub={ui.portal.bingo.sub}>
+            <div id="bingo" data-jump={ui.portal.rowBingo} data-jump-group="me" className="scroll-mt-28">
+              <WeddingBingo clientId={c.id} tasks={filteredTasks} />
+            </div>
           </Fold>
         )}
 

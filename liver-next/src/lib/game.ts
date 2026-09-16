@@ -29,6 +29,13 @@
    as well as by the bundler, and node resolves neither the `@/` alias nor an
    extensionless path. Every lib with a test next to it imports this way. */
 import { CARDS, type Card } from '../content/cards.ts';
+import { seedFrom } from './hash.ts';
+
+/** The token as a number, so one wedding's deck is the same on both phones
+ *  and on every reload, and two weddings do not share an order. Re-exported
+ *  rather than written here: the bingo board needs the same stable hash, so
+ *  it moved to `lib/hash.ts` and both read it from there. */
+export { seedFrom };
 
 /** A small, fast, seedable generator. Not cryptography — it deals cards. */
 function mulberry32(seed: number): () => number {
@@ -39,17 +46,6 @@ function mulberry32(seed: number): () => number {
     t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
-}
-
-/** The token as a number, so one wedding's deck is the same on both phones
- *  and on every reload, and two weddings do not share an order. */
-export function seedFrom(token: string): number {
-  let h = 2166136261;
-  for (let i = 0; i < token.length; i++) {
-    h ^= token.charCodeAt(i);
-    h = Math.imul(h, 16777619);
-  }
-  return h >>> 0;
 }
 
 function shuffled<T>(items: readonly T[], rand: () => number): T[] {
