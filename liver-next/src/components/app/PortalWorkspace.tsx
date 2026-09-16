@@ -288,7 +288,15 @@ export function PortalWorkspace({
             {slots.venues}
             {/* What was agreed, as the producer chose to share it. After the
                 suppliers because a meeting is usually about one of them. */}
-            {can('meetings') && (
+            {/* Only once there is a summary to read. This is the opposite call
+                to the hall comparison and the supplier desk, and the line
+                between them is whether the couple can do anything in the
+                panel: those two are screens they act in, so an empty one is
+                an invitation and worth a press. A meeting summary is written
+                by the producer and only read here — an empty one announces
+                that nothing has happened yet, which is a sentence, not a
+                feature. */}
+            {can('meetings') && data.meetingsFor(c.id).length > 0 && (
               <div id="meetings" data-jump={ui.portal.rowMeetings} data-jump-group="vendors" className="scroll-mt-28"><PortalMeetings meetings={data.meetingsFor(c.id)} ui={ui} /></div>
             )}
           </Fold>
