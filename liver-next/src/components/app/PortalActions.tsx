@@ -12,14 +12,24 @@ import { cn } from '@/lib/utils';
 /**
  * The two things a couple needs at a moment they cannot plan for.
  *
- * Reaching the producer, and saying something is wrong. Both live behind
- * floating buttons rather than in a menu, because both are wanted at the point
- * of noticing rather than at the point of looking.
+ * Reaching the producer, and saying something is wrong. Both are wanted at the
+ * point of noticing rather than at the point of looking, so both float.
  *
- * The two are deliberately different sizes and different weights. The one for
- * talking to a person is solid and larger; the one for reporting a problem is
- * quieter. A screen that offers "call" and "something is broken" at equal
- * volume is a screen that expects things to be broken.
+ * They used to be two circles, and with the way around beside them and the
+ * accessibility button the layout puts on every screen, the bottom of a
+ * phone carried four floating controls over the content. He said so: too
+ * much. So it is **one** button now, and the sheet behind it carries both
+ * jobs - the ways to reach a person first, and "something is not working"
+ * underneath them, quieter and after. That ordering is the whole of what the
+ * two sizes used to say: a screen that offers "call" and "something is
+ * broken" at equal volume is a screen that expects things to be broken.
+ *
+ * The other half of this was a real dead end. Every row in the contact sheet
+ * is conditional on the producer having filled that field in, so a producer
+ * with no number on their brand gave a button that opened a sheet with
+ * nothing in it at all. It is not possible to reach that state now: the
+ * report row is unconditional, and a sheet with no way to call says so in a
+ * sentence.
  */
 export function PortalActions({
   /** The way around the screen, dropped into the same dock. A slot rather
@@ -61,22 +71,10 @@ export function PortalActions({
           onClick={() => setSheet('contact')}
           title={c.contact.open}
           aria-label={c.contact.open}
-          className="pointer-events-auto grid h-[52px] w-[52px] place-items-center rounded-full
+          className="pointer-events-auto grid h-12 w-12 place-items-center rounded-full
                      bg-ink text-surface shadow-fab transition-colors duration-300 hover:bg-ink-soft"
         >
-          <Phone size={20} strokeWidth={1.5} aria-hidden />
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setSheet('report')}
-          title={c.report.open}
-          aria-label={c.report.open}
-          className="pointer-events-auto grid h-11 w-11 place-items-center rounded-full
-                     border border-line-strong bg-surface-100 text-ink-soft
-                     transition-colors duration-300 hover:text-ink"
-        >
-          <TriangleAlert size={18} strokeWidth={1.5} aria-hidden />
+          <Phone size={19} strokeWidth={1.5} aria-hidden />
         </button>
       </div>
 
@@ -87,6 +85,9 @@ export function PortalActions({
         sub={c.contact.sub}
       >
         <ul className="list-none space-y-2 p-0">
+          {!tel && !wa && !bookingUrl && (
+            <li className="px-3 py-2 text-[14px] text-ink-soft">{c.contact.none}</li>
+          )}
           {tel && (
             <Row
               href={`tel:${tel}`}
@@ -112,6 +113,19 @@ export function PortalActions({
               meta={c.contact.meetingMeta}
             />
           )}
+          {/* Last and quietest, and a button rather than a link because it
+              swaps this sheet for the other one. Unconditional: it is the row
+              that makes an empty contact sheet impossible. */}
+          <li className="border-t border-line pt-2">
+            <button
+              type="button"
+              onClick={() => setSheet('report')}
+              className="flex min-h-[52px] w-full items-center gap-3 px-3 text-start text-[15px] text-ink-soft transition-colors duration-300 hover:text-ink"
+            >
+              <TriangleAlert size={18} strokeWidth={1.5} aria-hidden />
+              <span className="flex-1">{c.report.open}</span>
+            </button>
+          </li>
         </ul>
       </Sheet>
 

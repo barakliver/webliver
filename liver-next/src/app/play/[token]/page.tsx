@@ -49,7 +49,7 @@ export async function generateMetadata({ params }: { params: Promise<{ token: st
   const { token } = await params;
   const row = await load(token);
   return {
-    title: row ? game.kicker : game.gone,
+    title: row ? game.title : game.gone,
     robots: { index: false, follow: false, nocache: true },
   };
 }

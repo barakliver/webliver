@@ -338,6 +338,29 @@ export function PortalWorkspace({
             {slots.thread}
           </Fold>
         )}
+
+        {/* Before I Do, after the drawers and outside all of them.
+            Outside on purpose: every drawer on this screen is closed at rest,
+            and a game nobody can see is a game nobody plays. It is one card,
+            it is the last thing on the screen, and it is the only thing here
+            that leaves the platform - so it opens in a tab of its own rather
+            than swapping the screen out from under somebody mid-plan.
+            Drawn only when he has opened it for this couple; the switch is
+            his alone and lives on their file. */}
+        {c.game_on && c.game_token && (
+          <a
+            href={`/play/${c.game_token}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-10 block rounded-xl2 bg-dark px-6 py-7 text-surface transition hover:bg-dark/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          >
+            <span aria-hidden className="text-2xl text-[#E2574C]">&#9829;</span>
+            <span className="mt-2 block font-display text-[22px] font-medium">{ui.portal.gameCta}</span>
+            <span className="mt-1.5 block max-w-md text-[14.5px] leading-relaxed text-surface/70">
+              {ui.portal.gameSub}
+            </span>
+          </a>
+        )}
       </div>
     </div>
   );

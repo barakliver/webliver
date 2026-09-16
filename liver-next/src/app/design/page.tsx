@@ -492,7 +492,8 @@ export default async function DesignPage() {
               event_date: '2026-12-05',
               venue: 'אחוזת הכפר', guest_estimate: 180, region: 'השרון', budget_visible: true, shared_sections: {}, budget_plan: null,
               budget_target: 260000, track_a_label: 'נועה', track_b_label: 'איתי',
-              guest_token: 'demo-token', guest_site_on: true, brand: null,
+              guest_token: 'demo-token', guest_site_on: true,
+              game_token: '0123456789abcdef0123456789abcdef', game_on: true, brand: null,
             }}
             data={{
               workspaces: [],
@@ -1664,7 +1665,7 @@ export default async function DesignPage() {
           </div>
         </Panel>
 
-        <Panel name="PortalActions · CoupleCompanion" note="the three things that float over the couple's area, contained so they can be seen">
+        <Panel name="PortalActions · CoupleCompanion" note="what floats over the couple's area: the way around, one button, and the assistant">
           <div className="relative h-[26rem] overflow-hidden rounded-xl2 border border-line bg-surface [transform:translate(0)]">
             <PortalActions
               producerName="הפקות ליאור"

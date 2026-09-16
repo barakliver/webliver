@@ -20,13 +20,15 @@
 export const game = {
   /* ── the door ──────────────────────────────────────────────────────────── */
   kicker: 'משחק הקלפים',
-  title: 'שאלה, בחירה, ואתם',
+  /* The deck's name, and it stays in Latin in a Hebrew screen because it is
+     a name rather than a phrase to translate. */
+  title: 'Before I Do',
   intro: 'שבעים וארבעה קלפים על החתונה שלכם ועליכם. כל אחד פותח בטלפון שלו, שניכם על אותו קלף.',
   who: 'מי פותח עכשיו?',
   sideA: 'אני הראשון/ה',
   sideB: 'אני השני/ה',
   rulesLink: 'איך משחקים',
-  gone: 'המשחק הזה לא פתוח',
+  gone: 'Before I Do לא פתוח',
   goneBody: 'הקישור שגוי, או שהמשחק עדיין לא נפתח לאירוע הזה.',
 
   /* ── the rules ─────────────────────────────────────────────────────────── */
@@ -105,7 +107,7 @@ export type GameCopy = typeof game;
  * is where they are easiest to change.
  */
 export const gameAdmin = {
-  title: 'משחק הקלפים',
+  title: 'Before I Do',
   sub: 'שבעים וארבעה קלפים לזוג, על מסך משלהם. נפתח מכאן בלבד.',
   on: 'פתוח',
   off: 'סגור',
@@ -116,7 +118,7 @@ export const gameAdmin = {
   copied: 'הועתק',
   open: 'לפתוח',
   share: 'וואטסאפ',
-  shareText: 'הכנתי לכם משחק קלפים לקראת החתונה. כל אחד פותח בטלפון שלו:',
+  shareText: 'הכנתי לכם משחק קלפים לקראת החתונה, Before I Do. כל אחד פותח בטלפון שלו:',
   saving: 'שומר…',
   saved: 'נשמר',
   hint: 'הקישור קיים גם כשהמשחק סגור, כדי שאפשר יהיה להכין אותו מראש, '

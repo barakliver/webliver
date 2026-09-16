@@ -976,6 +976,9 @@ export const appCopy = {
       whatsappMeta: 'מענה עד שעה',
       meeting: 'קביעת פגישה',
       meetingMeta: 'יומן פנוי',
+      /* The sheet used to render an empty list when the producer had not
+         filled in a number, which reads as a button that does nothing. */
+      none: 'עוד לא הוזן מספר טלפון. אפשר לכתוב כאן ונחזור אליכם.',
     },
     report: {
       open: 'דיווח על בעיה',
@@ -2023,6 +2026,9 @@ export const appCopy = {
     rowPayments: 'נשאר לשלם',
     rowSeating: 'שולחנות',
     rowContracts: 'הסכמים',
+    /* The deck's own name, in Latin in both languages because it is a name. */
+    gameCta: 'שחקו ב-Before I Do',
+    gameSub: 'משחק קלפים לשניכם. שבעים וארבעה קלפים על החתונה ועליכם, כל אחד בטלפון שלו.',
     rowVenues: 'אולמות להשוואה',
     rowBar: 'כמה אלכוהול לקנות',
     rowFiles: 'קבצים ותמונות',

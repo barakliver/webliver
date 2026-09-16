@@ -76,6 +76,8 @@ export const portalEn: PortalCopy = {
   rowPayments: 'Still to pay',
   rowSeating: 'Tables',
   rowContracts: 'Contracts',
+  gameCta: 'Play Before I Do',
+  gameSub: 'A card game for the two of you. Seventy-four cards about the wedding and about you, each on your own phone.',
   rowVenues: 'Halls to compare',
   rowBar: 'How much drink to buy',
   rowFiles: 'Files and photos',
@@ -222,6 +224,7 @@ export const sheetsEn: SheetsCopy = {
     whatsappMeta: 'Answered within the hour',
     meeting: 'Book a meeting',
     meetingMeta: 'Open slots in the diary',
+    none: 'No phone number yet. Write here and we will come back to you.',
   },
   report: {
     open: 'Report a problem',

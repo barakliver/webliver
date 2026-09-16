@@ -32,6 +32,7 @@ export type Workspace = {
    *  couple gets the link to paste into their invitations; nothing else about
    *  the page is theirs to change from here. */
   guest_token: string | null; guest_site_on: boolean;
+  game_token: string | null; game_on: boolean;
 };
 
 /** Which modules this workspace may open. Asked of the database rather than
@@ -111,7 +112,7 @@ export type PortalData = {
 };
 
 const WORKSPACE_COLS =
-  'id,display_name,event_date,venue,guest_estimate,region,budget_visible,budget_target,shared_sections,budget_plan,track_a_label,track_b_label,guest_token,guest_site_on,brand';
+  'id,display_name,event_date,venue,guest_estimate,region,budget_visible,budget_target,shared_sections,budget_plan,track_a_label,track_b_label,guest_token,guest_site_on,game_token,game_on,brand';
 
 type WithClient<T> = T & { client_id: string };
 const by = <T,>(rows: WithClient<T>[] | null | undefined, id: string): T[] =>
