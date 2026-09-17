@@ -266,12 +266,19 @@ that has happened once.
   he drew, so "look at 37" survives the trip from a phone call to a file. That
   is also why the rule cards are 100 and 101 with a gap in front of them, and
   closing that gap to make the list tidy would undo the only thing the ids are
-  for. And card 102, "איך משחקים?", is **the rules screen and not a card**:
-  it is drawn at the top of the rules and deliberately kept out of `CARDS`,
-  because a deck that deals its own instructions halfway through a game is a
-  bug somebody has to explain. A test walks every id to its file and back, so
-  a card without a picture fails the build rather than drawing a broken image
-  inside his frame.
+  for. And **three of his pictures are printed but never dealt**, each drawn
+  where it belongs instead: 102, "איך משחקים?", is the rules screen, because a
+  deck that deals its own instructions halfway through a game is a bug
+  somebody has to explain; 103 is his contact card, which in the printed box
+  is the one at the bottom of the pile, so here it is the screen after the
+  last card rather than a turn in the game; and the back is the back, behind
+  every face-down card. That last one was a drawn stand-in for two releases —
+  a hairline frame with a heart character in it — because the file did not
+  exist yet, and the difference between it and the real picture is the whole
+  of whether the table reads as a deck of cards or as a web page doing an
+  impression of one. A test walks every id to its file and back and asserts
+  the three undealt ones are undealt, so a card without a picture fails the
+  build rather than drawing a broken image inside his frame.
 - The ground is a pale blue, #F2F6FC, everywhere: the app, the public site and
   the guests' page alike. It was warm ivory before, and slate before that; the
   rule that settles it is that his latest instruction wins, and the reasoning

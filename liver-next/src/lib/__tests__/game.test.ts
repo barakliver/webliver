@@ -2,7 +2,9 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync } from 'node:fs';
 import { dealDeck, seedFrom, progressOf } from '../game.ts';
-import { CARDS, HOW_TO_PLAY_IMAGE, imageOf, type Card } from '../../content/cards.ts';
+import {
+  CARDS, HOW_TO_PLAY_IMAGE, CONTACT_IMAGE, CARD_BACK_IMAGE, imageOf, type Card,
+} from '../../content/cards.ts';
 
 /* The bug this file exists for. A rule card talks about the card beside it —
    "הקלף הבא" — so a deal that puts the two of them together, or puts one at an
@@ -107,10 +109,15 @@ test('every card names a picture, and no two cards name the same one', () => {
   assert.equal(files.size, CARDS.length);
 });
 
-/* The instruction card is drawn on the rules screen and must never be dealt:
-   a deck that deals its own instructions in the middle of a game is a bug
-   somebody would have to explain. */
-test('the instruction card exists and is not in the deck', () => {
-  assert.ok(existsSync(new URL(`../../../public${HOW_TO_PLAY_IMAGE}`, import.meta.url)));
-  assert.ok(!CARDS.some((c) => imageOf(c) === HOW_TO_PLAY_IMAGE));
+/* Three of his pictures are printed but never dealt, and each is drawn
+   somewhere else: the instructions are the rules screen, the contact card is
+   the end of the deck, and the back is what a face-down card shows. Each has
+   to exist, because each is referenced by a screen rather than by a card, and
+   none may be in the deck — a deck that deals its own instructions halfway
+   through a game is a bug somebody has to explain. */
+test('the three cards that are never dealt exist and are not in the deck', () => {
+  for (const src of [HOW_TO_PLAY_IMAGE, CONTACT_IMAGE, CARD_BACK_IMAGE]) {
+    assert.ok(existsSync(new URL(`../../../public${src}`, import.meta.url)), `${src} is missing`);
+    assert.ok(!CARDS.some((c) => imageOf(c) === src), `${src} is also dealt`);
+  }
 });

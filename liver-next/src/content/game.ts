@@ -89,9 +89,6 @@ export const game = {
   notebookBack: 'חזרה למשחק',
   notebookMine: 'המחברת נשמרת רק לצד שלכם. בן או בת הזוג לא רואים אותה.',
   goToCard: 'לקלף',
-  /* The face-down card carries the producer's name and nothing else, the way
-     the back of a real card does. */
-  backLine: 'קלף',
 } as const;
 
 export type GameCopy = typeof game;

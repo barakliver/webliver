@@ -3,7 +3,10 @@
 import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
 import { NotebookPen, X } from 'lucide-react';
 import { game } from '@/content/game';
-import { altOf, imageOf, HOW_TO_PLAY_IMAGE, type Card } from '@/content/cards';
+import {
+  altOf, imageOf, HOW_TO_PLAY_IMAGE, CONTACT_IMAGE, CONTACT_ALT, CARD_BACK_IMAGE,
+  type Card,
+} from '@/content/cards';
 import { progressOf } from '@/lib/game';
 import { loadGameNotes, saveGameNote } from '@/app/actions/game';
 import { Ltr } from '@/components/Ltr';
@@ -142,7 +145,7 @@ export function GameTable({ token, names, producer, deck }: GameTableProps) {
           {game.switchSide}
         </button>
         {/* The producer's name was here and the notebook is worth more: the
-            name is already on the back of every card and on the door. */}
+            name is on the door and on the footer of every card he drew. */}
         <button type="button" onClick={() => setScreen('notebook')} className="inline-flex items-center gap-1.5 rounded-xl2 px-2 py-1 hover:text-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-light">
           <NotebookPen size={13} strokeWidth={1.5} aria-hidden />
           {game.notebook}
@@ -163,7 +166,7 @@ export function GameTable({ token, names, producer, deck }: GameTableProps) {
               The card is then bounded by the box rather than by a width, so
               it is the screen that decides how big it is. */}
           <div className="flex min-h-0 flex-1 items-center justify-center py-4">
-            <Flip card={card as Card} open={open} onOpen={() => setOpen(true)} producer={producer} />
+            <Flip card={card as Card} open={open} onOpen={() => setOpen(true)} />
           </div>
 
           <div className="mx-auto w-full max-w-md space-y-4">
@@ -316,8 +319,8 @@ function Rules({ onBack }: { onBack: () => void }) {
 
 /* ── one card, face down then face up ─────────────────────────────────────── */
 
-function Flip({ card, open, onOpen, producer }: {
-  card: Card; open: boolean; onOpen: () => void; producer: string;
+function Flip({ card, open, onOpen }: {
+  card: Card; open: boolean; onOpen: () => void;
 }) {
   return (
     <button
@@ -334,18 +337,21 @@ function Flip({ card, open, onOpen, producer }: {
       style={{ aspectRatio: '944 / 1417' }}
     >
       <span className="flip-inner block rounded-xl2">
-        {/* Face down. Drawn rather than using his own Card Back file: he asked
-            for that one to be left alone, and this is one line to swap if he
-            would rather see the real thing here. */}
-        <span className="flip-face rounded-xl2 bg-[#3B5FA4] p-3">
-          {/* An inset hairline frame and a heart, which is what the front of
-              every one of his cards is built from. Drawn rather than using his
-              own Card Back file: he asked for that one to be left alone, and
-              swapping it in here is a one-line change if he would rather. */}
-          <span className="flex size-full flex-col items-center justify-center rounded-xl2 border border-white/30">
-            <span aria-hidden className="text-[2.75rem] leading-none text-white/85">&#9825;</span>
-            <span className="mt-4 text-[11px] text-white/55">{producer}</span>
-          </span>
+        {/* Face down: his own back, the same picture that is printed behind
+            every card in the box. It was a drawn stand-in — a hairline frame
+            with a heart character and the producer's name in it — for as long
+            as the file did not exist, and the difference between the two is
+            the whole of whether the table reads as a deck of cards or as a web
+            page doing an impression of one. */}
+        <span className="flip-face overflow-hidden rounded-xl2 bg-[#4A66A8]">
+          <img
+            src={CARD_BACK_IMAGE}
+            alt=""
+            width={944}
+            height={1417}
+            className="size-full object-contain"
+            draggable={false}
+          />
         </span>
         {/* Face up: his artwork, unchanged. */}
         <span className="flip-face is-back rounded-xl2 bg-white">
@@ -373,6 +379,19 @@ function Finished({ onRestart }: { onRestart: () => void }) {
     <div className="mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center text-center">
       <h2 className="font-display text-3xl font-medium">{game.done}</h2>
       <p className="mt-3 text-[15px] leading-relaxed text-surface/70">{game.doneBody}</p>
+      {/* His contact card, card 103, which in the printed box is the one at the
+          bottom of the pile. Here rather than in the deck for the same reason:
+          it is the card you reach after the last one, not a turn in the game.
+          It carries a QR code, so it is drawn large enough for a second phone
+          to read it off this screen. */}
+      <img
+        src={CONTACT_IMAGE}
+        alt={CONTACT_ALT}
+        width={944}
+        height={1417}
+        className="mt-8 w-full max-w-[15rem] rounded-xl2"
+        draggable={false}
+      />
       <button
         type="button"
         onClick={onRestart}

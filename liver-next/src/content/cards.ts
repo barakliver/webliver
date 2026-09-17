@@ -22,11 +22,13 @@
  * playing cards, and renumbering them here to close the gap would quietly undo
  * the one thing the ids are for.
  *
- * The third card in his hundreds, 102, is the instruction card, and it is
- * deliberately not in `CARDS`. It is not a card the couple is dealt; it is the
- * page that tells them how to play, and it is drawn on the rules screen. A
- * deck that deals its own instructions in the middle of a game is a deck with
- * a bug in it.
+ * **Three of his cards are printed but not dealt**, and each is drawn where it
+ * belongs instead. 102 is the instruction card and it is the rules screen; a
+ * deck that deals its own instructions halfway through a game is a deck with a
+ * bug in it. 103 is his contact card, which in the box is the one you find at
+ * the bottom, so here it is the end of the deck and not a turn in it. And the
+ * back is the back: one picture, behind every card, which is what the face-down
+ * card on the table shows.
  *
  * Hebrew only, deliberately. The pictures are Hebrew, and English chrome
  * around Hebrew artwork is a half-translation that reads worse than no
@@ -47,6 +49,23 @@ export type Card = OrCard | QuestionCard | RuleCard;
 /** The instruction card, drawn on the rules screen and never dealt. */
 export const HOW_TO_PLAY_IMAGE = '/game/cards/102.webp';
 
+/** His contact card, drawn at the end of the deck and never dealt. */
+export const CONTACT_IMAGE = '/game/cards/103.webp';
+export const CONTACT_ALT =
+  'רוצים עוד טיפים? סרקו וגלו רגעים יפים מאחורי הקלעים, רעיונות והשראה לחתונה שלכם. '
+  + '@barakliver';
+
+/**
+ * The back of the card, his own.
+ *
+ * It was a bordered rectangle with a heart character and the producer's name
+ * in it, standing in for a picture nobody had sent yet. The picture arrived
+ * with the final deck, and the difference is the whole of whether the table
+ * looks like a deck of cards or like a web page pretending to be one.
+ */
+export const CARD_BACK_IMAGE = '/game/cards/back.webp';
+export const CARD_BACK_ALT = 'Before I Do';
+
 export const CARDS: readonly Card[] = [
   /* ── the choices ─────────────────────────────────────────────────────── */
   { id: 1, kind: 'or', a: 'קוד לבוש', b: 'בלי' },
@@ -60,18 +79,18 @@ export const CARDS: readonly Card[] = [
   { id: 9, kind: 'or', a: 'עוגת חתונה', b: 'מגדל כוסות יין' },
   { id: 10, kind: 'or', a: 'הזמנות מודפסות', b: 'הזמנות דיגיטליות' },
   { id: 12, kind: 'or', a: 'מסיבת רווקים בנפרד', b: 'ביחד' },
-  { id: 13, kind: 'or', a: 'צלם וידאו', b: 'צלמ.ת סושיאל' },
+  { id: 13, kind: 'or', a: 'צלמ.ת וידאו', b: 'צלמ.ת סושיאל' },
   { id: 14, kind: 'or', a: 'לשכור מקום התארגנות', b: 'להתארגן בבית' },
   { id: 15, kind: 'or', a: 'רכב חתונה', b: 'להגיע עם חברים' },
   { id: 16, kind: 'or', a: 'הגשה לשולחן', b: 'בופה' },
   { id: 17, kind: 'or', a: 'רק ההורים בחופה', b: 'כל המשפחה הקרובה' },
   { id: 18, kind: 'or', a: 'קונספט ייחודי', b: 'חתונה קלאסית' },
   { id: 19, kind: 'or', a: 'חתונה רגילה', b: 'הפוכה' },
-  { id: 20, kind: 'or', a: 'עמדת קוקטיילים', b: 'בר שכולם מכירים' },
-  { id: 21, kind: 'or', lead: 'באפטר:', a: 'אוכל רחוב', b: 'קייטרינג יוקרתי' },
+  { id: 20, kind: 'or', a: 'עמדת קוקטיילים', b: 'בר קלאסי' },
+  { id: 21, kind: 'or', lead: 'באפטר:', a: 'של המקום', b: 'חיצוני' },
   { id: 22, kind: 'or', a: 'תאריך מיוחד', b: 'מה שזמין' },
   { id: 23, kind: 'or', a: 'אירוע צהריים קליל', b: 'לילה עד הבוקר' },
-  { id: 24, kind: 'or', a: 'סידורי ישיבה', b: 'קרב על מקומות' },
+  { id: 24, kind: 'or', a: 'סידורי הושבה', b: 'ישיבה אלטרנטיבית' },
   { id: 25, kind: 'or', a: 'להביא את הכלב', b: 'להשאיר אותו בבית' },
   { id: 26, kind: 'or', a: 'סלואו אחרי חופה', b: 'יאללה באלגן' },
   { id: 27, kind: 'or', a: 'זר פרחים לכלה', b: 'ידיים חופשיות' },
@@ -108,13 +127,13 @@ export const CARDS: readonly Card[] = [
   { id: 40, kind: 'question', q: 'מה הדבר הראשון שנעשה כשנגיע הביתה בסוף הלילה?' },
   { id: 41, kind: 'question', q: 'איזה רגע מהקשר שלנו הייתי רוצה שכל האורחים יכירו?' },
   { id: 42, kind: 'question', q: 'מה הדבר שהכי מלחיץ אותי ביום החתונה ועוד לא סיפרתי לך?' },
-  { id: 43, kind: 'question', q: 'איזו מסורת משפחתית הייתי רוצה להמשיך, ואיזו הייתי שמח/ה לוותר עליה?' },
+  { id: 43, kind: 'question', q: 'איזו מסורת משפחתית הייתי רוצה להמשיך, ואיזו הייתי שמח.ה לוותר עליה?' },
   { id: 44, kind: 'question', q: 'איזה משפט הייתי רוצה שהאורחים יגידו כשהם יוצאים מהחתונה?' },
   { id: 45, kind: 'question', q: 'על מה הכי קשה לי לוותר בגלל התקציב?' },
   { id: 53, kind: 'question', q: 'מי הייתי רוצה שיברך אותנו מתחת לחופה?' },
   { id: 54, kind: 'question', q: 'איזה שיר מזכיר לי אותנו ופשוט חייב להתנגן?' },
   { id: 55, kind: 'question', q: 'איזה פרט קטן בחתונה יגרום לי להרגיש שזו באמת החתונה שלנו?' },
-  { id: 58, kind: 'question', q: 'מה אני הכי מפחד/ת שישתבש ביום הזה?' },
+  { id: 58, kind: 'question', q: 'מה אני הכי מפחד.ת שישתבש ביום הזה?' },
 
   /* ── the two that change how the next card is played ─────────────────── */
   {
