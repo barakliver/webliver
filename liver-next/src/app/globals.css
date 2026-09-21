@@ -657,11 +657,17 @@
   .rule-gold {
     height: 1px;
     border: 0;
+    /* Every stop is the accent, at three strengths. It used to fade from a
+       bronze literal into the accent and back into bronze, which was one
+       colour while the accent was bronze and three colours the morning the
+       brand became a blue: the ends kept a palette the middle had left. A
+       hairline is the last place anybody looks for a bug and the first place
+       a screen stops feeling like one thing. */
     background: linear-gradient(
       90deg,
-      rgba(176, 141, 87, 0) 0%,
-      var(--accent-line) 30%,
-      rgba(176, 141, 87, .1) 100%
+      rgb(var(--accent-rgb) / 0) 0%,
+      rgb(var(--accent-rgb) / .55) 30%,
+      rgb(var(--accent-rgb) / .08) 100%
     );
   }
   [dir='rtl'] .rule-gold { transform: scaleX(-1); }
