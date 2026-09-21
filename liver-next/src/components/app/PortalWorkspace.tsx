@@ -404,7 +404,7 @@ export function PortalWorkspace({
             rel="noopener noreferrer"
             className="mt-10 block rounded-xl2 bg-dark px-6 py-7 text-surface transition hover:bg-dark/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
-            <span aria-hidden className="text-2xl text-[#E2574C]">&#9829;</span>
+            <span aria-hidden className="text-2xl text-coral">&#9829;</span>
             <span className="mt-2 block font-display text-[22px] font-medium">{ui.portal.gameCta}</span>
             <span className="mt-1.5 block max-w-md text-[14.5px] leading-relaxed text-surface/70">
               {ui.portal.gameSub}

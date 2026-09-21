@@ -539,11 +539,20 @@
      The blur is what makes it glass rather than grey, and it is why the page
      ground underneath is a gradient rather than a flat fill: there has to be
      something for the surface to be translucent over. */
+  /* A hairline and nothing else.
+     This carried a border, a shadow and a 24px backdrop blur, which is three
+     ways of saying "separate object" on the same edge, one hundred and forty
+     times down a screen. Weight is what that adds up to: not any one panel
+     looking heavy, but every panel insisting.
+     The blur went with the shadow. It was costing a filter pass per card on
+     a phone to soften a ground that is already a flat colour, and the
+     high-contrast mode has been stripping both for as long as it has
+     existed, which is the proof that nothing structural was resting on them.
+     Shadow still belongs to things that genuinely sit above the page: a
+     sheet, a dialog, the dock. `.panel` keeps its lift for the same reason. */
   .card {
-    @apply rounded-card border border-line-soft p-4 shadow-soft sm:p-6;
+    @apply rounded-card border border-line-soft p-4 sm:p-6;
     background: var(--surface-glass);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
   }
   /* The solid variant. Where a panel has to hold its own against whatever is
      behind it rather than borrow from it: a sheet, a login card, the result

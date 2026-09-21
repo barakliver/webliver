@@ -154,6 +154,13 @@ const config: Config = {
           DEFAULT: 'rgb(var(--bad-rgb, 149 61 53) / <alpha-value>)',
           wash:    'rgb(var(--bad-wash-rgb, 249 233 230) / <alpha-value>)',
         },
+        /* The warm one. A brand detail and a welcoming moment, never a
+           state: danger keeps `bad`, and the two are deliberately not
+           interchangeable. */
+        coral: {
+          DEFAULT: 'rgb(var(--coral-rgb, 239 69 61) / <alpha-value>)',
+          strong:  'rgb(var(--coral-strong-rgb, 214 50 41) / <alpha-value>)',
+        },
       },
       /* Two families again, and this time by his ruling rather than by a
          document's. The comment that used to sit here said "the day a display

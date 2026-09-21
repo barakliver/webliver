@@ -75,15 +75,21 @@ export function WinningBoard({ clientId, images, viewer }: {
   return (
     /* The one dark screen in the product.
      *
-     * Everything else sits on ivory. This inverts, and the inversion is the
-     * point: a moodboard is the only screen here where the pictures are the
-     * content and the interface is meant to disappear behind them. A warm
+     * Everything else sits on the pale blue. This inverts, and the inversion
+     * is the point: a moodboard is the only screen here where the pictures
+     * are the content and the interface is meant to disappear behind them. A
      * near-black does that; a light ground competes with every tile on it.
      *
+     * The near-black is a cool one now. It was #0E0C0A, a warm near-black
+     * chosen while the product was ivory, and it stayed warm through the move
+     * to blue: one band in the whole system belonging to a palette nothing
+     * else uses any more. That mattered more the morning the couple's screen
+     * started taking its cover picture from this board, because the band and
+     * the screen above it were then two different products.
+     *
      * The whole block carries its own token overrides rather than a second
-     * palette, so a producer's accent still reaches it and the gold that reads
-     * 2.89:1 on ivory reads 6.32:1 here, which is why gold may carry words on
-     * this screen and nowhere else. */
+     * palette, so a producer's accent still reaches it and a tone too dark to
+     * carry words on the pale ground carries them comfortably here. */
     <section
       className="border-t border-line bg-dark p-5 text-ink sm:p-8"
       style={{
@@ -92,25 +98,29 @@ export function WinningBoard({ clientId, images, viewer }: {
            nothing and the whole screen quietly fell back to the light
            palette: near-black text on a near-black ground.
 
-           The two soft tones were `rgba(250,247,242,.78)` and `.6` over this
-           ground. They are written flattened rather than translucent because
-           a channel triplet has no room for an alpha, and flattening over a
-           known ground is what the browser was computing anyway. The contrast
-           script derives the same two numbers the same way. */
-        '--ink-rgb': '250 247 242',
-        '--ink-soft-rgb': '198 195 191',   /* was #FAF7F2 at .78 */
-        '--ink-mute-rgb': '156 153 149',   /* was #FAF7F2 at .60 */
-        '--line': 'rgba(250,247,242,.12)',
-        '--line-strong': 'rgba(250,247,242,.22)',
-        '--line-control': 'rgba(250,247,242,.45)',
+           The two soft tones are `#E8EDF6` at .78 and at .6 over this ground.
+           They are written flattened rather than translucent because a channel
+           triplet has no room for an alpha, and flattening over a known ground
+           is what the browser was computing anyway. Measured against #0D121C:
+           the ink reads 15.95:1, the soft tone 9.94:1, the muted one 6.23:1
+           and the accent 11.12:1. */
+        '--ink-rgb': '232 237 246',
+        '--ink-soft-rgb': '184 189 198',   /* #E8EDF6 at .78 */
+        '--ink-mute-rgb': '144 149 159',   /* #E8EDF6 at .60 */
+        '--line': 'rgba(232,237,246,.12)',
+        '--line-strong': 'rgba(232,237,246,.22)',
+        '--line-control': 'rgba(232,237,246,.45)',
         /* Without this the inputs on this band were a light grey box with
            near-white text in it. The audit measured 1.44:1. */
-        '--field-bg': 'rgba(250,247,242,.10)',
-        '--surface-rgb': '14 12 10',
-        '--surface-100-rgb': '21 17 14',
-        '--surface-200-rgb': '42 36 29',
-        '--accent-rgb': 'var(--accent-light-rgb, 223 196 155)',
-        '--accent-bright-rgb': 'var(--accent-light-rgb, 223 196 155)',
+        '--field-bg': 'rgba(232,237,246,.10)',
+        '--surface-rgb': '13 18 28',
+        '--surface-100-rgb': '20 27 40',
+        '--surface-200-rgb': '32 41 58',
+        /* The fallback moved with the rest. It was a gold, which is what this
+           band would still have shown anybody whose accent token failed to
+           resolve. */
+        '--accent-rgb': 'var(--accent-light-rgb, 185 200 229)',
+        '--accent-bright-rgb': 'var(--accent-light-rgb, 185 200 229)',
       } as React.CSSProperties}
     >
       <p className="text-[11.5px] tracking-[.14em] text-accent-light">{c.eyebrow}</p>
