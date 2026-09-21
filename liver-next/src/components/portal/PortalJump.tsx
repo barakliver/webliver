@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { List, X } from 'lucide-react';
 import { unfold } from '@/lib/reveal';
 
@@ -38,6 +39,22 @@ type Section = { id: string; label: string; group: string };
  * A section inside a folded group is unfolded before the scroll rather than
  * after: a jump that lands on a closed summary looks like a jump that
  * missed.
+ *
+ * The sheet is drawn through a portal into the body, and that is a fix rather
+ * than a preference. The pill lives in the dock, and the dock is
+ * `pointer-events-none` so that the empty space either side of it does not
+ * swallow taps on the page beneath. The pill carries `pointer-events-auto` and
+ * therefore opened; the sheet was its sibling inside the same container, did
+ * not, and so the backdrop, the close button and every row in the list took no
+ * taps at all. It looked exactly like a screen that had frozen, and Escape
+ * still worked, because a key listener on the window never touches the DOM,
+ * which is why it seemed to freeze only on a phone.
+ *
+ * The same move fixes the second half. The dock is `z-30`, so a sheet at
+ * `z-[75]` inside it was still below anything the layout stacks above the
+ * dock: the assistant's bubble and the accessibility button drew over it.
+ * Raising the number inside the container could never have worked, because a
+ * z-index only orders an element against its siblings.
  */
 export function PortalJump({ c }: { c: JumpCopy }) {
   const [sections, setSections] = useState<Section[]>([]);
@@ -123,7 +140,7 @@ export function PortalJump({ c }: { c: JumpCopy }) {
         <span className="truncate">{label}</span>
       </button>
 
-      {open && (
+      {open && createPortal(
         <div
           role="dialog"
           aria-modal="true"
@@ -171,7 +188,8 @@ export function PortalJump({ c }: { c: JumpCopy }) {
               </div>
             ))}
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
     </>
   );
