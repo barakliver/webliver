@@ -651,8 +651,9 @@ export const consoleEn: ConsoleCopy = {
     switchesTitle: 'What the couple sees',
     switchesSub: 'Every section of the couple\'s screen is switched on and off here. An open section the couple sees in full and can add to themselves. The budget and payments are locked in the database as well, not only on the screen.',
     coupleSees: 'The couple sees:',
-    sharedOn: 'Open to the couple',
-    sharedOff: 'Hidden from the couple',
+    sharedOn: 'Open',
+    sharedOff: 'Hidden',
+    openTally: '{n} of {of} open',
   },
 
   quickLedger: {

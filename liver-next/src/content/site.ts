@@ -1435,8 +1435,14 @@ export const appCopy = {
     switchesTitle: 'מה הזוג רואה',
     switchesSub: 'כל חלק במסך של הזוג נדלק ונכבה כאן. חלק פתוח הזוג רואה במלואו ויכול להוסיף בו דברים בעצמו. התקציב והתשלומים נעולים גם במסד הנתונים, לא רק במסך.',
     coupleSees: 'הזוג רואה:',
-    sharedOn: 'פתוח לזוג',
-    sharedOff: 'מוסתר מהזוג',
+    /* Short on purpose. The heading over the list already says who this is
+       open to, and the two words sat beside twenty knobs. */
+    sharedOn: 'פתוח',
+    sharedOff: 'מוסתר',
+    /* The only question somebody opens this list holding. A string with
+       holes rather than a function: every word here crosses into a client
+       component, and a function does not survive the trip. */
+    openTally: '{n} מתוך {of} פתוחים',
   },
 
   /* The plus in the header: the producer's own money, in one press from
