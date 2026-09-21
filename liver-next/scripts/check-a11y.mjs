@@ -49,6 +49,34 @@ const ROUTES = ['/design', '/', '/eventos', '/login', '/store', '/privacy', '/in
 /* WCAG 2.2 at AA, which is the bar the release standard names. `best-practice`
    is deliberately absent: it is advice rather than the standard, and mixing
    the two turns a failing run into an argument about whether it counts. */
+/**
+ * Findings that are decisions rather than barriers.
+ *
+ * The same shape as `SEALED_BY_DESIGN` in check-rls.mjs, and for the same
+ * reason: a check that reports one thing forever is a check nobody reads, and
+ * the way to keep it at zero honestly is to write down why a thing is allowed
+ * rather than to widen the rule or quietly stop looking.
+ *
+ * Two conditions for a line here. The element must be genuinely unreadable by
+ * anybody, not merely hard to read, and it must already be hidden from
+ * assistive technology, so that excusing it takes nothing away from a person
+ * using one. A low-contrast element that a sighted person is meant to read
+ * does not belong here, whatever it costs to fix.
+ */
+const DECORATIVE_BY_DESIGN = [
+  {
+    rule: 'color-contrast',
+    selector: '.select-none',
+    why: 'The numeral behind the phone on the home page: 520px, aria-hidden, '
+       + 'pointer-events-none, behind everything at 4.5% opacity. It is '
+       + 'texture rather than text, and raising its contrast to pass would be '
+       + 'the same as deleting it.',
+  },
+];
+
+const excused = (rule, selector) =>
+  DECORATIVE_BY_DESIGN.some((e) => e.rule === rule && e.selector === selector);
+
 const TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
 
 let playwright;
@@ -90,12 +118,18 @@ for (const route of ROUTES) {
   );
 
   for (const v of result.violations) {
+    const nodes = v.nodes
+      .map((n) => n.target.join(' '))
+      .filter((sel) => !excused(v.id, sel));
+    /* Every node on this violation was a decision somebody wrote down, so
+       the violation itself is not news. */
+    if (nodes.length === 0) continue;
     findings.push({
       route,
       id: v.id,
       impact: v.impact ?? 'unknown',
       help: v.help,
-      nodes: v.nodes.slice(0, 3).map((n) => n.target.join(' ')),
+      nodes: nodes.slice(0, 3),
     });
   }
   checked++;

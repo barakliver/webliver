@@ -29,7 +29,14 @@ export function Steps({ site }: { site: SiteCopy }) {
           >
             <span
               aria-hidden
-              className="w-8 shrink-0 font-display text-[19px] font-semibold tracking-[.06em] text-accent-bright sm:w-12 sm:text-[22px]"
+              /* The words accent rather than the bright one. `accent-bright` is
+                 measured for large numerals and clears 3:1, which is the bar
+                 for text at 24px or at 18.66px bold; a roman numeral set at 19
+                 in semibold is neither, so it needed 4.5 and had 3.5. Caught
+                 by the accessibility audit, which is not part of `npm run
+                 check` because it needs a server, which is most of why it sat
+                 here. */
+              className="w-8 shrink-0 font-display text-[19px] font-semibold tracking-[.06em] text-accent sm:w-12 sm:text-[22px]"
             >
               {ROMAN[i] ?? i + 1}
             </span>
