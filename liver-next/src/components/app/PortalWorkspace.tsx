@@ -124,6 +124,13 @@ export function PortalWorkspace({
   /* The two after it, and never the one already at the top of the card. */
   const then = upcoming(openTasks, 3).filter((t) => t.title !== action.subject).slice(0, 2);
 
+  /* The first picture off their own board, and the only source of colour on
+     this screen that is not the accent. Read through the same gate the board
+     itself is behind, so a producer who has not opened that section to this
+     couple has not accidentally published one of its images at the top of
+     their screen. */
+  const cover = can('moodboard') ? data.boardFor(c.id)[0]?.url : undefined;
+
   const rows = summaryRows({
     budget: agreed > 0 ? agreed : null,
     owed,
@@ -149,30 +156,59 @@ export function PortalWorkspace({
           supposed to save. The dock travels with them, says which section
           they are in, and is in the corner a thumb is already resting in. */}
 
-      {/* The names in serif over the image, then the count. The countdown is
-          the largest thing on the couple's screen on purpose: it is the one
-          number they open the app to see, and every other figure on the page
-          is a consequence of it. */}
+      {/* Their picture, their name, the count, in that order.
+          The countdown used to be the largest thing here, at 104px, on the
+          argument that it is the one number they open the app to see. That
+          argument was about which figure matters and it is still true; what
+          it got wrong is that a number is not a greeting. A screen that opens
+          on four digits the height of a hand reads as a timer, and the
+          instruction now is that opening this should feel like arriving
+          somewhere calm.
+
+          So the name is the largest thing and the count is one line under it,
+          the way a screen names the place before it reports on it. The count
+          did not become small: at 40 it is still the second largest thing on
+          the screen and the only tabular figure above the fold.
+
+          The picture is the first image from their own board, and it is where
+          every colour on this screen that is not the accent comes from. That
+          is the whole of the direction: the chrome stays quiet, the content
+          carries the life. A couple who has not saved a picture yet gets no
+          band and a screen that starts at their name, which is a first
+          screen rather than a gap where something failed.
+
+          The gold rule that closed this block is gone. The group below brings
+          its own edge, and a hairline whose job is to separate two things
+          that are already apart is one more object on a screen being counted
+          down to four. */}
       <header className="mt-8">
-        <p className="text-[12px] tracking-[.14em] text-ink-mute">
+        {cover && (
+          /* Decoration, so it is hidden from a screen reader rather than
+             described: the caption that belongs to it lives on the board
+             itself, where somebody chose it. */
+          <img
+            src={cover} alt="" aria-hidden
+            className="mb-6 aspect-[16/9] w-full rounded-card object-cover"
+          />
+        )}
+
+        <h2 className="font-display text-display font-semibold leading-[1.12] tracking-[-.02em] text-ink">
+          {c.display_name}
+        </h2>
+
+        <p className="mt-1.5 text-[14px] text-ink-mute">
           {formatDate(dateFmt, c.event_date, ui.portal.dateTbd)}
           {c.venue ? ` · ${c.venue}` : ''}
         </p>
 
-        <h2 className="mt-3 font-display text-display font-semibold leading-tight text-ink">
-          {c.display_name}
-        </h2>
-
         {left !== null && left >= 0 && (
-          <div className="mt-8">
-            <p className="font-display text-[72px] font-semibold leading-none text-ink sm:text-[104px]">
+          <p className="mt-6 flex items-baseline gap-2.5">
+            <span className="font-display text-[40px] font-bold leading-none tracking-[-.03em] tabular-nums text-ink sm:text-[48px]">
               <Ltr>{left.toLocaleString('en-US')}</Ltr>
-            </p>
-            <p className="mt-2 text-[14px] text-ink-mute">{ui.portal.daysLeft}</p>
-          </div>
+            </span>
+            <span className="text-[15px] text-ink-mute">{ui.portal.daysLeft}</span>
+          </p>
         )}
-
-        <hr className="rule-gold mt-8" />
       </header>
 
       {/* The five questions, above everything, and only while any of them is

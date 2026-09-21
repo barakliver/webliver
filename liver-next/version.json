@@ -1,4 +1,4 @@
 {
-  "version": "2.30.1",
+  "version": "2.31",
   "note": "The release's name, said out loud. Seven characters of hexadecimal are the truth about a commit and useless to a person on the phone: 'go back to efd086d' is not a sentence anybody says. This is bumped by hand in the commit that is worth a number, and the agent writes it down beside the commit it put live, so the console can say which version is running. It is JSON rather than a module because the deploy agent reads it from bash and the app reads it from TypeScript, and one file that both can read cannot disagree with itself. It is kept out of package.json on purpose: changing that changes the lockfile, and the deploy reinstalls every dependency when the lockfile moves."
 }

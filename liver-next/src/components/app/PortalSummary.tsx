@@ -47,32 +47,43 @@ export function PortalSummary({ rows, label }: { rows: SummaryRow[]; label: stri
   if (live.length === 0) return null;
 
   return (
-    <nav aria-label={label} className="mt-10">
-      <ul className="list-none p-0">
-        {live.map((r) => (
+    <nav aria-label={label} className="mt-8">
+      {/* One object rather than four.
+          These were four full-width rules with a figure on each, which is a
+          list, and a list of four is four things to look at. Inside a single
+          rounded surface they are one thing with four lines in it, which is
+          what the rest of this screen is being counted down to.
+
+          The separator starts where the label starts instead of at the edge,
+          which is the detail that makes a list read as drawn rather than as
+          stacked; it is done with a border on the row inside the padding,
+          so it inherits the row's inset for free and never doubles at the
+          top. */}
+      <ul className="list-none overflow-hidden rounded-card bg-surface-100 p-0">
+        {live.map((r, i) => (
           <li key={r.key}>
             <Link
               href={r.href}
-              className="flex min-h-[64px] items-center justify-between gap-4 border-t border-line
-                         transition-colors duration-300 hover:bg-surface-100"
+              className={`mx-4 flex min-h-[52px] items-center justify-between gap-4
+                          transition-colors duration-300 hover:text-accent
+                          ${i > 0 ? 'border-t border-line' : ''}`}
             >
-              <span className="text-[15.5px] text-ink">{r.label}</span>
-              <span className="flex items-center gap-3">
+              <span className="text-[15.5px]">{r.label}</span>
+              <span className="flex items-center gap-2.5">
                 {/* Some sections have a number worth showing beside the name
                     and some do not: the thread has no count that means
                     anything, and a made-up one is worse than the arrow alone. */}
                 {r.value !== null && (
-                  <span className="font-display text-[22px] font-semibold text-ink">{r.value}</span>
+                  <span className="text-[17px] font-semibold tabular-nums">{r.value}</span>
                 )}
                 {/* Points the way the language runs. In a right-to-left page
                     a chevron aimed right is aimed backwards. */}
-                <ChevronLeft size={16} strokeWidth={1.5} className="chev-onward text-ink-mute" aria-hidden />
+                <ChevronLeft size={15} strokeWidth={1.5} className="chev-onward text-ink-mute" aria-hidden />
               </span>
             </Link>
           </li>
         ))}
       </ul>
-      <div className="border-t border-line" />
     </nav>
   );
 }
