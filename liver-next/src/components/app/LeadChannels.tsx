@@ -1,9 +1,9 @@
 'use client';
 
 import { useActionState, useRef, useState } from 'react';
-import { Check, Copy, Link2, Plus, RefreshCw, Trash2, X } from 'lucide-react';
+import { BadgeCheck, Check, Copy, Link2, Plus, RefreshCw, Trash2, TriangleAlert, X } from 'lucide-react';
 import {
-  addChannel, renameChannel, setChannelEnabled, rotateChannel, removeChannel,
+  addChannel, renameChannel, setChannelEnabled, rotateChannel, removeChannel, testChannel,
   type ChannelResult,
 } from '@/app/actions/leadChannels';
 import { CHANNEL_KINDS, channelUrl, type LeadChannel } from '@/content/channels';
@@ -153,6 +153,8 @@ function Row({ channel, origin }: { channel: LeadChannel; origin: string }) {
           </div>
 
           <div className="flex items-center gap-1.5">
+            <TestButton channelId={channel.id} />
+
             <form action={setChannelEnabled}>
               <input type="hidden" name="channel_id" value={channel.id} />
               <input type="hidden" name="enabled" value={channel.enabled ? 'off' : 'on'} />
@@ -185,6 +187,8 @@ function Row({ channel, origin }: { channel: LeadChannel; origin: string }) {
       )}
 
       <UrlLine url={url} />
+
+      <Guide kind={channel.source} />
 
       <p className="mt-2 text-[12.5px] text-ink-mute">
         {channel.last_lead_at
@@ -287,5 +291,77 @@ function UrlLine({ url }: { url: string }) {
       </div>
       <p className="mt-1.5 text-[12.5px] text-ink-mute">{c.urlHint}</p>
     </div>
+  );
+}
+
+/**
+ * The press that answers "is this actually receiving?".
+ *
+ * The result stays on the row rather than flashing and leaving, because it is
+ * the whole reason the button was pressed and because the failures each say
+ * what to do next. A refusal in particular is nearly always one thing: the
+ * address was replaced here and never re-pasted over there.
+ *
+ * `aria-live` on the answer rather than a toast: a producer who pressed this
+ * with a screen reader asked a question and is waiting for it to be answered.
+ */
+function TestButton({ channelId }: { channelId: string }) {
+  const c = useCopy().channel;
+  const [state, action, pending] = useActionState<ChannelResult | null, FormData>(testChannel, null);
+
+  return (
+    <div>
+      <form action={action}>
+        <input type="hidden" name="channel_id" value={channelId} />
+        <button type="submit" className="btn-ghost min-h-[34px] px-3 text-[13px]" disabled={pending}>
+          {pending ? c.testing : c.test}
+        </button>
+      </form>
+
+      {state && (
+        <p
+          role="status" aria-live="polite"
+          className={cn(
+            'mt-1.5 inline-flex max-w-[260px] items-start gap-1.5 text-[12.5px] leading-snug',
+            state.ok ? 'text-good' : 'text-bad',
+          )}
+        >
+          {state.ok
+            ? <BadgeCheck size={14} strokeWidth={1.5} className="mt-px shrink-0" aria-hidden />
+            : <TriangleAlert size={14} strokeWidth={1.5} className="mt-px shrink-0" aria-hidden />}
+          {state.ok ? c.testOk : state.error}
+        </p>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Where to paste it, on the row that has it.
+ *
+ * Closed by default and open in one press, for the reason the couple's screen
+ * folds: a producer who connected this last month is scrolling past it, and a
+ * producer connecting it now has the steps beside the address rather than in
+ * a document somebody has to keep.
+ *
+ * Three sets of steps for eight platforms, because Meta's two consoles are one
+ * console and everything else is the same field with a different name.
+ */
+function Guide({ kind }: { kind: string }) {
+  const c = useCopy().channel;
+  const steps =
+    kind === 'instagram' || kind === 'facebook' ? c.guides.meta
+    : kind === 'google_ads' ? c.guides.google
+    : c.guides.other;
+
+  return (
+    <details className="mt-3 group">
+      <summary className="cursor-pointer list-none text-[13px] text-accent transition hover:text-ink">
+        {c.guide}
+      </summary>
+      <ol className="mt-2 space-y-1.5 ps-5 text-[13px] leading-relaxed text-ink-soft [list-style:decimal]">
+        {steps.map((step) => <li key={step}>{step}</li>)}
+      </ol>
+    </details>
   );
 }

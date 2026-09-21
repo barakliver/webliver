@@ -5,7 +5,8 @@ import { supabaseServer } from '@/lib/supabase/server';
 import { currentAccount } from '@/lib/auth';
 import { serverCopy } from '@/lib/serverLocale';
 import { noteFailure } from '@/lib/flash';
-import { isChannelKind } from '@/content/channels';
+import { channelUrl, isChannelKind } from '@/content/channels';
+import { publicEnv } from '@/lib/env';
 
 /**
  * The doors a producer opens for their own enquiries.
@@ -134,4 +135,70 @@ export async function removeChannel(form: FormData): Promise<void> {
     await noteFailure('לא הצלחנו למחוק את הערוץ. אפשר לנסות שוב.');
   }
   touch();
+}
+
+/**
+ * Does this address actually receive?
+ *
+ * The producer's own question, answered without leaving the screen and
+ * without a fake enquiry landing in the list they read every morning. The
+ * probe is a real HTTP POST to the real public address, exactly the request
+ * Meta will make: it leaves this server, goes out through the certificate and
+ * the proxy, comes back in through the route, and the token is resolved in
+ * the database. What it deliberately does not carry is a name or a phone
+ * number, so the route answers "nothing to call back on" and stores nothing.
+ *
+ * Calling `ingest_lead_via_channel` from here would have been one line and
+ * would have proved the wrong thing. Every way this breaks in the field is
+ * outside the database: a domain that stopped resolving, a certificate nobody
+ * renewed, a proxy rule, a token the producer rotated and did not re-paste.
+ * A test that skips all of that is a test that says yes on the morning the
+ * leads stopped arriving.
+ *
+ * The three failures are told apart on purpose, because they need different
+ * things done about them: refused means re-paste the address, unreachable
+ * means the platform is having a bad minute, and anything else is ours.
+ */
+export async function testChannel(_prev: ChannelResult | null, form: FormData): Promise<ChannelResult> {
+  const c = (await serverCopy()).channel;
+  const id = String(form.get('channel_id') ?? '');
+  if (!id) return { ok: false, error: c.failed };
+
+  const sb = await supabaseServer();
+  /* The policy scopes this to the producer's own rows, so a channel id that
+     is not theirs reads as one that does not exist. */
+  const { data: row, error } = await sb
+    .from('lead_channels')
+    .select('token,enabled')
+    .eq('id', id)
+    .maybeSingle();
+
+  if (error || !row) {
+    console.error('[leadChannels] test could not read the channel', error);
+    return { ok: false, error: c.failed };
+  }
+  /* Answered here rather than by sending a probe that is certain to be
+     refused: "switched off" is a thing the producer did, not a fault. */
+  if (!row.enabled) return { ok: false, error: c.testOff };
+
+  let res: Response;
+  try {
+    res = await fetch(channelUrl(publicEnv.siteUrl, row.token), {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ liver_probe: true }),
+      cache: 'no-store',
+      signal: AbortSignal.timeout(10_000),
+    });
+  } catch (e) {
+    console.error('[leadChannels] probe could not reach the address', e);
+    return { ok: false, error: c.testUnreachable };
+  }
+
+  if (res.status === 401) return { ok: false, error: c.testRefused };
+  if (!res.ok) {
+    console.error('[leadChannels] probe was answered badly', { status: res.status });
+    return { ok: false, error: c.testBroken };
+  }
+  return { ok: true };
 }

@@ -1450,6 +1450,33 @@ export const channelEn: ChannelCopy = {
   tooLong: 'That name is too long. Up to 40 characters.',
   needName: 'Please name the channel.',
   needProducer: 'You need to be signed in as a producer',
+  test: 'Test',
+  testing: 'Testing',
+  testOk: 'The address is live and receiving enquiries.',
+  testOff: 'This channel is paused, so it refuses everything. Turn it on, then test again.',
+  testRefused: 'The address was refused. If you replaced it, paste the new one everywhere you connected it.',
+  testUnreachable: 'We could not reach the address. Worth trying again in a moment.',
+  testBroken: 'Something on our side did not answer properly. Try again, and tell us if it keeps happening.',
+  guide: 'How to connect it',
+  guides: {
+    meta: [
+      'Open Meta Business Suite with the account that manages the page.',
+      'In the side menu: All Tools, then Instant Forms.',
+      'Under CRM Setup choose Webhook, and paste the address above.',
+      'Meta sends an automatic verification and approves it itself. Every lead lands here from then on.',
+    ],
+    google: [
+      'In Google Ads, open the campaign that has the lead form.',
+      'In the form settings choose Lead delivery, then Webhook.',
+      'Paste the address above into the Webhook URL field.',
+      'The Key field can say anything. The address itself is the key.',
+    ],
+    other: [
+      'In any system that sends enquiries, look for a field called Webhook, POST URL or Endpoint.',
+      'Paste the address above into it.',
+      'It accepts JSON or an ordinary form, and recognises name, phone, email, date and guest count, in Hebrew and in English.',
+    ],
+  },
   kinds: {
     instagram: 'Instagram',
     facebook: 'Facebook',

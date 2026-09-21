@@ -222,6 +222,24 @@ export async function POST(req: Request) {
  * report ends up measuring the field names of ad platforms.
  */
 async function postToChannel(req: Request, token: string) {
+  /* The token is checked before the payload is judged, and the order is
+     load-bearing twice over.
+   *
+   * It is the honest refusal: a delivery to a revoked token used to be
+   * answered "ok, ignored" whenever it happened to carry no contact details,
+   * which tells somebody probing for live tokens that the door is at least
+   * listening, and tells a producer whose integration broke nothing at all.
+   *
+   * It is also what makes the test button on the channel screen a real test.
+   * A probe with no contact details now reaches this check, so a 200 means
+   * the address resolved to this producer's live channel: DNS, TLS, the
+   * route and the token, end to end, without a fake enquiry being written
+   * into the list the producer reads every morning. */
+  if (!(await channelExists(token))) {
+    console.warn('[leads/webhook] delivery presented an unknown channel token');
+    return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 });
+  }
+
   const body = await readBody(req);
   const lead = readLead(body, 'webhook');
 
