@@ -124,6 +124,30 @@ with checks as (
     select 1 from pg_class c join pg_namespace n on n.oid = c.relnamespace
      where n.nspname = 'public' and c.relname = 'feature_flags'
   )
+
+  union all
+  -- ── each producer's own webhook ───────────────────────────────────────────
+  select 'table: lead_channels', to_regclass('public.lead_channels') is not null
+
+  union all
+  --  The boundary of 0099, read out of the catalog rather than trusted.
+  --  store_lead names the workspace it writes to, so an anon grant on it would
+  --  turn one leaked key into write access to every producer's inbox. The two
+  --  functions above it are the ones anon is meant to reach, and each decides
+  --  the producer for itself.
+  select 'only the platform writes leads by producer', not has_function_privilege(
+    'anon',
+    'public.store_lead(uuid, text, text, text, text, date, integer, text, text, text, text)',
+    'execute'
+  )
+
+  union all
+  select 'a producer''s own webhook can receive', (
+    select bool_and(has_function_privilege('anon', p.oid, 'execute'))
+      from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+     where n.nspname = 'public'
+       and p.proname in ('ingest_lead_via_channel', 'lead_channel_exists')
+  )
 )
 
 select case when ok then 'ok' else 'MISSING' end as status, what

@@ -35,6 +35,20 @@ language sql stable as $$
   select nullif(current_setting('request.jwt.claim.email', true), '')
 $$;
 
+-- The whole token, which several policies read rather than the three settables
+-- above. Without it the schema stopped applying at 0034 and every migration
+-- after it was silently absent: the run still said "the schema applies",
+-- because the failure was swallowed, and the tests that needed a later table
+-- then died with no output at all.
+create or replace function auth.jwt() returns jsonb
+language sql stable as $$
+  select jsonb_strip_nulls(jsonb_build_object(
+    'sub',   nullif(current_setting('request.jwt.claim.sub', true), ''),
+    'email', nullif(current_setting('request.jwt.claim.email', true), ''),
+    'role',  nullif(current_setting('request.jwt.claim.role', true), '')
+  ))
+$$;
+
 create schema if not exists storage;
 create table if not exists storage.buckets (
   id text primary key, name text, public boolean default false,

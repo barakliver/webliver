@@ -137,6 +137,7 @@ import { ProducerLedger } from '@/components/app/ProducerLedger';
 import { prepCopy } from '@/content/site';
 import { HebrewCalendar } from '@/components/app/HebrewCalendar';
 import { LabelToolbar } from '@/components/app/LabelToolbar';
+import { LeadChannels } from '@/components/app/LeadChannels';
 import { EventTagPicker } from '@/components/app/EventTagPicker';
 import { accentByKey } from '@/content/brand';
 import type { Account } from '@/lib/auth';
@@ -1383,6 +1384,17 @@ export default async function DesignPage() {
               { id: 'c2', kind: 'lead_channel', label: 'המלצה ממעצב', color: '#0E7490', sort_order: 2 },
             ]}
             builtIn={['שיחת טלפון', 'וואטסאפ', 'אינסטגרם', 'פייסבוק', 'המלצה', 'הגיעו אלינו']}
+          />
+        </Panel>
+
+        <Panel name="LeadChannels" note="one live channel with its address, one paused, and one that has never received anything">
+          <LeadChannels
+            origin="https://liverproductions.com"
+            channels={[
+              { id: 'f1', label: 'אינסטגרם', source: 'instagram', token: 'a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6', enabled: true, last_lead_at: '2026-09-18T09:20:00Z', lead_count: 34 },
+              { id: 'f2', label: 'הקמפיין של הסתיו', source: 'google_ads', token: 'b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7', enabled: false, last_lead_at: '2026-08-02T17:05:00Z', lead_count: 6 },
+              { id: 'f3', label: 'פייסבוק', source: 'facebook', token: 'c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8', enabled: true, last_lead_at: null, lead_count: 0 },
+            ]}
           />
         </Panel>
 

@@ -16,6 +16,23 @@ import { readLead } from '@/lib/leadPayload';
  * There is no service role key here, and there does not need to be:
  * ingest_lead() is a security definer function the anon role may execute, and
  * nothing else about the database opens up because of it.
+ *
+ * Two doors, and which one a delivery came through decides whose inbox it
+ * lands in.
+ *
+ *   ?c=<token>   one producer's own channel. The token names the channel, the
+ *                channel names the producer and the source, and holding it is
+ *                the whole of the authorisation — there is nothing else to
+ *                present. This is what a producer pastes into Meta or Google.
+ *
+ *   no ?c=       the platform's own connections, authorised by the single
+ *                LEAD_WEBHOOK_KEY in the environment and attributed to the
+ *                platform's workspace. Live and posting today, so it keeps
+ *                working exactly as it did.
+ *
+ * The channel path deliberately never falls back to the shared key. A token
+ * that was revoked an hour ago must stop working, not quietly start arriving
+ * in somebody else's inbox instead.
  */
 
 export const runtime = 'nodejs';
@@ -55,6 +72,25 @@ function presentedKey(req: Request, url: URL, body: unknown): string {
   return url.searchParams.get('key') ?? '';
 }
 
+/** The producer's channel, if this delivery came through one. `c` is short
+ *  because it is typed by hand into consoles with short URL fields; `channel`
+ *  is accepted too for anybody wiring it up from the documentation. */
+function channelToken(url: URL): string {
+  return (url.searchParams.get('c') ?? url.searchParams.get('channel') ?? '').trim();
+}
+
+/** Whether a token names a live channel. Used only by the handshake — a
+ *  delivery proves the same thing by being accepted. */
+async function channelExists(token: string): Promise<boolean> {
+  const sb = await supabaseServer();
+  const { data, error } = await sb.rpc('lead_channel_exists', { p_token: token });
+  if (error) {
+    console.error('[leads/webhook] channel lookup failed', { code: error.code, message: error.message });
+    return false;
+  }
+  return data === true;
+}
+
 async function readBody(req: Request): Promise<unknown> {
   const type = req.headers.get('content-type') ?? '';
   const raw = await req.text();
@@ -87,9 +123,25 @@ export async function GET(req: Request) {
   const mode = url.searchParams.get('hub.mode');
   const token = url.searchParams.get('hub.verify_token') ?? '';
   const challenge = url.searchParams.get('hub.challenge') ?? '';
-  const expected = process.env.LEAD_WEBHOOK_KEY ?? '';
 
-  if (mode === 'subscribe' && expected && challenge && keyMatches(token, expected)) {
+  if (mode !== 'subscribe' || !challenge) {
+    return NextResponse.json({ ok: false }, { status: 403 });
+  }
+
+  /* Meta appends its hub.* parameters to whatever URL it was given, so a
+     producer's ?c= survives the handshake and is what decides which secret
+     the verify token is compared against. Their channel token doubles as it,
+     which is one value to copy rather than two. */
+  const channel = channelToken(url);
+  if (channel) {
+    const ok = await channelExists(channel);
+    return ok && keyMatches(token, channel)
+      ? new NextResponse(challenge, { status: 200, headers: { 'content-type': 'text/plain; charset=utf-8' } })
+      : NextResponse.json({ ok: false }, { status: 403 });
+  }
+
+  const expected = process.env.LEAD_WEBHOOK_KEY ?? '';
+  if (expected && keyMatches(token, expected)) {
     return new NextResponse(challenge, {
       status: 200,
       headers: { 'content-type': 'text/plain; charset=utf-8' },
@@ -100,6 +152,9 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   const url = new URL(req.url);
+  const channel = channelToken(url);
+  if (channel) return postToChannel(req, channel);
+
   const expected = process.env.LEAD_WEBHOOK_KEY ?? '';
 
   if (!expected) {
@@ -149,5 +204,61 @@ export async function POST(req: Request) {
   }
 
   console.info('[leads/webhook] stored', { source: lead.source, id: data });
+  return NextResponse.json({ ok: true, id: data });
+}
+
+/**
+ * A delivery through one producer's own channel.
+ *
+ * The token is the only credential, and it is not compared here: the database
+ * resolves it to a channel or refuses, which keeps "which producer is this
+ * for" and "is this allowed" as one question with one answer. There is
+ * nothing to compare in constant time either, because a wrong token is a
+ * failed lookup rather than a mismatched string.
+ *
+ * The source is not read from the payload on this path. A producer who named
+ * a channel "גוגל אדס" has said what it is; letting the sender overrule that
+ * with whatever its form happened to put in a `source` field is how a funnel
+ * report ends up measuring the field names of ad platforms.
+ */
+async function postToChannel(req: Request, token: string) {
+  const body = await readBody(req);
+  const lead = readLead(body, 'webhook');
+
+  if (!lead.full_name && !lead.phone && !lead.email) {
+    /* 200 for the same reason as the shared door: retrying an empty payload
+       produces the same empty payload forever. */
+    console.warn('[leads/webhook] channel delivery had no contact details');
+    return NextResponse.json({ ok: true, ignored: 'no contact details' });
+  }
+
+  const sb = await supabaseServer();
+  const { data, error } = await sb.rpc('ingest_lead_via_channel', {
+    p_token: token,
+    p_full_name: lead.full_name,
+    p_phone: lead.phone,
+    p_email: lead.email,
+    p_kind: lead.kind,
+    p_event_date: lead.event_date,
+    p_guest_count: lead.guest_count,
+    p_message: lead.message,
+    p_external_id: lead.external_id,
+    p_location: lead.location,
+  });
+
+  if (error) {
+    /* insufficient_privilege is the channel refusing the token — revoked,
+       switched off, or never ours. Answered 401 so the sender stops retrying
+       something that will never be accepted, and logged without the token so
+       a live secret does not end up in journalctl. */
+    if (error.code === '42501') {
+      console.warn('[leads/webhook] delivery presented an unknown channel token');
+      return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 });
+    }
+    console.error('[leads/webhook] channel ingest failed', { code: error.code, message: error.message });
+    return NextResponse.json({ ok: false, error: 'could not store the lead' }, { status: 500 });
+  }
+
+  console.info('[leads/webhook] stored through a channel', { id: data });
   return NextResponse.json({ ok: true, id: data });
 }

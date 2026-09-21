@@ -4,7 +4,7 @@ import {
   noticeCopy, ticketCopy, companionCopy, prepCopy, venueCopy, envelopesCopy, vehiclesCopy,
   meetingTemplatesCopy, timelineCopy, studioCopy, journalCopy, circleCopy, confirmCopy,
   leadsCopy, crewCopy, vendorCopy, templateCopy, barCopy, updateCopy, linkCopy, signCopy,
-  siteEditorCopy, hebrewCalCopy, labelCopy, knowledgeCopy, jumpCopy, copilotCopy, archiveCopy,
+  siteEditorCopy, hebrewCalCopy, labelCopy, channelCopy, knowledgeCopy, jumpCopy, copilotCopy, archiveCopy,
   meetingCopy, noteCopy, workflowCopy, referralCopy, holidayCopy,
 } from './site.ts';
 import {
@@ -15,7 +15,7 @@ import {
 } from './app.en.ts';
 import {
   consoleEn, leadEn, crewEn, vendorEn, templateEn, barEn, updateEn, linkEn, signEn,
-  siteEditorEn, hebrewCalEn, labelEn, knowledgeEn, jumpEn, copilotEn, archiveEn,
+  siteEditorEn, hebrewCalEn, labelEn, channelEn, knowledgeEn, jumpEn, copilotEn, archiveEn,
   meetingEn, noteEn, workflowEn, referralEn, holidayEn,
 } from './console.en.ts';
 
@@ -113,6 +113,9 @@ export type SignCopy = Wide<typeof signCopy>;
 export type SiteEditorCopy = Wide<typeof siteEditorCopy>;
 export type HebrewCalCopy = Wide<typeof hebrewCalCopy>;
 export type LabelCopy = Wide<typeof labelCopy>;
+/* The producer's own capture channels. Separate from LabelCopy because a
+   channel here is a live URL rather than a word on a form. */
+export type ChannelCopy = Wide<typeof channelCopy>;
 export type KnowledgeCopy = Wide<typeof knowledgeCopy>;
 export type JumpCopy = Wide<typeof jumpCopy>;
 export type CopilotCopy = Wide<typeof copilotCopy>;
@@ -145,7 +148,7 @@ export type AppUi = {
      the leads page's own two lines; `lead` is the row, the call and the form. */
   lead: LeadCopy; crew: CrewCopy; vendor: VendorCopy; template: TemplateCopy;
   bar: BarCopy; update: UpdateCopy; link: LinkCopy; sign: SignCopy;
-  siteEditor: SiteEditorCopy; hebrewCal: HebrewCalCopy; label: LabelCopy;
+  siteEditor: SiteEditorCopy; hebrewCal: HebrewCalCopy; label: LabelCopy; channel: ChannelCopy;
   knowledge: KnowledgeCopy; jump: JumpCopy; copilot: CopilotCopy; archive: ArchiveCopy;
   meeting: MeetingCopy; note: NoteCopy; workflow: WorkflowCopy; referral: ReferralCopy;
   holiday: HolidayCopy;
@@ -178,7 +181,7 @@ export const APP_UI_HE: AppUi = {
   eventFile: eventFileCopy,
   lead: leadsCopy, crew: crewCopy, vendor: vendorCopy, template: templateCopy,
   bar: barCopy, update: updateCopy, link: linkCopy, sign: signCopy,
-  siteEditor: siteEditorCopy, hebrewCal: hebrewCalCopy, label: labelCopy,
+  siteEditor: siteEditorCopy, hebrewCal: hebrewCalCopy, label: labelCopy, channel: channelCopy,
   knowledge: knowledgeCopy, jump: jumpCopy, copilot: copilotCopy, archive: archiveCopy,
   meeting: meetingCopy, note: noteCopy, workflow: workflowCopy, referral: referralCopy,
   holiday: holidayCopy,
@@ -200,7 +203,7 @@ const APP_UI_EN: AppUi = {
   eventFile: eventFileEn,
   lead: leadEn, crew: crewEn, vendor: vendorEn, template: templateEn,
   bar: barEn, update: updateEn, link: linkEn, sign: signEn,
-  siteEditor: siteEditorEn, hebrewCal: hebrewCalEn, label: labelEn,
+  siteEditor: siteEditorEn, hebrewCal: hebrewCalEn, label: labelEn, channel: channelEn,
   knowledge: knowledgeEn, jump: jumpEn, copilot: copilotEn, archive: archiveEn,
   meeting: meetingEn, note: noteEn, workflow: workflowEn, referral: referralEn,
   holiday: holidayEn,

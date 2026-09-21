@@ -10,6 +10,9 @@ import { LabelToolbar } from '@/components/app/LabelToolbar';
 import { loadLabels } from '@/lib/labels';
 import { IssueReporter } from '@/components/app/IssueReporter';
 import { LEAD_SOURCES } from '@/content/site';
+import { LeadChannels } from '@/components/app/LeadChannels';
+import type { LeadChannel } from '@/content/channels';
+import { publicEnv } from '@/lib/env';
 
 export const dynamic = 'force-dynamic';
 export async function generateMetadata() {
@@ -22,12 +25,16 @@ export default async function LeadsPage() {
   const sb = await supabaseServer();
 
   const channels = await loadLabels(sb, 'lead_channel');
-  const [{ data: leads }, { data: calls }] = await Promise.all([
+  const [{ data: leads }, { data: calls }, { data: feeds }] = await Promise.all([
     sb.from('leads')
       .select('id,full_name,email,phone,kind,event_date,guest_count,message,note,status,source,created_at,location')
       .order('created_at', { ascending: false }).limit(200),
     sb.from('sales_calls').select('id,lead_id,title,remind_on,done')
       .order('remind_on', { ascending: true, nullsFirst: false }),
+    /* The policy scopes this to the producer's own rows, tokens and all. */
+    sb.from('lead_channels')
+      .select('id,label,source,token,enabled,last_lead_at,lead_count')
+      .order('created_at', { ascending: false }),
   ]);
 
   const rows = (leads ?? []) as Lead[];
@@ -52,12 +59,17 @@ export default async function LeadsPage() {
 
       {/* The producer's own channels, edited where the funnel is read. A
           channel nobody can add is a funnel that measures our guesses. */}
-      <div className="my-6">
+      <div className="my-6 space-y-6">
         <LabelToolbar
           kind="lead_channel"
           labels={channels}
           builtIn={LEAD_SOURCES.map((s) => s.label)}
         />
+
+        {/* The same funnel, wired up rather than typed in. The toolbar above
+            is what a producer writes down after a phone call; this is the
+            advertising filling the list in without them. */}
+        <LeadChannels channels={(feeds ?? []) as LeadChannel[]} origin={publicEnv.siteUrl} />
       </div>
 
       <CallsPanel calls={allCalls} leads={rows.map((l) => ({ id: l.id, name: l.full_name }))} />

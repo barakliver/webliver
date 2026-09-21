@@ -1,6 +1,6 @@
 import type {
   ConsoleCopy, LeadCopy, CrewCopy, VendorCopy, TemplateCopy, BarCopy, UpdateCopy, LinkCopy,
-  SignCopy, SiteEditorCopy, HebrewCalCopy, LabelCopy, KnowledgeCopy, JumpCopy, CopilotCopy,
+  SignCopy, SiteEditorCopy, HebrewCalCopy, LabelCopy, ChannelCopy, KnowledgeCopy, JumpCopy, CopilotCopy,
   ArchiveCopy, MeetingCopy, NoteCopy, WorkflowCopy, ReferralCopy, HolidayCopy,
 } from './appUi.ts';
 
@@ -1416,6 +1416,50 @@ export const labelEn: LabelCopy = {
   eventTag: 'Event tag',
   eventTagNone: 'No tag',
   legend: 'Legend',
+};
+
+export const channelEn: ChannelCopy = {
+  title: 'Automatic enquiry capture',
+  sub: 'Each channel gets its own address. Paste it into Instagram, Google Ads or Facebook, and every enquiry from there lands here, tagged with the channel it came from.',
+  add: 'New channel',
+  addPh: 'What you call this channel',
+  addPhHint: 'For example: Instagram, Autumn campaign',
+  kind: 'Platform',
+  save: 'Open channel',
+  saving: 'Opening',
+  saveEdit: 'Save',
+  rename: 'Edit',
+  remove: 'Delete channel',
+  close: 'Close',
+  none: 'No channels yet. You can keep writing enquiries down by hand. This is here so you do not have to.',
+  url: 'The address to paste',
+  urlHint: 'This address is a secret. Anyone holding it can send you enquiries, so do not publish it.',
+  copy: 'Copy',
+  copied: 'Copied',
+  rotate: 'Replace address',
+  rotateHint: 'Revokes the current address and makes a new one. You will need to paste it again everywhere you connected it.',
+  on: 'Live',
+  off: 'Paused',
+  enable: 'Turn on',
+  disable: 'Pause',
+  lastLead: 'Last enquiry',
+  never: 'No enquiry yet',
+  count: 'enquiries',
+  taken: 'You already have a channel by that name.',
+  failed: 'Could not save. Try again.',
+  tooLong: 'That name is too long. Up to 40 characters.',
+  needName: 'Please name the channel.',
+  needProducer: 'You need to be signed in as a producer',
+  kinds: {
+    instagram: 'Instagram',
+    facebook: 'Facebook',
+    google_ads: 'Google Ads',
+    tiktok: 'TikTok',
+    website: 'Website',
+    whatsapp: 'WhatsApp',
+    referral: 'Referral',
+    other: 'Other',
+  },
 };
 
 export const knowledgeEn: KnowledgeCopy = {

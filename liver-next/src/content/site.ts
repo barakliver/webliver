@@ -3464,6 +3464,58 @@ export const labelCopy = {
 } as const;
 
 /**
+ * The doors a producer's enquiries arrive through.
+ *
+ * Separate from labelCopy on purpose. A channel there is a word on a form a
+ * producer fills in themselves; a channel here is a live URL somebody pastes
+ * into Meta, and every sentence has to earn its place in a screen where the
+ * cost of a misunderstanding is an afternoon of advertising landing nowhere.
+ */
+export const channelCopy = {
+  title: 'חיבור פניות אוטומטי',
+  sub: 'כל ערוץ מקבל כתובת משלו. מדביקים אותה באינסטגרם, בגוגל אדס או בפייסבוק, וכל פנייה משם נוחתת כאן אצלכם, מתויגת לפי הערוץ.',
+  add: 'ערוץ חדש',
+  addPh: 'איך תקראו לערוץ',
+  addPhHint: 'לדוגמה: אינסטגרם, הקמפיין של הסתיו',
+  kind: 'הפלטפורמה',
+  save: 'פתיחת ערוץ',
+  saving: 'פותח',
+  saveEdit: 'שמירה',
+  rename: 'עריכה',
+  remove: 'מחיקת הערוץ',
+  close: 'סגירה',
+  none: 'עוד לא פתחתם ערוץ. אפשר להמשיך לרשום פניות ביד. זה כאן בשביל שלא תצטרכו.',
+  url: 'הכתובת להדבקה',
+  urlHint: 'זו כתובת סודית. מי שמחזיק בה יכול לשלוח אליכם פניות, אז אל תפרסמו אותה.',
+  copy: 'העתקה',
+  copied: 'הועתק',
+  rotate: 'החלפת כתובת',
+  rotateHint: 'מבטל את הכתובת הקודמת ומייצר חדשה. צריך להדביק אותה מחדש בכל מקום שחיבר אותה.',
+  on: 'פעיל',
+  off: 'מושבת',
+  enable: 'הפעלה',
+  disable: 'השבתה',
+  lastLead: 'פנייה אחרונה',
+  never: 'עוד לא הגיעה פנייה',
+  count: 'פניות',
+  taken: 'כבר יש לכם ערוץ בשם הזה.',
+  failed: 'לא הצלחנו לשמור. נסו שוב.',
+  tooLong: 'שם ארוך מדי. עד 40 תווים.',
+  needName: 'נא לכתוב שם לערוץ.',
+  needProducer: 'צריך להתחבר כמפיק',
+  kinds: {
+    instagram: 'אינסטגרם',
+    facebook: 'פייסבוק',
+    google_ads: 'גוגל אדס',
+    tiktok: 'טיקטוק',
+    website: 'אתר',
+    whatsapp: 'וואטסאפ',
+    referral: 'המלצה',
+    other: 'אחר',
+  },
+} as const;
+
+/**
  * One place to look things up.
  *
  * The menu had two entries for knowledge, side by side, and neither name said
