@@ -279,12 +279,23 @@ that has happened once.
   impression of one. A test walks every id to its file and back and asserts
   the three undealt ones are undealt, so a card without a picture fails the
   build rather than drawing a broken image inside his frame.
-- The ground is a pale blue, #F2F6FC, everywhere: the app, the public site and
-  the guests' page alike. It was warm ivory before, and slate before that; the
-  rule that settles it is that his latest instruction wins, and the reasoning
-  for each move is written above the values in `globals.css`. Everywhere,
-  rather than in the app alone, because the whole point of the ivory move was
-  that the shopfront and the workspace must not read as two businesses.
+- The ground is a pale blue, #F1F4F9, everywhere: the app, the public site and
+  the guests' page alike, with #4F6BA5 as the brand blue. It was warm ivory
+  before, and a pale blue before that, and slate before that; the rule that
+  settles it is that his latest instruction wins, and the reasoning for each
+  move is written above the values in `globals.css`. Everywhere, rather than
+  in the app alone, because the whole point of the ivory move was that the
+  shopfront and the workspace must not read as two businesses.
+  This entry said #F2F6FC for a while and the code said #FCFCFA, because the
+  blue was withdrawn a round later and this line was never brought back. A
+  palette is the one thing a person checks here instead of rendering the
+  page, so when it moves again, move it here in the same commit.
+  The blue is a default rather than a decree: `producers.accent` still wins
+  for a producer who picked their own, and all six of those accents are
+  measured against these grounds in both palettes by `npm run contrast`.
+  The typeface has not moved and is not part of this: Heebo carries the
+  interface because he asked for it by name having seen the alternative
+  inside the working product.
 - The platform also has a dark palette. There are two controls for it and
   neither owns the state: a one-press switch in the app header beside the
   language one, and the full three-way choice in the accessibility menu —
