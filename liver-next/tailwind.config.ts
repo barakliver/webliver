@@ -179,7 +179,12 @@ const config: Config = {
       fontFamily: {
         sans:    ['var(--font-ui)', 'var(--font-heebo)', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif'],
         display: ['var(--font-display)', 'var(--font-heebo)', '-apple-system', 'system-ui', 'sans-serif'],
-        serif:   ['var(--font-editorial)', 'var(--font-frank)', 'Georgia', 'serif'],
+        /* `serif` by name and Heebo by face. The name is kept because a
+           handful of components ask for it and because a producer's own
+           brand kit still sets `--font-editorial` to the display font they
+           chose for their wedding; what it must never do again is fall back
+           to a serif of the platform's own. */
+        serif:   ['var(--font-editorial)', 'var(--font-heebo)', '-apple-system', 'system-ui', 'sans-serif'],
       },
       fontSize: {
         /* Tracked open again, the values the serif era used, recovered from

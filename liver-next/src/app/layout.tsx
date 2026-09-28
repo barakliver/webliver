@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Heebo, Frank_Ruhl_Libre, Lato, Playfair_Display } from 'next/font/google';
+import { Heebo } from 'next/font/google';
 import { site } from '@/content/site';
 import { siteEn } from '@/content/site.en';
 import { brandForHost } from '@/lib/branding';
@@ -15,54 +15,30 @@ import { LOCALE_COOKIE, dirOf, readLocale } from '@/lib/locale';
 import { BOOT_SCRIPT } from '@/lib/theme';
 import { ThemeScope } from '@/components/ThemeScope';
 
-/* Three families: Heebo for the interface, Frank Ruhl Libre for the
-   editorial display, and the two Latin faces an English page swaps in.
+/* One family: Heebo, everywhere, in both languages.
 
-   The display line has moved more than once and the history is worth keeping,
-   because each move was a ruling rather than a preference. The Lux direction
-   set every heading in Frank Ruhl Libre; the `Event Platform.dc.html` handoff
-   set everything in Heebo, and for a while that file was treated as the
-   authority and the serif came out. Then he ruled on it himself: the font he
-   named is the one in `design-system/liver-productions/MASTER.md`, whose own
-   correction section lands on Frank Ruhl Libre for display, because the
-   Cormorant it started from ships no Hebrew and this site is Hebrew first.
+   Three were loaded before this — Heebo for the interface, Frank Ruhl Libre
+   for the editorial display, and Lato with Playfair Display for an English
+   page — and the history of how the display line moved is worth keeping,
+   because every move was a ruling rather than a preference. The Lux
+   direction set every heading in Frank Ruhl Libre. The `Event Platform.dc`
+   handoff set everything in Heebo, and for a while that file was treated as
+   the authority. Then he named MASTER.md, whose correction section lands on
+   Frank Ruhl Libre, and the serif came back for display.
 
-   So: Frank Ruhl Libre carries the editorial headings, the promise line and
-   the large numerals, at the light weight that carries by shape at 104px.
-   Heebo carries everything read at 13 to 16px, where a serif costs legibility
-   and buys nothing, and inside the app it carries the headings too. Both ship
-   real Hebrew, which is the non-negotiable that disqualified the Latin
-   pairing in the first place.
+   And now he has ruled again, in one sentence: the type in the whole
+   application is Heebo. So the other three are not downloaded at all. That
+   is not only tidiness — three families at four weights each is a webfont
+   bill every visitor pays, and two of them existed to keep an English page
+   from setting Latin in a Hebrew face, which Heebo does not need help with.
 
-   The display tracking in tailwind.config.ts is positive, .01 to .02em: a
-   light serif closes up without air, the opposite of what Heebo needed. Both
-   sets of values are in the git history of that file. */
-/* The body face is Heebo, and this is the second time it has been.
-   The design source set everything in Heebo; it was moved to Assistant after
-   six pairings were drawn side by side and he picked one; and it is back,
-   because he asked for Heebo by name having now seen both inside the working
-   product rather than on a comparison sheet. That is the better evidence and
-   it is the later instruction, which is how this project settles every one of
-   these. Assistant is no longer loaded: a face nothing asks for is a webfont
-   every visitor downloads for nothing. */
+   The tracking that belongs to this face is in tailwind.config.ts and in
+   globals.css, negative where the serif era's was positive. Each swap of
+   the family carries its tracking with it; both sets are in the history of
+   those two files. */
 const heebo = Heebo({
   subsets: ['hebrew', 'latin'], variable: '--font-heebo',
   display: 'swap', weight: ['400', '500', '600', '700'],
-});
-const frank = Frank_Ruhl_Libre({
-  subsets: ['hebrew', 'latin'], variable: '--font-frank',
-  display: 'swap', weight: ['400', '500'],
-});
-/* The English faces. Neither sets Hebrew, which is why globals.css keeps
-   Heebo and Frank behind them in every stack; they are swapped in by the
-   `lang` on the html element, so a Hebrew page never pays for them. */
-const lato = Lato({
-  subsets: ['latin'], variable: '--font-lato',
-  display: 'swap', weight: ['400', '700'],
-});
-const playfair = Playfair_Display({
-  subsets: ['latin'], variable: '--font-playfair',
-  display: 'swap', weight: ['400', '500', '700'],
 });
 
 /* Generated per request rather than exported flat, because the name and the
@@ -195,7 +171,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       suppressHydrationWarning
       lang={locale}
       dir={dir}
-      className={`${heebo.variable} ${frank.variable} ${lato.variable} ${playfair.variable}`}
+      className={heebo.variable}
     >
       <head>
         {/* First thing in the document, ahead of the stylesheet. Anything

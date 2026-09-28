@@ -220,13 +220,15 @@ function checkBuiltCss() {
   );
 
   /* The face, which is the one thing about this design that cannot be checked
-     by looking at a screenshot on a phone. This assertion has flipped once:
-     the handoff file set everything in Heebo and for a while this checker
-     refused a build carrying the serif. Then he ruled on it himself - the
-     font he named is the one in MASTER.md, Frank Ruhl Libre for display - and
-     the layout loads it again. So its variable must be in the stylesheet; a
-     build without it has quietly reverted to the wrong design. */
-  record(has('--font-frank'), 'the serif is in the build');
+     by looking at a screenshot on a phone. This assertion has now flipped
+     twice, and both flips were his ruling rather than a reading of a
+     document: it refused a build carrying the serif, then demanded the serif
+     because MASTER.md named Frank Ruhl Libre for display, and it is back to
+     the one face because he said the type in the whole application is Heebo.
+     What it checks is that the face actually reached the build - a stylesheet
+     without the variable has quietly fallen through to the system stack,
+     which looks like a design decision on a phone and is not one. */
+  record(has('--font-heebo'), 'the one face is in the build');
 
   /* And the surfaces. A card in this design is glass: a translucent fill, a
      soft edge and a 24px corner. Its absence is what a flat page looks like. */

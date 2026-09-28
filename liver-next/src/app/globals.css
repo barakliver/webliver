@@ -228,42 +228,43 @@
     --coral: rgb(var(--coral-rgb));
     --coral-strong: rgb(var(--coral-strong-rgb));
 
-    /* ── type, by language and by purpose ──────────────────────────────────
-       The UI face carries everything operated: titles, tables, forms,
-       amounts, statuses, tasks. The editorial face is for marketing, for
-       welcoming, and for the few editorial moments inside the app. Hebrew
-       is Heebo and Frank Ruhl Libre; an English page swaps in Lato and
-       Playfair Display, with the Hebrew faces behind them for any glyph
-       they lack. `--font-display` is what `font-display` resolves to: the
-       editorial face on the public site, the UI face inside the app. */
-    /* Heebo carries the interface: titles, tables, forms, amounts, statuses,
-       tasks. It has been Heebo, then Assistant — chosen by eye from six
-       pairings drawn side by side — and it is Heebo again because he asked
-       for it by name after seeing both in the product rather than on a
-       comparison sheet. A face is judged on the screen it has to work on.
-       The system stack behind it in tailwind.config.ts is the fallback now;
-       Assistant is no longer downloaded at all. */
+    /* ── type: one face ────────────────────────────────────────────────────
+       Heebo, everywhere, in both languages.
+
+       There were three before this, by purpose and by language: Heebo for
+       everything operated, Frank Ruhl Libre for the editorial headings and
+       the promise line, and Lato with Playfair Display swapped in on an
+       English page. That was a reasonable structure and it is gone, because
+       he ruled on it in one sentence — the type in the whole application is
+       Heebo — and his latest instruction is how this project settles the
+       face. It has settled here before: Heebo, then Assistant chosen by eye
+       from six pairings, then Heebo again by name, and now Heebo alone.
+
+       Alone rather than first in a stack. A serif that only carries the
+       headings on the shopfront is still the difference between the
+       shopfront and the workspace reading as two businesses, which is the
+       argument the ground colour was moved for. And Heebo sets real Latin,
+       so an English page needs no second family to avoid Hebrew-font Latin.
+
+       The three other faces are no longer downloaded. A webfont nothing asks
+       for is bytes every visitor pays for on a wedding night in a hall with
+       one bar of signal.
+
+       One face means one set of tracking. A bold sans closes up without it,
+       which is the opposite of what the light serif wanted; the serif era's
+       positive values are in this file's history, as they were the last two
+       times the family moved. */
     --font-ui: var(--font-heebo);
-    --font-editorial: var(--font-frank);
-    --font-display: var(--font-editorial);
-    /* A light serif wants air; a bold sans wants none. Each display size
-       reads this rather than carrying a number of its own. */
-    --display-track: .01em;
-    --heading-track: 0;
-  }
-
-  html[lang='en'] {
-    --font-ui: var(--font-lato), var(--font-heebo);
-    --font-editorial: var(--font-playfair), var(--font-frank);
-  }
-
-  /* Inside the app, headings are the UI face: a page title, a card heading
-     and a figure are read, not admired. */
-  .app-type {
+    --font-editorial: var(--font-ui);
     --font-display: var(--font-ui);
     --display-track: -.015em;
     --heading-track: -.01em;
   }
+
+  /* Kept as a marker rather than deleted: the app still carries this class,
+     and the day a display face is chosen for the app alone it is one line
+     here again. It overrides nothing while there is one face. */
+  .app-type { --font-display: var(--font-ui); }
 
   html, body {
     /* Nothing may push the page sideways.

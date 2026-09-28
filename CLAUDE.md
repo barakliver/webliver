@@ -300,9 +300,21 @@ that has happened once.
   The blue is a default rather than a decree: `producers.accent` still wins
   for a producer who picked their own, and all six of those accents are
   measured against these grounds in both palettes by `npm run contrast`.
-  The typeface has not moved and is not part of this: Heebo carries the
-  interface because he asked for it by name having seen the alternative
-  inside the working product.
+- **The typeface is Heebo and there is only one.** Not Heebo for the
+  interface and a serif for the headings, which is how it was built: Heebo
+  everywhere, on `/app`, on the couple's screen, on the shopfront, on the
+  guests' page, in Hebrew and in English alike. He asked for it in one
+  sentence and his latest instruction wins, the same rule that settles the
+  ground colour. Frank Ruhl Libre, Lato and Playfair Display are no longer
+  downloaded at all, and `font-serif` is kept as a name whose face is Heebo,
+  because a producer's brand kit still sets `--font-editorial` to the
+  display font they chose for their own wedding. Two things travel with the
+  family and were got wrong the last two times it moved: the tracking, which
+  is negative for this face and positive for the serif and lives in
+  `globals.css` and `tailwind.config.ts`; and `scripts/verify.mjs`, which
+  asserts the face reached the build and would roll a release back on the
+  wrong assertion. Heebo sets real Latin, which is why the English page no
+  longer swaps in a second family.
 - The platform also has a dark palette. There are two controls for it and
   neither owns the state: a one-press switch in the app header beside the
   language one, and the full three-way choice in the accessibility menu —
