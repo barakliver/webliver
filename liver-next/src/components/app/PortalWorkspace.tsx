@@ -1,3 +1,4 @@
+import { CalendarHeart, Grid3x3, Handshake, ListChecks, MessageCircle, Users, Wallet } from 'lucide-react';
 import type { AppUi } from '@/content/appUi';
 import { weekdayDate } from '@/lib/appDates';
 import { formatDate, daysUntil } from '@/lib/dates';
@@ -18,7 +19,7 @@ import { GuestSiteLink } from '@/components/app/GuestSiteLink';
 import { PortalVendors } from '@/components/app/PortalVendors';
 import { PortalMeetings } from '@/components/app/PortalMeetings';
 import { QuoteCompare } from '@/components/app/QuoteCompare';
-import { Fold } from '@/components/Fold';
+import { Fold, FoldGroup } from '@/components/Fold';
 import { Ltr } from '@/components/Ltr';
 import type { PortalData, Workspace } from '@/lib/portal';
 import { nextAction, upcoming, type TaskFact } from '@/lib/nextAction';
@@ -156,59 +157,60 @@ export function PortalWorkspace({
           supposed to save. The dock travels with them, says which section
           they are in, and is in the corner a thumb is already resting in. */}
 
-      {/* Their picture, their name, the count, in that order.
+      {/* Their picture, their name, the count, in that order, and all three
+          inside one object rather than stacked as three.
+
           The countdown used to be the largest thing here, at 104px, on the
           argument that it is the one number they open the app to see. That
           argument was about which figure matters and it is still true; what
           it got wrong is that a number is not a greeting. A screen that opens
-          on four digits the height of a hand reads as a timer, and the
-          instruction now is that opening this should feel like arriving
-          somewhere calm.
+          on four digits the height of a hand reads as a timer.
 
-          So the name is the largest thing and the count is one line under it,
-          the way a screen names the place before it reports on it. The count
-          did not become small: at 40 it is still the second largest thing on
-          the screen and the only tabular figure above the fold.
+          So the name is the largest thing and the count sits under it in a
+          pill of its own: still the only tabular figure above the fold, and
+          now marked as a figure rather than left as a loose line of text
+          under a heading. The pill is where the accent enters the screen.
+
+          Centred, which the reference he sent is and the stacked version was
+          not. A wedding screen is a card before it is a dashboard, and an
+          image, two names and a date centred under each other is the shape
+          everybody already reads that way.
 
           The picture is the first image from their own board, and it is where
-          every colour on this screen that is not the accent comes from. That
-          is the whole of the direction: the chrome stays quiet, the content
-          carries the life. A couple who has not saved a picture yet gets no
-          band and a screen that starts at their name, which is a first
-          screen rather than a gap where something failed.
-
-          The gold rule that closed this block is gone. The group below brings
-          its own edge, and a hairline whose job is to separate two things
-          that are already apart is one more object on a screen being counted
-          down to four. */}
-      <header className="mt-8">
+          every colour on this screen that is not the accent comes from. It is
+          the lid of this object rather than a picture floating above it: a
+          couple who has saved nothing gets a card that starts at their name,
+          which is a first screen rather than a gap where something failed. */}
+      <header className="mt-6 overflow-hidden rounded-panel border border-line-soft bg-card text-center">
         {cover && (
           /* Decoration, so it is hidden from a screen reader rather than
              described: the caption that belongs to it lives on the board
              itself, where somebody chose it. */
           <img
             src={cover} alt="" aria-hidden
-            className="mb-6 aspect-[16/9] w-full rounded-card object-cover"
+            className="aspect-[16/9] w-full object-cover sm:aspect-[21/9]"
           />
         )}
 
-        <h2 className="font-display text-display font-semibold leading-[1.12] tracking-[-.02em] text-ink">
-          {c.display_name}
-        </h2>
+        <div className="px-5 py-8 sm:px-8 sm:py-10">
+          <h2 className="font-display text-display font-semibold leading-[1.12] tracking-[-.02em] text-ink">
+            {c.display_name}
+          </h2>
 
-        <p className="mt-1.5 text-[14px] text-ink-mute">
-          {formatDate(dateFmt, c.event_date, ui.portal.dateTbd)}
-          {c.venue ? ` · ${c.venue}` : ''}
-        </p>
-
-        {left !== null && left >= 0 && (
-          <p className="mt-6 flex items-baseline gap-2.5">
-            <span className="font-display text-[40px] font-bold leading-none tracking-[-.03em] tabular-nums text-ink sm:text-[48px]">
-              <Ltr>{left.toLocaleString('en-US')}</Ltr>
-            </span>
-            <span className="text-[15px] text-ink-mute">{ui.portal.daysLeft}</span>
+          <p className="mt-2 text-[14px] text-ink-mute">
+            {formatDate(dateFmt, c.event_date, ui.portal.dateTbd)}
+            {c.venue ? ` \u00B7 ${c.venue}` : ''}
           </p>
-        )}
+
+          {left !== null && left >= 0 && (
+            <p className="mt-6 inline-flex items-baseline gap-2 rounded-full bg-accent-wash px-5 py-2.5 text-accent">
+              <span className="font-display text-[28px] font-bold leading-none tracking-[-.03em] tabular-nums">
+                <Ltr>{left.toLocaleString('en-US')}</Ltr>
+              </span>
+              <span className="text-[14.5px]">{ui.portal.daysLeft}</span>
+            </p>
+          )}
+        </div>
       </header>
 
       {/* The five questions, above everything, and only while any of them is
@@ -233,25 +235,34 @@ export function PortalWorkspace({
 
       <PortalSummary rows={rows} label={ui.portal.summary} />
 
-      {/* The drawers. Tighter between them than inside them: closed, they
-          should read as one short list rather than as six more sections. A
-          drawer whose modules are all closed to this couple is not drawn at
-          all — the same rule every panel here already followed, one level up.
+      {/* The drawers, and now one object rather than six.
+
+          They were six cards with air between them. Closed, that is six
+          things to look at on a screen whose whole argument is that a couple
+          should arrive to four; and six identical rectangles of the same
+          weight are harder to find a place in than one list of six lines,
+          because nothing about any of them says which is which.
+
+          So they are inside one surface, each led by its own mark, each
+          carrying what is behind it as a figure. The 1px of ground between
+          them is the separator. A drawer whose modules are all closed to this
+          couple is not drawn at all, the same rule every panel here already
+          followed, one level up.
 
           Nothing above this line is a list. The countdown, the five opening
           questions, the one thing to do next and four figures: that is the
           whole of what a couple is shown at rest, and all of it fits on a
-          phone without scrolling past their own names. The lists — theirs,
-          the money's, the guests' — are behind rows they can read.
+          phone without scrolling past their own names. The lists - theirs,
+          the money's, the guests' - are behind rows they can read.
 
           Their own tasks are the first drawer and not an exception to it. The
           card above already names the next one, with its date and the two
           after it; the panel underneath is where that gets done, and a list
           of sixteen open tasks is the single heaviest thing on this screen to
           arrive to. */}
-      <div className="mt-10 space-y-3">
+      <FoldGroup className="mt-8">
         {can('tasks') && (
-          <Fold id="fold-mine" title={ui.portal.jumpMine} sub={ui.portal.foldMineSub}>
+          <Fold id="fold-mine" grouped icon={ListChecks} count={filteredTasks.filter((t) => !t.done).length} title={ui.portal.jumpMine} sub={ui.portal.foldMineSub}>
             <div id="tasks" data-jump={ui.portal.rowTasks} data-jump-group="me" className="scroll-mt-28"><TaskList clientId={c.id} tasks={filteredTasks} viewer="client" viewerId={viewerId} /></div>
           </Fold>
         )}
@@ -262,7 +273,7 @@ export function PortalWorkspace({
             than inside the list's, because a game stacked on top of a
             checklist is a checklist that got longer. */}
         {can('bingo') && (
-          <Fold id="fold-bingo" title={ui.portal.rowBingo} sub={ui.portal.bingo.sub}>
+          <Fold id="fold-bingo" grouped icon={Grid3x3} title={ui.portal.rowBingo} sub={ui.portal.bingo.sub}>
             <div id="bingo" data-jump={ui.portal.rowBingo} data-jump-group="me" className="scroll-mt-28">
               <WeddingBingo clientId={c.id} tasks={filteredTasks} />
             </div>
@@ -274,7 +285,7 @@ export function PortalWorkspace({
             sales screen wearing the clothes of a tool. Money is one door for
             both the payments and the budget. */}
         {can('budget') && (
-          <Fold id="fold-money" title={ui.portal.jumpMoney} sub={ui.portal.foldMoneySub}>
+          <Fold id="fold-money" grouped icon={Wallet} count={budget.length} title={ui.portal.jumpMoney} sub={ui.portal.foldMoneySub}>
             {/* The working shown before the lists, and only once there is a
                 budget to show: without lines the five figures are five
                 zeros. */}
@@ -299,7 +310,7 @@ export function PortalWorkspace({
         )}
 
         {(can('guests') || can('seating') || (c.guest_site_on && c.guest_token)) && (
-          <Fold id="fold-guests" title={ui.portal.jumpGuests} sub={ui.portal.foldGuestsSub}>
+          <Fold id="fold-guests" grouped icon={Users} count={guests.length} title={ui.portal.jumpGuests} sub={ui.portal.foldGuestsSub}>
             {/* The link they paste into the family group, once the producer
                 has switched the page on. First in this drawer because
                 sending it is what a couple comes here to do before anybody
@@ -320,7 +331,7 @@ export function PortalWorkspace({
             two files and five places on the screen; a couple looking for
             "the photographer" was never going to guess which. */}
         {(can('vendors') || can('meetings') || slots.vendorhq || slots.contracts || slots.venues) && (
-          <Fold id="fold-vendors" title={ui.portal.jumpVendors} sub={ui.portal.foldVendorsSub}>
+          <Fold id="fold-vendors" grouped icon={Handshake} count={data.vendorsFor(c.id).length} title={ui.portal.jumpVendors} sub={ui.portal.foldVendorsSub}>
             {can('vendors') && (
               <div id="vendors" data-jump={ui.portal.rowVendors} data-jump-group="vendors" className="scroll-mt-28 space-y-10">
                 <PortalVendors vendors={data.vendorsFor(c.id)} c={ui.portal} locale={ui.locale} />
@@ -357,7 +368,7 @@ export function PortalWorkspace({
             calendar that carries the dates onto their phones. */}
         {(can('runsheet') || can('moodboard') || slots.studio || slots.files || slots.lists
           || slots.prep || slots.envelopes || slots.transport || slots.calendar || slots.bar) && (
-          <Fold id="fold-day" title={ui.portal.jumpDay} sub={ui.portal.foldDaySub}>
+          <Fold id="fold-day" grouped icon={CalendarHeart} title={ui.portal.jumpDay} sub={ui.portal.foldDaySub}>
             {can('runsheet') && (
               <div id="runsheet" data-jump={ui.portal.rowRunsheet} data-jump-group="day" className="scroll-mt-28"><DaySchedule
                 clientId={c.id}
@@ -384,34 +395,34 @@ export function PortalWorkspace({
         )}
 
         {slots.thread && (
-          <Fold id="fold-talk" title={ui.portal.jumpTalk} sub={ui.portal.foldTalkSub}>
+          <Fold id="fold-talk" grouped icon={MessageCircle} title={ui.portal.jumpTalk} sub={ui.portal.foldTalkSub}>
             {slots.thread}
           </Fold>
         )}
+      </FoldGroup>
 
-        {/* Before I Do, after the drawers and outside all of them.
-            Outside on purpose: every drawer on this screen is closed at rest,
-            and a game nobody can see is a game nobody plays. It is one card,
-            it is the last thing on the screen, and it is the only thing here
-            that leaves the platform - so it opens in a tab of its own rather
-            than swapping the screen out from under somebody mid-plan.
-            Drawn only when he has opened it for this couple; the switch is
-            his alone and lives on their file. */}
-        {c.game_on && c.game_token && (
-          <a
-            href={`/play/${c.game_token}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-10 block rounded-xl2 bg-dark px-6 py-7 text-surface transition hover:bg-dark/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-          >
-            <span aria-hidden className="text-2xl text-coral">&#9829;</span>
-            <span className="mt-2 block font-display text-[22px] font-medium">{ui.portal.gameCta}</span>
-            <span className="mt-1.5 block max-w-md text-[14.5px] leading-relaxed text-surface/70">
-              {ui.portal.gameSub}
-            </span>
-          </a>
-        )}
-      </div>
+      {/* Before I Do, after the drawers and outside all of them.
+          Outside on purpose: every drawer on this screen is closed at rest,
+          and a game nobody can see is a game nobody plays. It is one card,
+          it is the last thing on the screen, and it is the only thing here
+          that leaves the platform - so it opens in a tab of its own rather
+          than swapping the screen out from under somebody mid-plan.
+          Drawn only when he has opened it for this couple; the switch is
+          his alone and lives on their file. */}
+      {c.game_on && c.game_token && (
+        <a
+          href={`/play/${c.game_token}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-8 block rounded-panel bg-dark px-6 py-7 text-surface transition hover:bg-dark/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        >
+          <span aria-hidden className="text-2xl text-coral">&#9829;</span>
+          <span className="mt-2 block font-display text-[22px] font-medium">{ui.portal.gameCta}</span>
+          <span className="mt-1.5 block max-w-md text-[14.5px] leading-relaxed text-surface/70">
+            {ui.portal.gameSub}
+          </span>
+        </a>
+      )}
     </div>
   );
 }

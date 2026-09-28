@@ -1,7 +1,7 @@
 import { fill } from '@/lib/copyText';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { CalendarHeart, Wallet, ChevronLeft } from 'lucide-react';
+import { CalendarHeart, Wallet, ChevronLeft, Inbox } from 'lucide-react';
 import { requireAccount, isLive } from '@/lib/auth';
 import { getOverview } from '@/lib/attention';
 import { Live } from '@/components/app/Live';
@@ -95,6 +95,8 @@ export default async function OverviewPage() {
                in it and nothing goes quiet by being closed. */
             <Fold
               id="fold-clients"
+              icon={Inbox}
+              count={items.length}
               title={c.needsYou}
               sub={items.length === 1 ? c.needsYouOne : fill(c.needsYouSub, { n: items.length })}
             >

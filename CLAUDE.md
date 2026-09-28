@@ -67,14 +67,21 @@ that has happened once.
   the number beside it, so the card on `/app/admin` says "ליור 2.1" with the
   commit underneath in small print. Talk to him in numbers, not hashes.
 - The couple's screen shows almost nothing at rest and has lost nothing. Open
-  on arrival: the countdown, the five opening questions, the one thing to do
-  next, and four figures. Everything else — their tasks included — is behind
-  six rows that say what is inside them, in `components/portal/Fold.tsx`.
-  Closed it is 1,871px on a phone and open it is 15,746, which is the whole
-  argument. Two rules come with it. The order of that screen is decided in
-  `PortalWorkspace` alone: the portal page hands its own panels in as `slots`
-  rather than printing them under it, because when it printed them the
-  suppliers were in one file and the supplier desk in the other. And every
+  on arrival: their picture and name, the countdown, the five opening
+  questions, the one thing to do next, and four figures. Everything else —
+  their tasks included — is behind six rows that say what is inside them, in
+  `components/Fold.tsx` (not `components/portal/`, which is where this said
+  to look for two months). Closed it is 1,777px on a phone and open it is
+  16,743, which is the whole argument. The six rows are one object rather
+  than six cards: `FoldGroup` is the surface, each row carries its section's
+  mark and how much is behind it, and an open drawer is a tray sunk into the
+  list. That is the reference he sent — a competitor's app whose whole
+  quality is that it reads as organised rather than as full — and the same
+  move the four figures above it already made. Two rules come with it. The
+  order of that screen is decided in `PortalWorkspace` alone: the portal page
+  hands its own panels in as `slots` rather than printing them under it,
+  because when it printed them the suppliers were in one file and the
+  supplier desk in the other. And every
   link into a section now points inside something closed, so `lib/reveal.ts`
   opens it first — the quick-jump uses it and so does `FoldReveal`, which
   catches every ordinary `#` link on the page. Without it the button on "מה

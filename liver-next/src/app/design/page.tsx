@@ -122,7 +122,8 @@ import { ServiceSwitch } from '@/components/app/ServiceSwitch';
 import { ThemeToggle } from '@/components/app/ThemeToggle';
 import { WorkspaceSwitcher } from '@/components/portal/WorkspaceSwitcher';
 import { PortalJump } from '@/components/portal/PortalJump';
-import { Fold } from '@/components/Fold';
+import { CalendarHeart, Users, Wallet } from 'lucide-react';
+import { Fold, FoldGroup } from '@/components/Fold';
 import { MyTasks, MyTaskQuickAdd } from '@/components/app/MyTasks';
 import { TaskTick } from '@/components/app/TaskTick';
 import { FoldReveal } from '@/components/portal/FoldReveal';
@@ -558,27 +559,34 @@ export default async function DesignPage() {
         {/* The drawer the couple's screen folds into. Drawn twice on purpose:
             what a closed row looks like is the whole point of it, and what an
             open one looks like is the thing that has to not be a surprise. */}
-        <Panel name="Fold · the couple's drawers" note="closed at rest, readable without opening: the name, one line saying what is inside, and a chevron">
-          <div className="max-w-2xl space-y-3">
-            <Fold id="design-fold-a" title="כסף" sub="תשלומים, תקציב ומה שכבר שולם">
-              <p className="card text-[14.5px] text-ink-soft">
-                מה שיושב בפנים הוא בדיוק הפאנלים שהיו שם קודם, עם הכותרות שלהם.
-                השורה למעלה היא שם המגירה, לא כותרת שנייה.
-              </p>
-            </Fold>
-            <Fold id="design-fold-b" title="היום עצמו" sub="הלו״ז, ההשראה והפרטים הקטנים" open>
-              <p className="card text-[14.5px] text-ink-soft" id="design-fold-inside">
-                כך זה נראה פתוח. ברירת המחדל היא סגור, ועל מסך הזוג אף מגירה לא
-                נפתחת מעצמה.
-              </p>
-            </Fold>
+        <Panel name="Fold · the couple's drawers" note="one list rather than six cards: a mark, the name, what is inside it in a sentence, and how much of it there is">
+          <div className="max-w-2xl">
+            <FoldGroup>
+              <Fold id="design-fold-a" grouped icon={Wallet} count={9} title="כסף" sub="תשלומים, תקציב ומה שכבר שולם">
+                <p className="card text-[14.5px] text-ink-soft">
+                  מה שיושב בפנים הוא בדיוק הפאנלים שהיו שם קודם, עם הכותרות שלהם.
+                  השורה למעלה היא שם המגירה, לא כותרת שנייה.
+                </p>
+              </Fold>
+              <Fold id="design-fold-c" grouped icon={Users} count={128} title="אורחים" sub="מי הוזמן, מי אישר והושבה">
+                <p className="card text-[14.5px] text-ink-soft">
+                  מגירה סגורה שאומרת כמה יש בתוכה היא מגירה שאי אפשר לשכוח.
+                </p>
+              </Fold>
+              <Fold id="design-fold-b" grouped icon={CalendarHeart} title="היום עצמו" sub="הלו״ז, ההשראה והפרטים הקטנים" open>
+                <p className="card text-[14.5px] text-ink-soft" id="design-fold-inside">
+                  כך זה נראה פתוח. ברירת המחדל היא סגור, ועל מסך הזוג אף מגירה לא
+                  נפתחת מעצמה.
+                </p>
+              </Fold>
+            </FoldGroup>
             {/* The other half of the drawers, and the reason this panel has a
                 link in it: the button on "מה עכשיו" is an ordinary link to a
                 section, and every section is now inside something closed.
                 FoldReveal is what opens it on the way. Pressing this opens
                 the first drawer above. */}
             <FoldReveal />
-            <a href="#design-fold-a" className="btn-quiet inline-flex text-[13.5px]">
+            <a href="#design-fold-a" className="btn-quiet mt-4 inline-flex text-[13.5px]">
               לפתוח את המגירה הראשונה מקישור
             </a>
           </div>
