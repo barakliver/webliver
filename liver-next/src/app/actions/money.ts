@@ -102,6 +102,73 @@ export async function addBudgetItem(_prev: MoneyResult | null, form: FormData): 
   return { ok: true };
 }
 
+/**
+ * Correcting a line that already exists.
+ *
+ * This was missing, and its absence is the whole reason the budget was hard
+ * to keep. A line is born as a guess and becomes a fact: you write 40,000 for
+ * the hall in March, you sign for 37,400 in June, and until now the only way
+ * to record June was to delete the line and type all four fields again. So
+ * either the budget stopped being true, or somebody retyped a supplier's name
+ * from memory. Both happened.
+ *
+ * The agreed figure is the one this exists for, and it is the one that always
+ * arrives late, but everything is editable for the same reason: a budget you
+ * cannot correct is a budget that is wrong and knows it.
+ *
+ * `category` is accepted blank on purpose. Blank means "work it out from the
+ * label", which is what `categoryOf` has always done and gets right most of
+ * the time; typing one is how somebody overrules it when the hall is called
+ * "אצל דודה" and no regular expression on earth is going to guess that.
+ *
+ * There is no ownership check here and none is wanted: the policy on
+ * `budget_items` is the check, so an id belonging to somebody else's wedding
+ * updates nothing and reports that it did nothing.
+ */
+export async function updateBudgetItem(_prev: MoneyResult | null, form: FormData): Promise<MoneyResult> {
+  const id = String(form.get('item_id') ?? '');
+  const clientId = String(form.get('client_id') ?? '');
+  const label = String(form.get('label') ?? '').trim();
+  const estimate = parseIls(form.get('estimate') as string | null);
+  const agreedRaw = String(form.get('agreed') ?? '').trim();
+
+  if (!id || !clientId) return { ok: false, error: 'חסר מזהה סעיף' };
+  if (label.length < 2) return { ok: false, error: 'נא לכתוב על מה הסעיף' };
+  if (estimate === null || estimate < 0) return { ok: false, error: 'אומדן לא תקין' };
+
+  /* Blank clears the agreed figure rather than leaving the old one, because
+     a price can be un-agreed: a supplier falls through and the line goes back
+     to being an estimate. Keeping the stale number would be the budget
+     quietly insisting on a booking that is off. */
+  const agreed = agreedRaw ? parseIls(agreedRaw) : null;
+  if (agreedRaw && (agreed === null || agreed < 0)) {
+    return { ok: false, error: 'סכום שנסגר לא תקין' };
+  }
+
+  const sb = await supabaseServer();
+  const { data, error } = await sb
+    .from('budget_items')
+    .update({
+      label, estimate, agreed,
+      category: String(form.get('category') ?? '').trim(),
+      vendor: String(form.get('vendor') ?? '').trim(),
+    })
+    .eq('id', id)
+    .select('id');
+
+  if (error) {
+    console.error('[money] updateBudgetItem failed', error);
+    return { ok: false, error: 'לא הצלחנו לשמור את השינוי' };
+  }
+  /* An update that matched nothing is not a success. Without this the screen
+     says "saved" and shows the old figure, which is the worst of the three
+     possible outcomes. */
+  if (!data || data.length === 0) return { ok: false, error: 'לא הצלחנו לשמור את השינוי' };
+
+  touch(clientId);
+  return { ok: true };
+}
+
 export async function deleteBudgetItem(form: FormData): Promise<void> {
   const id = String(form.get('item_id') ?? '');
   const clientId = String(form.get('client_id') ?? '');

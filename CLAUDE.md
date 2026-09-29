@@ -341,6 +341,30 @@ that has happened once.
   as panels at the radius of a button. Nested surfaces step down rather than
   matching: an inner box at the outer box's radius is what makes a card look
   like a sticker on a card.
+- **A budget line can be corrected, and that was missing for a year.**
+  `budget_items` had add and delete and no update at all, so the agreed
+  price - the one figure that by definition arrives late, after somebody
+  negotiates - could only ever be set at creation. Recording June meant
+  deleting the line and retyping four fields from memory, which is how a
+  budget stops being true. `updateBudgetItem` in `actions/money.ts` is the
+  fix, and it refuses silently-empty updates: an update that matched no row
+  returns an error rather than "saved", because the screen would otherwise
+  say saved and show the old number. Blank clears the agreed price on
+  purpose, since a supplier can fall through and the line goes back to being
+  an estimate. The panel is one list of rows at every width now, each a
+  `<details>` opening onto its own form; the four-column table it replaced
+  is the shape of a spreadsheet, which promises you can click a cell and
+  change it, and that one could not. Two implementations of the same rows
+  also meant an edit had to be built twice, which is how it got built
+  nought times.
+- **The category on a budget line is a guess you can overrule.**
+  `categoryOf` in `lib/budgetPlan.ts` reads `category` first and then the
+  label's own Hebrew words, so most lines file themselves; a hall called
+  "אצל דודה" files itself under `other` and quietly bends the tracker's
+  plan-against-actual. The add form never asked for a category at all, so
+  every line was created blank. Both forms now carry the select, blank means
+  "work it out from the label", and every row prints the area it landed in -
+  nobody reports a category they cannot see.
 - The platform also has a dark palette. There are two controls for it and
   neither owns the state: a one-press switch in the app header beside the
   language one, and the full three-way choice in the accessibility menu —
