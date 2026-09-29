@@ -12,7 +12,7 @@ function Go() {
   const c = useCopy().crew;
   const { pending } = useFormStatus();
   return (
-    <button type="submit" className="btn-ghost inline-flex items-center gap-2 text-[13.5px]" disabled={pending}>
+    <button type="submit" className="btn-ghost inline-flex items-center gap-2 text-body" disabled={pending}>
       <Wallet size={15} aria-hidden strokeWidth={1.5} />
       {pending ? c.saving : c.fillFees}
     </button>
@@ -42,21 +42,21 @@ export function FillFees({ missing }: { missing: number }) {
   >(fillCrewFees, null);
 
   if (missing === 0 && !state?.ok) {
-    return <p className="text-[13px] text-ink-mute">{c.fillFeesNone}</p>;
+    return <p className="text-body text-ink-mute">{c.fillFeesNone}</p>;
   }
 
   return (
     <form action={action} className="flex flex-wrap items-center gap-x-3 gap-y-1">
       <Go />
       {state?.ok ? (
-        <span className="inline-flex items-center gap-1.5 text-[13px] text-good">
+        <span className="inline-flex items-center gap-1.5 text-body text-good">
           <Check size={14} aria-hidden strokeWidth={1.5} />
           {fill(c.fillFeesDone, { n: String(state.filled ?? 0) })}
         </span>
       ) : state?.error ? (
-        <span className="text-[13px] text-bad">{state.error}</span>
+        <span className="text-body text-bad">{state.error}</span>
       ) : (
-        <span className="text-[13px] text-ink-mute">
+        <span className="text-body text-ink-mute">
           <Ltr>{String(missing)}</Ltr> · {c.fillFeesHint}
         </span>
       )}

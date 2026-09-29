@@ -59,8 +59,8 @@ export function CodeInput({ name, label, length }: {
      44px target without any padding tricks. Narrower when the code is longer
      than six, so eight cells still fit a 320px phone. */
   const cell = length > 6
-    ? 'h-[56px] w-[34px] text-[22px] sm:w-[40px]'
-    : 'h-[60px] w-[38px] text-[26px] sm:w-[46px]';
+    ? 'h-[56px] w-[34px] text-panel sm:w-[40px]'
+    : 'h-[60px] w-[38px] text-figure sm:w-[46px]';
 
   return (
     <div>
@@ -76,7 +76,7 @@ export function CodeInput({ name, label, length }: {
           aria-label={label}
           value={plain}
           onChange={(e) => setPlain(e.target.value.replace(/\D/g, '').slice(0, 12))}
-          className="field mt-1.5 w-full text-center font-display text-[26px] font-semibold tracking-[0.4em] tabular-nums"
+          className="field mt-1.5 w-full text-center font-display text-figure font-semibold tracking-[0.4em] tabular-nums"
         />
       ) : (
         /* Left to right inside a right-to-left page, because a number reads
@@ -132,7 +132,7 @@ export function CodeInput({ name, label, length }: {
       <button
         type="button"
         onClick={() => setPlain(plain === null ? digits.join('') : null)}
-        className="mt-2.5 block w-full text-center text-[13px] text-ink-mute underline-offset-2 hover:text-ink hover:underline"
+        className="mt-2.5 block w-full text-center text-body text-ink-mute underline-offset-2 hover:text-ink hover:underline"
       >
         {plain === null ? 'הקוד שקיבלתי באורך אחר' : 'חזרה לריבועים'}
       </button>

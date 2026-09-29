@@ -72,13 +72,13 @@ export function ProducerCopilot({ brandName }: { brandName: string }) {
       }}
       subtitle={
         <>
-          <p className="mt-0.5 truncate text-[12.5px] text-ink-mute">
+          <p className="mt-0.5 truncate text-meta text-ink-mute">
             {eventName ? `${c.context}: ${eventName}` : clientId ? c.sub : `${c.context}: ${c.noContext}`}
           </p>
           {/* Counts, never rows. Listing the guest list to prove it had read
               the guest list would be the leak it is meant to settle. */}
           {read && read.length > 0 && (
-            <p className="mt-1 truncate text-[11.5px] text-ink-mute" title={c.read}>
+            <p className="mt-1 truncate text-micro text-ink-mute" title={c.read}>
               {c.read}:{' '}
               {read.map((r) => `${r.n} ${c.reads[r.key as keyof typeof c.reads] ?? r.key}`).join(' · ')}
             </p>
@@ -90,7 +90,7 @@ export function ProducerCopilot({ brandName }: { brandName: string }) {
           <button
             type="button" onClick={() => void copy(i, text)}
             className={cn(
-              'inline-flex min-h-[32px] items-center gap-1.5 rounded-xl2 px-2 text-[12px] transition',
+              'inline-flex min-h-[32px] items-center gap-1.5 rounded-xl2 px-2 text-meta transition',
               copied === i ? 'text-ok' : 'text-ink-mute hover:bg-surface-200 hover:text-ink',
             )}
           >
@@ -103,7 +103,7 @@ export function ProducerCopilot({ brandName }: { brandName: string }) {
           <a
             href={`https://wa.me/?text=${encodeURIComponent(text)}`}
             target="_blank" rel="noopener noreferrer"
-            className="inline-flex min-h-[32px] items-center gap-1.5 rounded-xl2 px-2 text-[12px] text-ink-mute transition hover:bg-surface-200 hover:text-ink"
+            className="inline-flex min-h-[32px] items-center gap-1.5 rounded-xl2 px-2 text-meta text-ink-mute transition hover:bg-surface-200 hover:text-ink"
           >
             <MessageCircle size={13} strokeWidth={1.5} aria-hidden />
             {c.whatsapp}

@@ -55,7 +55,7 @@ function Chips({ name, tags, labels, picked, onPick }: {
         return (
           <button
             key={t.key} type="button" onClick={() => onPick(t.key)} aria-pressed={on}
-            className={`min-h-[40px] rounded-button border px-3.5 text-[14px] transition ${
+            className={`min-h-[40px] rounded-button border px-3.5 text-body transition ${
               on ? 'border-accent bg-accent text-white' : 'border-line-strong bg-card text-ink-soft hover:border-accent/50'
             }`}
           >
@@ -115,11 +115,11 @@ function LogForm({ clientId, onDone }: { clientId: string; onDone: () => void })
       {photos.map((p) => <input key={p} type="hidden" name="photos" value={p} />)}
 
       <div className="grid gap-3 sm:grid-cols-3">
-        <label className="grid gap-1.5 text-[13px] text-ink-soft sm:col-span-1">{c.form.venue}
+        <label className="grid gap-1.5 text-body text-ink-soft sm:col-span-1">{c.form.venue}
           <input name="venue_name" className="field" placeholder={c.form.venuePh} autoComplete="off" /></label>
-        <label className="grid gap-1.5 text-[13px] text-ink-soft">{c.form.date}
+        <label className="grid gap-1.5 text-body text-ink-soft">{c.form.date}
           <input name="event_date" type="date" className="field" /></label>
-        <label className="grid gap-1.5 text-[13px] text-ink-soft">{c.form.style}
+        <label className="grid gap-1.5 text-body text-ink-soft">{c.form.style}
           <select name="style" className="field" defaultValue="">
             <option value="" />
             {EVENT_STYLES.map((s) => <option key={s} value={s}>{c.form.styles[s]}</option>)}
@@ -142,13 +142,13 @@ function LogForm({ clientId, onDone }: { clientId: string; onDone: () => void })
       <div>
         <label className="label" htmlFor="takeaways">{c.form.takeaways}</label>
         <textarea id="takeaways" name="takeaways" rows={3} className="field" placeholder={c.form.takeawaysPh} />
-        <p className="mt-1.5 text-[12.5px] text-ink-mute">{c.form.takeawaysHint}</p>
+        <p className="mt-1.5 text-meta text-ink-mute">{c.form.takeawaysHint}</p>
       </div>
 
       <div>
         <p className="label">{c.form.photos}</p>
         <div className="flex flex-wrap items-center gap-3">
-          <label className="inline-flex min-h-[48px] cursor-pointer items-center gap-2 rounded-button border border-line-strong bg-card px-4 text-[14px] text-ink transition hover:border-accent/50">
+          <label className="inline-flex min-h-[48px] cursor-pointer items-center gap-2 rounded-button border border-line-strong bg-card px-4 text-body text-ink transition hover:border-accent/50">
             <ImagePlus size={16} aria-hidden strokeWidth={1.5} />
             {busy ? fill(c.form.photosBusy, { n: busy.n, m: busy.m }) : c.form.photosAdd}
             <input
@@ -156,16 +156,16 @@ function LogForm({ clientId, onDone }: { clientId: string; onDone: () => void })
               onChange={(e) => void upload(Array.from(e.target.files ?? []))}
             />
           </label>
-          {photos.length > 0 && <span className="text-[13px] text-ink-soft">{photos.length}</span>}
+          {photos.length > 0 && <span className="text-body text-ink-soft">{photos.length}</span>}
         </div>
-        <p className="mt-1.5 text-[12.5px] text-ink-mute">{c.form.photosHint}</p>
-        {upErr && <p role="alert" className="mt-2 text-[13.5px] text-bad">{upErr}</p>}
+        <p className="mt-1.5 text-meta text-ink-mute">{c.form.photosHint}</p>
+        {upErr && <p role="alert" className="mt-2 text-body text-bad">{upErr}</p>}
       </div>
 
-      {state && !state.ok && state.error && <p role="alert" className="text-[14px] text-bad">{state.error}</p>}
+      {state && !state.ok && state.error && <p role="alert" className="text-body text-bad">{state.error}</p>}
       <div className="flex flex-wrap items-center gap-2">
         <SaveButton />
-        <button type="button" onClick={onDone} className="btn-quiet text-[14px]">{c.cancel}</button>
+        <button type="button" onClick={onDone} className="btn-quiet text-body">{c.cancel}</button>
       </div>
     </form>
   );
@@ -178,11 +178,11 @@ function LogCard({ log, viewer }: { log: JournalLog; viewer: 'producer' | 'clien
     <article className="card">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div className="min-w-0">
-          <h3 className="inline-flex items-center gap-2 font-display text-[19px] font-semibold text-ink">
+          <h3 className="inline-flex items-center gap-2 font-display text-subhead font-semibold text-ink">
             <MapPin size={16} aria-hidden strokeWidth={1.5} className="text-accent" />
             {log.venue_name || c.card.at}
           </h3>
-          <p className="mt-1 text-[13px] text-ink-mute">
+          <p className="mt-1 text-body text-ink-mute">
             {log.event_date ?? c.card.noDate}
             {log.style && <span> · {c.form.styles[log.style as keyof typeof c.form.styles] ?? log.style}</span>}
           </p>
@@ -190,36 +190,36 @@ function LogCard({ log, viewer }: { log: JournalLog; viewer: 'producer' | 'clien
         {viewer === 'client' && (
           <DeleteForm action={deleteCritiqueLog}>
             <input type="hidden" name="id" value={log.id} />
-            <button type="submit" className="btn-quiet px-2 text-[13px]">{c.remove}</button>
+            <button type="submit" className="btn-quiet px-2 text-body">{c.remove}</button>
           </DeleteForm>
         )}
       </div>
 
       {(log.pros.length > 0 || log.pros_note) && (
         <div className="mt-4">
-          <p className="text-[12.5px] font-semibold tracking-[.06em] text-ok">{c.summary.worked}</p>
+          <p className="text-meta font-semibold tracking-[.06em] text-ok">{c.summary.worked}</p>
           <div className="mt-1.5 flex flex-wrap gap-1.5">
             {log.pros.map((k) => <span key={k} className="chip chip-ok">{c.tags[k as keyof typeof c.tags] ?? k}</span>)}
           </div>
-          {log.pros_note && <p className="mt-2 text-[14px] text-ink-soft">{log.pros_note}</p>}
+          {log.pros_note && <p className="mt-2 text-body text-ink-soft">{log.pros_note}</p>}
         </div>
       )}
 
       {(log.cons.length > 0 || log.cons_note) && (
         <div className="mt-4">
-          <p className="text-[12.5px] font-semibold tracking-[.06em] text-bad">{c.summary.avoid}</p>
+          <p className="text-meta font-semibold tracking-[.06em] text-bad">{c.summary.avoid}</p>
           <div className="mt-1.5 flex flex-wrap gap-1.5">
             {log.cons.map((k) => <span key={k} className="chip chip-bad">{c.tags[k as keyof typeof c.tags] ?? k}</span>)}
           </div>
-          {log.cons_note && <p className="mt-2 text-[14px] text-ink-soft">{log.cons_note}</p>}
+          {log.cons_note && <p className="mt-2 text-body text-ink-soft">{log.cons_note}</p>}
         </div>
       )}
 
       {lines.length > 0 && (
         <div className="mt-4 rounded-card-sm bg-accent-wash p-3.5">
-          <p className="text-[12.5px] font-semibold tracking-[.06em] text-accent">{c.summary.ours}</p>
+          <p className="text-meta font-semibold tracking-[.06em] text-accent">{c.summary.ours}</p>
           <ul className="mt-1.5 list-none space-y-1 p-0">
-            {lines.map((l, i) => <li key={i} className="text-[14.5px] text-ink">{l}</li>)}
+            {lines.map((l, i) => <li key={i} className="text-body text-ink">{l}</li>)}
           </ul>
         </div>
       )}
@@ -264,20 +264,20 @@ export function JournalBook({ clientId, logs, viewer }: {
 
       {rows.length > 0 && (
         <section className="card">
-          <h2 className="font-display text-[20px] font-semibold text-ink">{c.summary.title}</h2>
-          <p className="mt-1 max-w-2xl text-[14px] leading-relaxed text-ink-soft">{c.summary.sub}</p>
+          <h2 className="font-display text-panel font-semibold text-ink">{c.summary.title}</h2>
+          <p className="mt-1 max-w-2xl text-body leading-relaxed text-ink-soft">{c.summary.sub}</p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             {rows.map((r) => (
               <div key={r.area} className={`rounded-card-sm p-4 ${AREA_TONE[r.area]}`}>
-                <h3 className="text-[15px] font-semibold text-ink">{c.summary.areas[r.area]}</h3>
+                <h3 className="text-lead font-semibold text-ink">{c.summary.areas[r.area]}</h3>
                 {r.pros.length > 0 && (
-                  <p className="mt-2 text-[13.5px] text-ink-soft">
+                  <p className="mt-2 text-body text-ink-soft">
                     <span className="font-medium text-ok">{c.summary.worked}: </span>
                     {r.pros.map((p) => `${c.tags[p.key as keyof typeof c.tags] ?? p.key}${p.n > 1 ? ` (${fill(c.summary.times, { n: p.n })})` : ''}`).join(', ')}
                   </p>
                 )}
                 {r.cons.length > 0 && (
-                  <p className="mt-1.5 text-[13.5px] text-ink-soft">
+                  <p className="mt-1.5 text-body text-ink-soft">
                     <span className="font-medium text-bad">{c.summary.avoid}: </span>
                     {r.cons.map((p) => `${c.tags[p.key as keyof typeof c.tags] ?? p.key}${p.n > 1 ? ` (${fill(c.summary.times, { n: p.n })})` : ''}`).join(', ')}
                   </p>
@@ -285,7 +285,7 @@ export function JournalBook({ clientId, logs, viewer }: {
                 {r.takeaways.length > 0 && (
                   <ul className="mt-3 list-none space-y-1 border-t border-line pt-2.5 p-0">
                     {r.takeaways.map((t, i) => (
-                      <li key={i} className="text-[14px] text-ink">
+                      <li key={i} className="text-body text-ink">
                         {t.line}
                         {t.venue && <span className="text-ink-mute"> · {t.venue}</span>}
                       </li>
@@ -299,7 +299,7 @@ export function JournalBook({ clientId, logs, viewer }: {
       )}
 
       {logs.length === 0 ? (
-        <p className="card text-[15px] text-ink-mute">{viewer === 'client' ? c.none : c.noneProducer}</p>
+        <p className="card text-lead text-ink-mute">{viewer === 'client' ? c.none : c.noneProducer}</p>
       ) : (
         <div className="space-y-4">
           {logs.map((log) => <LogCard key={log.id} log={log} viewer={viewer} />)}

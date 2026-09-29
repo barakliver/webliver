@@ -231,11 +231,11 @@ export function QuickJump({ screens, events, records = [], compact }: {
            for one. */
         <button
           type="button" onClick={() => setOpen(true)} aria-label={c.open}
-          className="me-2 inline-flex h-9 w-56 items-center gap-2 rounded-xl2 border border-line bg-card/70 px-3 text-[13px] text-ink-mute transition-colors hover:border-line-strong hover:text-ink"
+          className="me-2 inline-flex h-9 w-56 items-center gap-2 rounded-xl2 border border-line bg-card/70 px-3 text-body text-ink-mute transition-colors hover:border-line-strong hover:text-ink"
         >
           <Search size={15} strokeWidth={1.5} aria-hidden />
           <span className="flex-1 truncate text-start">{c.placeholder}</span>
-          <kbd className="rounded-md border border-line px-1.5 py-0.5 font-sans text-[11px] tabular-nums text-ink-mute" dir="ltr">
+          <kbd className="rounded-md border border-line px-1.5 py-0.5 font-sans text-micro tabular-nums text-ink-mute" dir="ltr">
             {isMac ? '⌘K' : 'Ctrl K'}
           </kbd>
         </button>
@@ -260,7 +260,7 @@ export function QuickJump({ screens, events, records = [], compact }: {
                 placeholder={c.placeholder} aria-label={c.title}
                 role="combobox" aria-expanded aria-controls="jump-list" aria-activedescendant={hits[index] ? `jump-${index}` : undefined}
                 autoComplete="off" spellCheck={false}
-                className="min-h-[40px] flex-1 bg-transparent text-[16px] text-ink outline-none placeholder:text-ink-mute"
+                className="min-h-[40px] flex-1 bg-transparent text-head text-ink outline-none placeholder:text-ink-mute"
               />
               <button
                 type="button" onClick={() => setOpen(false)} aria-label={c.close}
@@ -272,7 +272,7 @@ export function QuickJump({ screens, events, records = [], compact }: {
 
             <ul id="jump-list" role="listbox" className="min-h-0 flex-1 overflow-y-auto py-2 pe-2 [scrollbar-gutter:stable]">
               {hits.length === 0 && (
-                <li className="px-5 py-8 text-center text-[14px] text-ink-mute">{c.none}</li>
+                <li className="px-5 py-8 text-center text-body text-ink-mute">{c.none}</li>
               )}
               {hits.map((h, i) => {
                 const on = i === index;
@@ -283,10 +283,10 @@ export function QuickJump({ screens, events, records = [], compact }: {
                       /* The section is named once, on the group, rather than
                          on every row: there is only ever one of them, so a
                          chip per line is the same word four times. */
-                      <p className="flex items-center gap-2 px-5 pb-1 pt-3 text-[11px] tracking-[.14em] text-ink-mute">
+                      <p className="flex items-center gap-2 px-5 pb-1 pt-3 text-micro tracking-[.14em] text-ink-mute">
                         <span>{heading[h.kind]}</span>
                         {h.kind === 'section' && h.note && (
-                          <span className="rounded-lg bg-surface-200 px-2 py-0.5 text-[11.5px] tracking-normal text-ink-soft">{h.note}</span>
+                          <span className="rounded-lg bg-surface-200 px-2 py-0.5 text-micro tracking-normal text-ink-soft">{h.note}</span>
                         )}
                       </p>
                     )}
@@ -294,7 +294,7 @@ export function QuickJump({ screens, events, records = [], compact }: {
                       id={`jump-${i}`} role="option" aria-selected={on} type="button"
                       onMouseEnter={() => setIndex(i)} onClick={() => go(h)}
                       className={cn(
-                        'flex min-h-[44px] w-full items-center gap-3 px-5 text-start text-[14.5px] transition-colors',
+                        'flex min-h-[44px] w-full items-center gap-3 px-5 text-start text-body transition-colors',
                         on ? 'bg-accent-wash text-ink' : 'text-ink-soft',
                       )}
                     >
@@ -309,7 +309,7 @@ export function QuickJump({ screens, events, records = [], compact }: {
 
                       {h.note && h.kind !== 'section' && (
                         <span className={cn(
-                          'shrink-0 text-[12.5px] text-ink-mute',
+                          'shrink-0 text-meta text-ink-mute',
                           /* A date lines up in a column; a phone number or a
                              category is prose and reads worse in figures. */
                           h.kind === 'event' || h.kind === 'recent' ? 'tabular-nums' : '',
@@ -324,7 +324,7 @@ export function QuickJump({ screens, events, records = [], compact }: {
               })}
             </ul>
 
-            <div className="hidden border-t border-line px-5 py-2 text-[11.5px] text-ink-mute sm:block">
+            <div className="hidden border-t border-line px-5 py-2 text-micro text-ink-mute sm:block">
               <p>{c.hint}</p>
               <p className="mt-0.5">{c.hintTwo}</p>
             </div>

@@ -108,11 +108,11 @@ export function EventDetails({ event }: { event: EventCore }) {
          vanish the moment it is used. */
       <section id="event-details" className="card scroll-mt-24">
         <form action={action} noValidate>
-          <h2 className="font-display text-[18px] font-semibold text-ink">{c.edit}</h2>
+          <h2 className="font-display text-subhead font-semibold text-ink">{c.edit}</h2>
           <input type="hidden" name="client_id" value={event.id} />
 
           {state && !state.ok && state.error && (
-            <p role="alert" className="mt-4 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-3 text-[14.5px] text-bad">
+            <p role="alert" className="mt-4 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-3 text-body text-bad">
               {state.error}
             </p>
           )}
@@ -167,11 +167,11 @@ export function EventDetails({ event }: { event: EventCore }) {
        it and asked for a rename that already existed. */
     <section id="event-details" className="card scroll-mt-24">
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <h2 className="font-display text-[18px] font-semibold text-ink">{c.details}</h2>
+        <h2 className="font-display text-subhead font-semibold text-ink">{c.details}</h2>
         <button
           type="button"
           onClick={() => setEditing(true)}
-          className="inline-flex items-center gap-1.5 text-[13.5px] text-ink-mute transition hover:text-accent"
+          className="inline-flex items-center gap-1.5 text-body text-ink-mute transition hover:text-accent"
         >
           <Pencil size={14} aria-hidden strokeWidth={1.5} />
           {c.edit}
@@ -186,7 +186,7 @@ export function EventDetails({ event }: { event: EventCore }) {
         <button
           type="button"
           onClick={() => setEditing(true)}
-          className="mt-5 inline-flex items-center gap-2 rounded-xl2 border border-dashed border-line-strong px-4 py-3 text-[14.5px] text-ink-soft transition hover:border-accent/50 hover:text-accent"
+          className="mt-5 inline-flex items-center gap-2 rounded-xl2 border border-dashed border-line-strong px-4 py-3 text-body text-ink-soft transition hover:border-accent/50 hover:text-accent"
         >
           <CalendarPlus size={16} aria-hidden strokeWidth={1.5} />
           {c.setDate}
@@ -196,17 +196,17 @@ export function EventDetails({ event }: { event: EventCore }) {
           {left > 1 ? (
             <>
               <span className="font-display text-[40px] font-semibold leading-none text-ink tabular-nums">{left}</span>
-              <span className="text-[15px] text-ink-mute">{c.daysLeft}</span>
+              <span className="text-lead text-ink-mute">{c.daysLeft}</span>
             </>
           ) : (
-            <span className="font-display text-[24px] font-semibold leading-none text-ink">
+            <span className="font-display text-figure font-semibold leading-none text-ink">
               {left === 0 ? c.today : left === 1 ? c.tomorrow : `${c.passed} ${fill(c.daysAgo, { n: -left })}`}
             </span>
           )}
         </div>
       )}
 
-      <dl className="mt-6 space-y-3 text-[14.5px]">
+      <dl className="mt-6 space-y-3 text-body">
         <Line label={ui.newClient.kind}>{kind}</Line>
         <Line label={ui.newClient.date}>
           {formatDate(dateFmtFor(locale), event.event_date, c.noDateYet)}
@@ -240,7 +240,7 @@ export function EventDetails({ event }: { event: EventCore }) {
       {event.brief && (
         <div className="mt-6 border-t border-line pt-5">
           <p className="label">{c.contact.brief}</p>
-          <p className="whitespace-pre-line text-[14.5px] leading-relaxed text-ink-soft">{event.brief}</p>
+          <p className="whitespace-pre-line text-body leading-relaxed text-ink-soft">{event.brief}</p>
         </div>
       )}
     </section>

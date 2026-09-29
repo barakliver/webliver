@@ -73,7 +73,7 @@ export function BudgetPlanner({ clientId, current, target, guestEstimate, defaul
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-2 rounded-xl2 border border-line-strong bg-card px-4 py-2.5 text-[14px] font-medium text-ink transition hover:border-accent/40 hover:text-accent"
+        className="inline-flex items-center gap-2 rounded-xl2 border border-line-strong bg-card px-4 py-2.5 text-body font-medium text-ink transition hover:border-accent/40 hover:text-accent"
       >
         <PieChart size={16} aria-hidden strokeWidth={1.5} />
         {c.open}
@@ -98,27 +98,27 @@ export function BudgetPlanner({ clientId, current, target, guestEstimate, defaul
     <section className="card">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="font-display text-[18px] font-semibold text-ink">{c.title}</h2>
-          <p className="mt-1 max-w-prose2 text-[14px] leading-relaxed text-ink-soft">{c.sub}</p>
+          <h2 className="font-display text-subhead font-semibold text-ink">{c.title}</h2>
+          <p className="mt-1 max-w-prose2 text-body leading-relaxed text-ink-soft">{c.sub}</p>
         </div>
-        <button type="button" className="btn-quiet text-[13.5px]" onClick={() => setOpen(false)}>{c.close}</button>
+        <button type="button" className="btn-quiet text-body" onClick={() => setOpen(false)}>{c.close}</button>
       </div>
 
       <div className="mt-5 grid gap-4 sm:grid-cols-2">
-        <label className="text-[12.5px] text-ink-mute">
+        <label className="text-meta text-ink-mute">
           {c.total}
           <input type="number" inputMode="decimal" min={0} step="0.01" value={total}
             onChange={(e) => setTotal(e.target.value)} className="field mt-1 w-full" />
         </label>
-        <label className="text-[12.5px] text-ink-mute">
+        <label className="text-meta text-ink-mute">
           {c.guests}
           <input type="number" inputMode="numeric" min={0} value={guests}
             onChange={(e) => setGuests(e.target.value)} className="field mt-1 w-full" />
         </label>
       </div>
 
-      <h3 className="mt-6 text-[13px] font-semibold text-accent">{c.pick}</h3>
-      <p className="mt-1 max-w-prose2 text-[12.5px] leading-relaxed text-ink-mute">{c.pickHint}</p>
+      <h3 className="mt-6 text-body font-semibold text-accent">{c.pick}</h3>
+      <p className="mt-1 max-w-prose2 text-meta leading-relaxed text-ink-mute">{c.pickHint}</p>
       {/* One button per area that cycles through the three stances, with the
           word on it. A row of three radio buttons per area is thirty controls
           on a phone; this is ten. */}
@@ -129,10 +129,10 @@ export function BudgetPlanner({ clientId, current, target, guestEstimate, defaul
             <button
               key={k} type="button" onClick={() => cycle(k)}
               aria-pressed={s !== 'neutral'}
-              className={`inline-flex min-h-[40px] items-center gap-2 rounded-xl2 border px-3 text-[13.5px] transition ${stanceClass(s)}`}
+              className={`inline-flex min-h-[40px] items-center gap-2 rounded-xl2 border px-3 text-body transition ${stanceClass(s)}`}
             >
               <span>{c.categories[k]}</span>
-              <span className="text-[11.5px] opacity-80">{s === 'must' ? c.must : s === 'nice' ? c.nice : c.neutral}</span>
+              <span className="text-micro opacity-80">{s === 'must' ? c.must : s === 'nice' ? c.nice : c.neutral}</span>
             </button>
           );
         })}
@@ -141,9 +141,9 @@ export function BudgetPlanner({ clientId, current, target, guestEstimate, defaul
       {totalN > 0 && (
         <>
           <div className="mt-5 overflow-x-auto">
-            <table className="w-full text-[13.5px]">
+            <table className="w-full text-body">
               <thead>
-                <tr className="border-b border-line text-[12.5px] text-ink-mute">
+                <tr className="border-b border-line text-meta text-ink-mute">
                   <th scope="col" className="py-2 text-start font-medium">{c.colArea}</th>
                   <th scope="col" className="py-2 text-start font-medium">{c.colBase}</th>
                   <th scope="col" className="py-2 text-start font-medium">{c.colPct}</th>
@@ -158,26 +158,26 @@ export function BudgetPlanner({ clientId, current, target, guestEstimate, defaul
                     <td className="py-2.5 pe-3 tabular-nums text-ink-mute">{l.base}%</td>
                     <td className={`py-2.5 pe-3 tabular-nums ${l.moved ? 'font-semibold' : ''}`}>{l.pct}%</td>
                     <td className="py-2.5 pe-3 tabular-nums"><Money value={l.amount} /></td>
-                    <td className="hidden py-2.5 text-[12.5px] text-ink-mute sm:table-cell">{reason(l)}</td>
+                    <td className="hidden py-2.5 text-meta text-ink-mute sm:table-cell">{reason(l)}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
           {alloc.perHead !== null && (
-            <p className="mt-3 text-[13.5px] text-ink-soft">{fill(c.perHead, { n: ils(alloc.perHead) })}</p>
+            <p className="mt-3 text-body text-ink-soft">{fill(c.perHead, { n: ils(alloc.perHead) })}</p>
           )}
-          <p className="mt-2 max-w-prose2 text-[12.5px] leading-relaxed text-ink-mute">{c.basis}</p>
+          <p className="mt-2 max-w-prose2 text-meta leading-relaxed text-ink-mute">{c.basis}</p>
         </>
       )}
 
       {result && !result.ok && (
-        <p role="alert" className="mt-4 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+        <p role="alert" className="mt-4 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-body text-bad">
           {result.error ?? c.failed}
         </p>
       )}
       {result?.ok && (
-        <p role="status" className="mt-4 inline-flex items-center gap-2 rounded-xl2 border border-ok/30 bg-ok-wash px-4 py-2.5 text-[14px] text-ok">
+        <p role="status" className="mt-4 inline-flex items-center gap-2 rounded-xl2 border border-ok/30 bg-ok-wash px-4 py-2.5 text-body text-ok">
           <Check size={15} aria-hidden strokeWidth={1.5} />
           {c.saved}
         </p>

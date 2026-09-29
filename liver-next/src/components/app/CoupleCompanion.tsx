@@ -30,7 +30,7 @@ export function CoupleCompanion({ copy }: { copy: CompanionCopy }) {
       copy={copy}
       endpoint="/api/companion"
       icon={MessageCircleQuestion}
-      subtitle={<p className="mt-0.5 text-[12.5px] text-ink-mute">{copy.sub}</p>}
+      subtitle={<p className="mt-0.5 text-meta text-ink-mute">{copy.sub}</p>}
       maxChars={1200}
       maxTurns={16}
       /* Above the phone's bottom bar, in the corner the producer's assistant

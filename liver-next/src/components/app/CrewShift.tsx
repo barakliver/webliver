@@ -12,7 +12,7 @@ import type { CrewSlot } from '@/lib/crewNeeds';
 function Card({ title, icon, children }: { title: string; icon: React.ReactNode; children: React.ReactNode }) {
   return (
     <section className="card p-4 sm:p-5">
-      <h3 className="flex items-center gap-2 font-display text-[17px] font-semibold text-ink">
+      <h3 className="flex items-center gap-2 font-display text-head font-semibold text-ink">
         {icon}{title}
       </h3>
       <div className="mt-3">{children}</div>
@@ -47,18 +47,18 @@ export function CrewShift({ detail, today }: { detail: ShiftDetail; today: strin
     <div className="space-y-4">
       <Link
         href="/app/shifts"
-        className="inline-flex items-center gap-1.5 text-[13.5px] text-ink-soft transition-colors hover:text-ink"
+        className="inline-flex items-center gap-1.5 text-body text-ink-soft transition-colors hover:text-ink"
       >
         <ChevronRight size={15} aria-hidden strokeWidth={1.5} className="chev-back" />
         {c.shiftBack}
       </Link>
 
       <header>
-        <h2 className="font-display text-[24px] font-semibold text-ink">{event.name}</h2>
-        <p className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-[14px] text-ink-soft">
+        <h2 className="font-display text-figure font-semibold text-ink">{event.name}</h2>
+        <p className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-body text-ink-soft">
           <span>{event.date ? fmt.format(new Date(event.date)) : c.shiftNoDate}</span>
           {isToday && (
-            <span className="rounded-xl2 bg-accent-wash px-2 py-0.5 text-[12.5px] text-accent">
+            <span className="rounded-xl2 bg-accent-wash px-2 py-0.5 text-meta text-accent">
               {c.shiftToday}
             </span>
           )}
@@ -69,51 +69,51 @@ export function CrewShift({ detail, today }: { detail: ShiftDetail; today: strin
       <section className="card grid gap-4 p-4 sm:grid-cols-3 sm:p-5">
         <div>
           <p className="eyebrow">{c.shiftWhere}</p>
-          <p className="mt-1 flex items-center gap-1.5 text-[15px] text-ink">
+          <p className="mt-1 flex items-center gap-1.5 text-lead text-ink">
             <MapPin size={15} className="text-ink-mute" aria-hidden strokeWidth={1.5} />
             {event.venue || c.shiftNoVenue}
           </p>
         </div>
         <div>
           <p className="eyebrow">{c.shiftMyCall}</p>
-          <p className="mt-1 flex items-center gap-1.5 text-[15px] text-ink">
+          <p className="mt-1 flex items-center gap-1.5 text-lead text-ink">
             <Clock size={15} className="text-ink-mute" aria-hidden strokeWidth={1.5} />
             {mine.callTime ? <Ltr>{hhmm(mine.callTime)}</Ltr> : c.noTime}
           </p>
         </div>
         <div>
           <p className="eyebrow">{c.shiftMyRole}</p>
-          <p className="mt-1 text-[15px] text-ink">{nameOf(mine.slot, mine.role) || c.slotNone}</p>
+          <p className="mt-1 text-lead text-ink">{nameOf(mine.slot, mine.role) || c.slotNone}</p>
         </div>
       </section>
 
       {mine.note && (
         <Card title={c.shiftMyNote} icon={<></>}>
-          <p className="whitespace-pre-line text-[14.5px] leading-relaxed text-ink">{mine.note}</p>
+          <p className="whitespace-pre-line text-body leading-relaxed text-ink">{mine.note}</p>
         </Card>
       )}
 
       <Card title={c.shiftNotes} icon={<></>}>
         {event.crewNote ? (
-          <p className="whitespace-pre-line text-[14.5px] leading-relaxed text-ink">{event.crewNote}</p>
+          <p className="whitespace-pre-line text-body leading-relaxed text-ink">{event.crewNote}</p>
         ) : (
-          <p className="text-[14px] text-ink-mute">{c.shiftNoNotes}</p>
+          <p className="text-body text-ink-mute">{c.shiftNoNotes}</p>
         )}
       </Card>
 
       <Card title={c.shiftSchedule} icon={<Clock size={17} className="text-ink-mute" aria-hidden strokeWidth={1.5} />}>
         {schedule.length === 0 ? (
-          <p className="text-[14px] text-ink-mute">{c.shiftNoSchedule}</p>
+          <p className="text-body text-ink-mute">{c.shiftNoSchedule}</p>
         ) : (
           <ol className="list-none space-y-2 p-0">
             {schedule.map((r) => (
               <li key={r.id} className="flex gap-3 border-b border-line-soft pb-2 last:border-0 last:pb-0">
-                <span className="w-14 shrink-0 tabular-nums text-[14px] text-ink-soft">
+                <span className="w-14 shrink-0 tabular-nums text-body text-ink-soft">
                   <Ltr>{hhmm(r.at)}</Ltr>
                 </span>
                 <span className="min-w-0">
-                  <span className="block text-[14.5px] text-ink">{r.title}</span>
-                  {r.note && <span className="mt-0.5 block text-[13px] text-ink-mute">{r.note}</span>}
+                  <span className="block text-body text-ink">{r.title}</span>
+                  {r.note && <span className="mt-0.5 block text-body text-ink-mute">{r.note}</span>}
                 </span>
               </li>
             ))}
@@ -123,23 +123,23 @@ export function CrewShift({ detail, today }: { detail: ShiftDetail; today: strin
 
       <Card title={c.shiftKit} icon={<Package size={17} className="text-ink-mute" aria-hidden strokeWidth={1.5} />}>
         {kit.length === 0 ? (
-          <p className="text-[14px] text-ink-mute">{c.shiftNoKit}</p>
+          <p className="text-body text-ink-mute">{c.shiftNoKit}</p>
         ) : (
           <ul className="list-none space-y-2 p-0">
             {kit.map((k) => (
               <li key={k.id} className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                <span className="text-[14.5px] text-ink">{k.item}</span>
+                <span className="text-body text-ink">{k.item}</span>
                 {k.needed && !k.sorted && (
-                  <span className="rounded-xl2 bg-warn-wash px-2 py-0.5 text-[12.5px] text-warn">
+                  <span className="rounded-xl2 bg-warn-wash px-2 py-0.5 text-meta text-warn">
                     {c.shiftKitNeeded}
                   </span>
                 )}
                 {k.sorted && (
-                  <span className="rounded-xl2 bg-good-wash px-2 py-0.5 text-[12.5px] text-good">
+                  <span className="rounded-xl2 bg-good-wash px-2 py-0.5 text-meta text-good">
                     {c.shiftKitSorted}
                   </span>
                 )}
-                {k.note && <span className="text-[13px] text-ink-mute">{k.note}</span>}
+                {k.note && <span className="text-body text-ink-mute">{k.note}</span>}
               </li>
             ))}
           </ul>
@@ -148,13 +148,13 @@ export function CrewShift({ detail, today }: { detail: ShiftDetail; today: strin
 
       <Card title={c.shiftWho} icon={<Users size={17} className="text-ink-mute" aria-hidden strokeWidth={1.5} />}>
         {crew.length <= 1 ? (
-          <p className="text-[14px] text-ink-mute">{c.shiftAlone}</p>
+          <p className="text-body text-ink-mute">{c.shiftAlone}</p>
         ) : (
           <ul className="list-none space-y-1.5 p-0">
             {crew.map((p, i) => (
-              <li key={`${p.name}-${i}`} className="flex flex-wrap items-baseline gap-x-3 text-[14.5px]">
+              <li key={`${p.name}-${i}`} className="flex flex-wrap items-baseline gap-x-3 text-body">
                 <span className="text-ink">{p.name}</span>
-                <span className="text-[13px] text-ink-mute">{nameOf(p.slot, p.role)}</span>
+                <span className="text-body text-ink-mute">{nameOf(p.slot, p.role)}</span>
               </li>
             ))}
           </ul>

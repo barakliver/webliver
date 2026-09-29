@@ -72,14 +72,14 @@ export function MeetingDrawer({ clientId, logs, own = [] }: {
         type="button"
         onClick={() => { setAdding(on ? null : key); setEditing(null); }}
         aria-pressed={on}
-        className={`rounded-button border px-4 py-2 text-start text-[13.5px] transition ${
+        className={`rounded-button border px-4 py-2 text-start text-body transition ${
           on
             ? 'border-accent bg-accent-wash text-ink'
             : 'border-line-strong bg-card text-ink-soft hover:border-accent/40 hover:text-ink'
         }`}
       >
         <span className="block text-ink">{t.title}</span>
-        {t.when && <span className="block text-[12px] text-ink-mute">{t.when}</span>}
+        {t.when && <span className="block text-meta text-ink-mute">{t.when}</span>}
       </button>
     );
   };
@@ -88,10 +88,10 @@ export function MeetingDrawer({ clientId, logs, own = [] }: {
     <section className="card">
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <div>
-          <h2 className="font-display text-[22px] font-semibold text-ink">{c.title}</h2>
-          <p className="mt-1 text-[13.5px] text-ink-mute">{c.sub}</p>
+          <h2 className="font-display text-panel font-semibold text-ink">{c.title}</h2>
+          <p className="mt-1 text-body text-ink-mute">{c.sub}</p>
         </div>
-        <Link href="/app/knowledge?shelf=templates" className="text-[13.5px] text-accent hover:underline">
+        <Link href="/app/knowledge?shelf=templates" className="text-body text-accent hover:underline">
           {c.buildOwn}
         </Link>
       </div>
@@ -106,8 +106,8 @@ export function MeetingDrawer({ clientId, logs, own = [] }: {
       >
         <PenLine size={18} aria-hidden strokeWidth={1.5} className="shrink-0 text-accent" />
         <span className="min-w-0">
-          <span className="block text-[14.5px] text-ink">{c.blank}</span>
-          <span className="block text-[12.5px] text-ink-mute">{c.blankWhen}</span>
+          <span className="block text-body text-ink">{c.blank}</span>
+          <span className="block text-meta text-ink-mute">{c.blankWhen}</span>
         </span>
       </Link>
 
@@ -136,7 +136,7 @@ export function MeetingDrawer({ clientId, logs, own = [] }: {
       )}
 
       {logs.length === 0 && !adding ? (
-        <p className="mt-6 text-[14.5px] text-ink-mute">{c.none}</p>
+        <p className="mt-6 text-body text-ink-mute">{c.none}</p>
       ) : (
         <ul className="mt-6 divide-y divide-line border-t border-line">
           {logs.map((log) => {
@@ -147,10 +147,10 @@ export function MeetingDrawer({ clientId, logs, own = [] }: {
             const note = log.kind === 'note';
             const heading = (
               <>
-                <p className="text-[15px] text-ink">
+                <p className="text-lead text-ink">
                   {log.title || (note ? c.blank : t?.title) || c.title}
                 </p>
-                <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-[12.5px] text-ink-mute">
+                <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-meta text-ink-mute">
                   {log.held_on && (
                     <span className="inline-flex items-center gap-1">
                       <CalendarDays size={13} aria-hidden strokeWidth={1.5} />
@@ -188,7 +188,7 @@ export function MeetingDrawer({ clientId, logs, own = [] }: {
                     {note ? (
                       <Link
                         href={`/app/clients/${clientId}/note?id=${log.id}`}
-                        className="btn-quiet px-3 text-[13px]"
+                        className="btn-quiet px-3 text-body"
                       >
                         {c.openNote}
                       </Link>
@@ -213,7 +213,7 @@ export function MeetingDrawer({ clientId, logs, own = [] }: {
                 </div>
 
                 {(!on || note) && log.summary && (
-                  <p className="mt-2 line-clamp-3 whitespace-pre-line text-[13.5px] text-ink-soft">
+                  <p className="mt-2 line-clamp-3 whitespace-pre-line text-body text-ink-soft">
                     {log.summary}
                   </p>
                 )}
@@ -228,9 +228,9 @@ export function MeetingDrawer({ clientId, logs, own = [] }: {
                     rather than clamped, since there is no form to open. */}
                 {on && !t && !note && (
                   <div className="mt-3 rounded-card-sm bg-surface-100 p-4">
-                    <p className="text-[13px] text-ink-mute">{c.noForm}</p>
+                    <p className="text-body text-ink-mute">{c.noForm}</p>
                     {log.summary && (
-                      <p className="mt-2 whitespace-pre-line text-[14px] text-ink">{log.summary}</p>
+                      <p className="mt-2 whitespace-pre-line text-body text-ink">{log.summary}</p>
                     )}
                   </div>
                 )}
@@ -288,9 +288,9 @@ function Form({ clientId, template, log, onDone }: {
 
   return (
     <div className="rounded-card-sm bg-surface-100 p-4">
-      {template.blurb && <p className="text-[13.5px] text-ink-soft">{template.blurb}</p>}
+      {template.blurb && <p className="text-body text-ink-soft">{template.blurb}</p>}
 
-      <label className="mt-4 block text-[12.5px] text-ink-mute">
+      <label className="mt-4 block text-meta text-ink-mute">
         {c.held}
         <input
           type="date" value={heldOn} onChange={(e) => setHeldOn(e.target.value)}
@@ -300,7 +300,7 @@ function Form({ clientId, template, log, onDone }: {
 
       {template.sections.map((section, i) => (
         <fieldset key={`${section.title}-${i}`} className="mt-5 border-0 p-0">
-          {section.title && <legend className="text-[13px] text-accent">{section.title}</legend>}
+          {section.title && <legend className="text-body text-accent">{section.title}</legend>}
           <div className="mt-2 grid gap-3 sm:grid-cols-2">
             {section.fields.map((f) => (
               <Input key={f.id} field={f} value={answers[f.id]} onChange={(v) => set(f.id, v)} />
@@ -309,30 +309,30 @@ function Form({ clientId, template, log, onDone }: {
         </fieldset>
       ))}
 
-      <label className="mt-5 flex min-h-[44px] cursor-pointer items-center gap-2.5 text-[14px] text-ink-soft">
+      <label className="mt-5 flex min-h-[44px] cursor-pointer items-center gap-2.5 text-body text-ink-soft">
         <input
           type="checkbox" checked={shared} onChange={(e) => setShared(e.target.checked)}
           className="size-5 rounded border-line-strong accent-accent"
         />
         {c.shareWithCouple}
       </label>
-      <p className="text-[12.5px] text-ink-mute">{c.shareHint}</p>
+      <p className="text-meta text-ink-mute">{c.shareHint}</p>
 
       {error && (
-        <p role="alert" className="mt-3 rounded-control border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+        <p role="alert" className="mt-3 rounded-control border border-bad/25 bg-bad-wash px-4 py-2.5 text-body text-bad">
           {error}
         </p>
       )}
 
       <div className="mt-5 flex flex-wrap items-center gap-2">
-        <span className="text-[12.5px] text-ink-mute">{fill(c.answered, { filled, total })}</span>
+        <span className="text-meta text-ink-mute">{fill(c.answered, { filled, total })}</span>
         <span className="ms-auto flex flex-wrap items-center gap-2">
-          <button type="button" onClick={onDone} className="btn-quiet px-3 text-[14px]">{c.cancel}</button>
+          <button type="button" onClick={onDone} className="btn-quiet px-3 text-body">{c.cancel}</button>
           <button
             type="button"
             onClick={() => void submit(true)}
             disabled={busy !== null || filled === 0}
-            className="btn-quiet inline-flex items-center gap-1.5 px-3 text-[14px] disabled:opacity-50"
+            className="btn-quiet inline-flex items-center gap-1.5 px-3 text-body disabled:opacity-50"
           >
             <Sparkles size={15} aria-hidden strokeWidth={1.5} />
             {busy === 'model' ? c.summarising : c.summarise}
@@ -350,14 +350,14 @@ function Form({ clientId, template, log, onDone }: {
 
       {summary ? (
         <div className="mt-5 border-t border-line pt-4">
-          <p className="text-[11.5px] tracking-[.14em] text-ink-mute">{c.summary}</p>
-          <p className="mt-2 whitespace-pre-line text-[14px] text-ink">{summary}</p>
+          <p className="text-micro tracking-[.14em] text-ink-mute">{c.summary}</p>
+          <p className="mt-2 whitespace-pre-line text-body text-ink">{summary}</p>
           {by === 'model' && (
-            <p className="mt-2 text-[12.5px] text-ink-mute">{c.summaryByModel}</p>
+            <p className="mt-2 text-meta text-ink-mute">{c.summaryByModel}</p>
           )}
         </div>
       ) : (
-        <p className="mt-5 border-t border-line pt-4 text-[13px] text-ink-mute">{c.summaryNone}</p>
+        <p className="mt-5 border-t border-line pt-4 text-body text-ink-mute">{c.summaryNone}</p>
       )}
     </div>
   );
@@ -369,7 +369,7 @@ function Input({ field, value, onChange }: {
   const id = `mf-${field.id}`;
   const common = 'field w-full';
   const label = (
-    <label htmlFor={id} className="block text-[12.5px] text-ink-mute">
+    <label htmlFor={id} className="block text-meta text-ink-mute">
       {field.label}
     </label>
   );
@@ -397,7 +397,7 @@ function Input({ field, value, onChange }: {
               key={String(v)} type="button"
               onClick={() => onChange(value === v ? undefined : v)}
               aria-pressed={value === v}
-              className={`min-h-[44px] flex-1 rounded-control border text-[14px] transition sm:min-h-[38px] ${
+              className={`min-h-[44px] flex-1 rounded-control border text-body transition sm:min-h-[38px] ${
                 value === v
                   ? 'border-accent bg-accent-wash text-ink'
                   : 'border-line-strong bg-card text-ink-soft hover:text-ink'

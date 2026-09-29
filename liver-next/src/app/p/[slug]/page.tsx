@@ -81,7 +81,7 @@ export default async function ProducerEntryPage({ params }: { params: Promise<{ 
       <main id="main" className="flex min-h-dvh items-center justify-center px-5 py-14">
         <div className="card w-full max-w-md text-center">
           <h1 className="font-display text-title font-semibold text-ink">{c.gone}</h1>
-          <p className="mt-3 text-[15.5px] leading-relaxed text-ink-soft">{c.goneBody}</p>
+          <p className="mt-3 text-lead leading-relaxed text-ink-soft">{c.goneBody}</p>
         </div>
       </main>
     );
@@ -113,10 +113,10 @@ export default async function ProducerEntryPage({ params }: { params: Promise<{ 
         ) : (
           <p className="font-display text-[34px] font-semibold leading-tight text-ink">{b.brand}</p>
         )}
-        {b.tagline && <p className="mt-2 text-[14.5px] text-ink-mute">{b.tagline}</p>}
+        {b.tagline && <p className="mt-2 text-body text-ink-mute">{b.tagline}</p>}
         <hr className="rule-gold mx-auto mt-8 w-24" />
         <p className="eyebrow mt-8">{c.eyebrow}</p>
-        <p className="measure mx-auto mt-3 text-[15.5px] leading-relaxed text-ink-soft">{c.sub}</p>
+        <p className="measure mx-auto mt-3 text-lead leading-relaxed text-ink-soft">{c.sub}</p>
         <div className="mt-8 flex flex-wrap justify-center gap-2.5">
           <Link href="/login" className="btn-primary">{c.enter}</Link>
           {wa && (

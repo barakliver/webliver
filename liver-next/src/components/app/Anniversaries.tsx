@@ -46,14 +46,14 @@ export function Anniversaries({ items }: { items: Anniversary[] }) {
         <CalendarHeart size={16} strokeWidth={1.5} aria-hidden />
         <h2 id="anniv" className="eyebrow">{c.anniversary}</h2>
       </div>
-      <p className="mt-2 text-[13px] text-ink-mute">{c.anniversarySub}</p>
+      <p className="mt-2 text-body text-ink-mute">{c.anniversarySub}</p>
 
       <ul className="mt-4 divide-y divide-line border-t border-line">
         {items.map((a) => (
           <li key={a.id} className="flex flex-wrap items-center justify-between gap-2 py-3">
             <Link href={`/app/clients/${a.clientId}`} className="min-w-0 flex-1 text-start">
-              <p className="truncate text-[15px] text-ink">{a.couple}</p>
-              <p className="mt-0.5 text-[12.5px] text-ink-mute">
+              <p className="truncate text-lead text-ink">{a.couple}</p>
+              <p className="mt-0.5 text-meta text-ink-mute">
                 {/* The date is the wedding's, not the reminder's. Without
                     saying so, "tomorrow · 2 September 2025" reads as a wedding
                     happening tomorrow in a year that has passed. */}
@@ -65,7 +65,7 @@ export function Anniversaries({ items }: { items: Anniversary[] }) {
               {a.emails.length > 0 && (
                 <a
                   href={greeting(a, locale)}
-                  className="btn-quiet inline-flex min-h-[44px] items-center gap-1.5 px-2 text-[13px] sm:min-h-0 sm:py-1"
+                  className="btn-quiet inline-flex min-h-[44px] items-center gap-1.5 px-2 text-body sm:min-h-0 sm:py-1"
                 >
                   <Mail size={14} aria-hidden strokeWidth={1.5} />
                   {c.greet}

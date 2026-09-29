@@ -140,7 +140,7 @@ export function GameTable({ token, names, producer, deck }: GameTableProps) {
      should have been. */
   return (
     <div className="relative flex h-[100svh] flex-col overflow-hidden bg-dark px-4 pb-[calc(env(safe-area-inset-bottom,0px)+1rem)] pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] text-surface">
-      <header className="mx-auto flex w-full max-w-md items-center justify-between gap-3 text-[11px] uppercase tracking-[.16em] text-surface/55">
+      <header className="mx-auto flex w-full max-w-md items-center justify-between gap-3 text-micro uppercase tracking-[.16em] text-surface/55">
         <button type="button" onClick={() => setScreen('door')} className="rounded-xl2 px-2 py-1 hover:text-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-light">
           {game.switchSide}
         </button>
@@ -177,7 +177,7 @@ export function GameTable({ token, names, producer, deck }: GameTableProps) {
                   style={{ width: `${progressOf(at, deck.length)}%` }}
                 />
               </div>
-              <p className="mt-2 text-center text-[11px] tracking-[.14em] text-surface/45">
+              <p className="mt-2 text-center text-micro tracking-[.14em] text-surface/45">
                 <Ltr>{at + 1} / {deck.length}</Ltr>
               </p>
             </div>
@@ -186,7 +186,7 @@ export function GameTable({ token, names, producer, deck }: GameTableProps) {
               <button
                 type="button"
                 onClick={open ? advance : () => setOpen(true)}
-                className="flex-1 rounded-xl2 bg-surface px-5 py-3.5 text-[15px] font-semibold text-dark transition hover:bg-surface/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-light"
+                className="flex-1 rounded-xl2 bg-surface px-5 py-3.5 text-lead font-semibold text-dark transition hover:bg-surface/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-light"
               >
                 {open ? game.next : game.tapToOpen}
               </button>
@@ -197,7 +197,7 @@ export function GameTable({ token, names, producer, deck }: GameTableProps) {
                 type="button"
                 onClick={() => { setOpen(true); setPadOpen(true); }}
                 aria-label={hasNote ? game.noteEdit : game.noteAdd}
-                className={`inline-flex shrink-0 items-center gap-1.5 rounded-xl2 border px-4 py-3.5 text-[14px] font-medium transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-light ${hasNote ? 'border-accent-light bg-accent-light/15 text-accent-light' : 'border-surface/25 text-surface/75 hover:border-surface/50'}`}
+                className={`inline-flex shrink-0 items-center gap-1.5 rounded-xl2 border px-4 py-3.5 text-body font-medium transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-light ${hasNote ? 'border-accent-light bg-accent-light/15 text-accent-light' : 'border-surface/25 text-surface/75 hover:border-surface/50'}`}
               >
                 <NotebookPen size={15} strokeWidth={1.5} aria-hidden />
                 {game.noteAdd}
@@ -244,18 +244,18 @@ function Door({ names, producer, onPick, onRules }: {
   return (
     <div className="flex min-h-[100svh] flex-col justify-center bg-dark px-6 py-12 text-surface">
       <div className="mx-auto w-full max-w-md">
-        <p className="text-[11px] uppercase tracking-[.22em] text-accent-light">{game.kicker}</p>
+        <p className="text-micro uppercase tracking-[.22em] text-accent-light">{game.kicker}</p>
         <h1 className="mt-3 font-display text-3xl font-medium leading-tight">{game.title}</h1>
-        <p className="mt-3 text-[15px] leading-relaxed text-surface/70">{game.intro}</p>
+        <p className="mt-3 text-lead leading-relaxed text-surface/70">{game.intro}</p>
 
-        <p className="mt-9 text-[13px] font-semibold tracking-wide text-surface/55">{game.who}</p>
+        <p className="mt-9 text-body font-semibold tracking-wide text-surface/55">{game.who}</p>
         <div className="mt-3 grid gap-3">
           {([[a, 'a'], [b, 'b']] as const).map(([label, which]) => (
             <button
               key={which}
               type="button"
               onClick={() => onPick(which)}
-              className="w-full rounded-xl2 border border-surface/20 bg-surface/5 px-5 py-4 text-start text-[17px] font-medium transition hover:border-accent-light hover:bg-surface/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-light"
+              className="w-full rounded-xl2 border border-surface/20 bg-surface/5 px-5 py-4 text-start text-head font-medium transition hover:border-accent-light hover:bg-surface/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-light"
             >
               {label}
             </button>
@@ -265,12 +265,12 @@ function Door({ names, producer, onPick, onRules }: {
         <button
           type="button"
           onClick={onRules}
-          className="mt-7 text-[13px] text-surface/60 underline underline-offset-4 hover:text-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-light"
+          className="mt-7 text-body text-surface/60 underline underline-offset-4 hover:text-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-light"
         >
           {game.rulesLink}
         </button>
 
-        <p className="mt-12 text-[11px] uppercase tracking-[.18em] text-surface/35">{producer}</p>
+        <p className="mt-12 text-micro uppercase tracking-[.18em] text-surface/35">{producer}</p>
       </div>
     </div>
   );
@@ -300,15 +300,15 @@ function Rules({ onBack }: { onBack: () => void }) {
         <div className="mt-9 space-y-7">
           {game.rules.map((r) => (
             <section key={r.h}>
-              <h2 className="text-[15px] font-semibold text-accent-light">{r.h}</h2>
-              <p className="mt-1.5 text-[15px] leading-relaxed text-surface/75">{r.p}</p>
+              <h2 className="text-lead font-semibold text-accent-light">{r.h}</h2>
+              <p className="mt-1.5 text-lead leading-relaxed text-surface/75">{r.p}</p>
             </section>
           ))}
         </div>
         <button
           type="button"
           onClick={onBack}
-          className="mt-10 w-full rounded-xl2 bg-surface px-5 py-3.5 text-[15px] font-semibold text-dark transition hover:bg-surface/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-light"
+          className="mt-10 w-full rounded-xl2 bg-surface px-5 py-3.5 text-lead font-semibold text-dark transition hover:bg-surface/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-light"
         >
           {game.rulesBack}
         </button>
@@ -378,7 +378,7 @@ function Finished({ onRestart }: { onRestart: () => void }) {
   return (
     <div className="mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center text-center">
       <h2 className="font-display text-3xl font-medium">{game.done}</h2>
-      <p className="mt-3 text-[15px] leading-relaxed text-surface/70">{game.doneBody}</p>
+      <p className="mt-3 text-lead leading-relaxed text-surface/70">{game.doneBody}</p>
       {/* His contact card, card 103, which in the printed box is the one at the
           bottom of the pile. Here rather than in the deck for the same reason:
           it is the card you reach after the last one, not a turn in the game.
@@ -395,7 +395,7 @@ function Finished({ onRestart }: { onRestart: () => void }) {
       <button
         type="button"
         onClick={onRestart}
-        className="mt-8 w-full rounded-xl2 bg-surface px-5 py-3.5 text-[15px] font-semibold text-dark transition hover:bg-surface/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-light"
+        className="mt-8 w-full rounded-xl2 bg-surface px-5 py-3.5 text-lead font-semibold text-dark transition hover:bg-surface/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-light"
       >
         {game.restart}
       </button>
@@ -493,7 +493,7 @@ function NotePad({ card, value, onClose, onSave }: {
         className="relative mx-auto w-full max-w-md rounded-xl2 bg-surface p-5 text-ink shadow-pop"
       >
         <div className="flex items-start justify-between gap-3">
-          <p className="text-[13px] leading-snug text-ink-soft">{altOf(card)}</p>
+          <p className="text-body leading-snug text-ink-soft">{altOf(card)}</p>
           <button
             type="button" onClick={onClose} aria-label={game.noteClose}
             className="-me-1 -mt-1 shrink-0 rounded-xl2 p-1.5 text-ink-mute hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
@@ -511,7 +511,7 @@ function NotePad({ card, value, onClose, onSave }: {
         />
 
         {failed && (
-          <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+          <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-body text-bad">
             {game.noteTrouble}
           </p>
         )}
@@ -532,7 +532,7 @@ function NotePad({ card, value, onClose, onSave }: {
               {game.noteClear}
             </button>
           )}
-          {saved && <span className="text-[13.5px] text-ok">{game.noteSaved}</span>}
+          {saved && <span className="text-body text-ok">{game.noteSaved}</span>}
         </div>
       </div>
     </div>
@@ -563,26 +563,26 @@ function Notebook({ deck, notes, onBack, onGo }: {
     <div className="min-h-[100svh] bg-dark px-6 py-12 text-surface">
       <div className="mx-auto w-full max-w-md">
         <h1 className="font-display text-3xl font-medium">{game.notebook}</h1>
-        <p className="mt-2 text-[13px] text-surface/55">{game.notebookMine}</p>
+        <p className="mt-2 text-body text-surface/55">{game.notebookMine}</p>
 
         {written.length === 0 ? (
           <div className="mt-10">
-            <p className="text-[17px] font-medium">{game.notebookEmpty}</p>
-            <p className="mt-2 text-[15px] leading-relaxed text-surface/70">{game.notebookEmptyBody}</p>
+            <p className="text-head font-medium">{game.notebookEmpty}</p>
+            <p className="mt-2 text-lead leading-relaxed text-surface/70">{game.notebookEmptyBody}</p>
           </div>
         ) : (
           <ul className="mt-8 space-y-6">
             {written.map(({ card, index, body }) => (
               <li key={card.id} className="border-t border-surface/15 pt-5">
-                <p className="text-[13px] leading-snug text-accent-light">{altOf(card)}</p>
+                <p className="text-body leading-snug text-accent-light">{altOf(card)}</p>
                 {/* Their own words, kept exactly as typed, line breaks and
                     all. `whitespace-pre-line` rather than a paragraph per
                     line: somebody writing three things under each other means
                     three things under each other. */}
-                <p className="mt-2 whitespace-pre-line text-[15px] leading-relaxed">{body}</p>
+                <p className="mt-2 whitespace-pre-line text-lead leading-relaxed">{body}</p>
                 <button
                   type="button" onClick={() => onGo(index)}
-                  className="mt-2 text-[13px] text-surface/60 underline underline-offset-4 hover:text-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-light"
+                  className="mt-2 text-body text-surface/60 underline underline-offset-4 hover:text-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-light"
                 >
                   {game.goToCard} <Ltr>{index + 1}</Ltr>
                 </button>
@@ -593,7 +593,7 @@ function Notebook({ deck, notes, onBack, onGo }: {
 
         <button
           type="button" onClick={onBack}
-          className="mt-10 w-full rounded-xl2 bg-surface px-5 py-3.5 text-[15px] font-semibold text-dark transition hover:bg-surface/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-light"
+          className="mt-10 w-full rounded-xl2 bg-surface px-5 py-3.5 text-lead font-semibold text-dark transition hover:bg-surface/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-light"
         >
           {game.notebookBack}
         </button>

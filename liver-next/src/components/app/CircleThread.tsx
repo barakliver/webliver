@@ -38,7 +38,7 @@ export function CircleThread({ post, replies, clientId, viewer }: {
 
   return (
     <div className="space-y-5">
-      <Link href="/app/portal/community" className="btn-quiet inline-flex items-center gap-1.5 px-0 text-[14px]">
+      <Link href="/app/portal/community" className="btn-quiet inline-flex items-center gap-1.5 px-0 text-body">
         <ArrowLeft size={16} aria-hidden strokeWidth={1.5} />
         {c.title}
       </Link>
@@ -46,16 +46,16 @@ export function CircleThread({ post, replies, clientId, viewer }: {
       <article className="card">
         <div className="flex flex-wrap items-start justify-between gap-2">
           <AuthorLine post={post} />
-          <span className="text-[12.5px] text-ink-mute">
+          <span className="text-meta text-ink-mute">
             <span aria-hidden>{CATEGORY_MARK[post.category as CircleCategory] ?? ''} </span>
             {c.categories[post.category as CircleCategory] ?? post.category}
           </span>
         </div>
-        <h1 className="mt-2 font-display text-[24px] font-semibold text-ink">{post.title}</h1>
-        <p className="mt-3 whitespace-pre-line text-[16px] leading-relaxed text-ink">{post.content}</p>
+        <h1 className="mt-2 font-display text-figure font-semibold text-ink">{post.title}</h1>
+        <p className="mt-3 whitespace-pre-line text-head leading-relaxed text-ink">{post.content}</p>
         <div className="mt-4 flex flex-wrap items-center gap-3">
           <VoteButton post={post} />
-          {post.upvotes > 0 && <span className="text-[12.5px] text-ink-mute">{count(c.upvotes, post.upvotes)}</span>}
+          {post.upvotes > 0 && <span className="text-meta text-ink-mute">{count(c.upvotes, post.upvotes)}</span>}
         </div>
       </article>
 
@@ -64,7 +64,7 @@ export function CircleThread({ post, replies, clientId, viewer }: {
           {replies.length === 0 ? c.reply.post : count(c.reply.count, replies.length)}
         </h2>
         {replies.length === 0 ? (
-          <p className="card text-[15px] text-ink-mute">{c.reply.none}</p>
+          <p className="card text-lead text-ink-mute">{c.reply.none}</p>
         ) : (
           <ul className="list-none space-y-3 p-0">
             {replies.map((r) => (
@@ -75,11 +75,11 @@ export function CircleThread({ post, replies, clientId, viewer }: {
                     <DeleteForm action={deleteCircleReply}>
                       <input type="hidden" name="id" value={r.id} />
                       <input type="hidden" name="post_id" value={post.id} />
-                      <button type="submit" className="btn-quiet px-2 text-[13px]">{c.remove}</button>
+                      <button type="submit" className="btn-quiet px-2 text-body">{c.remove}</button>
                     </DeleteForm>
                   )}
                 </div>
-                <p className="mt-2 whitespace-pre-line text-[15px] leading-relaxed text-ink">{r.content}</p>
+                <p className="mt-2 whitespace-pre-line text-lead leading-relaxed text-ink">{r.content}</p>
               </li>
             ))}
           </ul>
@@ -91,11 +91,11 @@ export function CircleThread({ post, replies, clientId, viewer }: {
         {clientId && <input type="hidden" name="client_id" value={clientId} />}
         <label className="sr-only" htmlFor="reply">{c.reply.post}</label>
         <textarea id="reply" name="content" required rows={4} className="field" placeholder={c.reply.placeholder} />
-        <label className="inline-flex min-h-[48px] cursor-pointer items-center gap-2.5 text-[14.5px] text-ink">
+        <label className="inline-flex min-h-[48px] cursor-pointer items-center gap-2.5 text-body text-ink">
           <input type="checkbox" name="is_anonymous" className="size-4" />
           {c.form.anonymous}
         </label>
-        {state && !state.ok && state.error && <p role="alert" className="text-[14px] text-bad">{state.error}</p>}
+        {state && !state.ok && state.error && <p role="alert" className="text-body text-bad">{state.error}</p>}
         <SendButton />
       </form>
     </div>

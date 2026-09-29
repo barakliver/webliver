@@ -90,7 +90,7 @@ export function NoticeBell({ notices, copy }: { notices: Notice[]; copy?: Notice
       >
         <Bell size={18} strokeWidth={1.5} aria-hidden />
         {unread > 0 && (
-          <span className="absolute -top-0.5 -end-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-bad px-1 text-[10.5px] font-semibold leading-none tabular-nums text-surface ring-2 ring-card">
+          <span className="absolute -top-0.5 -end-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-bad px-1 text-micro font-semibold leading-none tabular-nums text-surface ring-2 ring-card">
             {unread > 9 ? '9+' : unread}
           </span>
         )}
@@ -118,18 +118,18 @@ export function NoticeBell({ notices, copy }: { notices: Notice[]; copy?: Notice
           >
             <div className="flex items-center justify-between gap-2 border-b border-line px-4 py-3">
               <div className="flex items-baseline gap-2">
-                <b className="text-[14.5px] font-medium text-ink">{c.title}</b>
+                <b className="text-body font-medium text-ink">{c.title}</b>
                 {/* The count while there is one; the words "no new
                     notifications" the moment "mark all read" empties it,
                     so the header says what just happened. */}
-                <span className="text-[12.5px] tabular-nums text-ink-mute">
+                <span className="text-meta tabular-nums text-ink-mute">
                   {unread > 0 ? `${unread} ${c.unread}` : c.noneNew}
                 </span>
               </div>
               <div className="flex items-center gap-1">
                 {unread > 0 && (
                   <form action={markAllRead}>
-                    <button type="submit" className="btn-quiet inline-flex min-h-[36px] items-center gap-1.5 px-2 text-[12.5px]">
+                    <button type="submit" className="btn-quiet inline-flex min-h-[36px] items-center gap-1.5 px-2 text-meta">
                       <CheckCheck size={14} strokeWidth={1.5} aria-hidden />
                       {c.markAll}
                     </button>
@@ -149,8 +149,8 @@ export function NoticeBell({ notices, copy }: { notices: Notice[]; copy?: Notice
                 <span className="mx-auto grid size-11 place-items-center rounded-full bg-surface-100 text-ink-mute">
                   <Bell size={18} strokeWidth={1.5} aria-hidden />
                 </span>
-                <p className="mt-3 text-[14px] text-ink">{c.none}</p>
-                <p className="mt-1 text-[12.5px] text-ink-mute">{c.noneSub}</p>
+                <p className="mt-3 text-body text-ink">{c.none}</p>
+                <p className="mt-1 text-meta text-ink-mute">{c.noneSub}</p>
               </div>
             ) : (
               <ul className="min-h-0 flex-1 overflow-y-auto">
@@ -167,9 +167,9 @@ export function NoticeBell({ notices, copy }: { notices: Notice[]; copy?: Notice
                           type="button" onClick={() => follow(n)}
                           className="min-w-0 flex-1 text-start"
                         >
-                          <p className={cn('text-[14px] leading-snug', fresh ? 'font-medium text-ink' : 'text-ink')}>{n.title}</p>
-                          {n.body && <p className="mt-0.5 line-clamp-2 text-[13px] leading-snug text-ink-soft">{n.body}</p>}
-                          <p className="mt-1 text-[12px] text-ink-mute">
+                          <p className={cn('text-body leading-snug', fresh ? 'font-medium text-ink' : 'text-ink')}>{n.title}</p>
+                          {n.body && <p className="mt-0.5 line-clamp-2 text-body leading-snug text-ink-soft">{n.body}</p>}
+                          <p className="mt-1 text-meta text-ink-mute">
                             <span>{c.kinds[n.kind] ?? n.kind}</span>
                             <span> · </span>
                             <span>{rel(c, n.created_at)}</span>

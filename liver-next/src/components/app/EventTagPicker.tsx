@@ -42,7 +42,7 @@ export function EventTagPicker({ clientId, labels, current }: {
 
   return (
     <div className={cn('flex flex-wrap items-center gap-1.5', pending && 'opacity-60')}>
-      <span className="inline-flex items-center gap-1.5 text-[12.5px] text-ink-mute">
+      <span className="inline-flex items-center gap-1.5 text-meta text-ink-mute">
         <Tag size={13} strokeWidth={1.5} aria-hidden />
         {c.eventTag}
       </span>
@@ -54,7 +54,7 @@ export function EventTagPicker({ clientId, labels, current }: {
             key={l.id} type="button" onClick={() => set(l.id)}
             aria-pressed={on} disabled={pending}
             className={cn(
-              'inline-flex min-h-[32px] items-center gap-1.5 rounded-xl2 border px-2.5 text-[12.5px] transition-colors',
+              'inline-flex min-h-[32px] items-center gap-1.5 rounded-xl2 border px-2.5 text-meta transition-colors',
               on ? 'border-transparent' : 'border-line bg-card text-ink-soft hover:border-line-strong hover:text-ink',
             )}
             /* The label colour is measured against the chosen swatch rather

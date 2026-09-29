@@ -58,7 +58,7 @@ export default async function SignPage({ params }: { params: Promise<{ token: st
     <CopyProvider value={ui}>
     <main id="main" className="flex min-h-dvh items-center justify-center px-5 py-14">
       <div className="w-full max-w-2xl">
-        <p className="text-center font-display text-[19px] font-semibold text-ink">
+        <p className="text-center font-display text-subhead font-semibold text-ink">
           {deal?.brand || site.brand}
         </p>
         <PromiseLine className="mb-7 mt-2" />
@@ -69,7 +69,7 @@ export default async function SignPage({ params }: { params: Promise<{ token: st
              would confirm a guess to whoever was guessing. */
           <div className="card text-center">
             <h1 className="font-display text-title font-semibold text-ink">{c.badLink}</h1>
-            <p className="mt-3 text-[15.5px] leading-relaxed text-ink-soft">{c.badLinkBody}</p>
+            <p className="mt-3 text-lead leading-relaxed text-ink-soft">{c.badLinkBody}</p>
           </div>
         ) : (
           <>
@@ -77,7 +77,7 @@ export default async function SignPage({ params }: { params: Promise<{ token: st
               <p className="eyebrow">{c.eyebrow}</p>
               <h1 className="mt-2 font-display text-title font-semibold text-ink">{deal.title}</h1>
               {(deal.party_name || deal.party_role) && (
-                <p className="mt-1.5 text-[14.5px] text-ink-soft">
+                <p className="mt-1.5 text-body text-ink-soft">
                   {[deal.party_name, deal.party_role].filter(Boolean).join(' · ')}
                 </p>
               )}
@@ -86,8 +86,8 @@ export default async function SignPage({ params }: { params: Promise<{ token: st
             <article className="card">
               {deal.amount !== null && (
                 <div className="flex items-baseline justify-between gap-4 border-b border-line pb-4">
-                  <span className="text-[14px] text-ink-soft">{c.amount}</span>
-                  <span className="font-display text-[24px] font-semibold tabular-nums text-ink">
+                  <span className="text-body text-ink-soft">{c.amount}</span>
+                  <span className="font-display text-figure font-semibold tabular-nums text-ink">
                     <Money value={Number(deal.amount)} />
                   </span>
                 </div>
@@ -96,7 +96,7 @@ export default async function SignPage({ params }: { params: Promise<{ token: st
               {/* The terms as they were written, line breaks and all. This is
                   the text the fingerprint is taken of, so what is shown here is
                   exactly what is being agreed to. */}
-              <p className="mt-4 whitespace-pre-line text-[15px] leading-[1.9] text-ink">
+              <p className="mt-4 whitespace-pre-line text-lead leading-[1.9] text-ink">
                 {deal.body}
               </p>
             </article>
@@ -104,18 +104,18 @@ export default async function SignPage({ params }: { params: Promise<{ token: st
             {deal.status === 'signed' ? (
               <div className="panel mt-5 text-center">
                 <p className="eyebrow text-ok">{c.doneTitle}</p>
-                <p className="mt-2 text-[15.5px] text-ink">
+                <p className="mt-2 text-lead text-ink">
                   {c.doneBy} {deal.signed_name}
                 </p>
                 {deal.signed_at && (
-                  <p className="mt-1 text-[14px] text-ink-soft">
+                  <p className="mt-1 text-body text-ink-soft">
                     {c.doneAt}{' '}
                     <span dir="ltr" style={{ unicodeBidi: 'isolate', whiteSpace: 'nowrap' }}>
                       {dateFmt.format(new Date(deal.signed_at))}
                     </span>
                   </p>
                 )}
-                <p className="mt-3 text-[13.5px] leading-relaxed text-ink-mute">{c.doneBody}</p>
+                <p className="mt-3 text-body leading-relaxed text-ink-mute">{c.doneBody}</p>
               </div>
             ) : (
               <SignForm token={token} defaultName={deal.party_name} />

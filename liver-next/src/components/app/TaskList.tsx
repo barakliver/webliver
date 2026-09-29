@@ -95,7 +95,7 @@ function Row({ task, clientId, viewer, canDelete, grip }: {
           >
             <span
               aria-hidden
-              className={`flex h-6 w-6 items-center justify-center rounded-full border text-[13px] transition ${
+              className={`flex h-6 w-6 items-center justify-center rounded-full border text-body transition ${
                 done ? 'border-ok/30 bg-ok text-surface' : 'border-line-strong bg-card hover:border-ink'
               }`}
             >
@@ -105,14 +105,14 @@ function Row({ task, clientId, viewer, canDelete, grip }: {
         </div>
 
       <div className="min-w-0 flex-1">
-        <p className={`text-[15px] ${done ? 'text-ink-mute line-through' : 'text-ink'}`}>
+        <p className={`text-lead ${done ? 'text-ink-mute line-through' : 'text-ink'}`}>
           {task.title}
           {/* Only ever rendered on the producer's screen: a couple is never
               sent these rows in the first place, so the absence of a badge on
               their list is the policy and not a styling choice. */}
           {task.visible_to_client === false && (
             <span
-              className="ms-2 inline-flex items-center gap-1 align-middle rounded-xl2 bg-surface-200 px-2 py-0.5 text-[11.5px] text-ink-mute"
+              className="ms-2 inline-flex items-center gap-1 align-middle rounded-xl2 bg-surface-200 px-2 py-0.5 text-micro text-ink-mute"
               title={ui.template.privateNote}
             >
               <EyeOff size={11} aria-hidden strokeWidth={1.5} />
@@ -120,7 +120,7 @@ function Row({ task, clientId, viewer, canDelete, grip }: {
             </span>
           )}
         </p>
-        <p className="mt-0.5 text-[12.5px] text-ink-mute">
+        <p className="mt-0.5 text-meta text-ink-mute">
           <span className={late ? 'font-semibold text-bad' : ''}>
             {formatDate(dateFmt, task.due_on, c.noDue)}
             {late ? ` · ${c.overdue}` : ''}
@@ -128,7 +128,7 @@ function Row({ task, clientId, viewer, canDelete, grip }: {
           {' · '}{ownerLabel}
         </p>
         {task.notes && (
-          <p className="mt-1 whitespace-pre-line text-[13px] leading-snug text-ink-soft">{task.notes}</p>
+          <p className="mt-1 whitespace-pre-line text-body leading-snug text-ink-soft">{task.notes}</p>
         )}
       </div>
 
@@ -139,7 +139,7 @@ function Row({ task, clientId, viewer, canDelete, grip }: {
           type="button"
           onClick={() => setEditing((v) => !v)}
           aria-expanded={editing}
-          className="btn-quiet inline-flex items-center gap-1 px-2 py-1 text-[13px]"
+          className="btn-quiet inline-flex items-center gap-1 px-2 py-1 text-body"
         >
           <Pencil size={13} aria-hidden strokeWidth={1.5} />
           {c.edit}
@@ -148,7 +148,7 @@ function Row({ task, clientId, viewer, canDelete, grip }: {
           <DeleteForm action={deleteTask}>
             <input type="hidden" name="task_id" value={task.id} />
             <input type="hidden" name="client_id" value={clientId} />
-            <button type="submit" className="btn-quiet px-3 py-1 text-[13px]">{c.remove}</button>
+            <button type="submit" className="btn-quiet px-3 py-1 text-body">{c.remove}</button>
           </DeleteForm>
         )}
       </div>
@@ -193,23 +193,23 @@ function EditForm({ task, clientId, viewer, onDone }: {
       : (o === 'producer' ? c.ownerProducerClientView : c.ownerClientClientView);
 
   return (
-    <form action={action} noValidate className="mt-3 grid gap-3 rounded-xl2 border border-line bg-surface-100 p-4 sm:grid-cols-2">
+    <form action={action} noValidate className="mt-3 grid gap-3 rounded-card-sm border border-line bg-surface-100 p-4 sm:grid-cols-2">
       <input type="hidden" name="task_id" value={task.id} />
       <input type="hidden" name="client_id" value={clientId} />
-      <p className="text-[14px] font-medium text-ink sm:col-span-2">{c.editTitle}</p>
+      <p className="text-body font-medium text-ink sm:col-span-2">{c.editTitle}</p>
       {state && !state.ok && state.error && (
-        <p role="alert" className="rounded-control border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad sm:col-span-2">{state.error}</p>
+        <p role="alert" className="rounded-control border border-bad/25 bg-bad-wash px-4 py-2.5 text-body text-bad sm:col-span-2">{state.error}</p>
       )}
-      <label className="grid gap-1 text-[12.5px] text-ink-mute sm:col-span-2">{c.titlePh}
+      <label className="grid gap-1 text-meta text-ink-mute sm:col-span-2">{c.titlePh}
         <input name="title" required maxLength={200} defaultValue={task.title} className="field" autoComplete="off" /></label>
-      <label className="grid gap-1 text-[12.5px] text-ink-mute">{c.due}
+      <label className="grid gap-1 text-meta text-ink-mute">{c.due}
         <input name="due_on" type="date" defaultValue={task.due_on ?? ''} className="field" /></label>
-      <label className="grid gap-1 text-[12.5px] text-ink-mute">{c.owner}
+      <label className="grid gap-1 text-meta text-ink-mute">{c.owner}
         <select name="owner" defaultValue={task.owner} className="field">
           <option value="producer">{ownerLabel('producer')}</option>
           <option value="client">{ownerLabel('client')}</option>
         </select></label>
-      <label className="grid gap-1 text-[12.5px] text-ink-mute sm:col-span-2">{c.notes}
+      <label className="grid gap-1 text-meta text-ink-mute sm:col-span-2">{c.notes}
         <textarea name="notes" rows={2} maxLength={1000} defaultValue={task.notes ?? ''} placeholder={c.notesPh} className="field" /></label>
       <div className="flex flex-wrap items-center gap-2 sm:col-span-2">
         <SaveEdit />
@@ -237,8 +237,8 @@ export function TaskList({ clientId, tasks, viewer, viewerId }: {
 
   return (
     <section className="card">
-      <h2 className="font-display text-[18px] font-semibold text-ink">{c.title}</h2>
-      <p className="mt-1 text-[14px] text-ink-soft">{viewer === 'producer' ? c.subProducer : c.subClient}</p>
+      <h2 className="font-display text-subhead font-semibold text-ink">{c.title}</h2>
+      <p className="mt-1 text-body text-ink-soft">{viewer === 'producer' ? c.subProducer : c.subClient}</p>
 
       <form action={action} className="mt-5 grid gap-3 sm:grid-cols-[1fr_auto_auto_auto]">
         <input type="hidden" name="client_id" value={clientId} />
@@ -252,7 +252,7 @@ export function TaskList({ clientId, tasks, viewer, viewerId }: {
       </form>
 
       {state && !state.ok && state.error && (
-        <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+        <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-body text-bad">
           {state.error}
         </p>
       )}
@@ -264,10 +264,10 @@ export function TaskList({ clientId, tasks, viewer, viewerId }: {
            chased. */
         viewer === 'producer'
           ? <PlanOffer clientId={clientId} />
-          : <p className="mt-6 text-[14.5px] text-ink-mute">{c.none}</p>
+          : <p className="mt-6 text-body text-ink-mute">{c.none}</p>
       ) : (
         <>
-          <h3 className="mt-7 text-[13px] font-semibold text-accent">{c.open} · {open.length}</h3>
+          <h3 className="mt-7 text-body font-semibold text-accent">{c.open} · {open.length}</h3>
           {/* The order here is a decision, not a sort. What matters this week
               is not the three with the earliest dates; it is the three the
               person doing them decided matter. The finished list below stays a
@@ -293,7 +293,7 @@ export function TaskList({ clientId, tasks, viewer, viewerId }: {
 
           {done.length > 0 && (
             <>
-              <h3 className="mt-7 text-[13px] font-semibold text-ink-mute">{c.done} · {done.length}</h3>
+              <h3 className="mt-7 text-body font-semibold text-ink-mute">{c.done} · {done.length}</h3>
               <ul className="mt-3 space-y-2">
                 {done.map((t) => (
                   <li key={t.id}>

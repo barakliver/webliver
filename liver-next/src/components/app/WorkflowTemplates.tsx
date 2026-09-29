@@ -35,8 +35,8 @@ export function WorkflowTemplates({ templates }: { templates: Template[] }) {
     <section className="card">
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <div>
-          <h2 className="font-display text-[22px] font-semibold text-ink">{c.title}</h2>
-          <p className="mt-1 text-[13.5px] text-ink-mute">{c.sub}</p>
+          <h2 className="font-display text-panel font-semibold text-ink">{c.title}</h2>
+          <p className="mt-1 text-body text-ink-mute">{c.sub}</p>
         </div>
         {!adding && (
           <div className="flex flex-wrap gap-2">
@@ -45,7 +45,7 @@ export function WorkflowTemplates({ templates }: { templates: Template[] }) {
                 type="button"
                 disabled={busy}
                 onClick={() => startSeed(() => { void seedMeetingTemplate(); })}
-                className="btn-quiet px-3 text-[14px] disabled:opacity-60"
+                className="btn-quiet px-3 text-body disabled:opacity-60"
               >
                 {c.seed}
               </button>
@@ -69,7 +69,7 @@ export function WorkflowTemplates({ templates }: { templates: Template[] }) {
       )}
 
       {templates.length === 0 && !adding ? (
-        <p className="mt-6 text-[14.5px] text-ink-mute">{c.none}</p>
+        <p className="mt-6 text-body text-ink-mute">{c.none}</p>
       ) : (
         <ul className="mt-5 divide-y divide-line border-t border-line">
           {templates.map((t) => {
@@ -83,8 +83,8 @@ export function WorkflowTemplates({ templates }: { templates: Template[] }) {
                     aria-expanded={on}
                     className="min-w-0 flex-1 text-start"
                   >
-                    <p className="text-[15px] text-ink">{t.name}</p>
-                    <p className="mt-0.5 text-[12.5px] text-ink-mute">
+                    <p className="text-lead text-ink">{t.name}</p>
+                    <p className="mt-0.5 text-meta text-ink-mute">
                       {plural(c.stepsCount, t.steps.length)}
                     </p>
                   </button>
@@ -132,7 +132,7 @@ function Editor({ template, onDone }: { template?: Template; onDone: () => void 
 
   return (
     <div className="rounded-card-sm bg-surface-100 p-4">
-      <label className="block text-[12.5px] text-ink-mute">
+      <label className="block text-meta text-ink-mute">
         {c.name}
         <input
           value={name}
@@ -144,7 +144,7 @@ function Editor({ template, onDone }: { template?: Template; onDone: () => void 
         />
       </label>
 
-      <p className="mt-5 text-[13px] text-accent">{c.steps}</p>
+      <p className="mt-5 text-body text-accent">{c.steps}</p>
       <ul className="mt-2 space-y-2">
         {steps.map((s, i) => (
           <li key={i} className="grid gap-2 rounded-control border border-line bg-card p-3 sm:grid-cols-[auto_1fr_120px_130px_auto] sm:items-center">
@@ -162,7 +162,7 @@ function Editor({ template, onDone }: { template?: Template; onDone: () => void 
               autoComplete="off"
             />
 
-            <label className="block text-[12px] text-ink-mute">
+            <label className="block text-meta text-ink-mute">
               {c.stepWhen}
               <input
                 type="number"
@@ -176,7 +176,7 @@ function Editor({ template, onDone }: { template?: Template; onDone: () => void 
               />
             </label>
 
-            <label className="block text-[12px] text-ink-mute">
+            <label className="block text-meta text-ink-mute">
               {c.stepOwner}
               <select
                 value={s.owner}
@@ -204,22 +204,22 @@ function Editor({ template, onDone }: { template?: Template; onDone: () => void 
       <button
         type="button"
         onClick={() => setSteps((all) => [...all, blank()])}
-        className="btn-quiet mt-2 inline-flex items-center gap-1.5 px-3 text-[13.5px]"
+        className="btn-quiet mt-2 inline-flex items-center gap-1.5 px-3 text-body"
       >
         <Plus size={14} aria-hidden strokeWidth={1.5} />
         {c.addStep}
       </button>
 
-      <p className="mt-2 text-[12.5px] text-ink-mute">{c.stepWhenHint}</p>
+      <p className="mt-2 text-meta text-ink-mute">{c.stepWhenHint}</p>
 
       {error && (
-        <p role="alert" className="mt-3 rounded-control border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+        <p role="alert" className="mt-3 rounded-control border border-bad/25 bg-bad-wash px-4 py-2.5 text-body text-bad">
           {error}
         </p>
       )}
 
       <div className="mt-5 flex items-center justify-end gap-2">
-        <button type="button" onClick={onDone} className="btn-quiet px-3 text-[14px]">{c.cancel}</button>
+        <button type="button" onClick={onDone} className="btn-quiet px-3 text-body">{c.cancel}</button>
         <button
           type="button"
           onClick={() => void submit()}

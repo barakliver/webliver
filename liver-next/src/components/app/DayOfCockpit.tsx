@@ -83,14 +83,14 @@ export function DayOfCockpit({
       )}
 
       {now !== null && !live && (
-        <p className="card text-[14px] text-ink-soft">{c.notToday}</p>
+        <p className="card text-body text-ink-soft">{c.notToday}</p>
       )}
 
       {/* Said rather than done silently. A screen that refuses to sleep is a
           battery going down, and somebody who has not been told why will
           assume the app is broken rather than that it is helping. */}
       {awake && (
-        <p className="flex items-center gap-2 text-[12.5px] text-ink-mute">
+        <p className="flex items-center gap-2 text-meta text-ink-mute">
           <Sun size={14} strokeWidth={1.5} aria-hidden />
           {c.awake}
         </p>
@@ -98,7 +98,7 @@ export function DayOfCockpit({
 
       {live && sheet.length > 0 && (
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <span className="text-[14px] text-ink-soft">
+          <span className="text-body text-ink-soft">
             {fill(c.people.headcount, { here: heads.here, of: heads.of })}
             {heads.late > 0 && (
               <span className="ms-2 chip-bad">{c.people.missing} · {heads.late}</span>
@@ -117,8 +117,8 @@ export function DayOfCockpit({
 
       {arriving.length > 0 && (
         <section className="card border-warn/40 bg-warn-wash">
-          <h2 className="text-[13px] font-semibold text-warn">{c.people.dueSoon}</h2>
-          <ul className="mt-2 list-none space-y-1 p-0 text-[15px] text-ink">
+          <h2 className="text-body font-semibold text-warn">{c.people.dueSoon}</h2>
+          <ul className="mt-2 list-none space-y-1 p-0 text-lead text-ink">
             {arriving.map((p) => (
               <li key={p.id}>
                 <span className="font-semibold tabular-nums">{hhmm(p.call_time ?? '')}</span>
@@ -132,8 +132,8 @@ export function DayOfCockpit({
 
       <section className="card">
         <div className="flex items-baseline justify-between gap-3">
-          <h2 className="font-display text-[19px] font-semibold text-ink">{c.schedule}</h2>
-          <span className="text-[12.5px] text-ink-mute">{plural(c.openCount, open)}</span>
+          <h2 className="font-display text-subhead font-semibold text-ink">{c.schedule}</h2>
+          <span className="text-meta text-ink-mute">{plural(c.openCount, open)}</span>
         </div>
 
         <ul className="mt-4 list-none space-y-2 p-0">
@@ -152,20 +152,20 @@ function Headline({ label, placed, fallback, tone }: {
   const locale = useCopy().locale;
   return (
     <div className={cn('card', tone === 'now' && 'border-accent bg-accent-wash')}>
-      <div className="text-[12.5px] font-semibold text-ink-mute">{label}</div>
+      <div className="text-meta font-semibold text-ink-mute">{label}</div>
       {placed ? (
         <>
-          <div className="mt-1 font-display text-[22px] font-semibold leading-tight text-ink">
+          <div className="mt-1 font-display text-panel font-semibold leading-tight text-ink">
             {placed.line.title}
           </div>
-          <div className="mt-1 text-[14px] text-ink-soft">
+          <div className="mt-1 text-body text-ink-soft">
             <span className="tabular-nums">{hhmm(placed.line.at_time)}</span>
             {placed.inMinutes !== null && tone === 'next' && ` · ${relative(placed.inMinutes, locale)}`}
             {placed.line.duration_min ? ` · ${humanSpan(placed.line.duration_min, locale)}` : ''}
           </div>
         </>
       ) : (
-        <div className="mt-1 text-[15px] text-ink-soft">{fallback}</div>
+        <div className="mt-1 text-lead text-ink-soft">{fallback}</div>
       )}
     </div>
   );
@@ -223,8 +223,8 @@ function Row({ p, clientId }: { p: Placed; clientId: string }) {
 
       <div className="min-w-0 flex-1 pt-1">
         <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-          <span className="text-[15px] font-semibold tabular-nums text-ink">{hhmm(p.line.at_time)}</span>
-          <span className={cn('text-[15px]', done ? 'text-ink-mute line-through' : 'text-ink')}>
+          <span className="text-lead font-semibold tabular-nums text-ink">{hhmm(p.line.at_time)}</span>
+          <span className={cn('text-lead', done ? 'text-ink-mute line-through' : 'text-ink')}>
             {p.line.title}
           </span>
           {late && <span className="chip-bad">{c.late}</span>}
@@ -232,14 +232,14 @@ function Row({ p, clientId }: { p: Placed; clientId: string }) {
           {p.line.key_moment && <span className="chip-mute">{c.keyMoment}</span>}
         </div>
         {done && p.line.done_at && (
-          <div className="mt-0.5 text-[12.5px] text-ink-mute">{fill(c.doneAt, { t: timeOf(p.line.done_at) })}</div>
+          <div className="mt-0.5 text-meta text-ink-mute">{fill(c.doneAt, { t: timeOf(p.line.done_at) })}</div>
         )}
         {/* Announced as well as drawn, and it stays until the next attempt.
             A message that fades is one somebody glancing at a phone between
             two conversations will never once see. */}
-        {ticking && <div className="mt-0.5 text-[12.5px] text-ink-mute">{c.saving}</div>}
+        {ticking && <div className="mt-0.5 text-meta text-ink-mute">{c.saving}</div>}
         {failed && (
-          <div role="status" className="mt-1 text-[13px] font-medium text-bad">{c.notSaved}</div>
+          <div role="status" className="mt-1 text-body font-medium text-bad">{c.notSaved}</div>
         )}
       </div>
     </li>
@@ -251,16 +251,16 @@ function People({ sheet, clientId }: { sheet: Caller[]; clientId: string }) {
   if (sheet.length === 0) {
     return (
       <section className="card">
-        <h2 className="font-display text-[19px] font-semibold text-ink">{c.people.title}</h2>
-        <p className="mt-2 text-[15px] text-ink-mute">{c.people.empty}</p>
+        <h2 className="font-display text-subhead font-semibold text-ink">{c.people.title}</h2>
+        <p className="mt-2 text-lead text-ink-mute">{c.people.empty}</p>
       </section>
     );
   }
 
   return (
     <section className="card">
-      <h2 className="font-display text-[19px] font-semibold text-ink">{c.people.title}</h2>
-      <p className="mt-1 text-[13.5px] text-ink-soft">{c.people.sub}</p>
+      <h2 className="font-display text-subhead font-semibold text-ink">{c.people.title}</h2>
+      <p className="mt-1 text-body text-ink-soft">{c.people.sub}</p>
 
       <ul className="mt-4 list-none space-y-2 p-0">
         {sheet.map((person) => (
@@ -315,17 +315,17 @@ function PersonRow({ person, clientId }: { person: Caller; clientId: string }) {
 
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-            <span className="text-[15px] font-semibold tabular-nums text-ink">
+            <span className="text-lead font-semibold tabular-nums text-ink">
               {person.call_time ? hhmm(person.call_time) : c.people.noTime}
             </span>
-            <span className="text-[15px] text-ink">{person.name}</span>
+            <span className="text-lead text-ink">{person.name}</span>
             <span className="chip-mute">{person.kind === 'crew' ? c.people.crew : c.people.vendor}</span>
-            {person.role && <span className="text-[13.5px] text-ink-soft">{person.role}</span>}
+            {person.role && <span className="text-body text-ink-soft">{person.role}</span>}
             {here && <span className="chip-ok">{c.people.arrived}</span>}
           </div>
 
           {here && person.arrived_at && (
-            <div className="mt-0.5 text-[12.5px] text-ink-mute">
+            <div className="mt-0.5 text-meta text-ink-mute">
               {fill(c.people.arrivedAt, { t: timeOf(person.arrived_at) })}
             </div>
           )}
@@ -333,7 +333,7 @@ function PersonRow({ person, clientId }: { person: Caller; clientId: string }) {
           {/* The headcount above is built from these, so a check-in that did
               not save is a number the producer is about to act on. */}
           {failed && (
-            <div role="status" className="mt-1 text-[13px] font-medium text-bad">{c.people.notSaved}</div>
+            <div role="status" className="mt-1 text-body font-medium text-bad">{c.people.notSaved}</div>
           )}
 
           {e164 && (
@@ -341,7 +341,7 @@ function PersonRow({ person, clientId }: { person: Caller; clientId: string }) {
                is always the wrong one: a supplier mid-set does not pick up,
                and a driver on the road does not read. */
             <div className="mt-2 flex flex-wrap gap-2">
-              <a href={`tel:${e164}`} className="btn-ghost px-4 text-[14px]">
+              <a href={`tel:${e164}`} className="btn-ghost px-4 text-body">
                 <Phone size={16} strokeWidth={1.5} aria-hidden /> {c.people.call}
                 <span className="text-ink-mute tabular-nums">{displayPhone(e164)}</span>
               </a>
@@ -349,7 +349,7 @@ function PersonRow({ person, clientId }: { person: Caller; clientId: string }) {
                 href={`https://wa.me/${e164.replace('+', '')}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-ghost px-4 text-[14px]"
+                className="btn-ghost px-4 text-body"
               >
                 <MessageCircle size={16} strokeWidth={1.5} aria-hidden /> {c.people.whatsapp}
               </a>
@@ -382,15 +382,15 @@ function Countdown({ placed, onDismiss }: { placed: Placed; onDismiss: () => voi
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="min-w-0">
-          <div className="text-[12.5px] font-semibold text-warn">
+          <div className="text-meta font-semibold text-warn">
             {mins === 0 ? c.alert.inMinutes.now : mins === 1 ? c.alert.inMinutes.one : fill(c.alert.inMinutes.many, { n: mins })}
           </div>
-          <div className="mt-0.5 font-display text-[22px] font-semibold leading-tight text-ink">
+          <div className="mt-0.5 font-display text-panel font-semibold leading-tight text-ink">
             {placed.line.title}
           </div>
-          <div className="mt-0.5 text-[13.5px] text-ink-soft tabular-nums">{hhmm(placed.line.at_time)}</div>
+          <div className="mt-0.5 text-body text-ink-soft tabular-nums">{hhmm(placed.line.at_time)}</div>
         </div>
-        <button type="button" onClick={onDismiss} className="btn-ghost text-[14px]">
+        <button type="button" onClick={onDismiss} className="btn-ghost text-body">
           {c.alert.dismiss}
         </button>
       </div>
@@ -428,7 +428,7 @@ function Broadcast({ sheet, late }: { sheet: Caller[]; late: Caller[] }) {
 
   return (
     <>
-      <button type="button" onClick={() => setOpen(true)} className="btn-ghost text-[14px] text-bad">
+      <button type="button" onClick={() => setOpen(true)} className="btn-ghost text-body text-bad">
         <Megaphone size={16} strokeWidth={1.5} aria-hidden /> {c.broadcast.open}
       </button>
 
@@ -444,13 +444,13 @@ function Broadcast({ sheet, late }: { sheet: Caller[]; late: Caller[] }) {
             role="dialog"
             aria-modal="true"
             aria-label={c.broadcast.title}
-            className="glass-strong relative w-full max-w-lg rounded-t-3xl border border-line p-4 shadow-dock sm:rounded-xl2"
+            className="glass-strong relative w-full max-w-lg rounded-t-3xl border border-line p-4 shadow-dock sm:rounded-sheet"
             style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 1rem)' }}
           >
             <div className="flex items-start justify-between gap-3">
               <div>
-                <h2 className="font-display text-[19px] font-semibold text-ink">{c.broadcast.title}</h2>
-                <p className="mt-1 text-[13px] text-ink-soft">{c.broadcast.sub}</p>
+                <h2 className="font-display text-subhead font-semibold text-ink">{c.broadcast.title}</h2>
+                <p className="mt-1 text-body text-ink-soft">{c.broadcast.sub}</p>
               </div>
               <button
                 type="button"
@@ -476,7 +476,7 @@ function Broadcast({ sheet, late }: { sheet: Caller[]; late: Caller[] }) {
                     onClick={() => setWho(key)}
                     aria-pressed={who === key}
                     className={cn(
-                      'min-h-[44px] rounded-xl2 border px-4 text-[13.5px] font-medium transition-colors',
+                      'min-h-[44px] rounded-xl2 border px-4 text-body font-medium transition-colors',
                       who === key ? 'border-ink text-ink' : 'border-line text-ink-soft',
                     )}
                   >
@@ -484,7 +484,7 @@ function Broadcast({ sheet, late }: { sheet: Caller[]; late: Caller[] }) {
                   </button>
                 ))}
               </div>
-              <p className="mt-2 text-[12.5px] text-ink-mute">{plural(c.broadcast.count, target.length)}</p>
+              <p className="mt-2 text-meta text-ink-mute">{plural(c.broadcast.count, target.length)}</p>
             </fieldset>
 
             <div className="mt-4">
@@ -504,7 +504,7 @@ function Broadcast({ sheet, late }: { sheet: Caller[]; late: Caller[] }) {
                     key={preset}
                     type="button"
                     onClick={() => setText(preset)}
-                    className="rounded-xl2 border border-line px-3 py-2 text-[12.5px] text-ink-soft hover:border-line-strong"
+                    className="rounded-xl2 border border-line px-3 py-2 text-meta text-ink-soft hover:border-line-strong"
                   >
                     {preset}
                   </button>
@@ -523,7 +523,7 @@ function Broadcast({ sheet, late }: { sheet: Caller[]; late: Caller[] }) {
                       rel="noopener noreferrer"
                       className={cn(
                         'flex min-h-[48px] items-center justify-between gap-3 rounded-xl2 px-3',
-                        'text-[15px] transition-colors hover:bg-surface-100',
+                        'text-lead transition-colors hover:bg-surface-100',
                         text ? 'text-ink' : 'pointer-events-none text-ink-mute opacity-60',
                       )}
                     >

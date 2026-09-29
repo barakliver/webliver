@@ -68,26 +68,26 @@ export function BrandEditor({ fields, rootDomain }: { fields: BrandFields; rootD
     <form action={action} className="space-y-5">
       {/* ── what it will look like ─────────────────────────────────────── */}
       <section className="card" style={accentVars(chosen) as React.CSSProperties}>
-        <div className="text-[12.5px] font-semibold text-ink-mute">{c.preview}</div>
-        <div className="mt-3 rounded-xl2 border border-line bg-surface p-4">
+        <div className="text-meta font-semibold text-ink-mute">{c.preview}</div>
+        <div className="mt-3 rounded-card-sm border border-line bg-surface p-4">
           <div className="flex items-center justify-between gap-3 border-b border-line pb-3">
-            <span className="font-display text-[17px] font-semibold text-ink">
+            <span className="font-display text-head font-semibold text-ink">
               {name || c.namePh}
             </span>
             <span className="chip" style={{ borderColor: chosen.line, color: chosen.base }}>
               {ui.nav.overview}
             </span>
           </div>
-          <p className="mt-3 text-[14px] text-ink-soft">{tagline || c.taglinePh}</p>
+          <p className="mt-3 text-body text-ink-soft">{tagline || c.taglinePh}</p>
           <div className="mt-3 flex flex-wrap gap-2">
             <span
-              className="inline-flex min-h-[36px] items-center rounded-xl2 px-4 text-[13.5px] font-medium text-surface"
+              className="inline-flex min-h-[36px] items-center rounded-xl2 px-4 text-body font-medium text-surface"
               style={{ background: chosen.base }}
             >
               {ui.brand.save}
             </span>
             <span
-              className="inline-flex min-h-[36px] items-center rounded-xl2 border px-4 text-[13.5px]"
+              className="inline-flex min-h-[36px] items-center rounded-xl2 border px-4 text-body"
               style={{ borderColor: chosen.line, color: chosen.base }}
             >
               {ui.nav.clients}
@@ -127,7 +127,7 @@ export function BrandEditor({ fields, rootDomain }: { fields: BrandFields; rootD
                 onClick={() => setAccent(a.key)}
                 aria-pressed={a.key === accent}
                 className={cn(
-                  'inline-flex min-h-[44px] items-center gap-2 rounded-xl2 border px-3.5 text-[13.5px] font-medium transition-colors',
+                  'inline-flex min-h-[44px] items-center gap-2 rounded-xl2 border px-3.5 text-body font-medium transition-colors',
                   a.key === accent ? 'border-ink text-ink' : 'border-line text-ink-soft hover:border-line-strong',
                 )}
               >
@@ -142,7 +142,7 @@ export function BrandEditor({ fields, rootDomain }: { fields: BrandFields; rootD
               </button>
             ))}
           </div>
-          <p className="mt-2 text-[12.5px] text-ink-mute">{c.accentHint}</p>
+          <p className="mt-2 text-meta text-ink-mute">{c.accentHint}</p>
         </fieldset>
       </section>
 
@@ -162,7 +162,7 @@ export function BrandEditor({ fields, rootDomain }: { fields: BrandFields; rootD
 
       {/* ── your address ───────────────────────────────────────────────── */}
       <section className="card space-y-4">
-        <h2 className="font-display text-[17px] font-semibold text-ink">{c.address}</h2>
+        <h2 className="font-display text-head font-semibold text-ink">{c.address}</h2>
 
         <div>
           <label className="label" htmlFor="slug">{c.slug}</label>
@@ -174,35 +174,35 @@ export function BrandEditor({ fields, rootDomain }: { fields: BrandFields; rootD
             aria-describedby="slug-hint"
             aria-invalid={slugState === 'bad' || slugState === 'short' ? true : undefined}
           />
-          <p id="slug-hint" className="mt-1.5 text-[12.5px] leading-relaxed text-ink-mute">{c.slugHint}</p>
+          <p id="slug-hint" className="mt-1.5 text-meta leading-relaxed text-ink-mute">{c.slugHint}</p>
 
           {slugState === 'ok' && (
-            <p className="mt-2 text-[13px] text-ink-soft">
+            <p className="mt-2 text-body text-ink-soft">
               {c.slugPreview}{' '}
-              <span dir="ltr" className="font-mono text-[12.5px] text-ink">{`${origin || ''}/p/${cleaned}`}</span>
+              <span dir="ltr" className="font-mono text-meta text-ink">{`${origin || ''}/p/${cleaned}`}</span>
               {rootDomain && (
                 <>
                   {' · '}
-                  <span dir="ltr" className="font-mono text-[12.5px] text-ink">{`${cleaned}.${rootDomain}`}</span>
+                  <span dir="ltr" className="font-mono text-meta text-ink">{`${cleaned}.${rootDomain}`}</span>
                 </>
               )}
             </p>
           )}
           {slugState === 'bad' && (
-            <p role="alert" className="mt-2 flex flex-wrap items-center gap-2 text-[13px] text-bad">
+            <p role="alert" className="mt-2 flex flex-wrap items-center gap-2 text-body text-bad">
               {c.slugBad}
-              <span dir="ltr" className="font-mono text-[12.5px] text-ink">{suggestion}</span>
+              <span dir="ltr" className="font-mono text-meta text-ink">{suggestion}</span>
               <button
                 type="button"
                 onClick={() => setSlug(suggestion)}
-                className="btn-quiet min-h-[36px] px-2 text-[13px]"
+                className="btn-quiet min-h-[36px] px-2 text-body"
               >
                 {c.slugUse}
               </button>
             </p>
           )}
           {slugState === 'short' && (
-            <p role="alert" className="mt-2 text-[13px] text-bad">{c.slugShort}</p>
+            <p role="alert" className="mt-2 text-body text-bad">{c.slugShort}</p>
           )}
         </div>
 
@@ -210,7 +210,7 @@ export function BrandEditor({ fields, rootDomain }: { fields: BrandFields; rootD
           <label className="label" htmlFor="domain">{c.domain}</label>
           <input id="domain" name="domain" className="field" dir="ltr"
                  defaultValue={fields.domain ?? ''} maxLength={253} />
-          <p className="mt-1 text-[12.5px] text-ink-mute">{c.domainHint}</p>
+          <p className="mt-1 text-meta text-ink-mute">{c.domainHint}</p>
         </div>
       </section>
 
@@ -218,8 +218,8 @@ export function BrandEditor({ fields, rootDomain }: { fields: BrandFields; rootD
         <button type="submit" className="btn-primary" disabled={pending}>
           {pending ? c.saving : c.save}
         </button>
-        {state?.ok && <span className="text-[14px] text-ok">{c.saved}</span>}
-        {state?.error && <span className="text-[14px] text-bad">{state.error}</span>}
+        {state?.ok && <span className="text-body text-ok">{c.saved}</span>}
+        {state?.error && <span className="text-body text-bad">{state.error}</span>}
       </div>
     </form>
   );

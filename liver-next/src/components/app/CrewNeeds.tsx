@@ -21,7 +21,7 @@ function Assign() {
   const c = useCopy().crew;
   const { pending } = useFormStatus();
   return (
-    <button type="submit" className="btn-ghost shrink-0 text-[13.5px]" disabled={pending}>
+    <button type="submit" className="btn-ghost shrink-0 text-body" disabled={pending}>
       {pending ? c.saving : c.assign}
     </button>
   );
@@ -62,8 +62,8 @@ export function CrewNeeds({
   return (
     <section aria-labelledby="crew-needs" className="card p-4 sm:p-5">
       <header className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-        <h3 id="crew-needs" className="font-display text-[17px] font-semibold text-ink">{c.ruleTitle}</h3>
-        <p className="text-[13px] text-ink-mute">
+        <h3 id="crew-needs" className="font-display text-head font-semibold text-ink">{c.ruleTitle}</h3>
+        <p className="text-body text-ink-mute">
           {certain
             ? <>{c.ruleBy}: <Ltr>{String(guests)}</Ltr></>
             : c.ruleUnsure}
@@ -76,16 +76,16 @@ export function CrewNeeds({
           return (
             <li key={s.slot} className="rounded-xl2 border border-line-soft bg-surface-100 p-3">
               <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
-                <span className="font-medium text-[15px] text-ink">{labels[s.slot]}</span>
+                <span className="font-medium text-lead text-ink">{labels[s.slot]}</span>
                 {s.short > 0 ? (
-                  <span className="inline-flex items-center gap-1.5 text-[13px] text-bad">
+                  <span className="inline-flex items-center gap-1.5 text-body text-bad">
                     <TriangleAlert size={14} aria-hidden strokeWidth={1.5} />
                     {c.ruleShort}: <Ltr>{String(s.short)}</Ltr>
                   </span>
                 ) : s.optional && s.filled === 0 ? (
-                  <span className="text-[13px] text-ink-mute">{c.ruleOptional}</span>
+                  <span className="text-body text-ink-mute">{c.ruleOptional}</span>
                 ) : (
-                  <span className="inline-flex items-center gap-1.5 text-[13px] text-good">
+                  <span className="inline-flex items-center gap-1.5 text-body text-good">
                     <Check size={14} aria-hidden strokeWidth={1.5} />
                     {c.ruleFilled}
                   </span>
@@ -93,7 +93,7 @@ export function CrewNeeds({
               </div>
 
               {inRole.length > 0 && (
-                <p className="mt-1.5 text-[13.5px] text-ink-soft">
+                <p className="mt-1.5 text-body text-ink-soft">
                   {inRole.map((a) => a.name).join(' · ')}
                 </p>
               )}
@@ -108,7 +108,7 @@ export function CrewNeeds({
                   </label>
                   <select
                     id={`assign-${s.slot}`} name="member_id" required
-                    className="field w-auto min-w-0 max-w-[17rem] flex-1 basis-40 text-[14px]"
+                    className="field w-auto min-w-0 max-w-[17rem] flex-1 basis-40 text-body"
                     defaultValue=""
                   >
                     <option value="" disabled>{c.fromDirectory}</option>
@@ -125,14 +125,14 @@ export function CrewNeeds({
       </ul>
 
       {short === 0 && (
-        <p className="mt-3 inline-flex items-center gap-1.5 text-[13.5px] text-good">
+        <p className="mt-3 inline-flex items-center gap-1.5 text-body text-good">
           <Check size={15} aria-hidden strokeWidth={1.5} />
           {c.ruleDone}
         </p>
       )}
 
       {people.length === 0 && (
-        <p className="mt-3 flex flex-wrap items-center gap-2 text-[13.5px] text-ink-mute">
+        <p className="mt-3 flex flex-wrap items-center gap-2 text-body text-ink-mute">
           <UserPlus size={15} aria-hidden strokeWidth={1.5} />
           {c.noDirectory}
           <Link href="/app/crew" className="text-accent underline underline-offset-4">

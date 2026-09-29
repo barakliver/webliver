@@ -83,18 +83,18 @@ export function EventVendors({ clientId, vendors, directory }: {
     <section className="card">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="inline-flex items-center gap-2 font-display text-[18px] font-semibold text-ink">
+          <h2 className="inline-flex items-center gap-2 font-display text-subhead font-semibold text-ink">
             <Truck size={18} aria-hidden strokeWidth={1.5} />
             {c.eventTitle}
           </h2>
-          <p className="mt-1 text-[14px] text-ink-soft">{c.eventSub}</p>
+          <p className="mt-1 text-body text-ink-soft">{c.eventSub}</p>
         </div>
         <div className="flex flex-wrap gap-2">
           {available.length > 0 && (
             <button
               type="button"
               onClick={() => { setPicking((v) => !v); setAdding(false); }}
-              className="inline-flex items-center gap-1.5 rounded-xl2 border border-line-strong bg-card px-4 py-2 text-[13.5px] font-medium text-ink transition hover:border-accent/40 hover:text-accent"
+              className="inline-flex items-center gap-1.5 rounded-xl2 border border-line-strong bg-card px-4 py-2 text-body font-medium text-ink transition hover:border-accent/40 hover:text-accent"
             >
               {picking ? c.close : c.fromDirectory}
             </button>
@@ -102,7 +102,7 @@ export function EventVendors({ clientId, vendors, directory }: {
           <button
             type="button"
             onClick={() => { setAdding((v) => !v); setPicking(false); }}
-            className="inline-flex items-center gap-1.5 rounded-xl2 border border-line-strong bg-card px-4 py-2 text-[13.5px] font-medium text-ink transition hover:border-accent/40 hover:text-accent"
+            className="inline-flex items-center gap-1.5 rounded-xl2 border border-line-strong bg-card px-4 py-2 text-body font-medium text-ink transition hover:border-accent/40 hover:text-accent"
           >
             <Plus size={15} aria-hidden strokeWidth={1.5} />
             {adding ? c.close : c.add}
@@ -118,10 +118,10 @@ export function EventVendors({ clientId, vendors, directory }: {
                 <input type="hidden" name="client_id" value={clientId} />
                 <input type="hidden" name="vendor_id" value={d.id} />
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-[14.5px] text-ink">{d.name}</span>
-                  <span className="block text-[12.5px] text-ink-mute">{categoryLabelFor(d.category, locale)}</span>
+                  <span className="block truncate text-body text-ink">{d.name}</span>
+                  <span className="block text-meta text-ink-mute">{categoryLabelFor(d.category, locale)}</span>
                 </span>
-                <button type="submit" className="btn-quiet px-3 py-1 text-[13px]">{c.bookIt}</button>
+                <button type="submit" className="btn-quiet px-3 py-1 text-body">{c.bookIt}</button>
               </form>
             </li>
           ))}
@@ -129,7 +129,7 @@ export function EventVendors({ clientId, vendors, directory }: {
       )}
 
       {adding && (
-        <form action={action} className="mt-4 rounded-xl2 border border-line bg-surface-100 p-4" noValidate>
+        <form action={action} className="mt-4 rounded-card-sm border border-line bg-surface-100 p-4" noValidate>
           <input type="hidden" name="client_id" value={clientId} />
           <div className="grid gap-3 sm:grid-cols-[1fr_160px_1fr]">
             <div>
@@ -164,7 +164,7 @@ export function EventVendors({ clientId, vendors, directory }: {
             </div>
           </div>
           {state && !state.ok && state.error && (
-            <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+            <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-body text-bad">
               {state.error}
             </p>
           )}
@@ -173,23 +173,23 @@ export function EventVendors({ clientId, vendors, directory }: {
       )}
 
       {vendors.length === 0 ? (
-        <p className="mt-6 text-[14.5px] text-ink-mute">{c.eventNone}</p>
+        <p className="mt-6 text-body text-ink-mute">{c.eventNone}</p>
       ) : (
         <div className="mt-5 space-y-5">
           {groups.map(([category, list]) => (
             <div key={category}>
-              <h3 className="mb-2 text-[12.5px] font-semibold text-accent">{categoryLabelFor(category, locale)}</h3>
+              <h3 className="mb-2 text-meta font-semibold text-accent">{categoryLabelFor(category, locale)}</h3>
               <ul className="space-y-2.5">
                 {list.map((v) => (
                   <li key={v.id} className="flex flex-wrap items-center gap-3 rounded-xl2 border border-line px-4 py-3.5">
                     <div className="min-w-0 flex-1">
-                      <p className="text-[15.5px] text-ink">{v.name}</p>
-                      <div className="mt-0.5 flex flex-wrap items-center gap-x-3 text-[13px] text-ink-mute">
+                      <p className="text-lead text-ink">{v.name}</p>
+                      <div className="mt-0.5 flex flex-wrap items-center gap-x-3 text-body text-ink-mute">
                         {v.phone && <a href={`tel:${v.phone}`} dir="ltr" className="hover:text-accent">{v.phone}</a>}
                         {v.call_time && <span className="tabular-nums" dir="ltr">{hhmm(v.call_time)}</span>}
                         {v.vendor_id && <span className="text-ink-mute">{c.inDirectory}</span>}
                       </div>
-                      {v.notes && <p className="mt-0.5 text-[13px] text-ink-soft">{v.notes}</p>}
+                      {v.notes && <p className="mt-0.5 text-body text-ink-soft">{v.notes}</p>}
                     </div>
 
                     <form action={setEventVendorStatus}>
@@ -200,7 +200,7 @@ export function EventVendors({ clientId, vendors, directory }: {
                         defaultValue={v.status}
                         onChange={(e) => e.currentTarget.form?.requestSubmit()}
                         aria-label={`${c.status} ${v.name}`}
-                        className={`rounded-xl2 border-0 px-3 py-1.5 text-[12.5px] font-medium ${statusTone[v.status] ?? ''}`}
+                        className={`rounded-xl2 border-0 px-3 py-1.5 text-meta font-medium ${statusTone[v.status] ?? ''}`}
                       >
                         {vendorStatesFor(locale).map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
                       </select>
@@ -237,7 +237,7 @@ export function EventVendors({ clientId, vendors, directory }: {
         </div>
       )}
 
-      <p className="mt-5 inline-flex items-center gap-1.5 text-[12.5px] text-ink-mute">
+      <p className="mt-5 inline-flex items-center gap-1.5 text-meta text-ink-mute">
         <Lock size={13} aria-hidden strokeWidth={1.5} />
         {c.privateNote}
       </p>

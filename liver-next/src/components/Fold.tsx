@@ -86,12 +86,12 @@ export function Fold({
         )}
 
         <span className="min-w-0 flex-1">
-          <span className="block font-display text-[16.5px] font-semibold leading-tight text-ink">{title}</span>
-          <span className="mt-0.5 block truncate text-[13px] leading-relaxed text-ink-soft">{sub}</span>
+          <span className="block font-display text-head font-semibold leading-tight text-ink">{title}</span>
+          <span className="mt-0.5 block truncate text-body leading-relaxed text-ink-soft">{sub}</span>
         </span>
 
         {count !== undefined && count > 0 && (
-          <span className="shrink-0 text-[14px] tabular-nums text-ink-mute">
+          <span className="shrink-0 text-body tabular-nums text-ink-mute">
             <Ltr>{count}</Ltr>
           </span>
         )}

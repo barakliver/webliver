@@ -57,41 +57,41 @@ export function CalendarFeed({ clientId }: { clientId?: string }) {
 
   return (
     <div className="card">
-      <h2 className="font-display text-[17px] font-semibold text-ink">{c.title}</h2>
-      <p className="mt-1 text-[13.5px] text-ink-soft">{c.sub}</p>
+      <h2 className="font-display text-head font-semibold text-ink">{c.title}</h2>
+      <p className="mt-1 text-body text-ink-soft">{c.sub}</p>
 
       {!token ? (
         <>
-          <button type="button" onClick={create} disabled={pending} className="btn-ghost mt-3 text-[14px]">
+          <button type="button" onClick={create} disabled={pending} className="btn-ghost mt-3 text-body">
             <CalendarPlus size={16} aria-hidden strokeWidth={1.5} />
             {pending ? c.creating : c.create}
           </button>
-          {gone && <p className="mt-2 text-[13.5px] text-ok">{c.revoked}</p>}
+          {gone && <p className="mt-2 text-body text-ok">{c.revoked}</p>}
         </>
       ) : (
         <div className="mt-3 space-y-3">
-          <p className="rounded-xl2 bg-warn-wash p-3 text-[13.5px] text-warn">{c.warning}</p>
+          <p className="rounded-xl2 bg-warn-wash p-3 text-body text-warn">{c.warning}</p>
 
-          <code className="block overflow-x-auto rounded-xl2 bg-surface-100 p-3 text-[12.5px] text-ink-soft" dir="ltr">
+          <code className="block overflow-x-auto rounded-xl2 bg-surface-100 p-3 text-meta text-ink-soft" dir="ltr">
             {url}
           </code>
 
           <div className="flex flex-wrap gap-2">
-            <a href={webcal} className="btn-primary text-[14px]">{c.open}</a>
-            <button type="button" onClick={copy} className="btn-ghost text-[14px]">
+            <a href={webcal} className="btn-primary text-body">{c.open}</a>
+            <button type="button" onClick={copy} className="btn-ghost text-body">
               {copied ? <Check size={16} strokeWidth={1.5} aria-hidden /> : <Copy size={16} strokeWidth={1.5} aria-hidden />}
               {copied ? c.copied : c.copy}
             </button>
-            <button type="button" onClick={drop} disabled={pending} className="btn-ghost text-[14px] text-bad">
+            <button type="button" onClick={drop} disabled={pending} className="btn-ghost text-body text-bad">
               <Trash2 size={16} strokeWidth={1.5} aria-hidden /> {c.revoke}
             </button>
           </div>
 
-          <p className="text-[13px] text-ink-mute">{c.how}</p>
+          <p className="text-body text-ink-mute">{c.how}</p>
         </div>
       )}
 
-      {error && <p className="mt-2 text-[13.5px] text-bad">{error}</p>}
+      {error && <p className="mt-2 text-body text-bad">{error}</p>}
     </div>
   );
 }

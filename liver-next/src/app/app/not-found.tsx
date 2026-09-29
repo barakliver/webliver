@@ -22,7 +22,7 @@ export default async function WorkspaceNotFound() {
   return (
     <div className="card measure text-center">
       <h1 className="font-display text-title font-semibold text-ink">{c.title}</h1>
-      <p className="mt-3 text-[15.5px] text-ink-soft">{c.body}</p>
+      <p className="mt-3 text-lead text-ink-soft">{c.body}</p>
       <Link href="/app/clients" className="btn-primary mt-7 inline-flex items-center gap-2">
         <ArrowLeft size={17} strokeWidth={1.5} aria-hidden />
         <span>{c.back}</span>

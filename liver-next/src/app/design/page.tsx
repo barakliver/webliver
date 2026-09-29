@@ -223,8 +223,8 @@ function Panel({ name, note, children }: { name: string; note?: string; children
   return (
     <section className="mt-14 first:mt-0">
       <div className="mb-4 flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b border-line pb-2">
-        <h2 className="font-display text-[17px] font-semibold text-ink">{name}</h2>
-        {note && <p className="text-[12.5px] text-ink-mute">{note}</p>}
+        <h2 className="font-display text-head font-semibold text-ink">{name}</h2>
+        {note && <p className="text-meta text-ink-mute">{note}</p>}
       </div>
       {children}
     </section>
@@ -245,7 +245,7 @@ export default async function DesignPage() {
         <h1 className="mt-3 font-display text-display font-semibold text-ink">
           {locale === 'en' ? 'Every panel, no database' : 'כל הפאנלים, בלי מסד נתונים'}
         </h1>
-        <p className="measure mt-3 text-[14.5px] text-ink-soft">
+        <p className="measure mt-3 text-body text-ink-soft">
           {locale === 'en'
             ? 'Invented data, the real components. Development only.'
             : 'נתונים מומצאים, הרכיבים האמיתיים. סביבת פיתוח בלבד.'}
@@ -284,7 +284,7 @@ export default async function DesignPage() {
         <Panel name="TaskTick · finishing from the pile" note="on his own tasks only: one row, and the tick means one thing">
           <div className="flex items-center gap-4">
             <TaskTick taskId="fixture-task" clientId={client} label="לחזור לחברת התאורה" />
-            <p className="max-w-prose2 text-[14px] text-ink-soft">
+            <p className="max-w-prose2 text-body text-ink-soft">
               העיגול נסגר מיד, לפני שהשרת עונה. תשלום, ליד או אירוע שנמצא בפיגור לא
               מקבלים אותו: לכל אחד מהם יש פועל אחר, ולוח בקרה הוא לא המקום להחליט
               שכסף נכנס.
@@ -563,18 +563,18 @@ export default async function DesignPage() {
           <div className="max-w-2xl">
             <FoldGroup>
               <Fold id="design-fold-a" grouped icon={Wallet} count={9} title="כסף" sub="תשלומים, תקציב ומה שכבר שולם">
-                <p className="card text-[14.5px] text-ink-soft">
+                <p className="card text-body text-ink-soft">
                   מה שיושב בפנים הוא בדיוק הפאנלים שהיו שם קודם, עם הכותרות שלהם.
                   השורה למעלה היא שם המגירה, לא כותרת שנייה.
                 </p>
               </Fold>
               <Fold id="design-fold-c" grouped icon={Users} count={128} title="אורחים" sub="מי הוזמן, מי אישר והושבה">
-                <p className="card text-[14.5px] text-ink-soft">
+                <p className="card text-body text-ink-soft">
                   מגירה סגורה שאומרת כמה יש בתוכה היא מגירה שאי אפשר לשכוח.
                 </p>
               </Fold>
               <Fold id="design-fold-b" grouped icon={CalendarHeart} title="היום עצמו" sub="הלו״ז, ההשראה והפרטים הקטנים" open>
-                <p className="card text-[14.5px] text-ink-soft" id="design-fold-inside">
+                <p className="card text-body text-ink-soft" id="design-fold-inside">
                   כך זה נראה פתוח. ברירת המחדל היא סגור, ועל מסך הזוג אף מגירה לא
                   נפתחת מעצמה.
                 </p>
@@ -586,7 +586,7 @@ export default async function DesignPage() {
                 FoldReveal is what opens it on the way. Pressing this opens
                 the first drawer above. */}
             <FoldReveal />
-            <a href="#design-fold-a" className="btn-quiet mt-4 inline-flex text-[13.5px]">
+            <a href="#design-fold-a" className="btn-quiet mt-4 inline-flex text-body">
               לפתוח את המגירה הראשונה מקישור
             </a>
           </div>
@@ -604,7 +604,7 @@ export default async function DesignPage() {
                 vendors: 'ספקים', day: 'היום עצמו', talk: 'הודעות', event: 'האירוע',
               },
             }} />
-            <p className="max-w-prose2 text-[14px] text-ink-soft">
+            <p className="max-w-prose2 text-body text-ink-soft">
               על מסך הזוג הוא יושב בעוגן התחתון ואומר באיזה חלק הם נמצאים.
               הוא קורא את הדף עצמו, אז מודול שהמפיק סגר פשוט לא נמצא ברשימה.
             </p>
@@ -633,7 +633,7 @@ export default async function DesignPage() {
         <Panel name="ThemeToggle" note="light or dark in one press, the switch that sits in the app header beside the language one">
           <div className="flex items-center gap-4">
             <ThemeToggle label={{ toLight: 'מעבר לתצוגה בהירה', toDark: 'מעבר לתצוגה כהה' }} />
-            <p className="text-[14px] text-ink-soft">
+            <p className="text-body text-ink-soft">
               הכפתור מראה לאן הוא לוקח אתכם, לא איפה אתם. הבחירה המלאה, כולל
               לפי המכשיר, נמצאת בתפריט הנגישות.
             </p>
@@ -1232,8 +1232,8 @@ export default async function DesignPage() {
               ].map(([name, mail]) => (
                 <li key={mail} data-account={`${name} ${mail}`}
                     className="flex flex-wrap items-center justify-between gap-3 rounded-card border border-line-soft bg-card px-4 py-3">
-                  <span className="text-[15px] text-ink">{name}</span>
-                  <span className="text-[13.5px] text-ink-soft" dir="ltr">{mail}</span>
+                  <span className="text-lead text-ink">{name}</span>
+                  <span className="text-body text-ink-soft" dir="ltr">{mail}</span>
                 </li>
               ))}
             </ul>
@@ -1459,7 +1459,7 @@ export default async function DesignPage() {
             own, and a second copy of a fixed button lands on the first pixel
             for pixel, so the one underneath could not be pressed at all. */}
         <Panel name="ProducerCopilot" note="the shared chat dock, fully dressed; its button floats in the corner">
-          <p className="text-[13px] text-ink-mute">הכפתור צף בפינת המסך, ומגיע מהמעטפת של המפיק שלמעלה. פותחים אותו ומקבלים את הפתיח וההצעות; תשובה אמיתית דורשת מפתח API.</p>
+          <p className="text-body text-ink-mute">הכפתור צף בפינת המסך, ומגיע מהמעטפת של המפיק שלמעלה. פותחים אותו ומקבלים את הפתיח וההצעות; תשובה אמיתית דורשת מפתח API.</p>
         </Panel>
 
         <Panel name="Loading · console" note="what a tap on the navigation shows before the server answers">
@@ -1691,7 +1691,7 @@ export default async function DesignPage() {
         </Panel>
 
         <Panel name="Ltr · Money · Ratio · PromiseLine" note="a number inside a Hebrew sentence, which is where bidi goes wrong">
-          <div className="max-w-xl space-y-2 text-[15px] text-ink">
+          <div className="max-w-xl space-y-2 text-lead text-ink">
             <p>נכנסו <Money value={148000} /> מתוך התקציב.</p>
             <p>אישרו הגעה <Ratio of={96} total={180} />.</p>
             <p>הטלפון של הצלם הוא <Ltr>052-111-1111</Ltr> והמייל <Ltr>studio@example.com</Ltr>.</p>

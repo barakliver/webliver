@@ -126,7 +126,7 @@ export function Carried({ at, children }: {
     <div
       aria-hidden
       style={{ left: at.x, top: at.y }}
-      className="pointer-events-none fixed z-50 -translate-x-1/2 -translate-y-1/2 rounded-control border border-accent bg-card px-3 py-1.5 text-[13.5px] text-ink shadow-lift"
+      className="pointer-events-none fixed z-50 -translate-x-1/2 -translate-y-1/2 rounded-control border border-accent bg-card px-3 py-1.5 text-body text-ink shadow-lift"
     >
       {children}
     </div>

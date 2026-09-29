@@ -59,7 +59,7 @@ export function SupplierDraft({ eventVendorId, supplierName, demo }: {
     return (
       <button
         type="button" onClick={() => void ask()} disabled={busy}
-        className="btn-quiet inline-flex items-center gap-1 px-2 py-1 text-[12.5px]"
+        className="btn-quiet inline-flex items-center gap-1 px-2 py-1 text-meta"
       >
         <Sparkles size={12} aria-hidden strokeWidth={1.5} />
         {busy ? c.drafting : fill(c.draftTo, { name: supplierName })}
@@ -68,16 +68,16 @@ export function SupplierDraft({ eventVendorId, supplierName, demo }: {
   }
 
   return (
-    <div className="mt-1 min-w-0 basis-full rounded-xl2 border border-line bg-surface-100 p-4" role="region" aria-label={`${c.draft}: ${supplierName}`}>
+    <div className="mt-1 min-w-0 basis-full rounded-card-sm border border-line bg-surface-100 p-4" role="region" aria-label={`${c.draft}: ${supplierName}`}>
       <div className="flex flex-wrap items-start justify-between gap-2">
-        <p className="text-[14px] font-medium text-ink">{supplierName}</p>
-        <button type="button" onClick={() => setOpen(false)} className="btn-quiet inline-flex items-center gap-1 px-2 py-1 text-[12.5px]" aria-label={c.close}>
+        <p className="text-body font-medium text-ink">{supplierName}</p>
+        <button type="button" onClick={() => setOpen(false)} className="btn-quiet inline-flex items-center gap-1 px-2 py-1 text-meta" aria-label={c.close}>
           <X size={13} aria-hidden strokeWidth={1.5} />{c.close}
         </button>
       </div>
 
       {res && !res.ok && (
-        <p role="alert" className="mt-3 rounded-control border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">{res.error}</p>
+        <p role="alert" className="mt-3 rounded-control border border-bad/25 bg-bad-wash px-4 py-2.5 text-body text-bad">{res.error}</p>
       )}
 
       {res?.ok && (
@@ -85,7 +85,7 @@ export function SupplierDraft({ eventVendorId, supplierName, demo }: {
           {/* The facts. Only what the rows say; nothing the model added. */}
           <div>
             <p className="eyebrow">{c.facts}</p>
-            <ul className="mt-2 list-none space-y-1 p-0 text-[13.5px] text-ink-soft">
+            <ul className="mt-2 list-none space-y-1 p-0 text-body text-ink-soft">
               {(res.facts ?? []).map((f) => <li key={f}>{f}</li>)}
             </ul>
           </div>
@@ -100,27 +100,27 @@ export function SupplierDraft({ eventVendorId, supplierName, demo }: {
             <textarea
               value={text} onChange={(e) => setText(e.target.value)}
               rows={9} aria-label={c.suggestion}
-              className="field mt-2 min-h-[12rem] resize-y text-[14.5px] leading-relaxed"
+              className="field mt-2 min-h-[12rem] resize-y text-body leading-relaxed"
             />
             <div className="mt-3 flex flex-wrap items-center gap-2">
               {res.phone ? (
                 <a
                   href={`https://wa.me/${res.phone.replace('+', '')}?text=${encodeURIComponent(text)}`}
                   target="_blank" rel="noopener noreferrer"
-                  className="btn-primary inline-flex items-center gap-2 text-[14px]"
+                  className="btn-primary inline-flex items-center gap-2 text-body"
                 >
                   <MessageCircle size={15} aria-hidden strokeWidth={1.5} />
                   {c.openWhatsApp}
                 </a>
               ) : (
-                <span className="text-[12.5px] text-ink-mute">{c.noPhone}</span>
+                <span className="text-meta text-ink-mute">{c.noPhone}</span>
               )}
-              <button type="button" onClick={() => void copy()} className="btn-ghost inline-flex items-center gap-2 text-[14px]">
+              <button type="button" onClick={() => void copy()} className="btn-ghost inline-flex items-center gap-2 text-body">
                 <Copy size={14} aria-hidden strokeWidth={1.5} />
                 {copied ? c.copied : c.copy}
               </button>
             </div>
-            <p className="mt-2 text-[12px] text-ink-mute">{c.notSent}</p>
+            <p className="mt-2 text-meta text-ink-mute">{c.notSent}</p>
           </div>
         </div>
       )}

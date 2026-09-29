@@ -55,12 +55,12 @@ export function NewLeadForm({ channels = [] }: {
   return (
     <form action={action} className="card mt-4 space-y-5" noValidate>
       <div>
-        <h2 className="font-display text-[19px] font-semibold text-ink">{c.addTitle}</h2>
-        <p className="mt-1 text-[14px] text-ink-soft">{c.addSub}</p>
+        <h2 className="font-display text-subhead font-semibold text-ink">{c.addTitle}</h2>
+        <p className="mt-1 text-body text-ink-soft">{c.addSub}</p>
       </div>
 
       {state && !state.ok && state.error && (
-        <p role="alert" className="rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-3 text-[14.5px] text-bad">
+        <p role="alert" className="rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-3 text-body text-bad">
           {state.error}
         </p>
       )}

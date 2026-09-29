@@ -34,17 +34,17 @@ export function ProducerLinkCard({ slug }: { slug: string | null }) {
 
   return (
     <section className="card">
-      <h2 className="inline-flex items-center gap-2 font-display text-[17px] font-semibold text-ink">
+      <h2 className="inline-flex items-center gap-2 font-display text-head font-semibold text-ink">
         <Send size={17} aria-hidden strokeWidth={1.5} />
         {c.shareTitle}
       </h2>
-      <p className="mt-1.5 max-w-2xl text-[14px] leading-relaxed text-ink-soft">{c.shareSub}</p>
+      <p className="mt-1.5 max-w-2xl text-body leading-relaxed text-ink-soft">{c.shareSub}</p>
       {slug ? (
         <>
           <input
             readOnly value={url} dir="ltr" aria-label={c.shareTitle}
             onFocus={(e) => e.currentTarget.select()}
-            className="field mt-4 w-full font-mono text-[13px]"
+            className="field mt-4 w-full font-mono text-body"
           />
           <div className="mt-3 flex flex-wrap gap-2">
             <a
@@ -61,7 +61,7 @@ export function ProducerLinkCard({ slug }: { slug: string | null }) {
           </div>
         </>
       ) : (
-        <p className="mt-3 text-[13.5px] text-ink-mute">{c.shareNoSlug}</p>
+        <p className="mt-3 text-body text-ink-mute">{c.shareNoSlug}</p>
       )}
     </section>
   );

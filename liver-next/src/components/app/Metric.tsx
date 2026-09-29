@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
  * This composition existed in exactly one place in the product: inside the
  * phone on the landing page, which was built directly from the handoff. Every
  * other screen carried the palette and the serif and then set its headline
- * number at `text-[22px]`, so the tokens were right and the screens still did
+ * number at `text-panel`, so the tokens were right and the screens still did
  * not look like the design. `text-metric` and `text-metric-sm` were defined in
  * the config and used zero times.
  *
@@ -149,7 +149,7 @@ export function Metric({
       )}>
         {value}
       </p>
-      {sub && <p className="mt-2.5 text-[13.5px] leading-relaxed text-ink-mute">{sub}</p>}
+      {sub && <p className="mt-2.5 text-body leading-relaxed text-ink-mute">{sub}</p>}
     </Shell>
   );
 }
@@ -172,12 +172,12 @@ export function MetricRows({ rows, className }: { rows: Row[]; className?: strin
       {rows.map((row) => {
         const body = (
           <>
-            <span className="flex items-center gap-1.5 text-[14px] text-ink-soft">
+            <span className="flex items-center gap-1.5 text-body text-ink-soft">
               {row.label}
               <Way on={!!row.href} />
             </span>
             <span className={cn(
-              'font-display text-[17px] font-light tabular-nums transition-colors duration-200',
+              'font-display text-head font-light tabular-nums transition-colors duration-200',
               TONE[row.tone ?? 'ink'],
               row.href && 'group-hover/metric:text-accent-bright',
             )}>

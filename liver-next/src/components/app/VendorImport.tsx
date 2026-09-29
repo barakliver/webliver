@@ -158,29 +158,29 @@ export function VendorImport({ existingNames, onDone }: { existingNames: string[
     <section className="card">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="inline-flex items-center gap-2 font-display text-[17px] font-semibold text-ink">
+          <h2 className="inline-flex items-center gap-2 font-display text-head font-semibold text-ink">
             <FileSpreadsheet size={17} strokeWidth={1.5} aria-hidden />
             {c.title}
           </h2>
-          <p className="mt-1.5 max-w-2xl text-[14px] leading-relaxed text-ink-soft">{c.sub}</p>
+          <p className="mt-1.5 max-w-2xl text-body leading-relaxed text-ink-soft">{c.sub}</p>
         </div>
-        <button type="button" onClick={() => void template()} className="btn-ghost min-h-[38px] px-3.5 text-[13.5px]">
+        <button type="button" onClick={() => void template()} className="btn-ghost min-h-[38px] px-3.5 text-body">
           <Download size={14} strokeWidth={1.5} aria-hidden />
           {c.template}
         </button>
       </div>
 
       {result && (
-        <div className="mt-5 rounded-xl2 border border-ok/30 bg-ok-wash p-4">
-          <p className="inline-flex items-center gap-2 text-[14.5px] font-medium text-ok">
+        <div className="mt-5 rounded-card-sm border border-ok/30 bg-ok-wash p-4">
+          <p className="inline-flex items-center gap-2 text-body font-medium text-ok">
             <Check size={16} strokeWidth={1.5} aria-hidden />
             {c.done}
           </p>
-          <p className="mt-1 text-[13.5px] text-ink-soft">
+          <p className="mt-1 text-body text-ink-soft">
             {c.added} <Ltr>{result.added}</Ltr> · {c.updated} <Ltr>{result.updated}</Ltr> · {c.skipped} <Ltr>{result.skipped}</Ltr>
           </p>
           {onDone && (
-            <button type="button" onClick={onDone} className="btn-quiet mt-2 px-0 text-[13.5px]">{ui.vendor.close}</button>
+            <button type="button" onClick={onDone} className="btn-quiet mt-2 px-0 text-body">{ui.vendor.close}</button>
           )}
         </div>
       )}
@@ -195,7 +195,7 @@ export function VendorImport({ existingNames, onDone }: { existingNames: string[
             over ? 'border-accent bg-accent-wash' : 'border-line-strong bg-surface-100',
           )}
         >
-          <label className="inline-flex min-h-[44px] cursor-pointer items-center gap-2 rounded-button border border-line-strong bg-card px-5 text-[14px] font-medium text-ink transition hover:border-accent/40 hover:text-accent">
+          <label className="inline-flex min-h-[44px] cursor-pointer items-center gap-2 rounded-button border border-line-strong bg-card px-5 text-body font-medium text-ink transition hover:border-accent/40 hover:text-accent">
             <Upload size={16} strokeWidth={1.5} aria-hidden />
             {busy === 'reading' ? c.reading : c.choose}
             <input
@@ -204,29 +204,29 @@ export function VendorImport({ existingNames, onDone }: { existingNames: string[
               onChange={(e) => void read(e.target.files?.[0])}
             />
           </label>
-          <p className="mt-3 text-[13.5px] text-ink-soft">{c.drop}</p>
+          <p className="mt-3 text-body text-ink-soft">{c.drop}</p>
         </div>
       )}
 
       {error && (
-        <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">{error}</p>
+        <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-body text-bad">{error}</p>
       )}
 
       {parsed && (
         <div className="mt-5 space-y-5">
           <div>
             <div className="flex flex-wrap items-baseline justify-between gap-2">
-              <h3 className="text-[14.5px] font-medium text-ink">{c.mapping}</h3>
-              <p className="text-[12.5px] text-ink-mute">{c.mappingSub}</p>
+              <h3 className="text-body font-medium text-ink">{c.mapping}</h3>
+              <p className="text-meta text-ink-mute">{c.mappingSub}</p>
             </div>
             <ul className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
               {parsed.headers.map((h, i) => (
                 <li key={i} className="flex items-center gap-2 rounded-xl2 border border-line bg-surface-100 px-3 py-2">
-                  <span className="min-w-0 flex-1 truncate text-[13.5px] text-ink" title={h}>{h || `עמודה ${i + 1}`}</span>
+                  <span className="min-w-0 flex-1 truncate text-body text-ink" title={h}>{h || `עמודה ${i + 1}`}</span>
                   <select
                     value={map[i] ?? ''} onChange={(e) => choose(i, e.target.value as Field | '')}
                     aria-label={`${c.mapping}: ${h}`}
-                    className={cn('field min-h-[36px] w-[46%] px-2 py-1 text-[13px]', !map[i] && 'text-ink-mute')}
+                    className={cn('field min-h-[36px] w-[46%] px-2 py-1 text-body', !map[i] && 'text-ink-mute')}
                   >
                     <option value="">{c.skip}</option>
                     {FIELDS.map((f) => <option key={f} value={f}>{c.columns[f]}</option>)}
@@ -238,17 +238,17 @@ export function VendorImport({ existingNames, onDone }: { existingNames: string[
 
           <div>
             <div className="flex flex-wrap items-baseline justify-between gap-2">
-              <h3 className="text-[14.5px] font-medium text-ink">{c.preview}</h3>
-              <p className="text-[12.5px] text-ink-mute">
+              <h3 className="text-body font-medium text-ink">{c.preview}</h3>
+              <p className="text-meta text-ink-mute">
                 {c.rowsFound.replace('{n}', String(prepared.length))}
                 {prepared.length > 0 && <> · {c.willAdd.replace('{n}', String(willAdd))} · {c.willUpdate.replace('{n}', String(willUpdate))}</>}
               </p>
             </div>
             {nameCol === undefined ? (
-              <p className="mt-3 text-[13.5px] text-bad">{c.noRows}</p>
+              <p className="mt-3 text-body text-bad">{c.noRows}</p>
             ) : (
               <div className="mt-3 overflow-x-auto rounded-xl2 border border-line">
-                <table className="w-full min-w-[560px] text-[13px]">
+                <table className="w-full min-w-[560px] text-body">
                   <thead className="bg-surface-100 text-ink-mute">
                     <tr>
                       {FIELDS.filter((f) => Object.values(map).includes(f)).map((f) => (
@@ -269,7 +269,7 @@ export function VendorImport({ existingNames, onDone }: { existingNames: string[
                   </tbody>
                 </table>
                 {prepared.length > 6 && (
-                  <p className="border-t border-line px-3 py-2 text-[12.5px] text-ink-mute">
+                  <p className="border-t border-line px-3 py-2 text-meta text-ink-mute">
                     {c.previewMore.replace('{n}', String(prepared.length - 6))}
                   </p>
                 )}

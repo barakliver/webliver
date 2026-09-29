@@ -155,13 +155,13 @@ export function ReceiptScan({ clientId, formId }: { clientId: string; formId: st
             : <Camera size={16} strokeWidth={1.5} aria-hidden />}
           {busy ? c.scanning : c.scan}
         </button>
-        <p className="text-[12.5px] text-ink-mute">{c.scanHint}</p>
+        <p className="text-meta text-ink-mute">{c.scanHint}</p>
       </div>
 
       {note && (
         <p
           role="status"
-          className={`mt-2.5 text-[13px] ${note.bad ? 'text-warn' : 'text-ok'}`}
+          className={`mt-2.5 text-body ${note.bad ? 'text-warn' : 'text-ok'}`}
         >
           {note.text}
         </p>

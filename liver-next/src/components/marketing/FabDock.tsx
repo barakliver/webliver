@@ -46,7 +46,7 @@ export function FabDock({ site, kinds }: { site: SiteCopy; kinds: EventKinds }) 
                   as a banner ad rather than as a way to reach a producer, and
                   it was the brightest thing on a screen whose whole argument
                   is restraint. The icon still says which app it opens. */
-               className="flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-xl2 bg-ink px-4 text-[14px] tracking-[.03em] text-surface transition-colors duration-300 hover:bg-ink-soft sm:flex-none">
+               className="flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-xl2 bg-ink px-4 text-body tracking-[.03em] text-surface transition-colors duration-300 hover:bg-ink-soft sm:flex-none">
               <MessageCircle size={17} aria-hidden strokeWidth={1.5} /><span>{site.fab.whatsapp}</span>
             </a>
           )}
@@ -57,12 +57,12 @@ export function FabDock({ site, kinds }: { site: SiteCopy; kinds: EventKinds }) 
           {publicEnv.bookingUrl ? (
             <a href={publicEnv.bookingUrl} target="_blank" rel="noopener noreferrer"
                title={site.fab.bookingNote}
-               className="flex flex-1 items-center justify-center gap-2 rounded-xl2 bg-ink px-4 py-2.5 text-[14px] font-medium text-surface transition hover:bg-ink-soft sm:flex-none">
+               className="flex flex-1 items-center justify-center gap-2 rounded-xl2 bg-ink px-4 py-2.5 text-body font-medium text-surface transition hover:bg-ink-soft sm:flex-none">
               <CalendarDays size={17} aria-hidden strokeWidth={1.5} /><span>{site.fab.booking}</span>
             </a>
           ) : null}
           <button type="button" onClick={() => setSheet('lead')}
-                  className="flex flex-1 items-center justify-center gap-2 rounded-xl2 border border-line-strong bg-card/80 px-4 py-2.5 text-[14px] font-medium text-ink transition hover:bg-card sm:flex-none">
+                  className="flex flex-1 items-center justify-center gap-2 rounded-xl2 border border-line-strong bg-card/80 px-4 py-2.5 text-body font-medium text-ink transition hover:bg-card sm:flex-none">
             <PenLine size={17} aria-hidden strokeWidth={1.5} /><span>{site.fab.lead}</span>
           </button>
         </div>

@@ -26,7 +26,7 @@ function Busy({ label, busy }: { label: string; busy: string }) {
 function Err({ state }: { state: SeatResult | null }) {
   if (!state || state.ok || !state.error) return null;
   return (
-    <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+    <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-body text-bad">
       {state.error}
     </p>
   );
@@ -126,11 +126,11 @@ function Table({ table, seated, taken, dim, active, onOpen, drop }: {
           <Chair key={i} i={i} of={table.seats} taken={i < taken} name={occupant[i] ?? c.seatFree} />
         ))}
         <span className="pointer-events-none flex flex-col items-center gap-0.5 px-4 text-center">
-          <span className="font-display text-[15px] font-semibold leading-tight text-ink">{table.name}</span>
-          <span className="text-[12.5px] tabular-nums text-ink-mute">
+          <span className="font-display text-lead font-semibold leading-tight text-ink">{table.name}</span>
+          <span className="text-meta tabular-nums text-ink-mute">
             <Ratio of={taken} total={table.seats} />
           </span>
-          {full && <span className="text-[11.5px] text-ok">{c.full}</span>}
+          {full && <span className="text-micro text-ok">{c.full}</span>}
         </span>
       </button>
     </div>
@@ -192,9 +192,9 @@ export function SeatingPlan({ clientId, tables, guests }: {
 
   return (
     <section className="card">
-      <h2 className="font-display text-[18px] font-semibold text-ink">🪑 {c.title}</h2>
-      <p className="mt-1 text-[14px] text-ink-soft">{c.sub}</p>
-      <p className="mt-1 text-[13px] text-ink-mute">{c.dragHint}</p>
+      <h2 className="font-display text-subhead font-semibold text-ink">🪑 {c.title}</h2>
+      <p className="mt-1 text-body text-ink-soft">{c.sub}</p>
+      <p className="mt-1 text-body text-ink-mute">{c.dragHint}</p>
 
       <form action={addAction} className="mt-5 grid gap-3 sm:grid-cols-[1fr_120px_auto]">
         <input type="hidden" name="client_id" value={clientId} />
@@ -206,19 +206,19 @@ export function SeatingPlan({ clientId, tables, guests }: {
       <Err state={seatState} />
       <Err state={sizeState} />
 
-      {attending.length === 0 && <p className="mt-5 rounded-xl2 bg-warn-wash px-4 py-3 text-[14px] text-warn">{c.needRsvp}</p>}
+      {attending.length === 0 && <p className="mt-5 rounded-xl2 bg-warn-wash px-4 py-3 text-body text-warn">{c.needRsvp}</p>}
 
       <div
         {...drag.zone(UNSEATED)}
-        className={`mt-6 rounded-xl2 border p-4 transition-colors ${
+        className={`mt-6 rounded-card-sm border p-4 transition-colors ${
           over === UNSEATED ? 'border-accent bg-accent-wash' : 'border-line'
         }`}
       >
-        <h3 className="text-[13px] font-semibold text-accent">
+        <h3 className="text-body font-semibold text-accent">
           {c.unseated} · {waiting.reduce((a, g) => a + Number(g.party_size || 0), 0)} {c.peopleShort}
         </h3>
         {waiting.length === 0 ? (
-          <p className="mt-2 text-[14px] text-ink-mute">{attending.length ? c.unseatedNone : '·'}</p>
+          <p className="mt-2 text-body text-ink-mute">{attending.length ? c.unseatedNone : '·'}</p>
         ) : (
           <ul className="mt-3 space-y-2">
             {waiting.map((g) => (
@@ -230,13 +230,13 @@ export function SeatingPlan({ clientId, tables, guests }: {
                 }`}
               >
                 <Grip label={c.dragHint} {...drag.grip(g)} />
-                <span className="flex-1 text-[14.5px] text-ink">
+                <span className="flex-1 text-body text-ink">
                   {g.full_name} <span className="text-ink-mute">· {g.party_size}</span>
                 </span>
                 <form action={seatAction} className="flex gap-2">
                   <input type="hidden" name="guest_id" value={g.id} />
                   <input type="hidden" name="client_id" value={clientId} />
-                  <select name="table_id" required defaultValue="" className="field w-[150px] py-1.5 text-[13.5px]" aria-label={c.place}>
+                  <select name="table_id" required defaultValue="" className="field w-[150px] py-1.5 text-body" aria-label={c.place}>
                     <option value="" disabled>{c.choose}</option>
                     {tables.map((t) => (
                       <option key={t.id} value={t.id}>
@@ -244,7 +244,7 @@ export function SeatingPlan({ clientId, tables, guests }: {
                       </option>
                     ))}
                   </select>
-                  <button type="submit" className="btn-ghost px-3 py-1.5 text-[13px]">{c.place}</button>
+                  <button type="submit" className="btn-ghost px-3 py-1.5 text-body">{c.place}</button>
                 </form>
               </li>
             ))}
@@ -255,7 +255,7 @@ export function SeatingPlan({ clientId, tables, guests }: {
       {tables.length > 0 && (
         <div className="mt-8">
           <h3 className="eyebrow">{c.floor}</h3>
-          <p className="mt-1.5 text-[13px] text-ink-mute">{c.floorSub}</p>
+          <p className="mt-1.5 text-body text-ink-mute">{c.floorSub}</p>
           {/* Wrapped rather than laid out on a grid: a room is not a table of
               cells, and letting the circles find their own rows is closer to
               how they sit in one. Horizontal overflow is impossible here, so
@@ -281,7 +281,7 @@ export function SeatingPlan({ clientId, tables, guests }: {
       )}
 
       {tables.length === 0 ? (
-        <p className="mt-6 text-[14.5px] text-ink-mute">{c.noTables}</p>
+        <p className="mt-6 text-body text-ink-mute">{c.noTables}</p>
       ) : (
         <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {tables.map((t) => {
@@ -300,8 +300,8 @@ export function SeatingPlan({ clientId, tables, guests }: {
                 }`}
               >
                 <div className="flex items-start justify-between gap-2">
-                  <h3 className="font-display text-[16px] font-semibold text-ink">{t.name}</h3>
-                  <span className={`rounded-xl2 px-2.5 py-0.5 text-[12px] ${
+                  <h3 className="font-display text-head font-semibold text-ink">{t.name}</h3>
+                  <span className={`rounded-xl2 px-2.5 py-0.5 text-meta ${
                     free === 0 ? 'bg-ok-wash text-ok' : 'bg-surface-200 text-ink-mute'
                   }`}>
                     <Ratio of={taken} total={t.seats} /> {free === 0 ? c.full : ''}
@@ -313,14 +313,14 @@ export function SeatingPlan({ clientId, tables, guests }: {
                 </div>
 
                 {atTable(t.id).length === 0 ? (
-                  <p className="mt-3 text-[13.5px] text-ink-mute">{c.emptyTable}</p>
+                  <p className="mt-3 text-body text-ink-mute">{c.emptyTable}</p>
                 ) : (
                   <ul className="mt-3 space-y-1.5">
                     {atTable(t.id).map((g) => (
                       <li
                         key={g.id}
                         {...drag.row(g)}
-                        className={`flex items-center justify-between gap-1 rounded-xl2 text-[14px] transition ${
+                        className={`flex items-center justify-between gap-1 rounded-xl2 text-body transition ${
                           dragging?.id === g.id ? 'opacity-40' : ''
                         }`}
                       >
@@ -330,7 +330,7 @@ export function SeatingPlan({ clientId, tables, guests }: {
                           <input type="hidden" name="guest_id" value={g.id} />
                           <input type="hidden" name="client_id" value={clientId} />
                           <input type="hidden" name="table_id" value="" />
-                          <button type="submit" className="btn-quiet px-2 py-0.5 text-[12.5px]" title={c.unseat}>✕</button>
+                          <button type="submit" className="btn-quiet px-2 py-0.5 text-meta" title={c.unseat}>✕</button>
                         </form>
                       </li>
                     ))}
@@ -343,14 +343,14 @@ export function SeatingPlan({ clientId, tables, guests }: {
                     <input type="hidden" name="client_id" value={clientId} />
                     <input
                       name="seats" type="number" min={1} max={40} defaultValue={t.seats}
-                      className="field w-[80px] py-1 text-[13px]" aria-label={c.seats}
+                      className="field w-[80px] py-1 text-body" aria-label={c.seats}
                     />
-                    <button type="submit" className="btn-quiet px-2 py-1 text-[12.5px]">{c.seats}</button>
+                    <button type="submit" className="btn-quiet px-2 py-1 text-meta">{c.seats}</button>
                   </form>
                   <DeleteForm action={deleteTable}>
                     <input type="hidden" name="table_id" value={t.id} />
                     <input type="hidden" name="client_id" value={clientId} />
-                    <button type="submit" className="btn-quiet px-2 py-1 text-[12.5px]" title={c.removeTableHint}>
+                    <button type="submit" className="btn-quiet px-2 py-1 text-meta" title={c.removeTableHint}>
                       {c.removeTable}
                     </button>
                   </DeleteForm>

@@ -51,15 +51,15 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
     <section className="card">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="font-display text-[18px] font-semibold text-ink">{c.budTitle}</h2>
-          <p className="mt-1 text-[14px] text-ink-soft">{c.budSub}</p>
+          <h2 className="font-display text-subhead font-semibold text-ink">{c.budTitle}</h2>
+          <p className="mt-1 text-body text-ink-soft">{c.budSub}</p>
         </div>
 
         {viewer === 'producer' && (
           <form action={toggleBudgetVisible}>
             <input type="hidden" name="client_id" value={clientId} />
             <input type="hidden" name="visible" value={String(visible)} />
-            <button type="submit" className={`inline-flex min-h-[44px] items-center rounded-xl2 px-4 text-[13px] font-medium transition sm:min-h-0 sm:py-2 ${
+            <button type="submit" className={`inline-flex min-h-[44px] items-center rounded-xl2 px-4 text-body font-medium transition sm:min-h-0 sm:py-2 ${
               visible ? 'bg-ok-wash text-ok' : 'bg-surface-200 text-ink-mute'
             }`}>
               {visible ? c.budVisible : c.budHidden}
@@ -69,7 +69,7 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
       </div>
 
       {viewer === 'producer' && !visible && (
-        <p className="mt-4 rounded-xl2 bg-surface-200 px-4 py-3 text-[13.5px] text-ink-soft">{c.budHiddenNote}</p>
+        <p className="mt-4 rounded-xl2 bg-surface-200 px-4 py-3 text-body text-ink-soft">{c.budHiddenNote}</p>
       )}
 
       {/* Only once there is something to total. An empty budget used to draw
@@ -114,13 +114,13 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
       {viewer === 'producer' && <ReceiptScan clientId={clientId} formId={formId} />}
 
       {state && !state.ok && state.error && (
-        <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+        <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-body text-bad">
           {state.error}
         </p>
       )}
 
       {items.length === 0 ? (
-        <p className="mt-6 text-[14.5px] text-ink-mute">{c.budNone}</p>
+        <p className="mt-6 text-body text-ink-mute">{c.budNone}</p>
       ) : (
         <>
         {/* Cards on a phone, the table from the small breakpoint up. Four money
@@ -133,17 +133,17 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <p className="font-medium text-ink">{i.label}</p>
-                  {i.vendor && <p className="text-[12.5px] text-ink-mute">{i.vendor}</p>}
+                  {i.vendor && <p className="text-meta text-ink-mute">{i.vendor}</p>}
                 </div>
                 {/* The agreed figure is the one that matters once it exists, so
                     it is the one that gets the size; the estimate sits under it
                     as what it was before somebody negotiated. */}
                 <div className="shrink-0 text-left">
-                  <p className="font-display text-[16px] font-semibold tabular-nums text-ink">
+                  <p className="font-display text-head font-semibold tabular-nums text-ink">
                     <Money value={i.agreed === null ? Number(i.estimate) : Number(i.agreed)} />
                   </p>
                   {i.agreed !== null && Number(i.agreed) !== Number(i.estimate) && (
-                    <p className="text-[12px] tabular-nums text-ink-mute">
+                    <p className="text-meta tabular-nums text-ink-mute">
                       {c.budEstimate} <Money value={Number(i.estimate)} />
                     </p>
                   )}
@@ -153,7 +153,7 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
                 <DeleteForm action={deleteBudgetItem} className="mt-2">
                   <input type="hidden" name="item_id" value={i.id} />
                   <input type="hidden" name="client_id" value={clientId} />
-                  <button type="submit" className="btn-quiet px-2 py-1 text-[13px]">{c.remove}</button>
+                  <button type="submit" className="btn-quiet px-2 py-1 text-body">{c.remove}</button>
                 </DeleteForm>
               )}
             </li>
@@ -161,9 +161,9 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
         </ul>
 
         <div className="mt-5 hidden overflow-x-auto sm:block">
-          <table className="w-full text-right text-[14.5px]">
+          <table className="w-full text-right text-body">
             <thead>
-              <tr className="border-b border-line text-[12.5px] text-ink-mute">
+              <tr className="border-b border-line text-meta text-ink-mute">
                 <th scope="col" className="py-2 font-medium">{c.budLabel}</th>
                 <th scope="col" className="py-2 font-medium">{c.budVendor}</th>
                 <th scope="col" className="py-2 font-medium">{c.budEstimate}</th>
@@ -185,7 +185,7 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
                       <DeleteForm action={deleteBudgetItem}>
                         <input type="hidden" name="item_id" value={i.id} />
                         <input type="hidden" name="client_id" value={clientId} />
-                        <button type="submit" className="btn-quiet px-2 py-1 text-[13px]">{c.remove}</button>
+                        <button type="submit" className="btn-quiet px-2 py-1 text-body">{c.remove}</button>
                       </DeleteForm>
                     </td>
                   )}

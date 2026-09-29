@@ -93,20 +93,20 @@ export function ProfileForm({
           className="sr-only"
           id="avatar-file"
         />
-        <label htmlFor="avatar-file" className="btn-ghost cursor-pointer text-[14px]">
+        <label htmlFor="avatar-file" className="btn-ghost cursor-pointer text-body">
           <Camera size={16} strokeWidth={1.5} aria-hidden />
           {preview ? c.replace : c.choose}
         </label>
 
         {preview && (
-          <button type="button" onClick={onRemove} className="btn-quiet text-[13.5px]" disabled={busy}>
+          <button type="button" onClick={onRemove} className="btn-quiet text-body" disabled={busy}>
             <Trash2 size={15} strokeWidth={1.5} aria-hidden />
             {c.remove}
           </button>
         )}
 
-        <p className="text-center text-[12.5px] text-ink-mute">{c.hint}</p>
-        {busy && <p className="text-[13px] text-ink-soft">{c.saving}</p>}
+        <p className="text-center text-meta text-ink-mute">{c.hint}</p>
+        {busy && <p className="text-body text-ink-soft">{c.saving}</p>}
         {error && <p role="alert" className="chip-bad">{error}</p>}
       </section>
 
@@ -128,7 +128,7 @@ export function ProfileForm({
         <div>
           <label htmlFor="email" className="label">אימייל</label>
           <input id="email" value={email} readOnly disabled className="field opacity-60" />
-          <p className="mt-1.5 text-[12.5px] text-ink-mute">
+          <p className="mt-1.5 text-meta text-ink-mute">
             הכניסה מבוססת על הכתובת הזו, ולכן היא לא ניתנת לשינוי כאן.
           </p>
         </div>

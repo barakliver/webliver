@@ -257,10 +257,10 @@ export function NotePad({ clientId, eventName, note, takeFocus = true }: {
   return (
     <div className="mx-auto max-w-[46rem]">
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-        <Link href={`/app/clients/${clientId}`} className="btn-quiet inline-block px-0 text-[14px]">
+        <Link href={`/app/clients/${clientId}`} className="btn-quiet inline-block px-0 text-body">
           ← {c.back}
         </Link>
-        <p className="text-[13px] text-ink-mute">{eventName}</p>
+        <p className="text-body text-ink-mute">{eventName}</p>
       </div>
 
       <div className="panel">
@@ -268,7 +268,7 @@ export function NotePad({ clientId, eventName, note, takeFocus = true }: {
           <input
             type="date" value={heldOn} onChange={(e) => change(setHeldOn)(e.target.value)}
             aria-label={c.held}
-            className="field h-11 min-h-0 w-[170px] py-1 text-[14px]"
+            className="field h-11 min-h-0 w-[170px] py-1 text-body"
           />
           <Status state={state} at={savedAt} ever={!!savedAt || !!note.id} c={c} locale={ui.locale} />
         </div>
@@ -280,13 +280,13 @@ export function NotePad({ clientId, eventName, note, takeFocus = true }: {
           placeholder={c.titlePh}
           aria-label={c.title}
           maxLength={200}
-          className="mt-5 w-full border-0 bg-transparent p-0 font-display text-[21px] font-semibold text-ink placeholder:text-ink-mute/70 focus:outline-none sm:text-[26px]"
+          className="mt-5 w-full border-0 bg-transparent p-0 font-display text-panel font-semibold text-ink placeholder:text-ink-mute/70 focus:outline-none sm:text-figure"
         />
 
         <hr className="hairline mt-4" />
 
         {restored && (
-          <p className="mt-4 rounded-control border border-accent/25 bg-accent-wash px-4 py-2.5 text-[13.5px] text-ink">
+          <p className="mt-4 rounded-control border border-accent/25 bg-accent-wash px-4 py-2.5 text-body text-ink">
             {c.restored}
           </p>
         )}
@@ -298,11 +298,11 @@ export function NotePad({ clientId, eventName, note, takeFocus = true }: {
           placeholder={c.bodyPh}
           aria-label={c.title}
           autoFocus={takeFocus}
-          className="mt-4 min-h-[58vh] w-full resize-none border-0 bg-transparent p-0 text-[17px] leading-[1.9] text-ink placeholder:text-ink-mute/70 focus:outline-none"
+          className="mt-4 min-h-[58vh] w-full resize-none border-0 bg-transparent p-0 text-head leading-[1.9] text-ink placeholder:text-ink-mute/70 focus:outline-none"
         />
 
         {body.length >= COUNT_FROM && (
-          <p className={`mt-2 text-[12.5px] ${left <= 0 ? 'text-bad' : 'text-ink-mute'}`}>
+          <p className={`mt-2 text-meta ${left <= 0 ? 'text-bad' : 'text-ink-mute'}`}>
             {left <= 0 ? c.full : fill(c.nearLimit, { n: left })}
           </p>
         )}
@@ -336,7 +336,7 @@ function Status({ state, at, ever, c, locale }: {
 }) {
   if (state === 'failed') {
     return (
-      <p role="status" className="inline-flex items-center gap-1.5 text-[13px] text-bad">
+      <p role="status" className="inline-flex items-center gap-1.5 text-body text-bad">
         <CloudOff size={14} aria-hidden strokeWidth={1.5} />
         {c.failed}
       </p>
@@ -344,18 +344,18 @@ function Status({ state, at, ever, c, locale }: {
   }
   if (state === 'saving') {
     return (
-      <p role="status" className="inline-flex items-center gap-1.5 text-[13px] text-ink-mute">
+      <p role="status" className="inline-flex items-center gap-1.5 text-body text-ink-mute">
         <Loader2 size={14} aria-hidden strokeWidth={1.5} className="animate-spin motion-reduce:animate-none" />
         {c.saving}
       </p>
     );
   }
   if (state === 'dirty') {
-    return <p role="status" className="text-[13px] text-ink-mute">{c.unsaved}</p>;
+    return <p role="status" className="text-body text-ink-mute">{c.unsaved}</p>;
   }
   if (!ever) return <span aria-hidden />;
   return (
-    <p role="status" className="inline-flex items-center gap-1.5 text-[13px] text-ink-mute">
+    <p role="status" className="inline-flex items-center gap-1.5 text-body text-ink-mute">
       <Check size={14} aria-hidden strokeWidth={1.5} />
       {at ? fill(c.savedAt, { at: timeFmt(locale).format(at) }) : c.saved}
     </p>

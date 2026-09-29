@@ -73,7 +73,7 @@ export function Hero({ site }: { site: SiteCopy }) {
           <Prose
             lines={site.hero.body}
             lede={false}
-            className="!text-[18px] !leading-relaxed !text-surface/90 sm:!text-[20px]"
+            className="!text-subhead !leading-relaxed !text-surface/90 sm:!text-panel"
           />
         </div>
 

@@ -119,8 +119,8 @@ export function A11yPanel({ copy: c }: { copy: A11yCopy }) {
           <div className="max-h-[86svh] w-full overflow-y-auto rounded-t-sheet border border-line-strong bg-card p-6 shadow-pop sm:max-w-[28rem] sm:rounded-sheet">
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0">
-                <h2 className="font-display text-[22px] font-semibold text-ink">{c.title}</h2>
-                <p className="mt-1.5 text-[13.5px] leading-relaxed text-ink-soft">{c.sub}</p>
+                <h2 className="font-display text-panel font-semibold text-ink">{c.title}</h2>
+                <p className="mt-1.5 text-body leading-relaxed text-ink-soft">{c.sub}</p>
               </div>
               <button
                 type="button" onClick={() => setOpen(false)} aria-label={c.close}
@@ -135,7 +135,7 @@ export function A11yPanel({ copy: c }: { copy: A11yCopy }) {
             {/* First, because it is the one people came for. */}
             {onPlatform && (
             <div className="border-b border-line pb-4">
-              <span id="a11y-theme" className="text-[14.5px] text-ink">{c.theme}</span>
+              <span id="a11y-theme" className="text-body text-ink">{c.theme}</span>
               <div role="radiogroup" aria-labelledby="a11y-theme" className="mt-2.5 grid grid-cols-3 gap-2">
                 <Pick on={theme === 'auto'} onClick={() => setTheme('auto')}
                   icon={<Monitor size={16} strokeWidth={1.5} aria-hidden />} label={c.themeAuto} />
@@ -149,13 +149,13 @@ export function A11yPanel({ copy: c }: { copy: A11yCopy }) {
 
             {/* Text size */}
             <div className="flex items-center justify-between gap-4 border-b border-line py-3">
-              <span id="a11y-font" className="text-[14.5px] text-ink">{c.font}</span>
+              <span id="a11y-font" className="text-body text-ink">{c.font}</span>
               <div className="flex items-center gap-2">
                 <Step
                   label={c.smaller} icon={<Minus size={16} strokeWidth={1.5} aria-hidden />}
                   onClick={() => set('font', clampStep(s.font - 1))} disabled={s.font === 0}
                 />
-                <span aria-live="polite" className="min-w-[3.5rem] text-center font-display text-[16px] tabular-nums text-ink">
+                <span aria-live="polite" className="min-w-[3.5rem] text-center font-display text-head tabular-nums text-ink">
                   <span dir="ltr" style={{ unicodeBidi: 'isolate', whiteSpace: 'nowrap' }}>{scale}%</span>
                 </span>
                 <Step
@@ -182,12 +182,12 @@ export function A11yPanel({ copy: c }: { copy: A11yCopy }) {
 
             <hr className="rule-gold my-5" />
 
-            <h3 className="text-[14.5px] font-medium text-ink">{c.statement}</h3>
-            <p className="mt-2 text-[13.5px] leading-relaxed text-ink-soft">{c.statementBody}</p>
+            <h3 className="text-body font-medium text-ink">{c.statement}</h3>
+            <p className="mt-2 text-body leading-relaxed text-ink-soft">{c.statementBody}</p>
             <Link
               href="/accessibility"
               onClick={() => setOpen(false)}
-              className="mt-3 inline-block text-[13.5px] text-accent underline underline-offset-4"
+              className="mt-3 inline-block text-body text-accent underline underline-offset-4"
             >
               {c.statementMore}
             </Link>
@@ -208,7 +208,7 @@ function Pick({ on, onClick, icon, label }: {
   return (
     <button
       type="button" role="radio" aria-checked={on} onClick={onClick}
-      className={`flex min-h-[44px] flex-col items-center justify-center gap-1 rounded-control border px-2 py-2 text-[12.5px] transition-colors ${
+      className={`flex min-h-[44px] flex-col items-center justify-center gap-1 rounded-control border px-2 py-2 text-meta transition-colors ${
         on
           ? 'border-accent bg-accent-wash font-medium text-ink'
           : 'border-line-strong text-ink-soft hover:border-accent/50 hover:text-ink'
@@ -243,7 +243,7 @@ function Switch({ label, on, onChange, onWord, offWord }: {
 }) {
   return (
     <div className="flex items-center justify-between gap-4 border-b border-line py-3">
-      <span className="text-[14.5px] text-ink">{label}</span>
+      <span className="text-body text-ink">{label}</span>
       {/* The knob is placed with `justify-*` rather than moved with a
           transform. Under `dir="rtl"` a translateX runs the other way, so the
           transform version put every switch's knob on the same side and all

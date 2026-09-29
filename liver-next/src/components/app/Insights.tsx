@@ -12,10 +12,10 @@ import { Metric } from '@/components/app/Metric';
 async function Rate({ value }: { value: number | null }) {
   const c = (await serverCopy()).insights;
   if (value === null) {
-    return <span className="text-[12.5px] font-medium text-ink-mute">{c.thin}</span>;
+    return <span className="text-meta font-medium text-ink-mute">{c.thin}</span>;
   }
   return (
-    <span className="text-[12.5px] font-semibold tabular-nums text-accent">
+    <span className="text-meta font-semibold tabular-nums text-accent">
       {value}% <span className="font-normal text-ink-mute">{c.ofPrev}</span>
     </span>
   );
@@ -36,8 +36,8 @@ export async function FunnelChart({ funnel }: { funnel: Funnel }) {
   const top = Math.max(funnel.total, 1);
   return (
     <section className="card">
-      <h2 className="font-display text-[19px] font-semibold text-ink">{c.funnel.title}</h2>
-      <p className="mt-1 text-[13.5px] text-ink-soft">{c.funnel.sub}</p>
+      <h2 className="font-display text-subhead font-semibold text-ink">{c.funnel.title}</h2>
+      <p className="mt-1 text-body text-ink-soft">{c.funnel.sub}</p>
 
       <ul className="mt-5 list-none space-y-3 p-0">
         {funnel.steps.map((s, i) => (
@@ -54,12 +54,12 @@ export async function FunnelChart({ funnel }: { funnel: Funnel }) {
                          focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
                          focus-visible:outline-accent"
             >
-              <span className="text-[14px] font-medium text-ink transition-colors
+              <span className="text-body font-medium text-ink transition-colors
                                group-hover/metric:text-accent">
                 {LABELS[s.key] ?? s.key}
               </span>
               <span className="flex items-baseline gap-2">
-                <span className="text-[17px] font-semibold tabular-nums text-ink transition-colors
+                <span className="text-head font-semibold tabular-nums text-ink transition-colors
                                  group-hover/metric:text-accent">
                   {s.count}
                 </span>
@@ -76,7 +76,7 @@ export async function FunnelChart({ funnel }: { funnel: Funnel }) {
         ))}
       </ul>
 
-      <p className="mt-4 text-[12.5px] text-ink-mute">{c.thinHint}</p>
+      <p className="mt-4 text-meta text-ink-mute">{c.thinHint}</p>
     </section>
   );
 }
@@ -86,13 +86,13 @@ export async function Sources({ rows }: { rows: SourceRow[] }) {
   if (rows.length === 0) return null;
   return (
     <section className="card">
-      <h2 className="font-display text-[19px] font-semibold text-ink">{c.sources.title}</h2>
-      <p className="mt-1 text-[13.5px] text-ink-soft">{c.sources.sub}</p>
+      <h2 className="font-display text-subhead font-semibold text-ink">{c.sources.title}</h2>
+      <p className="mt-1 text-body text-ink-soft">{c.sources.sub}</p>
 
       <div className="mt-4 overflow-x-auto">
-        <table className="w-full min-w-[380px] border-collapse text-[14px]">
+        <table className="w-full min-w-[380px] border-collapse text-body">
           <thead>
-            <tr className="border-b border-line text-[12.5px] text-ink-mute">
+            <tr className="border-b border-line text-meta text-ink-mute">
               <th className="py-2 text-start font-medium">{c.sources.source}</th>
               <th className="py-2 text-start font-medium">{c.sources.leads}</th>
               <th className="py-2 text-start font-medium">{c.sources.won}</th>
@@ -107,7 +107,7 @@ export async function Sources({ rows }: { rows: SourceRow[] }) {
                 <td className="py-2.5 tabular-nums text-ink-soft">{r.won}</td>
                 <td className="py-2.5">
                   {r.rate === null
-                    ? <Ratio of={r.won} total={r.leads} className="text-[12.5px] text-ink-mute" />
+                    ? <Ratio of={r.won} total={r.leads} className="text-meta text-ink-mute" />
                     : <span className="font-semibold tabular-nums text-accent">{r.rate}%</span>}
                 </td>
               </tr>
@@ -144,8 +144,8 @@ export async function CashPanel({ cash }: { cash: Cash }) {
   const c = (await serverCopy()).insights;
   return (
     <section className="card">
-      <h2 className="font-display text-[19px] font-semibold text-ink">{c.cash.title}</h2>
-      <p className="mt-1 text-[13.5px] text-ink-soft">{c.cash.sub}</p>
+      <h2 className="font-display text-subhead font-semibold text-ink">{c.cash.title}</h2>
+      <p className="mt-1 text-body text-ink-soft">{c.cash.sub}</p>
       {/* Three across only where three six-figure amounts in the display face
           actually fit. At tablet widths the columns fall to ~180px each and
           the numerals collide, which on a money panel reads as one wrong
@@ -169,8 +169,8 @@ export async function ResponsePanel({ r }: { r: Response }) {
   const c = (await serverCopy()).insights;
   return (
     <section className="card">
-      <h2 className="font-display text-[19px] font-semibold text-ink">{c.response.title}</h2>
-      <p className="mt-1 text-[13.5px] text-ink-soft">{c.response.sub}</p>
+      <h2 className="font-display text-subhead font-semibold text-ink">{c.response.title}</h2>
+      <p className="mt-1 text-body text-ink-soft">{c.response.sub}</p>
       <div className="mt-4 grid gap-3 sm:grid-cols-3">
         <Figure
           label={c.response.median}
@@ -199,7 +199,7 @@ export async function Health({ signed, overdue, waiting }: {
   const clear = overdue === 0 && waiting === 0;
   return (
     <section className="card">
-      <h2 className="font-display text-[19px] font-semibold text-ink">{c.health.title}</h2>
+      <h2 className="font-display text-subhead font-semibold text-ink">{c.health.title}</h2>
       <div className="mt-4 grid gap-3 sm:grid-cols-3">
         <Figure
           label={c.health.signed}
@@ -221,7 +221,7 @@ export async function Health({ signed, overdue, waiting }: {
       </div>
 
       {clear ? (
-        <p className="mt-4 text-[14px] text-ink-soft">{c.health.clear}</p>
+        <p className="mt-4 text-body text-ink-soft">{c.health.clear}</p>
       ) : (
         <div className="mt-4 flex flex-wrap gap-2">
           {/* Links rather than status chips. A chip reports a state; these
@@ -250,15 +250,15 @@ export async function ConversionPanel({ r }: { r: Conversion }) {
   if (r.rate === null) {
     return (
       <section className="card">
-        <h2 className="font-display text-[19px] font-semibold text-ink">{cc.title}</h2>
-        <p className="mt-3 text-[14.5px] text-ink-soft">{cc.none}</p>
+        <h2 className="font-display text-subhead font-semibold text-ink">{cc.title}</h2>
+        <p className="mt-3 text-body text-ink-soft">{cc.none}</p>
       </section>
     );
   }
   return (
     <section className="card">
-      <h2 className="font-display text-[19px] font-semibold text-ink">{cc.title}</h2>
-      <p className="mt-1 text-[13.5px] text-ink-mute">{cc.sub}</p>
+      <h2 className="font-display text-subhead font-semibold text-ink">{cc.title}</h2>
+      <p className="mt-1 text-body text-ink-mute">{cc.sub}</p>
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
         <Figure
           label={cc.rate}
@@ -270,7 +270,7 @@ export async function ConversionPanel({ r }: { r: Conversion }) {
           value={r.medianDays === null ? '·' : cc.days.replace('{n}', String(r.medianDays))}
         />
       </div>
-      <p className="mt-3 text-[13px] text-ink-mute">{cc.count.replace('{n}', String(r.leads))}</p>
+      <p className="mt-3 text-body text-ink-mute">{cc.count.replace('{n}', String(r.leads))}</p>
     </section>
   );
 }

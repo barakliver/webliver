@@ -50,14 +50,14 @@ export function SignForm({ token, defaultName }: { token: string; defaultName: s
         className="field"
       />
 
-      <p className="mt-4 text-[13px] leading-relaxed text-ink-mute">{c.before}</p>
+      <p className="mt-4 text-body leading-relaxed text-ink-mute">{c.before}</p>
 
       <div className="mt-4">
         <Button />
       </div>
 
       {state && !state.ok && state.error && (
-        <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+        <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-body text-bad">
           {state.error}
         </p>
       )}

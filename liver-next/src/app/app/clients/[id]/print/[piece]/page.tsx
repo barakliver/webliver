@@ -69,16 +69,16 @@ export default async function PrintPiecePage({ params }: { params: Promise<{ id:
       `}</style>
 
       <div className="no-print mb-6 flex flex-wrap items-center justify-between gap-3">
-        <Link href={`/app/clients/${id}?tab=board`} className="btn-quiet inline-flex items-center gap-1.5 px-0 text-[14px]">
+        <Link href={`/app/clients/${id}?tab=board`} className="btn-quiet inline-flex items-center gap-1.5 px-0 text-body">
           <ArrowLeft size={16} aria-hidden strokeWidth={1.5} />
           {c.printPage.back}
         </Link>
         <PrintButton label={c.printPage.print} />
       </div>
       <div className="no-print mb-6 max-w-2xl">
-        <h1 className="font-display text-[24px] font-semibold text-ink">{c.pieces.names[p.key]}</h1>
-        <p className="mt-1 text-[14px] leading-relaxed text-ink-soft">{c.printPage.note}</p>
-        {p.pages === 'tables' && <p className="mt-1 text-[13px] text-ink-mute">{c.printPage.tables}: {pages.length}</p>}
+        <h1 className="font-display text-figure font-semibold text-ink">{c.pieces.names[p.key]}</h1>
+        <p className="mt-1 text-body leading-relaxed text-ink-soft">{c.printPage.note}</p>
+        {p.pages === 'tables' && <p className="mt-1 text-body text-ink-mute">{c.printPage.tables}: {pages.length}</p>}
       </div>
 
       <div className="print-doc brand-sheet grid gap-8 overflow-x-auto bg-surface-200 p-6">

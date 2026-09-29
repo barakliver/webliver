@@ -83,7 +83,7 @@ export function VendorScout({ vendors, events, signAs, demo }: {
     return (
       <button
         type="button" onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-2 rounded-xl2 border border-line-strong bg-card px-4 py-2.5 text-[14px] font-medium text-ink transition hover:border-accent/40 hover:text-accent"
+        className="inline-flex items-center gap-2 rounded-xl2 border border-line-strong bg-card px-4 py-2.5 text-body font-medium text-ink transition hover:border-accent/40 hover:text-accent"
       >
         <Radar size={16} aria-hidden strokeWidth={1.5} />
         {c.open}
@@ -95,42 +95,42 @@ export function VendorScout({ vendors, events, signAs, demo }: {
     <section className="card">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="font-display text-[18px] font-semibold text-ink">{c.title}</h2>
-          <p className="mt-1 max-w-prose2 text-[14px] leading-relaxed text-ink-soft">{c.sub}</p>
+          <h2 className="font-display text-subhead font-semibold text-ink">{c.title}</h2>
+          <p className="mt-1 max-w-prose2 text-body leading-relaxed text-ink-soft">{c.sub}</p>
         </div>
-        <button type="button" className="btn-quiet text-[13.5px]" onClick={() => setOpen(false)}>{c.close}</button>
+        <button type="button" className="btn-quiet text-body" onClick={() => setOpen(false)}>{c.close}</button>
       </div>
 
       <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        <label className="text-[12.5px] text-ink-mute">
+        <label className="text-meta text-ink-mute">
           {c.category}
           <select value={category} onChange={(e) => setCategory(e.target.value)} className="field mt-1 w-full">
             {vendorCategoriesFor(locale).map((k) => <option key={k.value} value={k.value}>{k.label}</option>)}
           </select>
         </label>
-        <label className="text-[12.5px] text-ink-mute">
+        <label className="text-meta text-ink-mute">
           {c.event}
           <select value={eventId} onChange={(e) => setEventId(e.target.value)} className="field mt-1 w-full">
             <option value="">{c.noEvent}</option>
             {events.map((e) => <option key={e.id} value={e.id}>{e.name}</option>)}
           </select>
         </label>
-        <label className="text-[12.5px] text-ink-mute">
+        <label className="text-meta text-ink-mute">
           {c.area}
           <input value={area} onChange={(e) => setArea(e.target.value)} placeholder={c.areaPh} className="field mt-1 w-full" />
         </label>
-        <label className="text-[12.5px] text-ink-mute sm:col-span-2">
+        <label className="text-meta text-ink-mute sm:col-span-2">
           {c.style}
           <input value={style} onChange={(e) => setStyle(e.target.value)} placeholder={c.stylePh} className="field mt-1 w-full" />
         </label>
-        <div className="text-[12.5px] text-ink-mute">
+        <div className="text-meta text-ink-mute">
           {c.budget}
           <div className="mt-1 flex gap-2">
             <input type="number" inputMode="numeric" min={0} value={low} onChange={(e) => setLow(e.target.value)} placeholder={c.low} aria-label={c.low} className="field w-full" />
             <input type="number" inputMode="numeric" min={0} value={high} onChange={(e) => setHigh(e.target.value)} placeholder={c.high} aria-label={c.high} className="field w-full" />
           </div>
         </div>
-        <label className="text-[12.5px] text-ink-mute sm:col-span-2 lg:col-span-3">
+        <label className="text-meta text-ink-mute sm:col-span-2 lg:col-span-3">
           {c.dealBreakers}
           <input value={breakers} onChange={(e) => setBreakers(e.target.value)} placeholder={c.dealBreakersPh} className="field mt-1 w-full" />
         </label>
@@ -140,7 +140,7 @@ export function VendorScout({ vendors, events, signAs, demo }: {
       </div>
 
       {ran && results.length === 0 && (
-        <p className="mt-5 rounded-xl2 bg-surface-200 px-4 py-3 text-[14px] text-ink-soft">{c.none}</p>
+        <p className="mt-5 rounded-xl2 bg-surface-200 px-4 py-3 text-body text-ink-soft">{c.none}</p>
       )}
 
       {results.length > 0 && (
@@ -150,35 +150,35 @@ export function VendorScout({ vendors, events, signAs, demo }: {
               <li key={r.vendor.id} className="rounded-xl2 border border-line px-4 py-3.5">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="text-[15.5px] font-semibold text-ink">
+                    <p className="text-lead font-semibold text-ink">
                       <span className="me-2 text-ink-mute">{i + 1}.</span>{r.vendor.name}
-                      {r.areaMatch && <span className="ms-2 rounded-xl2 bg-ok-wash px-2 py-0.5 text-[11.5px] text-ok">{c.inArea}</span>}
+                      {r.areaMatch && <span className="ms-2 rounded-xl2 bg-ok-wash px-2 py-0.5 text-micro text-ok">{c.inArea}</span>}
                     </p>
-                    <p className="mt-0.5 text-[13px] text-ink-mute">
+                    <p className="mt-0.5 text-body text-ink-mute">
                       {categoryLabelFor(r.vendor.category, locale)}
                       {r.vendor.area ? ` · ${r.vendor.area}` : ''}
                       {r.vendor.contact_name ? ` · ${r.vendor.contact_name}` : ''}
                     </p>
                   </div>
-                  <p className="font-display text-[22px] font-semibold tabular-nums text-ink">
-                    {r.total}<span className="ms-1 text-[12px] font-normal text-ink-mute">{c.outOf}</span>
+                  <p className="font-display text-panel font-semibold tabular-nums text-ink">
+                    {r.total}<span className="ms-1 text-meta font-normal text-ink-mute">{c.outOf}</span>
                   </p>
                 </div>
-                <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-[13px] text-ink-soft">
+                <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-body text-ink-soft">
                   <span>{c.colStyle} <b className="tabular-nums text-ink">{r.style}</b></span>
                   <span>{c.colBudget} <b className="tabular-nums text-ink">{r.budget}</b></span>
                   <span>{c.colStrength} <b className="tabular-nums text-ink">{r.strength}</b></span>
                   <span>{r.vendor.agreed_price !== null ? <Money value={r.vendor.agreed_price} /> : c.noPrice}</span>
                   <span>{r.vendor.bookings > 0 ? plural(c.bookings, r.vendor.bookings) : c.neverBooked}</span>
                 </div>
-                <p className="mt-1.5 text-[13px] text-ink-soft">
+                <p className="mt-1.5 text-body text-ink-soft">
                   {r.matched.length > 0 ? fill(c.why, { words: r.matched.join(', ') }) : c.whyNone}
                 </p>
                 {r.flags.length > 0 && (
-                  <p className="mt-1 text-[13px] font-medium text-bad">{fill(c.flags, { words: r.flags.join(', ') })}</p>
+                  <p className="mt-1 text-body font-medium text-bad">{fill(c.flags, { words: r.flags.join(', ') })}</p>
                 )}
-                {r.vendor.notes && <p className="mt-1 text-[12.5px] leading-relaxed text-ink-mute">{r.vendor.notes}</p>}
-                <div className="mt-2 flex flex-wrap gap-3 text-[13px]">
+                {r.vendor.notes && <p className="mt-1 text-meta leading-relaxed text-ink-mute">{r.vendor.notes}</p>}
+                <div className="mt-2 flex flex-wrap gap-3 text-body">
                   {r.vendor.phone && (
                     <a href={`tel:${r.vendor.phone}`} className="inline-flex items-center gap-1 text-accent"><Phone size={13} aria-hidden strokeWidth={1.5} />{r.vendor.phone}</a>
                   )}
@@ -190,26 +190,26 @@ export function VendorScout({ vendors, events, signAs, demo }: {
 
           <div className="mt-6 grid gap-5 lg:grid-cols-2">
             <div>
-              <h3 className="text-[14px] font-semibold text-ink">{c.outreachTitle}</h3>
-              <p className="mt-1 text-[12.5px] leading-relaxed text-ink-mute">{c.outreachSub}</p>
-              <textarea readOnly value={textOne} rows={10} className="field mt-2 w-full resize-y text-[13.5px] leading-relaxed" />
+              <h3 className="text-body font-semibold text-ink">{c.outreachTitle}</h3>
+              <p className="mt-1 text-meta leading-relaxed text-ink-mute">{c.outreachSub}</p>
+              <textarea readOnly value={textOne} rows={10} className="field mt-2 w-full resize-y text-body leading-relaxed" />
               <div className="mt-2 flex flex-wrap gap-2">
-                <button type="button" onClick={() => copy('one', textOne)} className="btn-ghost text-[13.5px]">
+                <button type="button" onClick={() => copy('one', textOne)} className="btn-ghost text-body">
                   {copied === 'one' ? <Check size={14} aria-hidden strokeWidth={1.5} /> : <Copy size={14} aria-hidden strokeWidth={1.5} />}
                   {copied === 'one' ? c.copied : c.copy}
                 </button>
                 {first?.vendor.phone && (
-                  <a href={wa(first.vendor.phone, textOne)} target="_blank" rel="noreferrer" className="btn-ghost text-[13.5px]">
+                  <a href={wa(first.vendor.phone, textOne)} target="_blank" rel="noreferrer" className="btn-ghost text-body">
                     <MessageCircle size={14} aria-hidden strokeWidth={1.5} />{c.whatsapp}
                   </a>
                 )}
               </div>
             </div>
             <div>
-              <h3 className="text-[14px] font-semibold text-ink">{c.genericTitle}</h3>
-              <textarea readOnly value={textRest} rows={10} className="field mt-2 w-full resize-y text-[13.5px] leading-relaxed" />
+              <h3 className="text-body font-semibold text-ink">{c.genericTitle}</h3>
+              <textarea readOnly value={textRest} rows={10} className="field mt-2 w-full resize-y text-body leading-relaxed" />
               <div className="mt-2">
-                <button type="button" onClick={() => copy('rest', textRest)} className="btn-ghost text-[13.5px]">
+                <button type="button" onClick={() => copy('rest', textRest)} className="btn-ghost text-body">
                   {copied === 'rest' ? <Check size={14} aria-hidden strokeWidth={1.5} /> : <Copy size={14} aria-hidden strokeWidth={1.5} />}
                   {copied === 'rest' ? c.copied : c.copy}
                 </button>
@@ -217,7 +217,7 @@ export function VendorScout({ vendors, events, signAs, demo }: {
             </div>
           </div>
 
-          <p className="mt-5 text-[13.5px] text-ink-soft">
+          <p className="mt-5 text-body text-ink-soft">
             {window.now
               ? c.bestWeekNow
               : fill(c.bestWeekNext, {
@@ -228,7 +228,7 @@ export function VendorScout({ vendors, events, signAs, demo }: {
         </>
       )}
 
-      <p className="mt-4 text-[12.5px] text-ink-mute">{c.honest}</p>
+      <p className="mt-4 text-meta text-ink-mute">{c.honest}</p>
     </section>
   );
 }

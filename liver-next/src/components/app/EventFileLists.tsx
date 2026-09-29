@@ -55,11 +55,11 @@ function MusicList({ clientId, songs }: { clientId: string; songs: Song[] }) {
           <Music size={16} strokeWidth={1.5} aria-hidden />
           <h2 className="eyebrow">{c.music.title}</h2>
         </div>
-        <p className="text-[13px] text-ink-mute">
+        <p className="text-body text-ink-mute">
           <Ltr>{c.music.chosen.replace('{n}', String(chosen)).replace('{of}', String(MUSIC_MOMENTS.length))}</Ltr>
         </p>
       </div>
-      <p className="mt-2 text-[13.5px] text-ink-soft">{c.music.sub}</p>
+      <p className="mt-2 text-body text-ink-soft">{c.music.sub}</p>
 
       <ul className="mt-4 divide-y divide-line border-t border-line">
         {MUSIC_MOMENTS.map((moment) => {
@@ -76,8 +76,8 @@ function MusicList({ clientId, songs }: { clientId: string; songs: Song[] }) {
                 className="flex w-full items-center justify-between gap-3 text-start"
               >
                 <span className="min-w-0">
-                  <span className="block text-[15px] text-ink">{moment}</span>
-                  <span className={`mt-0.5 block text-[13.5px] ${has ? 'text-ink-soft' : 'text-ink-mute'}`}>
+                  <span className="block text-lead text-ink">{moment}</span>
+                  <span className={`mt-0.5 block text-body ${has ? 'text-ink-soft' : 'text-ink-mute'}`}>
                     {has ? [row?.song, row?.artist].filter(Boolean).join(' · ') : '·'}
                   </span>
                 </span>
@@ -154,13 +154,13 @@ function Equipment({ clientId, kit, editable }: {
           <Package size={16} strokeWidth={1.5} aria-hidden />
           <h2 className="eyebrow">{c.equipment.title}</h2>
         </div>
-        <p className={`text-[13px] ${open > 0 ? 'text-warn' : 'text-ink-mute'}`}>
+        <p className={`text-body ${open > 0 ? 'text-warn' : 'text-ink-mute'}`}>
           {open > 0
             ? <Ltr>{open === 1 ? c.equipment.openCountOne : c.equipment.openCountMany.replace('{n}', String(open))}</Ltr>
             : c.equipment.allSorted}
         </p>
       </div>
-      <p className="mt-2 text-[13.5px] text-ink-soft">{c.equipment.sub}</p>
+      <p className="mt-2 text-body text-ink-soft">{c.equipment.sub}</p>
 
       <ul className="mt-4 divide-y divide-line border-t border-line">
         {EQUIPMENT_CHECK.map((item) => {
@@ -168,7 +168,7 @@ function Equipment({ clientId, kit, editable }: {
           const undecided = now === null;
           return (
             <li key={item} className="flex flex-wrap items-center justify-between gap-2 py-2.5">
-              <span className="text-[15px] text-ink">{item}</span>
+              <span className="text-lead text-ink">{item}</span>
 
               {editable ? (
                 <span role="group" aria-label={item} className="flex rounded-button border border-line-strong p-0.5">
@@ -180,7 +180,7 @@ function Equipment({ clientId, kit, editable }: {
                       <button
                         type="submit"
                         aria-pressed={now === s}
-                        className={`min-h-[38px] rounded-control px-3 text-[13px] transition ${
+                        className={`min-h-[38px] rounded-control px-3 text-body transition ${
                           now === s
                             ? s === 'sorted' ? 'bg-ok-wash text-ok'
                               : s === 'needed' ? 'bg-warn-wash text-warn'
@@ -194,7 +194,7 @@ function Equipment({ clientId, kit, editable }: {
                   ))}
                 </span>
               ) : (
-                <span className={`text-[13.5px] ${
+                <span className={`text-body ${
                   now === 'sorted' ? 'text-ok' : now === 'needed' ? 'text-warn' : 'text-ink-mute'
                 }`}>
                   {undecided ? c.equipment.undecided : c.equipment[now]}
@@ -220,7 +220,7 @@ function Couple({ clientId, people }: { clientId: string; people: Person[] }) {
         <Users size={16} strokeWidth={1.5} aria-hidden />
         <h2 className="eyebrow">{c.couple.title}</h2>
       </div>
-      <p className="mt-2 text-[13.5px] text-ink-soft">{c.couple.sub}</p>
+      <p className="mt-2 text-body text-ink-soft">{c.couple.sub}</p>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-2">
         {(['a', 'b'] as const).map((person) => (
@@ -252,7 +252,7 @@ function Side({ clientId, person, row }: {
       <input type="hidden" name="client_id" value={clientId} />
       <input type="hidden" name="person" value={person} />
 
-      <p className="text-[11.5px] tracking-[.14em] text-ink-mute">
+      <p className="text-micro tracking-[.14em] text-ink-mute">
         {person === 'a' ? c.couple.personA : c.couple.personB}
       </p>
 
@@ -264,7 +264,7 @@ function Side({ clientId, person, row }: {
 
       <div className="mt-3 space-y-2">
         {COUPLE_DETAIL_FIELDS.map((f) => (
-          <label key={f} className="block text-[12.5px] text-ink-mute">
+          <label key={f} className="block text-meta text-ink-mute">
             {f}
             <input
               name={`f:${f}`}
@@ -278,10 +278,10 @@ function Side({ clientId, person, row }: {
         ))}
       </div>
 
-      {filled === 0 && <p className="mt-3 text-[12.5px] text-ink-mute">{c.couple.emptyHint}</p>}
+      {filled === 0 && <p className="mt-3 text-meta text-ink-mute">{c.couple.emptyHint}</p>}
 
       <div className="mt-4 flex items-center justify-end gap-3">
-        {saved && <span role="status" className="text-[13px] text-ok">{c.couple.saved}</span>}
+        {saved && <span role="status" className="text-body text-ok">{c.couple.saved}</span>}
         <button type="submit" className="btn-primary">{c.couple.save}</button>
       </div>
     </form>

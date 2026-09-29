@@ -163,11 +163,11 @@ function Faces({ c, clientId, vips }: { c: PrepCopy; clientId: string; vips: Vip
 
   return (
     <section className="card">
-      <h2 className="font-display text-[19px] font-semibold text-ink">{c.facesTitle}</h2>
-      <p className="mt-1 text-[13.5px] text-ink-soft">{c.facesSub}</p>
+      <h2 className="font-display text-subhead font-semibold text-ink">{c.facesTitle}</h2>
+      <p className="mt-1 text-body text-ink-soft">{c.facesSub}</p>
 
       {vips.length === 0 ? (
-        <p className="mt-4 text-[14.5px] text-ink-mute">{c.facesEmpty}</p>
+        <p className="mt-4 text-body text-ink-mute">{c.facesEmpty}</p>
       ) : (
         <ul className="mt-4 grid list-none gap-3 p-0 sm:grid-cols-2 lg:grid-cols-3">
           {vips.map((v) => (
@@ -179,9 +179,9 @@ function Faces({ c, clientId, vips }: { c: PrepCopy; clientId: string; vips: Vip
                     <Camera size={18} strokeWidth={1.5} />
                   </span>}
               <div className="min-w-0 flex-1">
-                <p className="text-[15px] font-medium text-ink">{v.name}</p>
-                {v.relation && <p className="text-[13px] text-ink-soft">{v.relation}</p>}
-                {v.note && <p className="mt-0.5 text-[12.5px] leading-snug text-ink-mute">{v.note}</p>}
+                <p className="text-lead font-medium text-ink">{v.name}</p>
+                {v.relation && <p className="text-body text-ink-soft">{v.relation}</p>}
+                {v.note && <p className="mt-0.5 text-meta leading-snug text-ink-mute">{v.note}</p>}
               </div>
               <DeleteForm action={removeVip}>
                 <input type="hidden" name="id" value={v.id} />
@@ -233,11 +233,11 @@ function Looks({ c, clientId, looks }: { c: PrepCopy; clientId: string; looks: L
 
   return (
     <section className="card">
-      <h2 className="font-display text-[19px] font-semibold text-ink">{c.looksTitle}</h2>
-      <p className="mt-1 text-[13.5px] text-ink-soft">{c.looksSub}</p>
+      <h2 className="font-display text-subhead font-semibold text-ink">{c.looksTitle}</h2>
+      <p className="mt-1 text-body text-ink-soft">{c.looksSub}</p>
 
       {looks.length === 0 ? (
-        <p className="mt-4 text-[14.5px] text-ink-mute">{c.looksEmpty}</p>
+        <p className="mt-4 text-body text-ink-mute">{c.looksEmpty}</p>
       ) : (
         /* Grouped by what it is, because a stylist opens this looking for one
            of the three and scrolling past the other two is the whole
@@ -254,7 +254,7 @@ function Looks({ c, clientId, looks }: { c: PrepCopy; clientId: string; looks: L
                 <li key={l.id} className="group relative overflow-hidden rounded-xl2 border border-line">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   {l.url && <img src={l.url} alt={l.note || c.categories[cat]} className="aspect-square w-full object-cover" />}
-                  {l.note && <p className="px-1.5 py-1 text-[11.5px] leading-snug text-ink-soft">{l.note}</p>}
+                  {l.note && <p className="px-1.5 py-1 text-micro leading-snug text-ink-soft">{l.note}</p>}
                   <DeleteForm action={removeLook} className="absolute end-1.5 top-1.5">
                     <input type="hidden" name="id" value={l.id} />
                     <input type="hidden" name="client_id" value={clientId} />
@@ -305,14 +305,14 @@ function Shares({ c, clientId, shares, siteUrl }: {
 
   return (
     <section className="card">
-      <h2 className="inline-flex items-center gap-2 font-display text-[19px] font-semibold text-ink">
+      <h2 className="inline-flex items-center gap-2 font-display text-subhead font-semibold text-ink">
         <Share2 size={17} strokeWidth={1.5} aria-hidden />
         {c.shareTitle}
       </h2>
-      <p className="mt-1 text-[13.5px] text-ink-soft">{c.shareSub}</p>
+      <p className="mt-1 text-body text-ink-soft">{c.shareSub}</p>
 
       {live.length === 0 ? (
-        <p className="mt-4 text-[14.5px] text-ink-mute">{c.shareNone}</p>
+        <p className="mt-4 text-body text-ink-mute">{c.shareNone}</p>
       ) : (
         <ul className="mt-4 list-none space-y-2 p-0">
           {live.map((s) => {
@@ -320,9 +320,9 @@ function Shares({ c, clientId, shares, siteUrl }: {
             return (
               <li key={s.id} className="flex flex-wrap items-center gap-2 rounded-xl2 border border-line p-3">
                 <span className="chip-mute">{label(s.scope)}</span>
-                {s.label && <span className="text-[13.5px] text-ink">{s.label}</span>}
+                {s.label && <span className="text-body text-ink">{s.label}</span>}
                 {s.expiresAt && (
-                  <span className="text-[12.5px] text-ink-mute">
+                  <span className="text-meta text-ink-mute">
                     {c.shareUntil} {s.expiresAt.slice(0, 10)}
                   </span>
                 )}
@@ -331,7 +331,7 @@ function Shares({ c, clientId, shares, siteUrl }: {
                   void navigator.clipboard.writeText(url).then(() => {
                     setCopied(s.id); setTimeout(() => setCopied(''), 1400);
                   }).catch(() => { /* the link is on screen; selecting it still works */ });
-                }} className="btn-ghost min-h-[34px] px-3 text-[13px]">
+                }} className="btn-ghost min-h-[34px] px-3 text-body">
                   {copied === s.id ? c.shareCopied : c.shareCopy}
                 </button>
                 {/* The stylist is on WhatsApp, not on email. One tap opens the
@@ -339,14 +339,14 @@ function Shares({ c, clientId, shares, siteUrl }: {
                 <a
                   href={`https://wa.me/?text=${encodeURIComponent(url)}`}
                   target="_blank" rel="noopener noreferrer"
-                  className="btn-ghost inline-flex min-h-[34px] items-center px-3 text-[13px]"
+                  className="btn-ghost inline-flex min-h-[34px] items-center px-3 text-body"
                 >
                   {c.shareWhatsapp}
                 </a>
                 <form action={revokeShare}>
                   <input type="hidden" name="id" value={s.id} />
                   <input type="hidden" name="client_id" value={clientId} />
-                  <button type="submit" className="btn-quiet min-h-[34px] px-3 text-[13px]">{c.shareRevoke}</button>
+                  <button type="submit" className="btn-quiet min-h-[34px] px-3 text-body">{c.shareRevoke}</button>
                 </form>
               </li>
             );
@@ -363,7 +363,7 @@ function Shares({ c, clientId, shares, siteUrl }: {
           <form key={scope} action={mintShare}>
             <input type="hidden" name="client_id" value={clientId} />
             <input type="hidden" name="scope" value={scope} />
-            <button type="submit" className="btn-ghost min-h-[38px] px-3.5 text-[13.5px]">
+            <button type="submit" className="btn-ghost min-h-[38px] px-3.5 text-body">
               <Plus size={15} strokeWidth={1.5} aria-hidden />
               {c.shareNew} · {label(scope)}
             </button>
@@ -422,7 +422,7 @@ function PhotoButton({ c, photo, icon: Icon = Camera }: {
 
 function Submit({ c, pending, disabled = false }: { c: PrepCopy; pending: boolean; disabled?: boolean }) {
   return (
-    <button type="submit" disabled={pending || disabled} className="btn-primary mt-3 px-4 text-[14px]">
+    <button type="submit" disabled={pending || disabled} className="btn-primary mt-3 px-4 text-body">
       {pending
         ? <Loader2 size={15} strokeWidth={1.5} aria-hidden className="animate-spin" />
         : <Plus size={15} strokeWidth={1.5} aria-hidden />}
@@ -432,5 +432,5 @@ function Submit({ c, pending, disabled = false }: { c: PrepCopy; pending: boolea
 }
 
 function Err({ text }: { text: string }) {
-  return <p role="status" className="mt-2 text-[13.5px] text-bad">{text}</p>;
+  return <p role="status" className="mt-2 text-body text-bad">{text}</p>;
 }

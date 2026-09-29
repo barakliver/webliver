@@ -31,7 +31,7 @@ export function CallsPanel({ calls, leads }: { calls: Call[]; leads: { id: strin
 
   return (
     <section className="card mt-6">
-      <h2 className="font-display text-[18px] font-semibold text-ink">📞 {c.callsTitle}</h2>
+      <h2 className="font-display text-subhead font-semibold text-ink">📞 {c.callsTitle}</h2>
       <ul className="mt-4 space-y-2">
         {open.map((call) => {
           const st = dueState(call.remind_on);
@@ -40,8 +40,8 @@ export function CallsPanel({ calls, leads }: { calls: Call[]; leads: { id: strin
               st === 'late' ? 'border-bad/25 bg-bad-wash/60' : st === 'today' ? 'border-warn/30 bg-warn-wash/70' : 'border-line'
             }`}>
               <div className="min-w-0 flex-1">
-                <p className="text-[14.5px] text-ink">{call.title}{nameOf(call.lead_id) ? ` · ${nameOf(call.lead_id)}` : ''}</p>
-                <p className="text-[12.5px] text-ink-mute">
+                <p className="text-body text-ink">{call.title}{nameOf(call.lead_id) ? ` · ${nameOf(call.lead_id)}` : ''}</p>
+                <p className="text-meta text-ink-mute">
                   {formatDate(dateFmtFor(locale), call.remind_on, '·')}
                   {st === 'late' ? ` · ${c.callLate}` : st === 'today' ? ` · ${c.callToday}` : ''}
                 </p>
@@ -49,7 +49,7 @@ export function CallsPanel({ calls, leads }: { calls: Call[]; leads: { id: strin
               <form action={completeCall}>
                 <input type="hidden" name="call_id" value={call.id} />
                 <input type="hidden" name="done" value={String(call.done)} />
-                <button type="submit" className="btn-ghost px-4 py-1.5 text-[13px]">{c.callDone}</button>
+                <button type="submit" className="btn-ghost px-4 py-1.5 text-body">{c.callDone}</button>
               </form>
             </li>
           );

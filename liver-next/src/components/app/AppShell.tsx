@@ -81,7 +81,7 @@ function Brand({ brand }: { brand: Brand }) {
           <span className="sr-only">{brand.name}</span>
         </>
       ) : (
-        <span className="truncate font-display text-[18px] font-semibold text-ink">{brand.name}</span>
+        <span className="truncate font-display text-subhead font-semibold text-ink">{brand.name}</span>
       )}
     </Link>
   );
@@ -152,7 +152,7 @@ export function AppShell({
                 className="flex min-w-0 flex-1 items-center gap-2.5 transition-opacity hover:opacity-75"
               >
                 <Avatar name={account.fullName || account.email} src={account.avatarUrl} size={30} />
-                <span className="min-w-0 flex-1 truncate text-[13.5px] text-ink-soft">
+                <span className="min-w-0 flex-1 truncate text-body text-ink-soft">
                   {account.fullName || account.email}
                 </span>
               </Link>
@@ -256,7 +256,7 @@ export function AppShell({
             <form action={signOut}>
               <button
                 type="submit"
-                className="flex min-h-[52px] w-full items-center gap-3 px-1 text-start text-[15px] text-ink-soft transition-colors duration-300 hover:text-ink"
+                className="flex min-h-[52px] w-full items-center gap-3 px-1 text-start text-lead text-ink-soft transition-colors duration-300 hover:text-ink"
               >
                 <LogOut size={20} strokeWidth={1.5} aria-hidden />
                 {ui.signOut}

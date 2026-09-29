@@ -36,19 +36,19 @@ export function EnvelopesPanel({ c, clientId, items }: {
     <section className="card">
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         <div>
-          <h2 className="font-display text-[18px] font-semibold text-ink">{c.title}</h2>
-          <p className="mt-1 text-[14px] text-ink-soft">{c.sub}</p>
+          <h2 className="font-display text-subhead font-semibold text-ink">{c.title}</h2>
+          <p className="mt-1 text-body text-ink-soft">{c.sub}</p>
         </div>
         {items.length > 0 && (
-          <p className="text-[13.5px] text-ink-mute">
-            <span className="font-display text-[20px] font-semibold text-ink"><Money value={total} /></span>
+          <p className="text-body text-ink-mute">
+            <span className="font-display text-panel font-semibold text-ink"><Money value={total} /></span>
             {' · '}{c.handed.replace('{n}', String(handed)).replace('{of}', String(items.length))}
           </p>
         )}
       </div>
 
       {items.length === 0 ? (
-        <p className="mt-6 text-[14.5px] text-ink-mute">{c.empty}</p>
+        <p className="mt-6 text-body text-ink-mute">{c.empty}</p>
       ) : (
         <ul className="mt-5 space-y-2">
           {items.map((e) => (
@@ -80,24 +80,24 @@ export function EnvelopesPanel({ c, clientId, items }: {
               </form>
 
               <div className="min-w-0 flex-1">
-                <p className={`text-[15px] ${e.delivered_at ? 'text-ink-mute' : 'text-ink'}`}>
+                <p className={`text-lead ${e.delivered_at ? 'text-ink-mute' : 'text-ink'}`}>
                   {e.label}
                   {e.recipient && <span className="text-ink-soft"> · {e.recipient}</span>}
                 </p>
-                <p className="mt-0.5 text-[12.5px] text-ink-mute">
+                <p className="mt-0.5 text-meta text-ink-mute">
                   {e.cash ? c.cash : c.transfer}
                   {e.note ? ` · ${e.note}` : ''}
                 </p>
               </div>
 
-              <span className="font-display text-[17px] font-semibold tabular-nums text-ink">
+              <span className="font-display text-head font-semibold tabular-nums text-ink">
                 {e.amount === null ? '·' : <Money value={e.amount} />}
               </span>
 
               <DeleteForm action={removeEnvelope}>
                 <input type="hidden" name="id" value={e.id} />
                 <input type="hidden" name="client_id" value={clientId} />
-                <button type="submit" className="btn-quiet px-3 py-1 text-[13px]">{c.remove}</button>
+                <button type="submit" className="btn-quiet px-3 py-1 text-body">{c.remove}</button>
               </DeleteForm>
             </li>
           ))}
@@ -135,7 +135,7 @@ export function EnvelopesPanel({ c, clientId, items }: {
         </div>
         <Submit c={c} pending={pending} />
         {state?.ok === false && state.error && (
-          <p role="status" className="mt-2 text-[13.5px] text-bad">{state.error}</p>
+          <p role="status" className="mt-2 text-body text-bad">{state.error}</p>
         )}
       </form>
     </section>
@@ -146,7 +146,7 @@ function Submit({ c, pending }: { c: EnvelopesCopy; pending: boolean }) {
   const { pending: busy } = useFormStatus();
   const wait = pending || busy;
   return (
-    <button type="submit" disabled={wait} className="btn-primary mt-3 px-4 text-[14px]">
+    <button type="submit" disabled={wait} className="btn-primary mt-3 px-4 text-body">
       {wait
         ? <Loader2 size={15} strokeWidth={1.5} aria-hidden className="animate-spin" />
         : <Plus size={15} strokeWidth={1.5} aria-hidden />}

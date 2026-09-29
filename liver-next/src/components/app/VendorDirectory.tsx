@@ -26,7 +26,7 @@ function Save() {
 
 function Alert({ text }: { text: string }) {
   return (
-    <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+    <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-body text-bad">
       {text}
     </p>
   );
@@ -100,7 +100,7 @@ function Row({ vendor }: { vendor: Vendor }) {
 
   if (editing) {
     return (
-      <li className="rounded-xl2 border border-accent/40 bg-surface-100 p-4">
+      <li className="rounded-card-sm border border-accent/40 bg-surface-100 p-4">
         <form action={action} noValidate>
           <input type="hidden" name="vendor_id" value={vendor.id} />
           <Fields vendor={vendor} />
@@ -121,8 +121,8 @@ function Row({ vendor }: { vendor: Vendor }) {
       archived ? 'border-line bg-surface-100' : 'border-line'
     }`}>
       <div className="min-w-0 flex-1">
-        <p className={`text-[15.5px] ${archived ? 'text-ink-mute' : 'text-ink'}`}>{vendor.name}</p>
-        <div className="mt-0.5 flex flex-wrap items-center gap-x-3 text-[13px] text-ink-mute">
+        <p className={`text-lead ${archived ? 'text-ink-mute' : 'text-ink'}`}>{vendor.name}</p>
+        <div className="mt-0.5 flex flex-wrap items-center gap-x-3 text-body text-ink-mute">
           <span>{categoryLabelFor(vendor.category, locale)}</span>
           {vendor.contact_name && <span>{vendor.contact_name}</span>}
           {vendor.phone && <a href={`tel:${vendor.phone}`} dir="ltr" className="hover:text-accent">{vendor.phone}</a>}
@@ -134,7 +134,7 @@ function Row({ vendor }: { vendor: Vendor }) {
             <span>{c.depositPaid} <Ltr>{shekels.format(vendor.deposit_paid)}</Ltr></span>
           )}
         </div>
-        {vendor.notes && <p className="mt-1 text-[13px] text-ink-soft">{vendor.notes}</p>}
+        {vendor.notes && <p className="mt-1 text-body text-ink-soft">{vendor.notes}</p>}
       </div>
 
       <button
@@ -262,7 +262,7 @@ export function VendorDirectory({ vendors }: { vendors: Vendor[] }) {
       )}
 
       {archivedCount > 0 && (
-        <nav className="mb-5 inline-flex rounded-xl2 border border-line bg-surface-100 p-1 text-[14px]">
+        <nav className="mb-5 inline-flex rounded-xl2 border border-line bg-surface-100 p-1 text-body">
           {[
             { on: !showArchived, label: `${c.dirActive} · ${activeCount}`, go: false },
             { on: showArchived, label: `${c.dirArchived} · ${archivedCount}`, go: true },
@@ -295,7 +295,7 @@ export function VendorDirectory({ vendors }: { vendors: Vendor[] }) {
 
       {shown.length === 0 ? (
         <div className="card text-center">
-          <p className="text-[15px] text-ink-mute">{vendors.length === 0 ? c.dirNone : c.noResults}</p>
+          <p className="text-lead text-ink-mute">{vendors.length === 0 ? c.dirNone : c.noResults}</p>
           {/* An empty book offers the two ways to fill it, so the first visit
               is not a sentence and a search box. */}
           {vendors.length === 0 && !adding && !importing && (
@@ -313,7 +313,7 @@ export function VendorDirectory({ vendors }: { vendors: Vendor[] }) {
         </div>
       ) : (
         <>
-          <p className="mb-3 text-[13px] text-ink-mute">{fill(c.count, { n: shown.length })}</p>
+          <p className="mb-3 text-body text-ink-mute">{fill(c.count, { n: shown.length })}</p>
           <ul className="space-y-2.5">
             {shown.map((v) => <Row key={v.id} vendor={v} />)}
           </ul>

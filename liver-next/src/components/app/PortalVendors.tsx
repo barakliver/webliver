@@ -31,29 +31,29 @@ export function PortalVendors({ vendors, c, locale }: { vendors: Vendor[]; c: Po
 
   return (
     <section className="card">
-      <h2 className="font-display text-[22px] font-semibold text-ink">{c.vendorsTitle}</h2>
-      <p className="mt-1 text-[13.5px] text-ink-mute">{c.vendorsSub}</p>
+      <h2 className="font-display text-panel font-semibold text-ink">{c.vendorsTitle}</h2>
+      <p className="mt-1 text-body text-ink-mute">{c.vendorsSub}</p>
 
       {vendors.length === 0 ? (
-        <p className="mt-5 text-[14.5px] text-ink-mute">{c.vendorsEmpty}</p>
+        <p className="mt-5 text-body text-ink-mute">{c.vendorsEmpty}</p>
       ) : (
         <div className="mt-5 space-y-5">
           {ordered.map(([category, list]) => (
             <div key={category}>
-              <h3 className="mb-2 text-[12.5px] font-semibold text-accent">{categoryLabelFor(category, locale)}</h3>
+              <h3 className="mb-2 text-meta font-semibold text-accent">{categoryLabelFor(category, locale)}</h3>
               <ul className="divide-y divide-line border-t border-line">
                 {list.map((v) => (
                   <li key={v.id} className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 py-2.5">
                     <div className="min-w-0">
-                      <p className="text-[15px] text-ink">{v.name}</p>
+                      <p className="text-lead text-ink">{v.name}</p>
                       {v.phone && (
-                        <a href={`tel:${v.phone}`} className="mt-0.5 inline-flex items-center gap-1 text-[13px] text-ink-soft hover:text-ink">
+                        <a href={`tel:${v.phone}`} className="mt-0.5 inline-flex items-center gap-1 text-body text-ink-soft hover:text-ink">
                           <Phone size={12} aria-hidden strokeWidth={1.5} />
                           <Ltr>{v.phone}</Ltr>
                         </a>
                       )}
                     </div>
-                    <span className={`rounded-xl2 px-2 py-0.5 text-[11.5px] ${tone(v.status)}`}>{status(v.status)}</span>
+                    <span className={`rounded-xl2 px-2 py-0.5 text-micro ${tone(v.status)}`}>{status(v.status)}</span>
                   </li>
                 ))}
               </ul>

@@ -101,7 +101,7 @@ export default async function RunsheetPage({
   return (
     <>
       <div className="no-print mb-6 flex flex-wrap items-center justify-between gap-3">
-        <Link href={`/app/clients/${id}`} className="btn-quiet inline-flex items-center gap-1.5 px-0 text-[14px]">
+        <Link href={`/app/clients/${id}`} className="btn-quiet inline-flex items-center gap-1.5 px-0 text-body">
           <ArrowLeft size={16} aria-hidden strokeWidth={1.5} />
           {c.back}
         </Link>
@@ -118,7 +118,7 @@ export default async function RunsheetPage({
               key={a.value ?? 'all'}
               href={a.value ? `/app/clients/${id}/runsheet?for=${a.value}` : `/app/clients/${id}/runsheet`}
               aria-current={on ? 'page' : undefined}
-              className={`min-h-[44px] rounded-xl2 border px-4 text-[14px] leading-[42px] sm:min-h-[38px] sm:leading-[36px] transition ${
+              className={`min-h-[44px] rounded-xl2 border px-4 text-body leading-[42px] sm:min-h-[38px] sm:leading-[36px] transition ${
                 on ? 'border-ink bg-ink font-medium text-surface' : 'border-line-strong text-ink-soft hover:border-accent/40 hover:text-accent'
               }`}
             >

@@ -36,28 +36,28 @@ export function PortalMeetings({ meetings, ui }: { meetings: SharedMeeting[]; ui
 
   return (
     <section className="card">
-      <h2 className="font-display text-[22px] font-semibold text-ink">{c.title}</h2>
-      <p className="mt-1 text-[13.5px] text-ink-mute">{c.sub}</p>
+      <h2 className="font-display text-panel font-semibold text-ink">{c.title}</h2>
+      <p className="mt-1 text-body text-ink-mute">{c.sub}</p>
 
       {meetings.length === 0 ? (
-        <p className="mt-5 text-[14.5px] text-ink-mute">{c.none}</p>
+        <p className="mt-5 text-body text-ink-mute">{c.none}</p>
       ) : (
         <ul className="mt-5 divide-y divide-line border-t border-line">
           {meetings.map((m) => (
             <li key={m.id} className="py-4">
               <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-                <h3 className="text-[15.5px] font-medium text-ink">{m.title || c.untitled}</h3>
+                <h3 className="text-lead font-medium text-ink">{m.title || c.untitled}</h3>
                 {m.held_on && (
-                  <span className="inline-flex items-center gap-1.5 text-[12.5px] text-ink-mute">
+                  <span className="inline-flex items-center gap-1.5 text-meta text-ink-mute">
                     <CalendarDays size={13} aria-hidden strokeWidth={1.5} />
                     {formatDate(dateFmt, m.held_on, '')}
                   </span>
                 )}
               </div>
               {m.summary ? (
-                <p className="mt-2 max-w-prose2 whitespace-pre-line text-[14.5px] leading-relaxed text-ink-soft">{m.summary}</p>
+                <p className="mt-2 max-w-prose2 whitespace-pre-line text-body leading-relaxed text-ink-soft">{m.summary}</p>
               ) : (
-                <p className="mt-2 text-[13.5px] text-ink-mute">{c.noSummary}</p>
+                <p className="mt-2 text-body text-ink-mute">{c.noSummary}</p>
               )}
             </li>
           ))}

@@ -19,23 +19,23 @@ export async function BeginHere() {
   const c = (await serverCopy()).overview2.begin;
   return (
     <div className="card">
-      <p className="text-[14.5px] text-ink-soft">{c.sub}</p>
+      <p className="text-body text-ink-soft">{c.sub}</p>
       <ol className="mt-5 list-none space-y-4 p-0">
         {producerGuide.start.steps.map((step, i) => (
           <li key={step.title} className="flex items-baseline gap-3.5">
-            <span aria-hidden className="font-display text-[26px] font-semibold leading-none text-accent-bright">
+            <span aria-hidden className="font-display text-figure font-semibold leading-none text-accent-bright">
               {i + 1}
             </span>
             <span className="min-w-0">
-              <span className="block text-[15px] font-medium text-ink">{step.title}</span>
-              <span className="mt-0.5 block text-[13.5px] leading-relaxed text-ink-soft">{step.body}</span>
+              <span className="block text-lead font-medium text-ink">{step.title}</span>
+              <span className="mt-0.5 block text-body leading-relaxed text-ink-soft">{step.body}</span>
             </span>
           </li>
         ))}
       </ol>
       <div className="mt-6 flex flex-wrap items-center gap-3">
         <Link href="/app/brand" className="btn-primary">{c.cta}</Link>
-        <Link href="/app/guide" className="btn-quiet text-[14px]">
+        <Link href="/app/guide" className="btn-quiet text-body">
           {c.book}
           <ChevronLeft size={16} strokeWidth={1.5} aria-hidden className="chev-onward" />
         </Link>

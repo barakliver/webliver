@@ -20,7 +20,7 @@ function Submit({ label, busy }: { label: string; busy: string }) {
 
 function Alert({ text }: { text: string }) {
   return (
-    <p role="alert" className="border-r-2 border-bad bg-transparent py-2 pe-3 text-[14.5px] text-bad">
+    <p role="alert" className="border-r-2 border-bad bg-transparent py-2 pe-3 text-body text-bad">
       {text}
     </p>
   );
@@ -28,7 +28,7 @@ function Alert({ text }: { text: string }) {
 
 function Note({ text }: { text: string }) {
   return (
-    <p role="status" className="border-r-2 border-ok bg-transparent py-2 pe-3 text-[14.5px] text-ok">
+    <p role="status" className="border-r-2 border-ok bg-transparent py-2 pe-3 text-body text-ok">
       {text}
     </p>
   );
@@ -113,7 +113,7 @@ export function LoginForm({ next, prefill, reason, referral, copy, legal }: {
     <form action={askAction} className="card space-y-5" noValidate>
       <div>
         <h1 className="font-display text-title font-semibold text-ink">{copy.title}</h1>
-        <p className="mt-2 text-[15px] text-ink-soft">{copy.sub}</p>
+        <p className="mt-2 text-lead text-ink-soft">{copy.sub}</p>
       </div>
 
       {/* Above the fields, because for most people this is the whole screen.
@@ -129,7 +129,7 @@ export function LoginForm({ next, prefill, reason, referral, copy, legal }: {
           client. Said plainly and once: the address is already in the field
           below, so this is a sentence and a button rather than a dead end. */}
       {!askState && reason && (
-        <p role="status" className="border-r-2 border-line-strong bg-transparent py-2 pe-3 text-[14.5px] text-ink-soft">
+        <p role="status" className="border-r-2 border-line-strong bg-transparent py-2 pe-3 text-body text-ink-soft">
           {reason === 'expired' ? copy.linkExpired : copy.linkMissing}
         </p>
       )}
@@ -158,7 +158,7 @@ export function LoginForm({ next, prefill, reason, referral, copy, legal }: {
       {/* The whole row is the target, not the 16px box. A checkbox is the
           smallest thing on any form and the one most often missed by a
           thumb. */}
-      <label className="flex min-h-[44px] items-center gap-2.5 text-[14.5px] text-ink-soft">
+      <label className="flex min-h-[44px] items-center gap-2.5 text-body text-ink-soft">
         <input
           type="checkbox"
           className="size-5 rounded border-line-strong accent-accent"
@@ -183,11 +183,11 @@ export function LoginForm({ next, prefill, reason, referral, copy, legal }: {
 
       <Submit label={copy.submit} busy={copy.sending} />
 
-      <p className="text-[13px] leading-relaxed text-ink-mute">{copy.note}</p>
+      <p className="text-body leading-relaxed text-ink-mute">{copy.note}</p>
 
       {/* Reachable from the screen where somebody is about to hand something
           over, which is the one place a policy is actually worth linking. */}
-      <p className="text-[13px] text-ink-mute">
+      <p className="text-body text-ink-mute">
         {copy.privacyNote}
         <a href="/terms" className="underline underline-offset-4 transition-colors hover:text-accent">
           {legal.terms.title}
@@ -260,7 +260,7 @@ function CodeStep({
     <form action={action} className="card space-y-5" noValidate>
       <div>
         <h1 className="font-display text-title font-semibold text-ink">{copy.codeTitle}</h1>
-        <p className="mt-2 text-[15px] text-ink-soft">
+        <p className="mt-2 text-lead text-ink-soft">
           {channel === 'phone' ? copy.codeSentPhone : copy.codeSentEmail}{' '}
           <b className="text-ink" dir="ltr">{sent.display ?? sent.contact}</b>
         </p>
@@ -279,7 +279,7 @@ function CodeStep({
 
       <CodeInput key={at} name="code" label={copy.codeLabel} length={publicEnv.otpLength} />
 
-      <p className={`text-center text-[13px] ${validLeft === 0 ? 'text-bad' : 'text-ink-mute'}`}>
+      <p className={`text-center text-body ${validLeft === 0 ? 'text-bad' : 'text-ink-mute'}`}>
         {validLeft > 0 ? copy.validFor.replace('{t}', mmss(validLeft)) : copy.expired}
       </p>
 
@@ -295,7 +295,7 @@ function CodeStep({
         {resending ? copy.resendSending : resendLeft > 0 ? copy.resendIn.replace('{s}', String(resendLeft)) : copy.resend}
       </button>
 
-      <div className="flex flex-col items-center gap-1.5 text-[13px]">
+      <div className="flex flex-col items-center gap-1.5 text-body">
         {/* One link where there were two. With a single door there is nothing
             to switch to, and offering it would send somebody back to a screen
             that looks identical to the one they left. */}

@@ -30,7 +30,7 @@ function Busy({ label, busy }: { label: string; busy: string }) {
 
 function Alert({ text }: { text: string }) {
   return (
-    <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+    <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-body text-bad">
       {text}
     </p>
   );
@@ -82,13 +82,13 @@ function LineFields({ item, labels, showOwner }: {
           counts down to these and to nothing else: a warning before all forty
           lines is a warning before none. */}
       {showOwner && (
-        <label className="mt-3 flex min-h-[44px] cursor-pointer items-center gap-2 text-[14px] text-ink-soft">
+        <label className="mt-3 flex min-h-[44px] cursor-pointer items-center gap-2 text-body text-ink-soft">
           <input
             type="checkbox" name="key_moment" defaultChecked={!!item?.key_moment}
             className="h-4 w-4 accent-[var(--accent)]"
           />
           {c.keyMoment}
-          <span className="text-[12.5px] text-ink-mute">{c.keyMomentHint}</span>
+          <span className="text-meta text-ink-mute">{c.keyMomentHint}</span>
         </label>
       )}
 
@@ -125,9 +125,9 @@ function LineFields({ item, labels, showOwner }: {
       <fieldset className="mt-3">
         <legend className="sr-only">{c.audience}</legend>
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-          <span className="text-[13px] text-ink-mute">{c.audience}</span>
+          <span className="text-body text-ink-mute">{c.audience}</span>
           {AUDIENCES.map((a) => (
-            <label key={a.value} className="inline-flex items-center gap-1.5 text-[13.5px] text-ink-soft">
+            <label key={a.value} className="inline-flex items-center gap-1.5 text-body text-ink-soft">
               <input
                 type="checkbox" name="audience" value={a.value}
                 defaultChecked={item?.audience?.includes(a.value)}
@@ -170,7 +170,7 @@ function Row({
 
   if (editing) {
     return (
-      <li className="rounded-xl2 border border-accent/40 bg-surface-100 p-4">
+      <li className="rounded-card-sm border border-accent/40 bg-surface-100 p-4">
         <form action={action} noValidate>
           <input type="hidden" name="item_id" value={item.id} />
           <input type="hidden" name="client_id" value={clientId} />
@@ -192,19 +192,19 @@ function Row({
       {/* Left to right inside a right-to-left page, because a clock reads that
           way in every language. */}
       <div className="w-[62px] shrink-0 text-center" dir="ltr">
-        <div className="font-display text-[17px] font-semibold tabular-nums text-ink">{hhmm(item.at_time)}</div>
+        <div className="font-display text-head font-semibold tabular-nums text-ink">{hhmm(item.at_time)}</div>
         {span.minutes !== null && (
-          <div className={`mt-0.5 text-[11.5px] tabular-nums ${span.stated ? 'text-accent' : 'text-ink-mute'}`}>
+          <div className={`mt-0.5 text-micro tabular-nums ${span.stated ? 'text-accent' : 'text-ink-mute'}`}>
             {span.stated ? humanSpan(span.minutes, locale) : `↓ ${humanSpan(span.minutes, locale)}`}
           </div>
         )}
       </div>
 
       <div className="min-w-0 flex-1">
-        <p className="text-[15.5px] text-ink">{item.title}</p>
-        {item.note && <p className="mt-0.5 text-[13px] text-ink-soft">{item.note}</p>}
+        <p className="text-lead text-ink">{item.title}</p>
+        {item.note && <p className="mt-0.5 text-body text-ink-soft">{item.note}</p>}
 
-        <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px]">
+        <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-meta">
           <span className={`rounded-xl2 px-2 py-0.5 ${trackTone[item.track]}`}>{labels[item.track]}</span>
           {showOwner && item.owner && <span className="text-ink-mute">{item.owner}</span>}
           {item.audience.length > 0 && (
@@ -215,7 +215,7 @@ function Row({
         </div>
 
         {clash && (
-          <p className="mt-2 inline-flex items-center gap-1.5 text-[12.5px] text-warn">
+          <p className="mt-2 inline-flex items-center gap-1.5 text-meta text-warn">
             <TriangleAlert size={14} aria-hidden strokeWidth={1.5} />
             {c.overlap.replace('{title}', clash.withTitle)}
           </p>
@@ -298,12 +298,12 @@ function Templates({ clientId }: { clientId: string }) {
   const [chosen, setChosen] = useState<string | null>(null);
 
   return (
-    <div className="mt-5 rounded-xl2 border border-dashed border-line-strong bg-surface-100 p-5">
-      <h3 className="inline-flex items-center gap-2 font-display text-[16px] font-semibold text-ink">
+    <div className="mt-5 rounded-card-sm border border-dashed border-line-strong bg-surface-100 p-5">
+      <h3 className="inline-flex items-center gap-2 font-display text-head font-semibold text-ink">
         <Wand2 size={16} aria-hidden strokeWidth={1.5} />
         {c.templateTitle}
       </h3>
-      <p className="mt-1 text-[13.5px] text-ink-soft">{c.templateSub}</p>
+      <p className="mt-1 text-body text-ink-soft">{c.templateSub}</p>
 
       <div className="mt-4 grid gap-3 sm:grid-cols-3">
         {RUNSHEET_TEMPLATES.map((t) => (
@@ -312,15 +312,15 @@ function Templates({ clientId }: { clientId: string }) {
             type="button"
             aria-pressed={chosen === t.id}
             onClick={() => setChosen(t.id)}
-            className={`rounded-xl2 border p-4 text-right transition ${
+            className={`rounded-card-sm border p-4 text-right transition ${
               chosen === t.id
                 ? 'border-accent bg-card'
                 : 'border-line bg-card/60 hover:border-accent/40'
             }`}
           >
-            <span className="block text-[14.5px] font-semibold text-ink">{t.label}</span>
-            <span className="mt-1 block text-[12.5px] leading-relaxed text-ink-mute">{t.sub}</span>
-            <span className="mt-2 block text-[12px] tabular-nums text-accent">{c.totalLines.replace('{n}', String(t.lines.length))}</span>
+            <span className="block text-body font-semibold text-ink">{t.label}</span>
+            <span className="mt-1 block text-meta leading-relaxed text-ink-mute">{t.sub}</span>
+            <span className="mt-2 block text-meta tabular-nums text-accent">{c.totalLines.replace('{n}', String(t.lines.length))}</span>
           </button>
         ))}
       </div>
@@ -379,13 +379,13 @@ export function DaySchedule({ clientId, items, labelA, labelB, viewer = 'produce
     <section className="card">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="inline-flex items-center gap-2 font-display text-[18px] font-semibold text-ink">
+          <h2 className="inline-flex items-center gap-2 font-display text-subhead font-semibold text-ink">
             <Clock size={18} aria-hidden strokeWidth={1.5} />
             {c.title}
           </h2>
-          <p className="mt-1 text-[14px] text-ink-soft">{c.sub}</p>
+          <p className="mt-1 text-body text-ink-soft">{c.sub}</p>
           {ordered.length > 0 && (
-            <p className="mt-1 text-[12.5px] text-ink-mute" dir="rtl">
+            <p className="mt-1 text-meta text-ink-mute" dir="rtl">
               {c.totalLines.replace('{n}', String(ordered.length))}
               {' · '}
               <span dir="ltr">
@@ -396,12 +396,12 @@ export function DaySchedule({ clientId, items, labelA, labelB, viewer = 'produce
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <button type="button" className="btn-quiet text-[13.5px]" onClick={() => setRenaming((v) => !v)}>
+          <button type="button" className="btn-quiet text-body" onClick={() => setRenaming((v) => !v)}>
             {c.rename}
           </button>
           <button
             type="button"
-            className="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl2 border border-line-strong bg-card px-4 text-[13.5px] font-medium text-ink transition hover:border-accent/40 hover:text-accent sm:min-h-0 sm:py-2"
+            className="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl2 border border-line-strong bg-card px-4 text-body font-medium text-ink transition hover:border-accent/40 hover:text-accent sm:min-h-0 sm:py-2"
             onClick={() => setAdding((v) => !v)}
           >
             <Plus size={15} aria-hidden strokeWidth={1.5} />
@@ -416,13 +416,13 @@ export function DaySchedule({ clientId, items, labelA, labelB, viewer = 'produce
           <input name="track_a_label" defaultValue={labelA} maxLength={40} className="field" aria-label={labelA} />
           <input name="track_b_label" defaultValue={labelB} maxLength={40} className="field" aria-label={labelB} />
           <Busy label={c.renameSave} busy={c.adding} />
-          <p className="text-[12.5px] text-ink-mute sm:col-span-3">{c.renameHint}</p>
+          <p className="text-meta text-ink-mute sm:col-span-3">{c.renameHint}</p>
         </form>
       )}
       {nameState && !nameState.ok && nameState.error && <Alert text={nameState.error} />}
 
       {adding && (
-        <form action={addAction} className="mt-4 rounded-xl2 border border-line bg-surface-100 p-4" noValidate>
+        <form action={addAction} className="mt-4 rounded-card-sm border border-line bg-surface-100 p-4" noValidate>
           <input type="hidden" name="client_id" value={clientId} />
           <LineFields labels={labels} showOwner={showOwner} />
           {addState && !addState.ok && addState.error && <Alert text={addState.error} />}
@@ -434,13 +434,13 @@ export function DaySchedule({ clientId, items, labelA, labelB, viewer = 'produce
 
       {ordered.length === 0 ? (
         <>
-          <p className="mt-6 text-[14.5px] text-ink-mute">{c.none}</p>
+          <p className="mt-6 text-body text-ink-mute">{c.none}</p>
           <Templates clientId={clientId} />
         </>
       ) : (
         <>
           {wraps && (
-            <p className="mt-5 rounded-xl2 bg-surface-100 px-4 py-2.5 text-[13px] text-ink-soft">
+            <p className="mt-5 rounded-xl2 bg-surface-100 px-4 py-2.5 text-body text-ink-soft">
               {c.crossesMidnight}
             </p>
           )}

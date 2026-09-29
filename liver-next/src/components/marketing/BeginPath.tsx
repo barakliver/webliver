@@ -45,10 +45,10 @@ export function BeginPath({ site }: { site: SiteCopy }) {
                   {i + 1}
                 </span>
                 <span className="min-w-0 sm:mt-3 sm:block">
-                  <span className="block font-display text-[20px] font-semibold leading-snug text-ink transition-colors group-hover:text-accent sm:text-[22px]">
+                  <span className="block font-display text-panel font-semibold leading-snug text-ink transition-colors group-hover:text-accent sm:text-panel">
                     {step.title}
                   </span>
-                  <span className="mt-1 block text-[14px] leading-relaxed text-ink-soft">
+                  <span className="mt-1 block text-body leading-relaxed text-ink-soft">
                     {step.body}
                   </span>
                 </span>

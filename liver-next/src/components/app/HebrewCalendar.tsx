@@ -42,14 +42,14 @@ export function HebrewCalendar({ from }: { from: string }) {
     <section className="card">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="inline-flex items-center gap-2 font-display text-[17px] font-semibold text-ink">
+          <h2 className="inline-flex items-center gap-2 font-display text-head font-semibold text-ink">
             <CalendarCheck size={17} strokeWidth={1.5} aria-hidden />
             {c.title}
           </h2>
-          <p className="mt-1 max-w-2xl text-[14px] leading-relaxed text-ink-soft">{c.sub}</p>
+          <p className="mt-1 max-w-2xl text-body leading-relaxed text-ink-soft">{c.sub}</p>
         </div>
 
-        <nav className="inline-flex rounded-xl2 border border-line bg-surface-100 p-1 text-[13.5px]" aria-label={c.title}>
+        <nav className="inline-flex rounded-xl2 border border-line bg-surface-100 p-1 text-body" aria-label={c.title}>
           {([30, 60] as const).map((n) => (
             <button
               key={n} type="button" onClick={() => setSpan(n)} aria-pressed={span === n}
@@ -78,11 +78,11 @@ export function HebrewCalendar({ from }: { from: string }) {
       </ul>
 
       <div className="mt-5 rounded-xl2 border border-line bg-surface-100 px-4 py-3">
-        <p className="inline-flex items-start gap-2 text-[13px] leading-relaxed text-ink-soft">
+        <p className="inline-flex items-start gap-2 text-body leading-relaxed text-ink-soft">
           <Info size={14} strokeWidth={1.5} aria-hidden className="mt-0.5 shrink-0" />
           <span>{c.disclaimer}</span>
         </p>
-        <p className="mt-2 ps-6 text-[12.5px] leading-relaxed text-ink-mute">{c.custom}</p>
+        <p className="mt-2 ps-6 text-meta leading-relaxed text-ink-mute">{c.custom}</p>
       </div>
     </section>
   );
@@ -96,7 +96,7 @@ const TONE: Record<Verdict, { chip: string; dot: string; row: string }> = {
 
 function Legend({ tone, label, n }: { tone: Verdict; label: string; n: number }) {
   return (
-    <span className="inline-flex items-center gap-2 rounded-xl2 border border-line px-3 py-1.5 text-[12.5px] text-ink-soft">
+    <span className="inline-flex items-center gap-2 rounded-xl2 border border-line px-3 py-1.5 text-meta text-ink-soft">
       <span aria-hidden className={cn('size-2.5 rounded-full', TONE[tone].dot)} />
       {label}
       <span className="tabular-nums text-ink-mute">{n}</span>
@@ -115,24 +115,24 @@ function Row({ day, today }: { day: DayRuling; today: boolean }) {
     <li className={cn('flex flex-wrap items-center gap-x-3 gap-y-1 px-1 py-2.5', tone.row)}>
       <span aria-hidden className={cn('size-2 shrink-0 rounded-full', tone.dot)} />
 
-      <span className="w-[104px] shrink-0 text-[13.5px] text-ink">
+      <span className="w-[104px] shrink-0 text-body text-ink">
         {dayFmt.format(new Date(`${day.date}T12:00:00Z`))}
       </span>
 
       {/* The Hebrew date the evening begins, which is the one the restriction
           is actually about. */}
-      <span className="w-[112px] shrink-0 text-[12.5px] text-ink-mute">
+      <span className="w-[112px] shrink-0 text-meta text-ink-mute">
         {hebrewLabel(nextDay(day.date))}
       </span>
 
-      <span className="min-w-0 flex-1 text-[13px] text-ink-soft">
+      <span className="min-w-0 flex-1 text-body text-ink-soft">
         {words.length > 0 ? words.join(' · ') : ''}
       </span>
 
-      {today && <span className="rounded-xl2 bg-surface-200 px-2 py-0.5 text-[11.5px] text-ink-mute">{c.today}</span>}
+      {today && <span className="rounded-xl2 bg-surface-200 px-2 py-0.5 text-micro text-ink-mute">{c.today}</span>}
 
       {day.verdict !== 'clear' && (
-        <span className={cn('inline-flex shrink-0 items-center gap-1 rounded-xl2 px-2.5 py-1 text-[12px] font-medium', tone.chip)}>
+        <span className={cn('inline-flex shrink-0 items-center gap-1 rounded-xl2 px-2.5 py-1 text-meta font-medium', tone.chip)}>
           {day.verdict === 'blocked'
             ? <ShieldAlert size={12} strokeWidth={1.5} aria-hidden />
             : <CircleAlert size={12} strokeWidth={1.5} aria-hidden />}

@@ -40,7 +40,7 @@ export default async function JournalPage({ searchParams }: { searchParams: Prom
 
   return (
     <CopyProvider value={ui}>
-      <Link href={account.role === 'client' ? '/app/portal' : `/app/clients/${clientId}`} className="btn-quiet mb-4 inline-flex items-center gap-1.5 px-0 text-[14px]">
+      <Link href={account.role === 'client' ? '/app/portal' : `/app/clients/${clientId}`} className="btn-quiet mb-4 inline-flex items-center gap-1.5 px-0 text-body">
         <ArrowLeft size={16} aria-hidden strokeWidth={1.5} />
         {c.back}
       </Link>
@@ -52,7 +52,7 @@ export default async function JournalPage({ searchParams }: { searchParams: Prom
       <LoadTrouble />
       {clientId
         ? <JournalBook clientId={clientId} logs={logs} viewer={account.role === 'client' ? 'client' : 'producer'} />
-        : <p className="card text-[15px] text-ink-mute">{c.noneProducer}</p>}
+        : <p className="card text-lead text-ink-mute">{c.noneProducer}</p>}
     </CopyProvider>
   );
 }

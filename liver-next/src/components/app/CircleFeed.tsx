@@ -33,7 +33,7 @@ export function AuthorLine({ post }: {
     : (post.author_name || c.anon.plain);
   return (
     <span className="inline-flex flex-wrap items-center gap-2">
-      <span className="text-[13.5px] font-medium text-ink">{name}</span>
+      <span className="text-body font-medium text-ink">{name}</span>
       {post.is_producer && (
         <span className="chip chip-ok gap-1">
           <BadgeCheck size={13} aria-hidden strokeWidth={1.75} />
@@ -61,28 +61,28 @@ function AskForm({ producerId, clientId, category, onDone }: {
     <form action={action} className="card space-y-4">
       <input type="hidden" name="producer_id" value={producerId} />
       {clientId && <input type="hidden" name="client_id" value={clientId} />}
-      <label className="grid gap-1.5 text-[13px] text-ink-soft">{c.form.category}
+      <label className="grid gap-1.5 text-body text-ink-soft">{c.form.category}
         <select name="category" defaultValue={category} className="field">
           {CIRCLE_CATEGORIES.map((k) => (
             <option key={k} value={k}>{CATEGORY_MARK[k]} {c.categories[k]}</option>
           ))}
         </select>
       </label>
-      <label className="grid gap-1.5 text-[13px] text-ink-soft">{c.form.title}
+      <label className="grid gap-1.5 text-body text-ink-soft">{c.form.title}
         <input name="title" required minLength={2} maxLength={140} className="field" placeholder={c.form.titlePh} autoComplete="off" /></label>
-      <label className="grid gap-1.5 text-[13px] text-ink-soft">{c.form.content}
+      <label className="grid gap-1.5 text-body text-ink-soft">{c.form.content}
         <textarea name="content" required minLength={2} rows={5} className="field" placeholder={c.form.contentPh} /></label>
       <div>
-        <label className="inline-flex min-h-[48px] cursor-pointer items-center gap-2.5 text-[14.5px] text-ink">
+        <label className="inline-flex min-h-[48px] cursor-pointer items-center gap-2.5 text-body text-ink">
           <input type="checkbox" name="is_anonymous" className="size-4" />
           {c.form.anonymous}
         </label>
-        <p className="text-[12.5px] leading-relaxed text-ink-mute">{c.form.anonymousHint}</p>
+        <p className="text-meta leading-relaxed text-ink-mute">{c.form.anonymousHint}</p>
       </div>
-      {state && !state.ok && state.error && <p role="alert" className="text-[14px] text-bad">{state.error}</p>}
+      {state && !state.ok && state.error && <p role="alert" className="text-body text-bad">{state.error}</p>}
       <div className="flex flex-wrap items-center gap-2">
         <PostButton />
-        <button type="button" onClick={onDone} className="btn-quiet text-[14px]">{c.cancel}</button>
+        <button type="button" onClick={onDone} className="btn-quiet text-body">{c.cancel}</button>
       </div>
     </form>
   );
@@ -97,7 +97,7 @@ export function VoteButton({ post }: { post: Pick<CirclePost, 'id' | 'upvotes' |
       <button
         type="submit" aria-pressed={post.voted}
         title={post.voted ? c.upvoted : c.upvote}
-        className={`inline-flex min-h-[40px] items-center gap-1.5 rounded-button border px-3 text-[13.5px] transition ${
+        className={`inline-flex min-h-[40px] items-center gap-1.5 rounded-button border px-3 text-body transition ${
           post.voted ? 'border-accent bg-accent-wash text-accent' : 'border-line-strong bg-card text-ink-soft hover:border-accent/50'
         }`}
       >
@@ -127,7 +127,7 @@ export function CircleFeed({ producerId, clientId, posts, category, viewer }: {
             key={t.k || 'all'}
             href={t.k ? `/app/portal/community?c=${t.k}` : '/app/portal/community'}
             aria-current={category === t.k ? 'page' : undefined}
-            className={`inline-flex min-h-[40px] shrink-0 items-center gap-1.5 rounded-button border px-3.5 text-[14px] transition ${
+            className={`inline-flex min-h-[40px] shrink-0 items-center gap-1.5 rounded-button border px-3.5 text-body transition ${
               category === t.k ? 'border-accent bg-accent text-white' : 'border-line-strong bg-card text-ink-soft hover:border-accent/50'
             }`}
           >
@@ -145,10 +145,10 @@ export function CircleFeed({ producerId, clientId, posts, category, viewer }: {
           </button>
         )}
 
-      <p className="text-[12.5px] leading-relaxed text-ink-mute">{c.rules}</p>
+      <p className="text-meta leading-relaxed text-ink-mute">{c.rules}</p>
 
       {posts.length === 0 ? (
-        <p className="card text-[15px] text-ink-mute">{category ? c.noneCategory : c.none}</p>
+        <p className="card text-lead text-ink-mute">{category ? c.noneCategory : c.none}</p>
       ) : (
         <ul className="list-none space-y-4 p-0">
           {posts.map((p) => (
@@ -156,20 +156,20 @@ export function CircleFeed({ producerId, clientId, posts, category, viewer }: {
               <article className="card">
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <AuthorLine post={p} />
-                  <span className="text-[12.5px] text-ink-mute">
+                  <span className="text-meta text-ink-mute">
                     <span aria-hidden>{CATEGORY_MARK[p.category as CircleCategory] ?? ''} </span>
                     {c.categories[p.category as CircleCategory] ?? p.category}
                   </span>
                 </div>
-                <h2 className="mt-2 font-display text-[19px] font-semibold text-ink">
+                <h2 className="mt-2 font-display text-subhead font-semibold text-ink">
                   <Link href={`/app/portal/community/${p.id}`} className="hover:underline">{p.title}</Link>
                 </h2>
-                <p className="mt-1.5 line-clamp-3 whitespace-pre-line text-[15px] leading-relaxed text-ink-soft">{p.content}</p>
+                <p className="mt-1.5 line-clamp-3 whitespace-pre-line text-lead leading-relaxed text-ink-soft">{p.content}</p>
                 <div className="mt-4 flex flex-wrap items-center gap-2">
                   <VoteButton post={p} />
                   <Link
                     href={`/app/portal/community/${p.id}`}
-                    className="inline-flex min-h-[40px] items-center gap-1.5 rounded-button border border-line-strong bg-card px-3 text-[13.5px] text-ink-soft transition hover:border-accent/50"
+                    className="inline-flex min-h-[40px] items-center gap-1.5 rounded-button border border-line-strong bg-card px-3 text-body text-ink-soft transition hover:border-accent/50"
                   >
                     <MessageCircle size={14} aria-hidden strokeWidth={1.75} />
                     {p.replies === 0 ? c.reply.post : count(c.reply.count, p.replies)}
@@ -177,12 +177,12 @@ export function CircleFeed({ producerId, clientId, posts, category, viewer }: {
                   {(p.mine || viewer === 'producer') && (
                     <DeleteForm action={deleteCirclePost} className="ms-auto">
                       <input type="hidden" name="id" value={p.id} />
-                      <button type="submit" className="btn-quiet px-2 text-[13px]">{c.remove}</button>
+                      <button type="submit" className="btn-quiet px-2 text-body">{c.remove}</button>
                     </DeleteForm>
                   )}
                 </div>
                 {p.upvotes > 0 && (
-                  <p className="mt-2 text-[12.5px] text-ink-mute">{count(c.upvotes, p.upvotes)}</p>
+                  <p className="mt-2 text-meta text-ink-mute">{count(c.upvotes, p.upvotes)}</p>
                 )}
               </article>
             </li>

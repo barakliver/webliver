@@ -88,17 +88,17 @@ export async function NumbersSheet({ client, guests, tables, day, arrivals: arri
   return (
     <div className="print-doc">
       <header className="border-b-2 border-ink pb-4">
-        <h1 className="font-display text-[27px] font-light text-ink">{client.display_name}</h1>
-        <p className="mt-1.5 text-[15px] text-ink-soft">
+        <h1 className="font-display text-figure font-light text-ink">{client.display_name}</h1>
+        <p className="mt-1.5 text-lead text-ink-soft">
           {formatDate(dateFmtFor(locale), client.event_date, ui.runsheet.noDate)}
           {client.venue ? ` · ${client.venue}` : ''}
         </p>
-        <p className="mt-1 text-[14px] font-medium text-accent">{c.title} · {c.sub}</p>
+        <p className="mt-1 text-body font-medium text-accent">{c.title} · {c.sub}</p>
       </header>
 
       {/* ── how many ──────────────────────────────────────────────────── */}
       <section className="print-block mt-8">
-        <h2 className="font-display text-[19px] font-light text-ink">{c.counts}</h2>
+        <h2 className="font-display text-subhead font-light text-ink">{c.counts}</h2>
         <div className="mt-4 grid grid-cols-2 gap-x-8 gap-y-6 sm:grid-cols-4">
           <Stat label={c.heads} value={heads} />
           <Stat label={c.attending} value={attending.length} />
@@ -109,11 +109,11 @@ export async function NumbersSheet({ client, guests, tables, day, arrivals: arri
 
       {/* ── the meals ─────────────────────────────────────────────────── */}
       <section className="print-block mt-9">
-        <h2 className="font-display text-[19px] font-light text-ink">{c.diet}</h2>
+        <h2 className="font-display text-subhead font-light text-ink">{c.diet}</h2>
         {heads === 0 ? (
-          <p className="mt-3 text-[14.5px] text-ink-mute">{c.dietNone}</p>
+          <p className="mt-3 text-body text-ink-mute">{c.dietNone}</p>
         ) : (
-          <ul className="mt-3 max-w-md list-none divide-y divide-line border-y border-line p-0 text-[15px]">
+          <ul className="mt-3 max-w-md list-none divide-y divide-line border-y border-line p-0 text-lead">
             <li className="flex items-baseline justify-between py-2.5">
               <span className="text-ink">{c.dietRegular}</span>
               <span className="tabular-nums text-ink">{heads - special} {c.meals}</span>
@@ -124,7 +124,7 @@ export async function NumbersSheet({ client, guests, tables, day, arrivals: arri
                   <span className="text-ink">{label}</span>
                   <span className="tabular-nums text-ink">{n} {c.meals}</span>
                 </p>
-                <p className="mt-1 text-[13px] leading-relaxed text-ink-soft">
+                <p className="mt-1 text-body leading-relaxed text-ink-soft">
                   {(dietWho.get(label) ?? []).map(whoWhere).join(' · ')}
                 </p>
               </li>
@@ -135,24 +135,24 @@ export async function NumbersSheet({ client, guests, tables, day, arrivals: arri
 
       {/* ── who sits where ────────────────────────────────────────────── */}
       <section className="mt-9">
-        <h2 className="font-display text-[19px] font-light text-ink">{c.seating}</h2>
+        <h2 className="font-display text-subhead font-light text-ink">{c.seating}</h2>
         {tables.length === 0 ? (
-          <p className="mt-3 text-[14.5px] text-ink-mute">{c.seatingNone}</p>
+          <p className="mt-3 text-body text-ink-mute">{c.seatingNone}</p>
         ) : (
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             {tables.map((t) => {
               const seated = byTable.get(t.id) ?? [];
               const seats = seated.reduce((n, g) => n + Number(g.party_size || 0), 0);
               return (
-                <div key={t.id} className="print-block rounded-xl2 border border-line p-4">
+                <div key={t.id} className="print-block rounded-card-sm border border-line p-4">
                   <p className="flex items-baseline justify-between gap-3">
-                    <span className="text-[15px] font-medium text-ink">{t.name}</span>
-                    <span className="text-[12.5px] tabular-nums text-ink-mute">
+                    <span className="text-lead font-medium text-ink">{t.name}</span>
+                    <span className="text-meta tabular-nums text-ink-mute">
                       {seats} {c.seatedShort} · {t.seats} {c.seatsShort}
                     </span>
                   </p>
                   {seated.length > 0 && (
-                    <p className="mt-2 text-[13.5px] leading-relaxed text-ink-soft">
+                    <p className="mt-2 text-body leading-relaxed text-ink-soft">
                       {seated.map(withParty).join(' · ')}
                     </p>
                   )}
@@ -160,9 +160,9 @@ export async function NumbersSheet({ client, guests, tables, day, arrivals: arri
               );
             })}
             {unseated.length > 0 && (
-              <div className="print-block rounded-xl2 border border-dashed border-line-strong p-4">
-                <p className="text-[15px] font-medium text-ink">{c.unseated}</p>
-                <p className="mt-2 text-[13.5px] leading-relaxed text-ink-soft">
+              <div className="print-block rounded-card-sm border border-dashed border-line-strong p-4">
+                <p className="text-lead font-medium text-ink">{c.unseated}</p>
+                <p className="mt-2 text-body leading-relaxed text-ink-soft">
                   {unseated.map(withParty).join(' · ')}
                 </p>
               </div>
@@ -174,13 +174,13 @@ export async function NumbersSheet({ client, guests, tables, day, arrivals: arri
       {/* ── when ──────────────────────────────────────────────────────── */}
       <div className="mt-9 grid gap-9 sm:grid-cols-2">
         <section className="print-block">
-          <h2 className="font-display text-[19px] font-light text-ink">{c.schedule}</h2>
+          <h2 className="font-display text-subhead font-light text-ink">{c.schedule}</h2>
           {moments.length === 0 ? (
-            <p className="mt-3 text-[14.5px] text-ink-mute">{c.scheduleNone}</p>
+            <p className="mt-3 text-body text-ink-mute">{c.scheduleNone}</p>
           ) : (
             <ul className="mt-3 list-none divide-y divide-line border-y border-line p-0">
               {moments.map((m) => (
-                <li key={m.id} className="flex items-baseline gap-4 py-2.5 text-[15px]">
+                <li key={m.id} className="flex items-baseline gap-4 py-2.5 text-lead">
                   <span className="w-[46px] shrink-0 tabular-nums text-ink" dir="ltr">{hhmm(m.at_time)}</span>
                   <span className="min-w-0 text-ink">{m.title}</span>
                 </li>
@@ -190,13 +190,13 @@ export async function NumbersSheet({ client, guests, tables, day, arrivals: arri
         </section>
 
         <section className="print-block">
-          <h2 className="font-display text-[19px] font-light text-ink">{c.arrivals}</h2>
+          <h2 className="font-display text-subhead font-light text-ink">{c.arrivals}</h2>
           {arrivals.length === 0 ? (
-            <p className="mt-3 text-[14.5px] text-ink-mute">{c.arrivalsNone}</p>
+            <p className="mt-3 text-body text-ink-mute">{c.arrivalsNone}</p>
           ) : (
             <ul className="mt-3 list-none divide-y divide-line border-y border-line p-0">
               {arrivals.map((a) => (
-                <li key={a.id} className="flex items-baseline gap-4 py-2.5 text-[15px]">
+                <li key={a.id} className="flex items-baseline gap-4 py-2.5 text-lead">
                   <span className="w-[46px] shrink-0 tabular-nums text-ink" dir="ltr">{hhmm(a.at_time)}</span>
                   <span className="min-w-0 text-ink">
                     {a.name}
@@ -209,7 +209,7 @@ export async function NumbersSheet({ client, guests, tables, day, arrivals: arri
         </section>
       </div>
 
-      <footer className="mt-10 border-t border-line pt-4 text-[12.5px] text-ink-mute">
+      <footer className="mt-10 border-t border-line pt-4 text-meta text-ink-mute">
         <p>{c.updated}</p>
         <p className="mt-1 text-ink-soft">{brand.name}{brand.tagline ? ` · ${brand.tagline}` : ''}</p>
       </footer>

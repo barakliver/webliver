@@ -102,11 +102,11 @@ export function VersionWatch() {
                  rounded-card border border-line-strong bg-card px-4 py-3 shadow-pop
                  lg:inset-x-auto lg:bottom-6 lg:end-6"
     >
-      <p className="text-[13.5px] text-ink">{c.ready}</p>
+      <p className="text-body text-ink">{c.ready}</p>
       <button
         type="button"
         onClick={() => window.location.reload()}
-        className="btn-primary inline-flex shrink-0 items-center gap-1.5 px-4 py-1.5 text-[13px]"
+        className="btn-primary inline-flex shrink-0 items-center gap-1.5 px-4 py-1.5 text-body"
       >
         <RefreshCw size={14} strokeWidth={1.5} aria-hidden />
         {c.refresh}

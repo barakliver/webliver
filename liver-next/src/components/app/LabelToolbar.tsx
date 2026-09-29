@@ -48,17 +48,17 @@ export function LabelToolbar({ kind, labels, builtIn = [] }: {
     <section className="card">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="inline-flex items-center gap-2 font-display text-[17px] font-semibold text-ink">
+          <h2 className="inline-flex items-center gap-2 font-display text-head font-semibold text-ink">
             <Palette size={17} strokeWidth={1.5} aria-hidden />
             {isTags ? c.tagsTitle : c.channelsTitle}
           </h2>
-          <p className="mt-1 max-w-2xl text-[14px] leading-relaxed text-ink-soft">
+          <p className="mt-1 max-w-2xl text-body leading-relaxed text-ink-soft">
             {isTags ? c.tagsSub : c.channelsSub}
           </p>
         </div>
         <button
           type="button" onClick={() => setAdding((v) => !v)}
-          className="btn-ghost min-h-[38px] px-3.5 text-[13.5px]"
+          className="btn-ghost min-h-[38px] px-3.5 text-body"
         >
           {adding ? <X size={14} strokeWidth={1.5} aria-hidden /> : <Plus size={14} strokeWidth={1.5} aria-hidden />}
           {c.add}
@@ -66,7 +66,7 @@ export function LabelToolbar({ kind, labels, builtIn = [] }: {
       </div>
 
       {adding && (
-        <form action={action} className="mt-4 rounded-xl2 border border-line bg-surface-100 p-4">
+        <form action={action} className="mt-4 rounded-card-sm border border-line bg-surface-100 p-4">
           <input type="hidden" name="kind" value={kind} />
           <input type="hidden" name="color" value={color} />
           <div className="flex flex-wrap items-end gap-2">
@@ -78,13 +78,13 @@ export function LabelToolbar({ kind, labels, builtIn = [] }: {
           </div>
           <Swatches value={color} onPick={setColor} />
           {state && !state.ok && state.error && (
-            <p role="alert" className="mt-2 text-[13px] text-bad">{state.error}</p>
+            <p role="alert" className="mt-2 text-body text-bad">{state.error}</p>
           )}
         </form>
       )}
 
       {labels.length === 0 && !adding ? (
-        <p className="mt-5 text-[14px] text-ink-mute">{isTags ? c.none : c.noneChannels}</p>
+        <p className="mt-5 text-body text-ink-mute">{isTags ? c.none : c.noneChannels}</p>
       ) : (
         <ul className="mt-5 flex flex-wrap gap-2">
           {labels.map((l) => (
@@ -96,7 +96,7 @@ export function LabelToolbar({ kind, labels, builtIn = [] }: {
                   <span aria-hidden className="size-3 shrink-0 rounded-full" style={{ background: l.color }} />
                   <button
                     type="button" onClick={() => setEditing(l.id)}
-                    className="text-[13.5px] text-ink transition hover:text-accent"
+                    className="text-body text-ink transition hover:text-accent"
                     aria-label={`${c.rename}: ${l.label}`}
                   >
                     {l.label}
@@ -117,9 +117,9 @@ export function LabelToolbar({ kind, labels, builtIn = [] }: {
 
           {builtIn.map((b) => (
             <li key={b}>
-              <span className="inline-flex items-center gap-2 rounded-xl2 border border-dashed border-line px-3 py-1.5 text-[13.5px] text-ink-mute">
+              <span className="inline-flex items-center gap-2 rounded-xl2 border border-dashed border-line px-3 py-1.5 text-body text-ink-mute">
                 {b}
-                <span className="text-[11px]">{c.builtIn}</span>
+                <span className="text-micro">{c.builtIn}</span>
               </span>
             </li>
           ))}
@@ -148,9 +148,9 @@ function EditRow({ label, onDone }: { label: ProducerLabel; onDone: () => void }
       <div className="flex flex-wrap items-center gap-2">
         <input
           name="label" defaultValue={label.label} maxLength={40} autoComplete="off"
-          className="field min-h-[36px] w-[180px] py-1 text-[13.5px]" aria-label={c.rename} autoFocus
+          className="field min-h-[36px] w-[180px] py-1 text-body" aria-label={c.rename} autoFocus
         />
-        <button type="submit" className="btn-primary min-h-[36px] px-3 text-[13px]" disabled={pending}>
+        <button type="submit" className="btn-primary min-h-[36px] px-3 text-body" disabled={pending}>
           {pending ? c.saving : c.save}
         </button>
         <button type="button" onClick={onDone} aria-label={c.close} className="grid size-9 place-items-center rounded-xl2 text-ink-mute transition hover:bg-surface-200 hover:text-ink">
@@ -158,7 +158,7 @@ function EditRow({ label, onDone }: { label: ProducerLabel; onDone: () => void }
         </button>
       </div>
       <Swatches value={color} onPick={setColor} />
-      {state && !state.ok && state.error && <p role="alert" className="mt-2 text-[13px] text-bad">{state.error}</p>}
+      {state && !state.ok && state.error && <p role="alert" className="mt-2 text-body text-bad">{state.error}</p>}
     </form>
   );
 }

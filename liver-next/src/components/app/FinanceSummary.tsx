@@ -70,13 +70,13 @@ export function FinanceSummary({ clientId, viewer, target, items, payments }: {
     <section className="card">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="font-display text-[18px] font-semibold text-ink">{c.title}</h2>
-          <p className="mt-1 text-[14px] text-ink-soft">{c.sub}</p>
+          <h2 className="font-display text-subhead font-semibold text-ink">{c.title}</h2>
+          <p className="mt-1 text-body text-ink-soft">{c.sub}</p>
         </div>
         <button
           type="button" onClick={() => setExplain((v) => !v)} aria-expanded={explain}
           title={c.formula}
-          className="btn-quiet inline-flex min-h-[44px] items-center gap-1.5 px-3 text-[14px]"
+          className="btn-quiet inline-flex min-h-[44px] items-center gap-1.5 px-3 text-body"
         >
           <Info size={15} strokeWidth={1.5} aria-hidden />
           {c.how}
@@ -88,56 +88,84 @@ export function FinanceSummary({ clientId, viewer, target, items, payments }: {
           always, because once it has been read once it is furniture. */}
       {explain && (
         <div className="mt-4 rounded-xl2 border border-accent-line/40 bg-accent-wash px-4 py-3.5">
-          <p className="text-[14px] leading-relaxed text-ink">{c.formula}</p>
-          <p className="mt-2 text-[13px] tabular-nums text-ink-soft" dir="ltr">
+          <p className="text-body leading-relaxed text-ink">{c.formula}</p>
+          <p className="mt-2 text-body tabular-nums text-ink-soft" dir="ltr">
             <Money value={committed} /> − <Money value={paid} /> = <Money value={remaining} />
           </p>
           {target !== null && (
-            <p className="mt-1 text-[13px] tabular-nums text-ink-soft" dir="ltr">
+            <p className="mt-1 text-body tabular-nums text-ink-soft" dir="ltr">
               <Money value={target} /> − <Money value={committed} /> = <Money value={Math.abs(variance ?? 0)} />{underTarget === false ? ' ⚠' : ''}
             </p>
           )}
         </div>
       )}
 
-      {/* Five tiles. The fifth is the verdict, so it gets the colour. */}
-      <div className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-5">
+      {/*
+        Five figures, and two shapes for them.
+
+        On anything wide they are tiles, which is right: five boxes side by
+        side is a row of numbers a producer scans. On a phone they were the
+        same five boxes in two columns, which is 2 + 2 + 1 — the fifth sits
+        alone beside a gap, and the labels break to three lines inside a
+        150px box. A grid whose last row is half empty reads as a mistake
+        even when every figure in it is correct.
+
+        So on a phone they are rows: the name on one side, the figure on the
+        other, inside one surface. That is the move the four numbers at the
+        top of the couple's screen already made, for the same reason, and it
+        is the shape a phone is actually good at.
+
+        The explanatory sentence under each figure is the one thing dropped
+        at that width. It is not lost: "how is this worked out" above opens
+        the whole arithmetic in words, which is the better answer anyway and
+        was already there.
+
+        The verdict keeps its colour in both shapes. As a row it is a tinted
+        band at the bottom of the list, which is what a verdict should look
+        like at the end of a sum.
+      */}
+      <div className="mt-6 overflow-hidden rounded-card-sm border border-line bg-surface-100
+                      sm:grid sm:grid-cols-2 sm:gap-3 sm:overflow-visible sm:rounded-none sm:border-0 sm:bg-transparent lg:grid-cols-5">
         {tiles.map((t) => (
-          <div key={t.key} className="rounded-xl2 border border-line bg-surface-100 p-4">
-            <p className="inline-flex items-center gap-1.5 text-[11.5px] tracking-[.12em] text-ink-mute">
+          <div
+            key={t.key}
+            className="flex min-h-[54px] items-center justify-between gap-4 border-t border-line px-4 first:border-t-0
+                       sm:block sm:min-h-0 sm:rounded-card-sm sm:border sm:border-line sm:bg-surface-100 sm:p-4"
+          >
+            <p className="inline-flex items-center gap-1.5 text-micro tracking-[.12em] text-ink-mute">
               <t.icon size={13} strokeWidth={1.5} aria-hidden />
               {t.kicker}
             </p>
-            <p className={cn('mt-2 font-display text-[24px] font-semibold leading-none tabular-nums', t.tone ?? 'text-ink')}>
+            <p className={cn('font-display font-semibold leading-none tabular-nums text-lead sm:mt-2 sm:text-figure', t.tone ?? 'text-ink')}>
               {t.value}
             </p>
-            {t.sub && <p className="mt-2 text-[12px] leading-snug text-ink-mute">{t.sub}</p>}
+            {t.sub && <p className="hidden text-meta leading-snug text-ink-mute sm:mt-2 sm:block">{t.sub}</p>}
           </div>
         ))}
 
         <div
           className={cn(
-            'rounded-xl2 border p-4',
+            'flex min-h-[54px] items-center justify-between gap-4 border-t px-4 sm:block sm:min-h-0 sm:rounded-card-sm sm:border sm:p-4',
             variance === null
               ? 'border-line bg-surface-100'
               : underTarget ? 'border-ok/30 bg-ok-wash' : 'border-bad/30 bg-bad-wash',
           )}
         >
-          <p className="inline-flex items-center gap-1.5 text-[11.5px] tracking-[.12em] text-ink-mute">
+          <p className="inline-flex items-center gap-1.5 text-micro tracking-[.12em] text-ink-mute">
             {underTarget === false
               ? <TriangleAlert size={13} strokeWidth={1.5} aria-hidden />
               : <ShieldCheck size={13} strokeWidth={1.5} aria-hidden />}
             {variance === null ? c.variance : underTarget ? c.surplus : c.overrun}
           </p>
           <p className={cn(
-            'mt-2 font-display text-[24px] font-semibold leading-none tabular-nums',
+            'font-display font-semibold leading-none tabular-nums text-lead sm:mt-2 sm:text-figure',
             variance === null ? 'text-ink-mute' : underTarget ? 'text-ok' : 'text-bad',
           )}>
-            {variance === null ? <span className="text-[16px]">{c.setTargetFirst}</span> : <Money value={Math.abs(variance)} />}
+            {variance === null ? <span className="text-meta sm:text-head">{c.setTargetFirst}</span> : <Money value={Math.abs(variance)} />}
           </p>
           {variance !== null && (
             <span className={cn(
-              'mt-2 inline-block rounded-xl2 px-2 py-0.5 text-[11.5px] font-medium',
+              'hidden rounded-control px-2 py-0.5 text-micro font-medium sm:mt-2 sm:inline-block',
               underTarget ? 'bg-ok/10 text-ok' : 'bg-bad/10 text-bad',
             )}>
               {underTarget ? c.underBadge : c.overBadge}
@@ -153,7 +181,7 @@ export function FinanceSummary({ clientId, viewer, target, items, payments }: {
           <span className="h-full bg-ok transition-[width] duration-700" style={{ width: `${paidPct}%` }} />
           <span className="h-full bg-warn/70 transition-[width] duration-700" style={{ width: `${pendingPct}%` }} />
         </div>
-        <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-[12.5px] text-ink-mute">
+        <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-meta text-ink-mute">
           <span className="inline-flex items-center gap-1.5">
             <span aria-hidden className="size-2 rounded-full bg-ok" />
             {c.paidShare} <span className="tabular-nums" dir="ltr">{paidPct}%</span>
@@ -181,10 +209,10 @@ export function FinanceSummary({ clientId, viewer, target, items, payments }: {
               </div>
               <button type="submit" className="btn-primary" disabled={pending}>{pending ? c.saving : c.save}</button>
               <button type="button" onClick={() => setEditing(false)} className="btn-ghost">{c.cancel}</button>
-              {state && !state.ok && state.error && <p role="alert" className="w-full text-[13.5px] text-bad">{state.error}</p>}
+              {state && !state.ok && state.error && <p role="alert" className="w-full text-body text-bad">{state.error}</p>}
             </form>
           ) : (
-            <button type="button" onClick={() => setEditing(true)} className="btn-quiet inline-flex items-center gap-1.5 px-0 text-[13.5px]">
+            <button type="button" onClick={() => setEditing(true)} className="btn-quiet inline-flex items-center gap-1.5 px-0 text-body">
               <Pencil size={14} strokeWidth={1.5} aria-hidden />
               {target === null ? c.setTarget : c.editTarget}
             </button>

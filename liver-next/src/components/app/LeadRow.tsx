@@ -34,7 +34,7 @@ function Book() {
   const c = useCopy().lead;
   const { pending } = useFormStatus();
   return (
-    <button type="submit" className="btn-ghost whitespace-nowrap px-4 py-2 text-[13.5px]" disabled={pending}>
+    <button type="submit" className="btn-ghost whitespace-nowrap px-4 py-2 text-body" disabled={pending}>
       {pending ? c.callBooking : c.callBook}
     </button>
   );
@@ -63,10 +63,10 @@ export function LeadRow({ lead, calls }: { lead: Lead; calls: Call[] }) {
             instead, which is what the wrap was for. */}
         <div className="min-w-[200px] flex-1">
           <p className="font-medium text-ink">{lead.full_name}</p>
-          <p className="text-[12.5px] text-ink-mute" dir="ltr">
+          <p className="text-meta text-ink-mute" dir="ltr">
             {[lead.phone, lead.email].filter(Boolean).join(' · ') || '·'}
           </p>
-          <p className="mt-0.5 text-[12.5px] text-ink-mute">
+          <p className="mt-0.5 text-meta text-ink-mute">
             {kind}
             {lead.event_date ? ` · ${show(locale, lead.event_date)}` : ''}
             {lead.guest_count ? ` · ${lead.guest_count}` : ''}
@@ -75,7 +75,7 @@ export function LeadRow({ lead, calls }: { lead: Lead; calls: Call[] }) {
           {/* Where, on its own line and in ink: it is the first thing the
               producer looks for, and it decides whether to pick up the phone. */}
           {lead.location && (
-            <p className="mt-1 inline-flex items-center gap-1 text-[13px] text-ink">
+            <p className="mt-1 inline-flex items-center gap-1 text-body text-ink">
               <MapPin size={13} strokeWidth={1.5} aria-hidden className="text-accent" />
               {lead.location}
             </p>
@@ -83,7 +83,7 @@ export function LeadRow({ lead, calls }: { lead: Lead; calls: Call[] }) {
         </div>
 
         {openCalls.length > 0 && (
-          <span className="rounded-xl2 bg-warn-wash px-3 py-1 text-[12.5px] text-warn">
+          <span className="rounded-xl2 bg-warn-wash px-3 py-1 text-meta text-warn">
             {c.callTitle} · {show(locale, openCalls[0].remind_on)}
           </span>
         )}
@@ -93,14 +93,14 @@ export function LeadRow({ lead, calls }: { lead: Lead; calls: Call[] }) {
           <select
             name="status" defaultValue={lead.status}
             onChange={(e) => e.currentTarget.form?.requestSubmit()}
-            className="field w-[140px] py-1.5 text-[13.5px]"
+            className="field w-[140px] py-1.5 text-body"
             aria-label={ui.leads.cols.status}
           >
             {Object.entries(c.statuses).map(([v, label]) => <option key={v} value={v}>{label}</option>)}
           </select>
         </form>
 
-        <button type="button" className="btn-quiet px-3 py-1.5 text-[13px]" onClick={() => setOpen((v) => !v)}>
+        <button type="button" className="btn-quiet px-3 py-1.5 text-body" onClick={() => setOpen((v) => !v)}>
           {open ? c.close : c.open}
         </button>
       </div>
@@ -108,14 +108,14 @@ export function LeadRow({ lead, calls }: { lead: Lead; calls: Call[] }) {
       {open && (
         <div className="space-y-4 border-t border-line bg-surface-100 p-4">
           {lead.message && (
-            <p className="rounded-xl2 bg-card px-4 py-3 text-[14px] leading-relaxed text-ink-soft">“{lead.message}”</p>
+            <p className="rounded-xl2 bg-card px-4 py-3 text-body leading-relaxed text-ink-soft">“{lead.message}”</p>
           )}
 
           <form action={setLeadNote} className="flex flex-wrap gap-2">
             <input type="hidden" name="lead_id" value={lead.id} />
             <input name="note" defaultValue={lead.note} placeholder={c.notePh} autoComplete="off"
                    className="field flex-1 min-w-[200px]" aria-label={c.note} />
-            <button type="submit" className="btn-ghost px-4 py-2 text-[13.5px]">{c.saveNote}</button>
+            <button type="submit" className="btn-ghost px-4 py-2 text-body">{c.saveNote}</button>
           </form>
 
           <form action={action} className="flex flex-wrap gap-2">
@@ -126,12 +126,12 @@ export function LeadRow({ lead, calls }: { lead: Lead; calls: Call[] }) {
             <Book />
           </form>
           {state && !state.ok && state.error && (
-            <p role="alert" className="rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">{state.error}</p>
+            <p role="alert" className="rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-body text-bad">{state.error}</p>
           )}
 
           <form action={convertLead}>
             <input type="hidden" name="lead_id" value={lead.id} />
-            <button type="submit" className="btn-primary px-5 py-2 text-[14px]">{c.convert}</button>
+            <button type="submit" className="btn-primary px-5 py-2 text-body">{c.convert}</button>
           </form>
         </div>
       )}

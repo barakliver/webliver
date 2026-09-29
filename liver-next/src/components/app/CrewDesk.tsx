@@ -54,7 +54,7 @@ function Save() {
 
 function Alert({ text }: { text: string }) {
   return (
-    <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+    <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-body text-bad">
       {text}
     </p>
   );
@@ -75,7 +75,7 @@ function RolePicker({ chosen }: { chosen?: string[] }) {
           <label
             key={s}
             className="inline-flex cursor-pointer items-center gap-2 rounded-xl2 border border-line-soft
-                       bg-surface-100 px-3 py-2 text-[14px] text-ink-soft transition-colors
+                       bg-surface-100 px-3 py-2 text-body text-ink-soft transition-colors
                        hover:border-accent/40 has-[:checked]:border-accent has-[:checked]:bg-accent-wash has-[:checked]:text-ink"
           >
             <input
@@ -128,7 +128,7 @@ function Fields({ person }: { person?: CrewPerson }) {
             defaultValue={person?.rate === null || person?.rate === undefined ? '' : String(person.rate)}
             placeholder={c.feePh} autoComplete="off" className="field" inputMode="numeric"
           />
-          <p className="mt-1 text-[12px] text-ink-mute">{c.deskRateHint}</p>
+          <p className="mt-1 text-meta text-ink-mute">{c.deskRateHint}</p>
         </div>
       </div>
 
@@ -187,7 +187,7 @@ function EditForm({ person }: { person: CrewPerson }) {
       <form action={archiveCrewMember} className="mt-2">
         <input type="hidden" name="member_id" value={person.id} />
         <input type="hidden" name="archived" value={person.archived_at ? '0' : '1'} />
-        <button type="submit" className="btn-ghost text-[13.5px]">
+        <button type="submit" className="btn-ghost text-body">
           {person.archived_at ? c.deskRestore : c.deskArchive}
         </button>
       </form>
@@ -205,7 +205,7 @@ function SendInvite({ sent, disabled }: { sent: boolean; disabled: boolean }) {
   const { pending } = useFormStatus();
   return (
     <button
-      type="submit" className="btn-ghost inline-flex items-center gap-1.5 text-[13.5px]"
+      type="submit" className="btn-ghost inline-flex items-center gap-1.5 text-body"
       disabled={pending || disabled}
     >
       <Send size={14} aria-hidden strokeWidth={1.5} />
@@ -222,12 +222,12 @@ function InviteButton({ person }: { person: CrewPerson }) {
       <input type="hidden" name="member_id" value={person.id} />
       <SendInvite sent={!!state?.ok} disabled={!person.email} />
       {state?.ok && (
-        <span className="inline-flex items-center gap-1 text-[13px] text-good">
+        <span className="inline-flex items-center gap-1 text-body text-good">
           <Check size={14} aria-hidden strokeWidth={1.5} />{c.inviteSent}
         </span>
       )}
-      {state?.error && <span className="text-[13px] text-bad">{state.error}</span>}
-      {!person.email && <span className="text-[13px] text-ink-mute">{c.inviteNoEmail}</span>}
+      {state?.error && <span className="text-body text-bad">{state.error}</span>}
+      {!person.email && <span className="text-body text-ink-mute">{c.inviteNoEmail}</span>}
     </form>
   );
 }
@@ -237,14 +237,14 @@ function RoleBadges({ roles }: { roles: string[] }) {
   const labels = useSlotLabels();
   const known = CREW_SLOTS.filter((s) => roles.includes(s));
   if (known.length === 0) {
-    return <span className="text-[13px] text-ink-mute">{c.deskRolesNone}</span>;
+    return <span className="text-body text-ink-mute">{c.deskRolesNone}</span>;
   }
   return (
     <span className="flex flex-wrap gap-1.5">
       {known.map((s) => (
         <span
           key={s}
-          className="inline-flex items-center rounded-xl2 bg-accent-wash px-2 py-0.5 text-[12.5px] text-accent"
+          className="inline-flex items-center rounded-xl2 bg-accent-wash px-2 py-0.5 text-meta text-accent"
         >
           {labels[s]}
         </span>
@@ -263,24 +263,24 @@ function PersonRow({ person }: { person: CrewPerson }) {
                      [&::-webkit-details-marker]:hidden"
         >
           <span className="min-w-0 flex-1">
-            <span className="block font-display text-[17px] font-semibold text-ink">{person.name}</span>
+            <span className="block font-display text-head font-semibold text-ink">{person.name}</span>
             <span className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1.5">
               <RoleBadges roles={person.roles} />
               {/* The clash, on the person rather than only in the list above:
                   this is the row somebody opens to fix it. */}
               {!!person.clashes && person.clashes > 0 && (
-                <span className="inline-flex items-center gap-1 rounded-xl2 bg-bad-wash px-2 py-0.5 text-[12.5px] text-bad">
+                <span className="inline-flex items-center gap-1 rounded-xl2 bg-bad-wash px-2 py-0.5 text-meta text-bad">
                   <TriangleAlert size={12} aria-hidden strokeWidth={1.5} />
                   {c.clashBadge}
                 </span>
               )}
               {person.email && (
-                <span className={`text-[12.5px] ${person.signedIn ? 'text-good' : 'text-ink-mute'}`}>
+                <span className={`text-meta ${person.signedIn ? 'text-good' : 'text-ink-mute'}`}>
                   {person.signedIn ? c.deskSignedIn : c.deskNotSignedIn}
                 </span>
               )}
             </span>
-            <span className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-[13px] text-ink-mute">
+            <span className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-body text-ink-mute">
               {person.phone && (
                 <span className="inline-flex items-center gap-1.5">
                   <Phone size={13} aria-hidden strokeWidth={1.5} />
@@ -355,11 +355,11 @@ export function CrewDesk({ people }: { people: CrewPerson[] }) {
     <section aria-labelledby="crew-desk">
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
-          <h2 id="crew-desk" className="font-display text-[22px] font-semibold text-ink">{c.deskTitle}</h2>
-          <p className="mt-1 text-[14px] text-ink-soft">{c.deskSub}</p>
+          <h2 id="crew-desk" className="font-display text-panel font-semibold text-ink">{c.deskTitle}</h2>
+          <p className="mt-1 text-body text-ink-soft">{c.deskSub}</p>
         {/* Said out loud, because it is the one thing on this screen somebody
             would otherwise have to assume. */}
-        <p className="mt-1 text-[12.5px] text-ink-mute">{c.deskMoneyPrivate}</p>
+        <p className="mt-1 text-meta text-ink-mute">{c.deskMoneyPrivate}</p>
         </div>
         <button
           type="button" onClick={() => setAdding((v) => !v)}
@@ -393,11 +393,11 @@ export function CrewDesk({ people }: { people: CrewPerson[] }) {
       {live.length === 0 ? (
         <div className="card mt-5 p-6 text-center">
           <UserPlus size={22} strokeWidth={1.5} aria-hidden className="mx-auto text-ink-mute" />
-          <p className="mt-3 text-[15px] text-ink">{c.deskNone}</p>
-          <p className="mt-1 text-[13.5px] text-ink-mute">{c.deskNoneHint}</p>
+          <p className="mt-3 text-lead text-ink">{c.deskNone}</p>
+          <p className="mt-1 text-body text-ink-mute">{c.deskNoneHint}</p>
         </div>
       ) : shown.length === 0 ? (
-        <p className="mt-5 text-[14px] text-ink-mute">{c.deskNoMatch}</p>
+        <p className="mt-5 text-body text-ink-mute">{c.deskNoMatch}</p>
       ) : (
         /* The list folds too. Fifteen people is a long way to scroll past on
            the way to the season board, and the row says how many are inside
@@ -408,8 +408,8 @@ export function CrewDesk({ people }: { people: CrewPerson[] }) {
             className="flex cursor-pointer list-none items-center gap-3 py-1
                        [&::-webkit-details-marker]:hidden"
           >
-            <span className="font-display text-[16px] font-semibold text-ink">{c.deskPeople}</span>
-            <span className="text-[13px] text-ink-mute"><Ltr>{String(shown.length)}</Ltr></span>
+            <span className="font-display text-head font-semibold text-ink">{c.deskPeople}</span>
+            <span className="text-body text-ink-mute"><Ltr>{String(shown.length)}</Ltr></span>
             <ChevronDown
               size={17} strokeWidth={1.5} aria-hidden
               className="shrink-0 text-ink-mute transition-transform duration-200 group-open/list:rotate-180"
@@ -427,14 +427,14 @@ export function CrewDesk({ people }: { people: CrewPerson[] }) {
             className="flex cursor-pointer list-none items-center gap-3 py-1
                        [&::-webkit-details-marker]:hidden"
           >
-            <span className="font-display text-[17px] font-semibold text-ink">{c.deskArchivedTitle}</span>
-            <span className="text-[13px] text-ink-mute">{archived.length}</span>
+            <span className="font-display text-head font-semibold text-ink">{c.deskArchivedTitle}</span>
+            <span className="text-body text-ink-mute">{archived.length}</span>
             <ChevronDown
               size={18} strokeWidth={1.5} aria-hidden
               className="shrink-0 text-ink-mute transition-transform duration-200 group-open:rotate-180"
             />
           </summary>
-          <p className="mt-1 text-[13.5px] text-ink-mute">{c.deskArchivedSub}</p>
+          <p className="mt-1 text-body text-ink-mute">{c.deskArchivedSub}</p>
           <ul className="mt-3 list-none space-y-3 p-0">
             {archived.map((p) => <PersonRow key={p.id} person={p} />)}
           </ul>

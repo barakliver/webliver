@@ -66,7 +66,7 @@ export function SidebarNav({ items }: { items: NavItem[] }) {
                 href={i.href}
                 aria-current={current ? 'page' : undefined}
                 className={cn(
-                  'relative flex items-center gap-3 py-2.5 pe-4 text-[14px] tracking-[.02em]',
+                  'relative flex items-center gap-3 py-2.5 pe-4 text-body tracking-[.02em]',
                   'transition-colors duration-300',
                   current ? 'text-ink' : 'text-ink-mute hover:text-ink',
                 )}
@@ -152,7 +152,7 @@ export function MobileTabBar({ items, extra }: {
             style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 5.5rem)' }}
           >
             <div className="mb-3 flex items-center justify-between">
-              <h2 className="text-[15px] font-semibold text-ink">{ui.nav.moreTitle}</h2>
+              <h2 className="text-lead font-semibold text-ink">{ui.nav.moreTitle}</h2>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
@@ -172,7 +172,7 @@ export function MobileTabBar({ items, extra }: {
                       href={i.href}
                       aria-current={current ? 'page' : undefined}
                       className={cn(
-                        'relative flex min-h-[52px] items-center gap-3 border-b border-line px-1 text-[15px]',
+                        'relative flex min-h-[52px] items-center gap-3 border-b border-line px-1 text-lead',
                         'transition-colors duration-300',
                         /* A gold mark on the trailing edge rather than a fill.
                            The same mark the desktop nav and the segmented
@@ -210,7 +210,7 @@ export function MobileTabBar({ items, extra }: {
                   aria-current={current ? 'page' : undefined}
                   className={cn(
                     'flex min-h-[56px] flex-col items-center justify-center gap-1.5 px-1 pt-2',
-                    'text-[12px] tracking-[.04em] transition-colors duration-300',
+                    'text-meta tracking-[.04em] transition-colors duration-300',
                     current ? 'text-ink' : 'text-ink-mute',
                   )}
                 >
@@ -245,7 +245,7 @@ export function MobileTabBar({ items, extra }: {
                 aria-haspopup="dialog"
                 className={cn(
                   'flex min-h-[56px] w-full flex-col items-center justify-center gap-1.5 px-1 pt-2',
-                  'text-[12px] tracking-[.04em] transition-colors duration-300',
+                  'text-meta tracking-[.04em] transition-colors duration-300',
                   /* Lit when the open screen lives behind it, so the nav never
                      reports that you are nowhere. */
                   open || inOverflow ? 'text-ink' : 'text-ink-mute',

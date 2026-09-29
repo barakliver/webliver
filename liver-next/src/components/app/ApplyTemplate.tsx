@@ -49,7 +49,7 @@ export function ApplyTemplate({ clientId, templates, hasDate }: {
       </div>
 
       <div className="mt-4 flex flex-wrap items-end gap-3">
-        <label className="min-w-[12rem] flex-1 text-[12.5px] text-ink-mute">
+        <label className="min-w-[12rem] flex-1 text-meta text-ink-mute">
           {c.which}
           <select
             value={pick}
@@ -78,15 +78,15 @@ export function ApplyTemplate({ clientId, templates, hasDate }: {
       {/* Said before the press, not after: an event with no date still gets the
           checklist, and somebody should know that is what they are about to
           get rather than wonder why nothing has a deadline. */}
-      {!hasDate && <p className="mt-3 text-[13px] text-warn">{c.noDate}</p>}
+      {!hasDate && <p className="mt-3 text-body text-warn">{c.noDate}</p>}
 
       {said && (
-        <p role="status" className="mt-3 inline-block rounded-control border border-ok/30 bg-ok-wash px-4 py-2 text-[14px] text-ok">
+        <p role="status" className="mt-3 inline-block rounded-control border border-ok/30 bg-ok-wash px-4 py-2 text-body text-ok">
           <Ltr>{said}</Ltr>
         </p>
       )}
       {error && (
-        <p role="alert" className="mt-3 rounded-control border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+        <p role="alert" className="mt-3 rounded-control border border-bad/25 bg-bad-wash px-4 py-2.5 text-body text-bad">
           {error}
         </p>
       )}

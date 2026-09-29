@@ -34,11 +34,11 @@ export function WeddingBingo({ clientId, tasks }: { clientId: string; tasks: Tas
     return (
       <section className="card" aria-labelledby="bingo-title">
         <Title id="bingo-title" text={c.title} />
-        <p className="mt-1 text-[14px] text-ink-soft">{c.sub}</p>
-        <p className="mt-5 text-[14px] leading-relaxed text-ink-mute">
+        <p className="mt-1 text-body text-ink-soft">{c.sub}</p>
+        <p className="mt-5 text-body leading-relaxed text-ink-mute">
           {c.tooFew.replace('{n}', String(MIN_SQUARES - tasks.length))}
         </p>
-        <a href="#tasks" className="btn-quiet mt-4 inline-flex px-3 py-1.5 text-[13px]">{c.toTasks}</a>
+        <a href="#tasks" className="btn-quiet mt-4 inline-flex px-3 py-1.5 text-body">{c.toTasks}</a>
       </section>
     );
   }
@@ -49,11 +49,11 @@ export function WeddingBingo({ clientId, tasks }: { clientId: string; tasks: Tas
     <section className="card" aria-labelledby="bingo-title">
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         <Title id="bingo-title" text={c.title} />
-        <p className="text-[13px] tabular-nums text-ink-mute">
+        <p className="text-body tabular-nums text-ink-mute">
           <Ltr>{board.ticked} / {board.total}</Ltr>
         </p>
       </div>
-      <p className="mt-1 text-[14px] text-ink-soft">{c.sub}</p>
+      <p className="mt-1 text-body text-ink-soft">{c.sub}</p>
 
       {/* The shout, above the board rather than under it: on a phone the
           bottom of a four by four grid is below the fold, and a celebration
@@ -61,7 +61,7 @@ export function WeddingBingo({ clientId, tasks }: { clientId: string; tasks: Tas
       {lines > 0 && (
         <p
           role="status"
-          className="mt-5 inline-flex items-center gap-2 rounded-xl2 bg-ok-wash px-3 py-2 text-[14px] font-semibold text-ok"
+          className="mt-5 inline-flex items-center gap-2 rounded-xl2 bg-ok-wash px-3 py-2 text-body font-semibold text-ok"
         >
           <PartyPopper size={16} aria-hidden strokeWidth={1.75} />
           {board.ticked === board.total
@@ -88,14 +88,14 @@ export function WeddingBingo({ clientId, tasks }: { clientId: string; tasks: Tas
         ))}
       </div>
 
-      <p className="mt-4 text-[12.5px] leading-relaxed text-ink-mute">{c.note}</p>
+      <p className="mt-4 text-meta leading-relaxed text-ink-mute">{c.note}</p>
     </section>
   );
 }
 
 function Title({ id, text }: { id: string; text: string }) {
   return (
-    <h2 id={id} className="font-display text-[18px] font-semibold text-ink">{text}</h2>
+    <h2 id={id} className="font-display text-subhead font-semibold text-ink">{text}</h2>
   );
 }
 
@@ -130,11 +130,11 @@ function Square({ task, clientId, onLine }: {
       >
         <span
           aria-hidden
-          className={`text-[15px] leading-none ${done ? '' : 'text-transparent'}`}
+          className={`text-lead leading-none ${done ? '' : 'text-transparent'}`}
         >
           ✓
         </span>
-        <span className="line-clamp-3 text-[11.5px] leading-tight">{task.title}</span>
+        <span className="line-clamp-3 text-micro leading-tight">{task.title}</span>
       </button>
       {captureForm}
     </>

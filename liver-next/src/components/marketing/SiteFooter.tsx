@@ -23,7 +23,7 @@ export function SiteFooter({ brand, note, locale }: {
 
   return (
     <footer className="border-t border-line py-10">
-      <div className="shell flex flex-wrap items-center gap-x-3 gap-y-2 text-[13.5px] text-ink-mute">
+      <div className="shell flex flex-wrap items-center gap-x-3 gap-y-2 text-body text-ink-mute">
         <span>{brand} · {note}</span>
         <span aria-hidden>·</span>
         <Link href="/accessibility" className="underline underline-offset-4 transition-colors hover:text-accent">

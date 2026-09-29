@@ -145,25 +145,25 @@ export function BrandStudio({ clientId, viewer, brand, images, data, canAi, prin
     <section className="card">
       {hrefs.map((h) => <link key={h} rel="stylesheet" href={h} precedence="default" />)}
       <p className="eyebrow">{c.eyebrow}</p>
-      <h2 className="mt-2 font-display text-[26px] font-semibold text-ink">{c.title}</h2>
-      <p className="mt-2 max-w-2xl text-[14.5px] leading-relaxed text-ink-soft">{producer ? c.sub : c.subClient}</p>
+      <h2 className="mt-2 font-display text-figure font-semibold text-ink">{c.title}</h2>
+      <p className="mt-2 max-w-2xl text-body leading-relaxed text-ink-soft">{producer ? c.sub : c.subClient}</p>
 
-      {!producer && !hasBrand && <p className="mt-6 text-[14.5px] text-ink-mute">{c.none}</p>}
+      {!producer && !hasBrand && <p className="mt-6 text-body text-ink-mute">{c.none}</p>}
 
       {producer && (
-        <div className="mt-6 rounded-xl2 border border-line bg-surface-100 p-4 sm:p-5">
-          <h3 className="text-[15px] font-semibold text-ink">{c.inputs.title}</h3>
+        <div className="mt-6 rounded-card-sm border border-line bg-surface-100 p-4 sm:p-5">
+          <h3 className="text-lead font-semibold text-ink">{c.inputs.title}</h3>
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
-            <label className="grid gap-1 text-[13px] text-ink-soft">{c.inputs.words}
+            <label className="grid gap-1 text-body text-ink-soft">{c.inputs.words}
               <input className="field" value={draft.inputs.words} onChange={(e) => setInput('words', e.target.value)} placeholder={c.inputs.wordsPh} /></label>
-            <label className="grid gap-1 text-[13px] text-ink-soft">{c.inputs.reference}
+            <label className="grid gap-1 text-body text-ink-soft">{c.inputs.reference}
               <input className="field" value={draft.inputs.reference} onChange={(e) => setInput('reference', e.target.value)} placeholder={c.inputs.referencePh} /></label>
-            <label className="grid gap-1 text-[13px] text-ink-soft">{c.inputs.colorsIn}
+            <label className="grid gap-1 text-body text-ink-soft">{c.inputs.colorsIn}
               <input className="field" value={draft.inputs.colorsIn} onChange={(e) => setInput('colorsIn', e.target.value)} placeholder={c.inputs.colorsInPh} /></label>
-            <label className="grid gap-1 text-[13px] text-ink-soft">{c.inputs.colorsOut}
+            <label className="grid gap-1 text-body text-ink-soft">{c.inputs.colorsOut}
               <input className="field" value={draft.inputs.colorsOut} onChange={(e) => setInput('colorsOut', e.target.value)} placeholder={c.inputs.colorsOutPh} /></label>
           </div>
-          <p className="mt-3 text-[12.5px] leading-relaxed text-ink-mute">{c.inputs.pinterest}</p>
+          <p className="mt-3 text-meta leading-relaxed text-ink-mute">{c.inputs.pinterest}</p>
           <div className="mt-4 flex flex-wrap items-center gap-2">
             <button type="button" className="btn-primary inline-flex items-center gap-2" onClick={readBoard} disabled={busy !== '' || !canAi}>
               <Sparkles size={16} aria-hidden strokeWidth={1.5} />
@@ -173,13 +173,13 @@ export function BrandStudio({ clientId, viewer, brand, images, data, canAi, prin
               <Pipette size={16} aria-hidden strokeWidth={1.5} />
               {busy === 'extract' ? c.extracting : c.extract}
             </button>
-            {!canAi && <span className="text-[12.5px] text-ink-mute">{c.readNoKey}</span>}
+            {!canAi && <span className="text-meta text-ink-mute">{c.readNoKey}</span>}
             {canAi && images.length > 0 && images.length < 8 && (
-              <span className="text-[12.5px] text-ink-mute">{c.readFew.replace('{n}', String(images.length))}</span>
+              <span className="text-meta text-ink-mute">{c.readFew.replace('{n}', String(images.length))}</span>
             )}
           </div>
           {note && (
-            <p role="alert" className={`mt-3 rounded-xl2 px-4 py-2.5 text-[14px] ${note.tone === 'bad' ? 'border border-bad/25 bg-bad-wash text-bad' : 'border border-ok/25 bg-ok-wash text-ok'}`}>
+            <p role="alert" className={`mt-3 rounded-xl2 px-4 py-2.5 text-body ${note.tone === 'bad' ? 'border border-bad/25 bg-bad-wash text-bad' : 'border border-ok/25 bg-ok-wash text-ok'}`}>
               {note.text}
             </p>
           )}
@@ -194,16 +194,16 @@ export function BrandStudio({ clientId, viewer, brand, images, data, canAi, prin
           {/* ── the sheet ─────────────────────────────────────────────── */}
           <div className="flex flex-wrap items-baseline justify-between gap-2">
             <div>
-              <h3 className="font-display text-[20px] font-semibold text-ink">{c.sheet.title}</h3>
-              <p className="text-[13.5px] text-ink-mute">{producer ? c.sheet.sub : ''}{draft.by && <span className="ms-1">· {draft.by === 'ai' ? c.sheet.byAi : c.sheet.byHand}</span>}</p>
+              <h3 className="font-display text-panel font-semibold text-ink">{c.sheet.title}</h3>
+              <p className="text-body text-ink-mute">{producer ? c.sheet.sub : ''}{draft.by && <span className="ms-1">· {draft.by === 'ai' ? c.sheet.byAi : c.sheet.byHand}</span>}</p>
             </div>
-            {producer && <div className="flex items-center gap-3">{savedAt > 0 && <span className="text-[13px] text-ok">{c.sheet.saved}</span>}<SaveButton /></div>}
+            {producer && <div className="flex items-center gap-3">{savedAt > 0 && <span className="text-body text-ok">{c.sheet.saved}</span>}<SaveButton /></div>}
           </div>
-          {state && !state.ok && state.error && <p role="alert" className="mt-3 text-[14px] text-bad">{state.error}</p>}
+          {state && !state.ok && state.error && <p role="alert" className="mt-3 text-body text-bad">{state.error}</p>}
 
           <div className="mt-5 grid gap-6 lg:grid-cols-[1.2fr_1fr]">
             <div>
-              <p className="text-[12.5px] font-semibold tracking-[.08em] text-ink-mute">{c.sheet.palette}</p>
+              <p className="text-meta font-semibold tracking-[.08em] text-ink-mute">{c.sheet.palette}</p>
               <ul className="mt-2 grid grid-cols-5 gap-2">
                 {PALETTE_ROLES.map((role) => {
                   const s = draft.palette.find((x) => x.role === role)!;
@@ -213,29 +213,29 @@ export function BrandStudio({ clientId, viewer, brand, images, data, canAi, prin
                         <span className="block h-16 rounded-xl2 border border-line" style={{ background: s.hex }} />
                         {producer && <input type="color" value={s.hex} onChange={(e) => setSwatch(role, { hex: e.target.value })} className="sr-only" aria-label={`${c.sheet.roles[role]} ${s.hex}`} />}
                       </label>
-                      <p className="mt-1.5 text-[12px] font-medium text-ink">{c.sheet.roles[role]}</p>
-                      <p className="text-[11.5px] tabular-nums text-ink-mute" dir="ltr">{s.hex}</p>
+                      <p className="mt-1.5 text-meta font-medium text-ink">{c.sheet.roles[role]}</p>
+                      <p className="text-micro tabular-nums text-ink-mute" dir="ltr">{s.hex}</p>
                       {producer ? (
-                        <input className="field mt-1 px-2 py-1 text-[12px]" value={s.name} onChange={(e) => setSwatch(role, { name: e.target.value })} aria-label={c.sheet.swatchName} />
+                        <input className="field mt-1 px-2 py-1 text-meta" value={s.name} onChange={(e) => setSwatch(role, { name: e.target.value })} aria-label={c.sheet.swatchName} />
                       ) : (
-                        s.name && <p className="text-[12px] text-ink-soft">{s.name}</p>
+                        s.name && <p className="text-meta text-ink-soft">{s.name}</p>
                       )}
                     </li>
                   );
                 })}
               </ul>
 
-              <p className="mt-5 text-[12.5px] font-semibold tracking-[.08em] text-ink-mute">{c.sheet.fonts}</p>
+              <p className="mt-5 text-meta font-semibold tracking-[.08em] text-ink-mute">{c.sheet.fonts}</p>
               {producer ? (
                 <select className="field mt-2" value={draft.fonts} onChange={(e) => set('fonts', e.target.value as WeddingBrand['fonts'])} aria-label={c.sheet.fonts}>
                   {FONT_PAIRS.map((p) => <option key={p.key} value={p.key}>{p.display} + {p.body}</option>)}
                 </select>
               ) : null}
               <div className="mt-2 rounded-xl2 border border-line bg-surface-100 px-4 py-3">
-                <p style={{ fontFamily: `'${pair.display}', ${pair.serif ? 'serif' : 'sans-serif'}` }} className="text-[26px] leading-tight text-ink">{data.displayName}</p>
-                <p style={{ fontFamily: `'${pair.body}', sans-serif` }} className="mt-1 text-[14px] text-ink-soft">{pair.display} · {pair.body}</p>
+                <p style={{ fontFamily: `'${pair.display}', ${pair.serif ? 'serif' : 'sans-serif'}` }} className="text-figure leading-tight text-ink">{data.displayName}</p>
+                <p style={{ fontFamily: `'${pair.body}', sans-serif` }} className="mt-1 text-body text-ink-soft">{pair.display} · {pair.body}</p>
               </div>
-              <p className="mt-1.5 text-[12px] text-ink-mute">{c.sheet.fontsHint}</p>
+              <p className="mt-1.5 text-meta text-ink-mute">{c.sheet.fontsHint}</p>
             </div>
 
             <div className="space-y-4">
@@ -244,15 +244,15 @@ export function BrandStudio({ clientId, viewer, brand, images, data, canAi, prin
               <Field label={c.sheet.voice} producer={producer} value={draft.voice} onChange={(v) => set('voice', v)} rows={2} placeholder={c.sheet.voicePh} />
               <Field label={c.sheet.direction} producer={producer} value={draft.direction} onChange={(v) => set('direction', v)} rows={4} />
               <div>
-                <p className="text-[12.5px] font-semibold tracking-[.08em] text-ink-mute">{c.sheet.lean}</p>
+                <p className="text-meta font-semibold tracking-[.08em] text-ink-mute">{c.sheet.lean}</p>
                 <div className="mt-1.5 flex flex-wrap items-center gap-2">
                   {(['safe', 'bold'] as Variant[]).map((v) => (
                     <button key={v} type="button" disabled={!producer} onClick={() => set('lean', v)} aria-pressed={draft.lean === v}
-                      className={`rounded-xl2 px-3 py-1.5 text-[13px] ${draft.lean === v ? 'bg-ink text-surface' : 'border border-line bg-surface-100 text-ink-soft'}`}>
+                      className={`rounded-xl2 px-3 py-1.5 text-body ${draft.lean === v ? 'bg-ink text-surface' : 'border border-line bg-surface-100 text-ink-soft'}`}>
                       {v === 'safe' ? c.sheet.leanSafe : c.sheet.leanBold}
                     </button>
                   ))}
-                  {draft.leanReason && <span className="text-[13px] text-ink-soft">{draft.leanReason}</span>}
+                  {draft.leanReason && <span className="text-body text-ink-soft">{draft.leanReason}</span>}
                 </div>
               </div>
             </div>
@@ -261,16 +261,16 @@ export function BrandStudio({ clientId, viewer, brand, images, data, canAi, prin
           {/* ── the texts ─────────────────────────────────────────────── */}
           {producer && (
             <div className="mt-8">
-              <h3 className="font-display text-[18px] font-semibold text-ink">{c.texts.title}</h3>
-              <p className="text-[13.5px] text-ink-mute">{c.texts.sub}</p>
+              <h3 className="font-display text-subhead font-semibold text-ink">{c.texts.title}</h3>
+              <p className="text-body text-ink-mute">{c.texts.sub}</p>
               <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                <label className="grid gap-1 text-[13px] text-ink-soft">{c.texts.story}
+                <label className="grid gap-1 text-body text-ink-soft">{c.texts.story}
                   <textarea className="field" rows={3} value={draft.texts.story} onChange={(e) => setText('story', e.target.value)} placeholder={c.texts.storyPh} /></label>
-                <label className="grid gap-1 text-[13px] text-ink-soft">{c.texts.travel}
+                <label className="grid gap-1 text-body text-ink-soft">{c.texts.travel}
                   <textarea className="field" rows={3} value={draft.texts.travel} onChange={(e) => setText('travel', e.target.value)} placeholder={c.texts.travelPh} /></label>
-                <label className="grid gap-1 text-[13px] text-ink-soft">{c.texts.registry}
+                <label className="grid gap-1 text-body text-ink-soft">{c.texts.registry}
                   <textarea className="field" rows={2} value={draft.texts.registry} onChange={(e) => setText('registry', e.target.value)} placeholder={c.texts.registryPh} /></label>
-                <label className="grid gap-1 text-[13px] text-ink-soft">{c.texts.menu}
+                <label className="grid gap-1 text-body text-ink-soft">{c.texts.menu}
                   <textarea className="field" rows={3} value={draft.texts.menu} onChange={(e) => setText('menu', e.target.value)} placeholder={c.texts.menuPh} /></label>
               </div>
             </div>
@@ -281,10 +281,10 @@ export function BrandStudio({ clientId, viewer, brand, images, data, canAi, prin
       {/* ── the pieces ──────────────────────────────────────────────── */}
       {(producer || hasBrand) && (
         <div className="mt-10">
-          <h3 className="font-display text-[20px] font-semibold text-ink">{c.pieces.title}</h3>
-          <p className="max-w-2xl text-[13.5px] leading-relaxed text-ink-mute">{c.pieces.sub}</p>
-          <p className="mt-1 text-[12.5px] text-ink-mute">{c.pieces.sizes}</p>
-          {data.tables.length === 0 && <p className="mt-1 text-[12.5px] text-ink-mute">{c.pieces.tablesNone}</p>}
+          <h3 className="font-display text-panel font-semibold text-ink">{c.pieces.title}</h3>
+          <p className="max-w-2xl text-body leading-relaxed text-ink-mute">{c.pieces.sub}</p>
+          <p className="mt-1 text-meta text-ink-mute">{c.pieces.sizes}</p>
+          {data.tables.length === 0 && <p className="mt-1 text-meta text-ink-mute">{c.pieces.tablesNone}</p>}
 
           <div className="mt-6 space-y-10">
             {PIECES.map((p) => {
@@ -292,16 +292,16 @@ export function BrandStudio({ clientId, viewer, brand, images, data, canAi, prin
               return (
                 <div key={p.key} className="border-t border-line pt-6">
                   <div className="flex flex-wrap items-center justify-between gap-2">
-                    <h4 className="text-[16px] font-semibold text-ink">{c.pieces.names[p.key]}</h4>
+                    <h4 className="text-head font-semibold text-ink">{c.pieces.names[p.key]}</h4>
                     {p.key === 'website' ? (
-                      siteUrl ? <a href={siteUrl} target="_blank" rel="noopener noreferrer" className="btn-ghost inline-flex items-center gap-1.5 text-[13px]"><ExternalLink size={14} aria-hidden strokeWidth={1.5} />{c.pieces.openSite}</a> : null
+                      siteUrl ? <a href={siteUrl} target="_blank" rel="noopener noreferrer" className="btn-ghost inline-flex items-center gap-1.5 text-body"><ExternalLink size={14} aria-hidden strokeWidth={1.5} />{c.pieces.openSite}</a> : null
                     ) : producer ? (
-                      <a href={`${printBase}/${p.key}`} target="_blank" rel="noopener noreferrer" className="btn-ghost inline-flex items-center gap-1.5 text-[13px]" title={c.pieces.printHint}>
+                      <a href={`${printBase}/${p.key}`} target="_blank" rel="noopener noreferrer" className="btn-ghost inline-flex items-center gap-1.5 text-body" title={c.pieces.printHint}>
                         <Printer size={14} aria-hidden strokeWidth={1.5} />{c.pieces.print}
                       </a>
                     ) : null}
                   </div>
-                  {p.key === 'website' && <p className="mt-1 text-[12.5px] text-ink-mute">{c.pieces.siteNote}</p>}
+                  {p.key === 'website' && <p className="mt-1 text-meta text-ink-mute">{c.pieces.siteNote}</p>}
                   <div className="mt-4 grid gap-6 sm:grid-cols-2">
                     {(['safe', 'bold'] as Variant[]).map((v) => (
                       <div key={v}>
@@ -316,14 +316,14 @@ export function BrandStudio({ clientId, viewer, brand, images, data, canAi, prin
                           )}
                         </div>
                         <div className="mt-3 flex flex-wrap items-center gap-2">
-                          <span className="text-[13px] font-medium text-ink">{v === 'safe' ? c.pieces.safe : c.pieces.bold}</span>
-                          {draft.lean === v && draft.leanReason && <span className="text-[12px] text-accent">· {c.pieces.fits}</span>}
+                          <span className="text-body font-medium text-ink">{v === 'safe' ? c.pieces.safe : c.pieces.bold}</span>
+                          {draft.lean === v && draft.leanReason && <span className="text-meta text-accent">· {c.pieces.fits}</span>}
                           <form action={pickBrandVariant} onSubmit={() => setDraft((d) => ({ ...d, picks: { ...d.picks, [p.key]: v } }))}>
                             <input type="hidden" name="client_id" value={clientId} />
                             <input type="hidden" name="piece" value={p.key} />
                             <input type="hidden" name="variant" value={v} />
                             <button type="submit" aria-pressed={picked === v}
-                              className={`rounded-xl2 px-3 py-1 text-[12.5px] ${picked === v ? 'bg-ink text-surface' : 'border border-line bg-surface-100 text-ink-soft hover:bg-surface-200'}`}>
+                              className={`rounded-xl2 px-3 py-1 text-meta ${picked === v ? 'bg-ink text-surface' : 'border border-line bg-surface-100 text-ink-soft hover:bg-surface-200'}`}>
                               {picked === v ? c.pieces.picked : c.pieces.pick}
                             </button>
                           </form>
@@ -338,18 +338,18 @@ export function BrandStudio({ clientId, viewer, brand, images, data, canAi, prin
 
           {/* ── where to print ─────────────────────────────────────────── */}
           <div className="mt-10 border-t border-line pt-6">
-            <h3 className="font-display text-[18px] font-semibold text-ink">{c.printers.title}</h3>
-            <p className="max-w-2xl text-[13.5px] text-ink-mute">{c.printers.sub}</p>
+            <h3 className="font-display text-subhead font-semibold text-ink">{c.printers.title}</h3>
+            <p className="max-w-2xl text-body text-ink-mute">{c.printers.sub}</p>
             <ol className="mt-3 grid gap-3 sm:grid-cols-3">
               {c.printers.list.map((p, i) => (
-                <li key={p.name} className="rounded-xl2 border border-line bg-surface-100 p-4">
-                  <p className="text-[14.5px] font-semibold text-ink"><span className="tabular-nums text-ink-mute">{i + 1}.</span> {p.name}</p>
-                  <p className="text-[12.5px] text-accent">{p.level}</p>
-                  <p className="mt-1 text-[13px] leading-relaxed text-ink-soft">{p.note}</p>
+                <li key={p.name} className="rounded-card-sm border border-line bg-surface-100 p-4">
+                  <p className="text-body font-semibold text-ink"><span className="tabular-nums text-ink-mute">{i + 1}.</span> {p.name}</p>
+                  <p className="text-meta text-accent">{p.level}</p>
+                  <p className="mt-1 text-body leading-relaxed text-ink-soft">{p.note}</p>
                 </li>
               ))}
             </ol>
-            <p className="mt-3 text-[13px] text-ink-soft">{c.printers.local}</p>
+            <p className="mt-3 text-body text-ink-soft">{c.printers.local}</p>
           </div>
         </div>
       )}
@@ -362,7 +362,7 @@ function Field({ label, producer, value, onChange, rows, placeholder, chips }: {
 }) {
   return (
     <div>
-      <p className="text-[12.5px] font-semibold tracking-[.08em] text-ink-mute">{label}</p>
+      <p className="text-meta font-semibold tracking-[.08em] text-ink-mute">{label}</p>
       {producer ? (
         rows ? (
           <textarea className="field mt-1.5" rows={rows} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} aria-label={label} />
@@ -371,10 +371,10 @@ function Field({ label, producer, value, onChange, rows, placeholder, chips }: {
         )
       ) : chips ? (
         <div className="mt-1.5 flex flex-wrap gap-1.5">
-          {chips.map((w) => <span key={w} className="rounded-xl2 border border-line bg-surface-100 px-2.5 py-1 text-[13px] text-ink">{w}</span>)}
+          {chips.map((w) => <span key={w} className="rounded-xl2 border border-line bg-surface-100 px-2.5 py-1 text-body text-ink">{w}</span>)}
         </div>
       ) : (
-        <p className="mt-1.5 whitespace-pre-line text-[14px] leading-relaxed text-ink-soft">{value}</p>
+        <p className="mt-1.5 whitespace-pre-line text-body leading-relaxed text-ink-soft">{value}</p>
       )}
     </div>
   );

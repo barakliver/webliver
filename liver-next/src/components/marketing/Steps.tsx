@@ -36,11 +36,11 @@ export function Steps({ site }: { site: SiteCopy }) {
                  by the accessibility audit, which is not part of `npm run
                  check` because it needs a server, which is most of why it sat
                  here. */
-              className="w-8 shrink-0 font-display text-[19px] font-semibold tracking-[.06em] text-accent sm:w-12 sm:text-[22px]"
+              className="w-8 shrink-0 font-display text-subhead font-semibold tracking-[.06em] text-accent sm:w-12 sm:text-panel"
             >
               {ROMAN[i] ?? i + 1}
             </span>
-            <span className="text-[16.5px] leading-relaxed text-ink sm:text-[18px]">{step}</span>
+            <span className="text-head leading-relaxed text-ink sm:text-subhead">{step}</span>
           </li>
         ))}
       </ol>

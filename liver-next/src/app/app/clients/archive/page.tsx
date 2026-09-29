@@ -34,7 +34,7 @@ export default async function ArchivePage() {
   return (
     <>
       <div className="mb-4">
-        <Link href="/app/clients" className="btn-quiet inline-block px-0 text-[14px]">
+        <Link href="/app/clients" className="btn-quiet inline-block px-0 text-body">
           ← {c.backToLive}
         </Link>
       </div>

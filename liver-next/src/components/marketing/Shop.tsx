@@ -73,10 +73,10 @@ export function Shop({ producerId, items, copy: c }: {
   if (done !== null) {
     return (
       <div className="card mx-auto max-w-xl text-center">
-        <h2 className="font-display text-[26px] font-semibold text-ink">{c.thanksTitle}</h2>
-        <p className="mt-3 text-[15px] text-ink-soft">{c.thanks}</p>
-        <p className="mt-2 font-display text-[24px] text-accent"><Ltr>{done}</Ltr></p>
-        <button type="button" onClick={() => setDone(null)} className="btn-quiet mt-5 text-[14.5px]">
+        <h2 className="font-display text-figure font-semibold text-ink">{c.thanksTitle}</h2>
+        <p className="mt-3 text-lead text-ink-soft">{c.thanks}</p>
+        <p className="mt-2 font-display text-figure text-accent"><Ltr>{done}</Ltr></p>
+        <button type="button" onClick={() => setDone(null)} className="btn-quiet mt-5 text-body">
           {c.again}
         </button>
       </div>
@@ -84,7 +84,7 @@ export function Shop({ producerId, items, copy: c }: {
   }
 
   if (items.length === 0) {
-    return <p className="text-center text-[15px] text-ink-mute">{c.shopEmpty}</p>;
+    return <p className="text-center text-lead text-ink-mute">{c.shopEmpty}</p>;
   }
 
   return (
@@ -99,15 +99,15 @@ export function Shop({ producerId, items, copy: c }: {
                 <img src={i.image} alt="" className="h-44 w-full object-cover" loading="lazy" />
               )}
               <div className="flex flex-1 flex-col p-5">
-                <p className="text-[11.5px] tracking-[.14em] text-ink-mute">
+                <p className="text-micro tracking-[.14em] text-ink-mute">
                   {i.kind === 'service' ? c.kindService : c.kindProduct}
                 </p>
-                <h3 className="mt-1.5 font-display text-[20px] font-semibold text-ink">{i.name}</h3>
-                {i.blurb && <p className="mt-1.5 text-[14px] text-ink-soft">{i.blurb}</p>}
-                {i.body && <p className="mt-2 whitespace-pre-line text-[13.5px] text-ink-mute">{i.body}</p>}
+                <h3 className="mt-1.5 font-display text-panel font-semibold text-ink">{i.name}</h3>
+                {i.blurb && <p className="mt-1.5 text-body text-ink-soft">{i.blurb}</p>}
+                {i.body && <p className="mt-2 whitespace-pre-line text-body text-ink-mute">{i.body}</p>}
 
                 <div className="mt-auto flex items-center justify-between gap-3 pt-4">
-                  <Money value={i.price} className="font-display text-[20px] text-ink" />
+                  <Money value={i.price} className="font-display text-panel text-ink" />
 
                   {qty === 0 ? (
                     <button type="button" onClick={() => set(i.id, 1)} className="btn-primary">
@@ -116,7 +116,7 @@ export function Shop({ producerId, items, copy: c }: {
                   ) : (
                     <div className="flex items-center gap-1 rounded-button border border-line-strong p-1">
                       <Step label="-" onClick={() => set(i.id, qty - 1)}><Minus size={15} aria-hidden strokeWidth={1.5} /></Step>
-                      <span className="min-w-8 text-center text-[15px] tabular-nums text-ink" aria-label={c.qty}>
+                      <span className="min-w-8 text-center text-lead tabular-nums text-ink" aria-label={c.qty}>
                         <Ltr>{qty}</Ltr>
                       </span>
                       <Step label="+" onClick={() => set(i.id, qty + 1)}><Plus size={15} aria-hidden strokeWidth={1.5} /></Step>
@@ -138,7 +138,7 @@ export function Shop({ producerId, items, copy: c }: {
         >
           <ShoppingBag size={17} aria-hidden strokeWidth={1.5} />
           {c.cart}
-          <span className="rounded-control bg-card/25 px-2 text-[13px] tabular-nums"><Ltr>{count}</Ltr></span>
+          <span className="rounded-control bg-card/25 px-2 text-body tabular-nums"><Ltr>{count}</Ltr></span>
         </button>
       )}
 
@@ -149,7 +149,7 @@ export function Shop({ producerId, items, copy: c }: {
             className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-t-sheet border border-line bg-card p-5 sm:rounded-sheet"
           >
             <div className="flex items-center justify-between gap-3">
-              <h2 className="font-display text-[22px] font-semibold text-ink">{c.cart}</h2>
+              <h2 className="font-display text-panel font-semibold text-ink">{c.cart}</h2>
               <button type="button" onClick={() => setOpen(false)} className="btn-quiet px-2 py-1" aria-label={c.cancel}>
                 <X size={18} aria-hidden strokeWidth={1.5} />
               </button>
@@ -159,22 +159,22 @@ export function Shop({ producerId, items, copy: c }: {
               {lines.map((l) => (
                 <li key={l.id} className="flex items-center justify-between gap-3 py-3">
                   <div className="min-w-0">
-                    <p className="truncate text-[14.5px] text-ink">{l.name}</p>
-                    <Money value={l.price} className="text-[13px] text-ink-mute" />
+                    <p className="truncate text-body text-ink">{l.name}</p>
+                    <Money value={l.price} className="text-body text-ink-mute" />
                   </div>
                   <div className="flex shrink-0 items-center gap-1 rounded-button border border-line-strong p-1">
                     <Step label="-" onClick={() => set(l.id, l.qty - 1)}><Minus size={14} aria-hidden strokeWidth={1.5} /></Step>
-                    <span className="min-w-7 text-center text-[14px] tabular-nums text-ink"><Ltr>{l.qty}</Ltr></span>
+                    <span className="min-w-7 text-center text-body tabular-nums text-ink"><Ltr>{l.qty}</Ltr></span>
                     <Step label="+" onClick={() => set(l.id, l.qty + 1)}><Plus size={14} aria-hidden strokeWidth={1.5} /></Step>
                   </div>
-                  <Money value={l.price * l.qty} className="w-20 shrink-0 text-end text-[14.5px] text-ink" />
+                  <Money value={l.price * l.qty} className="w-20 shrink-0 text-end text-body text-ink" />
                 </li>
               ))}
             </ul>
 
             <div className="mt-3 flex items-baseline justify-between">
-              <span className="text-[14px] text-ink-soft">{c.total}</span>
-              <Money value={total} className="font-display text-[24px] text-ink" />
+              <span className="text-body text-ink-soft">{c.total}</span>
+              <Money value={total} className="font-display text-figure text-ink" />
             </div>
 
             <form action={send} className="mt-5 space-y-3">
@@ -185,12 +185,12 @@ export function Shop({ producerId, items, copy: c }: {
               <input name="email" type="email" maxLength={200} placeholder={c.buyerEmail} aria-label={c.buyerEmail} className="field w-full" autoComplete="email" />
               <textarea name="note" rows={3} maxLength={2000} placeholder={c.buyerNotePh} aria-label={c.buyerNote} className="field w-full resize-y" />
 
-              <p className="text-[13px] text-ink-mute">{c.payLater}</p>
+              <p className="text-body text-ink-mute">{c.payLater}</p>
 
-              {error && <p role="alert" className="rounded-control border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">{error}</p>}
+              {error && <p role="alert" className="rounded-control border border-bad/25 bg-bad-wash px-4 py-2.5 text-body text-bad">{error}</p>}
 
               <div className="flex items-center justify-between gap-3">
-                <button type="button" onClick={() => { setCart({}); setOpen(false); }} className="btn-quiet text-[14px]">
+                <button type="button" onClick={() => { setCart({}); setOpen(false); }} className="btn-quiet text-body">
                   {c.clear}
                 </button>
                 <button type="submit" className="btn-primary disabled:opacity-60" disabled={busy}>

@@ -56,7 +56,7 @@ export default async function PreviewPage({ params }: { params: Promise<{ id: st
           screen is forgetting whose screen it is. */}
       <div className="sticky top-0 z-20 -mx-4 mb-6 border-b border-accent bg-surface-100/95 px-4 py-3 backdrop-blur-sm sm:-mx-6 sm:px-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <p className="flex items-center gap-2.5 text-[14.5px] text-accent">
+          <p className="flex items-center gap-2.5 text-body text-accent">
             <Eye size={17} aria-hidden strokeWidth={1.5} />
             <span>
               <strong className="font-semibold">{c.banner}</strong>
@@ -65,7 +65,7 @@ export default async function PreviewPage({ params }: { params: Promise<{ id: st
           </p>
           <Link
             href={`/app/clients/${id}`}
-            className="inline-flex items-center gap-1.5 rounded-xl2 border border-accent/30 bg-card/70 px-3.5 py-1.5 text-[13.5px] font-medium text-accent transition hover:bg-card"
+            className="inline-flex items-center gap-1.5 rounded-xl2 border border-accent/30 bg-card/70 px-3.5 py-1.5 text-body font-medium text-accent transition hover:bg-card"
           >
             <ArrowLeft size={15} aria-hidden strokeWidth={1.5} />
             {c.exit}

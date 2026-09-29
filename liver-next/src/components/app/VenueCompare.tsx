@@ -71,17 +71,17 @@ export function VenueCompare({ c, clientId, venues, guestEstimate, quoteUrls, ca
     <section className="print-doc print-wide space-y-5">
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
-          <h2 className="font-display text-[19px] font-semibold text-ink">{c.title}</h2>
-          <p className="mt-1 max-w-prose text-[13.5px] text-ink-soft">{c.sub}</p>
+          <h2 className="font-display text-subhead font-semibold text-ink">{c.title}</h2>
+          <p className="mt-1 max-w-prose text-body text-ink-soft">{c.sub}</p>
         </div>
         <div className="flex shrink-0 gap-2 no-print">
-          <button type="button" onClick={() => window.print()} className="btn-ghost min-h-[38px] px-3 text-[13.5px]">
+          <button type="button" onClick={() => window.print()} className="btn-ghost min-h-[38px] px-3 text-body">
             <Printer size={15} strokeWidth={1.5} aria-hidden />
             {c.print}
           </button>
           {!adding && (
             <button type="button" onClick={() => { setAdding(true); setEditing(null); }}
-              className="btn-primary min-h-[38px] px-3.5 text-[13.5px]">
+              className="btn-primary min-h-[38px] px-3.5 text-body">
               <Plus size={15} strokeWidth={1.5} aria-hidden />
               {c.add}
             </button>
@@ -106,12 +106,12 @@ export function VenueCompare({ c, clientId, venues, guestEstimate, quoteUrls, ca
           />
         </form>
 
-        <label className="flex min-h-[44px] cursor-pointer items-center gap-2 text-[14px] text-ink">
+        <label className="flex min-h-[44px] cursor-pointer items-center gap-2 text-body text-ink">
           <input type="checkbox" checked={withVat} onChange={(e) => setWithVat(e.target.checked)} className="size-4" />
           {c.vatBasis}
         </label>
 
-        <div className="w-full space-y-1 text-[12.5px] leading-snug text-ink-mute">
+        <div className="w-full space-y-1 text-meta leading-snug text-ink-mute">
           <p>{c.guestsHint}</p>
           <p>{c.chooseHint}</p>
           {/* Only while the two disagree. The budget is written on the
@@ -130,8 +130,8 @@ export function VenueCompare({ c, clientId, venues, guestEstimate, quoteUrls, ca
 
       {venues.length === 0 && !adding ? (
         <div className="card">
-          <p className="text-[15px] text-ink">{c.empty}</p>
-          <p className="mt-1 text-[13.5px] text-ink-soft">{c.emptySub}</p>
+          <p className="text-lead text-ink">{c.empty}</p>
+          <p className="mt-1 text-body text-ink-soft">{c.emptySub}</p>
         </div>
       ) : (
         /* A column per hall, scrolling sideways on a phone rather than
@@ -182,7 +182,7 @@ function Column({ c, clientId, v, k, guests, isBest, over, quoteUrl, canChoose, 
     <article className={`card flex h-full flex-col ${v.isSelected ? 'border-accent' : ''}`}>
       <header>
         <div className="flex items-start justify-between gap-2">
-          <h3 className="font-display text-[17px] font-semibold text-ink">{v.venueName}</h3>
+          <h3 className="font-display text-head font-semibold text-ink">{v.venueName}</h3>
           <DeleteForm action={removeVenue} className="no-print">
             <input type="hidden" name="id" value={v.id} />
             <input type="hidden" name="client_id" value={clientId} />
@@ -192,7 +192,7 @@ function Column({ c, clientId, v, k, guests, isBest, over, quoteUrl, canChoose, 
             </button>
           </DeleteForm>
         </div>
-        {v.location && <p className="text-[13px] text-ink-soft">{v.location}</p>}
+        {v.location && <p className="text-body text-ink-soft">{v.location}</p>}
 
         <div className="mt-2 flex flex-wrap gap-1.5">
           {v.isSelected && <span className="chip-ok">{c.chosen}</span>}
@@ -206,13 +206,13 @@ function Column({ c, clientId, v, k, guests, isBest, over, quoteUrl, canChoose, 
       {/* The figure the hall never quotes, given the most room on the card. */}
       <div className="mt-4 border-t border-line pt-3">
         <p className="eyebrow">{c.perGuest}</p>
-        <p className="font-display text-[26px] font-semibold text-ink">
+        <p className="font-display text-figure font-semibold text-ink">
           <Money value={k.perGuest} />
         </p>
-        <p className="mt-0.5 text-[12px] leading-snug text-ink-mute">{c.perGuestHint}</p>
+        <p className="mt-0.5 text-meta leading-snug text-ink-mute">{c.perGuestHint}</p>
       </div>
 
-      <dl className="mt-3 space-y-1 text-[13.5px]">
+      <dl className="mt-3 space-y-1 text-body">
         <Line label={c.food} value={k.food} />
         {k.bar > 0 && <Line label={c.bar} value={k.bar} />}
         {k.soundLighting > 0 && <Line label={c.sound} value={k.soundLighting} />}
@@ -220,7 +220,7 @@ function Column({ c, clientId, v, k, guests, isBest, over, quoteUrl, canChoose, 
         {k.service > 0 && <Line label={c.service} value={k.service} />}
         <div className="flex items-baseline justify-between gap-2 border-t border-line pt-1.5">
           <dt className="text-ink">{c.total}</dt>
-          <dd className="font-display text-[17px] font-semibold text-ink"><Money value={k.total} /></dd>
+          <dd className="font-display text-head font-semibold text-ink"><Money value={k.total} /></dd>
         </div>
       </dl>
 
@@ -228,13 +228,13 @@ function Column({ c, clientId, v, k, guests, isBest, over, quoteUrl, canChoose, 
 
       <Flags c={c} clientId={clientId} v={v} flags={flags} />
 
-      {v.notes && <p className="mt-3 text-[12.5px] leading-snug text-ink-mute">{v.notes}</p>}
+      {v.notes && <p className="mt-3 text-meta leading-snug text-ink-mute">{v.notes}</p>}
 
       <div className="mt-auto flex flex-wrap gap-2 pt-4 no-print">
-        <button type="button" onClick={onEdit} className="btn-quiet min-h-[34px] px-3 text-[13px]">{c.edit}</button>
+        <button type="button" onClick={onEdit} className="btn-quiet min-h-[34px] px-3 text-body">{c.edit}</button>
         {quoteUrl && (
           <a href={quoteUrl} target="_blank" rel="noopener noreferrer"
-            className="btn-quiet inline-flex min-h-[34px] items-center gap-1.5 px-3 text-[13px]">
+            className="btn-quiet inline-flex min-h-[34px] items-center gap-1.5 px-3 text-body">
             <Paperclip size={13} strokeWidth={1.5} aria-hidden />
             {c.quoteOpen}
           </a>
@@ -244,7 +244,7 @@ function Column({ c, clientId, v, k, guests, isBest, over, quoteUrl, canChoose, 
             <input type="hidden" name="id" value={v.id} />
             <input type="hidden" name="client_id" value={clientId} />
             <input type="hidden" name="guests" value={guests} />
-            <button type="submit" className="btn-primary min-h-[34px] px-3 text-[13px]">
+            <button type="submit" className="btn-primary min-h-[34px] px-3 text-body">
               <Check size={14} strokeWidth={1.5} aria-hidden />
               {c.choose}
             </button>
@@ -294,10 +294,10 @@ function Buffer({ c, clientId, v, total }: {
       <input type="hidden" name="value" value={pct} />
 
       <div className="flex items-baseline justify-between gap-2">
-        <label className="text-[13.5px] text-ink-soft" htmlFor={`buf-${v.id}`}>
+        <label className="text-body text-ink-soft" htmlFor={`buf-${v.id}`}>
           {c.buffer} <span className="tabular-nums">{pct}%</span>
         </label>
-        <span className="font-display text-[15px] font-semibold text-ink tabular-nums">
+        <span className="font-display text-lead font-semibold text-ink tabular-nums">
           <Money value={shown} />
         </span>
       </div>
@@ -308,7 +308,7 @@ function Buffer({ c, clientId, v, total }: {
         onKeyUp={() => form.current?.requestSubmit()}
         className="mt-1.5 w-full accent-accent no-print"
       />
-      <p className="mt-1 text-[12px] text-ink-mute no-print">{c.withBuffer}</p>
+      <p className="mt-1 text-meta text-ink-mute no-print">{c.withBuffer}</p>
     </form>
   );
 }
@@ -326,7 +326,7 @@ function Flags({ c, clientId, v, flags }: {
       <p className="eyebrow">{c.flags}</p>
       <div className="mt-1.5 flex flex-wrap gap-1.5">
         {VENUE_FLAGS.map((f) => (
-          <label key={f} className={`inline-flex cursor-pointer items-center gap-1 rounded-xl2 border px-2 py-1 text-[12px] transition ${
+          <label key={f} className={`inline-flex cursor-pointer items-center gap-1 rounded-xl2 border px-2 py-1 text-meta transition ${
             has.has(f) ? 'border-ok bg-ok-wash text-ok' : 'border-line text-ink-mute hover:text-ink'
           }`}>
             <input
@@ -431,7 +431,7 @@ function VenueForm({ c, clientId, venue, onDone }: {
         </Field>
       </div>
 
-      <label className="flex min-h-[44px] cursor-pointer items-center gap-2 text-[14px] text-ink">
+      <label className="flex min-h-[44px] cursor-pointer items-center gap-2 text-body text-ink">
         <input type="checkbox" name="is_vat_included" defaultChecked={venue?.isVatIncluded} className="size-4" />
         {c.vatIncluded}
       </label>
@@ -442,7 +442,7 @@ function VenueForm({ c, clientId, venue, onDone }: {
       </Field>
 
       <div className="flex flex-wrap items-center gap-3">
-        <label className="btn-ghost inline-flex min-h-[38px] cursor-pointer items-center gap-2 px-3 text-[13.5px]">
+        <label className="btn-ghost inline-flex min-h-[38px] cursor-pointer items-center gap-2 px-3 text-body">
           <input type="file" accept=".pdf,image/*" className="sr-only"
             onChange={(e) => void upload(e.target.files?.[0])} />
           {busy ? <Loader2 size={15} strokeWidth={1.5} aria-hidden className="animate-spin" />
@@ -453,12 +453,12 @@ function VenueForm({ c, clientId, venue, onDone }: {
       </div>
 
       <div className="flex flex-wrap gap-2 border-t border-line pt-3">
-        <button type="submit" disabled={pending} className="btn-primary min-h-[38px] px-4 text-[14px]">
+        <button type="submit" disabled={pending} className="btn-primary min-h-[38px] px-4 text-body">
           {pending ? <Loader2 size={15} strokeWidth={1.5} aria-hidden className="animate-spin" />
                    : <Check size={15} strokeWidth={1.5} aria-hidden />}
           {pending ? c.saving : c.save}
         </button>
-        <button type="button" onClick={onDone} className="btn-quiet min-h-[38px] px-4 text-[14px]">{c.cancel}</button>
+        <button type="button" onClick={onDone} className="btn-quiet min-h-[38px] px-4 text-body">{c.cancel}</button>
       </div>
 
       {state?.ok === false && state.error && <Err text={state.error} />}
@@ -472,11 +472,11 @@ function Field({ label, hint, children }: { label: string; hint?: string; childr
     <label className="block">
       <span className="label">{label}</span>
       {children}
-      {hint && <span className="mt-1 block text-[12px] leading-snug text-ink-mute">{hint}</span>}
+      {hint && <span className="mt-1 block text-meta leading-snug text-ink-mute">{hint}</span>}
     </label>
   );
 }
 
 function Err({ text }: { text: string }) {
-  return <p role="status" className="text-[13.5px] text-bad">{text}</p>;
+  return <p role="status" className="text-body text-bad">{text}</p>;
 }

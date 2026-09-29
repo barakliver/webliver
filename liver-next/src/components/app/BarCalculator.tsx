@@ -24,7 +24,7 @@ function Choice<T extends string>({ label, hint, value, options, labels, onChang
             type="button"
             aria-pressed={o === value}
             onClick={() => onChange(o)}
-            className={`inline-flex min-h-[44px] items-center rounded-xl2 border px-4 text-[14px] transition sm:min-h-[38px] ${
+            className={`inline-flex min-h-[44px] items-center rounded-xl2 border px-4 text-body transition sm:min-h-[38px] ${
               o === value
                 ? 'border-ink bg-ink font-medium text-surface'
                 : 'border-line-strong text-ink-soft hover:border-accent/40 hover:text-accent'
@@ -34,7 +34,7 @@ function Choice<T extends string>({ label, hint, value, options, labels, onChang
           </button>
         ))}
       </div>
-      {hint && <p className="mt-1.5 text-[12.5px] text-ink-mute">{hint}</p>}
+      {hint && <p className="mt-1.5 text-meta text-ink-mute">{hint}</p>}
     </div>
   );
 }
@@ -55,11 +55,11 @@ function Number_({ label, hint, value, onChange, min, max, step = 1, suffix }: {
         />
         {/* dir="ltr", because "10%" in an rtl run renders as "% 10". The
             number and its unit are one token and read left to right. */}
-        <span dir="ltr" className="w-[74px] shrink-0 text-left font-display text-[17px] font-semibold tabular-nums text-ink">
+        <span dir="ltr" className="w-[74px] shrink-0 text-left font-display text-head font-semibold tabular-nums text-ink">
           {value}{suffix ? ` ${suffix}` : ''}
         </span>
       </div>
-      {hint && <p className="mt-1 text-[12.5px] text-ink-mute">{hint}</p>}
+      {hint && <p className="mt-1 text-meta text-ink-mute">{hint}</p>}
     </div>
   );
 }
@@ -110,11 +110,11 @@ export function BarCalculator({ guestEstimate, confirmedGuests }: {
   return (
     <section className="card">
       <div className="no-print">
-        <h2 className="inline-flex items-center gap-2 font-display text-[18px] font-semibold text-ink">
+        <h2 className="inline-flex items-center gap-2 font-display text-subhead font-semibold text-ink">
           <Martini size={18} aria-hidden strokeWidth={1.5} />
           {c.title}
         </h2>
-        <p className="mt-1 text-[14px] text-ink-soft">{c.sub}</p>
+        <p className="mt-1 text-body text-ink-soft">{c.sub}</p>
 
         <div className="mt-6 space-y-5">
           <Number_ label={c.guests} value={guests} onChange={setGuests} min={10} max={1500} step={10} />
@@ -132,8 +132,8 @@ export function BarCalculator({ guestEstimate, confirmedGuests }: {
 
       <div className="print-doc mt-8">
         <div className="flex flex-wrap items-baseline justify-between gap-3 border-b border-line pb-3">
-          <h3 className="font-display text-[18px] font-semibold text-ink">{c.planTitle}</h3>
-          <p className="text-[13px] tabular-nums text-ink-mute">
+          <h3 className="font-display text-subhead font-semibold text-ink">{c.planTitle}</h3>
+          <p className="text-body tabular-nums text-ink-mute">
             {plan.litres} {c.litresOut}
             {style !== 'house' && ` · ${plan.servings} ${c.servingsOut}`}
             {` · ${plan.drinkers} ${c.drinkersOut}`}
@@ -141,29 +141,29 @@ export function BarCalculator({ guestEstimate, confirmedGuests }: {
         </div>
 
         {style === 'house' && (
-          <p className="mt-3 text-[13px] leading-relaxed text-ink-mute">{c.houseNote}</p>
+          <p className="mt-3 text-body leading-relaxed text-ink-mute">{c.houseNote}</p>
         )}
 
         <ul className="mt-4 space-y-2">
           {lines.map((l) => (
             <li key={l.key} className="flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b border-line py-2.5 last:border-0">
-              <span className="min-w-0 flex-1 text-[15px] text-ink">{c.items[l.key]}</span>
-              <span className="font-display text-[16px] font-semibold tabular-nums text-ink">
+              <span className="min-w-0 flex-1 text-lead text-ink">{c.items[l.key]}</span>
+              <span className="font-display text-head font-semibold tabular-nums text-ink">
                 {l.key === 'beer' && beerPacks ? plan.beerSixPacks : l.qty}{' '}
-                <span className="text-[13px] font-normal text-ink-mute">
+                <span className="text-body font-normal text-ink-mute">
                   {l.key === 'beer' && beerPacks ? c.beerAsPacks : c.units[l.key]}
                 </span>
               </span>
               {l.total > 0 && (
-                <span className="w-[86px] shrink-0 text-left text-[14px] tabular-nums text-ink-soft"><Money value={l.total} /></span>
+                <span className="w-[86px] shrink-0 text-left text-body tabular-nums text-ink-soft"><Money value={l.total} /></span>
               )}
             </li>
           ))}
         </ul>
 
         {total > 0 && (
-          <p className="mt-4 text-left text-[15px] text-ink-soft">
-            {c.grandTotal} <b className="font-display text-[19px] tabular-nums text-ink"><Money value={total} /></b>
+          <p className="mt-4 text-left text-lead text-ink-soft">
+            {c.grandTotal} <b className="font-display text-subhead tabular-nums text-ink"><Money value={total} /></b>
           </p>
         )}
       </div>
@@ -172,7 +172,7 @@ export function BarCalculator({ guestEstimate, confirmedGuests }: {
           nothing is a switch somebody presses twice looking for the effect. */}
       {plan.bottles.beer > 0 && (
         <div className="no-print mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-line pt-4">
-          <span className="text-[13px] text-ink-mute">{c.beerUnit}</span>
+          <span className="text-body text-ink-mute">{c.beerUnit}</span>
           <div role="group" className="flex">
             {([false, true] as const).map((packs) => (
               <button
@@ -181,7 +181,7 @@ export function BarCalculator({ guestEstimate, confirmedGuests }: {
                 onClick={() => setBeerPacks(packs)}
                 aria-pressed={beerPacks === packs}
                 className={[
-                  'min-h-[44px] border-b px-3 text-[13.5px] tracking-[.04em] transition-colors duration-300',
+                  'min-h-[44px] border-b px-3 text-body tracking-[.04em] transition-colors duration-300',
                   beerPacks === packs
                     ? 'border-accent-line text-ink'
                     : 'border-transparent text-ink-mute hover:text-ink',
@@ -191,23 +191,23 @@ export function BarCalculator({ guestEstimate, confirmedGuests }: {
               </button>
             ))}
           </div>
-          {beerPacks && <span className="text-[12.5px] text-ink-mute">{c.beerPackNote}</span>}
+          {beerPacks && <span className="text-meta text-ink-mute">{c.beerPackNote}</span>}
         </div>
       )}
 
       <div className="no-print mt-6 flex flex-wrap items-center gap-3">
-        <button type="button" className="btn-quiet text-[13.5px]" onClick={() => setShowPrices((v) => !v)}>
+        <button type="button" className="btn-quiet text-body" onClick={() => setShowPrices((v) => !v)}>
           {c.prices}
         </button>
-        <button type="button" className="btn-ghost text-[14px]" onClick={() => window.print()}>
+        <button type="button" className="btn-ghost text-body" onClick={() => window.print()}>
           <Printer size={16} aria-hidden strokeWidth={1.5} />
           {c.print}
         </button>
       </div>
 
       {showPrices && (
-        <div className="no-print mt-4 rounded-xl2 border border-line bg-surface-100 p-4">
-          <p className="text-[13px] text-ink-mute">{c.pricesHint}</p>
+        <div className="no-print mt-4 rounded-card-sm border border-line bg-surface-100 p-4">
+          <p className="text-body text-ink-mute">{c.pricesHint}</p>
           <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {(Object.keys(prices) as (keyof Prices)[]).map((k) => (
               <div key={k}>
@@ -226,8 +226,8 @@ export function BarCalculator({ guestEstimate, confirmedGuests }: {
       )}
 
       <details className="no-print mt-5">
-        <summary className="cursor-pointer text-[13px] text-ink-mute hover:text-ink">{c.assumptions}</summary>
-        <ul className="mt-2 space-y-1.5 text-[13px] leading-relaxed text-ink-soft">
+        <summary className="cursor-pointer text-body text-ink-mute hover:text-ink">{c.assumptions}</summary>
+        <ul className="mt-2 space-y-1.5 text-body leading-relaxed text-ink-soft">
           {c.assumptionLines.map((l) => <li key={l}>{l}</li>)}
         </ul>
       </details>

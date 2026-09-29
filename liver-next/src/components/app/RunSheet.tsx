@@ -84,13 +84,13 @@ export async function RunSheet({
   return (
     <div className="print-doc">
       <header className="print-block border-b-2 border-ink pb-4">
-        <p className="text-[12px] uppercase tracking-[0.14em] text-ink-soft">{brand.name}</p>
-        <h1 className="mt-1.5 font-display text-[27px] font-semibold text-ink">{client.display_name}</h1>
-        <p className="mt-1.5 text-[15px] text-ink-soft">
+        <p className="text-meta uppercase tracking-[0.14em] text-ink-soft">{brand.name}</p>
+        <h1 className="mt-1.5 font-display text-figure font-semibold text-ink">{client.display_name}</h1>
+        <p className="mt-1.5 text-lead text-ink-soft">
           {dateLabel || c.noDate}
           {client.venue ? ` · ${client.venue}` : ''}
         </p>
-        <p className="mt-1 text-[14px] font-medium text-accent">
+        <p className="mt-1 text-body font-medium text-accent">
           {c.sheetFor} {roleLabel ?? c.everyone}
           {ordered.length > 0 && (
             <span className="text-ink-mute">
@@ -103,7 +103,7 @@ export async function RunSheet({
       </header>
 
       {ordered.length === 0 ? (
-        <p className="mt-8 text-[15px] text-ink-mute">{lines.length === 0 ? c.empty : c.emptyForRole}</p>
+        <p className="mt-8 text-lead text-ink-mute">{lines.length === 0 ? c.empty : c.emptyForRole}</p>
       ) : (
         <ol className="mt-5">
           {ordered.map((i, index) => {
@@ -120,7 +120,7 @@ export async function RunSheet({
                 {/* Left to right inside a right-to-left page, because a clock
                     reads that way in every language. */}
                 <span className="w-[86px] shrink-0 text-center" dir="ltr">
-                  <span className="block font-display text-[23px] font-semibold leading-none tabular-nums text-ink">
+                  <span className="block font-display text-panel font-semibold leading-none tabular-nums text-ink">
                     {hhmm(i.at_time)}
                   </span>
                   {/* Two corrections to one small line. It is kept on a single
@@ -133,22 +133,22 @@ export async function RunSheet({
                       inherited it, which threw the leading number to the wrong
                       end. Measured 111px out of place before this attribute. */}
                   {span.minutes !== null && (
-                    <span dir="rtl" className="mt-1 block whitespace-nowrap text-[11.5px] tabular-nums text-ink-mute">
+                    <span dir="rtl" className="mt-1 block whitespace-nowrap text-micro tabular-nums text-ink-mute">
                       {span.stated ? humanSpan(span.minutes, locale) : `↓ ${humanSpan(span.minutes, locale)}`}
                     </span>
                   )}
                 </span>
 
                 <div className="min-w-0 flex-1">
-                  <p className="text-[17px] leading-snug text-ink">{i.title}</p>
-                  {i.note && <p className="mt-0.5 text-[14px] leading-snug text-ink-soft">{i.note}</p>}
+                  <p className="text-head leading-snug text-ink">{i.title}</p>
+                  {i.note && <p className="mt-0.5 text-body leading-snug text-ink-soft">{i.note}</p>}
                   {staffVisible && i.owner && (
-                    <p className="mt-0.5 text-[13px] text-ink-mute">{c.owner}: {i.owner}</p>
+                    <p className="mt-0.5 text-body text-ink-mute">{c.owner}: {i.owner}</p>
                   )}
                 </div>
 
                 {i.audience.length > 0 && (
-                  <span className="shrink-0 self-start text-[12.5px] text-ink-mute">
+                  <span className="shrink-0 self-start text-meta text-ink-mute">
                     {i.audience.map(audienceLabel).join(' · ')}
                   </span>
                 )}
@@ -163,13 +163,13 @@ export async function RunSheet({
           fresh page so a call list is never split in half. */}
       {staffVisible && (
         <section className="print-block mt-7">
-          <h2 className="border-b border-ink/20 pb-1.5 font-display text-[16px] font-semibold text-ink">
+          <h2 className="border-b border-ink/20 pb-1.5 font-display text-head font-semibold text-ink">
             {c.contacts}
           </h2>
           {people.length === 0 ? (
-            <p className="mt-3 text-[13.5px] text-ink-mute">{c.noContacts}</p>
+            <p className="mt-3 text-body text-ink-mute">{c.noContacts}</p>
           ) : (
-            <table className="mt-2 w-full text-[14px]">
+            <table className="mt-2 w-full text-body">
               <tbody>
                 {people.map((p) => (
                   <tr key={p.id} className="border-b border-line last:border-0">
@@ -181,7 +181,7 @@ export async function RunSheet({
                     {/* The biggest thing in this table, because it is the only
                         part of it anybody ever reads out loud. */}
                     <td className="py-2 text-end align-top">
-                      <span dir="ltr" className="text-[16px] font-medium tabular-nums text-ink">{p.phone}</span>
+                      <span dir="ltr" className="text-head font-medium tabular-nums text-ink">{p.phone}</span>
                     </td>
                   </tr>
                 ))}
@@ -191,7 +191,7 @@ export async function RunSheet({
         </section>
       )}
 
-      <footer className="print-block mt-6 text-[12.5px] text-ink-mute">
+      <footer className="print-block mt-6 text-meta text-ink-mute">
         {brand.name}
         {brand.tagline ? ` · ${brand.tagline}` : ''}
         {' · '}

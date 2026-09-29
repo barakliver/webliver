@@ -28,7 +28,7 @@ function Save() {
 
 function Alert({ text }: { text: string }) {
   return (
-    <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+    <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-body text-bad">
       {text}
     </p>
   );
@@ -97,7 +97,7 @@ function Row({ member, clientId }: { member: CrewMember; clientId: string }) {
 
   if (editing) {
     return (
-      <li className="rounded-xl2 border border-accent/40 bg-surface-100 p-4">
+      <li className="rounded-card-sm border border-accent/40 bg-surface-100 p-4">
         <form action={action} noValidate>
           <input type="hidden" name="crew_id" value={member.id} />
           <input type="hidden" name="client_id" value={clientId} />
@@ -115,21 +115,21 @@ function Row({ member, clientId }: { member: CrewMember; clientId: string }) {
   return (
     <li className="flex gap-4 rounded-xl2 border border-line px-4 py-3.5 transition hover:border-line-strong">
       <div className="w-[58px] shrink-0 text-center" dir="ltr">
-        <span className={`font-display text-[16px] font-semibold tabular-nums ${member.call_time ? 'text-ink' : 'text-ink-mute'}`}>
+        <span className={`font-display text-head font-semibold tabular-nums ${member.call_time ? 'text-ink' : 'text-ink-mute'}`}>
           {member.call_time ? hhmm(member.call_time) : '·'}
         </span>
       </div>
 
       <div className="min-w-0 flex-1">
-        <p className="text-[15.5px] text-ink">
+        <p className="text-lead text-ink">
           {member.name}
           {member.role && <span className="text-ink-mute"> · {member.role}</span>}
         </p>
-        <div className="mt-0.5 flex flex-wrap items-center gap-x-3 text-[13px] text-ink-mute">
+        <div className="mt-0.5 flex flex-wrap items-center gap-x-3 text-body text-ink-mute">
           {member.phone && <a href={`tel:${member.phone}`} dir="ltr" className="hover:text-accent">{member.phone}</a>}
           {member.fee !== null && <Money value={member.fee} className="tabular-nums" />}
         </div>
-        {member.notes && <p className="mt-0.5 text-[13px] text-ink-soft">{member.notes}</p>}
+        {member.notes && <p className="mt-0.5 text-body text-ink-soft">{member.notes}</p>}
       </div>
 
       <div className="flex shrink-0 items-start gap-1">
@@ -191,16 +191,16 @@ export function CrewPanel({ clientId, crew }: { clientId: string; crew: CrewMemb
     <section className="card">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="inline-flex items-center gap-2 font-display text-[18px] font-semibold text-ink">
+          <h2 className="inline-flex items-center gap-2 font-display text-subhead font-semibold text-ink">
             <Users size={18} aria-hidden strokeWidth={1.5} />
             {c.title}
           </h2>
-          <p className="mt-1 text-[14px] text-ink-soft">{c.sub}</p>
+          <p className="mt-1 text-body text-ink-soft">{c.sub}</p>
         </div>
         <button
           type="button"
           onClick={() => setAdding((v) => !v)}
-          className="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl2 border border-line-strong bg-card px-4 text-[13.5px] font-medium text-ink transition hover:border-accent/40 hover:text-accent sm:min-h-0 sm:py-2"
+          className="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl2 border border-line-strong bg-card px-4 text-body font-medium text-ink transition hover:border-accent/40 hover:text-accent sm:min-h-0 sm:py-2"
         >
           <Plus size={15} aria-hidden strokeWidth={1.5} />
           {adding ? c.close : c.add}
@@ -208,7 +208,7 @@ export function CrewPanel({ clientId, crew }: { clientId: string; crew: CrewMemb
       </div>
 
       {adding && (
-        <form action={action} className="mt-4 rounded-xl2 border border-line bg-surface-100 p-4" noValidate>
+        <form action={action} className="mt-4 rounded-card-sm border border-line bg-surface-100 p-4" noValidate>
           <input type="hidden" name="client_id" value={clientId} />
           <Fields />
           {state && !state.ok && state.error && <Alert text={state.error} />}
@@ -217,21 +217,21 @@ export function CrewPanel({ clientId, crew }: { clientId: string; crew: CrewMemb
       )}
 
       {ordered.length === 0 ? (
-        <p className="mt-6 text-[14.5px] text-ink-mute">{c.none}</p>
+        <p className="mt-6 text-body text-ink-mute">{c.none}</p>
       ) : (
         <>
           <ul className="mt-5 space-y-2.5">
             {ordered.map((m) => <Row key={m.id} member={m} clientId={clientId} />)}
           </ul>
           {total > 0 && (
-            <p className="mt-4 text-left text-[14px] text-ink-soft">
+            <p className="mt-4 text-left text-body text-ink-soft">
               {c.totalFee} <b className="tabular-nums text-ink"><Money value={total} /></b>
             </p>
           )}
         </>
       )}
 
-      <p className="mt-5 inline-flex items-center gap-1.5 text-[12.5px] text-ink-mute">
+      <p className="mt-5 inline-flex items-center gap-1.5 text-meta text-ink-mute">
         <Lock size={13} aria-hidden strokeWidth={1.5} />
         {c.privateNote}
       </p>

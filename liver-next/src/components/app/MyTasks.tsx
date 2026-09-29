@@ -52,11 +52,11 @@ export function MyTasks({ tasks, today, showAdd = true }: {
     <section className="card" aria-labelledby="my-tasks">
       <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
         <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-          <h2 id="my-tasks" className="font-display text-[22px] font-semibold text-ink">{c.title}</h2>
+          <h2 id="my-tasks" className="font-display text-panel font-semibold text-ink">{c.title}</h2>
           {/* Only while it is not zero. A standing "0 להיום" is a number that
               trains people to stop reading the line it is on. */}
           {waiting > 0 && (
-            <span className="text-[13px] font-semibold text-accent">{fill(c.waiting, { n: waiting })}</span>
+            <span className="text-body font-semibold text-accent">{fill(c.waiting, { n: waiting })}</span>
           )}
         </div>
         {/* The plus lives on this panel's own header now. It stood on the
@@ -64,10 +64,10 @@ export function MyTasks({ tasks, today, showAdd = true }: {
             the control that writes a line into it belongs to it. */}
         {showAdd && <MyTaskQuickAdd />}
       </div>
-      <p className="mt-1 text-[14px] text-ink-soft">{c.sub}</p>
+      <p className="mt-1 text-body text-ink-soft">{c.sub}</p>
 
       {open.length === 0 ? (
-        <p className="mt-5 rounded-xl2 bg-surface-100 px-4 py-3 text-[14.5px] text-ink-mute">{c.empty}</p>
+        <p className="mt-5 rounded-xl2 bg-surface-100 px-4 py-3 text-body text-ink-mute">{c.empty}</p>
       ) : (
         <ul className="mt-5 list-none space-y-2 p-0">
           {open.map((t) => <Row key={t.id} task={t} today={today} />)}
@@ -79,7 +79,7 @@ export function MyTasks({ tasks, today, showAdd = true }: {
           by mistake should cost one press rather than being retyped. */}
       {finished.length > 0 && (
         <details className="mt-5">
-          <summary className="flex min-h-[44px] cursor-pointer list-none items-center gap-2 text-[13.5px] text-ink-mute hover:text-ink [&::-webkit-details-marker]:hidden">
+          <summary className="flex min-h-[44px] cursor-pointer list-none items-center gap-2 text-body text-ink-mute hover:text-ink [&::-webkit-details-marker]:hidden">
             <CheckCheck size={15} strokeWidth={1.5} aria-hidden />
             {c.doneOnes} · {finished.length}
           </summary>
@@ -163,7 +163,7 @@ function AddForm({ onDone }: { onDone?: () => void }) {
     <form action={action} className="mt-5 flex flex-wrap items-center gap-2">
       <Fields />
       <SubmitButton label={c.add} busy={c.adding} />
-      {state?.error && <p className="w-full text-[13.5px] text-bad">{state.error}</p>}
+      {state?.error && <p className="w-full text-body text-bad">{state.error}</p>}
     </form>
   );
 }
@@ -212,7 +212,7 @@ function Row({ task, today }: { task: ProducerTask; today: string }) {
         >
           <span
             aria-hidden
-            className={`flex h-6 w-6 items-center justify-center rounded-full border text-[13px] transition ${
+            className={`flex h-6 w-6 items-center justify-center rounded-full border text-body transition ${
               done ? 'border-ok/30 bg-ok text-surface' : 'border-line-strong bg-card hover:border-ink'
             }`}
           >
@@ -221,8 +221,8 @@ function Row({ task, today }: { task: ProducerTask; today: string }) {
         </button>
 
         <div className="min-w-0 flex-1">
-          <p className={`text-[15px] ${done ? 'text-ink-mute line-through' : 'text-ink'}`}>{task.title}</p>
-          <p className="mt-0.5 flex flex-wrap items-center gap-x-1.5 text-[12.5px] text-ink-mute">
+          <p className={`text-lead ${done ? 'text-ink-mute line-through' : 'text-ink'}`}>{task.title}</p>
+          <p className="mt-0.5 flex flex-wrap items-center gap-x-1.5 text-meta text-ink-mute">
             <span className={where === 'late' ? 'font-semibold text-bad' : where === 'today' ? 'font-semibold text-ink' : ''}>
               {where === 'today' ? c.today : formatDate(dateFmt, task.due_on, c.noDue)}
               {where === 'late' ? ` · ${c.overdue}` : ''}
@@ -232,7 +232,7 @@ function Row({ task, today }: { task: ProducerTask; today: string }) {
             {task.done_on && <span>· {fill(c.lastDone, { date: formatDate(dateFmt, task.done_on, '') })}</span>}
           </p>
           {task.note && (
-            <p className="mt-1 whitespace-pre-line text-[13px] leading-snug text-ink-soft">{task.note}</p>
+            <p className="mt-1 whitespace-pre-line text-body leading-snug text-ink-soft">{task.note}</p>
           )}
         </div>
 
@@ -242,14 +242,14 @@ function Row({ task, today }: { task: ProducerTask; today: string }) {
         <div className="flex w-full items-center gap-2 ps-8 sm:w-auto sm:ps-0">
           <button
             type="button" onClick={() => setEditing((v) => !v)} aria-expanded={editing}
-            className="btn-quiet inline-flex items-center gap-1 px-2 py-1 text-[13px]"
+            className="btn-quiet inline-flex items-center gap-1 px-2 py-1 text-body"
           >
             <Pencil size={13} aria-hidden strokeWidth={1.5} />
             {c.edit}
           </button>
           <DeleteForm action={deleteMyTask}>
             <input type="hidden" name="task_id" value={task.id} />
-            <button type="submit" className="btn-quiet px-3 py-1 text-[13px]">{c.remove}</button>
+            <button type="submit" className="btn-quiet px-3 py-1 text-body">{c.remove}</button>
           </DeleteForm>
         </div>
       </div>
@@ -275,8 +275,8 @@ function EditForm({ task, onDone }: { task: ProducerTask; onDone: () => void }) 
       <input type="hidden" name="task_id" value={task.id} />
       <Fields task={task} withNote />
       <SubmitButton label={c.save} busy={c.saving} />
-      <button type="button" onClick={onDone} className="btn-quiet px-3 py-1 text-[13.5px]">{c.cancel}</button>
-      {state?.error && <p className="w-full text-[13.5px] text-bad">{state.error}</p>}
+      <button type="button" onClick={onDone} className="btn-quiet px-3 py-1 text-body">{c.cancel}</button>
+      {state?.error && <p className="w-full text-body text-bad">{state.error}</p>}
     </form>
   );
 }
@@ -307,7 +307,7 @@ export function MyTaskQuickAdd() {
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-controls="quick-add-mine"
-        className="btn-quiet inline-flex min-h-[44px] items-center gap-1.5 px-2 text-[13.5px]"
+        className="btn-quiet inline-flex min-h-[44px] items-center gap-1.5 px-2 text-body"
       >
         {open ? <X size={16} aria-hidden strokeWidth={1.5} /> : <Plus size={16} aria-hidden strokeWidth={1.5} />}
         {open ? o.addMineClose : o.addMine}

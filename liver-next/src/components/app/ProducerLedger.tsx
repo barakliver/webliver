@@ -40,14 +40,14 @@ export function ProducerLedger({ c, payments, items, crew, fee }: {
 
   return (
     <section className="card" aria-labelledby="ledger-title">
-      <h2 id="ledger-title" className="font-display text-[18px] font-semibold text-ink">{c.title}</h2>
-      <p className="mt-1 text-[13.5px] text-ink-soft">{c.sub}</p>
+      <h2 id="ledger-title" className="font-display text-subhead font-semibold text-ink">{c.title}</h2>
+      <p className="mt-1 text-body text-ink-soft">{c.sub}</p>
 
       {nothingYet ? (
-        <p className="mt-5 text-[14.5px] text-ink-mute">{c.none}</p>
+        <p className="mt-5 text-body text-ink-mute">{c.none}</p>
       ) : (
         <>
-          <dl className="mt-5 grid grid-cols-2 gap-x-6 gap-y-3 text-[14px] sm:grid-cols-3">
+          <dl className="mt-5 grid grid-cols-2 gap-x-6 gap-y-3 text-body sm:grid-cols-3">
             <Figure label={c.billed} value={l.billed} />
             <Figure label={c.received} value={l.received} />
             <Figure label={c.outstanding} value={l.outstanding} />
@@ -62,12 +62,12 @@ export function ProducerLedger({ c, payments, items, crew, fee }: {
                 loss would be arithmetically defensible and would teach a
                 producer to stop reading this panel. */}
             {l.costsWithoutBilling ? (
-              <p className="text-[14px] leading-relaxed text-ink-soft">{c.early}</p>
+              <p className="text-body leading-relaxed text-ink-soft">{c.early}</p>
             ) : (
               <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-                <span className="text-[14px] text-ink-mute">{c.margin}</span>
+                <span className="text-body text-ink-mute">{c.margin}</span>
                 <span className="flex items-baseline gap-2">
-                  <b className={l.margin < 0 ? 'text-[20px] text-bad' : 'text-[20px] text-ink'}>
+                  <b className={l.margin < 0 ? 'text-panel text-bad' : 'text-panel text-ink'}>
                     <Money value={l.margin} />
                   </b>
                   {/* The number is isolated and the words are not. A bare
@@ -75,7 +75,7 @@ export function ProducerLedger({ c, payments, items, crew, fee }: {
                       end, and on a figure whose whole meaning is its sign that
                       is not a detail. */}
                   {l.marginPct !== null && (
-                    <span className="text-[13px] text-ink-soft">
+                    <span className="text-body text-ink-soft">
                       <Ltr>{`${l.marginPct}%`}</Ltr>{' '}
                       {c.marginPct.replace('{n}%', '').trim()}
                     </span>
@@ -85,7 +85,7 @@ export function ProducerLedger({ c, payments, items, crew, fee }: {
             )}
 
             {l.margin < 0 && !l.costsWithoutBilling && (
-              <p className="mt-3 inline-flex items-center gap-2 rounded-xl2 border border-bad/25 bg-bad-wash px-3 py-2 text-[13.5px] text-bad">
+              <p className="mt-3 inline-flex items-center gap-2 rounded-xl2 border border-bad/25 bg-bad-wash px-3 py-2 text-body text-bad">
                 <TriangleAlert size={16} strokeWidth={1.5} aria-hidden />
                 {c.loss}
               </p>

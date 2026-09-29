@@ -62,7 +62,7 @@ export default async function PlayPage({ params }: { params: Promise<{ token: st
     return (
       <main id="main" className="flex min-h-[100svh] flex-col items-center justify-center bg-dark px-6 text-center text-surface">
         <h1 className="font-display text-2xl font-medium">{game.gone}</h1>
-        <p className="mt-3 max-w-sm text-[15px] leading-relaxed text-surface/65">{game.goneBody}</p>
+        <p className="mt-3 max-w-sm text-lead leading-relaxed text-surface/65">{game.goneBody}</p>
       </main>
     );
   }

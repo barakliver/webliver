@@ -100,7 +100,7 @@ function Form({ producerId, product, onDone }: {
       />
 
       <div className="flex flex-wrap items-center gap-3">
-        <label className="inline-flex min-h-[44px] cursor-pointer items-center gap-2 rounded-button border border-line-strong bg-card px-4 text-[14px] text-ink transition hover:border-accent/40 sm:min-h-[38px]">
+        <label className="inline-flex min-h-[44px] cursor-pointer items-center gap-2 rounded-button border border-line-strong bg-card px-4 text-body text-ink transition hover:border-accent/40 sm:min-h-[38px]">
           <ImageIcon size={15} aria-hidden strokeWidth={1.5} />
           {busy ? c.photoUploading : path ? c.photoDone : c.photoAdd}
           <input
@@ -109,19 +109,19 @@ function Form({ producerId, product, onDone }: {
           />
         </label>
 
-        <label className="inline-flex min-h-[44px] cursor-pointer items-center gap-2 text-[14px] text-ink-soft sm:min-h-[38px]">
+        <label className="inline-flex min-h-[44px] cursor-pointer items-center gap-2 text-body text-ink-soft sm:min-h-[38px]">
           <input type="checkbox" name="active" defaultChecked={product?.active ?? true} className="size-4 accent-[rgb(var(--accent-rgb))]" />
           {c.active}
         </label>
 
         <div className="ms-auto flex items-center gap-2">
-          <button type="button" onClick={onDone} className="btn-quiet px-3 text-[14px]">{c.cancel}</button>
+          <button type="button" onClick={onDone} className="btn-quiet px-3 text-body">{c.cancel}</button>
           <Saving />
         </div>
       </div>
 
       {state && !state.ok && state.error && (
-        <p role="alert" className="text-[14px] text-bad">{state.error}</p>
+        <p role="alert" className="text-body text-bad">{state.error}</p>
       )}
     </form>
   );
@@ -137,8 +137,8 @@ export function StoreProducts({ producerId, products }: {
     <section className="card">
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <div>
-          <h2 className="font-display text-[22px] font-semibold text-ink">{c.tabProducts}</h2>
-          <p className="mt-1 text-[13.5px] text-ink-mute">{c.dragHint}</p>
+          <h2 className="font-display text-panel font-semibold text-ink">{c.tabProducts}</h2>
+          <p className="mt-1 text-body text-ink-mute">{c.dragHint}</p>
         </div>
         {!adding && (
           <button type="button" onClick={() => { setAdding(true); setEditing(null); }} className="btn-primary inline-flex items-center gap-2">
@@ -155,7 +155,7 @@ export function StoreProducts({ producerId, products }: {
       )}
 
       {products.length === 0 && !adding ? (
-        <p className="mt-6 text-[14.5px] text-ink-mute">{c.noneProducts}</p>
+        <p className="mt-6 text-body text-ink-mute">{c.noneProducts}</p>
       ) : (
         <Sortable
           items={products}
@@ -191,16 +191,16 @@ export function StoreProducts({ producerId, products }: {
 
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-baseline gap-x-2">
-                    <p className="text-[15px] text-ink">{p.name}</p>
-                    <span className="text-[12px] text-ink-mute">
+                    <p className="text-lead text-ink">{p.name}</p>
+                    <span className="text-meta text-ink-mute">
                       {p.kind === 'service' ? c.kindService : c.kindProduct}
                     </span>
                     {!p.active && (
-                      <span className="rounded-control bg-surface-200 px-2 text-[11.5px] text-ink-mute">{c.hidden}</span>
+                      <span className="rounded-control bg-surface-200 px-2 text-micro text-ink-mute">{c.hidden}</span>
                     )}
                   </div>
-                  {p.blurb && <p className="mt-0.5 truncate text-[13.5px] text-ink-soft">{p.blurb}</p>}
-                  <Money value={p.price} className="mt-1 block text-[14px] text-ink" />
+                  {p.blurb && <p className="mt-0.5 truncate text-body text-ink-soft">{p.blurb}</p>}
+                  <Money value={p.price} className="mt-1 block text-body text-ink" />
                 </div>
 
                 {/* Three buttons beside a name and a picture is one thing too
@@ -210,7 +210,7 @@ export function StoreProducts({ producerId, products }: {
                   <form action={toggleProduct}>
                     <input type="hidden" name="id" value={p.id} />
                     <input type="hidden" name="active" value={String(!p.active)} />
-                    <button type="submit" className="btn-quiet px-2 py-1 text-[13px]">
+                    <button type="submit" className="btn-quiet px-2 py-1 text-body">
                       {p.active ? c.hide : c.show}
                     </button>
                   </form>
@@ -218,7 +218,7 @@ export function StoreProducts({ producerId, products }: {
                   <button
                     type="button"
                     onClick={() => { setEditing(editing === p.id ? null : p.id); setAdding(false); }}
-                    className="btn-quiet inline-flex items-center gap-1 px-2 py-1 text-[13px]"
+                    className="btn-quiet inline-flex items-center gap-1 px-2 py-1 text-body"
                   >
                     <Pencil size={14} aria-hidden strokeWidth={1.5} />
                     {c.edit}
@@ -226,7 +226,7 @@ export function StoreProducts({ producerId, products }: {
 
                   <DeleteForm action={deleteProduct} ask={c.removeAsk}>
                     <input type="hidden" name="id" value={p.id} />
-                    <button type="submit" className="btn-quiet px-2 py-1 text-[13px]" aria-label={`${c.remove} ${p.name}`}>
+                    <button type="submit" className="btn-quiet px-2 py-1 text-body" aria-label={`${c.remove} ${p.name}`}>
                       <Trash2 size={14} aria-hidden strokeWidth={1.5} />
                     </button>
                   </DeleteForm>

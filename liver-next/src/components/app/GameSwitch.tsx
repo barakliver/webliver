@@ -54,13 +54,13 @@ export function GameSwitch({ clientId, token, on }: {
     <section className="card">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="inline-flex items-center gap-2 font-display text-[18px] font-semibold text-ink">
+          <h2 className="inline-flex items-center gap-2 font-display text-subhead font-semibold text-ink">
             <Spade size={18} aria-hidden strokeWidth={1.5} />
             {c.title}
           </h2>
-          <p className="mt-1 max-w-2xl text-[14px] text-ink-soft">{c.sub}</p>
+          <p className="mt-1 max-w-2xl text-body text-ink-soft">{c.sub}</p>
         </div>
-        <span className={`rounded-xl2 px-3 py-1 text-[12.5px] ${on ? 'bg-ok-wash text-ok' : 'bg-surface-200 text-ink-mute'}`}>
+        <span className={`rounded-xl2 px-3 py-1 text-meta ${on ? 'bg-ok-wash text-ok' : 'bg-surface-200 text-ink-mute'}`}>
           {on ? c.on : c.off}
         </span>
       </div>
@@ -76,7 +76,7 @@ export function GameSwitch({ clientId, token, on }: {
               <input
                 id="game-url" readOnly value={url} dir="ltr"
                 onFocus={(e) => e.currentTarget.select()}
-                className="field min-w-[220px] flex-1 font-mono text-[13px]"
+                className="field min-w-[220px] flex-1 font-mono text-body"
               />
               <button type="button" onClick={copy} className="btn-ghost">
                 {copied ? <Check size={15} strokeWidth={1.5} aria-hidden /> : <Copy size={15} strokeWidth={1.5} aria-hidden />}
@@ -94,19 +94,19 @@ export function GameSwitch({ clientId, token, on }: {
                 {c.open}
               </a>
             </div>
-            <p className="mt-1.5 text-[12.5px] text-ink-mute">{c.hint}</p>
+            <p className="mt-1.5 text-meta text-ink-mute">{c.hint}</p>
           </div>
         )}
 
         {state && !state.ok && state.error && (
-          <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+          <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-body text-bad">
             {state.error}
           </p>
         )}
 
         <div className="mt-5 flex flex-wrap items-center gap-3">
           <Save on={on} />
-          {state?.ok && <span className="text-[13.5px] text-ok">{c.saved}</span>}
+          {state?.ok && <span className="text-body text-ok">{c.saved}</span>}
         </div>
       </form>
     </section>

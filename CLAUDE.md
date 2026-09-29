@@ -315,6 +315,32 @@ that has happened once.
   asserts the face reached the build and would roll a release back on the
   wrong assertion. Heebo sets real Latin, which is why the English page no
   longer swaps in a second family.
+- **Every size below 30px is one of eight named steps**, in
+  `tailwind.config.ts`: `micro` 11.5, `meta` 12.5, `body` 14, `lead` 15.5,
+  `head` 17, `subhead` 19, `panel` 22, `figure` 26. There were thirty-five
+  before, and twelve of them were heading sizes. Nobody chose thirty-five;
+  they accumulated one at a time, each a reasonable local decision, and half
+  a pixel is invisible in one panel and is exactly what makes a whole screen
+  read as assembled rather than designed. The steps are the values the
+  product already used most, so the rename moved 1,800 call sites and moved
+  no text by more than a pixel; what it did change is that 13px and 14.5px
+  became the same step, because an interface has one body size. The steps
+  carry **no line height** on purpose - an arbitrary `text-[14px]` set the
+  size and nothing else, and attaching a leading here would have silently
+  relaid out every screen. 30px and up stays arbitrary: those are nine
+  one-off art directions, and forcing a hero onto a shared step only grows
+  the scale to defeat the rule. `npm run type` fails the build on anything
+  below 30 that is not a step, for the same reason `npm run classes` does it
+  for colour - the failure it catches is a mistake that looks like a
+  decision.
+- **A radius says what a thing is**, and the three are `card` 16 for a
+  panel, `card-sm` 14 for a surface inside one, and `control` 12 for
+  anything pressed or typed in; `sheet` 22 is what floats. `xl2` is the
+  legacy alias for 12 and is still on 325 controls, which is correct for a
+  control and was wrong on the thirty-four bordered boxes that were reading
+  as panels at the radius of a button. Nested surfaces step down rather than
+  matching: an inner box at the outer box's radius is what makes a card look
+  like a sticker on a card.
 - The platform also has a dark palette. There are two controls for it and
   neither owns the state: a one-press switch in the app header beside the
   language one, and the full three-way choice in the accessibility menu —

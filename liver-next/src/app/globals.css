@@ -584,7 +584,7 @@
      grows around it. */
   .btn {
     @apply inline-flex min-h-[48px] items-center justify-center gap-2 rounded-button
-           px-6 text-[16px] font-semibold
+           px-6 text-head font-semibold
            transition duration-300 ease-out
            active:translate-y-px active:duration-75
            disabled:pointer-events-none disabled:opacity-50;
@@ -633,7 +633,7 @@
        form in this app is built out of this class, so this is the one place
        to say it. */
     @apply min-h-[48px] w-full min-w-0 rounded-control border border-line-control
-           px-4 py-2.5 text-[16px] text-ink placeholder:text-ink-mute
+           px-4 py-2.5 text-head text-ink placeholder:text-ink-mute
            focus:border-accent;
     background: var(--field-bg);
     transition: border-color .2s cubic-bezier(.16, 1, .3, 1);
@@ -641,14 +641,14 @@
   /* Focus is a ring rather than a thicker border, so the control does not
      change size when it is entered and the line below it does not jump. */
 
-  .label { @apply mb-1.5 block text-[13.5px] font-medium text-ink-soft; }
+  .label { @apply mb-1.5 block text-body font-medium text-ink-soft; }
 
   /* Status reads without colour too: every chip carries a word. */
   /* Rectangles with a 1px border, not pills with a fill. Status still reads
      without colour, because every chip carries a word. */
   .chip {
     @apply inline-flex items-center gap-1.5 rounded-full border px-3 py-1
-           text-[11.5px] font-medium tracking-[.04em];
+           text-micro font-medium tracking-[.04em];
   }
   .chip-ok   { @apply chip border-ok/40   text-ok; }
   .chip-warn { @apply chip border-warn/40 text-warn; }
@@ -656,7 +656,7 @@
   .chip-mute { @apply chip border-line-strong text-ink-soft; }
 
   .eyebrow {
-    @apply text-[11.5px] font-medium tracking-[.14em] text-accent;
+    @apply text-micro font-medium tracking-[.14em] text-accent;
   }
 
   /* A hairline that reads as a rule rather than a border. */

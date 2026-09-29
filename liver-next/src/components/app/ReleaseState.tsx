@@ -38,17 +38,17 @@ export function ReleaseState({ state }: { state: State }) {
     <section className="card" aria-labelledby="release-title">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 id="release-title" className="flex items-center gap-2 font-display text-[17px] font-semibold text-ink">
+          <h2 id="release-title" className="flex items-center gap-2 font-display text-head font-semibold text-ink">
             <Rocket size={16} aria-hidden strokeWidth={1.5} />
             {c.title}
           </h2>
-          <p className="mt-1 max-w-prose2 text-[13.5px] text-ink-soft">{c.sub}</p>
+          <p className="mt-1 max-w-prose2 text-body text-ink-soft">{c.sub}</p>
         </div>
         {state.found && <span className={result.chip}>{result.text}</span>}
       </div>
 
       {!state.found ? (
-        <p className="mt-4 text-[14px] text-ink-mute">{c.none}</p>
+        <p className="mt-4 text-body text-ink-mute">{c.none}</p>
       ) : (
         <>
           {/* The number first, the commit under it in small print. Seven
@@ -57,7 +57,7 @@ export function ReleaseState({ state }: { state: State }) {
               person reads, and the commit stays visible because it is what
               actually gets deployed. A release made before version.json
               existed has no number, and then the commit is all there is. */}
-          <dl className="mt-4 grid gap-x-8 gap-y-3 text-[14px] sm:grid-cols-3">
+          <dl className="mt-4 grid gap-x-8 gap-y-3 text-body sm:grid-cols-3">
             <Row label={c.running} version={VERSION} value={state.running} />
             <Row label={c.live} version={state.liveVersion} value={shortSha(state.live) || '·'} />
             <Row label={c.previous} version={state.previousVersion} value={shortSha(state.previous) || '·'} />
@@ -69,7 +69,7 @@ export function ReleaseState({ state }: { state: State }) {
               release at all" — two very different mornings, and the only
               way to tell them apart was a log on the machine. */}
           {state.tried && (
-            <p className="mt-3 text-[13.5px] text-ink-soft">
+            <p className="mt-3 text-body text-ink-soft">
               {c.attempt}{' '}
               <span className="font-mono text-ink"><Ltr>{shortSha(state.tried.tag)}</Ltr></span>
               {' · '}{fill(c.attemptNo, { n: state.tried.n })}
@@ -77,22 +77,22 @@ export function ReleaseState({ state }: { state: State }) {
           )}
 
           {stuck && (
-            <p role="alert" className="mt-4 rounded-control border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+            <p role="alert" className="mt-4 rounded-control border border-bad/25 bg-bad-wash px-4 py-2.5 text-body text-bad">
               {fill(c.gaveUp, { tag: shortSha(stuck) })}
             </p>
           )}
           {serving === false && (
-            <p className="mt-3 rounded-control border border-warn/25 bg-warn-wash px-4 py-2.5 text-[14px] text-warn">
+            <p className="mt-3 rounded-control border border-warn/25 bg-warn-wash px-4 py-2.5 text-body text-warn">
               {c.mismatch}
             </p>
           )}
 
           {state.lines.length > 0 && (
             <details className="mt-4">
-              <summary className="cursor-pointer text-[13.5px] text-accent">
+              <summary className="cursor-pointer text-body text-accent">
                 {c.log}{state.at ? ` · ${fill(c.at, { when: state.at.replace('T', ' ').replace('Z', ' UTC') })}` : ''}
               </summary>
-              <pre dir="ltr" className="mt-2 max-h-64 overflow-auto rounded-control bg-surface-200 p-3 text-start text-[12px] leading-relaxed text-ink-soft">
+              <pre dir="ltr" className="mt-2 max-h-64 overflow-auto rounded-control bg-surface-200 p-3 text-start text-meta leading-relaxed text-ink-soft">
                 {state.lines.join('\n')}
               </pre>
             </details>
@@ -107,17 +107,17 @@ function Row({ label, version, value }: { label: string; version?: string | null
   const c = useCopy().admin.release;
   return (
     <div className="flex items-baseline justify-between gap-3 border-b border-line py-1.5 sm:block sm:border-0 sm:py-0">
-      <dt className="text-[12.5px] text-ink-mute">{label}</dt>
+      <dt className="text-meta text-ink-mute">{label}</dt>
       <dd className="m-0 text-end sm:text-start">
         {version ? (
           <>
-            <span className="block font-display text-[15.5px] font-semibold text-ink">
+            <span className="block font-display text-lead font-semibold text-ink">
               {fill(c.version, { v: version })}
             </span>
-            <span className="block font-mono text-[12px] text-ink-mute"><Ltr>{value}</Ltr></span>
+            <span className="block font-mono text-meta text-ink-mute"><Ltr>{value}</Ltr></span>
           </>
         ) : (
-          <span className="block font-mono text-[13.5px] text-ink"><Ltr>{value}</Ltr></span>
+          <span className="block font-mono text-body text-ink"><Ltr>{value}</Ltr></span>
         )}
       </dd>
     </div>

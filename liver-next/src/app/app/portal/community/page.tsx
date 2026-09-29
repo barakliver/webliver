@@ -39,7 +39,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
   return (
     <CopyProvider value={ui}>
       {account.role === 'client' && (
-        <Link href="/app/portal" className="btn-quiet mb-4 inline-flex items-center gap-1.5 px-0 text-[14px]">
+        <Link href="/app/portal" className="btn-quiet mb-4 inline-flex items-center gap-1.5 px-0 text-body">
           <ArrowLeft size={16} aria-hidden strokeWidth={1.5} />
           {c.back}
         </Link>
@@ -57,7 +57,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
           viewer={account.role === 'client' ? 'client' : 'producer'}
         />
       ) : (
-        <p className="card text-[15px] text-ink-mute">{c.closed}</p>
+        <p className="card text-lead text-ink-mute">{c.closed}</p>
       )}
     </CopyProvider>
   );

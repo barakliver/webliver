@@ -59,7 +59,7 @@ export async function EventTabs({
             href={tab === 'overview' ? `/app/clients/${clientId}` : `/app/clients/${clientId}?tab=${tab}`}
             aria-current={on ? 'page' : undefined}
             scroll={false}
-            className={`inline-flex min-h-[44px] sm:min-h-[38px] shrink-0 items-center gap-1.5 rounded-xl2 px-4 text-[14px] transition ${
+            className={`inline-flex min-h-[44px] sm:min-h-[38px] shrink-0 items-center gap-1.5 rounded-xl2 px-4 text-body transition ${
               on
                 ? 'bg-ink font-medium text-surface'
                 : 'text-ink-soft hover:bg-surface-200 hover:text-ink'
@@ -68,7 +68,7 @@ export async function EventTabs({
             {labels[tab]}
             <LinkHint />
             {count !== undefined && count > 0 && (
-              <span className={`rounded-xl2 px-1.5 text-[11.5px] tabular-nums ${
+              <span className={`rounded-xl2 px-1.5 text-micro tabular-nums ${
                 on ? 'bg-card/20 text-surface' : 'bg-surface-200 text-ink-mute'
               }`}>
                 {count}

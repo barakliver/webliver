@@ -39,8 +39,8 @@ export function BrandAssets({ urls }: { urls: BrandAssetUrls }) {
   const c = useCopy().brand.assets;
   return (
     <section className="card">
-      <h2 className="font-display text-[17px] font-semibold text-ink">{c.title}</h2>
-      <p className="mt-1.5 max-w-2xl text-[14px] leading-relaxed text-ink-soft">{c.sub}</p>
+      <h2 className="font-display text-head font-semibold text-ink">{c.title}</h2>
+      <p className="mt-1.5 max-w-2xl text-body leading-relaxed text-ink-soft">{c.sub}</p>
       <div className="mt-5 grid gap-4 lg:grid-cols-3">
         <Asset kind="logo" url={urls.logo} />
         <Asset kind="icon" url={urls.icon} />
@@ -73,12 +73,12 @@ function Asset({ kind, url }: { kind: BrandAsset; url: string | null }) {
   const error = local || (state && !state.ok ? state.error : '');
 
   return (
-    <div className="flex flex-col rounded-xl2 border border-line bg-surface-100 p-4">
+    <div className="flex flex-col rounded-card-sm border border-line bg-surface-100 p-4">
       <div className="flex items-center gap-2">
         <Icon size={16} strokeWidth={1.5} aria-hidden className="text-accent" />
-        <h3 className="text-[14.5px] font-medium text-ink">{rule.title}</h3>
+        <h3 className="text-body font-medium text-ink">{rule.title}</h3>
       </div>
-      <p className="mt-1 text-[12.5px] leading-relaxed text-ink-mute">{rule.where}</p>
+      <p className="mt-1 text-meta leading-relaxed text-ink-mute">{rule.where}</p>
 
       {/* The picture as it is, on the ground it will actually sit on: the
           icon on a phone-shaped tile, the cover wide, the logo on the page. */}
@@ -97,11 +97,11 @@ function Asset({ kind, url }: { kind: BrandAsset; url: string | null }) {
             <img src={url} alt={rule.title} className={cn('object-contain', kind === 'cover' ? 'size-full object-cover' : 'max-h-16 max-w-[80%]')} />
           )
         ) : (
-          <span className="text-[12.5px] text-ink-mute">{c.empty}</span>
+          <span className="text-meta text-ink-mute">{c.empty}</span>
         )}
       </div>
 
-      <ul className="mt-3 space-y-1 text-[12.5px] text-ink-soft">
+      <ul className="mt-3 space-y-1 text-meta text-ink-soft">
         {rule.rules.map((r) => (
           <li key={r} className="flex items-start gap-1.5">
             <Check size={13} strokeWidth={1.5} aria-hidden className="mt-[3px] shrink-0 text-accent" />
@@ -120,7 +120,7 @@ function Asset({ kind, url }: { kind: BrandAsset; url: string | null }) {
           />
           <button
             type="button" onClick={() => input.current?.click()} disabled={pending}
-            className="btn-ghost min-h-[38px] px-3.5 text-[13.5px]"
+            className="btn-ghost min-h-[38px] px-3.5 text-body"
           >
             <Upload size={14} strokeWidth={1.5} aria-hidden />
             {pending ? c.uploading : url ? c.replace : c.choose}
@@ -129,20 +129,20 @@ function Asset({ kind, url }: { kind: BrandAsset; url: string | null }) {
         {url && !pending && (
           <DeleteForm action={removeBrandAsset}>
             <input type="hidden" name="kind" value={kind} />
-            <button type="submit" className="btn-quiet inline-flex min-h-[38px] items-center gap-1.5 px-2 text-[13px]">
+            <button type="submit" className="btn-quiet inline-flex min-h-[38px] items-center gap-1.5 px-2 text-body">
               <Trash2 size={14} strokeWidth={1.5} aria-hidden />
               {c.remove}
             </button>
           </DeleteForm>
         )}
         {state?.ok && !pending && !local && (
-          <span className="inline-flex items-center gap-1 text-[13px] text-ok">
+          <span className="inline-flex items-center gap-1 text-body text-ok">
             <Check size={14} strokeWidth={1.5} aria-hidden />
             {c.uploaded}
           </span>
         )}
       </div>
-      {error && <p role="alert" className="mt-2 text-[13px] text-bad">{error}</p>}
+      {error && <p role="alert" className="mt-2 text-body text-bad">{error}</p>}
     </div>
   );
 }

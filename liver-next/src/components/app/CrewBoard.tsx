@@ -58,7 +58,7 @@ function Saving() {
   const c = useCopy().crew;
   const { pending } = useFormStatus();
   return (
-    <button type="submit" className="btn-ghost shrink-0 text-[12.5px]" disabled={pending}>
+    <button type="submit" className="btn-ghost shrink-0 text-meta" disabled={pending}>
       {pending ? c.saving : c.save}
     </button>
   );
@@ -79,20 +79,20 @@ function EventIncome({ clientId, fee }: { clientId: string; fee: number | null }
     <form action={action} className="mt-2 flex flex-wrap items-end gap-2">
       <input type="hidden" name="client_id" value={clientId} />
       <div>
-        <label className="label text-[11.5px]" htmlFor={`inc-${clientId}`}>{c.incomeSet}</label>
+        <label className="label text-micro" htmlFor={`inc-${clientId}`}>{c.incomeSet}</label>
         <input
           id={`inc-${clientId}`} name="producer_fee" type="number" min="0" step="500"
           defaultValue={fee === null ? '' : String(fee)}
-          placeholder={c.incomePh} className="field w-32 text-[13px]" inputMode="numeric"
+          placeholder={c.incomePh} className="field w-32 text-body" inputMode="numeric"
         />
       </div>
       <Saving />
       {state?.ok && (
-        <span className="inline-flex items-center gap-1 pb-2 text-[12px] text-good">
+        <span className="inline-flex items-center gap-1 pb-2 text-meta text-good">
           <Check size={12} aria-hidden strokeWidth={1.5} />{c.crewNoteSaved}
         </span>
       )}
-      {state?.error && <span className="pb-2 text-[12px] text-bad">{state.error}</span>}
+      {state?.error && <span className="pb-2 text-meta text-bad">{state.error}</span>}
     </form>
   );
 }
@@ -117,11 +117,11 @@ function PersonFee({ row }: { row: BoardAssignment }) {
         name="fee" type="number" min="0" step="50"
         defaultValue={row.fee ? String(row.fee) : ''}
         placeholder={c.fee} aria-label={c.fee}
-        className="field w-24 text-[12.5px]" inputMode="numeric"
+        className="field w-24 text-meta" inputMode="numeric"
       />
       <Saving />
       {state?.ok && <Check size={12} aria-hidden strokeWidth={1.5} className="mb-2 text-good" />}
-      {state?.error && <span className="mb-2 text-[12px] text-bad">{state.error}</span>}
+      {state?.error && <span className="mb-2 text-meta text-bad">{state.error}</span>}
     </form>
   );
 }
@@ -157,7 +157,7 @@ function SlotPicker({
     <details className="group/pick mt-2">
       <summary
         className="flex cursor-pointer list-none items-center justify-center gap-1.5 rounded-xl2
-                   border border-dashed border-line px-2 py-1.5 text-[12.5px] text-ink-soft
+                   border border-dashed border-line px-2 py-1.5 text-meta text-ink-soft
                    transition-colors hover:border-accent/50 hover:text-accent
                    [&::-webkit-details-marker]:hidden"
       >
@@ -179,13 +179,13 @@ function SlotPicker({
             <input
               type="search" value={q} onChange={(e) => setQ(e.target.value)}
               aria-label={`${c.deskSearch}: ${label}`} placeholder={c.deskSearchPh}
-              className="field ps-8 text-[13px] [&::-webkit-search-cancel-button]:appearance-none"
+              className="field ps-8 text-body [&::-webkit-search-cancel-button]:appearance-none"
             />
           </div>
         )}
 
         {shown.length === 0 ? (
-          <p className="mt-2 text-[12.5px] text-ink-mute">{c.deskNoMatch}</p>
+          <p className="mt-2 text-meta text-ink-mute">{c.deskNoMatch}</p>
         ) : (
           <ul className="mt-2 max-h-56 list-none space-y-1 overflow-y-auto p-0">
             {shown.map((p) => (
@@ -193,7 +193,7 @@ function SlotPicker({
                 <button
                   type="button"
                   onClick={() => { onPick(p.id); setQ(''); }}
-                  className="w-full rounded-xl2 px-2.5 py-1.5 text-start text-[13.5px] text-ink
+                  className="w-full rounded-xl2 px-2.5 py-1.5 text-start text-body text-ink
                              transition-colors hover:bg-accent-wash"
                 >
                   {p.name}
@@ -305,7 +305,7 @@ export function CrewBoard({
   );
 
   if (events.length === 0) {
-    return <p className="text-[14px] text-ink-mute">{c.boardNoEvents}</p>;
+    return <p className="text-body text-ink-mute">{c.boardNoEvents}</p>;
   }
 
   return (
@@ -324,7 +324,7 @@ export function CrewBoard({
                     which is the one thing a drag must never break. */}
                 <span
                   {...drag.row(p.id)}
-                  className={`inline-flex items-center gap-1 rounded-xl2 border ps-1 pe-3 text-[14px] transition-colors ${
+                  className={`inline-flex items-center gap-1 rounded-xl2 border ps-1 pe-3 text-body transition-colors ${
                     on
                       ? 'border-accent bg-accent-wash text-ink'
                       : doubled.has(p.id)
@@ -344,7 +344,7 @@ export function CrewBoard({
                       <TriangleAlert size={13} aria-hidden strokeWidth={1.5} className="text-bad" />
                     )}
                     {p.name}
-                    <span className="tabular-nums text-[12px] text-ink-mute"><Ltr>{String(load(p.id))}</Ltr></span>
+                    <span className="tabular-nums text-meta text-ink-mute"><Ltr>{String(load(p.id))}</Ltr></span>
                   </button>
                 </span>
               </li>
@@ -352,7 +352,7 @@ export function CrewBoard({
           })}
         </ul>
         {picked && (
-          <p role="status" className="mt-2 text-[13px] text-accent">{c.boardPicked}</p>
+          <p role="status" className="mt-2 text-body text-accent">{c.boardPicked}</p>
         )}
       </div>
 
@@ -366,12 +366,12 @@ export function CrewBoard({
             return (
               <li key={ev.id} className="card p-4 sm:p-5">
                 <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-                  <h4 className="font-display text-[16.5px] font-semibold text-ink">
+                  <h4 className="font-display text-head font-semibold text-ink">
                     <Link href={`/app/clients/${ev.id}`} className="transition-colors hover:text-accent">
                       {ev.name}
                     </Link>
                   </h4>
-                  <p className="flex flex-wrap items-center gap-x-3 text-[13px] text-ink-mute">
+                  <p className="flex flex-wrap items-center gap-x-3 text-body text-ink-mute">
                     <span>{ev.date ? fmt.format(new Date(ev.date)) : c.shiftNoDate}</span>
                     {ev.guests !== null && (
                       <span><Ltr>{String(ev.guests)}</Ltr> {c.boardGuests}</span>
@@ -393,7 +393,7 @@ export function CrewBoard({
                     same three figures the money tab shows and from the same
                     function, so staffing an evening and reading what is left
                     of it are one glance rather than two screens. */}
-                <dl className="mt-2.5 flex flex-wrap items-baseline gap-x-5 gap-y-1 text-[13px]">
+                <dl className="mt-2.5 flex flex-wrap items-baseline gap-x-5 gap-y-1 text-body">
                   <div className="flex items-baseline gap-1.5">
                     <dt className="text-ink-mute">{c.moneyIn}</dt>
                     <dd className="text-ink"><Money value={ev.money.billed} /></dd>
@@ -442,7 +442,7 @@ export function CrewBoard({
                               : 'border-line-soft bg-surface-100'
                         }`}
                       >
-                        <p className="text-[12.5px] text-ink-mute">
+                        <p className="text-meta text-ink-mute">
                           {labels[slot]}
                           {state.need > 0 && <> · <Ltr>{`${state.filled}/${state.need}`}</Ltr></>}
                         </p>
@@ -458,7 +458,7 @@ export function CrewBoard({
                               }`}
                             >
                               <span className="flex items-center justify-between gap-2">
-                              <span className="flex min-w-0 items-center gap-1.5 truncate text-[13.5px] text-ink">
+                              <span className="flex min-w-0 items-center gap-1.5 truncate text-body text-ink">
                                 {clashDays.has(`${r.memberId}|${ev.date?.slice(0, 10) ?? ''}`) && (
                                   <TriangleAlert size={12} aria-hidden strokeWidth={1.5} className="shrink-0 text-bad" />
                                 )}
@@ -489,7 +489,7 @@ export function CrewBoard({
                             type="button"
                             onClick={() => place(ev.id, picked, slot)}
                             className="mt-2 w-full rounded-xl2 border border-dashed border-accent/50 px-2 py-1.5
-                                       text-[12.5px] text-accent transition-colors hover:bg-accent-wash"
+                                       text-meta text-accent transition-colors hover:bg-accent-wash"
                           >
                             {c.boardPlace}
                           </button>
@@ -526,7 +526,7 @@ export function CrewBoard({
         );
         if (t.billed === 0 && t.costs === 0) return null;
         return (
-          <dl className="flex flex-wrap items-baseline gap-x-6 gap-y-1.5 border-t border-line pt-4 text-[14px]">
+          <dl className="flex flex-wrap items-baseline gap-x-6 gap-y-1.5 border-t border-line pt-4 text-body">
             <div className="flex items-baseline gap-2">
               <dt className="text-ink-mute">{c.seasonIn}</dt>
               <dd className="text-ink"><Money value={t.billed} /></dd>

@@ -25,7 +25,7 @@ export function AiConcierge({ copy: c }: { copy: ConciergeCopy }) {
       copy={c}
       endpoint="/api/ai-concierge"
       icon={MessagesSquare}
-      subtitle={<p className="mt-0.5 text-[12.5px] text-ink-mute">{c.sub}</p>}
+      subtitle={<p className="mt-0.5 text-meta text-ink-mute">{c.sub}</p>}
       maxChars={1000}
       maxTurns={20}
     />

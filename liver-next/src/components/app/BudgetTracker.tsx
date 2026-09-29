@@ -34,13 +34,13 @@ export function BudgetTracker({ items, payments, plan, target }: {
 
   return (
     <section className="card">
-      <h2 className="font-display text-[18px] font-semibold text-ink">{c.trackerTitle}</h2>
-      <p className="mt-1 max-w-prose2 text-[14px] leading-relaxed text-ink-soft">{c.trackerSub}</p>
+      <h2 className="font-display text-subhead font-semibold text-ink">{c.trackerTitle}</h2>
+      <p className="mt-1 max-w-prose2 text-body leading-relaxed text-ink-soft">{c.trackerSub}</p>
 
       {t.flagged.length > 0 && (
         <div role="alert" className="mt-4 rounded-xl2 border border-bad/30 bg-bad-wash px-4 py-3">
           {t.flagged.map((r) => (
-            <p key={r.key} className="flex items-start gap-2 text-[14px] text-bad">
+            <p key={r.key} className="flex items-start gap-2 text-body text-bad">
               <TriangleAlert size={16} aria-hidden strokeWidth={1.5} className="mt-0.5 shrink-0" />
               <span>
                 <strong className="font-semibold">{fill(c.overTitle, { cat: cat(r.key), pct: r.pct - 100 })}</strong>
@@ -48,7 +48,7 @@ export function BudgetTracker({ items, payments, plan, target }: {
               </span>
             </p>
           ))}
-          <p className="mt-2 text-[13.5px] text-ink">
+          <p className="mt-2 text-body text-ink">
             {t.tradeOff
               ? fill(c.tradeOff, { cat: cat(t.tradeOff.cut), amount: ils(t.tradeOff.headroom) })
               : c.tradeOffNone}
@@ -56,12 +56,12 @@ export function BudgetTracker({ items, payments, plan, target }: {
         </div>
       )}
 
-      {!plan && <p className="mt-4 rounded-xl2 bg-surface-200 px-4 py-3 text-[13.5px] text-ink-soft">{c.trackerNoPlan}</p>}
+      {!plan && <p className="mt-4 rounded-xl2 bg-surface-200 px-4 py-3 text-body text-ink-soft">{c.trackerNoPlan}</p>}
 
       <div className="mt-4 overflow-x-auto">
-        <table className="w-full text-[13.5px]">
+        <table className="w-full text-body">
           <thead>
-            <tr className="border-b border-line text-[12.5px] text-ink-mute">
+            <tr className="border-b border-line text-meta text-ink-mute">
               <th scope="col" className="py-2 text-start font-medium">{c.colArea}</th>
               <th scope="col" className="py-2 text-start font-medium">{c.colPlanned}</th>
               <th scope="col" className="py-2 text-start font-medium">{c.colActual}</th>
@@ -82,7 +82,7 @@ export function BudgetTracker({ items, payments, plan, target }: {
                     {r.planned > 0 ? <Money value={r.remaining} /> : '·'}
                   </td>
                   <td className={`py-2.5 pe-3 tabular-nums ${r.over ? 'font-semibold text-bad' : ''}`}>{r.planned > 0 ? `${r.pct}%` : '·'}</td>
-                  <td className="hidden py-2.5 text-[12.5px] text-ink-mute sm:table-cell">
+                  <td className="hidden py-2.5 text-meta text-ink-mute sm:table-cell">
                     {r.lines === 0 ? c.nothingBooked : plural(c.lines, r.lines)}
                   </td>
                 </tr>
@@ -106,8 +106,8 @@ export function BudgetTracker({ items, payments, plan, target }: {
 
       {/* The three lines. */}
       <div className="mt-5 border-t border-line pt-4">
-        <h3 className="text-[13.5px] font-semibold text-ink">{c.weekTitle}</h3>
-        <ol className="mt-2 space-y-1 text-[14px] leading-relaxed text-ink-soft">
+        <h3 className="text-body font-semibold text-ink">{c.weekTitle}</h3>
+        <ol className="mt-2 space-y-1 text-body leading-relaxed text-ink-soft">
           <li>
             {w.overall.target && w.overall.pct !== null
               ? fill(c.overall, { committed: ils(w.overall.committed), target: ils(w.overall.target), pct: w.overall.pct })
@@ -120,7 +120,7 @@ export function BudgetTracker({ items, payments, plan, target }: {
               : c.nextDueNone}
           </li>
         </ol>
-        <p className="mt-3 text-[12.5px] text-ink-mute">{c.digestNote}</p>
+        <p className="mt-3 text-meta text-ink-mute">{c.digestNote}</p>
       </div>
     </section>
   );

@@ -56,19 +56,19 @@ export function NextAction({ action, then, ui, moneyOn }: {
           three lines on the screen this is most often read on. */}
       <div className="mt-3 flex flex-col items-start gap-4 sm:flex-row sm:justify-between sm:gap-x-6">
         <div className="min-w-0 flex-1">
-          <h2 className="flex items-start gap-2.5 font-display text-[22px] font-semibold leading-snug text-ink sm:text-[26px]">
+          <h2 className="flex items-start gap-2.5 font-display text-panel font-semibold leading-snug text-ink sm:text-figure">
             {done && <Check size={22} aria-hidden strokeWidth={1.5} className="mt-1 shrink-0 text-ok" />}
             <span className="min-w-0">{head}</span>
           </h2>
 
-          <p className="mt-2 max-w-prose2 text-[15px] leading-relaxed text-ink-soft">{why}</p>
+          <p className="mt-2 max-w-prose2 text-lead leading-relaxed text-ink-soft">{why}</p>
 
           {/* The date and the amount as their own marks rather than inside
               the sentence, so the formatter that draws every other figure in
               the app draws these too and a Hebrew paragraph never has a
               hand-built number in the middle of it. */}
           {(action.due || money || (action.code === 'taskLate' && action.n > 1)) && (
-            <p className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[13.5px] text-ink-mute">
+            <p className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-body text-ink-mute">
               {action.due && (
                 <span className={`inline-flex items-center gap-1.5 ${action.late ? 'font-semibold text-bad' : ''}`}>
                   <CalendarDays size={14} aria-hidden strokeWidth={1.5} />
@@ -95,12 +95,12 @@ export function NextAction({ action, then, ui, moneyOn }: {
 
       {then.length > 0 && (
         <div className="mt-6 border-t border-line pt-4">
-          <p className="text-[12.5px] text-ink-mute">{c.also}</p>
+          <p className="text-meta text-ink-mute">{c.also}</p>
           <ul className="mt-2 list-none space-y-1.5 p-0">
             {then.map((t) => (
               <li key={`${t.title}-${t.due_on ?? ''}`} className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-0.5">
-                <span className="min-w-0 text-[14.5px] text-ink">{t.title}</span>
-                <span className="shrink-0 text-[12.5px] text-ink-mute">
+                <span className="min-w-0 text-body text-ink">{t.title}</span>
+                <span className="shrink-0 text-meta text-ink-mute">
                   {formatDate(dateFmt, t.due_on, c.noDue)}
                   {' · '}
                   {t.owner === 'client' ? c.ownerUs : c.ownerProducer}

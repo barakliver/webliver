@@ -25,8 +25,8 @@ export async function AttentionList({ items }: { items: AttentionItem[] }) {
           <CircleCheck size={22} strokeWidth={1.5} aria-hidden />
         </span>
         <div>
-          <p className="font-display text-[19px] font-semibold text-ink">{c.clear}</p>
-          <p className="text-[14px] text-ink-soft">{c.clearSub}</p>
+          <p className="font-display text-subhead font-semibold text-ink">{c.clear}</p>
+          <p className="text-body text-ink-soft">{c.clearSub}</p>
         </div>
       </div>
     );
@@ -71,8 +71,8 @@ export async function AttentionList({ items }: { items: AttentionItem[] }) {
               </span>
 
               <span className="min-w-0 flex-1">
-                <span className="block truncate text-[15.5px] font-medium text-ink">{it.title}</span>
-                <span className="block truncate text-[13.5px] text-ink-soft">{it.detail}</span>
+                <span className="block truncate text-lead font-medium text-ink">{it.title}</span>
+                <span className="block truncate text-body text-ink-soft">{it.detail}</span>
               </span>
               </Link>
 
@@ -104,7 +104,7 @@ export async function AttentionList({ items }: { items: AttentionItem[] }) {
       })}
 
       {rest > 0 && (
-        <li className="pt-1 text-center text-[13.5px] text-ink-soft">
+        <li className="pt-1 text-center text-body text-ink-soft">
           ועוד {rest} {rest === 1 ? 'דבר' : 'דברים'}
         </li>
       )}

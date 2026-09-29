@@ -197,17 +197,17 @@ export function PortalWorkspace({
             {c.display_name}
           </h2>
 
-          <p className="mt-2 text-[14px] text-ink-mute">
+          <p className="mt-2 text-body text-ink-mute">
             {formatDate(dateFmt, c.event_date, ui.portal.dateTbd)}
             {c.venue ? ` \u00B7 ${c.venue}` : ''}
           </p>
 
           {left !== null && left >= 0 && (
             <p className="mt-6 inline-flex items-baseline gap-2 rounded-full bg-accent-wash px-5 py-2.5 text-accent">
-              <span className="font-display text-[28px] font-bold leading-none tracking-[-.03em] tabular-nums">
+              <span className="font-display text-figure font-bold leading-none tracking-[-.03em] tabular-nums">
                 <Ltr>{left.toLocaleString('en-US')}</Ltr>
               </span>
-              <span className="text-[14.5px]">{ui.portal.daysLeft}</span>
+              <span className="text-body">{ui.portal.daysLeft}</span>
             </p>
           )}
         </div>
@@ -417,8 +417,8 @@ export function PortalWorkspace({
           className="mt-8 block rounded-panel bg-dark px-6 py-7 text-surface transition hover:bg-dark/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
         >
           <span aria-hidden className="text-2xl text-coral">&#9829;</span>
-          <span className="mt-2 block font-display text-[22px] font-medium">{ui.portal.gameCta}</span>
-          <span className="mt-1.5 block max-w-md text-[14.5px] leading-relaxed text-surface/70">
+          <span className="mt-2 block font-display text-panel font-medium">{ui.portal.gameCta}</span>
+          <span className="mt-1.5 block max-w-md text-body leading-relaxed text-surface/70">
             {ui.portal.gameSub}
           </span>
         </a>

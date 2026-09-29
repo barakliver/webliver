@@ -53,7 +53,7 @@ export function FindInvite({ token, c }: {
           {pending ? c.finding : c.find}
         </button>
       </div>
-      {error && <p role="alert" className="mt-3 text-[14px] text-bad">{error}</p>}
+      {error && <p role="alert" className="mt-3 text-body text-bad">{error}</p>}
     </form>
   );
 }

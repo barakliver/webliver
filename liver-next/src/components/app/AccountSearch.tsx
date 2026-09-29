@@ -90,7 +90,7 @@ export function AccountSearch({ scope }: {
       {/* Only while something is typed, and it says the count both ways so
           "nothing found" is never mistaken for "nothing here". */}
       {shown !== null && (
-        <p aria-live="polite" className="mt-2 text-[13px] text-ink-mute">
+        <p aria-live="polite" className="mt-2 text-body text-ink-mute">
           {shown === 0 ? c.searchNone : fill(c.searchCount, { n: shown, total })}
         </p>
       )}

@@ -52,15 +52,15 @@ export function Referrals({ rows, siteUrl, mine, bare = false }: {
           under it. Two headings saying the same thing, one inside the
           other, is what wrapping a self-titled panel produces. */}
       {!bare && <>
-        <h2 className="font-display text-[17px] font-semibold text-ink">{c.title}</h2>
-        <p className="mt-1 text-[13.5px] text-ink-soft">{c.sub}</p>
+        <h2 className="font-display text-head font-semibold text-ink">{c.title}</h2>
+        <p className="mt-1 text-body text-ink-soft">{c.sub}</p>
       </>}
 
       {link && (
         <div className="mt-4 flex flex-wrap items-center gap-2 rounded-card-sm bg-surface-100 p-3">
-          <span className="text-[12.5px] text-ink-mute">{c.myLink}</span>
-          <code className="min-w-0 flex-1 truncate text-[13px] text-ink" dir="ltr">{link}</code>
-          <button type="button" onClick={() => void copy()} className="btn-quiet inline-flex items-center gap-1.5 px-3 text-[13.5px]">
+          <span className="text-meta text-ink-mute">{c.myLink}</span>
+          <code className="min-w-0 flex-1 truncate text-body text-ink" dir="ltr">{link}</code>
+          <button type="button" onClick={() => void copy()} className="btn-quiet inline-flex items-center gap-1.5 px-3 text-body">
             {copied
               ? <><Check size={14} aria-hidden strokeWidth={1.5} />{c.copied}</>
               : <><Copy size={14} aria-hidden strokeWidth={1.5} />{c.copy}</>}
@@ -69,12 +69,12 @@ export function Referrals({ rows, siteUrl, mine, bare = false }: {
       )}
 
       {sorted.length === 0 ? (
-        <p className="mt-5 text-[14.5px] text-ink-mute">{c.none}</p>
+        <p className="mt-5 text-body text-ink-mute">{c.none}</p>
       ) : (
         <div className="mt-5 overflow-x-auto">
-          <table className="w-full min-w-[520px] border-collapse text-[14px]">
+          <table className="w-full min-w-[520px] border-collapse text-body">
             <thead>
-              <tr className="border-b border-line text-start text-[12.5px] text-ink-mute">
+              <tr className="border-b border-line text-start text-meta text-ink-mute">
                 <th className="py-2 text-start font-normal">{c.producer}</th>
                 <th className="py-2 text-start font-normal">{c.code}</th>
                 <th className="py-2 text-start font-normal">{c.invitedBy}</th>

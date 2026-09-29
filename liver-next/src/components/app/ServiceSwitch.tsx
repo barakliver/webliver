@@ -35,7 +35,7 @@ export function ServiceSwitch({ clientId, service }: { clientId: string; service
     <div
       role="group"
       aria-label={useCopy().clientPage.service}
-      className="inline-flex rounded-xl2 border border-line bg-surface-100 p-1 text-[13.5px]"
+      className="inline-flex rounded-xl2 border border-line bg-surface-100 p-1 text-body"
     >
       {SERVICES.map((s) => {
         const on = s === now;

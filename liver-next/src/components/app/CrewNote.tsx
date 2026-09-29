@@ -16,7 +16,7 @@ function Save({ saved }: { saved: boolean }) {
         {pending ? c.saving : c.save}
       </button>
       {saved && !pending && (
-        <span className="inline-flex items-center gap-1 text-[13px] text-good">
+        <span className="inline-flex items-center gap-1 text-body text-good">
           <Check size={14} aria-hidden strokeWidth={1.5} />{c.crewNoteSaved}
         </span>
       )}
@@ -39,11 +39,11 @@ export function CrewNote({ clientId, note }: { clientId: string; note: string })
 
   return (
     <section aria-labelledby="crew-note" className="card p-4 sm:p-5">
-      <h3 id="crew-note" className="flex items-center gap-2 font-display text-[17px] font-semibold text-ink">
+      <h3 id="crew-note" className="flex items-center gap-2 font-display text-head font-semibold text-ink">
         <NotebookPen size={17} className="text-ink-mute" aria-hidden strokeWidth={1.5} />
         {c.crewNoteTitle}
       </h3>
-      <p className="mt-1 text-[13.5px] text-ink-soft">{c.crewNoteSub}</p>
+      <p className="mt-1 text-body text-ink-soft">{c.crewNoteSub}</p>
 
       <form action={action} className="mt-3">
         <input type="hidden" name="client_id" value={clientId} />
@@ -53,7 +53,7 @@ export function CrewNote({ clientId, note }: { clientId: string; note: string })
           placeholder={c.crewNotePh} className="field"
         />
         {state?.error && (
-          <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+          <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-body text-bad">
             {state.error}
           </p>
         )}

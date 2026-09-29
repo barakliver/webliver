@@ -51,11 +51,11 @@ export function ArchiveShelf({ shelf }: { shelf: Shelf[] }) {
               aria-expanded={on}
               className="flex w-full items-center justify-between gap-3 px-5 py-4 text-start"
             >
-              <span className="font-display text-[20px] font-semibold text-ink">
+              <span className="font-display text-panel font-semibold text-ink">
                 {folder.year ? fill(c.yearLabel, { year: folder.year }) : c.noYear}
               </span>
               <span className="flex items-center gap-3">
-                <span className="text-[13.5px] text-ink-mute">{plural(c.count, folder.events.length)}</span>
+                <span className="text-body text-ink-mute">{plural(c.count, folder.events.length)}</span>
                 <ChevronDown
                   size={17} aria-hidden strokeWidth={1.5}
                   className={`text-ink-mute transition-transform ${on ? 'rotate-180' : ''}`}
@@ -86,8 +86,8 @@ function Row({ event: e }: { event: ArchivedEvent }) {
     <li className="border-b border-line last:border-0">
       <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
         <button type="button" onClick={() => setOpen(!open)} className="min-w-0 flex-1 text-start" aria-expanded={open}>
-          <p className="text-[15.5px] text-ink">{e.display_name}</p>
-          <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px] text-ink-mute">
+          <p className="text-lead text-ink">{e.display_name}</p>
+          <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-body text-ink-mute">
             {e.event_date && dateFmtFor(locale).format(new Date(e.event_date))}
             {e.venue && (
               <span className="inline-flex items-center gap-1">
@@ -106,7 +106,7 @@ function Row({ event: e }: { event: ArchivedEvent }) {
 
         <Link
           href={`/app/clients/${e.client_id}`}
-          className="btn-quiet shrink-0 px-3 text-[13.5px]"
+          className="btn-quiet shrink-0 px-3 text-body"
         >
           {c.open}
         </Link>
@@ -114,7 +114,7 @@ function Row({ event: e }: { event: ArchivedEvent }) {
 
       {open && (
         <div className="border-t border-line bg-surface-100 px-5 py-4">
-          <p className="text-[11.5px] tracking-[.14em] text-ink-mute">{c.frozen}</p>
+          <p className="text-micro tracking-[.14em] text-ink-mute">{c.frozen}</p>
 
           <div className="mt-3 grid gap-4 sm:grid-cols-2">
             <Block title={c.vendors} rows={e.vendors.map((v) =>
@@ -123,7 +123,7 @@ function Row({ event: e }: { event: ArchivedEvent }) {
               [k.name ?? '', [k.role, k.phone].filter(Boolean).join(' · ')] as const)} />
           </div>
 
-          <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 border-t border-line pt-3 text-[13.5px]">
+          <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 border-t border-line pt-3 text-body">
             <span className="text-ink-mute">{c.budget} <Money value={budget} className="text-ink" /></span>
             <span className="text-ink-mute">{c.paid} <Money value={paid} className="text-ink" /></span>
             <span className="text-ink-mute">
@@ -131,7 +131,7 @@ function Row({ event: e }: { event: ArchivedEvent }) {
             </span>
           </div>
 
-          {e.note && <p className="mt-3 whitespace-pre-line text-[14px] text-ink-soft">{e.note}</p>}
+          {e.note && <p className="mt-3 whitespace-pre-line text-body text-ink-soft">{e.note}</p>}
         </div>
       )}
     </li>
@@ -147,10 +147,10 @@ function Block({ title, rows }: { title: string; rows: readonly (readonly [strin
 
   return (
     <div>
-      <p className="text-[13px] text-accent">{title}</p>
+      <p className="text-body text-accent">{title}</p>
       <ul className="mt-2 space-y-1">
         {real.map(([name, meta], i) => (
-          <li key={`${name}-${i}`} className="text-[14px] text-ink">
+          <li key={`${name}-${i}`} className="text-body text-ink">
             {name}
             {meta && <span className="text-ink-mute"> · {meta}</span>}
           </li>

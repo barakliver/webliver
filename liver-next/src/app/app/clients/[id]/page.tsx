@@ -77,7 +77,7 @@ import { Thread } from '@/components/app/Thread';
 export const dynamic = 'force-dynamic';
 
 const link =
-  'inline-flex min-h-[40px] shrink-0 items-center gap-2 whitespace-nowrap rounded-xl2 border border-line-strong bg-card px-4 text-[14px] font-medium text-ink transition hover:border-accent/40 hover:text-accent';
+  'inline-flex min-h-[40px] shrink-0 items-center gap-2 whitespace-nowrap rounded-xl2 border border-line-strong bg-card px-4 text-body font-medium text-ink transition hover:border-accent/40 hover:text-accent';
 
 /**
  * One event, as its producer works on it.
@@ -120,7 +120,7 @@ export default async function ClientPage({
   return (
     <>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <Link href="/app/clients" className="btn-quiet inline-block px-0 text-[14px]">← {c.back}</Link>
+        <Link href="/app/clients" className="btn-quiet inline-block px-0 text-body">← {c.back}</Link>
         {/* Eight buttons were standing above the couple's own name, in a row
             that scrolled sideways, above a row of tags, above the sections.
             Three bands of chrome before the event itself begins, and he said
@@ -138,7 +138,7 @@ export default async function ClientPage({
             {ui.meeting.blank}
           </Link>
           <details className="group relative">
-            <summary className="btn-quiet inline-flex min-h-[44px] cursor-pointer list-none items-center gap-1.5 px-3 text-[14px] [&::-webkit-details-marker]:hidden">
+            <summary className="btn-quiet inline-flex min-h-[44px] cursor-pointer list-none items-center gap-1.5 px-3 text-body [&::-webkit-details-marker]:hidden">
               <Ellipsis size={16} aria-hidden strokeWidth={1.5} />
               {c.tools}
             </summary>

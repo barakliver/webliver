@@ -58,7 +58,7 @@ export function EventSelector({ clientId, events, selectedId, labels }: {
                 role="tab"
                 aria-selected={on}
                 onClick={() => open(e.id)}
-                className={`flex min-h-[48px] items-center whitespace-nowrap rounded-control border px-4 text-[14.5px] transition ${
+                className={`flex min-h-[48px] items-center whitespace-nowrap rounded-control border px-4 text-body transition ${
                   on
                     ? 'border-ink bg-ink text-surface'
                     : 'border-line bg-card text-ink-soft hover:border-ink'
@@ -74,7 +74,7 @@ export function EventSelector({ clientId, events, selectedId, labels }: {
       <button
         type="button"
         onClick={() => setShowForm(true)}
-        className="btn-quiet whitespace-nowrap px-3 py-2 text-[14px]"
+        className="btn-quiet whitespace-nowrap px-3 py-2 text-body"
       >
         {labels.add}
       </button>
@@ -178,9 +178,9 @@ function CreateEventModal({ clientId, onClose, onCreated }: {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-scrim/40 p-4">
-      <div className="w-full max-w-md rounded-xl2 border border-line bg-card p-6">
-        <h2 className="font-display text-[18px] font-semibold text-ink">אירוע נוסף</h2>
-        <p className="mt-1 text-[14px] text-ink-soft">
+      <div className="w-full max-w-md rounded-sheet border border-line bg-card p-6">
+        <h2 className="font-display text-subhead font-semibold text-ink">אירוע נוסף</h2>
+        <p className="mt-1 text-body text-ink-soft">
           חינה, שבת חתן, ארוחת ערב. לכל אחד התאריך והרשימה שלו.
         </p>
 
@@ -220,7 +220,7 @@ function CreateEventModal({ clientId, onClose, onCreated }: {
         </div>
 
         {error && (
-          <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+          <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-body text-bad">
             {error}
           </p>
         )}

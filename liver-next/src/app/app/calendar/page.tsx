@@ -144,7 +144,7 @@ export default async function CalendarPage({ searchParams }: {
           {/* The file first, because it is the thing that works with no setup at
               all, and the subscription under it for the people who want the
               diary to stay right without being re-saved. */}
-          <a href="/app/calendar.ics" className="btn-ghost inline-flex items-center gap-2 text-[14px]">
+          <a href="/app/calendar.ics" className="btn-ghost inline-flex items-center gap-2 text-body">
             <CalendarPlus size={16} aria-hidden strokeWidth={1.5} />
             {c.subscribe}
           </a>
@@ -164,7 +164,7 @@ export default async function CalendarPage({ searchParams }: {
                 <div className="space-y-4">
                   {[...byDay.entries()].map(([date, dayItems]) => (
                     <div key={date} className="card">
-                      <h3 className="text-[14px] font-semibold text-ink">
+                      <h3 className="text-body font-semibold text-ink">
                         <Link href={`/app/calendar?day=${date}#day`} className="hover:underline">
                           {dayFmtFor(locale).format(new Date(date + 'T00:00:00'))}
                         </Link>
@@ -186,13 +186,13 @@ export default async function CalendarPage({ searchParams }: {
                                   ? <span aria-hidden className="size-2.5 shrink-0 rounded-full" style={{ background: i.color }} />
                                   : <Icon size={16} aria-hidden strokeWidth={1.5} className="shrink-0" />}
                                 <span className="min-w-0 flex-1">
-                                  <span className={`block truncate text-[15px] ${i.done ? 'line-through opacity-60' : ''}`}>
+                                  <span className={`block truncate text-lead ${i.done ? 'line-through opacity-60' : ''}`}>
                                     {i.title}
                                   </span>
-                                  {i.detail && <span className="block truncate text-[13px] opacity-75">{i.detail}</span>}
+                                  {i.detail && <span className="block truncate text-body opacity-75">{i.detail}</span>}
                                 </span>
                                 {i.amount ? (
-                                  <span className="shrink-0 text-[14px] tabular-nums"><Money value={i.amount} /></span>
+                                  <span className="shrink-0 text-body tabular-nums"><Money value={i.amount} /></span>
                                 ) : null}
                               </Link>
                             </li>

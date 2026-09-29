@@ -32,7 +32,7 @@ export function PageHead({ title, sub, actions, report }: {
         <h1 className="inline-flex items-center gap-2 font-display text-title font-bold text-editorial">
           {title}
         </h1>
-        {sub && <p className="mt-2 text-[15.5px] text-ink-soft">{sub}</p>}
+        {sub && <p className="mt-2 text-lead text-ink-soft">{sub}</p>}
       </div>
       {(actions || report) && (
         <div className="flex shrink-0 items-center gap-2 pt-1">
@@ -47,6 +47,6 @@ export function PageHead({ title, sub, actions, report }: {
 
 export function Empty({ text }: { text: string }) {
   return (
-    <div className="card text-center text-[15px] text-ink-mute">{text}</div>
+    <div className="card text-center text-lead text-ink-mute">{text}</div>
   );
 }

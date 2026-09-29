@@ -41,7 +41,7 @@ export default async function ClientsPage({
 
       {/* Two lists, not a filter menu: live work and closed files are different
           questions, and one of them is asked far more often than the other. */}
-      <nav className="mb-6 inline-flex rounded-xl2 border border-line bg-surface-100 p-1 text-[14px]" aria-label={ui.clients.title}>
+      <nav className="mb-6 inline-flex rounded-xl2 border border-line bg-surface-100 p-1 text-body" aria-label={ui.clients.title}>
         {[
           { key: 'live', href: '/app/clients', label: c.tabLive, on: !archived },
           { key: 'done', href: '/app/clients?show=done', label: c.tabDone, on: archived },
@@ -70,7 +70,7 @@ export default async function ClientsPage({
       ) : (
         <>
           {!archived && openGaps === 0 && (
-            <p className="mb-4 rounded-xl2 bg-ok-wash px-4 py-3 text-[14.5px] text-ok">{c.allClear}</p>
+            <p className="mb-4 rounded-xl2 bg-ok-wash px-4 py-3 text-body text-ok">{c.allClear}</p>
           )}
           <StatusBoard items={items} />
         </>

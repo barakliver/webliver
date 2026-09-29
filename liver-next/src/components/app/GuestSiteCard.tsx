@@ -51,13 +51,13 @@ export function GuestSiteCard({ clientId, token, on, note }: {
     <section className="card">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="inline-flex items-center gap-2 font-display text-[18px] font-semibold text-ink">
+          <h2 className="inline-flex items-center gap-2 font-display text-subhead font-semibold text-ink">
             <Globe size={18} aria-hidden strokeWidth={1.5} />
             {c.title}
           </h2>
-          <p className="mt-1 max-w-2xl text-[14px] text-ink-soft">{c.sub}</p>
+          <p className="mt-1 max-w-2xl text-body text-ink-soft">{c.sub}</p>
         </div>
-        <span className={`rounded-xl2 px-3 py-1 text-[12.5px] ${enabled ? 'bg-ok-wash text-ok' : 'bg-surface-200 text-ink-mute'}`}>
+        <span className={`rounded-xl2 px-3 py-1 text-meta ${enabled ? 'bg-ok-wash text-ok' : 'bg-surface-200 text-ink-mute'}`}>
           {enabled ? c.on : c.off}
         </span>
       </div>
@@ -73,7 +73,7 @@ export function GuestSiteCard({ clientId, token, on, note }: {
               <input
                 id="guest-site-url" readOnly value={url} dir="ltr"
                 onFocus={(e) => e.currentTarget.select()}
-                className="field min-w-[220px] flex-1 font-mono text-[13px]"
+                className="field min-w-[220px] flex-1 font-mono text-body"
               />
               <button type="button" onClick={copy} className="btn-ghost">
                 {copied ? <Check size={15} strokeWidth={1.5} aria-hidden /> : <Copy size={15} strokeWidth={1.5} aria-hidden />}
@@ -100,11 +100,11 @@ export function GuestSiteCard({ clientId, token, on, note }: {
             id="guest-note" name="note" rows={3} maxLength={1200}
             defaultValue={note} placeholder={c.notePh} className="field resize-y"
           />
-          <p className="mt-1.5 text-[12.5px] text-ink-mute">{c.hint}</p>
+          <p className="mt-1.5 text-meta text-ink-mute">{c.hint}</p>
         </div>
 
         {state && !state.ok && state.error && (
-          <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+          <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-body text-bad">
             {state.error}
           </p>
         )}
@@ -118,7 +118,7 @@ export function GuestSiteCard({ clientId, token, on, note }: {
           >
             {enabled ? c.turnOff : c.turnOn}
           </button>
-          {state?.ok && <span className="text-[13.5px] text-ok">{c.saved}</span>}
+          {state?.ok && <span className="text-body text-ok">{c.saved}</span>}
         </div>
       </form>
     </section>

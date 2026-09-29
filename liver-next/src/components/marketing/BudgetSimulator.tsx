@@ -31,7 +31,7 @@ function Chips<T extends string>({ items, words, value, onChange, label }: {
         {items.map((v) => (
           <button
             key={v} type="button" onClick={() => onChange(v)} aria-pressed={value === v}
-            className={`inline-flex min-h-[44px] items-center rounded-xl2 px-4 text-[14px] transition sm:min-h-0 sm:py-2 ${
+            className={`inline-flex min-h-[44px] items-center rounded-xl2 px-4 text-body transition sm:min-h-0 sm:py-2 ${
               value === v ? 'bg-ink text-surface' : 'border border-line bg-card/70 text-ink-soft hover:bg-card'
             }`}
           >{words[v]}</button>
@@ -83,7 +83,7 @@ export function BudgetSimulator({ copy: c, closing, bookLabel }: {
 
   return (
     <div>
-      <p className="mb-6 rounded-xl2 border border-warn/30 bg-warn-wash px-4 py-3 text-[14px] leading-relaxed text-warn">
+      <p className="mb-6 rounded-xl2 border border-warn/30 bg-warn-wash px-4 py-3 text-body leading-relaxed text-warn">
         {c.note}
       </p>
 
@@ -104,13 +104,13 @@ export function BudgetSimulator({ copy: c, closing, bookLabel }: {
               {RATES.map((v) => (
                 <button
                   key={v} type="button" onClick={() => setAttendance(v)} aria-pressed={attendance === v}
-                  className={`inline-flex min-h-[44px] items-center rounded-xl2 px-4 text-[14px] transition sm:min-h-0 sm:py-2 ${
+                  className={`inline-flex min-h-[44px] items-center rounded-xl2 px-4 text-body transition sm:min-h-0 sm:py-2 ${
                     attendance === v ? 'bg-ink text-surface' : 'border border-line bg-card/70 text-ink-soft hover:bg-card'
                   }`}
                 >{Math.round(v * 100)}%</button>
               ))}
             </div>
-            <p className="mt-1.5 text-[12.5px] text-ink-mute">
+            <p className="mt-1.5 text-meta text-ink-mute">
               {c.attendingHint}
             </p>
           </fieldset>
@@ -125,7 +125,7 @@ export function BudgetSimulator({ copy: c, closing, bookLabel }: {
               onChange={(e) => { setPlateText(e.target.value); setPlateTouched(true); }}
               className="field"
             />
-            <p className="mt-1.5 text-[12.5px] text-ink-mute">
+            <p className="mt-1.5 text-meta text-ink-mute">
               {c.plateHint}
             </p>
           </div>
@@ -137,7 +137,7 @@ export function BudgetSimulator({ copy: c, closing, bookLabel }: {
         </div>
 
         <div className="card flex flex-col">
-          <p className="text-[13px] text-ink-mute">{c.rangeLabel}</p>
+          <p className="text-body text-ink-mute">{c.rangeLabel}</p>
           {/* "עד" rather than a dash. A range written with a dash reads
               ambiguously in a right-to-left line, where the eye cannot tell
               which end it started from; the word cannot be read backwards. */}
@@ -147,7 +147,7 @@ export function BudgetSimulator({ copy: c, closing, bookLabel }: {
             <span className="tabular-nums">{ilsRounded(r.high)}</span>
           </p>
 
-          <div className="mt-4 flex flex-wrap gap-x-5 gap-y-1.5 text-[13.5px] text-ink-mute">
+          <div className="mt-4 flex flex-wrap gap-x-5 gap-y-1.5 text-body text-ink-mute">
             <span>{c.attendingCount}: <b className="text-ink">{r.attending}</b></span>
             <span>{c.tables}: <b className="text-ink">{r.tables}</b></span>
             <span>{c.perGuest}: <b className="tabular-nums text-ink"><Money value={r.perGuest} /></b></span>
@@ -158,9 +158,9 @@ export function BudgetSimulator({ copy: c, closing, bookLabel }: {
               const pct = r.total ? (l.amount / r.total) * 100 : 0;
               return (
                 <li key={l.key}>
-                  <div className="flex items-baseline justify-between gap-3 text-[14.5px]">
+                  <div className="flex items-baseline justify-between gap-3 text-body">
                     <span className="text-ink-soft">
-                      {c.line[l.key as keyof typeof c.line]} <span className="text-[11.5px] text-ink-mute">{c.scale[l.scale]}</span>
+                      {c.line[l.key as keyof typeof c.line]} <span className="text-micro text-ink-mute">{c.scale[l.scale]}</span>
                     </span>
                     <span className="tabular-nums text-ink"><Money value={l.amount} /></span>
                   </div>
@@ -172,12 +172,12 @@ export function BudgetSimulator({ copy: c, closing, bookLabel }: {
             })}
           </ul>
 
-          <p className="mt-6 rounded-xl2 bg-accent-wash px-4 py-3 text-[14px] text-ink-soft">
+          <p className="mt-6 rounded-xl2 bg-accent-wash px-4 py-3 text-body text-ink-soft">
             {c.marginal}: <b className="tabular-nums text-ink"><Money value={r.marginalTen} /></b>
           </p>
 
           <div className="mt-6 border-t border-line pt-6">
-            <p className="text-[15px] text-ink-soft">{closing}</p>
+            <p className="text-lead text-ink-soft">{closing}</p>
             <BookMeeting className="btn-primary mt-4 inline-flex items-center gap-2" label={bookLabel} />
           </div>
         </div>

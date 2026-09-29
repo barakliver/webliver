@@ -98,12 +98,12 @@ export function OrdersBoard({ orders }: { orders: Order[] }) {
   return (
     <section className="card">
       <div className="flex flex-wrap items-baseline justify-between gap-3">
-        <h2 className="font-display text-[22px] font-semibold text-ink">{c.tabOrders}</h2>
-        <p className="text-[13.5px] text-ink-mute">{c.ordersHint}</p>
+        <h2 className="font-display text-panel font-semibold text-ink">{c.tabOrders}</h2>
+        <p className="text-body text-ink-mute">{c.ordersHint}</p>
       </div>
 
       {rows.length === 0 ? (
-        <p className="mt-6 text-[14.5px] text-ink-mute">{c.noneOrders}</p>
+        <p className="mt-6 text-body text-ink-mute">{c.noneOrders}</p>
       ) : (
         <div className="mt-5 grid gap-3 lg:grid-cols-4">
           {COLUMNS.map((col) => {
@@ -119,8 +119,8 @@ export function OrdersBoard({ orders }: { orders: Order[] }) {
                 }`}
               >
                 <div className="flex items-baseline justify-between gap-2">
-                  <p className={`text-[13px] ${TONE[col]}`}>{c.state[col]}</p>
-                  <span className="text-[12.5px] tabular-nums text-ink-mute">{inCol.length}</span>
+                  <p className={`text-body ${TONE[col]}`}>{c.state[col]}</p>
+                  <span className="text-meta tabular-nums text-ink-mute">{inCol.length}</span>
                 </div>
 
                 <ul className="mt-3 space-y-2">
@@ -153,11 +153,11 @@ export function OrdersBoard({ orders }: { orders: Order[] }) {
                           className="min-w-0 flex-1 text-start"
                           aria-expanded={open === o.id}
                         >
-                          <p className="truncate text-[14.5px] text-ink">{o.buyer_name}</p>
-                          <p className="mt-0.5 text-[12px] text-ink-mute">
+                          <p className="truncate text-body text-ink">{o.buyer_name}</p>
+                          <p className="mt-0.5 text-meta text-ink-mute">
                             <Ltr>{o.number}</Ltr> · {dateFmt.format(new Date(o.created_at))}
                           </p>
-                          <Money value={o.total} className="mt-1 block text-[14px] text-ink" />
+                          <Money value={o.total} className="mt-1 block text-body text-ink" />
                         </button>
                       </div>
 
@@ -165,7 +165,7 @@ export function OrdersBoard({ orders }: { orders: Order[] }) {
                         <div className="mt-3 space-y-3 border-t border-line pt-3">
                           <ul className="space-y-1">
                             {o.items.map((l, i) => (
-                              <li key={`${l.id}-${i}`} className="flex items-baseline justify-between gap-2 text-[13.5px]">
+                              <li key={`${l.id}-${i}`} className="flex items-baseline justify-between gap-2 text-body">
                                 <span className="min-w-0 truncate text-ink-soft">{l.name}</span>
                                 <span className="shrink-0 text-ink-mute">
                                   <Ltr>×{l.qty}</Ltr>
@@ -176,7 +176,7 @@ export function OrdersBoard({ orders }: { orders: Order[] }) {
                           </ul>
 
                           {(o.buyer_phone || o.buyer_email) && (
-                            <p className="text-[13px] text-ink-soft">
+                            <p className="text-body text-ink-soft">
                               {o.buyer_phone && (
                                 <a href={`tel:${o.buyer_phone}`} className="transition hover:text-accent">
                                   <Ltr>{o.buyer_phone}</Ltr>
@@ -191,7 +191,7 @@ export function OrdersBoard({ orders }: { orders: Order[] }) {
                             </p>
                           )}
 
-                          <label className="block text-[12.5px] text-ink-mute">
+                          <label className="block text-meta text-ink-mute">
                             {c.moveTo}
                             <select
                               value={o.status}
@@ -211,7 +211,7 @@ export function OrdersBoard({ orders }: { orders: Order[] }) {
                               placeholder={c.orderNotePh} aria-label={c.orderNote}
                               className="field flex-1" autoComplete="off"
                             />
-                            <button type="submit" className="btn-quiet whitespace-nowrap px-3 text-[13.5px]">
+                            <button type="submit" className="btn-quiet whitespace-nowrap px-3 text-body">
                               {c.save}
                             </button>
                           </form>
@@ -235,8 +235,8 @@ export function OrdersBoard({ orders }: { orders: Order[] }) {
           style={{ left: ghost.x, top: ghost.y }}
           className="pointer-events-none fixed z-50 -translate-x-1/2 -translate-y-1/2 rounded-control border border-accent bg-card px-3 py-2 shadow-lift"
         >
-          <p className="text-[14px] text-ink">{dragged.buyer_name}</p>
-          <Money value={dragged.total} className="text-[13px] text-ink-mute" />
+          <p className="text-body text-ink">{dragged.buyer_name}</p>
+          <Money value={dragged.total} className="text-body text-ink-mute" />
         </div>
       )}
     </section>

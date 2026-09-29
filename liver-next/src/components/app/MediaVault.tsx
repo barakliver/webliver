@@ -78,13 +78,13 @@ export function MediaVault({ clientId, photos, viewer }: {
     <div>
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-[11.5px] tracking-[.14em] text-ink-mute">{c.title}</p>
-          <p className="mt-1 max-w-xl text-[13.5px] leading-relaxed text-ink-soft">{c.sub}</p>
+          <p className="text-micro tracking-[.14em] text-ink-mute">{c.title}</p>
+          <p className="mt-1 max-w-xl text-body leading-relaxed text-ink-soft">{c.sub}</p>
         </div>
         {photos.length > 0 && (
           <button
             type="button" onClick={() => setManaging((v) => !v)} aria-pressed={managing}
-            className={cn('btn-quiet inline-flex min-h-[38px] items-center gap-1.5 px-2.5 text-[13.5px]', managing && 'text-accent')}
+            className={cn('btn-quiet inline-flex min-h-[38px] items-center gap-1.5 px-2.5 text-body', managing && 'text-accent')}
           >
             <Settings2 size={15} strokeWidth={1.5} aria-hidden />
             {managing ? c.done : c.manage}
@@ -104,22 +104,22 @@ export function MediaVault({ clientId, photos, viewer }: {
               <button
                 key={f.key} type="button" onClick={() => setFilter(f.key)} aria-pressed={on}
                 className={cn(
-                  'inline-flex min-h-[36px] shrink-0 items-center gap-1.5 rounded-xl2 border px-3 text-[13px] transition-colors',
+                  'inline-flex min-h-[36px] shrink-0 items-center gap-1.5 rounded-xl2 border px-3 text-body transition-colors',
                   on ? 'border-ink bg-ink text-surface' : 'border-line text-ink-soft hover:border-line-strong hover:text-ink',
                 )}
               >
                 {f.label}
-                <span className={cn('tabular-nums text-[11.5px]', on ? 'text-surface/70' : 'text-ink-mute')}>{n}</span>
+                <span className={cn('tabular-nums text-micro', on ? 'text-surface/70' : 'text-ink-mute')}>{n}</span>
               </button>
             );
           })}
         </div>
       )}
 
-      {photos.length > 0 && <p className="mt-3 text-[12.5px] text-ink-mute">{countLine}</p>}
+      {photos.length > 0 && <p className="mt-3 text-meta text-ink-mute">{countLine}</p>}
 
       {shown.length === 0 ? (
-        <p className="mt-4 text-[14px] text-ink-mute">{photos.length === 0 ? (viewer === 'client' ? ui.files.none : ui.files.noneProducer) : c.none}</p>
+        <p className="mt-4 text-body text-ink-mute">{photos.length === 0 ? (viewer === 'client' ? ui.files.none : ui.files.noneProducer) : c.none}</p>
       ) : (
         <ul className="mt-3 grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-4">
           {shown.map((f, i) => (
@@ -133,7 +133,7 @@ export function MediaVault({ clientId, photos, viewer }: {
                   <span className="grid aspect-[4/3] w-full place-items-center bg-surface-200 text-ink-mute">
                     <span className="flex flex-col items-center gap-1.5 px-3 text-center">
                       <ImageOff size={22} strokeWidth={1.5} aria-hidden />
-                      <span className="text-[11.5px] leading-snug">HEIC</span>
+                      <span className="text-micro leading-snug">HEIC</span>
                     </span>
                   </span>
                 ) : (
@@ -144,12 +144,12 @@ export function MediaVault({ clientId, photos, viewer }: {
                   </>
                 )}
                 <span className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 bg-gradient-to-t from-ink/60 to-transparent p-2.5 text-surface opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
-                  <span className="truncate text-[12px]">{f.note || f.name}</span>
+                  <span className="truncate text-meta">{f.note || f.name}</span>
                   <Maximize2 size={14} strokeWidth={1.5} aria-hidden className="shrink-0" />
                 </span>
               </button>
               {f.tag && !managing && (
-                <span className="pointer-events-none absolute start-2 top-2 rounded-xl2 bg-card/85 px-2 py-0.5 text-[11px] text-ink backdrop-blur">
+                <span className="pointer-events-none absolute start-2 top-2 rounded-xl2 bg-card/85 px-2 py-0.5 text-micro text-ink backdrop-blur">
                   {c.tags[f.tag as MediaTag]}
                 </span>
               )}
@@ -158,7 +158,7 @@ export function MediaVault({ clientId, photos, viewer }: {
                   <label className="sr-only" htmlFor={`tag-${f.id}`}>{c.retag}</label>
                   <select
                     id={`tag-${f.id}`} value={f.tag} onChange={(e) => retag(f, e.target.value)}
-                    className="field min-h-[34px] flex-1 px-2 py-1 text-[12.5px]"
+                    className="field min-h-[34px] flex-1 px-2 py-1 text-meta"
                   >
                     <option value="">{c.untagged}</option>
                     {MEDIA_TAGS.map((t) => <option key={t} value={t}>{c.tags[t]}</option>)}
@@ -226,9 +226,9 @@ function Lightbox({ items, index, onIndex, onClose, onRetag }: {
       onClick={onClose}
     >
       <div className="flex items-center justify-between gap-3 px-4 py-3 text-surface" onClick={(e) => e.stopPropagation()}>
-        <p className="min-w-0 truncate text-[13.5px]">
+        <p className="min-w-0 truncate text-body">
           <Ltr><span className="tabular-nums text-surface/70">{`${index + 1} / ${items.length}`}</span></Ltr>
-          {f.tag && <span className="ms-3 rounded-xl2 bg-surface/15 px-2 py-0.5 text-[12px]">{c.tags[f.tag as MediaTag]}</span>}
+          {f.tag && <span className="ms-3 rounded-xl2 bg-surface/15 px-2 py-0.5 text-meta">{c.tags[f.tag as MediaTag]}</span>}
         </p>
         <div className="flex items-center gap-1">
           <a
@@ -251,10 +251,10 @@ function Lightbox({ items, index, onIndex, onClose, onRetag }: {
         {undrawable(f.mime) ? (
           <div className="flex flex-col items-center gap-3 rounded-card-sm bg-surface/10 px-8 py-10 text-surface" onClick={(e) => e.stopPropagation()}>
             <ImageOff size={32} strokeWidth={1.5} aria-hidden />
-            <p className="text-[14px]"><Ltr>{f.name}</Ltr></p>
+            <p className="text-body"><Ltr>{f.name}</Ltr></p>
             <a
               href={`${f.url}${f.url.includes('?') ? '&' : '?'}download=${encodeURIComponent(f.name)}`}
-              className="inline-flex min-h-[40px] items-center gap-2 rounded-xl2 border border-surface/30 px-4 text-[13.5px]"
+              className="inline-flex min-h-[40px] items-center gap-2 rounded-xl2 border border-surface/30 px-4 text-body"
             >
               <Download size={15} strokeWidth={1.5} aria-hidden />
               {ui.files.download}
@@ -290,18 +290,18 @@ function Lightbox({ items, index, onIndex, onClose, onRetag }: {
 
       <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4 text-surface" onClick={(e) => e.stopPropagation()}>
         <div className="min-w-0">
-          <p className="truncate text-[14px]">{f.note || f.name}</p>
-          <p className="mt-0.5 text-[12.5px] text-surface/60">
+          <p className="truncate text-body">{f.note || f.name}</p>
+          <p className="mt-0.5 text-meta text-surface/60">
             {ui.files.by} {f.uploader} · {dateFmt.format(new Date(f.created_at))}
           </p>
         </div>
         {onRetag && (
-          <label className="inline-flex items-center gap-2 text-[12.5px] text-surface/80">
+          <label className="inline-flex items-center gap-2 text-meta text-surface/80">
             <Tag size={14} strokeWidth={1.5} aria-hidden />
             <span className="sr-only">{c.retag}</span>
             <select
               value={f.tag} onChange={(e) => onRetag(f, e.target.value)}
-              className="min-h-[36px] rounded-xl2 border border-surface/25 bg-surface/10 px-2.5 text-[12.5px] text-surface backdrop-blur [&>option]:text-ink"
+              className="min-h-[36px] rounded-xl2 border border-surface/25 bg-surface/10 px-2.5 text-meta text-surface backdrop-blur [&>option]:text-ink"
             >
               <option value="">{c.untagged}</option>
               {MEDIA_TAGS.map((t) => <option key={t} value={t}>{c.tags[t]}</option>)}

@@ -38,7 +38,7 @@ function Save() {
   const c = useCopy().crew;
   const { pending } = useFormStatus();
   return (
-    <button type="submit" className="btn-ghost shrink-0 text-[13px]" disabled={pending}>
+    <button type="submit" className="btn-ghost shrink-0 text-body" disabled={pending}>
       {pending ? c.saving : c.save}
     </button>
   );
@@ -68,20 +68,20 @@ function Fee({ e }: { e: MonthEvening }) {
       <input type="hidden" name="crew_id" value={e.crewId} />
       <input type="hidden" name="client_id" value={e.clientId} />
       <div>
-        <label className="label text-[11.5px]" htmlFor={`f-${e.crewId}`}>{c.fee}</label>
+        <label className="label text-micro" htmlFor={`f-${e.crewId}`}>{c.fee}</label>
         <input
           id={`f-${e.crewId}`} name="fee" type="number" min="0" step="50"
           defaultValue={e.fee ? String(e.fee) : ''}
-          className="field w-28 text-[13px]" inputMode="numeric"
+          className="field w-28 text-body" inputMode="numeric"
         />
       </div>
       <Save />
       {state?.ok && (
-        <span className="inline-flex items-center gap-1 pb-2 text-[12.5px] text-good">
+        <span className="inline-flex items-center gap-1 pb-2 text-meta text-good">
           <Check size={13} aria-hidden strokeWidth={1.5} />{c.crewNoteSaved}
         </span>
       )}
-      {state?.error && <span className="pb-2 text-[12.5px] text-bad">{state.error}</span>}
+      {state?.error && <span className="pb-2 text-meta text-bad">{state.error}</span>}
     </form>
   );
 }
@@ -95,7 +95,7 @@ function Hours({ e }: { e: MonthEvening }) {
   return (
     <details open={!!e.hours} className="group/h mt-1">
       <summary
-        className="inline-flex cursor-pointer list-none items-center gap-1.5 text-[12.5px]
+        className="inline-flex cursor-pointer list-none items-center gap-1.5 text-meta
                    text-ink-mute transition-colors hover:text-accent
                    [&::-webkit-details-marker]:hidden"
       >
@@ -110,28 +110,28 @@ function Hours({ e }: { e: MonthEvening }) {
       <input type="hidden" name="crew_id" value={e.crewId} />
       <input type="hidden" name="client_id" value={e.clientId} />
       <div>
-        <label className="label text-[11.5px]" htmlFor={`h-${e.crewId}`}>{c.hoursExtra}</label>
+        <label className="label text-micro" htmlFor={`h-${e.crewId}`}>{c.hoursExtra}</label>
         <input
           id={`h-${e.crewId}`} name="extra_hours" type="number" min="0" max="24" step="0.5"
           defaultValue={e.hours === null ? '' : String(e.hours)}
-          className="field w-24 text-[13px]" inputMode="decimal"
+          className="field w-24 text-body" inputMode="decimal"
         />
       </div>
       <div>
-        <label className="label text-[11.5px]" htmlFor={`hr-${e.crewId}`}>{c.hoursRate}</label>
+        <label className="label text-micro" htmlFor={`hr-${e.crewId}`}>{c.hoursRate}</label>
         <input
           id={`hr-${e.crewId}`} name="hour_rate" type="number" min="0" step="10"
           defaultValue={e.hourRate === null ? '' : String(e.hourRate)}
-          className="field w-24 text-[13px]" inputMode="numeric"
+          className="field w-24 text-body" inputMode="numeric"
         />
       </div>
       <Save />
       {state?.ok && (
-        <span className="inline-flex items-center gap-1 pb-2 text-[12.5px] text-good">
+        <span className="inline-flex items-center gap-1 pb-2 text-meta text-good">
           <Check size={13} aria-hidden strokeWidth={1.5} />{c.crewNoteSaved}
         </span>
       )}
-      {state?.error && <span className="pb-2 text-[12.5px] text-bad">{state.error}</span>}
+      {state?.error && <span className="pb-2 text-meta text-bad">{state.error}</span>}
       </form>
     </details>
   );
@@ -165,7 +165,7 @@ export function CrewMonths({ months }: { months: MonthRow[] }) {
   });
 
   if (months.length === 0) {
-    return <p className="text-[14px] text-ink-mute">{c.monthsNone}</p>;
+    return <p className="text-body text-ink-mute">{c.monthsNone}</p>;
   }
 
   return (
@@ -177,7 +177,7 @@ export function CrewMonths({ months }: { months: MonthRow[] }) {
                        [&::-webkit-details-marker]:hidden"
           >
             <span className="flex items-baseline gap-3">
-              <span className="font-display text-[17px] font-semibold text-ink">
+              <span className="font-display text-head font-semibold text-ink">
                 {monthFmt.format(new Date(`${m.month}-01T12:00:00Z`))}
               </span>
               <ChevronDown
@@ -185,7 +185,7 @@ export function CrewMonths({ months }: { months: MonthRow[] }) {
                 className="shrink-0 self-center text-ink-mute transition-transform duration-200 group-open/m:rotate-180"
               />
             </span>
-            <span className="flex items-baseline gap-2 text-[14px]">
+            <span className="flex items-baseline gap-2 text-body">
               <span className="text-ink-mute">{c.monthsTotal}</span>
               <b className="font-semibold text-ink"><Money value={m.total} /></b>
             </span>
@@ -195,8 +195,8 @@ export function CrewMonths({ months }: { months: MonthRow[] }) {
             {m.people.map((p) => (
               <li key={p.memberId} className="rounded-xl2 border border-line-soft bg-surface-100 p-3">
                 <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-                  <span className="font-medium text-[15px] text-ink">{p.name}</span>
-                  <span className="flex items-baseline gap-2 text-[14px]">
+                  <span className="font-medium text-lead text-ink">{p.name}</span>
+                  <span className="flex items-baseline gap-2 text-body">
                     <span className="text-ink-mute">{c.monthsPay}</span>
                     <b className="font-semibold text-ink"><Money value={p.total} /></b>
                   </span>
@@ -205,7 +205,7 @@ export function CrewMonths({ months }: { months: MonthRow[] }) {
                 <ul className="mt-2 list-none space-y-2.5 p-0">
                   {p.evenings.map((e) => (
                     <li key={e.crewId} className="border-t border-line-soft pt-2 first:border-0 first:pt-0">
-                      <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5 text-[13.5px]">
+                      <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5 text-body">
                         <Link
                           href={`/app/clients/${e.clientId}`}
                           className="text-ink transition-colors hover:text-accent"
@@ -227,7 +227,7 @@ export function CrewMonths({ months }: { months: MonthRow[] }) {
                           adds up to less than it should, so it says so rather
                           than contributing a quiet zero. */}
                       {!e.fee && (
-                        <p className="mt-1 inline-flex items-center gap-1.5 text-[12.5px] text-warn">
+                        <p className="mt-1 inline-flex items-center gap-1.5 text-meta text-warn">
                           <TriangleAlert size={12} aria-hidden strokeWidth={1.5} />
                           {c.feeMissing}
                         </p>

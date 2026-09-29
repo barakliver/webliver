@@ -116,10 +116,10 @@ export default async function OverviewPage() {
                 <CalendarHeart size={16} strokeWidth={1.5} aria-hidden />
                 <span className="eyebrow">{c.nextEvent}</span>
               </div>
-              <p className="mt-3 font-display text-[24px] font-semibold leading-tight text-ink">
+              <p className="mt-3 font-display text-figure font-semibold leading-tight text-ink">
                 {next.name}
               </p>
-              <p className="mt-1 text-[14px] text-ink-soft">{next.date}</p>
+              <p className="mt-1 text-body text-ink-soft">{next.date}</p>
               <p className="mt-4 font-display text-[32px] font-semibold leading-none text-ink">
                 {next.days === 0 ? c.inDays.today : next.days === 1 ? c.inDays.tomorrow : fill(c.inDays.later, { n: next.days })}
               </p>
@@ -155,7 +155,7 @@ export default async function OverviewPage() {
             />
 
             <hr className="hairline my-4" />
-            <Link href="/app/clients" className="btn-quiet px-0 text-[14px]">
+            <Link href="/app/clients" className="btn-quiet px-0 text-body">
               {c.allClients}
               <ChevronLeft size={16} strokeWidth={1.5} aria-hidden className="chev-onward" />
             </Link>

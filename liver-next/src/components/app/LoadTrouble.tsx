@@ -46,7 +46,7 @@ export function TroubleLine({ text }: { text: string }) {
   return (
     <p
       role="status"
-      className="mb-5 flex items-start gap-2.5 rounded-xl2 border border-warn/30 bg-warn-wash px-4 py-3 text-[14px] leading-relaxed text-ink"
+      className="mb-5 flex items-start gap-2.5 rounded-xl2 border border-warn/30 bg-warn-wash px-4 py-3 text-body leading-relaxed text-ink"
     >
       <TriangleAlert size={17} strokeWidth={1.5} aria-hidden className="mt-0.5 shrink-0 text-warn" />
       <span>{text}</span>

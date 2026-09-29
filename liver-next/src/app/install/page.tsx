@@ -31,17 +31,17 @@ function Steps({ icon: Icon, title, steps }: {
 }) {
   return (
     <section className="card">
-      <h2 className="inline-flex items-center gap-2 font-display text-[18px] font-semibold text-ink">
+      <h2 className="inline-flex items-center gap-2 font-display text-subhead font-semibold text-ink">
         <Icon size={18} aria-hidden strokeWidth={1.5} />
         {title}
       </h2>
       <ol className="mt-4 space-y-3">
         {steps.map((step, i) => (
           <li key={step} className="flex gap-3">
-            <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-accent-wash text-[12.5px] font-semibold tabular-nums text-accent">
+            <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-accent-wash text-meta font-semibold tabular-nums text-accent">
               {i + 1}
             </span>
-            <span className="text-[15px] leading-relaxed text-ink">{step}</span>
+            <span className="text-lead leading-relaxed text-ink">{step}</span>
           </li>
         ))}
       </ol>
@@ -60,14 +60,14 @@ export default async function InstallPage() {
   return (
     <main id="main" className="shell py-10 sm:py-16">
       <div className="mx-auto max-w-prose2">
-        <Link href="/" className="text-[14px] text-ink-mute transition hover:text-ink">
+        <Link href="/" className="text-body text-ink-mute transition hover:text-ink">
           {host.isPlatform ? site.brand : host.name}
         </Link>
 
         <h1 className="mt-5 font-display text-title font-semibold text-ink">{c.title}</h1>
-        <p className="mt-2 text-[15.5px] leading-relaxed text-ink-soft">{c.sub}</p>
+        <p className="mt-2 text-lead leading-relaxed text-ink-soft">{c.sub}</p>
 
-        <ul className="mt-5 space-y-1.5 text-[14.5px] text-ink-soft">
+        <ul className="mt-5 space-y-1.5 text-body text-ink-soft">
           {c.whyLines.map((l) => (
             <li key={l} className="flex gap-2">
               <span aria-hidden className="text-accent">·</span>
@@ -83,11 +83,11 @@ export default async function InstallPage() {
         </div>
 
         <section className="card mt-6">
-          <h2 className="inline-flex items-center gap-2 font-display text-[16.5px] font-semibold text-ink">
+          <h2 className="inline-flex items-center gap-2 font-display text-head font-semibold text-ink">
             <CircleHelp size={17} aria-hidden strokeWidth={1.5} />
             {c.troubleTitle}
           </h2>
-          <ul className="mt-3 space-y-2 text-[14.5px] leading-relaxed text-ink-soft">
+          <ul className="mt-3 space-y-2 text-body leading-relaxed text-ink-soft">
             {c.troubleLines.map((l) => <li key={l}>{l}</li>)}
           </ul>
         </section>

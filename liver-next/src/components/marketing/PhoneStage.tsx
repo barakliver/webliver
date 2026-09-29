@@ -145,17 +145,17 @@ function PortalScreen({ screen }: {
       className="w-[268px] border border-line-strong bg-surface-100 p-6 shadow-fab sm:w-[300px]"
       style={{ borderRadius: '44px' }}
     >
-      <p className="text-[11.5px] tracking-[.14em] text-ink-mute">{screen.couple}</p>
+      <p className="text-micro tracking-[.14em] text-ink-mute">{screen.couple}</p>
       <p className="mt-6 font-display text-[86px] font-semibold leading-none text-ink">
         <Ltr>200</Ltr>
       </p>
-      <p className="mt-1 text-[13.5px] text-ink-soft">{screen.days}</p>
+      <p className="mt-1 text-body text-ink-soft">{screen.days}</p>
       <hr className="rule-gold my-6" />
       <ul className="list-none space-y-0 p-0">
         {rows.map(([label, value]) => (
           <li key={label} className="flex items-baseline justify-between border-b border-line py-3 last:border-0">
-            <span className="text-[14px] text-ink-soft">{label}</span>
-            <span className="font-display text-[17px] font-semibold text-ink">{value}</span>
+            <span className="text-body text-ink-soft">{label}</span>
+            <span className="font-display text-head font-semibold text-ink">{value}</span>
           </li>
         ))}
       </ul>

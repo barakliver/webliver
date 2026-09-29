@@ -22,7 +22,7 @@ export function ConfirmDeleteDemo({ ask }: { ask?: string }) {
   const c = useCopy().confirm;
   return (
     <DeleteForm action={async () => {}} ask={ask}>
-      <button type="submit" className="btn-ghost inline-flex items-center gap-2 text-[14px]">
+      <button type="submit" className="btn-ghost inline-flex items-center gap-2 text-body">
         {c.delete}
       </button>
     </DeleteForm>
@@ -61,11 +61,11 @@ export function DeleteForm({ action, ask, className, children }: {
         className="w-[min(92vw,22rem)] rounded-card border border-line bg-card p-6 text-ink shadow-lift backdrop:bg-scrim/30"
         aria-labelledby="confirm-delete-title"
       >
-        <p id="confirm-delete-title" className="flex items-start gap-2.5 text-[15.5px] font-medium leading-snug text-ink">
+        <p id="confirm-delete-title" className="flex items-start gap-2.5 text-lead font-medium leading-snug text-ink">
           <TriangleAlert size={18} aria-hidden strokeWidth={1.5} className="mt-0.5 shrink-0 text-bad" />
           {ask ?? c.ask}
         </p>
-        <p className="mt-2 text-[13.5px] text-ink-soft">{c.sub}</p>
+        <p className="mt-2 text-body text-ink-soft">{c.sub}</p>
         <div className="mt-5 flex flex-wrap justify-end gap-2">
           <button type="button" className="btn-ghost" onClick={() => dialog.current?.close()}>{c.cancel}</button>
           <button

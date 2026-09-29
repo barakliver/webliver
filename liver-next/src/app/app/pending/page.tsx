@@ -22,9 +22,9 @@ export default async function PendingPage() {
       />
       <div className="card space-y-4">
         {ui.pending.body.map((line) => (
-          <p key={line} className="text-[16px] leading-relaxed text-ink-soft">{line}</p>
+          <p key={line} className="text-head leading-relaxed text-ink-soft">{line}</p>
         ))}
-        <div className="flex items-center gap-2 border-t border-line pt-4 text-[14.5px]">
+        <div className="flex items-center gap-2 border-t border-line pt-4 text-body">
           <span className="text-ink-mute">{ui.pending.statusLabel}:</span>
           <b className="text-ink">{ui.pending.statuses[status]}</b>
         </div>

@@ -108,7 +108,7 @@ export function IssueReporter({ userId, compact, row, context, copy }: {
         <button
           type="button"
           onClick={() => { reset(); setOpen(true); }}
-          className="flex min-h-[52px] w-full items-center gap-3 border-b border-line px-1 text-start text-[15px] text-ink-soft transition-colors duration-300 hover:text-ink"
+          className="flex min-h-[52px] w-full items-center gap-3 border-b border-line px-1 text-start text-lead text-ink-soft transition-colors duration-300 hover:text-ink"
         >
           <Flag size={20} strokeWidth={1.5} aria-hidden />
           {c.open}
@@ -134,8 +134,8 @@ export function IssueReporter({ userId, compact, row, context, copy }: {
             <span className="mx-auto grid size-12 place-items-center rounded-full bg-ok-wash text-ok">
               <Check size={22} strokeWidth={1.5} aria-hidden />
             </span>
-            <p className="mt-4 text-[16px] font-medium text-ink">{c.sent}</p>
-            <p className="mx-auto mt-2 max-w-sm text-[13.5px] leading-relaxed text-ink-soft">{c.sentSub}</p>
+            <p className="mt-4 text-head font-medium text-ink">{c.sent}</p>
+            <p className="mx-auto mt-2 max-w-sm text-body leading-relaxed text-ink-soft">{c.sentSub}</p>
             <button type="button" onClick={() => setOpen(false)} className="btn-ghost mt-6">{c.close}</button>
           </div>
         ) : (
@@ -146,7 +146,7 @@ export function IssueReporter({ userId, compact, row, context, copy }: {
                 <button
                   key={k} type="button" onClick={() => setCategory(k)} aria-pressed={category === k}
                   className={cn(
-                    'min-h-[40px] rounded-xl2 border px-3.5 text-[13.5px] transition-colors',
+                    'min-h-[40px] rounded-xl2 border px-3.5 text-body transition-colors',
                     category === k ? 'border-ink bg-ink text-surface' : 'border-line text-ink-soft hover:border-line-strong hover:text-ink',
                   )}
                 >
@@ -156,7 +156,7 @@ export function IssueReporter({ userId, compact, row, context, copy }: {
             </div>
 
             {context && (
-              <p className="mt-4 rounded-xl2 border border-line bg-surface-100 px-3 py-2 text-[12.5px] text-ink-soft">
+              <p className="mt-4 rounded-xl2 border border-line bg-surface-100 px-3 py-2 text-meta text-ink-soft">
                 {c.inContext.replace('{what}', context)}
               </p>
             )}
@@ -174,7 +174,7 @@ export function IssueReporter({ userId, compact, row, context, copy }: {
                 <div className="flex items-center gap-3 rounded-xl2 border border-line bg-surface-100 p-2">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={URL.createObjectURL(shot)} alt="" className="h-14 w-20 rounded-lg object-cover" />
-                  <span className="min-w-0 flex-1 truncate text-[13px] text-ink-soft" dir="ltr">{shot.name}</span>
+                  <span className="min-w-0 flex-1 truncate text-body text-ink-soft" dir="ltr">{shot.name}</span>
                   <button
                     type="button" onClick={() => setShot(null)} aria-label={c.screenshotRemove}
                     className="grid size-9 place-items-center rounded-xl2 text-ink-mute transition hover:bg-surface-200 hover:text-ink"
@@ -183,18 +183,18 @@ export function IssueReporter({ userId, compact, row, context, copy }: {
                   </button>
                 </div>
               ) : (
-                <label className="inline-flex min-h-[40px] cursor-pointer items-center gap-2 rounded-xl2 border border-line-strong bg-card px-4 text-[13.5px] text-ink transition hover:border-accent/40 hover:text-accent">
+                <label className="inline-flex min-h-[40px] cursor-pointer items-center gap-2 rounded-xl2 border border-line-strong bg-card px-4 text-body text-ink transition hover:border-accent/40 hover:text-accent">
                   <ImagePlus size={15} strokeWidth={1.5} aria-hidden />
                   {c.screenshot}
                   <input ref={input} type="file" accept="image/*" className="sr-only" onChange={(e) => pick(e.target.files?.[0])} />
                 </label>
               )}
-              <p className="mt-1.5 text-[12.5px] text-ink-mute">{c.screenshotHint}</p>
+              <p className="mt-1.5 text-meta text-ink-mute">{c.screenshotHint}</p>
             </div>
 
-            <p className="mt-4 text-[12.5px] leading-relaxed text-ink-mute">{c.auto}</p>
+            <p className="mt-4 text-meta leading-relaxed text-ink-mute">{c.auto}</p>
 
-            {error && <p role="alert" className="mt-3 text-[13.5px] text-bad">{error}</p>}
+            {error && <p role="alert" className="mt-3 text-body text-bad">{error}</p>}
 
             <button
               type="button" onClick={() => void send()} disabled={state === 'sending'}

@@ -49,26 +49,26 @@ export function QuoteCompare({ clientId, vendors, lines, viewer }: {
 
   return (
     <section className="card" aria-labelledby="quotes-title">
-      <h2 id="quotes-title" className="font-display text-[18px] font-semibold text-ink">{c.title}</h2>
-      <p className="mt-1 max-w-prose2 text-[14px] leading-relaxed text-ink-soft">
+      <h2 id="quotes-title" className="font-display text-subhead font-semibold text-ink">{c.title}</h2>
+      <p className="mt-1 max-w-prose2 text-body leading-relaxed text-ink-soft">
         {viewer === 'client' ? c.coupleSub : c.sub}
       </p>
 
       {groups.length === 0 ? (
-        <p className="mt-5 text-[14.5px] text-ink-mute">{c.none}</p>
+        <p className="mt-5 text-body text-ink-mute">{c.none}</p>
       ) : (
         <div className="mt-5 space-y-7">
           {groups.map((g) => (
             <div key={g.category}>
-              <h3 className="mb-2 text-[12.5px] font-semibold text-accent">{categoryLabelFor(g.category, locale)}</h3>
+              <h3 className="mb-2 text-meta font-semibold text-accent">{categoryLabelFor(g.category, locale)}</h3>
               {/* `contain: paint` beside the scroll, the way the venue rail
                   does it: in a right-to-left page a wide table inside a plain
                   scroll box still pushed the whole document 160px to the
                   left, and the phone scrolled sideways instead of the table. */}
               <div className="overflow-x-auto pb-1 [contain:paint]">
-                <table className="w-full min-w-[640px] border-collapse text-[13.5px]">
+                <table className="w-full min-w-[640px] border-collapse text-body">
                   <thead>
-                    <tr className="border-b border-line text-[12px] text-ink-mute">
+                    <tr className="border-b border-line text-meta text-ink-mute">
                       <th scope="col" className="py-2 pe-3 text-start font-medium">{c.supplier}</th>
                       <th scope="col" className="py-2 pe-3 text-start font-medium">{c.amount}</th>
                       <th scope="col" className="py-2 pe-3 text-start font-medium">{c.hours}</th>
@@ -93,8 +93,8 @@ export function QuoteCompare({ clientId, vendors, lines, viewer }: {
                               {v.chosen && <Check size={14} aria-hidden strokeWidth={2} className="shrink-0 text-accent" />}
                               <span className="font-medium">{v.name}</span>
                             </span>
-                            {v.quote_scope && <span className="mt-0.5 block text-[12.5px] text-ink-soft">{v.quote_scope}</span>}
-                            {v.status === 'booked' && <span className="mt-1 inline-block rounded-xl2 bg-ok-wash px-2 py-0.5 text-[11.5px] text-ok">{ui.portal.vendorBooked}</span>}
+                            {v.quote_scope && <span className="mt-0.5 block text-meta text-ink-soft">{v.quote_scope}</span>}
+                            {v.status === 'booked' && <span className="mt-1 inline-block rounded-xl2 bg-ok-wash px-2 py-0.5 text-micro text-ok">{ui.portal.vendorBooked}</span>}
                           </td>
                           <td className="py-2.5 pe-3 tabular-nums">{amount === null ? <Unknown c={c} /> : <Money value={amount} className="text-ink" />}</td>
                           <td className="py-2.5 pe-3 tabular-nums">{hours === null ? <Unknown c={c} /> : <Ltr>{hours}</Ltr>}</td>
@@ -108,7 +108,7 @@ export function QuoteCompare({ clientId, vendors, lines, viewer }: {
                                 type="button"
                                 onClick={() => setEditing(open ? null : v.id)}
                                 aria-expanded={open}
-                                className="btn-quiet inline-flex items-center gap-1 px-2 py-1 text-[12.5px]"
+                                className="btn-quiet inline-flex items-center gap-1 px-2 py-1 text-meta"
                               >
                                 <Pencil size={12} aria-hidden strokeWidth={1.5} />
                                 {hasQuote(v) ? c.editQuote : c.addQuote}
@@ -117,9 +117,9 @@ export function QuoteCompare({ clientId, vendors, lines, viewer }: {
                                 <form action={chooseQuote} className="flex flex-col items-end gap-1">
                                   <input type="hidden" name="event_vendor_id" value={v.id} />
                                   <input type="hidden" name="client_id" value={clientId} />
-                                  <button type="submit" className="btn-primary min-h-[36px] px-3 text-[13px]">{c.choose}</button>
+                                  <button type="submit" className="btn-primary min-h-[36px] px-3 text-body">{c.choose}</button>
                                   {/* What the press does, before it is pressed. */}
-                                  <span className="max-w-[16rem] text-end text-[11.5px] leading-snug text-ink-mute">
+                                  <span className="max-w-[16rem] text-end text-micro leading-snug text-ink-mute">
                                     {effect.replaces.length > 0
                                       ? fill(c.effectReplaces, { names: effect.replaces.map((r) => r.name).join(', ') })
                                       : c.effectAdds}
@@ -128,7 +128,7 @@ export function QuoteCompare({ clientId, vendors, lines, viewer }: {
                                   </span>
                                 </form>
                               )}
-                              {effect?.noop && <span className="text-[11.5px] text-ink-mute">{c.chosenNow}</span>}
+                              {effect?.noop && <span className="text-micro text-ink-mute">{c.chosenNow}</span>}
                             </div>
                           </td>
                         </tr>
@@ -159,7 +159,7 @@ export function QuoteCompare({ clientId, vendors, lines, viewer }: {
         </div>
       )}
 
-      <p className="mt-4 text-[12.5px] text-ink-mute">{c.notBooked}</p>
+      <p className="mt-4 text-meta text-ink-mute">{c.notBooked}</p>
     </section>
   );
 }
@@ -175,26 +175,26 @@ function QuoteForm({ clientId, vendor, onDone }: { clientId: string; vendor: Quo
   return (
     <form
       action={async (fd) => { await saveQuote(fd); onDone(); }}
-      className="mt-3 grid gap-3 rounded-xl2 border border-line bg-surface-100 p-4 sm:grid-cols-3"
+      className="mt-3 grid gap-3 rounded-card-sm border border-line bg-surface-100 p-4 sm:grid-cols-3"
     >
       <input type="hidden" name="event_vendor_id" value={vendor.id} />
       <input type="hidden" name="client_id" value={clientId} />
-      <p className="text-[14px] font-medium text-ink sm:col-span-3">{vendor.name}</p>
-      <label className="grid gap-1 text-[12.5px] text-ink-mute">{c.amount}
+      <p className="text-body font-medium text-ink sm:col-span-3">{vendor.name}</p>
+      <label className="grid gap-1 text-meta text-ink-mute">{c.amount}
         <input name="quote_amount" type="number" inputMode="decimal" min="0" step="0.01" defaultValue={vendor.quote_amount ?? ''} className="field" /></label>
-      <label className="grid gap-1 text-[12.5px] text-ink-mute">{c.hours}
+      <label className="grid gap-1 text-meta text-ink-mute">{c.hours}
         <input name="quote_hours" type="number" inputMode="decimal" min="0.5" max="72" step="0.5" defaultValue={vendor.quote_hours ?? ''} className="field" /></label>
-      <label className="grid gap-1 text-[12.5px] text-ink-mute">{c.scope}
+      <label className="grid gap-1 text-meta text-ink-mute">{c.scope}
         <input name="quote_scope" maxLength={300} defaultValue={vendor.quote_scope} placeholder={c.scopePh} className="field" /></label>
-      <label className="grid gap-1 text-[12.5px] text-ink-mute">{c.includes}
+      <label className="grid gap-1 text-meta text-ink-mute">{c.includes}
         <input name="quote_includes" maxLength={600} defaultValue={vendor.quote_includes} placeholder={c.includesPh} className="field" /></label>
-      <label className="grid gap-1 text-[12.5px] text-ink-mute">{c.extras}
+      <label className="grid gap-1 text-meta text-ink-mute">{c.extras}
         <input name="quote_extras" maxLength={600} defaultValue={vendor.quote_extras} placeholder={c.extrasPh} className="field" /></label>
-      <label className="grid gap-1 text-[12.5px] text-ink-mute">{c.terms}
+      <label className="grid gap-1 text-meta text-ink-mute">{c.terms}
         <input name="quote_terms" maxLength={600} defaultValue={vendor.quote_terms} placeholder={c.termsPh} className="field" /></label>
       <div className="flex flex-wrap items-center gap-2 sm:col-span-3">
         <button type="submit" className="btn-primary">{c.save}</button>
-        <button type="button" onClick={onDone} className="btn-quiet px-3 text-[14px]">{c.cancel}</button>
+        <button type="button" onClick={onDone} className="btn-quiet px-3 text-body">{c.cancel}</button>
       </div>
     </form>
   );

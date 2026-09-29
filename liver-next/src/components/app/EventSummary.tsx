@@ -83,16 +83,16 @@ export async function EventSummary({ clientId, summary }: { clientId: string; su
       )}
 
       {money.overdue > 0 && (
-        <p className="inline-flex items-center gap-2 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+        <p className="inline-flex items-center gap-2 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-body text-bad">
           <CircleAlert size={16} aria-hidden strokeWidth={1.5} />
           {t.overdue} <Money value={money.overdue} />
         </p>
       )}
 
       <div className="card">
-        <h2 className="font-display text-[18px] font-semibold text-ink">{c.nextUp}</h2>
+        <h2 className="font-display text-subhead font-semibold text-ink">{c.nextUp}</h2>
         {next.length === 0 ? (
-          <p className="mt-3 text-[14.5px] text-ink-mute">{c.nextUpNone}</p>
+          <p className="mt-3 text-body text-ink-mute">{c.nextUpNone}</p>
         ) : (
           <ul className="mt-4 space-y-2">
             {next.map((item) => {
@@ -113,16 +113,16 @@ export async function EventSummary({ clientId, summary }: { clientId: string; su
                       title absorbs the whole squeeze one word per line before
                       the metadata ever wraps. Below the floor the date and the
                       button move to the next line instead. */}
-                  <span className="min-w-[160px] flex-1 text-[14.5px] text-ink">{item.title}</span>
+                  <span className="min-w-[160px] flex-1 text-body text-ink">{item.title}</span>
                   {item.amount !== undefined && item.amount > 0 && (
-                    <Money value={item.amount} className="text-[13.5px] tabular-nums text-ink-soft" />
+                    <Money value={item.amount} className="text-body tabular-nums text-ink-soft" />
                   )}
-                  <span className={`text-[13px] tabular-nums ${late ? 'text-bad' : 'text-ink-mute'}`}>
+                  <span className={`text-body tabular-nums ${late ? 'text-bad' : 'text-ink-mute'}`}>
                     {formatDate(dateFmtFor(locale), item.due, t.none)}
                   </span>
                   <Link
                     href={`/app/clients/${clientId}?tab=${item.kind === 'task' ? 'tasks' : 'money'}`}
-                    className="btn-quiet px-3 py-1 text-[13px]"
+                    className="btn-quiet px-3 py-1 text-body"
                   >
                     {c.openTab}
                   </Link>

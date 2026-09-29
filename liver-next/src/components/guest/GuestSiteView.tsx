@@ -59,11 +59,11 @@ export function GuestSiteView({ site, token, c, locale }: {
           <h1 className="mt-4 font-display text-display-xl font-semibold leading-tight text-ink">
             {site.event_name}
           </h1>
-          <p className="mt-5 text-[16.5px] text-ink-soft">
+          <p className="mt-5 text-head text-ink-soft">
             {formatDate(dateFmt, site.event_date, c.dateTbd)}
           </p>
           {venue && (
-            <p className="mt-1 inline-flex items-center gap-1.5 text-[15px] text-ink-mute">
+            <p className="mt-1 inline-flex items-center gap-1.5 text-lead text-ink-mute">
               <MapPin size={15} strokeWidth={1.5} aria-hidden />
               {venue}
             </p>
@@ -76,12 +76,12 @@ export function GuestSiteView({ site, token, c, locale }: {
                   <p className="font-display text-[88px] font-semibold leading-none text-ink sm:text-[112px]">
                     <Ltr>{left.toLocaleString('en-US')}</Ltr>
                   </p>
-                  <p className="mt-2 text-[14px] tracking-[.06em] text-ink-mute">{c.daysLeft}</p>
+                  <p className="mt-2 text-body tracking-[.06em] text-ink-mute">{c.daysLeft}</p>
                 </>
               ) : left === 0 ? (
                 <p className="font-display text-[40px] font-semibold leading-none text-accent-bright">{c.today}</p>
               ) : (
-                <p className="text-[15.5px] text-ink-soft">{c.passed}</p>
+                <p className="text-lead text-ink-soft">{c.passed}</p>
               )}
             </div>
           )}
@@ -125,8 +125,8 @@ export function GuestSiteView({ site, token, c, locale }: {
             <h2 className="eyebrow text-center">{c.moments}</h2>
             <ul className="mx-auto mt-5 max-w-sm list-none divide-y divide-line border-y border-line p-0">
               {site.moments.map((m, i) => (
-                <li key={i} className="flex items-baseline gap-5 py-3 text-[16px]">
-                  <span className="w-[52px] shrink-0 font-display text-[18px] font-semibold tabular-nums text-ink" dir="ltr">
+                <li key={i} className="flex items-baseline gap-5 py-3 text-head">
+                  <span className="w-[52px] shrink-0 font-display text-subhead font-semibold tabular-nums text-ink" dir="ltr">
                     {hhmm(m.at)}
                   </span>
                   <span className="text-ink">{m.title}</span>
@@ -140,7 +140,7 @@ export function GuestSiteView({ site, token, c, locale }: {
         {site.note.trim() && (
           <section className="mt-12">
             <h2 className="eyebrow text-center">{c.note}</h2>
-            <p className="measure mx-auto mt-4 whitespace-pre-line text-center text-[16.5px] leading-relaxed text-ink-soft">
+            <p className="measure mx-auto mt-4 whitespace-pre-line text-center text-head leading-relaxed text-ink-soft">
               {site.note}
             </p>
           </section>
@@ -148,8 +148,8 @@ export function GuestSiteView({ site, token, c, locale }: {
 
         {/* ── the reply ─────────────────────────────────────────────────── */}
         <section className="card mt-12">
-          <h2 className="font-display text-[22px] font-semibold text-ink">{c.rsvpTitle}</h2>
-          <p className="mt-2 text-[14.5px] leading-relaxed text-ink-soft">{c.rsvpSub}</p>
+          <h2 className="font-display text-panel font-semibold text-ink">{c.rsvpTitle}</h2>
+          <p className="mt-2 text-body leading-relaxed text-ink-soft">{c.rsvpSub}</p>
           <div className="mt-5">
             <FindInvite
               token={token}
@@ -159,7 +159,7 @@ export function GuestSiteView({ site, token, c, locale }: {
         </section>
 
         {site.producer && (
-          <footer className="mt-14 text-center text-[12.5px] text-ink-mute">
+          <footer className="mt-14 text-center text-meta text-ink-mute">
             {c.producedBy} · {site.producer}
           </footer>
         )}

@@ -31,7 +31,7 @@ export async function generateMetadata() {
  *  gets the design's own metric size; the two under it are the qualifiers,
  *  because a user count without the active share is a vanity figure.
  *
- *  This used to set the headline at `text-[22px]`, which is why the console
+ *  This used to set the headline at `text-panel`, which is why the console
  *  carried the right palette and still did not look like the design: the
  *  numbers were the smallest thing on a screen that is entirely numbers. */
 function Band({ title, rows, href }: {
@@ -167,7 +167,7 @@ export default async function AdminPage() {
         {/* What people reported from inside the platform. Its own screen,
             because a list of bugs under a list of producers is two lists. */}
         <Fold id="fold-tickets" title={ticketCopy.admin.title} sub={ticketCopy.admin.sub}>
-          <Link href="/app/admin/tickets" className="btn-ghost inline-flex min-h-[44px] items-center gap-2 px-3.5 text-[14px]">
+          <Link href="/app/admin/tickets" className="btn-ghost inline-flex min-h-[44px] items-center gap-2 px-3.5 text-body">
             <LifeBuoy size={17} strokeWidth={1.5} aria-hidden />
             {ticketCopy.admin.title}
           </Link>
@@ -182,7 +182,7 @@ export default async function AdminPage() {
         {/* The screen says out loud what it cannot show. An empty list where a
             list used to be reads as a bug; a paragraph reads as a decision. */}
         <Fold id="fold-privacy" title={c.privacy.title} sub={c.privacy.sub}>
-          <ul className="list-none space-y-1.5 p-0 text-[14px] text-ink-soft">
+          <ul className="list-none space-y-1.5 p-0 text-body text-ink-soft">
             {c.privacy.body.map((line) => <li key={line}>{line}</li>)}
           </ul>
         </Fold>

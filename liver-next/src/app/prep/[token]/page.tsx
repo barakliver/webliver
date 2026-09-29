@@ -95,8 +95,8 @@ export default async function PrepPage({ params }: { params: Promise<{ token: st
   if (!sheet) {
     return (
       <main id="main" className="shell max-w-lg py-20 text-center">
-        <h1 className="font-display text-[24px] font-semibold text-ink">{c.gone}</h1>
-        <p className="mt-2 text-[15px] text-ink-soft">{c.goneSub}</p>
+        <h1 className="font-display text-figure font-semibold text-ink">{c.gone}</h1>
+        <p className="mt-2 text-lead text-ink-soft">{c.goneSub}</p>
       </main>
     );
   }

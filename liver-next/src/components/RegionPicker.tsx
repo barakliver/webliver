@@ -54,7 +54,7 @@ export function RegionPicker({
               onClick={() => setChip(on ? '' : r.value)}
               aria-pressed={on}
               className={cn(
-                'inline-flex min-h-[40px] items-center rounded-xl2 border px-3.5 text-[13.5px] transition-colors',
+                'inline-flex min-h-[40px] items-center rounded-xl2 border px-3.5 text-body transition-colors',
                 on
                   ? 'border-ink bg-ink text-surface'
                   : 'border-line bg-card text-ink-soft hover:border-line-strong hover:text-ink',

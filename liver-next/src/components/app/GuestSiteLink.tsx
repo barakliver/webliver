@@ -41,15 +41,15 @@ export function GuestSiteLink({ token }: { token: string }) {
 
   return (
     <section className="card">
-      <h2 className="inline-flex items-center gap-2 font-display text-[19px] font-semibold text-ink">
+      <h2 className="inline-flex items-center gap-2 font-display text-subhead font-semibold text-ink">
         <Globe size={18} aria-hidden strokeWidth={1.5} />
         {c.title}
       </h2>
-      <p className="mt-1.5 text-[14.5px] leading-relaxed text-ink-soft">{c.sub}</p>
+      <p className="mt-1.5 text-body leading-relaxed text-ink-soft">{c.sub}</p>
       <input
         readOnly value={url} dir="ltr" aria-label={c.title}
         onFocus={(e) => e.currentTarget.select()}
-        className="field mt-4 w-full font-mono text-[13px]"
+        className="field mt-4 w-full font-mono text-body"
       />
       <div className="mt-3 flex flex-wrap gap-2">
         <a href={wa} onClick={share} target="_blank" rel="noopener noreferrer" className="btn-primary">

@@ -182,7 +182,7 @@ export function ChatDock({
         >
           <header className="flex items-start justify-between gap-3 border-b border-line px-5 py-4">
             <div className="min-w-0">
-              <h2 className="inline-flex items-center gap-2 font-display text-[16.5px] font-semibold text-ink">
+              <h2 className="inline-flex items-center gap-2 font-display text-head font-semibold text-ink">
                 <Icon size={15} strokeWidth={1.5} aria-hidden className="text-accent" />
                 {c.title}
               </h2>
@@ -199,7 +199,7 @@ export function ChatDock({
           <div ref={listRef} className="flex-1 space-y-3 overflow-y-auto px-5 py-4">
             {turns.length === 0 && (
               <div className="space-y-3">
-                <p className="text-[14px] leading-relaxed text-ink-soft">{c.greeting}</p>
+                <p className="text-body leading-relaxed text-ink-soft">{c.greeting}</p>
                 {/* Openers rather than a blank box. Nobody's first thought is a
                     well-formed question, and three real ones show what this can
                     be asked about. */}
@@ -212,7 +212,7 @@ export function ChatDock({
                         if (startersSend) void send(s);
                         else { setDraft(s); focusField(); }
                       }}
-                      className="rounded-xl2 border border-line px-3 py-1.5 text-start text-[12.5px] text-ink-soft transition hover:border-accent/40 hover:text-accent"
+                      className="rounded-xl2 border border-line px-3 py-1.5 text-start text-meta text-ink-soft transition hover:border-accent/40 hover:text-accent"
                     >
                       {s}
                     </button>
@@ -223,12 +223,12 @@ export function ChatDock({
 
             {turns.map((t, i) => (
               t.role === 'user' ? (
-                <p key={i} className="ms-8 rounded-xl2 rounded-se-md bg-ink px-3.5 py-2.5 text-[14px] leading-relaxed text-surface">
+                <p key={i} className="ms-8 rounded-xl2 rounded-se-md bg-ink px-3.5 py-2.5 text-body leading-relaxed text-surface">
                   {t.content}
                 </p>
               ) : (
                 <div key={i} className="me-2">
-                  <p className="whitespace-pre-line text-[14px] leading-relaxed text-ink">{t.content}</p>
+                  <p className="whitespace-pre-line text-body leading-relaxed text-ink">{t.content}</p>
                   {/* Only once it has stopped writing. Offering to copy half an
                       answer is offering to copy the wrong thing. */}
                   {renderActions && !(busy && i === turns.length - 1) && renderActions(t.content, i)}
@@ -240,7 +240,7 @@ export function ChatDock({
                 written, the answer is the progress indicator, and leaving
                 "רגע" under it says the opposite of what the screen shows. */}
             {busy && turns[turns.length - 1]?.role !== 'assistant' && (
-              <p className="text-[13.5px] text-ink-mute" role="status">{c.thinking}</p>
+              <p className="text-body text-ink-mute" role="status">{c.thinking}</p>
             )}
           </div>
 
@@ -286,7 +286,7 @@ export function ChatDock({
             </button>
           </form>
 
-          <p className="px-5 pb-3 text-[11.5px] text-ink-mute">
+          <p className="px-5 pb-3 text-micro text-ink-mute">
             {c.disclaimer}{footer ? ` · ${footer}` : ''}
           </p>
         </div>

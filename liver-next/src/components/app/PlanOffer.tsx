@@ -26,7 +26,7 @@ export function PlanOffer({ clientId }: { clientId: string }) {
 
   if (result?.ok) {
     return (
-      <p role="status" className="mt-6 text-[14.5px] text-ink-soft">
+      <p role="status" className="mt-6 text-body text-ink-soft">
         {/* Nothing added is a real outcome rather than a failure: it means
             every step was already on the event, which is worth saying plainly
             instead of reporting success over a list that did not change. */}
@@ -36,14 +36,14 @@ export function PlanOffer({ clientId }: { clientId: string }) {
   }
 
   return (
-    <div className="mt-6 rounded-xl2 border border-line bg-surface-100 p-5">
-      <p className="text-[14.5px] text-ink-mute">{c.none}</p>
+    <div className="mt-6 rounded-card-sm border border-line bg-surface-100 p-5">
+      <p className="text-body text-ink-mute">{c.none}</p>
 
       <div className="mt-4 flex items-baseline gap-3">
         <ListChecks size={18} strokeWidth={1.5} aria-hidden className="shrink-0 translate-y-0.5 text-accent" />
         <div className="min-w-0">
-          <p className="text-[15px] font-medium text-ink">{c.planTitle}</p>
-          <p className="mt-1 text-[13.5px] leading-relaxed text-ink-soft">{c.planBody}</p>
+          <p className="text-lead font-medium text-ink">{c.planTitle}</p>
+          <p className="mt-1 text-body leading-relaxed text-ink-soft">{c.planBody}</p>
         </div>
       </div>
 
@@ -57,7 +57,7 @@ export function PlanOffer({ clientId }: { clientId: string }) {
       </button>
 
       {result && !result.ok && result.error && (
-        <p role="alert" className="mt-3 text-[14px] text-bad">{result.error}</p>
+        <p role="alert" className="mt-3 text-body text-bad">{result.error}</p>
       )}
     </div>
   );

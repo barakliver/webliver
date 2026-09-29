@@ -30,11 +30,11 @@ export function GuestImport({ clientId }: { clientId: string }) {
   return (
     <div className="mt-4">
       <div className="flex flex-wrap gap-2">
-        <button type="button" onClick={() => setOpen((v) => !v)} className="btn-ghost inline-flex items-center gap-2 text-[14px]">
+        <button type="button" onClick={() => setOpen((v) => !v)} className="btn-ghost inline-flex items-center gap-2 text-body">
           <FileSpreadsheet size={16} aria-hidden strokeWidth={1.5} />
           {c.open}
         </button>
-        <a href={`/app/clients/${clientId}/guests.csv`} className="btn-ghost inline-flex items-center gap-2 text-[14px]">
+        <a href={`/app/clients/${clientId}/guests.csv`} className="btn-ghost inline-flex items-center gap-2 text-body">
           <Download size={16} aria-hidden strokeWidth={1.5} />
           {c.export}
         </a>
@@ -43,27 +43,27 @@ export function GuestImport({ clientId }: { clientId: string }) {
       {open && (
         <form action={action} className="mt-4 rounded-xl2 bg-surface-100 p-4">
           <input type="hidden" name="client_id" value={clientId} />
-          <p className="text-[14px] text-ink-soft">{c.hint}</p>
+          <p className="text-body text-ink-soft">{c.hint}</p>
 
           <input
             type="file"
             name="file"
             accept=".csv,text/csv,text/plain"
-            className="mt-3 block w-full text-[14px] file:mr-3 file:min-h-[44px] file:rounded-xl2 sm:min-h-[38px] file:border-0 file:bg-ink file:px-4 file:text-[14px] file:text-surface"
+            className="mt-3 block w-full text-body file:mr-3 file:min-h-[44px] file:rounded-xl2 sm:min-h-[38px] file:border-0 file:bg-ink file:px-4 file:text-body file:text-surface"
           />
 
-          <p className="mt-3 text-[13px] text-ink-mute">{c.orPaste}</p>
+          <p className="mt-3 text-body text-ink-mute">{c.orPaste}</p>
           <textarea
             name="text"
             rows={4}
             placeholder={c.pastePh}
-            className="field mt-1.5 w-full font-mono text-[13px]"
+            className="field mt-1.5 w-full font-mono text-body"
           />
 
           <div className="mt-3"><Submit /></div>
 
           {report && (
-            <div role="status" className="mt-4 space-y-2 text-[14px]">
+            <div role="status" className="mt-4 space-y-2 text-body">
               {report.ok ? (
                 <p className="rounded-xl2 bg-ok-wash px-4 py-2.5 text-ok">
                   {report.added === 0 ? c.nothingNew : `${c.added} ${report.added}`}
@@ -78,7 +78,7 @@ export function GuestImport({ clientId }: { clientId: string }) {
               {report.skipped && report.skipped.length > 0 && (
                 <details className="rounded-xl2 bg-warn-wash px-4 py-2.5 text-warn">
                   <summary className="cursor-pointer">{report.skipped.length} {c.skipped}</summary>
-                  <ul className="mt-2 space-y-0.5 text-[13px]">
+                  <ul className="mt-2 space-y-0.5 text-body">
                     {report.skipped.slice(0, 30).map((s) => (
                       <li key={s.line}>{c.line} {s.line}: {s.reason}</li>
                     ))}

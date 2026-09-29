@@ -32,8 +32,8 @@ export function CrewShifts({ shifts, today }: { shifts: Shift[]; today: string }
     return (
       <div className="card p-6 text-center">
         <CalendarCheck2 size={22} strokeWidth={1.5} aria-hidden className="mx-auto text-ink-mute" />
-        <p className="mt-3 text-[15px] text-ink">{c.shiftsNone}</p>
-        <p className="mt-1 text-[13.5px] text-ink-mute">{c.shiftsNoneHint}</p>
+        <p className="mt-3 text-lead text-ink">{c.shiftsNone}</p>
+        <p className="mt-1 text-body text-ink-mute">{c.shiftsNoneHint}</p>
       </div>
     );
   }
@@ -61,22 +61,22 @@ export function CrewShifts({ shifts, today }: { shifts: Shift[]; today: string }
             <div className="pointer-events-none relative flex items-start gap-4">
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                  <h3 className="font-display text-[18px] font-semibold text-ink">{s.display_name}</h3>
+                  <h3 className="font-display text-subhead font-semibold text-ink">{s.display_name}</h3>
                   {when === 'today' && (
-                    <span className="rounded-xl2 bg-accent-wash px-2 py-0.5 text-[12.5px] text-accent">
+                    <span className="rounded-xl2 bg-accent-wash px-2 py-0.5 text-meta text-accent">
                       {c.shiftToday}
                     </span>
                   )}
                   {when === 'past' && (
-                    <span className="text-[12.5px] text-ink-mute">{c.shiftPast}</span>
+                    <span className="text-meta text-ink-mute">{c.shiftPast}</span>
                   )}
                 </div>
 
-                <p className="mt-1 text-[14px] text-ink-soft">
+                <p className="mt-1 text-body text-ink-soft">
                   {s.event_date ? fmt.format(new Date(s.event_date)) : c.shiftNoDate}
                 </p>
 
-                <dl className="mt-2.5 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-[13.5px] text-ink-soft">
+                <dl className="mt-2.5 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-body text-ink-soft">
                   <div className="flex min-w-0 items-center gap-1.5">
                     <MapPin size={14} className="text-ink-mute" aria-hidden strokeWidth={1.5} />
                     <dd className="truncate">{s.venue || c.shiftNoVenue}</dd>

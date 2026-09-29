@@ -68,13 +68,13 @@ export function PortalSummary({ rows, label }: { rows: SummaryRow[]; label: stri
                           transition-colors duration-300 hover:text-accent
                           ${i > 0 ? 'border-t border-line' : ''}`}
             >
-              <span className="text-[15.5px]">{r.label}</span>
+              <span className="text-lead">{r.label}</span>
               <span className="flex items-center gap-2.5">
                 {/* Some sections have a number worth showing beside the name
                     and some do not: the thread has no count that means
                     anything, and a made-up one is worse than the arrow alone. */}
                 {r.value !== null && (
-                  <span className="text-[17px] font-semibold tabular-nums">{r.value}</span>
+                  <span className="text-head font-semibold tabular-nums">{r.value}</span>
                 )}
                 {/* Points the way the language runs. In a right-to-left page
                     a chevron aimed right is aimed backwards. */}

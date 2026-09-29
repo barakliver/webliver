@@ -115,10 +115,10 @@ export default async function PortalPage({ searchParams }: {
             spelled out, rather than leaving somebody looking at a blank page
             wondering whether the invitation was real. */}
         <div className="card mt-5">
-          <p className="text-[14.5px] text-ink">
+          <p className="text-body text-ink">
             <Ltr>{ui.portal.emptyWho.replace('{email}', account.email)}</Ltr>
           </p>
-          <p className="mt-2 text-[14px] text-ink-soft">{ui.portal.emptyMismatch}</p>
+          <p className="mt-2 text-body text-ink-soft">{ui.portal.emptyMismatch}</p>
         </div>
       </>
     );
@@ -318,15 +318,15 @@ export default async function PortalPage({ searchParams }: {
         <Link href="/app/portal/journal" className="card flex items-start gap-3 transition hover:border-accent/40">
           <NotebookPen size={20} aria-hidden strokeWidth={1.5} className="mt-0.5 shrink-0 text-accent" />
           <span>
-            <span className="block text-[15.5px] font-semibold text-ink">{ui.journal.title}</span>
-            <span className="mt-0.5 block text-[13.5px] leading-relaxed text-ink-soft">{ui.journal.sub}</span>
+            <span className="block text-lead font-semibold text-ink">{ui.journal.title}</span>
+            <span className="mt-0.5 block text-body leading-relaxed text-ink-soft">{ui.journal.sub}</span>
           </span>
         </Link>
         <Link href="/app/portal/community" className="card flex items-start gap-3 transition hover:border-accent/40">
           <Users size={20} aria-hidden strokeWidth={1.5} className="mt-0.5 shrink-0 text-accent" />
           <span>
-            <span className="block text-[15.5px] font-semibold text-ink">{ui.circle.title}</span>
-            <span className="mt-0.5 block text-[13.5px] leading-relaxed text-ink-soft">{ui.circle.sub}</span>
+            <span className="block text-lead font-semibold text-ink">{ui.circle.title}</span>
+            <span className="mt-0.5 block text-body leading-relaxed text-ink-soft">{ui.circle.sub}</span>
           </span>
         </Link>
       </nav>

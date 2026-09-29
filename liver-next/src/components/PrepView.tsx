@@ -40,8 +40,8 @@ export function PrepView({ c, eventName, dateLabel, venue, producer, faces, look
   return (
     <main id="main" className="shell max-w-3xl py-10">
       <header className="border-b border-line pb-5">
-        <h1 className="font-display text-[28px] font-semibold text-ink">{eventName}</h1>
-        <p className="mt-1.5 text-[15px] text-ink-soft">
+        <h1 className="font-display text-figure font-semibold text-ink">{eventName}</h1>
+        <p className="mt-1.5 text-lead text-ink-soft">
           {dateLabel}
           {venue ? ` · ${venue}` : ''}
         </p>
@@ -49,7 +49,7 @@ export function PrepView({ c, eventName, dateLabel, venue, producer, faces, look
 
       {faces.length > 0 && (
         <section className="mt-8">
-          <h2 className="font-display text-[20px] font-semibold text-ink">{c.faces}</h2>
+          <h2 className="font-display text-panel font-semibold text-ink">{c.faces}</h2>
           <ul className="mt-4 grid list-none gap-4 p-0 sm:grid-cols-2">
             {faces.map((f, i) => (
               <li key={i} className="flex items-start gap-3">
@@ -62,11 +62,11 @@ export function PrepView({ c, eventName, dateLabel, venue, producer, faces, look
                   ? <img src={f.url} alt={f.name} className="size-20 shrink-0 rounded-xl2 object-cover" />
                   : <span aria-hidden className="size-20 shrink-0 rounded-xl2 border border-line bg-surface-200" />}
                 <div className="min-w-0">
-                  <p className="text-[16px] font-medium text-ink">{f.name}</p>
-                  {f.relation && <p className="text-[14px] text-ink-soft">{f.relation}</p>}
+                  <p className="text-head font-medium text-ink">{f.name}</p>
+                  {f.relation && <p className="text-body text-ink-soft">{f.relation}</p>}
                   {/* The instruction, at the same size as the name. It is the
                       only part of this that is an instruction. */}
-                  {f.note && <p className="mt-1 text-[14px] leading-snug text-ink">{f.note}</p>}
+                  {f.note && <p className="mt-1 text-body leading-snug text-ink">{f.note}</p>}
                 </div>
               </li>
             ))}
@@ -76,7 +76,7 @@ export function PrepView({ c, eventName, dateLabel, venue, producer, faces, look
 
       {looks.length > 0 && (
         <section className="mt-10">
-          <h2 className="font-display text-[20px] font-semibold text-ink">{c.looks}</h2>
+          <h2 className="font-display text-panel font-semibold text-ink">{c.looks}</h2>
           {ORDER.filter((cat) => looks.some((l) => l.category === cat)).map((cat) => (
             <div key={cat} className="mt-5">
               <h3 className="eyebrow">{c.categories[cat]}</h3>
@@ -85,7 +85,7 @@ export function PrepView({ c, eventName, dateLabel, venue, producer, faces, look
                   <li key={i} className="overflow-hidden rounded-xl2 border border-line">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     {l.url && <img src={l.url} alt={l.note || c.categories[cat]} className="aspect-square w-full object-cover" />}
-                    {l.note && <p className="px-2 py-1.5 text-[13px] leading-snug text-ink-soft">{l.note}</p>}
+                    {l.note && <p className="px-2 py-1.5 text-body leading-snug text-ink-soft">{l.note}</p>}
                   </li>
                 ))}
               </ul>
@@ -98,14 +98,14 @@ export function PrepView({ c, eventName, dateLabel, venue, producer, faces, look
           references should know that is the link working as intended, not a
           page that failed to load. */}
       {faces.length > 0 && looks.length === 0 && (
-        <p className="mt-8 text-[13.5px] text-ink-mute">{c.onlyFaces}</p>
+        <p className="mt-8 text-body text-ink-mute">{c.onlyFaces}</p>
       )}
       {looks.length > 0 && faces.length === 0 && (
-        <p className="mt-8 text-[13.5px] text-ink-mute">{c.onlyLooks}</p>
+        <p className="mt-8 text-body text-ink-mute">{c.onlyLooks}</p>
       )}
 
       {producer && (
-        <footer className="mt-10 border-t border-line pt-4 text-[13.5px] text-ink-mute">
+        <footer className="mt-10 border-t border-line pt-4 text-body text-ink-mute">
           {c.by} {producer}
         </footer>
       )}

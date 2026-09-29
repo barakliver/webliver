@@ -69,7 +69,7 @@ export default async function EventOsPage() {
         <Section eyebrow={c.eyebrow} title={c.title} sub={c.sub} level={1}>
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <Link href="/login" className="btn-primary">{c.cta}</Link>
-            <p className="text-[14px] text-ink-soft">{c.ctaNote}</p>
+            <p className="text-body text-ink-soft">{c.ctaNote}</p>
           </div>
         </Section>
 
@@ -78,7 +78,7 @@ export default async function EventOsPage() {
         <Section title={c.problemTitle} className="pt-0">
           <ul className="measure list-none space-y-3 p-0">
             {c.problem.map((line) => (
-              <li key={line} className="flex items-baseline gap-3 text-[16.5px] leading-relaxed text-ink-soft">
+              <li key={line} className="flex items-baseline gap-3 text-head leading-relaxed text-ink-soft">
                 <span aria-hidden className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
                 <span>{line}</span>
               </li>
@@ -90,15 +90,15 @@ export default async function EventOsPage() {
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {c.get.map((item) => (
               <div key={item.title} className="card">
-                <h3 className="font-display text-[18px] font-semibold text-ink">{item.title}</h3>
-                <p className="mt-2 text-[14.5px] leading-relaxed text-ink-soft">{item.body}</p>
+                <h3 className="font-display text-subhead font-semibold text-ink">{item.title}</h3>
+                <p className="mt-2 text-body leading-relaxed text-ink-soft">{item.body}</p>
               </div>
             ))}
           </div>
         </Section>
 
         <Section title={c.coupleTitle} className="pt-0">
-          <p className="measure text-[16.5px] leading-relaxed text-ink-soft">{c.coupleBody}</p>
+          <p className="measure text-head leading-relaxed text-ink-soft">{c.coupleBody}</p>
         </Section>
 
         {/* On the dark band because it is the claim a producer is most likely
@@ -109,18 +109,18 @@ export default async function EventOsPage() {
           <ol className="grid list-none gap-6 p-0 sm:grid-cols-3">
             {c.start.map((step, i) => (
               <li key={step.title}>
-                <span aria-hidden className="font-display text-[26px] font-semibold leading-none text-accent-bright">
+                <span aria-hidden className="font-display text-figure font-semibold leading-none text-accent-bright">
                   {i + 1}
                 </span>
-                <h3 className="mt-2 font-display text-[17px] font-semibold text-ink">{step.title}</h3>
-                <p className="mt-1.5 text-[14.5px] leading-relaxed text-ink-soft">{step.body}</p>
+                <h3 className="mt-2 font-display text-head font-semibold text-ink">{step.title}</h3>
+                <p className="mt-1.5 text-body leading-relaxed text-ink-soft">{step.body}</p>
               </li>
             ))}
           </ol>
 
           <div className="mt-10 flex flex-wrap items-center gap-4">
             <Link href="/login" className="btn-primary">{c.cta}</Link>
-            <p className="text-[14px] text-ink-soft">{c.ctaNote}</p>
+            <p className="text-body text-ink-soft">{c.ctaNote}</p>
           </div>
         </Section>
       </main>

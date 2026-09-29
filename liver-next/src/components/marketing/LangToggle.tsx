@@ -30,7 +30,7 @@ export function LangToggle({ current, className = '' }: { current: Locale; class
             aria-label={LOCALE_LABEL[code]}
             aria-current={on ? 'true' : undefined}
             disabled={on}
-            className={`min-h-[32px] rounded-full px-3 text-[12.5px] transition-colors ${
+            className={`min-h-[32px] rounded-full px-3 text-meta transition-colors ${
               on
                 ? 'bg-ink font-medium text-surface'
                 : 'text-ink-mute hover:text-ink'

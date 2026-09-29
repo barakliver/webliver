@@ -71,14 +71,14 @@ export function Thread({ clientId, messages, viewerId }: {
 
   return (
     <section className="card">
-      <h2 className="flex items-center gap-2 font-display text-[18px] font-semibold text-ink">
+      <h2 className="flex items-center gap-2 font-display text-subhead font-semibold text-ink">
         <MessagesSquare size={18} aria-hidden strokeWidth={1.5} />
         {c.title}
       </h2>
-      <p className="mt-1 text-[14px] text-ink-soft">{c.sub}</p>
+      <p className="mt-1 text-body text-ink-soft">{c.sub}</p>
 
       {messages.length === 0 ? (
-        <p className="mt-5 rounded-xl2 bg-surface-100 px-4 py-3 text-[14.5px] text-ink-mute">{c.empty}</p>
+        <p className="mt-5 rounded-xl2 bg-surface-100 px-4 py-3 text-body text-ink-mute">{c.empty}</p>
       ) : (
         <ol className="mt-5 space-y-3">
           {messages.map((m) => {
@@ -90,20 +90,20 @@ export function Thread({ clientId, messages, viewerId }: {
             return (
               <li key={m.id}>
                 {newDay && (
-                  <p className="mb-3 mt-5 text-center text-[12.5px] text-ink-mute first:mt-0">{day}</p>
+                  <p className="mb-3 mt-5 text-center text-meta text-ink-mute first:mt-0">{day}</p>
                 )}
                 <div className={`flex gap-2.5 ${mine ? 'flex-row-reverse' : ''}`}>
                   <Avatar name={m.author_name} src={m.author_avatar} size={32} />
                   <div className={`min-w-0 max-w-[80%] ${mine ? 'text-left' : ''}`}>
                     <div
-                      className={`rounded-xl2 px-3.5 py-2.5 text-[14.5px] leading-[1.65] ${
+                      className={`rounded-xl2 px-3.5 py-2.5 text-body leading-[1.65] ${
                         mine ? 'bg-ink text-surface' : 'bg-surface-200 text-ink'
                       }`}
                     >
-                      {!mine && <p className="mb-0.5 text-[12.5px] font-medium text-accent">{m.author_name}</p>}
+                      {!mine && <p className="mb-0.5 text-meta font-medium text-accent">{m.author_name}</p>}
                       <p className="whitespace-pre-wrap break-words">{m.body}</p>
                     </div>
-                    <div className={`mt-1 flex items-center gap-2 text-[12px] text-ink-mute ${mine ? 'justify-end' : ''}`}>
+                    <div className={`mt-1 flex items-center gap-2 text-meta text-ink-mute ${mine ? 'justify-end' : ''}`}>
                       <time dateTime={m.created_at}>{timeFmt.format(new Date(m.created_at))}</time>
                       {mine && (
                         <DeleteForm action={deleteMessage}>
@@ -137,7 +137,7 @@ export function Thread({ clientId, messages, viewerId }: {
         <Send_ />
       </form>
       {state && !state.ok && state.error && (
-        <p role="alert" className="mt-3 rounded-xl2 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">{state.error}</p>
+        <p role="alert" className="mt-3 rounded-xl2 bg-bad-wash px-4 py-2.5 text-body text-bad">{state.error}</p>
       )}
     </section>
   );

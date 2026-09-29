@@ -45,7 +45,7 @@ export default async function SiteEditorPage() {
         report={<IssueReporter userId={account.id} context={ui.siteEditor.title} />}
       />
       <SiteEditor values={values} overridden={overridden} />
-      <p className="mt-8 text-[13px] text-ink-mute">{ui.siteEditor.note}</p>
+      <p className="mt-8 text-body text-ink-mute">{ui.siteEditor.note}</p>
     </>
   );
 }

@@ -92,9 +92,9 @@ const whenIs = (c: BookCopy, n: number) =>
 function Part({ title, count, children }: { title: string; count?: number; children: React.ReactNode }) {
   return (
     <section className="print-block mt-8">
-      <h2 className="border-b border-ink/20 pb-1.5 font-display text-[17px] font-semibold text-ink">
+      <h2 className="border-b border-ink/20 pb-1.5 font-display text-head font-semibold text-ink">
         {title}
-        {count !== undefined && <span className="ms-2 text-[13px] font-normal text-ink-soft">{count}</span>}
+        {count !== undefined && <span className="ms-2 text-body font-normal text-ink-soft">{count}</span>}
       </h2>
       {children}
     </section>
@@ -102,7 +102,7 @@ function Part({ title, count, children }: { title: string; count?: number; child
 }
 
 function Empty({ children }: { children: React.ReactNode }) {
-  return <p className="mt-3 text-[13.5px] text-ink-mute">{children}</p>;
+  return <p className="mt-3 text-body text-ink-mute">{children}</p>;
 }
 
 export function ProductionBook(props: BookProps) {
@@ -141,14 +141,14 @@ export function ProductionBook(props: BookProps) {
     <div className="print-doc mx-auto max-w-[860px] text-ink">
       {/* ── cover ─────────────────────────────────────────────────────────── */}
       <header className="print-block border-b-2 border-ink pb-5">
-        <p className="text-[12px] uppercase tracking-[0.14em] text-ink-soft">{brand.name}</p>
+        <p className="text-meta uppercase tracking-[0.14em] text-ink-soft">{brand.name}</p>
         <h1 className="mt-2 font-display text-[30px] font-semibold leading-tight">{client.display_name}</h1>
-        <p className="mt-1.5 text-[15px] text-ink-soft">
+        <p className="mt-1.5 text-lead text-ink-soft">
           {date || c.noDate}
           {client.venue ? ` · ${client.venue}` : ''}
         </p>
 
-        <dl className="mt-5 grid grid-cols-2 gap-x-8 gap-y-2 text-[13.5px] sm:grid-cols-4">
+        <dl className="mt-5 grid grid-cols-2 gap-x-8 gap-y-2 text-body sm:grid-cols-4">
           <div>
             <dt className="text-ink-mute">{c.countdown}</dt>
             <dd className="font-medium">{daysToEvent === null ? c.noDate : whenIs(c, daysToEvent)}</dd>
@@ -172,7 +172,7 @@ export function ProductionBook(props: BookProps) {
         </dl>
 
         {(client.contact_phone || client.contact_email) && (
-          <p className="mt-4 text-[13.5px] text-ink-soft">
+          <p className="mt-4 text-body text-ink-soft">
             {c.reachCouple}: {[client.contact_phone, client.contact_email].filter(Boolean).join(' · ')}
           </p>
         )}
@@ -181,7 +181,7 @@ export function ProductionBook(props: BookProps) {
       {/* ── who arrives when ──────────────────────────────────────────────── */}
       <Part title={c.arrivals} count={arrivals.length}>
         {arrivals.length === 0 ? <Empty>{c.noArrivals}</Empty> : (
-          <table className="mt-3 w-full text-[13.5px]">
+          <table className="mt-3 w-full text-body">
             <tbody>
               {arrivals.map((a) => (
                 <tr key={a.id} className="print-block border-b border-ink/10">
@@ -199,14 +199,14 @@ export function ProductionBook(props: BookProps) {
       {/* ── the running order ─────────────────────────────────────────────── */}
       <Part title={c.runningOrder} count={moments.length}>
         {moments.length === 0 ? <Empty>{c.noOrder}</Empty> : (
-          <table className="mt-3 w-full text-[13.5px]">
+          <table className="mt-3 w-full text-body">
             <tbody>
               {moments.map((m) => (
                 <tr key={m.id} className="print-block border-b border-ink/10 align-top">
                   <td className="w-16 py-1.5 font-medium tabular-nums">{hhmm(m.at_time)}</td>
                   <td className="py-1.5">
                     <span className="font-medium">{m.title}</span>
-                    {m.note && <span className="block text-[12.5px] text-ink-soft">{m.note}</span>}
+                    {m.note && <span className="block text-meta text-ink-soft">{m.note}</span>}
                   </td>
                   <td className="w-28 py-1.5 text-end text-ink-soft">{m.owner}</td>
                 </tr>
@@ -222,8 +222,8 @@ export function ProductionBook(props: BookProps) {
           <div className="mt-3 space-y-4">
             {[...byCategory.entries()].map(([category, list]) => (
               <div key={category} className="print-block">
-                <h3 className="text-[12px] uppercase tracking-[0.1em] text-ink-mute">{category}</h3>
-                <table className="mt-1 w-full text-[13.5px]">
+                <h3 className="text-meta uppercase tracking-[0.1em] text-ink-mute">{category}</h3>
+                <table className="mt-1 w-full text-body">
                   <tbody>
                     {list.map((v) => (
                       <tr key={v.id} className="border-b border-ink/10">
@@ -242,14 +242,14 @@ export function ProductionBook(props: BookProps) {
 
       {/* ── guests ────────────────────────────────────────────────────────── */}
       <Part title={c.guests}>
-        <dl className="mt-3 grid grid-cols-2 gap-x-8 gap-y-2 text-[13.5px] sm:grid-cols-4">
+        <dl className="mt-3 grid grid-cols-2 gap-x-8 gap-y-2 text-body sm:grid-cols-4">
           <div><dt className="text-ink-mute">{c.invited}</dt><dd className="font-medium">{guests.invited}</dd></div>
           <div><dt className="text-ink-mute">{c.coming}</dt><dd className="font-medium">{guests.coming}</dd></div>
           <div><dt className="text-ink-mute">{c.declined}</dt><dd className="font-medium">{guests.declined}</dd></div>
           <div><dt className="text-ink-mute">{c.pending}</dt><dd className="font-medium">{guests.pending}</dd></div>
         </dl>
         {guests.diets.length > 0 && (
-          <p className="mt-3 text-[13.5px] text-ink-soft">
+          <p className="mt-3 text-body text-ink-soft">
             {c.diets}: {guests.diets.map((d) => `${d.label} ${d.count}`).join(' · ')}
           </p>
         )}
@@ -258,7 +258,7 @@ export function ProductionBook(props: BookProps) {
       {/* ── what is still open ────────────────────────────────────────────── */}
       <Part title={c.open} count={openTasks.length}>
         {openTasks.length === 0 ? <Empty>{c.noOpen}</Empty> : (
-          <ul className="mt-3 list-none space-y-1.5 p-0 text-[13.5px]">
+          <ul className="mt-3 list-none space-y-1.5 p-0 text-body">
             {openTasks.map((t) => (
               <li key={t.id} className="print-block flex items-baseline justify-between gap-4 border-b border-ink/10 pb-1.5">
                 <span>{t.title}</span>
@@ -271,12 +271,12 @@ export function ProductionBook(props: BookProps) {
 
       {/* ── money ─────────────────────────────────────────────────────────── */}
       <Part title={c.money}>
-        <dl className="mt-3 grid grid-cols-2 gap-x-8 gap-y-2 text-[13.5px]">
+        <dl className="mt-3 grid grid-cols-2 gap-x-8 gap-y-2 text-body">
           <div><dt className="text-ink-mute">{c.paid}</dt><dd className="font-medium"><Money value={paid} /></dd></div>
           <div><dt className="text-ink-mute">{c.owed}</dt><dd className="font-medium"><Money value={owed} /></dd></div>
         </dl>
         {payments.length > 0 && (
-          <table className="mt-3 w-full text-[13.5px]">
+          <table className="mt-3 w-full text-body">
             <tbody>
               {payments.map((p) => (
                 <tr key={p.id} className="print-block border-b border-ink/10">
@@ -291,7 +291,7 @@ export function ProductionBook(props: BookProps) {
       </Part>
 
       {/* ── signature ─────────────────────────────────────────────────────── */}
-      <footer className="print-block mt-10 border-t border-ink/20 pt-3 text-[12px] text-ink-mute">
+      <footer className="print-block mt-10 border-t border-ink/20 pt-3 text-meta text-ink-mute">
         {/* The paper carries the producer's business, never the platform's:
             what a venue manager holds is their supplier's stationery. The
             printing date is on it because a production book is out of date

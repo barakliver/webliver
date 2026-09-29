@@ -31,13 +31,13 @@ export function DarkBand({
 
       <div className="shell text-center">
         {kicker && (
-          <p className="text-[11.5px] font-medium tracking-[.14em] text-accent-light">{kicker}</p>
+          <p className="text-micro font-medium tracking-[.14em] text-accent-light">{kicker}</p>
         )}
         <h2 className="mx-auto mt-4 max-w-[20ch] font-display text-display font-semibold text-surface">
           {title}
         </h2>
         {body && (
-          <p className="measure mx-auto mt-5 text-[16.5px] leading-relaxed text-surface/75">{body}</p>
+          <p className="measure mx-auto mt-5 text-head leading-relaxed text-surface/75">{body}</p>
         )}
         <div className="mt-9">
           <Link

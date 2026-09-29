@@ -117,8 +117,8 @@ export function EventFiles({ clientId, files, viewer }: {
   return (
     <section className="card">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h2 className="font-display text-[22px] font-semibold text-ink">{c.title}</h2>
-        <p className="text-[13.5px] text-ink-mute">{viewer === 'client' ? c.subClient : c.subProducer}</p>
+        <h2 className="font-display text-panel font-semibold text-ink">{c.title}</h2>
+        <p className="text-body text-ink-mute">{viewer === 'client' ? c.subClient : c.subProducer}</p>
       </div>
 
       {/* Both sides may add. The couple is who this was built for, but a
@@ -134,7 +134,7 @@ export function EventFiles({ clientId, files, viewer }: {
           over ? 'border-accent bg-accent-wash' : 'border-line-strong bg-surface-100'
         }`}
       >
-        <label className="inline-flex min-h-[44px] cursor-pointer items-center gap-2 rounded-button border border-line-strong bg-card px-5 text-[14px] font-medium text-ink transition hover:border-accent/40 hover:text-accent">
+        <label className="inline-flex min-h-[44px] cursor-pointer items-center gap-2 rounded-button border border-line-strong bg-card px-5 text-body font-medium text-ink transition hover:border-accent/40 hover:text-accent">
           <Upload size={16} aria-hidden strokeWidth={1.5} />
           {busy.length > 0 ? c.adding : c.add}
           <input
@@ -142,16 +142,16 @@ export function EventFiles({ clientId, files, viewer }: {
             onChange={(e) => { if (e.target.files?.length) void send(e.target.files); }}
           />
         </label>
-        <p className="mt-3 text-[13.5px] text-ink-soft">{c.drop}</p>
-        <p className="mt-1 text-[12.5px] text-ink-mute">{c.dropHint}</p>
+        <p className="mt-3 text-body text-ink-soft">{c.drop}</p>
+        <p className="mt-1 text-meta text-ink-mute">{c.dropHint}</p>
 
         <div className="mt-4 flex flex-wrap items-center justify-center gap-1.5">
-          <span className="me-1 text-[12.5px] text-ink-mute">{c.media.tagForUpload}</span>
+          <span className="me-1 text-meta text-ink-mute">{c.media.tagForUpload}</span>
           {MEDIA_TAGS.map((t) => (
             <button
               key={t} type="button" onClick={() => setTag(tag === t ? '' : t)} aria-pressed={tag === t}
               className={cn(
-                'inline-flex min-h-[34px] items-center rounded-xl2 border px-3 text-[12.5px] transition-colors',
+                'inline-flex min-h-[34px] items-center rounded-xl2 border px-3 text-meta transition-colors',
                 tag === t ? 'border-ink bg-ink text-surface' : 'border-line bg-card text-ink-soft hover:border-line-strong hover:text-ink',
               )}
             >
@@ -163,20 +163,20 @@ export function EventFiles({ clientId, files, viewer }: {
         {busy.length > 0 && (
           <ul className="mt-3 space-y-1" aria-live="polite">
             {busy.map((n) => (
-              <li key={n} className="truncate text-[13px] text-ink-mute">{c.adding} · {n}</li>
+              <li key={n} className="truncate text-body text-ink-mute">{c.adding} · {n}</li>
             ))}
           </ul>
         )}
       </div>
 
       {error && (
-        <p role="alert" className="mt-3 rounded-control border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+        <p role="alert" className="mt-3 rounded-control border border-bad/25 bg-bad-wash px-4 py-2.5 text-body text-bad">
           {error}
         </p>
       )}
 
       {files.length === 0 ? (
-        <p className="mt-6 text-[14.5px] text-ink-mute">{viewer === 'client' ? c.none : c.noneProducer}</p>
+        <p className="mt-6 text-body text-ink-mute">{viewer === 'client' ? c.none : c.noneProducer}</p>
       ) : (
         <div className="mt-6 space-y-6">
           {photos.length > 0 && (
@@ -185,7 +185,7 @@ export function EventFiles({ clientId, files, viewer }: {
 
           {docs.length > 0 && (
             <div>
-              <p className="text-[11.5px] tracking-[.14em] text-ink-mute">{c.documents}</p>
+              <p className="text-micro tracking-[.14em] text-ink-mute">{c.documents}</p>
               <ul className="mt-3 divide-y divide-line border-t border-line">
                 {docs.map((f) => (
                   <li key={f.id} className="py-3">
@@ -221,16 +221,16 @@ function Row({ file: f, clientId, viewer, start, compact }: {
           <span className="shrink-0 text-ink-mute"><Icon mime={f.mime} /></span>
           <a
             href={f.url} target="_blank" rel="noreferrer"
-            className="truncate text-[14.5px] text-ink transition hover:text-accent"
+            className="truncate text-body text-ink transition hover:text-accent"
             title={f.name}
           >
             <Ltr>{f.name}</Ltr>
           </a>
         </div>
 
-        {f.note && <p className="mt-1 text-[13.5px] text-ink-soft">{f.note}</p>}
+        {f.note && <p className="mt-1 text-body text-ink-soft">{f.note}</p>}
 
-        <p className="mt-1 text-[12.5px] text-ink-mute">
+        <p className="mt-1 text-meta text-ink-mute">
           {c.by} {f.uploader} · {dateFmt.format(new Date(f.created_at))}
           {f.size_bytes > 0 && <> · <Ltr>{humanSize(f.size_bytes)}</Ltr></>}
         </p>
@@ -246,7 +246,7 @@ function Row({ file: f, clientId, viewer, start, compact }: {
               name="note" defaultValue={f.note} maxLength={300} placeholder={c.notePh}
               className="field flex-1" aria-label={c.note} autoComplete="off"
             />
-            <button type="submit" className="btn-quiet whitespace-nowrap px-3 text-[13.5px]">{c.noteSave}</button>
+            <button type="submit" className="btn-quiet whitespace-nowrap px-3 text-body">{c.noteSave}</button>
           </form>
         )}
       </div>
@@ -254,7 +254,7 @@ function Row({ file: f, clientId, viewer, start, compact }: {
       <div className={`flex shrink-0 items-center gap-1 ${compact ? 'mt-2' : ''}`}>
         <a
           href={downloadHref(f)}
-          className="btn-quiet inline-flex items-center gap-1.5 px-2 py-1 text-[13px]"
+          className="btn-quiet inline-flex items-center gap-1.5 px-2 py-1 text-body"
           aria-label={`${c.download} ${f.name}`}
         >
           <Download size={15} aria-hidden strokeWidth={1.5} />
@@ -262,7 +262,7 @@ function Row({ file: f, clientId, viewer, start, compact }: {
         </a>
 
         {!editing && (
-          <button type="button" onClick={() => setEditing(true)} className="btn-quiet px-2 py-1 text-[13px]">
+          <button type="button" onClick={() => setEditing(true)} className="btn-quiet px-2 py-1 text-body">
             {c.note}
           </button>
         )}
@@ -273,7 +273,7 @@ function Row({ file: f, clientId, viewer, start, compact }: {
             <input type="hidden" name="client_id" value={clientId} />
             <button
               type="submit"
-              className="btn-quiet inline-flex items-center gap-1.5 px-2 py-1 text-[13px]"
+              className="btn-quiet inline-flex items-center gap-1.5 px-2 py-1 text-body"
               aria-label={`${c.remove} ${f.name}`}
             >
               <X size={15} aria-hidden strokeWidth={1.5} />

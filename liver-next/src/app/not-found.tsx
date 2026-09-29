@@ -35,13 +35,13 @@ export default async function NotFound() {
   return (
     <main id="main" className="shell flex min-h-[70vh] flex-col justify-center py-16">
       <div className="measure">
-        <p className="font-mono text-[13px] tracking-[.2em] text-ink-mute" dir="ltr">{c.code}</p>
+        <p className="font-mono text-body tracking-[.2em] text-ink-mute" dir="ltr">{c.code}</p>
 
         <h1 className="mt-4 font-display text-display font-semibold leading-tight text-ink">
           {c.title}
         </h1>
 
-        <p className="mt-4 text-[16px] leading-relaxed text-ink-soft">{c.body}</p>
+        <p className="mt-4 text-head leading-relaxed text-ink-soft">{c.body}</p>
 
         <div className="mt-8 flex flex-wrap gap-3">
           <Link href="/" className="btn-primary inline-flex items-center gap-2">
@@ -66,7 +66,7 @@ export default async function NotFound() {
 
         {/* The sentence that solves most of these without anybody being
             written to: an expired link looks exactly like a broken one. */}
-        <p className="mt-10 border-t border-line pt-5 text-[13.5px] leading-relaxed text-ink-mute">
+        <p className="mt-10 border-t border-line pt-5 text-body leading-relaxed text-ink-mute">
           {c.help}
         </p>
       </div>

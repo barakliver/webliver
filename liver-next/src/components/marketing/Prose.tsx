@@ -17,12 +17,12 @@ export function Prose({ lines, className = '', lede = true, ledeClassName = 'tex
   ledeClassName?: string;
 }) {
   return (
-    <div className={`measure space-y-2.5 text-[16.5px] text-ink-soft sm:text-[17.5px] ${className}`}>
+    <div className={`measure space-y-2.5 text-head text-ink-soft sm:text-head ${className}`}>
       {lines.map((line, i) => (
         <p
           key={i}
           className={lede && i === 0
-            ? `pb-1.5 text-[19px] leading-relaxed sm:text-[21px] ${ledeClassName}`
+            ? `pb-1.5 text-subhead leading-relaxed sm:text-panel ${ledeClassName}`
             : undefined}
         >
           {line}

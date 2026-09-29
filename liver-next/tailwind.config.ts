@@ -205,6 +205,45 @@ const config: Config = {
         /* The numbers the screens are built around. */
         'metric':     ['62px', { lineHeight: '1',    letterSpacing: '-.02em' }],
         'metric-sm':  ['42px', { lineHeight: '1.05', letterSpacing: '-.015em' }],
+
+        /* ── the interface scale ───────────────────────────────────────────
+           Eight steps, and every size in the product below 30px is one of
+           them.
+
+           There were thirty-five. Not chosen: accumulated, one at a time,
+           each one a reasonable local decision. Between 12 and 15px alone
+           there were seven — 12, 12.5, 13, 13.5, 14, 14.5, 15 — and half a
+           pixel is invisible in one line and is exactly what makes a whole
+           screen read as untidy without anybody being able to point at the
+           reason. Twelve of them were heading sizes, which is the same as
+           having none: the eye builds a hierarchy out of a few repeated
+           steps, and it cannot build one out of twelve.
+
+           The steps are the values the product already used most, so this
+           refactor moves 1,800 call sites and moves no text by more than a
+           pixel. What it does change is that `13px` and `14.5px` are now
+           the same step: an interface has one body size, and the two of
+           them were the same sentence written twice.
+
+           Deliberately no line height. An arbitrary `text-[14px]` set the
+           size and nothing else, so every one of these call sites inherits
+           its leading from its context or from a `leading-*` beside it.
+           Attaching one here would have silently relaid out every screen in
+           the product, which is not what a rename is allowed to do.
+
+           30px and up is left as an arbitrary value on purpose. Those are
+           nine one-off art directions — the countdown, the game's own type,
+           the marketing hero — and `display`, `display-xl` and the two
+           metric sizes above are the named ones. `npm run type` fails the
+           build on anything below 30 that is not on this scale. */
+        'micro':      '11.5px',
+        'meta':       '12.5px',
+        'body':       '14px',
+        'lead':       '15.5px',
+        'head':       '17px',
+        'subhead':    '19px',
+        'panel':      '22px',
+        'figure':     '26px',
       },
       letterSpacing: {
         /* A kicker is the one thing tracked open rather than tight. */

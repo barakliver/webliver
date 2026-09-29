@@ -28,13 +28,13 @@ function Result({ state }: { state: TemplateResult | null }) {
   if (!state) return null;
   if (!state.ok) {
     return (
-      <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+      <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-body text-bad">
         {state.error}
       </p>
     );
   }
   return (
-    <p role="status" className="mt-3 inline-flex items-center gap-2 rounded-xl2 border border-ok/30 bg-ok-wash px-4 py-2.5 text-[14px] text-ok">
+    <p role="status" className="mt-3 inline-flex items-center gap-2 rounded-xl2 border border-ok/30 bg-ok-wash px-4 py-2.5 text-body text-ok">
       <Check size={15} aria-hidden strokeWidth={1.5} />
       {fill(c.added, { n: state.added ?? 0 })}
     </p>
@@ -87,7 +87,7 @@ export function EventTemplate({ clientId }: { clientId: string }) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-2 rounded-xl2 border border-line-strong bg-card px-4 py-2.5 text-[14px] font-medium text-ink transition hover:border-accent/40 hover:text-accent"
+        className="inline-flex items-center gap-2 rounded-xl2 border border-line-strong bg-card px-4 py-2.5 text-body font-medium text-ink transition hover:border-accent/40 hover:text-accent"
       >
         <ClipboardList size={16} aria-hidden strokeWidth={1.5} />
         {c.open}
@@ -99,10 +99,10 @@ export function EventTemplate({ clientId }: { clientId: string }) {
     <section className="card">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="font-display text-[18px] font-semibold text-ink">{c.title}</h2>
-          <p className="mt-1 max-w-prose2 text-[14px] leading-relaxed text-ink-soft">{c.sub}</p>
+          <h2 className="font-display text-subhead font-semibold text-ink">{c.title}</h2>
+          <p className="mt-1 max-w-prose2 text-body leading-relaxed text-ink-soft">{c.sub}</p>
         </div>
-        <button type="button" className="btn-quiet text-[13.5px]" onClick={() => setOpen(false)}>{c.close}</button>
+        <button type="button" className="btn-quiet text-body" onClick={() => setOpen(false)}>{c.close}</button>
       </div>
 
       <nav className="mt-5 flex flex-wrap gap-1.5" aria-label={c.title}>
@@ -112,7 +112,7 @@ export function EventTemplate({ clientId }: { clientId: string }) {
             type="button"
             aria-current={tab === id ? 'true' : undefined}
             onClick={() => setTab(id)}
-            className={`inline-flex min-h-[44px] items-center rounded-xl2 px-4 text-[14px] transition sm:min-h-[38px] ${
+            className={`inline-flex min-h-[44px] items-center rounded-xl2 px-4 text-body transition sm:min-h-[38px] ${
               tab === id ? 'bg-ink font-medium text-surface' : 'text-ink-soft hover:bg-surface-200 hover:text-ink'
             }`}
           >
@@ -125,7 +125,7 @@ export function EventTemplate({ clientId }: { clientId: string }) {
         <form action={taskAction} className="mt-5">
           <input type="hidden" name="client_id" value={clientId} />
 
-          <div className="mb-3 flex flex-wrap gap-3 text-[13px]">
+          <div className="mb-3 flex flex-wrap gap-3 text-body">
             <button type="button" className="text-ink-mute hover:text-ink"
               onClick={() => setPicked(new Set(TASK_TEMPLATE.flatMap((g) => g.tasks.map((t) => t.title))))}>
               {c.pickAll}
@@ -138,8 +138,8 @@ export function EventTemplate({ clientId }: { clientId: string }) {
           <div className="space-y-6">
             {TASK_TEMPLATE.map((group) => (
               <div key={group.id}>
-                <h3 className="text-[13px] font-semibold text-accent">{group.title}</h3>
-                <p className="mt-0.5 mb-3 text-[12.5px] leading-relaxed text-ink-mute">{group.sub}</p>
+                <h3 className="text-body font-semibold text-accent">{group.title}</h3>
+                <p className="mt-0.5 mb-3 text-meta leading-relaxed text-ink-mute">{group.sub}</p>
 
                 <ul className="space-y-1.5">
                   {group.tasks.map((t) => {
@@ -162,8 +162,8 @@ export function EventTemplate({ clientId }: { clientId: string }) {
                           {on && <input type="hidden" name="task" value={t.title} />}
                           {on && isShared && <input type="hidden" name="shared" value={t.title} />}
                           <span className="min-w-0">
-                            <span className="block text-[14.5px] text-ink">{t.title}</span>
-                            {t.note && <span className="block text-[12.5px] text-ink-mute">{t.note}</span>}
+                            <span className="block text-body text-ink">{t.title}</span>
+                            {t.note && <span className="block text-meta text-ink-mute">{t.note}</span>}
                           </span>
                         </label>
 
@@ -173,7 +173,7 @@ export function EventTemplate({ clientId }: { clientId: string }) {
                           disabled={!on}
                           aria-pressed={isShared}
                           onClick={() => toggle(shared, t.title, setShared)}
-                          className={`inline-flex min-h-[36px] shrink-0 items-center gap-1.5 rounded-xl2 px-3 text-[12.5px] transition disabled:opacity-40 ${
+                          className={`inline-flex min-h-[36px] shrink-0 items-center gap-1.5 rounded-xl2 px-3 text-meta transition disabled:opacity-40 ${
                             isShared ? 'bg-ok-wash text-ok' : 'bg-surface-200 text-ink-mute'
                           }`}
                         >
@@ -189,7 +189,7 @@ export function EventTemplate({ clientId }: { clientId: string }) {
             ))}
           </div>
 
-          <p className="mt-4 inline-flex items-center gap-1.5 text-[12.5px] text-ink-mute">
+          <p className="mt-4 inline-flex items-center gap-1.5 text-meta text-ink-mute">
             <Lock size={13} aria-hidden strokeWidth={1.5} />
             {c.privateNote}
           </p>
@@ -202,7 +202,7 @@ export function EventTemplate({ clientId }: { clientId: string }) {
       {tab === 'budget' && (
         <form action={budgetAction} className="mt-5">
           <input type="hidden" name="client_id" value={clientId} />
-          <div className="mb-3 flex flex-wrap gap-3 text-[13px]">
+          <div className="mb-3 flex flex-wrap gap-3 text-body">
             <button type="button" className="text-ink-mute hover:text-ink" onClick={() => setBudget(new Set(BUDGET_LINES.map((b) => b.label)))}>{c.pickAll}</button>
             <button type="button" className="text-ink-mute hover:text-ink" onClick={() => setBudget(new Set())}>{c.pickNone}</button>
           </div>
@@ -218,7 +218,7 @@ export function EventTemplate({ clientId }: { clientId: string }) {
                     className="size-5 shrink-0 rounded border-line-strong accent-accent"
                   />
                   {budget.has(b.label) && <input type="hidden" name="line" value={b.label} />}
-                  <span className="text-[14.5px] text-ink">{b.label}</span>
+                  <span className="text-body text-ink">{b.label}</span>
                 </label>
               </li>
             ))}
@@ -231,7 +231,7 @@ export function EventTemplate({ clientId }: { clientId: string }) {
       {tab === 'suppliers' && (
         <form action={roleAction} className="mt-5">
           <input type="hidden" name="client_id" value={clientId} />
-          <div className="mb-3 flex flex-wrap gap-3 text-[13px]">
+          <div className="mb-3 flex flex-wrap gap-3 text-body">
             <button type="button" className="text-ink-mute hover:text-ink" onClick={() => setRoles(new Set(SUPPLIER_ROLES.map((r) => r.name)))}>{c.pickAll}</button>
             <button type="button" className="text-ink-mute hover:text-ink" onClick={() => setRoles(new Set())}>{c.pickNone}</button>
           </div>
@@ -248,8 +248,8 @@ export function EventTemplate({ clientId }: { clientId: string }) {
                   />
                   {roles.has(r.name) && <input type="hidden" name="role" value={r.name} />}
                   <span className="min-w-0">
-                    <span className="block text-[14.5px] text-ink">{r.name}</span>
-                    <span className="block text-[12px] text-ink-mute">{categoryLabelFor(r.category, locale)}</span>
+                    <span className="block text-body text-ink">{r.name}</span>
+                    <span className="block text-meta text-ink-mute">{categoryLabelFor(r.category, locale)}</span>
                   </span>
                 </label>
               </li>

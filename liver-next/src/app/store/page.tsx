@@ -63,7 +63,7 @@ export default async function StorePage() {
       <Nav site={site} locale={locale} shop={items.length > 0} />
       <main id="main">
         <Section id="shop" title={c.shopTitle} level={1}>
-          <p className="mb-8 text-[15.5px] text-ink-soft">{c.shopSub}</p>
+          <p className="mb-8 text-lead text-ink-soft">{c.shopSub}</p>
           <Shop producerId={String(producerId ?? '')} items={items} copy={c} />
           <PromiseLine className="mt-16" text={site.hero.headline} />
         </Section>

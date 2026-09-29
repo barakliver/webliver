@@ -133,7 +133,7 @@ export function PortalJump({ c }: { c: JumpCopy }) {
         aria-haspopup="dialog"
         aria-expanded={open}
         className="pointer-events-auto flex min-h-[48px] max-w-[58vw] items-center gap-2 rounded-full
-                   border border-line-strong bg-card px-4 text-[14px] font-medium text-ink shadow-fab
+                   border border-line-strong bg-card px-4 text-body font-medium text-ink shadow-fab
                    transition-colors hover:border-accent"
       >
         <List size={17} strokeWidth={1.5} aria-hidden className="shrink-0 text-accent" />
@@ -151,8 +151,8 @@ export function PortalJump({ c }: { c: JumpCopy }) {
           <div className="max-h-[80svh] w-full overflow-y-auto rounded-t-sheet border border-line-strong bg-card p-6 shadow-pop sm:max-w-[26rem] sm:rounded-sheet">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h2 className="font-display text-[20px] font-semibold text-ink">{c.title}</h2>
-                <p className="mt-1 text-[13.5px] text-ink-soft">{c.sub}</p>
+                <h2 className="font-display text-panel font-semibold text-ink">{c.title}</h2>
+                <p className="mt-1 text-body text-ink-soft">{c.sub}</p>
               </div>
               <button
                 type="button" onClick={() => { setOpen(false); opener.current?.focus(); }}
@@ -165,7 +165,7 @@ export function PortalJump({ c }: { c: JumpCopy }) {
 
             {order.map((g) => (
               <div key={g} className="mt-5">
-                <p className="text-[12px] tracking-[.12em] text-ink-mute">{c.groups[g] ?? c.groups.event}</p>
+                <p className="text-meta tracking-[.12em] text-ink-mute">{c.groups[g] ?? c.groups.event}</p>
                 <ul className="mt-1.5 list-none p-0">
                   {sections.filter((s) => s.group === g).map((s) => {
                     const on = s.id === current;
@@ -175,7 +175,7 @@ export function PortalJump({ c }: { c: JumpCopy }) {
                           type="button"
                           onClick={() => go(s.id)}
                           aria-current={on ? 'true' : undefined}
-                          className={`flex min-h-[48px] w-full items-center justify-between gap-3 border-b border-line px-1 text-start text-[15px] transition-colors ${
+                          className={`flex min-h-[48px] w-full items-center justify-between gap-3 border-b border-line px-1 text-start text-lead transition-colors ${
                             on ? 'font-semibold text-accent' : 'text-ink hover:text-accent'
                           }`}
                         >

@@ -59,14 +59,14 @@ export function BeginFlow({ clientId, basics, defaultOpen = false }: {
     const names = (done.wrote ?? []).map((k) => c.wrote[k as keyof typeof c.wrote]).filter(Boolean);
     return (
       <section className="card mt-8 border-ok/30">
-        <h2 className="flex items-center gap-2.5 font-display text-[20px] font-semibold text-ink">
+        <h2 className="flex items-center gap-2.5 font-display text-panel font-semibold text-ink">
           <Check size={20} aria-hidden strokeWidth={1.5} className="shrink-0 text-ok" />
           {c.doneTitle}
         </h2>
         {names.length > 0 && (
-          <p className="mt-2 text-[14.5px] text-ink-soft">{names.join(' · ')}</p>
+          <p className="mt-2 text-body text-ink-soft">{names.join(' · ')}</p>
         )}
-        <p className="mt-2 text-[14.5px] text-ink-soft">
+        <p className="mt-2 text-body text-ink-soft">
           {done.tasks ? fill(c.doneTasks, { n: done.tasks }) : c.doneNone}
         </p>
       </section>
@@ -76,13 +76,13 @@ export function BeginFlow({ clientId, basics, defaultOpen = false }: {
   if (!open) {
     return (
       <section className="card mt-8">
-        <h2 className="flex items-center gap-2.5 font-display text-[20px] font-semibold text-ink">
+        <h2 className="flex items-center gap-2.5 font-display text-panel font-semibold text-ink">
           <Sparkles size={19} aria-hidden strokeWidth={1.5} className="shrink-0 text-accent" />
           {c.title}
         </h2>
         {/* Counted from the questions actually left, so the card and the
             "question 1 of 2" inside it can never disagree. */}
-        <p className="mt-2 max-w-prose2 text-[14.5px] leading-relaxed text-ink-soft">
+        <p className="mt-2 max-w-prose2 text-body leading-relaxed text-ink-soft">
           {steps.length === 1 ? c.subOne : fill(c.sub, { n: steps.length })}
         </p>
         <div className="mt-5 flex flex-wrap gap-2">
@@ -117,10 +117,10 @@ export function BeginFlow({ clientId, basics, defaultOpen = false }: {
   return (
     <section className="card mt-8" aria-labelledby="begin-title">
       <p className="eyebrow">{fill(c.of, { n: at + 1, of: steps.length })}</p>
-      <h2 id="begin-title" className="mt-2 font-display text-[22px] font-semibold text-ink">
+      <h2 id="begin-title" className="mt-2 font-display text-panel font-semibold text-ink">
         {c.q[step].head}
       </h2>
-      <p className="mt-1.5 max-w-prose2 text-[14px] leading-relaxed text-ink-soft">{c.q[step].hint}</p>
+      <p className="mt-1.5 max-w-prose2 text-body leading-relaxed text-ink-soft">{c.q[step].hint}</p>
 
       <div className="mt-5">
         <Field
@@ -135,20 +135,20 @@ export function BeginFlow({ clientId, basics, defaultOpen = false }: {
       </div>
 
       {done && !done.ok && (
-        <p role="alert" className="mt-4 rounded-control border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+        <p role="alert" className="mt-4 rounded-control border border-bad/25 bg-bad-wash px-4 py-2.5 text-body text-bad">
           {done.error ?? c.failed}
         </p>
       )}
 
       <div className="mt-6 flex flex-wrap items-center gap-2">
         {at > 0 && (
-          <button type="button" onClick={() => setAt((i) => i - 1)} className="btn-quiet px-3 text-[14px]">
+          <button type="button" onClick={() => setAt((i) => i - 1)} className="btn-quiet px-3 text-body">
             {c.back}
           </button>
         )}
         {/* Skipping is a real answer and stays one press away, on every
             question including the first. */}
-        <button type="button" onClick={onward} disabled={busy} className="btn-quiet px-3 text-[14px]">
+        <button type="button" onClick={onward} disabled={busy} className="btn-quiet px-3 text-body">
           {c.skip}
         </button>
         <button type="button" onClick={onward} disabled={busy} className="btn-primary ms-auto">
@@ -210,7 +210,7 @@ function Field({ step, c, date, setDate, guests, setGuests, region, setRegion, b
         return (
           <button
             key={k} type="button" onClick={() => toggle(k)} aria-pressed={on}
-            className={`min-h-[44px] rounded-button border px-4 text-[14px] transition ${
+            className={`min-h-[44px] rounded-button border px-4 text-body transition ${
               on
                 ? 'border-accent bg-accent-wash text-ink'
                 : 'border-line-strong bg-card text-ink-soft hover:border-accent/40 hover:text-ink'

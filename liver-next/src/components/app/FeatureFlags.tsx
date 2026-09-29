@@ -30,14 +30,14 @@ export function FeatureFlags({ flags, bare = false }: { flags: Flag[]; bare?: bo
       {/* Skipped when a fold already carries both. */}
       {!bare && <>
         <h2 className="eyebrow mb-1">{c.title}</h2>
-        <p className="mb-3 text-[13.5px] text-ink-soft">{c.sub}</p>
+        <p className="mb-3 text-body text-ink-soft">{c.sub}</p>
       </>}
 
       <div className="card">
         <ul className="list-none space-y-1 p-0">
           {flags.map((f) => <Row key={f.key} flag={f} />)}
         </ul>
-        <p className="mt-3 text-[12.5px] text-ink-mute">{c.note}</p>
+        <p className="mt-3 text-meta text-ink-mute">{c.note}</p>
       </div>
     </section>
   );
@@ -70,9 +70,9 @@ function Row({ flag }: { flag: Flag }) {
 
   return (
     <li className="flex flex-wrap items-center justify-between gap-3 border-b border-line py-2 last:border-0">
-      <span className="text-[15px] text-ink">
+      <span className="text-lead text-ink">
         {flag.label || flag.key}
-        {saved && <span className="ms-2 text-[12.5px] text-ok">{c.saved}</span>}
+        {saved && <span className="ms-2 text-meta text-ok">{c.saved}</span>}
       </span>
 
       <div className="flex gap-2">
@@ -101,7 +101,7 @@ function Toggle({ label, on, onClick }: { label: string; on: boolean; onClick: (
       onClick={onClick}
       aria-pressed={on}
       className={cn(
-        'inline-flex min-h-[44px] items-center gap-1.5 rounded-xl2 border px-4 text-[13.5px] font-medium transition-colors',
+        'inline-flex min-h-[44px] items-center gap-1.5 rounded-xl2 border px-4 text-body font-medium transition-colors',
         on
           ? 'border-ok bg-ok-wash text-ok'
           : 'border-line-strong bg-surface-100 text-ink-mute',

@@ -36,7 +36,7 @@ function CopyLink({ token }: { token: string }) {
   return (
     <button
       type="button"
-      className="btn-quiet px-2 py-1 text-[13px]"
+      className="btn-quiet px-2 py-1 text-body"
       onClick={async () => {
         const url = `${window.location.origin}/rsvp/${token}`;
         try {
@@ -62,7 +62,7 @@ const dietLabel = (v: string) => DIETS.find((d) => d.value === v)?.label ?? v;
 function StatusChip({ status }: { status: Guest['status'] }) {
   const c = useCopy().guests;
   return (
-    <span className={`shrink-0 rounded-xl2 px-3 py-1 text-[12.5px] ${
+    <span className={`shrink-0 rounded-xl2 px-3 py-1 text-meta ${
       status === 'attending' ? 'bg-ok-wash text-ok'
       : status === 'declined' ? 'bg-bad-wash text-bad'
       : 'bg-surface-200 text-ink-mute'
@@ -89,7 +89,7 @@ function Remind({ guest }: { guest: Guest }) {
       href={`https://wa.me/${phone.replace('+', '')}?text=${encodeURIComponent(text)}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="btn-quiet inline-flex items-center gap-1 px-2 py-1 text-[13px]"
+      className="btn-quiet inline-flex items-center gap-1 px-2 py-1 text-body"
     >
       <MessageCircle size={13} aria-hidden strokeWidth={1.5} />
       {c.remind}
@@ -110,13 +110,13 @@ function RowActions({ guest, clientId }: { guest: Guest; clientId: string }) {
           <input type="hidden" name="guest_id" value={guest.id} />
           <input type="hidden" name="client_id" value={clientId} />
           <input type="hidden" name="status" value="attending" />
-          <button type="submit" className="btn-quiet px-2 py-1 text-[13px]">✓</button>
+          <button type="submit" className="btn-quiet px-2 py-1 text-body">✓</button>
         </form>
       )}
       <DeleteForm action={deleteGuest}>
         <input type="hidden" name="guest_id" value={guest.id} />
         <input type="hidden" name="client_id" value={clientId} />
-        <button type="submit" className="btn-quiet px-2 py-1 text-[13px]">{c.remove}</button>
+        <button type="submit" className="btn-quiet px-2 py-1 text-body">{c.remove}</button>
       </DeleteForm>
     </>
   );
@@ -152,8 +152,8 @@ export function GuestList({ clientId, guests }: { clientId: string; guests: Gues
 
   return (
     <section className="card">
-      <h2 className="font-display text-[18px] font-semibold text-ink">{c.title}</h2>
-      <p className="mt-1 text-[14px] text-ink-soft">{c.sub}</p>
+      <h2 className="font-display text-subhead font-semibold text-ink">{c.title}</h2>
+      <p className="mt-1 text-body text-ink-soft">{c.sub}</p>
 
       <div className="mt-6 grid gap-x-8 gap-y-8 grid-cols-2 sm:grid-cols-4">
         {tiles.map((t) => (
@@ -173,7 +173,7 @@ export function GuestList({ clientId, guests }: { clientId: string; guests: Gues
         <div>
           <label className="label" htmlFor="g-names">{c.addTitle}</label>
           <textarea id="g-names" name="names" rows={3} className="field" placeholder={c.addPh} />
-          <p className="mt-1.5 text-[12.5px] text-ink-mute">{c.addHint}</p>
+          <p className="mt-1.5 text-meta text-ink-mute">{c.addHint}</p>
         </div>
         <div className="flex flex-wrap gap-3">
           <input name="side" placeholder={c.side} autoComplete="off" className="field w-[180px]" aria-label={c.side} />
@@ -182,7 +182,7 @@ export function GuestList({ clientId, guests }: { clientId: string; guests: Gues
       </form>
 
       {state && !state.ok && state.error && (
-        <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+        <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-body text-bad">
           {state.error}
         </p>
       )}
@@ -190,7 +190,7 @@ export function GuestList({ clientId, guests }: { clientId: string; guests: Gues
 
 
       {guests.length === 0 ? (
-        <p className="mt-6 text-[14.5px] text-ink-mute">{c.none}</p>
+        <p className="mt-6 text-body text-ink-mute">{c.none}</p>
       ) : (
         <>
           <div className="mt-6 flex flex-wrap gap-2">
@@ -198,7 +198,7 @@ export function GuestList({ clientId, guests }: { clientId: string; guests: Gues
               ([v, label]) => (
                 <button
                   key={v} type="button" onClick={() => setFilter(v)} aria-pressed={filter === v}
-                  className={`inline-flex min-h-[44px] items-center rounded-xl2 px-4 text-[13.5px] transition sm:min-h-0 sm:py-1.5 ${
+                  className={`inline-flex min-h-[44px] items-center rounded-xl2 px-4 text-body transition sm:min-h-0 sm:py-1.5 ${
                     filter === v ? 'bg-ink text-surface' : 'border border-line bg-card/70 text-ink-soft hover:bg-card'
                   }`}
                 >{label}</button>
@@ -221,7 +221,7 @@ export function GuestList({ clientId, guests }: { clientId: string; guests: Gues
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="font-medium text-ink">{g.full_name}</p>
-                    <p className="text-[12.5px] text-ink-mute">
+                    <p className="text-meta text-ink-mute">
                       {[g.side, g.phone].filter(Boolean).join(' · ') || '·'}
                     </p>
                   </div>
@@ -229,11 +229,11 @@ export function GuestList({ clientId, guests }: { clientId: string; guests: Gues
                 </div>
 
                 {g.status === 'attending' && (
-                  <p className="mt-2 text-[13px] text-ink-soft">
+                  <p className="mt-2 text-body text-ink-soft">
                     {g.party_size} {c.party} · {dietLabel(g.diet)}
                   </p>
                 )}
-                {g.note && <p className="mt-1 text-[13px] text-ink-soft">{g.note}</p>}
+                {g.note && <p className="mt-1 text-body text-ink-soft">{g.note}</p>}
 
                 <div className="mt-3 flex flex-wrap items-center gap-1">
                   <RowActions guest={g} clientId={clientId} />
@@ -243,9 +243,9 @@ export function GuestList({ clientId, guests }: { clientId: string; guests: Gues
           </ul>
 
           <div className="mt-4 hidden overflow-x-auto sm:block">
-            <table className="w-full text-right text-[14.5px]">
+            <table className="w-full text-right text-body">
               <thead>
-                <tr className="border-b border-line text-[12.5px] text-ink-mute">
+                <tr className="border-b border-line text-meta text-ink-mute">
                   <th scope="col" className="py-2 font-medium">{c.guest}</th>
                   <th scope="col" className="py-2 font-medium">{c.status}</th>
                   <th scope="col" className="py-2 font-medium">{c.party}</th>
@@ -259,7 +259,7 @@ export function GuestList({ clientId, guests }: { clientId: string; guests: Gues
                   <tr key={g.id} className="border-b border-line last:border-0">
                     <td className="py-3">
                       <div className="font-medium text-ink">{g.full_name}</div>
-                      <div className="text-[12.5px] text-ink-mute">
+                      <div className="text-meta text-ink-mute">
                         {[g.side, g.phone].filter(Boolean).join(' · ') || '·'}
                       </div>
                     </td>

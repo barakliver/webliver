@@ -116,7 +116,7 @@ export default async function HomePage() {
                   now, or leave details and be called back. */}
               <div className="mt-7">
                 <BookMeeting className="btn-primary inline-flex items-center gap-2" label={site.closing.cta} />
-                <p className="mt-2.5 text-[13.5px] text-ink-mute">{site.fab.bookingNote}</p>
+                <p className="mt-2.5 text-body text-ink-mute">{site.fab.bookingNote}</p>
               </div>
             </div>
             <LeadForm site={site} kinds={eventKindsFor(locale)} />

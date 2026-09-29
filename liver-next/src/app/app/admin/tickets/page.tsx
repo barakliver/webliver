@@ -60,7 +60,7 @@ export default async function TicketsPage({ searchParams }: { searchParams: Prom
   return (
     <>
       <div className="mb-4">
-        <Link href="/app/admin" className="btn-quiet inline-block px-0 text-[14px]">← {ui.admin.title}</Link>
+        <Link href="/app/admin" className="btn-quiet inline-block px-0 text-body">← {ui.admin.title}</Link>
       </div>
       <PageHead title={c.title} sub={c.sub}
         report={<IssueReporter userId={account.id} context={c.title} />}
@@ -69,7 +69,7 @@ export default async function TicketsPage({ searchParams }: { searchParams: Prom
       <div className="mb-5">
         <Link
           href={showClosed ? '/app/admin/tickets' : '/app/admin/tickets?all=1'}
-          className="btn-ghost min-h-[38px] px-3.5 text-[13.5px]"
+          className="btn-ghost min-h-[38px] px-3.5 text-body"
         >
           {showClosed ? c.open : c.showClosed}
         </Link>
@@ -83,7 +83,7 @@ export default async function TicketsPage({ searchParams }: { searchParams: Prom
             <li key={t.id} className="card">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2 text-[12.5px]">
+                  <div className="flex flex-wrap items-center gap-2 text-meta">
                     <span className={`rounded-xl2 px-2 py-0.5 ${t.status === 'open' ? 'bg-warn-wash text-warn' : 'bg-ok-wash text-ok'}`}>
                       {t.status === 'open' ? c.open : c.closed}
                     </span>
@@ -91,8 +91,8 @@ export default async function TicketsPage({ searchParams }: { searchParams: Prom
                     <span className="text-ink-mute">·</span>
                     <span className="text-ink-mute">{dateFmtFor(locale).format(new Date(t.created_at))}</span>
                   </div>
-                  <p className="mt-2 whitespace-pre-wrap text-[15px] leading-relaxed text-ink">{t.body}</p>
-                  <dl className="mt-3 grid gap-x-6 gap-y-1 text-[12.5px] text-ink-mute sm:grid-cols-[auto_1fr]">
+                  <p className="mt-2 whitespace-pre-wrap text-lead leading-relaxed text-ink">{t.body}</p>
+                  <dl className="mt-3 grid gap-x-6 gap-y-1 text-meta text-ink-mute sm:grid-cols-[auto_1fr]">
                     <dt>{c.reporter}</dt><dd className="text-ink-soft">{t.reporter_id ? (who.get(t.reporter_id) ?? '·') : '·'}</dd>
                     <dt>{c.route}</dt><dd className="text-ink-soft"><Ltr>{t.route || '·'}</Ltr></dd>
                     <dt>{c.agent}</dt><dd className="break-all text-ink-soft"><Ltr>{t.agent || '·'}</Ltr></dd>
@@ -100,7 +100,7 @@ export default async function TicketsPage({ searchParams }: { searchParams: Prom
                   {t.screenshot_path && shots.get(t.screenshot_path) && (
                     <a
                       href={shots.get(t.screenshot_path)} target="_blank" rel="noreferrer"
-                      className="mt-3 inline-flex items-center gap-1.5 text-[13px] text-accent hover:underline"
+                      className="mt-3 inline-flex items-center gap-1.5 text-body text-accent hover:underline"
                     >
                       <ExternalLink size={14} strokeWidth={1.5} aria-hidden />
                       {c.screenshot}
@@ -110,7 +110,7 @@ export default async function TicketsPage({ searchParams }: { searchParams: Prom
                 <form action={setTicketStatus}>
                   <input type="hidden" name="ticket_id" value={t.id} />
                   <input type="hidden" name="status" value={t.status === 'open' ? 'closed' : 'open'} />
-                  <button type="submit" className={`${t.status === 'open' ? 'btn-primary' : 'btn-ghost'} min-h-[38px] px-3.5 text-[13.5px]`}>
+                  <button type="submit" className={`${t.status === 'open' ? 'btn-primary' : 'btn-ghost'} min-h-[38px] px-3.5 text-body`}>
                     {t.status === 'open'
                       ? <Check size={15} strokeWidth={1.5} aria-hidden />
                       : <RotateCcw size={15} strokeWidth={1.5} aria-hidden />}

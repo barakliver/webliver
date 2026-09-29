@@ -19,14 +19,14 @@ export default async function OfflinePage() {
   return (
     <main id="main" className="flex min-h-dvh items-center justify-center px-5 py-16">
       <div className="w-full max-w-md text-center">
-        <p className="font-display text-[19px] font-semibold text-ink">{brand.isPlatform ? site.brand : brand.name}</p>
+        <p className="font-display text-subhead font-semibold text-ink">{brand.isPlatform ? site.brand : brand.name}</p>
         {/* The one screen nobody chooses to see. Worth leaving something on
             other than an apology about the network. */}
         {brand.isPlatform ? <PromiseLine className="mb-6 mt-2" /> : <div className="mb-6 mt-2" />}
         <div className="card">
-          <div aria-hidden className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-surface-200 text-[22px]">📶</div>
+          <div aria-hidden className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-surface-200 text-panel">📶</div>
           <h1 className="mt-4 font-display text-title font-semibold text-ink">אין חיבור לאינטרנט</h1>
-          <p className="mt-3 text-[15.5px] leading-relaxed text-ink-soft">
+          <p className="mt-3 text-lead leading-relaxed text-ink-soft">
             האפליקציה צריכה חיבור כדי להראות לכם מידע עדכני.
             ברגע שהחיבור יחזור, פשוט רעננו את הדף.
           </p>

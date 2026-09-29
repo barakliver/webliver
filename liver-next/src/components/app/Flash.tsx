@@ -39,7 +39,7 @@ export function FlashLine({ text, tone = 'bad', className = 'mb-5' }: { text: st
   return (
     <p
       role="status"
-      className={`${className} flex items-start gap-2.5 rounded-xl2 border px-4 py-3 text-[14px] leading-relaxed text-ink ${
+      className={`${className} flex items-start gap-2.5 rounded-xl2 border px-4 py-3 text-body leading-relaxed text-ink ${
         ok ? 'border-ok/30 bg-ok-wash' : 'border-bad/30 bg-bad-wash'
       }`}
     >

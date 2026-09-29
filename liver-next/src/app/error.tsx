@@ -41,7 +41,7 @@ export default function SiteError({ error, reset }: { error: Error & { digest?: 
     <main id="main" className="shell flex min-h-[70vh] flex-col justify-center py-16">
       <div className="measure">
         <h1 className="font-display text-display font-semibold leading-tight text-ink">{c.title}</h1>
-        <p className="mt-4 text-[16px] leading-relaxed text-ink-soft">{c.body}</p>
+        <p className="mt-4 text-head leading-relaxed text-ink-soft">{c.body}</p>
 
         <div className="mt-8 flex flex-wrap gap-3">
           <button type="button" onClick={reset} className="btn-primary inline-flex items-center gap-2">
@@ -65,7 +65,7 @@ export default function SiteError({ error, reset }: { error: Error & { digest?: 
         </div>
 
         {error.digest && (
-          <p className="mt-10 border-t border-line pt-5 text-[13px] text-ink-mute">
+          <p className="mt-10 border-t border-line pt-5 text-body text-ink-mute">
             {c.ref}: <code className="font-mono" dir="ltr">{error.digest}</code>
           </p>
         )}

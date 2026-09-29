@@ -129,10 +129,10 @@ export function MonthGrid({ items, month, today, locale, ui, open = '', switches
   return (
     <section className="card" aria-labelledby="grid-title">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 id="grid-title" className="font-display text-[17px] font-semibold text-ink">{c.grid}</h2>
+        <h2 id="grid-title" className="font-display text-head font-semibold text-ink">{c.grid}</h2>
         {/* The switches, as links that rewrite the address: no state to keep
             and nothing to hydrate, and a bookmark keeps the choice. */}
-        <div className="flex flex-wrap items-center gap-1.5 text-[12.5px]">
+        <div className="flex flex-wrap items-center gap-1.5 text-meta">
           <span className="text-ink-mute">{c.holidays}:</span>
           <Link
             href={calendarHref(month, { ...switches, jewish: !switches.jewish }, open || undefined)}
@@ -150,7 +150,7 @@ export function MonthGrid({ items, month, today, locale, ui, open = '', switches
           </Link>
         </div>
       </div>
-      <p className="mt-1 max-w-2xl text-[14px] leading-relaxed text-ink-soft">{c.gridSub}</p>
+      <p className="mt-1 max-w-2xl text-body leading-relaxed text-ink-soft">{c.gridSub}</p>
 
       {/* The month and the way to the next one. The arrows point the way the
           language runs: in a right-to-left page "forward" is to the left. */}
@@ -164,7 +164,7 @@ export function MonthGrid({ items, month, today, locale, ui, open = '', switches
           >
             <ChevronRight size={18} aria-hidden strokeWidth={1.5} className="chev-back" />
           </Link>
-          <h3 className="min-w-[10ch] text-center font-display text-[20px] font-semibold text-ink">
+          <h3 className="min-w-[10ch] text-center font-display text-panel font-semibold text-ink">
             {monthFmt.format(start)}
           </h3>
           <Link
@@ -177,13 +177,13 @@ export function MonthGrid({ items, month, today, locale, ui, open = '', switches
           </Link>
         </div>
         {month !== thisMonth && (
-          <Link href={calendarHref(thisMonth, switches)} className="btn-ghost min-h-[40px] px-4 text-[13.5px]">
+          <Link href={calendarHref(thisMonth, switches)} className="btn-ghost min-h-[40px] px-4 text-body">
             {c.today}
           </Link>
         )}
       </div>
 
-      <div className="mt-3 flex flex-wrap gap-2 text-[12.5px] text-ink-soft">
+      <div className="mt-3 flex flex-wrap gap-2 text-meta text-ink-soft">
         <span className="inline-flex items-center gap-1.5"><span aria-hidden className={`size-2.5 rounded-full ${TONE.event.split(' ')[0]}`} />{c.legendEvent}</span>
         <span className="inline-flex items-center gap-1.5"><span aria-hidden className="size-2.5 rounded-full bg-ink-mute" />{c.legendTask}</span>
         <span className="inline-flex items-center gap-1.5"><span aria-hidden className="size-2.5 rounded-full bg-warn" />{c.legendPayment}</span>
@@ -199,11 +199,11 @@ export function MonthGrid({ items, month, today, locale, ui, open = '', switches
           a scrollbar. The day is still the door, and the drawer names
           everything the dots stand for. */}
       <div className="mt-4">
-        <table className="w-full table-fixed border-collapse text-[12.5px]">
+        <table className="w-full table-fixed border-collapse text-meta">
           <thead>
             <tr>
               {weekdays.map((w) => (
-                <th key={w} scope="col" className="border-b border-line py-1.5 text-start text-[12px] font-medium text-ink-mute">{w}</th>
+                <th key={w} scope="col" className="border-b border-line py-1.5 text-start text-meta font-medium text-ink-mute">{w}</th>
               ))}
             </tr>
           </thead>
@@ -233,17 +233,17 @@ export function MonthGrid({ items, month, today, locale, ui, open = '', switches
                         href={calendarHref(month, switches, day)}
                         scroll={false}
                         aria-label={`${c.day.add}: ${day}`}
-                        className="mb-1 flex items-center justify-between rounded px-0.5 text-[12px] tabular-nums transition hover:bg-surface-200"
+                        className="mb-1 flex items-center justify-between rounded px-0.5 text-meta tabular-nums transition hover:bg-surface-200"
                       >
                         <span className={isToday
                           ? 'grid size-6 place-items-center rounded-full bg-accent font-semibold text-surface'
                           : 'px-0.5 text-ink-mute'}>
                           {Number(day.slice(8, 10))}
                         </span>
-                        <span aria-hidden className="text-[13px] leading-none opacity-0 transition group-hover:opacity-70">+</span>
+                        <span aria-hidden className="text-body leading-none opacity-0 transition group-hover:opacity-70">+</span>
                       </Link>
                       {named.length > 0 && (
-                        <p className="mb-0.5 truncate px-0.5 text-[10px] leading-snug sm:text-[11px]">
+                        <p className="mb-0.5 truncate px-0.5 text-micro leading-snug sm:text-micro">
                           {named.filter((h) => h.first).map((h, i) => (
                             <span key={h.key} className={HOLIDAY_TONE[h.tone]}>
                               {i > 0 ? ' · ' : ''}{ui.holiday[h.key]}
@@ -268,7 +268,7 @@ export function MonthGrid({ items, month, today, locale, ui, open = '', switches
                             <Link
                               href={it.href}
                               title={`${it.title}${it.detail ? ` · ${it.detail}` : ''}`}
-                              className={`block truncate rounded px-1.5 py-0.5 text-[11.5px] leading-snug ${TONE[it.kind]} ${it.done ? 'line-through opacity-60' : ''}`}
+                              className={`block truncate rounded px-1.5 py-0.5 text-micro leading-snug ${TONE[it.kind]} ${it.done ? 'line-through opacity-60' : ''}`}
                               style={it.kind === 'event' && it.color ? { background: it.color } : undefined}
                             >
                               {it.title}
@@ -276,7 +276,7 @@ export function MonthGrid({ items, month, today, locale, ui, open = '', switches
                           </li>
                         ))}
                         {dayItems.length > SHOW && (
-                          <li className="px-1.5 text-[11px] text-ink-mute">{fill(c.more, { n: dayItems.length - SHOW })}</li>
+                          <li className="px-1.5 text-micro text-ink-mute">{fill(c.more, { n: dayItems.length - SHOW })}</li>
                         )}
                       </ul>
                     </td>

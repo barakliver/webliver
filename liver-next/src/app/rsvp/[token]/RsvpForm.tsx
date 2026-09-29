@@ -33,14 +33,14 @@ export function RsvpForm({ token, initial, copy }: {
   if (state?.ok) {
     return (
       <div className="card text-center" role="status">
-        <div aria-hidden className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-accent-wash text-[22px]">✓</div>
+        <div aria-hidden className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-accent-wash text-panel">✓</div>
         <h2 className="mt-4 font-display text-title font-semibold text-ink">
           {state.status === 'attending' ? c.okComing : c.okNotComing}
         </h2>
-        <p className="mt-2 text-[15.5px] text-ink-soft">
+        <p className="mt-2 text-lead text-ink-soft">
           {state.status === 'attending' ? c.okComingBody : c.okNotComingBody}
         </p>
-        <p className="mt-4 text-[13.5px] text-ink-mute">{c.changeLater}</p>
+        <p className="mt-4 text-body text-ink-mute">{c.changeLater}</p>
       </div>
     );
   }
@@ -50,10 +50,10 @@ export function RsvpForm({ token, initial, copy }: {
       <input type="hidden" name="token" value={token} />
 
       {initial.responded && (
-        <p className="rounded-xl2 bg-surface-200 px-4 py-3 text-[14px] text-ink-soft">{c.already}</p>
+        <p className="rounded-xl2 bg-surface-200 px-4 py-3 text-body text-ink-soft">{c.already}</p>
       )}
       {state && !state.ok && state.error && (
-        <p role="alert" className="rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-3 text-[14.5px] text-bad">
+        <p role="alert" className="rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-3 text-body text-bad">
           {state.error}
         </p>
       )}
@@ -64,7 +64,7 @@ export function RsvpForm({ token, initial, copy }: {
           {(['attending', 'declined'] as const).map((v) => (
             <label
               key={v}
-              className={`cursor-pointer rounded-xl2 border px-5 py-4 text-center text-[15.5px] transition ${
+              className={`cursor-pointer rounded-xl2 border px-5 py-4 text-center text-lead transition ${
                 coming === v ? 'border-ink bg-ink text-surface' : 'border-line bg-card/70 text-ink hover:bg-card'
               }`}
             >
@@ -87,7 +87,7 @@ export function RsvpForm({ token, initial, copy }: {
               id="rsvp-size" name="party_size" type="number" min={1} max={20} inputMode="numeric"
               defaultValue={initial.partySize || 1} className="field"
             />
-            <p className="mt-1.5 text-[12.5px] text-ink-mute">{c.howManyHint}</p>
+            <p className="mt-1.5 text-meta text-ink-mute">{c.howManyHint}</p>
           </div>
 
           <div>

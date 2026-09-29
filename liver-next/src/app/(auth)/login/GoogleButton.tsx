@@ -73,20 +73,20 @@ export function GoogleButton({ next = '/app', copy }: { next?: string; copy: Aut
         type="button"
         onClick={() => void go()}
         disabled={busy}
-        className="inline-flex min-h-[48px] w-full items-center justify-center gap-3 rounded-button border border-line-strong bg-card text-[15px] font-medium text-ink transition hover:border-accent/40 hover:bg-surface-100 disabled:opacity-60"
+        className="inline-flex min-h-[48px] w-full items-center justify-center gap-3 rounded-button border border-line-strong bg-card text-lead font-medium text-ink transition hover:border-accent/40 hover:bg-surface-100 disabled:opacity-60"
       >
         <GoogleMark />
         {busy ? copy.googleGoing : copy.google}
       </button>
 
-      {error && <p role="alert" className="text-[14px] text-bad">{error}</p>}
+      {error && <p role="alert" className="text-body text-bad">{error}</p>}
 
       {/* A rule with the word on it, rather than a bare rule. The point is to
           say these are two ways to do the same thing, not that one of them is
           a footnote. */}
       <div className="flex items-center gap-3" aria-hidden>
         <span className="h-px flex-1 bg-line" />
-        <span className="text-[12.5px] text-ink-mute">{copy.or}</span>
+        <span className="text-meta text-ink-mute">{copy.or}</span>
         <span className="h-px flex-1 bg-line" />
       </div>
     </div>

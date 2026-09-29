@@ -23,15 +23,15 @@ async function Countdown({ days }: { days: number | null }) {
     return (
       <div className="flex flex-col items-center justify-center rounded-xl2 bg-surface-200 px-3 py-2 text-center">
         <CalendarX2 size={18} className="text-ink-mute" aria-hidden strokeWidth={1.5} />
-        <span className="mt-1 text-[11.5px] leading-tight text-ink-mute">{c.noDate}</span>
+        <span className="mt-1 text-micro leading-tight text-ink-mute">{c.noDate}</span>
       </div>
     );
   }
   if (days < 0) {
     return (
       <div className="flex flex-col items-center justify-center rounded-xl2 bg-surface-200 px-3 py-2 text-center">
-        <span className="font-display text-[15px] font-semibold leading-none text-ink-soft">{c.passed}</span>
-        <span className="mt-1 text-[11.5px] leading-tight text-ink-mute">
+        <span className="font-display text-lead font-semibold leading-none text-ink-soft">{c.passed}</span>
+        <span className="mt-1 text-micro leading-tight text-ink-mute">
           {Math.abs(days)} {c.daysAgo}
         </span>
       </div>
@@ -51,7 +51,7 @@ async function Countdown({ days }: { days: number | null }) {
       <span className={`block font-display text-metric-sm font-light tabular-nums ${
         soon ? 'text-accent-bright' : 'text-ink'
       }`}>{days}</span>
-      <span className="mt-0.5 block text-[11.5px] leading-tight text-ink-mute">{c.daysLeft}</span>
+      <span className="mt-0.5 block text-micro leading-tight text-ink-mute">{c.daysLeft}</span>
     </div>
   );
 }
@@ -59,7 +59,7 @@ async function Countdown({ days }: { days: number | null }) {
 function GapChip({ label, level }: { label: string; level: 'now' | 'soon' }) {
   return (
     <span
-      className={`inline-flex items-center rounded-xl2 px-2.5 py-1 text-[12.5px] font-medium ${
+      className={`inline-flex items-center rounded-xl2 px-2.5 py-1 text-meta font-medium ${
         level === 'now'
           ? 'bg-bad-wash text-bad'
           : 'bg-warn-wash text-warn'
@@ -94,11 +94,11 @@ async function Row({ s }: { s: ClientStatus }) {
 
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-            <h3 className="inline-flex items-center gap-2 font-display text-[18.5px] font-semibold text-ink">
+            <h3 className="inline-flex items-center gap-2 font-display text-subhead font-semibold text-ink">
               {s.color && <span aria-hidden className="size-2.5 shrink-0 rounded-full" style={{ background: s.color }} />}
               {s.name}
             </h3>
-            <p className="text-[13.5px] text-ink-mute">
+            <p className="text-body text-ink-mute">
               {formatDate(dateFmtFor(locale), s.eventDate, c.noDate)}
               {s.venue ? ` · ${s.venue}` : ''}
             </p>
@@ -112,7 +112,7 @@ async function Row({ s }: { s: ClientStatus }) {
             </ul>
           )}
 
-          <dl className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-[13.5px] text-ink-soft">
+          <dl className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-body text-ink-soft">
             {s.nextTask && (
               <div className="flex min-w-0 items-center gap-1.5">
                 <dt className="text-ink-mute">{c.next}</dt>
@@ -195,10 +195,10 @@ export async function StatusBoard({ items }: { items: ClientStatus[] }) {
             className="mb-4 flex cursor-pointer list-none items-center gap-3 py-1
                        [&::-webkit-details-marker]:hidden"
           >
-            <h2 className="font-display text-[26px] font-semibold leading-none text-ink">
+            <h2 className="font-display text-figure font-semibold leading-none text-ink">
               {g.year ? <Ltr>{g.year}</Ltr> : c.noYear}
             </h2>
-            <span className="text-[13px] text-ink-mute">
+            <span className="text-body text-ink-mute">
               {g.rows.length} {g.rows.length === 1 ? c.oneEvent : c.manyEvents}
             </span>
             {/* Down when closed, up when open, and the only thing on the row

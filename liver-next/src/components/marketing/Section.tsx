@@ -22,7 +22,7 @@ export function Section({
           <header className={cn('mb-10 sm:mb-14', center && 'text-center')}>
             {eyebrow && <p className="eyebrow mb-3">{eyebrow}</p>}
             {title && <Heading className="font-display text-display font-bold text-editorial">{title}</Heading>}
-            {sub && <p className="measure mt-3 text-[16.5px] text-ink-soft">{sub}</p>}
+            {sub && <p className="measure mt-3 text-head text-ink-soft">{sub}</p>}
           </header>
         )}
         {children}

@@ -55,7 +55,7 @@ export function QuickLedger({ events, compact = false }: { events: JumpEvent[]; 
       <Sheet open={open} onClose={() => setOpen(false)} title={c.title} sub={c.sub}>
         <form action={action} className="grid gap-3">
           <input type="hidden" name="kind" value={kind} />
-          <div className="inline-flex rounded-xl2 border border-line bg-surface-100 p-1 text-[14px]" role="radiogroup" aria-label={c.title}>
+          <div className="inline-flex rounded-xl2 border border-line bg-surface-100 p-1 text-body" role="radiogroup" aria-label={c.title}>
             {(['income', 'expense'] as const).map((k) => (
               <button
                 key={k} type="button" role="radio" aria-checked={kind === k}
@@ -67,40 +67,40 @@ export function QuickLedger({ events, compact = false }: { events: JumpEvent[]; 
             ))}
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
-            <label className="text-[12.5px] text-ink-mute">
+            <label className="text-meta text-ink-mute">
               {c.amount}
               <input name="amount" type="number" inputMode="decimal" min={0} step="0.01" required autoFocus className="field mt-1 w-full" />
             </label>
-            <label className="text-[12.5px] text-ink-mute">
+            <label className="text-meta text-ink-mute">
               {c.date}
               <input name="on_date" type="date" defaultValue={todayInZone()} className="field mt-1 w-full" />
             </label>
           </div>
-          <label className="text-[12.5px] text-ink-mute">
+          <label className="text-meta text-ink-mute">
             {c.label}
             <input name="label" required maxLength={120} placeholder={c.labelPh} className="field mt-1 w-full" />
           </label>
-          <label className="text-[12.5px] text-ink-mute">
+          <label className="text-meta text-ink-mute">
             {c.event}
             <select name="client_id" defaultValue="" className="field mt-1 w-full">
               <option value="">{c.noEvent}</option>
               {events.map((e) => <option key={e.id} value={e.id}>{e.name}</option>)}
             </select>
           </label>
-          <label className="text-[12.5px] text-ink-mute">
+          <label className="text-meta text-ink-mute">
             {c.party}
             <input name="party" maxLength={120} placeholder={c.partyPh} className="field mt-1 w-full" />
           </label>
-          <label className="text-[12.5px] text-ink-mute">
+          <label className="text-meta text-ink-mute">
             {c.note}
             <input name="note" maxLength={500} className="field mt-1 w-full" />
           </label>
 
           {state && !state.ok && (
-            <p role="alert" className="rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">{state.error ?? c.failed}</p>
+            <p role="alert" className="rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-body text-bad">{state.error ?? c.failed}</p>
           )}
           {saved && (
-            <p role="status" className="inline-flex items-center gap-2 text-[14px] text-ok"><Check size={15} aria-hidden strokeWidth={1.5} />{c.saved}</p>
+            <p role="status" className="inline-flex items-center gap-2 text-body text-ok"><Check size={15} aria-hidden strokeWidth={1.5} />{c.saved}</p>
           )}
           <div className="mt-1"><Save /></div>
         </form>

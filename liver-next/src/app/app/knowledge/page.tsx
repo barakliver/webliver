@@ -103,14 +103,14 @@ export default async function KnowledgePage({
               aria-current={on ? 'page' : undefined}
               scroll={false}
               className={cn(
-                'inline-flex min-h-[44px] shrink-0 items-center gap-1.5 rounded-xl2 px-4 text-[14px] transition sm:min-h-[38px]',
+                'inline-flex min-h-[44px] shrink-0 items-center gap-1.5 rounded-xl2 px-4 text-body transition sm:min-h-[38px]',
                 on ? 'bg-ink font-medium text-surface' : 'text-ink-soft hover:bg-surface-200 hover:text-ink',
               )}
             >
               {c.shelves[s]}
               {counts[s] > 0 && (
                 <span className={cn(
-                  'rounded-xl2 px-1.5 text-[11.5px] tabular-nums',
+                  'rounded-xl2 px-1.5 text-micro tabular-nums',
                   on ? 'bg-card/20 text-surface' : 'bg-surface-200 text-ink-mute',
                 )}>
                   {counts[s]}
@@ -129,7 +129,7 @@ export default async function KnowledgePage({
               question about a screen they cannot see. */}
           <section className="mt-14 border-t border-line pt-9">
             <p className="eyebrow">{clientGuide.title}</p>
-            <p className="mb-6 mt-1 max-w-2xl text-[13.5px] text-ink-soft">{guideUi.coupleBookNote}</p>
+            <p className="mb-6 mt-1 max-w-2xl text-body text-ink-soft">{guideUi.coupleBookNote}</p>
             <GuideBookView book={clientGuide} c={guideUi} />
           </section>
         </>
@@ -137,7 +137,7 @@ export default async function KnowledgePage({
 
       {shelf === 'playbook' && (
         <div className="print-doc">
-          <p className="mb-6 max-w-2xl text-[14.5px] leading-relaxed text-ink-soft">
+          <p className="mb-6 max-w-2xl text-body leading-relaxed text-ink-soft">
             {sopCopy.sub} {sopCopy.itemsCount(sopItemCount)}.
           </p>
           <SopBook />

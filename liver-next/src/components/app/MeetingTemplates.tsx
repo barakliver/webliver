@@ -46,8 +46,8 @@ export function MeetingTemplates({ c, own }: { c: MeetingTemplatesCopy; own: Mee
     <section className="card">
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <div>
-          <h2 className="font-display text-[22px] font-semibold text-ink">{c.title}</h2>
-          <p className="mt-1 max-w-2xl text-[13.5px] text-ink-mute">{c.sub}</p>
+          <h2 className="font-display text-panel font-semibold text-ink">{c.title}</h2>
+          <p className="mt-1 max-w-2xl text-body text-ink-mute">{c.sub}</p>
         </div>
         {!adding && (
           <button
@@ -70,13 +70,13 @@ export function MeetingTemplates({ c, own }: { c: MeetingTemplatesCopy; own: Mee
       {/* The standing ones. Shown as what they are, a list to copy from. */}
       <div className="mt-7">
         <p className="eyebrow">{c.builtIn}</p>
-        <p className="mt-1 text-[12.5px] text-ink-mute">{c.builtInHint}</p>
+        <p className="mt-1 text-meta text-ink-mute">{c.builtInHint}</p>
         <ul className="mt-3 divide-y divide-line border-t border-line">
           {BUILT_IN_TEMPLATES.map((t) => (
             <li key={t.kind} className="flex items-center justify-between gap-3 py-2.5">
               <div className="min-w-0 flex-1">
-                <p className="text-[15px] text-ink">{t.title}</p>
-                <p className="mt-0.5 text-[12.5px] text-ink-mute">
+                <p className="text-lead text-ink">{t.title}</p>
+                <p className="mt-0.5 text-meta text-ink-mute">
                   {t.when} · {c.questionsCount.replace('{n}', String(questionCount(t)))}
                 </p>
               </div>
@@ -84,7 +84,7 @@ export function MeetingTemplates({ c, own }: { c: MeetingTemplatesCopy; own: Mee
                 type="button"
                 onClick={() => copy(t.kind)}
                 disabled={copying !== null}
-                className="btn-quiet inline-flex shrink-0 items-center gap-1.5 px-3 text-[13.5px] disabled:opacity-60"
+                className="btn-quiet inline-flex shrink-0 items-center gap-1.5 px-3 text-body disabled:opacity-60"
               >
                 <Copy size={14} aria-hidden strokeWidth={1.5} />
                 {copying === t.kind ? c.copying : c.copy}
@@ -93,7 +93,7 @@ export function MeetingTemplates({ c, own }: { c: MeetingTemplatesCopy; own: Mee
           ))}
         </ul>
         {copyError && (
-          <p role="alert" className="mt-3 rounded-control border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+          <p role="alert" className="mt-3 rounded-control border border-bad/25 bg-bad-wash px-4 py-2.5 text-body text-bad">
             {copyError}
           </p>
         )}
@@ -103,7 +103,7 @@ export function MeetingTemplates({ c, own }: { c: MeetingTemplatesCopy; own: Mee
       <div className="mt-8">
         <p className="eyebrow">{c.own}</p>
         {live.length === 0 && !adding ? (
-          <p className="mt-3 text-[14.5px] text-ink-mute">{c.none}</p>
+          <p className="mt-3 text-body text-ink-mute">{c.none}</p>
         ) : (
           <ul className="mt-3 divide-y divide-line border-t border-line">
             {live.map((t) => {
@@ -117,8 +117,8 @@ export function MeetingTemplates({ c, own }: { c: MeetingTemplatesCopy; own: Mee
                       aria-expanded={on}
                       className="min-w-0 flex-1 text-start"
                     >
-                      <p className="text-[15px] text-ink">{t.title}</p>
-                      <p className="mt-0.5 text-[12.5px] text-ink-mute">
+                      <p className="text-lead text-ink">{t.title}</p>
+                      <p className="mt-0.5 text-meta text-ink-mute">
                         {t.when ? `${t.when} · ` : ''}
                         {c.questionsCount.replace('{n}', String(questionCount(t)))}
                       </p>
@@ -224,7 +224,7 @@ function Editor({ c, template, onDone }: {
   return (
     <div className="rounded-card-sm bg-surface-100 p-4">
       <div className="grid gap-3 sm:grid-cols-2">
-        <label className="block text-[12.5px] text-ink-mute">
+        <label className="block text-meta text-ink-mute">
           {c.name}
           <input
             value={name} onChange={(e) => setName(e.target.value)}
@@ -232,7 +232,7 @@ function Editor({ c, template, onDone }: {
             className="field mt-1 w-full" autoComplete="off"
           />
         </label>
-        <label className="block text-[12.5px] text-ink-mute">
+        <label className="block text-meta text-ink-mute">
           {c.when}
           <input
             value={when} onChange={(e) => setWhen(e.target.value)}
@@ -240,7 +240,7 @@ function Editor({ c, template, onDone }: {
             className="field mt-1 w-full" autoComplete="off"
           />
         </label>
-        <label className="block text-[12.5px] text-ink-mute sm:col-span-2">
+        <label className="block text-meta text-ink-mute sm:col-span-2">
           {c.blurb}
           <input
             value={blurb} onChange={(e) => setBlurb(e.target.value)}
@@ -250,7 +250,7 @@ function Editor({ c, template, onDone }: {
         </label>
       </div>
 
-      <p className="mt-5 text-[13px] text-accent">{c.sections}</p>
+      <p className="mt-5 text-body text-accent">{c.sections}</p>
       <ul className="mt-2 space-y-3">
         {sections.map((s, si) => (
           <li key={s.key} className="rounded-control border border-line bg-card p-3">
@@ -308,13 +308,13 @@ function Editor({ c, template, onDone }: {
                     <textarea
                       value={f.options} onChange={(e) => setField(si, fi, { options: e.target.value })}
                       rows={3} placeholder={c.optionsPh} aria-label={c.options}
-                      className="field mt-2 w-full resize-y text-[13.5px]"
+                      className="field mt-2 w-full resize-y text-body"
                     />
                   )}
                   <input
                     value={f.hint} onChange={(e) => setField(si, fi, { hint: e.target.value })}
                     maxLength={200} placeholder={`${c.hint}: ${c.hintPh}`} aria-label={c.hint}
-                    className="field mt-2 w-full text-[13px]" autoComplete="off"
+                    className="field mt-2 w-full text-body" autoComplete="off"
                   />
                 </li>
               ))}
@@ -323,7 +323,7 @@ function Editor({ c, template, onDone }: {
             <button
               type="button"
               onClick={() => setSection(si, { fields: [...s.fields, blankField()] })}
-              className="btn-quiet mt-2 inline-flex items-center gap-1.5 px-3 text-[13.5px]"
+              className="btn-quiet mt-2 inline-flex items-center gap-1.5 px-3 text-body"
             >
               <Plus size={14} aria-hidden strokeWidth={1.5} />
               {c.addQuestion}
@@ -335,20 +335,20 @@ function Editor({ c, template, onDone }: {
       <button
         type="button"
         onClick={() => setSections((all) => [...all, blankSection()])}
-        className="btn-quiet mt-3 inline-flex items-center gap-1.5 px-3 text-[13.5px]"
+        className="btn-quiet mt-3 inline-flex items-center gap-1.5 px-3 text-body"
       >
         <Plus size={14} aria-hidden strokeWidth={1.5} />
         {c.addSection}
       </button>
 
       {error && (
-        <p role="alert" className="mt-3 rounded-control border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+        <p role="alert" className="mt-3 rounded-control border border-bad/25 bg-bad-wash px-4 py-2.5 text-body text-bad">
           {error}
         </p>
       )}
 
       <div className="mt-5 flex items-center justify-end gap-2">
-        <button type="button" onClick={onDone} className="btn-quiet px-3 text-[14px]">{c.cancel}</button>
+        <button type="button" onClick={onDone} className="btn-quiet px-3 text-body">{c.cancel}</button>
         <button
           type="button"
           onClick={() => void submit()}

@@ -36,20 +36,20 @@ export function Nav({ site = fallback, locale = DEFAULT_LOCALE, shop }: {
        asking for it. */
     <nav className="glass sticky top-0 z-30 border-b border-line">
       <div className="shell flex h-16 items-center justify-between gap-4">
-        <Link href="/" className="inline-flex min-h-[44px] items-center font-display text-[17px] font-semibold tracking-tight text-ink">
+        <Link href="/" className="inline-flex min-h-[44px] items-center font-display text-head font-semibold tracking-tight text-ink">
           {site.brand}
         </Link>
         <div className="hidden items-center gap-1 md:flex">
           {links.map(([href, label]) => (
-            <Link key={href} href={href} className="rounded-xl2 px-3.5 py-2 text-[14.5px] text-ink-soft transition hover:bg-card/70 hover:text-ink">
+            <Link key={href} href={href} className="rounded-xl2 px-3.5 py-2 text-body text-ink-soft transition hover:bg-card/70 hover:text-ink">
               {label}
             </Link>
           ))}
         </div>
         <div className="flex items-center gap-2">
           <LangToggle current={locale} className="hidden sm:inline-flex" />
-          <Link href="/login" className="btn-ghost !px-4 !py-2 !text-[14px]">{site.nav.login}</Link>
-          <Link href="#contact" className="btn-primary !px-4 !py-2 !text-[14px]">{site.nav.contact}</Link>
+          <Link href="/login" className="btn-ghost !px-4 !py-2 !text-body">{site.nav.login}</Link>
+          <Link href="#contact" className="btn-primary !px-4 !py-2 !text-body">{site.nav.contact}</Link>
         </div>
       </div>
     </nav>

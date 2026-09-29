@@ -32,7 +32,7 @@ function StatusButton({ id, status, label, tone }: {
     <form action={setProducerStatus}>
       <input type="hidden" name="producer_id" value={id} />
       <input type="hidden" name="status" value={status} />
-      <button type="submit" className={`btn-${tone} px-3.5 text-[13.5px]`}>
+      <button type="submit" className={`btn-${tone} px-3.5 text-body`}>
         <Icon size={15} aria-hidden strokeWidth={1.5} />
         {label}
       </button>
@@ -59,22 +59,22 @@ export async function AdminRow({ p }: { p: ProducerRow }) {
       <details className="group rounded-card border border-line-soft bg-card shadow-soft">
         <summary className="flex min-h-[68px] cursor-pointer list-none items-center justify-between gap-4 p-4 transition-colors hover:border-accent sm:p-5 [&::-webkit-details-marker]:hidden">
           <div className="min-w-0">
-            <h3 className="flex flex-wrap items-center gap-2 font-display text-[17.5px] font-semibold text-ink">
+            <h3 className="flex flex-wrap items-center gap-2 font-display text-head font-semibold text-ink">
               {p.brand}
               {p.isRoot && (
-                <span className="inline-flex items-center gap-1 rounded-xl2 bg-accent-wash px-2.5 py-0.5 text-[12px] font-medium text-accent">
+                <span className="inline-flex items-center gap-1 rounded-xl2 bg-accent-wash px-2.5 py-0.5 text-meta font-medium text-accent">
                   <ShieldCheck size={13} aria-hidden strokeWidth={1.5} />
                   {c.rootBadge}
                 </span>
               )}
-              <span className={`rounded-xl2 px-2.5 py-0.5 text-[12px] font-medium ${STATUS_TONE[p.status]}`}>
+              <span className={`rounded-xl2 px-2.5 py-0.5 text-meta font-medium ${STATUS_TONE[p.status]}`}>
                 {ui.pending.statuses[p.status]}
               </span>
             </h3>
             {/* The address stays on the closed row: it is what tells two
                 accounts of the same name apart, and it is what gets typed
                 into the search. */}
-            <p className="mt-1 truncate text-[13.5px] text-ink-soft" dir="ltr">{p.email}</p>
+            <p className="mt-1 truncate text-body text-ink-soft" dir="ltr">{p.email}</p>
           </div>
           <ChevronDown
             size={20} strokeWidth={1.5} aria-hidden
@@ -85,14 +85,14 @@ export async function AdminRow({ p }: { p: ProducerRow }) {
         <div className="border-t border-line p-4 sm:p-5">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="min-w-0">
-              <p className="text-[13px] text-ink-mute">
+              <p className="text-body text-ink-mute">
                 {p.eventsLive} {p.eventsLive === 1 ? c.oneLive : c.manyLive}
                 {p.eventsTotal !== p.eventsLive && ` · ${c.ofTotal} ${p.eventsTotal}`}
                 {' · '}{c.board.leads} {p.leadsTotal}
                 {' · '}{c.board.signed} {p.signedTotal}
               </p>
 
-              <p className="mt-0.5 text-[13px] text-ink-mute">
+              <p className="mt-0.5 text-body text-ink-mute">
                 {p.lastSeen ? `${c.lastSeen} ${formatDate(dateFmtFor(locale), p.lastSeen, '·')}` : c.never}
               </p>
             </div>
@@ -154,12 +154,12 @@ async function KindSwitch({ ownerId, kind }: { ownerId: string; kind: AccountKin
   return (
     <div className="mt-4 border-t border-line pt-4">
       <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-        <h4 className="text-[13.5px] font-medium text-ink">{k.title}</h4>
-        <span className="text-[12.5px] text-ink-mute">
+        <h4 className="text-body font-medium text-ink">{k.title}</h4>
+        <span className="text-meta text-ink-mute">
           {k.current}: {nowIs}
         </span>
       </div>
-      <p className="mt-0.5 text-[12.5px] text-ink-mute">{k.sub}</p>
+      <p className="mt-0.5 text-meta text-ink-mute">{k.sub}</p>
 
       <div className="mt-3 grid gap-2 sm:grid-cols-3">
         {options.map((o) => (
@@ -175,8 +175,8 @@ async function KindSwitch({ ownerId, kind }: { ownerId: string; kind: AccountKin
                 ? 'w-full rounded-xl2 border border-accent bg-accent-wash p-3 text-start transition'
                 : 'w-full rounded-xl2 border border-line p-3 text-start transition hover:border-accent/40 hover:bg-surface-200'}
             >
-              <span className="block text-[13.5px] font-medium text-ink">{o.label}</span>
-              <span className="mt-0.5 block text-[12px] leading-snug text-ink-mute">{o.note}</span>
+              <span className="block text-body font-medium text-ink">{o.label}</span>
+              <span className="mt-0.5 block text-meta leading-snug text-ink-mute">{o.note}</span>
             </button>
           </form>
         ))}

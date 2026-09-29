@@ -38,34 +38,34 @@ export function VehiclesPanel({ c, clientId, items }: {
     <section className="card">
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         <div>
-          <h2 className="font-display text-[18px] font-semibold text-ink">{c.title}</h2>
-          <p className="mt-1 text-[14px] text-ink-soft">{c.sub}</p>
+          <h2 className="font-display text-subhead font-semibold text-ink">{c.title}</h2>
+          <p className="mt-1 text-body text-ink-soft">{c.sub}</p>
         </div>
         {seats > 0 && (
-          <p className="text-[13.5px] text-ink-mute">
-            <span className="font-display text-[20px] font-semibold text-ink"><Ltr>{seats}</Ltr></span>
+          <p className="text-body text-ink-mute">
+            <span className="font-display text-panel font-semibold text-ink"><Ltr>{seats}</Ltr></span>
             {' '}{c.seatsTotal}
           </p>
         )}
       </div>
 
       {items.length === 0 ? (
-        <p className="mt-6 text-[14.5px] text-ink-mute">{c.empty}</p>
+        <p className="mt-6 text-body text-ink-mute">{c.empty}</p>
       ) : (
         <ul className="mt-5 space-y-2">
           {items.map((v) => (
             <li key={v.id} className="flex flex-wrap items-start gap-3 rounded-xl2 border border-line px-3 py-3">
               <div className="min-w-0 flex-1">
-                <p className="text-[15px] text-ink">
+                <p className="text-lead text-ink">
                   {v.name}
                   {v.driver && <span className="text-ink-soft"> · {v.driver}</span>}
                   {v.seats !== null && (
-                    <span className="ms-2 whitespace-nowrap rounded-xl2 bg-surface-200 px-2 py-0.5 text-[11.5px] text-ink-mute">
+                    <span className="ms-2 whitespace-nowrap rounded-xl2 bg-surface-200 px-2 py-0.5 text-micro text-ink-mute">
                       <Ltr>{v.seats}</Ltr> {c.seats}
                     </span>
                   )}
                 </p>
-                <p className="mt-0.5 text-[12.5px] text-ink-mute">
+                <p className="mt-0.5 text-meta text-ink-mute">
                   {legLabel(v.leg)}
                   {v.phone && (
                     <>
@@ -76,13 +76,13 @@ export function VehiclesPanel({ c, clientId, items }: {
                     </>
                   )}
                 </p>
-                {v.riders && <p className="mt-1 text-[13.5px] text-ink-soft">{v.riders}</p>}
-                {v.note && <p className="mt-0.5 text-[12.5px] text-ink-mute">{v.note}</p>}
+                {v.riders && <p className="mt-1 text-body text-ink-soft">{v.riders}</p>}
+                {v.note && <p className="mt-0.5 text-meta text-ink-mute">{v.note}</p>}
               </div>
               <DeleteForm action={removeVehicle}>
                 <input type="hidden" name="id" value={v.id} />
                 <input type="hidden" name="client_id" value={clientId} />
-                <button type="submit" className="btn-quiet px-3 py-1 text-[13px]">{c.remove}</button>
+                <button type="submit" className="btn-quiet px-3 py-1 text-body">{c.remove}</button>
               </DeleteForm>
             </li>
           ))}
@@ -129,7 +129,7 @@ export function VehiclesPanel({ c, clientId, items }: {
         </label>
         <Submit c={c} pending={pending} />
         {state?.ok === false && state.error && (
-          <p role="status" className="mt-2 text-[13.5px] text-bad">{state.error}</p>
+          <p role="status" className="mt-2 text-body text-bad">{state.error}</p>
         )}
       </form>
     </section>
@@ -140,7 +140,7 @@ function Submit({ c, pending }: { c: VehiclesCopy; pending: boolean }) {
   const { pending: busy } = useFormStatus();
   const wait = pending || busy;
   return (
-    <button type="submit" disabled={wait} className="btn-primary mt-3 px-4 text-[14px]">
+    <button type="submit" disabled={wait} className="btn-primary mt-3 px-4 text-body">
       {wait
         ? <Loader2 size={15} strokeWidth={1.5} aria-hidden className="animate-spin" />
         : <Plus size={15} strokeWidth={1.5} aria-hidden />}

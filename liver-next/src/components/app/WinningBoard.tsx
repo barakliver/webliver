@@ -123,9 +123,9 @@ export function WinningBoard({ clientId, images, viewer }: {
         '--accent-bright-rgb': 'var(--accent-light-rgb, 185 200 229)',
       } as React.CSSProperties}
     >
-      <p className="text-[11.5px] tracking-[.14em] text-accent-light">{c.eyebrow}</p>
+      <p className="text-micro tracking-[.14em] text-accent-light">{c.eyebrow}</p>
       <h2 className="mt-2 font-display text-[30px] font-semibold text-ink">{c.title}</h2>
-      <p className="mt-2 text-[14.5px] text-ink-soft">{viewer === 'client' ? c.subClient : c.subProducerAdd}</p>
+      <p className="mt-2 text-body text-ink-soft">{viewer === 'client' ? c.subClient : c.subProducerAdd}</p>
       <hr className="rule-gold mt-6" />
 
       {/* Both sides add. The couple is who the board is for; the producer
@@ -138,7 +138,7 @@ export function WinningBoard({ clientId, images, viewer }: {
           e.preventDefault(); setOver(false);
           if (e.dataTransfer.files?.length) void send(Array.from(e.dataTransfer.files));
         }}
-        className={`mt-5 rounded-xl2 border border-dashed p-4 transition ${over ? 'border-accent bg-surface-200' : 'border-line-strong'}`}
+        className={`mt-5 rounded-card-sm border border-dashed p-4 transition ${over ? 'border-accent bg-surface-200' : 'border-line-strong'}`}
       >
         <form
           onSubmit={(e) => { e.preventDefault(); void send(chosen); }}
@@ -150,7 +150,7 @@ export function WinningBoard({ clientId, images, viewer }: {
               second string. The input is still here and still submits with
               the form; it is simply visually replaced by a label that shows
               what was chosen, in the language of the page. */}
-          <label className="inline-flex min-h-[44px] cursor-pointer items-center gap-2 rounded-xl2 border border-line-strong bg-surface-100 px-4 text-[14px] text-ink transition hover:border-accent/40 sm:min-h-0 sm:py-2">
+          <label className="inline-flex min-h-[44px] cursor-pointer items-center gap-2 rounded-xl2 border border-line-strong bg-surface-100 px-4 text-body text-ink transition hover:border-accent/40 sm:min-h-0 sm:py-2">
             <ImagePlus size={16} aria-hidden strokeWidth={1.5} />
             <span className="max-w-[16rem] truncate">
               {chosen.length === 0 ? c.chooseMany : chosen.length === 1 ? chosen[0].name : plural(c.picked, chosen.length)}
@@ -169,17 +169,17 @@ export function WinningBoard({ clientId, images, viewer }: {
             {progress ? c.progress.replace('{n}', String(progress.n)).replace('{m}', String(progress.m)) : c.upload}
           </button>
         </form>
-        <p className="mt-2 text-[12.5px] text-ink-mute">{c.dropHint}</p>
+        <p className="mt-2 text-meta text-ink-mute">{c.dropHint}</p>
       </div>
 
       {error && (
-        <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+        <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-body text-bad">
           {error}
         </p>
       )}
 
       {images.length === 0 ? (
-        <p className="mt-6 text-[14.5px] text-ink-mute">{viewer === 'client' ? c.none : c.noneProducer}</p>
+        <p className="mt-6 text-body text-ink-mute">{viewer === 'client' ? c.none : c.noneProducer}</p>
       ) : (
         <>
           {used.length > 1 && (
@@ -188,7 +188,7 @@ export function WinningBoard({ clientId, images, viewer }: {
                 <button
                   key={cat.value} type="button" onClick={() => setFilter(cat.value)}
                   aria-pressed={filter === cat.value}
-                  className={`inline-flex min-h-[44px] items-center rounded-xl2 px-4 text-[13.5px] transition sm:min-h-0 sm:py-1.5 ${
+                  className={`inline-flex min-h-[44px] items-center rounded-xl2 px-4 text-body transition sm:min-h-0 sm:py-1.5 ${
                     filter === cat.value ? 'bg-ink text-surface' : 'border border-line bg-surface-100 text-ink-soft hover:bg-surface-200'
                   }`}
                 >{cat.label}</button>
@@ -204,13 +204,13 @@ export function WinningBoard({ clientId, images, viewer }: {
                 <img src={img.url} alt={img.caption || labelOf(img.category)} className="h-52 w-full object-cover" loading="lazy" />
                 <div className="flex items-start justify-between gap-2 p-3">
                   <div className="min-w-0">
-                    {img.caption && <p className="text-[14px] text-ink">{img.caption}</p>}
-                    <p className="text-[12.5px] text-ink-mute">{labelOf(img.category)}</p>
+                    {img.caption && <p className="text-body text-ink">{img.caption}</p>}
+                    <p className="text-meta text-ink-mute">{labelOf(img.category)}</p>
                   </div>
                   <DeleteForm action={deleteBoardImage}>
                     <input type="hidden" name="image_id" value={img.id} />
                     <input type="hidden" name="client_id" value={clientId} />
-                    <button type="submit" className="btn-quiet px-2 py-1 text-[13px]">{c.remove}</button>
+                    <button type="submit" className="btn-quiet px-2 py-1 text-body">{c.remove}</button>
                   </DeleteForm>
                 </div>
               </li>

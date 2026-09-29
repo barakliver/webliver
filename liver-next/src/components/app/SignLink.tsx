@@ -10,7 +10,7 @@ function Make() {
   const c = useCopy().link;
   const { pending } = useFormStatus();
   return (
-    <button type="submit" disabled={pending} className="btn-ghost inline-flex items-center gap-1.5 text-[13.5px] disabled:opacity-60">
+    <button type="submit" disabled={pending} className="btn-ghost inline-flex items-center gap-1.5 text-body disabled:opacity-60">
       <Link2 size={15} strokeWidth={1.5} aria-hidden />
       {pending ? c.making : c.make}
     </button>
@@ -61,25 +61,25 @@ export function SignLink({ contractId, clientId, party }: {
       </form>
 
       {state && !state.ok && (
-        <p role="alert" className="basis-full text-[13px] text-bad">{c.failed}</p>
+        <p role="alert" className="basis-full text-body text-bad">{c.failed}</p>
       )}
 
       {url && (
         <div className="basis-full">
-          <p className="text-[13px] text-ok">{c.ready}</p>
+          <p className="text-body text-ok">{c.ready}</p>
 
           {/* Readable and selectable, not hidden behind a button. A link
               somebody cannot see is a link they cannot check before sending. */}
           <p
             dir="ltr"
             className="mt-2 overflow-x-auto rounded-xl2 border border-line bg-surface-100 px-3 py-2
-                       text-start font-mono text-[12px] text-ink-soft"
+                       text-start font-mono text-meta text-ink-soft"
           >
             {url}
           </p>
 
           <div className="mt-2 flex flex-wrap items-center gap-2">
-            <button type="button" onClick={copy} className="btn-ghost inline-flex items-center gap-1.5 text-[13px]">
+            <button type="button" onClick={copy} className="btn-ghost inline-flex items-center gap-1.5 text-body">
               {copied
                 ? <Check size={14} strokeWidth={1.5} aria-hidden className="text-ok" />
                 : <Copy size={14} strokeWidth={1.5} aria-hidden />}
@@ -87,7 +87,7 @@ export function SignLink({ contractId, clientId, party }: {
             </button>
 
             <a href={wa} target="_blank" rel="noopener noreferrer"
-               className="btn-ghost inline-flex items-center gap-1.5 text-[13px]">
+               className="btn-ghost inline-flex items-center gap-1.5 text-body">
               <MessageCircle size={14} strokeWidth={1.5} aria-hidden />
               {c.whatsapp}
             </a>
@@ -95,14 +95,14 @@ export function SignLink({ contractId, clientId, party }: {
             <form action={revokeSignLink}>
               <input type="hidden" name="contract_id" value={contractId} />
               <input type="hidden" name="client_id" value={clientId} />
-              <button type="submit" className="btn-quiet inline-flex items-center gap-1.5 text-[13px]">
+              <button type="submit" className="btn-quiet inline-flex items-center gap-1.5 text-body">
                 <Ban size={14} strokeWidth={1.5} aria-hidden />
                 {c.revoke}
               </button>
             </form>
           </div>
 
-          <p className="mt-2 text-[12.5px] text-ink-mute">{c.revokeNote}</p>
+          <p className="mt-2 text-meta text-ink-mute">{c.revokeNote}</p>
         </div>
       )}
     </>

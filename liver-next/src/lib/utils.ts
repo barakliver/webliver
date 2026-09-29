@@ -13,7 +13,7 @@ import { extendTailwindMerge } from 'tailwind-merge';
  * That is why the app looked like the palette without looking like the design.
  * `text-metric` and `text-metric-sm` — the 62px and 42px serif figures the
  * whole visual language is built on — were used zero times in the product,
- * because anyone who tried them saw no effect and reached for `text-[22px]`
+ * because anyone who tried them saw no effect and reached for `text-panel`
  * instead. Every headline number in the app ended up a hardcoded pixel size
  * between 16 and 40. `text-display` and `text-title` were being dropped the
  * same way wherever they met a colour inside `cn`.

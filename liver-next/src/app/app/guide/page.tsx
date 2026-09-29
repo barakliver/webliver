@@ -56,14 +56,14 @@ export default async function GuidePage() {
       {!isClient && (
         <section className="mt-14 border-t border-line pt-9">
           <p className="eyebrow">{clientGuide.title}</p>
-          <p className="mt-1 mb-6 max-w-2xl text-[13.5px] text-ink-soft">{guideUi.coupleBookNote}</p>
+          <p className="mt-1 mb-6 max-w-2xl text-body text-ink-soft">{guideUi.coupleBookNote}</p>
           <GuideBookView book={clientGuide} c={guideUi} />
         </section>
       )}
 
       <section className="card mt-12 max-w-2xl">
-        <h2 className="font-display text-[18px] font-semibold text-ink">{c.askTitle}</h2>
-        <p className="mt-2 text-[14.5px] leading-relaxed text-ink-soft">{c.askBody}</p>
+        <h2 className="font-display text-subhead font-semibold text-ink">{c.askTitle}</h2>
+        <p className="mt-2 text-body leading-relaxed text-ink-soft">{c.askBody}</p>
       </section>
 
       <AiConcierge copy={conciergeFor(locale)} />

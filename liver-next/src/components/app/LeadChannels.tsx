@@ -50,15 +50,15 @@ export function LeadChannels({ channels, origin }: {
     <section className="card">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="inline-flex items-center gap-2 font-display text-[17px] font-semibold text-ink">
+          <h2 className="inline-flex items-center gap-2 font-display text-head font-semibold text-ink">
             <Link2 size={17} strokeWidth={1.5} aria-hidden />
             {c.title}
           </h2>
-          <p className="mt-1 max-w-2xl text-[14px] leading-relaxed text-ink-soft">{c.sub}</p>
+          <p className="mt-1 max-w-2xl text-body leading-relaxed text-ink-soft">{c.sub}</p>
         </div>
         <button
           type="button" onClick={() => setAdding((v) => !v)}
-          className="btn-ghost min-h-[38px] px-3.5 text-[13.5px]"
+          className="btn-ghost min-h-[38px] px-3.5 text-body"
         >
           {adding ? <X size={14} strokeWidth={1.5} aria-hidden /> : <Plus size={14} strokeWidth={1.5} aria-hidden />}
           {c.add}
@@ -66,7 +66,7 @@ export function LeadChannels({ channels, origin }: {
       </div>
 
       {adding && (
-        <form action={action} className="mt-4 rounded-xl2 border border-line bg-surface-100 p-4">
+        <form action={action} className="mt-4 rounded-card-sm border border-line bg-surface-100 p-4">
           <div className="flex flex-wrap items-end gap-3">
             <div className="min-w-[200px] flex-1">
               <label className="label" htmlFor="new-channel">{c.addPh}</label>
@@ -84,13 +84,13 @@ export function LeadChannels({ channels, origin }: {
             </button>
           </div>
           {state && !state.ok && state.error && (
-            <p role="alert" className="mt-2 text-[13px] text-bad">{state.error}</p>
+            <p role="alert" className="mt-2 text-body text-bad">{state.error}</p>
           )}
         </form>
       )}
 
       {channels.length === 0 && !adding ? (
-        <p className="mt-5 text-[14px] text-ink-mute">{c.none}</p>
+        <p className="mt-5 text-body text-ink-mute">{c.none}</p>
       ) : (
         <ul className="mt-5 space-y-3">
           {channels.map((ch) => <Row key={ch.id} channel={ch} origin={origin} />)}
@@ -130,7 +130,7 @@ function Row({ channel, origin }: { channel: LeadChannel; origin: string }) {
     : channel.source;
 
   return (
-    <li className={cn('rounded-xl2 border border-line bg-card p-4', !channel.enabled && 'opacity-60')}>
+    <li className={cn('rounded-card-sm border border-line bg-card p-4', !channel.enabled && 'opacity-60')}>
       {editing ? (
         <EditRow channel={channel} onDone={() => setEditing(false)} />
       ) : (
@@ -138,12 +138,12 @@ function Row({ channel, origin }: { channel: LeadChannel; origin: string }) {
           <div className="min-w-0">
             <button
               type="button" onClick={() => setEditing(true)}
-              className="text-[15px] font-semibold text-ink transition hover:text-accent"
+              className="text-lead font-semibold text-ink transition hover:text-accent"
               aria-label={`${c.rename}: ${channel.label}`}
             >
               {channel.label}
             </button>
-            <p className="mt-0.5 text-[13px] text-ink-mute">
+            <p className="mt-0.5 text-body text-ink-mute">
               {kind}
               {' · '}
               <span className={channel.enabled ? 'text-good' : 'text-ink-mute'}>
@@ -158,7 +158,7 @@ function Row({ channel, origin }: { channel: LeadChannel; origin: string }) {
             <form action={setChannelEnabled}>
               <input type="hidden" name="channel_id" value={channel.id} />
               <input type="hidden" name="enabled" value={channel.enabled ? 'off' : 'on'} />
-              <button type="submit" className="btn-ghost min-h-[34px] px-3 text-[13px]">
+              <button type="submit" className="btn-ghost min-h-[34px] px-3 text-body">
                 {channel.enabled ? c.disable : c.enable}
               </button>
             </form>
@@ -190,7 +190,7 @@ function Row({ channel, origin }: { channel: LeadChannel; origin: string }) {
 
       <Guide kind={channel.source} />
 
-      <p className="mt-2 text-[12.5px] text-ink-mute">
+      <p className="mt-2 text-meta text-ink-mute">
         {channel.last_lead_at
           ? `${c.lastLead}: ${dateFmtFor(ui.locale).format(new Date(channel.last_lead_at))} · ${channel.lead_count} ${c.count}`
           : c.never}
@@ -236,7 +236,7 @@ function EditRow({ channel, onDone }: { channel: LeadChannel; onDone: () => void
         </button>
       </div>
       {state && !state.ok && state.error && (
-        <p role="alert" className="mt-2 text-[13px] text-bad">{state.error}</p>
+        <p role="alert" className="mt-2 text-body text-bad">{state.error}</p>
       )}
     </form>
   );
@@ -278,18 +278,18 @@ function UrlLine({ url }: { url: string }) {
       <div className="flex flex-wrap items-center gap-2">
         <code
           ref={code} dir="ltr"
-          className="min-w-0 flex-1 overflow-x-auto whitespace-nowrap rounded-xl2 border border-line bg-surface-100 px-3 py-2 text-[12.5px] text-ink-soft"
+          className="min-w-0 flex-1 overflow-x-auto whitespace-nowrap rounded-xl2 border border-line bg-surface-100 px-3 py-2 text-meta text-ink-soft"
         >
           {url}
         </code>
-        <button type="button" onClick={copy} className="btn-ghost min-h-[38px] shrink-0 px-3.5 text-[13.5px]">
+        <button type="button" onClick={copy} className="btn-ghost min-h-[38px] shrink-0 px-3.5 text-body">
           {done
             ? <Check size={14} strokeWidth={1.5} aria-hidden />
             : <Copy size={14} strokeWidth={1.5} aria-hidden />}
           {done ? c.copied : c.copy}
         </button>
       </div>
-      <p className="mt-1.5 text-[12.5px] text-ink-mute">{c.urlHint}</p>
+      <p className="mt-1.5 text-meta text-ink-mute">{c.urlHint}</p>
     </div>
   );
 }
@@ -313,7 +313,7 @@ function TestButton({ channelId }: { channelId: string }) {
     <div>
       <form action={action}>
         <input type="hidden" name="channel_id" value={channelId} />
-        <button type="submit" className="btn-ghost min-h-[34px] px-3 text-[13px]" disabled={pending}>
+        <button type="submit" className="btn-ghost min-h-[34px] px-3 text-body" disabled={pending}>
           {pending ? c.testing : c.test}
         </button>
       </form>
@@ -322,7 +322,7 @@ function TestButton({ channelId }: { channelId: string }) {
         <p
           role="status" aria-live="polite"
           className={cn(
-            'mt-1.5 inline-flex max-w-[260px] items-start gap-1.5 text-[12.5px] leading-snug',
+            'mt-1.5 inline-flex max-w-[260px] items-start gap-1.5 text-meta leading-snug',
             state.ok ? 'text-good' : 'text-bad',
           )}
         >
@@ -356,10 +356,10 @@ function Guide({ kind }: { kind: string }) {
 
   return (
     <details className="mt-3 group">
-      <summary className="cursor-pointer list-none text-[13px] text-accent transition hover:text-ink">
+      <summary className="cursor-pointer list-none text-body text-accent transition hover:text-ink">
         {c.guide}
       </summary>
-      <ol className="mt-2 space-y-1.5 ps-5 text-[13px] leading-relaxed text-ink-soft [list-style:decimal]">
+      <ol className="mt-2 space-y-1.5 ps-5 text-body leading-relaxed text-ink-soft [list-style:decimal]">
         {steps.map((step) => <li key={step}>{step}</li>)}
       </ol>
     </details>

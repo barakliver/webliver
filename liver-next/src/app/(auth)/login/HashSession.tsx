@@ -53,7 +53,7 @@ export function HashSession({ next = '/app' }: { next?: string }) {
 
   if (!busy) return null;
   return (
-    <p role="status" className="mb-4 rounded-control border border-line bg-surface-100 px-4 py-3 text-center text-[14px] text-ink-soft">
+    <p role="status" className="mb-4 rounded-control border border-line bg-surface-100 px-4 py-3 text-center text-body text-ink-soft">
       {copy.signingIn}
     </p>
   );

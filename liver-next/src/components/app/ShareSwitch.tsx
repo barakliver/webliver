@@ -34,7 +34,7 @@ function Knob({ on, label, word }: { on: boolean; label: string; word: string })
       aria-checked={on}
       aria-label={label}
       disabled={pending}
-      className="inline-flex min-h-[44px] items-center gap-2 rounded-xl2 px-1.5 text-[12.5px] transition disabled:opacity-60 sm:min-h-[36px]"
+      className="inline-flex min-h-[44px] items-center gap-2 rounded-xl2 px-1.5 text-meta transition disabled:opacity-60 sm:min-h-[36px]"
     >
       <span
         aria-hidden
@@ -75,10 +75,10 @@ export function TabShare({ clientId, tab, shares, moneyOn }: {
   if (sections.length === 0) return null;
   return (
     <div className="mb-5 flex flex-wrap items-center gap-x-5 gap-y-1 rounded-xl2 border border-line bg-surface-100 px-3 py-1.5">
-      <span className="text-[12.5px] text-ink-mute">{ui.preview.coupleSees}</span>
+      <span className="text-meta text-ink-mute">{ui.preview.coupleSees}</span>
       {sections.map((s) => (
         <span key={s.key} className="inline-flex items-center gap-2">
-          {sections.length > 1 && <span className="text-[13px] text-ink">{ui.portal[s.row] as string}</span>}
+          {sections.length > 1 && <span className="text-body text-ink">{ui.portal[s.row] as string}</span>}
           <ShareSwitch
             clientId={clientId}
             section={s.key}
@@ -119,16 +119,16 @@ export function ShareSwitches({ clientId, shares, moneyOn }: {
   return (
     <section className="card">
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-        <h2 className="font-display text-[18px] font-semibold text-ink">{c.switchesTitle}</h2>
-        <p className="text-[13px] tabular-nums text-ink-mute">
+        <h2 className="font-display text-subhead font-semibold text-ink">{c.switchesTitle}</h2>
+        <p className="text-body tabular-nums text-ink-mute">
           {c.openTally.replace('{n}', String(openCount)).replace('{of}', String(PORTAL_SECTIONS.length))}
         </p>
       </div>
-      <p className="mt-1 max-w-prose2 text-[14px] leading-relaxed text-ink-soft">{c.switchesSub}</p>
+      <p className="mt-1 max-w-prose2 text-body leading-relaxed text-ink-soft">{c.switchesSub}</p>
       <ul className="mt-4 grid list-none gap-x-8 p-0 sm:grid-cols-2 lg:grid-cols-3">
         {PORTAL_SECTIONS.map((s) => (
           <li key={s.key} className="flex items-center justify-between gap-2 border-t border-line">
-            <span className="min-w-0 truncate text-[14px] text-ink">{ui.portal[s.row] as string}</span>
+            <span className="min-w-0 truncate text-body text-ink">{ui.portal[s.row] as string}</span>
             <ShareSwitch
               clientId={clientId}
               section={s.key}

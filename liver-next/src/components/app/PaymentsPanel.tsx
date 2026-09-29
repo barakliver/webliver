@@ -48,8 +48,8 @@ export function PaymentsPanel({ clientId, payments, viewer }: {
 
   return (
     <section className="card">
-      <h2 className="font-display text-[18px] font-semibold text-ink">{c.payTitle}</h2>
-      <p className="mt-1 text-[14px] text-ink-soft">
+      <h2 className="font-display text-subhead font-semibold text-ink">{c.payTitle}</h2>
+      <p className="mt-1 text-body text-ink-soft">
         {viewer === 'producer' ? c.paySubProducer : c.paySubClient}
       </p>
 
@@ -79,13 +79,13 @@ export function PaymentsPanel({ clientId, payments, viewer }: {
       )}
 
       {state && !state.ok && state.error && (
-        <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-[14px] text-bad">
+        <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-body text-bad">
           {state.error}
         </p>
       )}
 
       {payments.length === 0 ? (
-        <p className="mt-6 text-[14.5px] text-ink-mute">{c.payNone}</p>
+        <p className="mt-6 text-body text-ink-mute">{c.payNone}</p>
       ) : (
         <ul className="mt-5 space-y-2">
           {payments.map((p) => {
@@ -95,8 +95,8 @@ export function PaymentsPanel({ clientId, payments, viewer }: {
                 late ? 'border-bad/25 bg-bad-wash/60' : 'border-line'
               }`}>
                 <div className="min-w-0 flex-1">
-                  <p className="text-[15px] text-ink">{p.title}</p>
-                  <p className="mt-0.5 whitespace-nowrap text-[12.5px] text-ink-mute">
+                  <p className="text-lead text-ink">{p.title}</p>
+                  <p className="mt-0.5 whitespace-nowrap text-meta text-ink-mute">
                     {p.paid
                       ? `${c.paid}${p.paid_on ? ' · ' + formatDate(dateFmt, p.paid_on, '') : ''}`
                       : (
@@ -108,7 +108,7 @@ export function PaymentsPanel({ clientId, payments, viewer }: {
                   </p>
                 </div>
 
-                <span className={`tabular-nums text-[15px] font-semibold ${p.paid ? 'text-ok' : 'text-ink'}`}>
+                <span className={`tabular-nums text-lead font-semibold ${p.paid ? 'text-ok' : 'text-ink'}`}>
                   <Money value={Number(p.amount)} />
                 </span>
 
@@ -121,14 +121,14 @@ export function PaymentsPanel({ clientId, payments, viewer }: {
                       <input type="hidden" name="payment_id" value={p.id} />
                       <input type="hidden" name="client_id" value={clientId} />
                       <input type="hidden" name="paid" value={String(p.paid)} />
-                      <button type="submit" className="btn-ghost px-3 py-1.5 text-[13px]">
+                      <button type="submit" className="btn-ghost px-3 py-1.5 text-body">
                         {p.paid ? c.markUnpaid : c.markPaid}
                       </button>
                     </form>
                     <DeleteForm action={deletePayment}>
                       <input type="hidden" name="payment_id" value={p.id} />
                       <input type="hidden" name="client_id" value={clientId} />
-                      <button type="submit" className="btn-quiet px-2 py-1.5 text-[13px]">{c.remove}</button>
+                      <button type="submit" className="btn-quiet px-2 py-1.5 text-body">{c.remove}</button>
                     </DeleteForm>
                   </div>
                 )}

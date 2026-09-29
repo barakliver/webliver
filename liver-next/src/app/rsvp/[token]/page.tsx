@@ -50,12 +50,12 @@ export default async function RsvpPage({ params }: { params: Promise<{ token: st
   return (
     <main id="main" className="flex min-h-dvh items-center justify-center px-5 py-14">
       <div className="w-full max-w-lg">
-        <p className="mb-6 text-center font-display text-[19px] font-semibold text-ink">{brandLine}</p>
+        <p className="mb-6 text-center font-display text-subhead font-semibold text-ink">{brandLine}</p>
 
         {!guest ? (
           <div className="card text-center">
             <h1 className="font-display text-title font-semibold text-ink">{rsvpCopy.badLink}</h1>
-            <p className="mt-3 text-[15.5px] leading-relaxed text-ink-soft">{rsvpCopy.badLinkBody}</p>
+            <p className="mt-3 text-lead leading-relaxed text-ink-soft">{rsvpCopy.badLinkBody}</p>
           </div>
         ) : (
           <>
@@ -64,12 +64,12 @@ export default async function RsvpPage({ params }: { params: Promise<{ token: st
               <h1 className="mt-2 font-display text-title font-semibold text-ink">
                 {rsvpCopy.hello} <bdi>{guest.guest_name}</bdi>
               </h1>
-              <p className="mt-3 text-[16px] text-ink-soft">
+              <p className="mt-3 text-head text-ink-soft">
                 {rsvpCopy.invitedTo}
                 <b className="text-ink"> {guest.event_name}</b>
               </p>
               {(guest.event_date || guest.venue) && (
-                <p className="mt-1 text-[14.5px] text-ink-mute">
+                <p className="mt-1 text-body text-ink-mute">
                   {formatDate(dateFmt, guest.event_date, '')}
                   {guest.event_date && guest.venue ? ' · ' : ''}
                   {guest.venue}

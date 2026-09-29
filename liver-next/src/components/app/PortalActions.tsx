@@ -86,7 +86,7 @@ export function PortalActions({
       >
         <ul className="list-none space-y-2 p-0">
           {!tel && !wa && !bookingUrl && (
-            <li className="px-3 py-2 text-[14px] text-ink-soft">{c.contact.none}</li>
+            <li className="px-3 py-2 text-body text-ink-soft">{c.contact.none}</li>
           )}
           {tel && (
             <Row
@@ -120,7 +120,7 @@ export function PortalActions({
             <button
               type="button"
               onClick={() => setSheet('report')}
-              className="flex min-h-[52px] w-full items-center gap-3 px-3 text-start text-[15px] text-ink-soft transition-colors duration-300 hover:text-ink"
+              className="flex min-h-[52px] w-full items-center gap-3 px-3 text-start text-lead text-ink-soft transition-colors duration-300 hover:text-ink"
             >
               <TriangleAlert size={18} strokeWidth={1.5} aria-hidden />
               <span className="flex-1">{c.report.open}</span>
@@ -151,13 +151,13 @@ function Row({ href, icon, label, meta, primary }: {
         href={href}
         {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
         className={cn(
-          'flex min-h-[52px] items-center gap-3 px-3 text-[15px] transition-colors duration-300',
+          'flex min-h-[52px] items-center gap-3 px-3 text-lead transition-colors duration-300',
           primary ? 'bg-ink text-surface hover:bg-ink-soft' : 'border border-line text-ink hover:bg-surface',
         )}
       >
         {icon}
         <span className="flex-1">{label}</span>
-        <span className={cn('text-[12.5px]', primary ? 'text-surface/65' : 'text-ink-mute')}>{meta}</span>
+        <span className={cn('text-meta', primary ? 'text-surface/65' : 'text-ink-mute')}>{meta}</span>
       </a>
     </li>
   );
@@ -198,7 +198,7 @@ function ReportForm({ onSubmit, onDone }: {
             onClick={() => setTopic(t)}
             aria-pressed={topic === t}
             className={cn(
-              'min-h-[40px] border px-3 text-[13px] transition-colors duration-300',
+              'min-h-[40px] border px-3 text-body transition-colors duration-300',
               topic === t ? 'border-ink text-ink' : 'border-line text-ink-mute hover:text-ink',
             )}
           >
@@ -216,7 +216,7 @@ function ReportForm({ onSubmit, onDone }: {
         className="field mt-4 resize-none"
       />
 
-      {error && <p role="alert" className="mt-2 text-[13.5px] text-bad">{error}</p>}
+      {error && <p role="alert" className="mt-2 text-body text-bad">{error}</p>}
 
       <button
         type="button"
