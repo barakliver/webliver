@@ -270,7 +270,7 @@ function Door({ names, producer, onPick, onRules }: {
           {game.rulesLink}
         </button>
 
-        <p className="mt-12 text-micro uppercase tracking-[.18em] text-surface/35">{producer}</p>
+        <p className="mt-12 text-micro uppercase tracking-[.18em] text-surface/70">{producer}</p>
       </div>
     </div>
   );

@@ -77,13 +77,20 @@ export function CrewShifts({ shifts, today }: { shifts: Shift[]; today: string }
                 </p>
 
                 <dl className="mt-2.5 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-body text-ink-soft">
+                  {/* A description list whose values have no terms is what a
+                      screen reader reads as a run of loose figures: the icon
+                      beside each one is a picture and says nothing. The word
+                      is hidden rather than absent, because the icon already
+                      says it to anybody who can see it. */}
                   <div className="flex min-w-0 items-center gap-1.5">
                     <MapPin size={14} className="text-ink-mute" aria-hidden strokeWidth={1.5} />
+                    <dt className="sr-only">{c.shiftVenue}</dt>
                     <dd className="truncate">{s.venue || c.shiftNoVenue}</dd>
                   </div>
                   {s.call_time && (
                     <div className="flex items-center gap-1.5">
                       <Clock size={14} className="text-ink-mute" aria-hidden strokeWidth={1.5} />
+                      <dt className="sr-only">{c.shiftCall}</dt>
                       <dd><Ltr>{hhmm(s.call_time)}</Ltr></dd>
                     </div>
                   )}

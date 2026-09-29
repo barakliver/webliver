@@ -121,17 +121,22 @@ async function Row({ s }: { s: ClientStatus }) {
             )}
             {s.guests.invited > 0 && (
               <div className="flex items-center gap-1.5">
+                {/* The word was already printed after the figure; it is the
+                    term for it, so it is marked as one. A `dd` with no `dt`
+                    reads as a value nobody named. */}
                 <Users size={14} className="text-ink-mute" aria-hidden strokeWidth={1.5} />
+                <dt className="text-ink-mute">{c.attending}</dt>
                 <dd className="tabular-nums">
-                  <Ratio of={s.guests.attending} total={s.guests.invited} /> {c.attending}
+                  <Ratio of={s.guests.attending} total={s.guests.invited} />
                 </dd>
               </div>
             )}
             {s.money.owed > 0 && (
               <div className="flex items-center gap-1.5">
                 <Wallet size={14} className="text-ink-mute" aria-hidden strokeWidth={1.5} />
+                <dt className="text-ink-mute">{c.owed}</dt>
                 <dd className={`tabular-nums ${s.money.overdue > 0 ? 'text-bad' : ''}`}>
-                  <Money value={s.money.owed} /> {c.owed}
+                  <Money value={s.money.owed} />
                 </dd>
               </div>
             )}

@@ -1236,6 +1236,10 @@ export const appCopy = {
        and the hall's staff are off on Independence Day, and neither family
        of days is the other's business. */
     holidays: 'חגים',
+    /* A switch built as a link cannot carry a pressed state, so the state
+       has to live in the name it is read out by. */
+    filterShow: 'להציג',
+    filterHide: 'להסתיר',
     jewishOn: 'חגי ישראל',
     christianOn: 'חגים נוצריים',
     holidayLegend: 'חג או מועד',
@@ -2494,6 +2498,10 @@ export const crewCopy = {
   shiftWhere: 'איפה',
   shiftNoVenue: 'המקום עוד לא נקבע',
   shiftNoDate: 'התאריך עוד לא נקבע',
+  /* Read out rather than drawn: an icon is a picture to a screen reader,
+     so the value beside it needs a word of its own. */
+  shiftVenue: 'מקום',
+  shiftCall: 'שעת הגעה',
   shiftMyRole: 'התפקיד שלי',
   shiftMyCall: 'שעת הגעה',
   shiftMyNote: 'הערה אליי',

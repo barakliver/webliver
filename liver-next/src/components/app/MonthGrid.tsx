@@ -131,19 +131,28 @@ export function MonthGrid({ items, month, today, locale, ui, open = '', switches
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 id="grid-title" className="font-display text-head font-semibold text-ink">{c.grid}</h2>
         {/* The switches, as links that rewrite the address: no state to keep
-            and nothing to hydrate, and a bookmark keeps the choice. */}
+            and nothing to hydrate, and a bookmark keeps the choice.
+
+            What a link cannot carry is a pressed state. `aria-pressed` was on
+            both of these and it is not an attribute a link is allowed, so a
+            screen reader announced "link, Jewish and Israeli holidays" and
+            said nothing about whether they were on - somebody could press it
+            and have no way to learn what had changed. The state lives in the
+            name now, as the action the link performs: showing when they are
+            hidden, hiding when they are shown. That is also what the link
+            actually does, which `aria-pressed` never was. */}
         <div className="flex flex-wrap items-center gap-1.5 text-meta">
           <span className="text-ink-mute">{c.holidays}:</span>
           <Link
             href={calendarHref(month, { ...switches, jewish: !switches.jewish }, open || undefined)}
-            aria-pressed={switches.jewish}
+            aria-label={`${switches.jewish ? c.filterHide : c.filterShow} ${c.jewishOn}`}
             className={`rounded-full border px-3 py-1 transition ${switches.jewish ? 'border-accent bg-accent-wash text-ink' : 'border-line text-ink-soft hover:border-accent/40'}`}
           >
             {c.jewishOn}
           </Link>
           <Link
             href={calendarHref(month, { ...switches, christian: !switches.christian }, open || undefined)}
-            aria-pressed={switches.christian}
+            aria-label={`${switches.christian ? c.filterHide : c.filterShow} ${c.christianOn}`}
             className={`rounded-full border px-3 py-1 transition ${switches.christian ? 'border-accent bg-accent-wash text-ink' : 'border-line text-ink-soft hover:border-accent/40'}`}
           >
             {c.christianOn}

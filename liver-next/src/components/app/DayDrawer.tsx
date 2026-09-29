@@ -136,7 +136,9 @@ export function DayDrawer({ day, dayText, items, entries, clients, closeHref = '
                   ) : (
                     <Link href={i.href} className={`block truncate text-lead hover:underline ${i.done ? 'line-through opacity-60' : ''}`}>{i.title}</Link>
                   )}
-                  {i.detail && <span className="block truncate text-body opacity-75">{i.detail}</span>}
+                  {/* `opacity-75` over a tinted chip took this under the contrast
+                      bar. The tone it wanted is a token that is measured. */}
+                  {i.detail && <span className="block truncate text-body text-ink-soft">{i.detail}</span>}
                 </span>
                 {i.amount ? <span className="shrink-0 text-body tabular-nums"><Money value={i.amount} /></span> : null}
                 {row && (

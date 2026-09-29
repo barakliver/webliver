@@ -406,15 +406,7 @@ export function CrewBoard({
                     <dt className="text-ink-mute">{c.moneyOut}</dt>
                     <dd className="text-ink"><Money value={ev.money.costs} /></dd>
                   </div>
-                  {/* A margin before anything is billed is not a loss, it is
-                      an invoice nobody has raised yet. Saying "loss" there is
-                      how somebody learns to stop reading this line. */}
-                  {ev.money.fee === null && ev.money.billed > 0 && (
-                    <div className="text-ink-mute">{c.incomeFromPlan}</div>
-                  )}
-                  {ev.money.early ? (
-                    <div className="text-ink-mute">{c.moneyEarly}</div>
-                  ) : (
+                  {!ev.money.early && (
                     <div className="flex items-baseline gap-1.5">
                       <dt className="text-ink-mute">{c.moneyMargin}</dt>
                       <dd className={ev.money.margin < 0 ? 'font-medium text-bad' : 'font-medium text-ink'}>
@@ -423,6 +415,22 @@ export function CrewBoard({
                     </div>
                   )}
                 </dl>
+
+                {/* The two notes about the figures, underneath them rather
+                    than among them. They were inside the list, as bare text
+                    with no term and no value, which is a sentence wearing the
+                    markup of a statistic: a screen reader announces the list
+                    and then reads a loose line nobody named. Out here they
+                    are what they are, a caption.
+
+                    A margin before anything is billed is not a loss, it is an
+                    invoice nobody has raised yet. Saying "loss" there is how
+                    somebody learns to stop reading this line. */}
+                {(ev.money.early || (ev.money.fee === null && ev.money.billed > 0)) && (
+                  <p className="mt-1.5 text-body text-ink-mute">
+                    {ev.money.early ? c.moneyEarly : c.incomeFromPlan}
+                  </p>
+                )}
 
                 <EventIncome clientId={ev.id} fee={ev.money.fee} />
 

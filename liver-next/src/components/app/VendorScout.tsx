@@ -190,9 +190,17 @@ export function VendorScout({ vendors, events, signAs, demo }: {
 
           <div className="mt-6 grid gap-5 lg:grid-cols-2">
             <div>
-              <h3 className="text-body font-semibold text-ink">{c.outreachTitle}</h3>
+              {/* The heading is the field's name rather than a second label
+                  beside it. A readonly textarea with no name at all is what a
+                  screen reader reads as "edit text, blank": there is a
+                  paragraph of drafted message inside it and nothing says
+                  which draft it is. */}
+              <h3 id="scout-outreach" className="text-body font-semibold text-ink">{c.outreachTitle}</h3>
               <p className="mt-1 text-meta leading-relaxed text-ink-mute">{c.outreachSub}</p>
-              <textarea readOnly value={textOne} rows={10} className="field mt-2 w-full resize-y text-body leading-relaxed" />
+              <textarea
+                readOnly value={textOne} rows={10} aria-labelledby="scout-outreach"
+                className="field mt-2 w-full resize-y text-body leading-relaxed"
+              />
               <div className="mt-2 flex flex-wrap gap-2">
                 <button type="button" onClick={() => copy('one', textOne)} className="btn-ghost text-body">
                   {copied === 'one' ? <Check size={14} aria-hidden strokeWidth={1.5} /> : <Copy size={14} aria-hidden strokeWidth={1.5} />}
@@ -206,8 +214,11 @@ export function VendorScout({ vendors, events, signAs, demo }: {
               </div>
             </div>
             <div>
-              <h3 className="text-body font-semibold text-ink">{c.genericTitle}</h3>
-              <textarea readOnly value={textRest} rows={10} className="field mt-2 w-full resize-y text-body leading-relaxed" />
+              <h3 id="scout-generic" className="text-body font-semibold text-ink">{c.genericTitle}</h3>
+              <textarea
+                readOnly value={textRest} rows={10} aria-labelledby="scout-generic"
+                className="field mt-2 w-full resize-y text-body leading-relaxed"
+              />
               <div className="mt-2">
                 <button type="button" onClick={() => copy('rest', textRest)} className="btn-ghost text-body">
                   {copied === 'rest' ? <Check size={14} aria-hidden strokeWidth={1.5} /> : <Copy size={14} aria-hidden strokeWidth={1.5} />}
