@@ -193,10 +193,61 @@ export function luminance(hex: string): number {
   return 0.2126 * ch((n >> 16) & 255) + 0.7152 * ch((n >> 8) & 255) + 0.0722 * ch(n & 255);
 }
 
-/** Which of the two neutrals reads on a ground: the light one on a dark
- *  ground, the dark one on a light ground. */
-export const inkOn = (b: WeddingBrand, groundHex: string): string =>
-  luminance(groundHex) > 0.4 ? swatch(b, 'dark') : swatch(b, 'light');
+/**
+ * Which of the two neutrals reads on a ground.
+ *
+ * It used to answer by luminance: over 0.4 take the dark one, under it take
+ * the light one. That is right at the ends and wrong in the middle, which is
+ * exactly where an accent lives. The default gold sits just under the line,
+ * so the RSVP pill - ivory on gold - came out at 2.86, and the same gold
+ * against the dark neutral is 5.5. The cut-off chose the worse of the two
+ * while a measurement was available.
+ *
+ * So it measures. A tie goes to the dark one, which is the commoner case and
+ * the one a printer prefers.
+ */
+export const inkOn = (b: WeddingBrand, groundHex: string): string => {
+  const dark = swatch(b, 'dark');
+  const light = swatch(b, 'light');
+  return contrast(dark, groundHex) >= contrast(light, groundHex) ? dark : light;
+};
+
+/** The WCAG contrast ratio between two colours, 1 to 21. */
+export function contrast(aHex: string, bHex: string): number {
+  const [hi, lo] = [luminance(aHex), luminance(bHex)].sort((x, y) => y - x);
+  return (hi + 0.05) / (lo + 0.05);
+}
+
+/**
+ * The accent, when it can carry words, and the ink when it cannot.
+ *
+ * A wedding's accent is chosen to be beautiful beside the ground rather than
+ * readable on it, and those are different jobs. The default gold is 2.87
+ * against the default ivory, where the bar for a sentence is 4.5 - and it is
+ * no better anywhere else: 3.09 on pure white, 2.80 on the platform's own
+ * blue. That is a fact about a light gold, not about a ground, so no change
+ * of paper rescues it.
+ *
+ * It matters more here than almost anywhere in the product, because the
+ * guests' page is public and the people most likely to be reading a wedding
+ * invitation on a phone in poor light are the couple's grandparents.
+ *
+ * So small text asks for this rather than for the accent, and gets the accent
+ * only when the accent is readable. The hairlines, the ampersand and the
+ * filled pill still take `accent` directly: decoration carries no meaning and
+ * has no bar to clear. Nobody's palette is overruled - the colour they chose
+ * is still on the page, doing the job it was chosen for.
+ *
+ * `large` drops the bar to 3, which is what WCAG allows for text at 24px or
+ * 18.66px bold, and is why a headline may keep the gold where a caption may
+ * not.
+ */
+export const readableAccent = (
+  b: WeddingBrand, groundHex: string, large = false,
+): string => {
+  const accent = swatch(b, 'accent');
+  return contrast(accent, groundHex) >= (large ? 3 : 4.5) ? accent : inkOn(b, groundHex);
+};
 
 /** "נועה ואיתי" as two names, or the whole thing as one when it does not
  *  split cleanly. The joining vav is the one convention the platform can

@@ -365,6 +365,22 @@ that has happened once.
   every line was created blank. Both forms now carry the select, blank means
   "work it out from the label", and every row prints the area it landed in -
   nobody reports a category they cannot see.
+- **A wedding's accent is chosen to be beautiful, not to be read**, and those
+  are different jobs. The default gold is 2.87 against the default ivory,
+  where the bar for a sentence is 4.5, and it is no better anywhere else:
+  3.09 on pure white, 2.80 on the platform's own blue. That is a fact about a
+  light gold rather than about a ground, so no change of paper rescues it,
+  and it matters because the guests' page is public and the people reading a
+  wedding invitation on a phone in poor light are often the grandparents. So
+  small text on a brand piece asks `readableAccent` in `content/brandKit.ts`
+  and gets the accent only when the accent clears the bar; the hairlines, the
+  ampersand and the filled pill still take it directly, because decoration
+  carries no meaning. Nobody's palette is overruled - a couple who chose a
+  dark accent keeps it everywhere. `inkOn` beside it used to answer by a
+  luminance cut-off at 0.4, which is right at the ends and wrong in the
+  middle, and the middle is exactly where an accent lives: the RSVP pill came
+  out ivory on gold at 2.86 while charcoal on the same gold is over 5. It
+  measures both and takes the better one now. Both are tested.
 - The platform also has a dark palette. There are two controls for it and
   neither owns the state: a one-press switch in the app header beside the
   language one, and the full three-way choice in the accessibility menu —

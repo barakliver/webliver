@@ -2,7 +2,7 @@ import type { CSSProperties, ReactNode } from 'react';
 import type { StudioCopy } from '@/content/appUi';
 import type { Locale } from '@/lib/locale';
 import {
-  BLEED_MM, MARK_MM, fontPair, inkOn, pieceOf, swatch,
+  BLEED_MM, MARK_MM, fontPair, inkOn, pieceOf, readableAccent, swatch,
   type PieceKey, type Variant, type WeddingBrand,
 } from '@/content/brandKit';
 
@@ -39,6 +39,9 @@ type OnCopy = StudioCopy['on'];
 
 type Theme = {
   bg: string; ink: string; soft: string; accent: string; band: string; bandInk: string;
+  /** The accent where it can carry words, the ink where it cannot. Only
+   *  decoration takes `accent` directly. */
+  accentInk: string;
   display: string; body: string; center: boolean; bold: boolean;
 };
 
@@ -57,11 +60,11 @@ export function themeOf(brand: WeddingBrand, variant: Variant): Theme {
     const bg = swatch(brand, 'primary');
     const ink = inkOn(brand, bg);
     const band = swatch(brand, 'secondary');
-    return { bg, ink, soft: withAlpha(ink, 0.72), accent: swatch(brand, 'accent'), band, bandInk: inkOn(brand, band), display, body, center: false, bold: true };
+    return { bg, ink, soft: withAlpha(ink, 0.72), accent: swatch(brand, 'accent'), accentInk: readableAccent(brand, bg), band, bandInk: inkOn(brand, band), display, body, center: false, bold: true };
   }
   const bg = swatch(brand, 'light');
   const ink = swatch(brand, 'dark');
-  return { bg, ink, soft: withAlpha(ink, 0.66), accent: swatch(brand, 'accent'), band: swatch(brand, 'secondary'), bandInk: ink, display, body, center: true, bold: false };
+  return { bg, ink, soft: withAlpha(ink, 0.66), accent: swatch(brand, 'accent'), accentInk: readableAccent(brand, bg), band: swatch(brand, 'secondary'), bandInk: ink, display, body, center: true, bold: false };
 }
 
 /* ── the frame ─────────────────────────────────────────────────────────── */
@@ -130,12 +133,12 @@ function Rule({ t, w = 18 }: { t: Theme; w?: number }) {
 }
 
 function Eyebrow({ t, children, size = 3 }: { t: Theme; children: ReactNode; size?: number }) {
-  return <p style={{ fontSize: `${size}mm`, letterSpacing: '0.18em', textTransform: 'uppercase', color: t.bold ? t.ink : t.accent, margin: 0, fontWeight: 600 }}>{children}</p>;
+  return <p style={{ fontSize: `${size}mm`, letterSpacing: '0.18em', textTransform: 'uppercase', color: t.bold ? t.ink : t.accentInk, margin: 0, fontWeight: 600 }}>{children}</p>;
 }
 
 /** A web address on a card: broken wherever it must be, never past the edge. */
 function Url({ t, url, size = 2.6, accent = false }: { t: Theme; url: string; size?: number; accent?: boolean }) {
-  return <p dir="ltr" style={{ fontSize: `${size}mm`, margin: '3mm 0 0', color: accent ? t.accent : t.soft, fontWeight: accent ? 600 : 400, wordBreak: 'break-all', overflowWrap: 'anywhere', maxWidth: '100%', textAlign: t.center ? 'center' : 'start' }}>{url.replace(/^https?:\/\//, '')}</p>;
+  return <p dir="ltr" style={{ fontSize: `${size}mm`, margin: '3mm 0 0', color: accent ? t.accentInk : t.soft, fontWeight: accent ? 600 : 400, wordBreak: 'break-all', overflowWrap: 'anywhere', maxWidth: '100%', textAlign: t.center ? 'center' : 'start' }}>{url.replace(/^https?:\/\//, '')}</p>;
 }
 
 function Line({ t, children, size = 3.6, soft = false }: { t: Theme; children: ReactNode; size?: number; soft?: boolean }) {
@@ -232,7 +235,7 @@ export function Piece({ kind, variant, brand, data: d, c, locale, page = 0, blee
           <Rule t={t} w={14} />
           <Line t={t} size={3.8}>{when}</Line>
           {d.venue && <Line t={t} size={3.4}>{d.venue}</Line>}
-          <p style={{ fontSize: '3mm', fontWeight: 600, margin: '6mm 0 1mm', color: t.accent, letterSpacing: '0.1em' }}>{c.stay}</p>
+          <p style={{ fontSize: '3mm', fontWeight: 600, margin: '6mm 0 1mm', color: t.accentInk, letterSpacing: '0.1em' }}>{c.stay}</p>
           <p style={{ fontSize: '3mm', margin: 0, whiteSpace: 'pre-line', color: t.ink }}>{brand.texts.travel || ' '}</p>
           {d.siteUrl && <Url t={t} url={d.siteUrl} />}
         </Card>
@@ -290,7 +293,7 @@ export function Piece({ kind, variant, brand, data: d, c, locale, page = 0, blee
           <ul style={{ listStyle: 'none', padding: 0, margin: '3mm 0 0', display: 'grid', gap: '4mm', alignSelf: 'stretch' }}>
             {rows.map((m, i) => (
               <li key={i} style={{ display: 'flex', gap: '4mm', alignItems: 'baseline', justifyContent: t.center ? 'center' : 'flex-start', fontSize: '4.2mm' }}>
-                {m.at && <span dir="ltr" style={{ fontFamily: t.display, color: t.accent, minWidth: '12mm', fontSize: '4.4mm' }}>{m.at.slice(0, 5)}</span>}
+                {m.at && <span dir="ltr" style={{ fontFamily: t.display, color: t.accentInk, minWidth: '12mm', fontSize: '4.4mm' }}>{m.at.slice(0, 5)}</span>}
                 <span>{m.title}</span>
               </li>
             ))}
@@ -309,7 +312,7 @@ export function Piece({ kind, variant, brand, data: d, c, locale, page = 0, blee
 function Website({ t, brand, d, c, dir }: { t: Theme; brand: WeddingBrand; d: PieceData; c: OnCopy; dir: 'rtl' | 'ltr' }) {
   const sec = (title: string, body: ReactNode) => (
     <section style={{ padding: '18px 22px', borderTop: `1px solid ${withAlpha(t.ink, 0.12)}` }}>
-      <p style={{ fontSize: 10, letterSpacing: '0.16em', textTransform: 'uppercase', color: t.accent, margin: 0, fontWeight: 600 }}>{title}</p>
+      <p style={{ fontSize: 10, letterSpacing: '0.16em', textTransform: 'uppercase', color: t.accentInk, margin: 0, fontWeight: 600 }}>{title}</p>
       <div style={{ marginTop: 8, fontSize: 13, color: t.ink, lineHeight: 1.45 }}>{body}</div>
     </section>
   );
@@ -318,7 +321,7 @@ function Website({ t, brand, d, c, dir }: { t: Theme; brand: WeddingBrand; d: Pi
   return (
     <div dir={dir} style={{ width: 390, height: 844, background: t.bg, color: t.ink, fontFamily: t.body, overflow: 'hidden', position: 'relative' }}>
       <header style={{ padding: '44px 22px 26px', textAlign: 'center', background: t.bold ? t.band : t.bg, color: t.bold ? t.bandInk : t.ink }}>
-        <p style={{ fontSize: 10, letterSpacing: '0.18em', textTransform: 'uppercase', margin: 0, color: t.bold ? t.bandInk : t.accent, fontWeight: 600 }}>{c.invite}</p>
+        <p style={{ fontSize: 10, letterSpacing: '0.18em', textTransform: 'uppercase', margin: 0, color: t.bold ? t.bandInk : t.accentInk, fontWeight: 600 }}>{c.invite}</p>
         <p style={{ fontFamily: t.display, fontSize: t.bold ? 44 : 36, lineHeight: 1.05, margin: '14px 0 0' }}>{a}{b ? ` ${dir === 'rtl' ? 'ו' : '&'}${dir === 'rtl' ? '' : ' '}${b}` : ''}</p>
         <p style={{ fontSize: 14, margin: '12px 0 0', ...(t.bold ? {} : soft) }}>{d.dateText}</p>
         {d.venue && <p style={{ fontSize: 13, margin: '2px 0 0', ...(t.bold ? {} : soft) }}>{d.venue}</p>}
@@ -335,7 +338,7 @@ function Website({ t, brand, d, c, dir }: { t: Theme; brand: WeddingBrand; d: Pi
         <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: 6 }}>
           {(d.moments.length > 0 ? d.moments : c.defaultMoments.map((title) => ({ at: '', title }))).slice(0, 4).map((m, i) => (
             <li key={i} style={{ display: 'flex', gap: 12 }}>
-              {m.at && <span dir="ltr" style={{ fontFamily: t.display, color: t.accent, minWidth: 40 }}>{m.at.slice(0, 5)}</span>}
+              {m.at && <span dir="ltr" style={{ fontFamily: t.display, color: t.accentInk, minWidth: 40 }}>{m.at.slice(0, 5)}</span>}
               <span>{m.title}</span>
             </li>
           ))}
