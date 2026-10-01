@@ -1447,6 +1447,7 @@ export const channelEn: ChannelCopy = {
   off: 'Paused',
   enable: 'Turn on',
   disable: 'Pause',
+  quiet: 'No enquiry has arrived for {n} days. If the campaign is running, it is worth checking the address is still pasted correctly.',
   lastLead: 'Last enquiry',
   never: 'No enquiry yet',
   count: 'enquiries',

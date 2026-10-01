@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
-import { tenantOf, lookupKey } from '@/lib/tenant';
+import { tenantOf, lookupKey, surfaceOf } from '@/lib/tenant';
 
 type CookieToSet = { name: string; value: string; options?: CookieOptions };
 
@@ -35,7 +35,43 @@ export default async function proxy(request: NextRequest) {
     headers.set(TENANT_KIND_HEADER, tenant.kind);
   }
 
-  const response = NextResponse.next({ request: { headers } });
+  /* The app subdomain's front door.
+   *
+   * Routing in this app is by path, so `/` is the marketing home on whatever
+   * host answers it — which means app.beforeidoevent.com would serve the
+   * shopfront. One rewrite fixes that, and deliberately only that one: every
+   * other path is left alone, so a deep link into the console works, and so
+   * does /login, and so does every token link already sitting in somebody's
+   * WhatsApp if it ever arrives there.
+   *
+   * A rewrite rather than a redirect, because the address a producer typed is
+   * the address they should keep. And it does nothing at all until
+   * NEXT_PUBLIC_ROOT_DOMAIN is set, which is what makes it safe to ship
+   * before any DNS moves.
+   *
+   * It does NOT return early, and that is the whole care in this block. The
+   * token refresh below is the reason this function runs at all; a path that
+   * skips it is a path where a signed-in producer is thrown to the login
+   * screen the moment their access token expires — on the console's own front
+   * page, which is the one address they keep open. So the rewrite only
+   * decides which response object the rest of the function fills in. */
+  const toConsole = request.nextUrl.pathname === '/'
+    && surfaceOf(request.headers.get('host')) === 'console';
+
+  /* What the request is really for, once the rewrite is taken into account.
+     The guard at the bottom has to read this rather than the address bar, or
+     the console's front page is the one page in the product that is not
+     behind the sign-in. */
+  const pathname = toConsole ? '/app' : request.nextUrl.pathname;
+
+  let response: NextResponse;
+  if (toConsole) {
+    const to = request.nextUrl.clone();
+    to.pathname = '/app';
+    response = NextResponse.rewrite(to, { request: { headers } });
+  } else {
+    response = NextResponse.next({ request: { headers } });
+  }
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -52,10 +88,10 @@ export default async function proxy(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user && request.nextUrl.pathname.startsWith('/app')) {
+  if (!user && pathname.startsWith('/app')) {
     const to = request.nextUrl.clone();
     to.pathname = '/login';
-    to.searchParams.set('next', request.nextUrl.pathname);
+    to.searchParams.set('next', pathname);
     return NextResponse.redirect(to);
   }
   return response;

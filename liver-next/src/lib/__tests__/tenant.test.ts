@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { tenantOf, cleanHost, isLocal, lookupKey, platformRoot } from '../tenant.ts';
+import { tenantOf, cleanHost, isLocal, lookupKey, platformRoot, surfaceOf, APP_LABEL } from '../tenant.ts';
 
 const ROOT = 'liverproductions.com';
 
@@ -63,4 +63,36 @@ test('the lookup key is the whole host for a domain and the label for a slug', (
   assert.equal(lookupKey(tenantOf('keren.' + ROOT, ROOT)), 'keren');
   assert.equal(lookupKey(tenantOf('events.keren-weddings.com', ROOT)), 'events.keren-weddings.com');
   assert.equal(lookupKey({ kind: 'platform' }), null);
+});
+
+test('only the app subdomain is the console, and everything else is the site', () => {
+  assert.equal(surfaceOf(`app.${ROOT}`, ROOT), 'console');
+  assert.equal(surfaceOf(`APP.${ROOT}:443`, ROOT), 'console');
+
+  /* The shopfront, a producer's subdomain, a producer's own domain and a
+     laptop. A host this does not recognise serves what a stranger expects
+     rather than a sign-in screen. */
+  assert.equal(surfaceOf(ROOT, ROOT), 'site');
+  assert.equal(surfaceOf(`www.${ROOT}`, ROOT), 'site');
+  assert.equal(surfaceOf(`keren.${ROOT}`, ROOT), 'site');
+  assert.equal(surfaceOf('events.keren-weddings.com', ROOT), 'site');
+  assert.equal(surfaceOf('localhost:3000', ROOT), 'site');
+  assert.equal(surfaceOf(null, ROOT), 'site');
+
+  /* Two labels is a mistake and not the console, the same way it is not a
+     tenant. */
+  assert.equal(surfaceOf(`a.app.${ROOT}`, ROOT), 'site');
+
+  /* And with no root configured nothing is the console, which is what makes
+     this safe to ship before any DNS moves: the behaviour today is exactly
+     the behaviour yesterday until somebody sets the variable. */
+  assert.equal(surfaceOf(`app.${ROOT}`, ''), 'site');
+});
+
+test('the console label can never be taken by a producer', () => {
+  /* The two halves have to agree. If `app` ever left PLATFORM_LABELS, the
+     subdomain would resolve to a producer whose slug is "app" and serve
+     their branding over the platform's own console. */
+  assert.deepEqual(tenantOf(`${APP_LABEL}.${ROOT}`, ROOT), { kind: 'platform' });
+  assert.equal(surfaceOf(`${APP_LABEL}.${ROOT}`, ROOT), 'console');
 });

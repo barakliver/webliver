@@ -6,9 +6,10 @@ import {
   addChannel, renameChannel, setChannelEnabled, rotateChannel, removeChannel, testChannel,
   type ChannelResult,
 } from '@/app/actions/leadChannels';
-import { CHANNEL_KINDS, channelUrl, type LeadChannel } from '@/content/channels';
+import { CHANNEL_KINDS, channelUrl, quietDays, type LeadChannel } from '@/content/channels';
 import { useCopy } from '@/components/app/CopyProvider';
 import { cn } from '@/lib/utils';
+import { fill } from '@/lib/copyText';
 import { EVENT_ZONE } from '@/lib/clock';
 import type { Locale } from '@/lib/locale';
 import { DeleteForm } from '@/components/app/ConfirmDelete';
@@ -121,6 +122,11 @@ function Row({ channel, origin }: { channel: LeadChannel; origin: string }) {
   const ui = useCopy();
   const [editing, setEditing] = useState(false);
   const url = channelUrl(origin, channel.token);
+  /* Read on the client and so against the reader's own clock, which is the
+     right one: this is a sentence about how long ago something happened, and
+     it is read in Israel on the morning somebody wonders where the enquiries
+     went. */
+  const quiet = quietDays(channel);
 
   /* A channel that is switched off keeps its row and loses its emphasis: the
      producer needs to see that it exists and is not receiving, which a hidden
@@ -195,6 +201,16 @@ function Row({ channel, origin }: { channel: LeadChannel; origin: string }) {
           ? `${c.lastLead}: ${dateFmtFor(ui.locale).format(new Date(channel.last_lead_at))} · ${channel.lead_count} ${c.count}`
           : c.never}
       </p>
+
+      {/* A channel that was delivering and stopped. The date above is the
+          fact and this is what the fact means, because reading a date and
+          doing the subtraction is not something anybody does on a screen they
+          open to check their enquiries. */}
+      {quiet !== null && (
+        <p className="mt-2 rounded-control border border-warn/30 bg-warn-wash px-3 py-2 text-meta text-warn">
+          {fill(c.quiet, { n: quiet })}
+        </p>
+      )}
     </li>
   );
 }

@@ -15,6 +15,10 @@
  * and a custom domain by the whole host, and getting that backwards means a
  * producer whose slug happens to be "app" answers on the platform's own app
  * subdomain.
+ *
+ * `surfaceOf` at the bottom answers a different question about the same host:
+ * not whose branding, but whether this host is the shopfront or the
+ * workspace. See REBRAND.md.
  */
 
 /** Hosts that are the platform itself and never a tenant. */
@@ -86,4 +90,45 @@ export function tenantOf(rawHost: string | null | undefined, root = platformRoot
  *  custom domain and just the label for a subdomain. */
 export function lookupKey(t: Tenant): string | null {
   return t.kind === 'platform' ? null : t.value;
+}
+
+/* ── which surface a host serves ──────────────────────────────────────────
+   A second question about the same host, and a different one.
+
+   `tenantOf` answers "whose branding is this", which is about producers.
+   This answers "is this the shopfront or the workspace", which is about the
+   split he drew: beforeidoevent.com is the business and
+   app.beforeidoevent.com is the platform.
+
+   It has to exist because routing in this app is by path and not by host.
+   `/` is the marketing home and `/app/*` is the console on whatever host
+   answers, so without this the app subdomain would serve the marketing site
+   — which is what it does today.
+
+   Pure, so it can be checked without standing up a server, for the same
+   reason `tenantOf` is. */
+
+/** The label the console answers on, under the platform root. It is already
+ *  in PLATFORM_LABELS above, so it can never be a producer's slug. */
+export const APP_LABEL = 'app';
+
+export type Surface =
+  /** The business: the marketing pages, the shop, and every link already in
+   *  somebody's WhatsApp — the guests' page, an RSVP, a contract to sign. */
+  | 'site'
+  /** The platform: sign in, the producer's console, the couple's portal. */
+  | 'console';
+
+/**
+ * Which of the two a host is for.
+ *
+ * Only the app subdomain is the console. Everything else — the apex, a
+ * producer's subdomain, a producer's own domain, localhost — is the site,
+ * and that default is deliberate: a host this does not recognise serves the
+ * thing a stranger expects, rather than a sign-in screen.
+ */
+export function surfaceOf(rawHost: string | null | undefined, root = platformRoot()): Surface {
+  const host = cleanHost(rawHost);
+  if (!host || !root) return 'site';
+  return host === `${APP_LABEL}.${root}` ? 'console' : 'site';
 }

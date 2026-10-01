@@ -48,13 +48,17 @@ the whole reason this matters more than the tidiness of a redirect.
 not redirect, until every channel has been re-pasted** — and the only person
 who can confirm a re-paste is the producer who owns the ad account.
 
-Two things worth building before the move, and both are small:
+The early warning is built (2.40). `lead_channels.last_lead_at` was a date on
+the card that nobody subtracts from today, so a channel that was delivering
+and stopped now says so in its own words after three weeks — phrased as a
+question, because the product cannot know whether the campaign is merely
+paused, and a warning that fires on every quiet fortnight is a warning nobody
+reads by March. It is useful long after this migration; it exists because of
+it.
 
-- the channel card already has a test button, and it already proves the whole
-  path end to end. It should say which host a channel's address is on, so
-  "this one is still on the old domain" is readable rather than inferred.
-- `lead_channels` has `last_lead_at`. A channel that was delivering and then
-  stopped is a fact the database already holds and nothing currently reads.
+What it cannot do is tell you which host an address was pasted on. Nothing in
+this product can see inside somebody's ad console, which is exactly why the
+old host has to keep answering that one path rather than redirecting it.
 
 ### 2. Every subscribed calendar doubles — fixed tonight
 
@@ -137,12 +141,14 @@ This is his call and nothing should be built until he makes it.
 
 ## The rest, in the order I would do it
 
-1. **Make the host configurable and prove nothing moved.** Mostly done
-   tonight. What is left is `scripts/check-mail.mjs`, which defaults to the
-   old domain, and three fixtures in `/design` that name it.
-2. **Teach `proxy.ts` what a host means.** `app.<root>` serves the console,
-   the apex serves the site. One function, tested the way `tenantOf` is
-   tested — pure host arithmetic, no server needed.
+1. ~~**Make the host configurable and prove nothing moved.**~~ Done. What is
+   left is `scripts/check-mail.mjs`, which defaults to the old domain, and
+   three fixtures in `/design` that name it — none of them shipped code.
+2. ~~**Teach `proxy.ts` what a host means.**~~ Done. `surfaceOf` in
+   `tenant.ts` is the arithmetic and `proxy.ts` rewrites `/` to `/app` on the
+   console host and nothing else, so every deep link, `/login` and every
+   token link still answers. It does nothing until `NEXT_PUBLIC_ROOT_DOMAIN`
+   is set, which is what made it safe to ship before any DNS moved.
 3. **The game's own domain.** `beforeido.co.il` is a different registrable
    domain, so nothing is shared with it and nothing needs to be: the game is
    anonymous, the token is the whole credential, and `game_notes` has row

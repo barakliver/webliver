@@ -39,3 +39,40 @@ export type LeadChannel = {
  *  console, where a path relative to anything means nothing. */
 export const channelUrl = (origin: string, token: string): string =>
   `${origin.replace(/\/+$/, '')}/api/leads/webhook?c=${encodeURIComponent(token)}`;
+
+/**
+ * A channel that was delivering and has gone quiet.
+ *
+ * This exists for one day in particular. Every producer's channel address is
+ * pasted by hand into Meta or Google, once, and it is the only string in this
+ * product that lives outside it. When the business changes domain those
+ * pasted addresses point at the old one, and unlike every other link here
+ * they are POSTs from delivery infrastructure that is not obliged to follow a
+ * redirect — so a rename can stop the leads without stopping anything a
+ * person can see.
+ *
+ * And that failure is invisible by construction: a channel that has stopped
+ * delivering looks exactly like a week in which nobody enquired. The money
+ * spent on those ads is spent either way.
+ *
+ * So the product says it. Not as an accusation — it cannot know whether the
+ * campaign is simply paused, and most quiet weeks are quiet weeks — but as
+ * the question a producer would want asked on their behalf.
+ *
+ * Only for a channel that has delivered before. A channel that has never
+ * received anything is a channel somebody has not finished wiring up, which
+ * the row already says in its own words, and saying it twice reads as an
+ * error rather than as a beginning.
+ */
+export const QUIET_AFTER_DAYS = 21;
+
+export function quietDays(
+  channel: Pick<LeadChannel, 'enabled' | 'last_lead_at'>,
+  now = new Date(),
+): number | null {
+  if (!channel.enabled || !channel.last_lead_at) return null;
+  const last = new Date(channel.last_lead_at);
+  if (Number.isNaN(last.getTime())) return null;
+  const days = Math.floor((now.getTime() - last.getTime()) / 86_400_000);
+  return days >= QUIET_AFTER_DAYS ? days : null;
+}

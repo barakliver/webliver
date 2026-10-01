@@ -3517,6 +3517,9 @@ export const channelCopy = {
   off: 'מושבת',
   enable: 'הפעלה',
   disable: 'השבתה',
+  /* A channel that was delivering and stopped. Phrased as a question,
+     because the product cannot know whether the campaign is simply paused. */
+  quiet: 'לא התקבלה פנייה כבר {n} ימים. אם הקמפיין רץ, כדאי לוודא שהכתובת עדיין מודבקת נכון.',
   lastLead: 'פנייה אחרונה',
   never: 'עוד לא הגיעה פנייה',
   count: 'פניות',
