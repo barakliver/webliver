@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { supabasePublic } from '@/lib/supabase/public';
 import { buildIcs, eventInstant } from '@/lib/ics';
-import { PLATFORM_HOST } from '@/lib/env';
+import { UID_HOST } from '@/lib/env';
 
 export const dynamic = 'force-dynamic';
 
@@ -30,7 +30,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ token: 
   if (!start) return gone();
 
   const ics = buildIcs([{
-    uid: `guest-${token}@${PLATFORM_HOST}`,
+    uid: `guest-${token}@${UID_HOST}`,
     start,
     end: new Date(start.getTime() + 6 * 60 * 60 * 1000),
     summary: row.event_name,

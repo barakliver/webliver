@@ -1,10 +1,3 @@
-/** The platform's own hostname, in one place.
- *
- *  It was written out as a literal in eleven files. They all agreed, and they
- *  were all correct; the constant survives anyway, because eleven copies of a
- *  hostname is eleven places to be wrong the day it changes.
- */
-export const PLATFORM_HOST = 'liverproductions.com';
 
 /** Reads an environment variable, failing loudly at the call site rather than
  *  silently rendering a broken page. */
@@ -16,6 +9,46 @@ export function required(name: string): string {
 export function optional(name: string, fallback = ''): string {
   return process.env[name] ?? fallback;
 }
+
+/** The platform's own hostname, in one place.
+ *
+ *  It was written out as a literal in eleven files. They all agreed, and they
+ *  were all correct; the constant survives anyway, because eleven copies of a
+ *  hostname is eleven places to be wrong the day it changes.
+ *
+ *  It is the public address and nothing else. What it must never again be is
+ *  the thing calendars identify an event by - see `UID_HOST` below, which is
+ *  the half of this constant that may not move.
+ */
+export const PLATFORM_HOST = optional('NEXT_PUBLIC_PLATFORM_HOST', 'liverproductions.com');
+
+/**
+ * The namespace half of every iCalendar UID, and it is frozen.
+ *
+ * This was `PLATFORM_HOST`, and the two were the same string doing two
+ * completely different jobs. One is an address, which changes when a business
+ * changes its name. The other is an identity, which may not.
+ *
+ * A UID is how every calendar in the world decides whether an event it is
+ * being handed is one it already has. Four feeds in this product mint them -
+ * the producer's calendar, one event's file, the couple's own date and the
+ * crew feed - and they are subscribed to, not downloaded: Google and Apple
+ * re-read them forever.
+ *
+ * So changing this string does not rename anything. It tells every subscriber
+ * that every event they hold has been withdrawn and a different event has
+ * appeared in its place. The old ones do not leave - a feed cannot delete
+ * what it no longer mentions - so a couple who subscribed in March would
+ * simply have two of their own wedding, at the same hour, and a crew member
+ * would have two of every shift this season. Nobody could fix that from
+ * inside the product.
+ *
+ * `beforeidoevent.com` is the address now. This stays what it was, forever,
+ * because what it names is not a website. It is deliberately not read from
+ * the environment: a variable is a thing somebody can set, and the one
+ * guarantee this needs is that nobody can.
+ */
+export const UID_HOST = 'liverproductions.com';
 /**
  * Where this deployment actually lives.
  *

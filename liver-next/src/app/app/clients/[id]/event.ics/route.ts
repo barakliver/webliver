@@ -3,7 +3,7 @@ import { requireAccount } from '@/lib/auth';
 import { supabaseServer } from '@/lib/supabase/server';
 import { buildIcs, eventInstant, lineInstant, type IcsEvent } from '@/lib/ics';
 import { crossesMidnight } from '@/lib/runsheet';
-import { PLATFORM_HOST } from '@/lib/env';
+import { UID_HOST } from '@/lib/env';
 
 /** One event, plus its run sheet, for the couple's own calendar.
  *
@@ -27,7 +27,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
   const events: IcsEvent[] = [];
   const start = eventInstant(client.event_date, '19:00')!;
   events.push({
-    uid: `event-${id}@${PLATFORM_HOST}`,
+    uid: `event-${id}@${UID_HOST}`,
     start,
     end: new Date(start.getTime() + 6 * 60 * 60 * 1000),
     summary: client.display_name,
@@ -50,7 +50,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
     const at = lineInstant(client.event_date, String(line.at_time).slice(0, 5), wraps);
     if (!at) continue;
     events.push({
-      uid: `day-${line.id}@${PLATFORM_HOST}`,
+      uid: `day-${line.id}@${UID_HOST}`,
       start: at,
       end: new Date(at.getTime() + 30 * 60 * 1000),
       summary: line.title,
