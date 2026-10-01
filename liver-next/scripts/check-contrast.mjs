@@ -27,42 +27,143 @@ const ratio = (a, b) => {
   return (hi + 0.05) / (lo + 0.05);
 };
 
-/* The palette. A near-white ground with a warm near-black on it, and bronze
-   as the action. Arrived as a specification and every pairing in it cleared
-   its bar unchanged, which is rare enough to say out loud; what needed
-   solving were the tones a specification does not carry — the middle ink,
-   the muted ink, the accent's three other roles, the washes and the veil.
+/* The palette, written out by hand.
 
    These are copied from globals.css on purpose rather than read out of it.
    Reading them would mean this file passes whenever the stylesheet is
    self-consistent, which is not the question being asked: the question is
    whether the numbers somebody wrote down are the numbers that are readable.
    The cost of the copy is that a palette change has to be made twice, and
-   that cost is the point — it is the second pair of eyes. */
+   that cost is the point - it is the second pair of eyes.
+
+   The argument is still good. What it did not survive is the thing it was
+   built to catch. The ground moved from ivory to a pale blue and the accent
+   from bronze to a brand blue, and this copy was never brought across: for
+   two redesigns `npm run contrast` measured a palette the product had
+   stopped using, reported that every pairing cleared its bar, and was
+   telling the truth about colours nobody could see. A second pair of eyes
+   that is asleep is worse than one pair, because it is counted.
+
+   So the copy stays and `assertMatchesStylesheet` below is new. Somebody
+   still writes each number down twice, deliberately, which is the whole
+   value. They simply can no longer do it once and walk away: the two are
+   compared on every run and the build fails naming the token, the value here
+   and the value in the stylesheet. */
 const c = {
-  ink: '#292823', inkSoft: '#68665F', inkMid: '#8D887F',
-  inkMute: '#6E6C64',              /* solved against the step up */
-  surface: '#FCFCFA', surface100: '#FFFFFF', surface200: '#F6F6F2',
+  ink: '#24344E', inkSoft: '#52627B', inkMid: '#7A89A3',
+  inkMute: '#586782',              /* solved against the step up */
+  surface: '#F1F4F9', surface100: '#FFFFFF', surface200: '#E4EBF6',
   card: '#FFFFFF',
-  dark: '#1E1C18',
-  line: '#E8E6E0', lineStrong: '#D6D3CB',
-  lineControl: '#8D887F',
+  dark: '#192030',
+  line: '#D4DDEC', lineStrong: '#BCC8DE',
+  lineControl: '#7689A8',
   /* The focus ring, which is not the accent and is measured as a control
      boundary: a ring nobody can find is the accessibility failure this
      token exists to prevent. */
-  focus: '#3569A5',
-  accent: '#806646',               /* the primary action, safe as words */
-  accentHover: '#6D5539',
-  accentBright: '#9E7F4E',         /* large numerals only, 3:1 bar   */
-  accentLine: '#B08D57',           /* words on the dark ground       */
-  accentLight: '#C2A472',
-  /* The bronze at 8% over the canvas, which is what --accent-wash ships. */
-  accentWash: '#F2F0EC',
-  ok: '#35654B', okWash: '#EAF1EC',
-  warn: '#865B1D', warnWash: '#FBF2E0',
-  bad: '#A83A3A', badWash: '#FAEAEA',
+  focus: '#16223A',
+  accent: '#4D68A0',               /* the primary action, safe as words */
+  accentHover: '#3E568A',
+  accentBright: '#6A85BE',         /* large numerals only, 3:1 bar   */
+  accentLine: '#92AAD6',           /* words on the dark ground       */
+  accentLight: '#B9C8E5',
+  /* The accent at 8% over the canvas, which is what --accent-wash ships.
+     Filled in below from the two tones it is made of rather than written,
+     so the one blended token cannot drift from its own ingredients. */
+  accentWash: '',
+  ok: '#24664B', okWash: '#EAF4EE',
+  warn: '#805311', warnWash: '#FFF4DF',
+  bad: '#B4232B', badWash: '#FDECEE',
   white: '#FFFFFF',
 };
+
+/* ── the two copies have to agree ─────────────────────────────────────────
+   Everything above is written by hand and everything below trusts it, so the
+   one failure this file cannot report on its own is being out of date. It was
+   out of date for two redesigns.
+
+   The stylesheet is the source of what ships. This reads the light palette
+   out of it and compares, token by token, and fails naming both values. It
+   does not replace the hand-written copy and must not: the copy is the
+   second pair of eyes, and a script that reads its expectations out of the
+   thing it is checking has no opinion of its own. */
+
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const CSS = readFileSync(
+  join(dirname(fileURLToPath(import.meta.url)), '..', 'src', 'app', 'globals.css'),
+  'utf8',
+);
+
+/* The light palette only: the `:root` block before any theme override. A
+   dark-mode value matching a light-mode expectation would be a worse answer
+   than no answer. */
+const ROOT = (() => {
+  const i = CSS.indexOf('  :root {');
+  if (i < 0) throw new Error('check-contrast: no :root block in globals.css');
+  const end = CSS.indexOf('\n  }', i);
+  return CSS.slice(i, end);
+})();
+
+const hexOf = (token) => {
+  /* Channels first — most of the palette ships as `36 52 78` so Tailwind can
+     fold an alpha into it. */
+  const ch = new RegExp(`--${token}-rgb:\\s*(\\d+)\\s+(\\d+)\\s+(\\d+)\\s*;`).exec(ROOT);
+  if (ch) {
+    return '#' + [ch[1], ch[2], ch[3]]
+      .map((v) => Number(v).toString(16).padStart(2, '0')).join('').toUpperCase();
+  }
+  const hx = new RegExp(`--${token}:\\s*(#[0-9a-fA-F]{6})\\s*;`).exec(ROOT);
+  return hx ? hx[1].toUpperCase() : null;
+};
+
+/* Which hand-written key is which stylesheet token. Only the solid tones: a
+   blend and a translucent line are checked by the pairings below instead. */
+const TOKENS = {
+  ink: 'ink', inkSoft: 'ink-soft', inkMid: 'ink-mid', inkMute: 'ink-mute',
+  surface: 'surface', surface100: 'surface-100', surface200: 'surface-200',
+  dark: 'dark', focus: 'focus',
+  accent: 'accent', accentHover: 'accent-hover', accentBright: 'accent-bright',
+  accentLine: 'accent-line', accentLight: 'accent-light',
+  ok: 'ok', okWash: 'ok-wash',
+  warn: 'warn', warnWash: 'warn-wash',
+  bad: 'bad', badWash: 'bad-wash',
+  line: 'line', lineStrong: 'line-strong', lineControl: 'line-control',
+};
+
+function assertMatchesStylesheet() {
+  const drift = [];
+  for (const [key, token] of Object.entries(TOKENS)) {
+    const css = hexOf(token);
+    if (!css) { drift.push(`  --${token} is not in globals.css at all`); continue; }
+    const mine = String(c[key]).toUpperCase();
+    if (mine !== css) drift.push(`  ${key.padEnd(13)} here ${mine}   globals.css ${css}`);
+  }
+  if (drift.length === 0) return;
+
+  console.error(
+    `\nthis file is measuring ${drift.length} tone${drift.length === 1 ? '' : 's'} `
+    + 'the product does not use:\n',
+  );
+  drift.forEach((d) => console.error(d));
+  console.error(
+    '\nThe stylesheet is what ships. Bring the copy above across by hand, which\n'
+    + 'is the point of it being a copy, and then read what the new ratios say.\n',
+  );
+  process.exit(1);
+}
+
+assertMatchesStylesheet();
+
+/* The one blended token, built from the two it is made of so it cannot
+   disagree with them: the accent at 8% over the canvas. */
+c.accentWash = (() => {
+  const a = 0.08;
+  const [fg, bg] = [parseInt(c.accent.slice(1), 16), parseInt(c.surface.slice(1), 16)];
+  const mix = (sh) => Math.round(((fg >> sh) & 255) * a + ((bg >> sh) & 255) * (1 - a));
+  return '#' + [16, 8, 0].map((sh) => mix(sh).toString(16).padStart(2, '0')).join('').toUpperCase();
+})();
 
 /* The hairlines are rgba over the ground; flatten them so the ratio is real. */
 const over = (rgba, ground) => {

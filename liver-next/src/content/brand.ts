@@ -56,6 +56,13 @@ export type Accent = {
   wash: string;
 };
 
+/* The three `light` tones moved by one and two percent when the contrast
+   script stopped measuring a palette from two redesigns ago. Olive, clay and
+   graphite were 4.41, 4.42 and 4.47 on the dark ground against a bar of 4.5,
+   and they had been for as long as the ground has been #192030 — the check
+   was reading the ivory era's #1E1C18 and reporting that they passed. None
+   of the three is a different colour now; each is the same colour clearing
+   the bar it was always meant to clear. */
 export const ACCENTS: Accent[] = [
   {
     key: 'gold',
@@ -73,7 +80,7 @@ export const ACCENTS: Accent[] = [
     base:   '#62713F',
     bright: '#7B8E4F',
     line:   '#7A8C4E',
-    light:  '#7A8C4E',
+    light:  '#7C8F50',
     night:  '#899961',
     wash:   'rgba(122, 140, 78, .07)',
   },
@@ -87,7 +94,7 @@ export const ACCENTS: Accent[] = [
     base:   '#985839',
     bright: '#C2724D',
     line:   '#C0714C',
-    light:  '#C0714C',
+    light:  '#C2724D',
     night:  '#C88261',
     wash:   'rgba(192, 113, 76, .07)',
   },
@@ -117,7 +124,7 @@ export const ACCENTS: Accent[] = [
     base:   '#63676F',
     bright: '#828792',
     line:   '#6B6F78',
-    light:  '#83868E',
+    light:  '#84878F',
     night:  '#91939A',
     wash:   'rgba(107, 111, 120, .07)',
   },

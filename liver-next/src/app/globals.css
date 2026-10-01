@@ -198,10 +198,20 @@
     /* Deep teal, the primary action of the planning system: 8.2:1 for a
        white label on it, 7.6:1 as words on the canvas. A producer's own
        accent replaces every one of these through accentVars. */
-    --accent-rgb: 79 107 165;        /* #4F6BA5, as words on the canvas */
+    /* #4D68A0. It was #4F6BA5, which he picked, and this is the same blue
+       three percent darker — a change nobody can see beside a change three
+       pairings needed. On its own 8% wash it measured 4.33 against a bar of
+       4.5, on the step up 4.40, and both of those are the tinted chip this
+       interface is full of. Nobody caught it because `npm run contrast` was
+       still measuring the bronze from two redesigns ago; it reads the real
+       palette now and would have failed the build on the day this moved. */
+    --accent-rgb: 77 104 160;        /* #4D68A0, as words on the canvas */
     --accent-hover-rgb: 62 86 138;   /* #3E568A, the pressed and hovered fill */
     --accent-pressed-rgb: 48 68 111; /* #30446F */
-    --accent-bright-rgb: 108 136 194;/* #6C88C2, large numerals only */
+    /* #6A85BE, two percent down from #6C88C2 for the same reason: 2.95
+       against a bar of 3 on the step up. A large numeral at 2.95 is not a
+       different design from one at 3.07; it is the same design, failing. */
+    --accent-bright-rgb: 106 133 190;/* #6A85BE, large numerals only */
     --accent-line-rgb: 146 170 214;  /* #92AAD6, as words on the dark */
     --accent-light-rgb: 185 200 229; /* #B9C8E5, on the dark ground only */
     /* The one warm thing left, and it is kept small on purpose: a brand

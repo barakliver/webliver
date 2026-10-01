@@ -287,7 +287,7 @@ that has happened once.
   the three undealt ones are undealt, so a card without a picture fails the
   build rather than drawing a broken image inside his frame.
 - The ground is a pale blue, #F1F4F9, everywhere: the app, the public site and
-  the guests' page alike, with #4F6BA5 as the brand blue. It was warm ivory
+  the guests' page alike, with #4D68A0 as the brand blue. It was warm ivory
   before, and a pale blue before that, and slate before that; the rule that
   settles it is that his latest instruction wins, and the reasoning for each
   move is written above the values in `globals.css`. Everywhere, rather than
@@ -297,9 +297,29 @@ that has happened once.
   blue was withdrawn a round later and this line was never brought back. A
   palette is the one thing a person checks here instead of rendering the
   page, so when it moves again, move it here in the same commit.
+  The brand blue was #4F6BA5, which he picked, and it is three percent
+  darker now: on its own 8% wash it measured 4.33 against a bar of 4.5 and
+  on the step up 4.40, and both of those are the tinted chip this interface
+  is full of. `accent-bright` moved two percent for the same reason. Neither
+  is a different colour; each is the same colour clearing the bar it was
+  always meant to clear.
   The blue is a default rather than a decree: `producers.accent` still wins
   for a producer who picked their own, and all six of those accents are
   measured against these grounds in both palettes by `npm run contrast`.
+  **That script carries a hand-written copy of the palette on purpose** -
+  reading the values out of the stylesheet would mean it passes whenever the
+  stylesheet is self-consistent, and the question it asks is whether the
+  numbers somebody wrote down are the numbers that are readable. The copy is
+  the second pair of eyes. What the argument did not survive is the thing it
+  was built to catch: the copy was never brought across when the ground went
+  from ivory to blue, so for two redesigns the script measured a palette the
+  product had stopped using and reported that every pairing passed. It was
+  telling the truth about colours nobody could see. The copy stays and it is
+  now compared against `globals.css` token by token on every run, failing
+  with both values named - somebody still writes each number down twice,
+  deliberately, and can no longer do it once and walk away. Three producer
+  `light` tones moved by one and two percent when the real dark ground came
+  into view for the first time.
 - **The typeface is Heebo and there is only one.** Not Heebo for the
   interface and a serif for the headings, which is how it was built: Heebo
   everywhere, on `/app`, on the couple's screen, on the shopfront, on the
