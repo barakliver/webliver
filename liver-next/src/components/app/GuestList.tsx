@@ -1,10 +1,13 @@
 'use client';
 
+import { Pencil } from 'lucide-react';
+import { Sheet } from '@/components/app/Sheet';
+
 import { MessageCircle } from 'lucide-react';
 
 import { useActionState, useState } from 'react';
 import { useFormStatus } from 'react-dom';
-import { addGuests, deleteGuest, setGuestStatus, type GuestResult } from '@/app/actions/guests';
+import { addGuests, deleteGuest, setGuestStatus, updateGuest, type GuestResult } from '@/app/actions/guests';
 import { DIETS } from '@/content/lists';
 import { GuestImport } from '@/components/app/GuestImport';
 import { useCopy } from '@/components/app/CopyProvider';
@@ -97,14 +100,109 @@ function Remind({ guest }: { guest: Guest }) {
   );
 }
 
-/** Copy the invitation, remind them, mark them as coming, remove them. Same
- *  actions wherever the row is drawn. */
+/**
+ * Correcting a guest.
+ *
+ * In a sheet rather than inline, and that is the whole reason this works:
+ * the list is drawn twice, as cards on a phone and as a table above it, and
+ * an inline form would have to be built into both. A thing built twice is a
+ * thing built nought times, which is exactly how this product went a year
+ * without any way to fix a guest's name at all.
+ *
+ * What it writes is who somebody is. What it never writes is what they
+ * answered — `status`, `party_size` and `responded_at` are on the same row
+ * and are the other act, so until now a typo in a name cost a delete, and a
+ * delete cost the reply. Nobody rings an aunt a second time over a spelling,
+ * so the spelling stayed, and then it was printed on the seating chart.
+ */
+function EditGuest({ guest, clientId, open, onClose }: {
+  guest: Guest; clientId: string; open: boolean; onClose: () => void;
+}) {
+  const ui = useCopy();
+  const c = ui.guests;
+  const [state, action] = useActionState<GuestResult | null, FormData>(
+    async (prev, form) => {
+      const r = await updateGuest(prev, form);
+      if (r.ok) onClose();
+      return r;
+    },
+    null,
+  );
+
+  return (
+    <Sheet open={open} onClose={onClose} title={c.gEdit} sub={c.gEditSub}>
+      <form action={action} className="grid gap-3">
+        <input type="hidden" name="guest_id" value={guest.id} />
+        <input type="hidden" name="client_id" value={clientId} />
+
+        <label className="min-w-0">
+          <span className="mb-1 block text-meta font-medium text-ink-soft">{c.gName}</span>
+          <input name="full_name" required defaultValue={guest.full_name} autoComplete="off" className="field" />
+        </label>
+        <div className="grid grid-cols-2 gap-3">
+          <label className="min-w-0">
+            <span className="mb-1 block text-meta font-medium text-ink-soft">{c.gSide}</span>
+            <input name="side" defaultValue={guest.side} autoComplete="off" className="field" />
+          </label>
+          <label className="min-w-0">
+            <span className="mb-1 block text-meta font-medium text-ink-soft">{c.gPhone}</span>
+            <input name="phone" type="tel" inputMode="tel" defaultValue={guest.phone} autoComplete="off" className="field" />
+          </label>
+        </div>
+        <label className="min-w-0">
+          <span className="mb-1 block text-meta font-medium text-ink-soft">{c.dietCol}</span>
+          <select name="diet" defaultValue={guest.diet ?? ''} className="field">
+            <option value="" />
+            {DIETS.map((d) => <option key={d.value} value={d.value}>{d.label}</option>)}
+          </select>
+        </label>
+
+        <div className="mt-1 flex items-center gap-3">
+          <SaveGuest />
+          <button type="button" onClick={onClose} className="btn-quiet px-2 py-1 text-body">
+            {c.gCancel}
+          </button>
+        </div>
+
+        {state && !state.ok && state.error && (
+          <p role="alert" className="rounded-control border border-bad/25 bg-bad-wash px-4 py-2.5 text-body text-bad">
+            {state.error}
+          </p>
+        )}
+      </form>
+    </Sheet>
+  );
+}
+
+function SaveGuest() {
+  const c = useCopy().guests;
+  const { pending } = useFormStatus();
+  return (
+    <button type="submit" className="btn-primary" disabled={pending}>
+      {pending ? c.gSaving : c.gSave}
+    </button>
+  );
+}
+
+/** Copy the invitation, remind them, mark them as coming, correct them,
+ *  remove them. Same actions wherever the row is drawn. */
 function RowActions({ guest, clientId }: { guest: Guest; clientId: string }) {
   const c = useCopy().guests;
+  const [editing, setEditing] = useState(false);
   return (
     <>
       <CopyLink token={guest.invite_token} />
       <Remind guest={guest} />
+      <button
+        type="button"
+        onClick={() => setEditing(true)}
+        className="grid size-9 place-items-center rounded-control text-ink-mute transition-colors hover:bg-surface-200 hover:text-ink"
+        aria-label={c.gEdit}
+        title={c.gEdit}
+      >
+        <Pencil size={15} strokeWidth={1.5} aria-hidden />
+      </button>
+      <EditGuest guest={guest} clientId={clientId} open={editing} onClose={() => setEditing(false)} />
       {guest.status !== 'attending' && (
         <form action={setGuestStatus}>
           <input type="hidden" name="guest_id" value={guest.id} />

@@ -48,6 +48,63 @@ export async function addGuests(_prev: GuestResult | null, form: FormData): Prom
   return { ok: true, added: rows.length };
 }
 
+/**
+ * Correcting a guest, which until now meant deleting them.
+ *
+ * A name typed wrong, a phone with a digit missing, a cousin moved to the
+ * other side of the family. There was no update, so the only way to fix any
+ * of it was `deleteGuest` and type them again — and that takes their reply
+ * with it. `status`, `party_size` and `responded_at` all live on the same
+ * row, so a typo in a name cost somebody their RSVP and a phone call to the
+ * aunt asking a second time whether she is coming.
+ *
+ * Nobody makes that call for a spelling, so the name simply stays wrong, and
+ * then it is printed on the seating chart.
+ *
+ * Which is why this writes only the four fields the form carries and never
+ * touches the reply. Editing who somebody is and recording what they
+ * answered are two different acts; `setGuestStatus` is the other one.
+ *
+ * No ownership check and none wanted: the policy on `guests_rsvp` is the
+ * check, so an id from somebody else's wedding updates nothing and says so.
+ */
+export async function updateGuest(_prev: GuestResult | null, form: FormData): Promise<GuestResult> {
+  const id = String(form.get('guest_id') ?? '');
+  const clientId = String(form.get('client_id') ?? '');
+  const fullName = String(form.get('full_name') ?? '').trim();
+
+  if (!id || !clientId) return { ok: false, error: 'חסר מזהה אורח' };
+  if (fullName.length < 2) return { ok: false, error: 'נא לכתוב שם' };
+
+  const diet = String(form.get('diet') ?? '').trim();
+  if (diet && !DIETS.some((d) => d.value === diet)) {
+    return { ok: false, error: 'העדפת האוכל לא מוכרת' };
+  }
+
+  const sb = await supabaseServer();
+  const { data, error } = await sb
+    .from('guests_rsvp')
+    .update({
+      full_name: fullName,
+      side: String(form.get('side') ?? '').trim(),
+      phone: String(form.get('phone') ?? '').trim(),
+      diet,
+    })
+    .eq('id', id)
+    .select('id');
+
+  if (error) {
+    console.error('[guests] updateGuest failed', error);
+    return { ok: false, error: 'לא הצלחנו לשמור את השינוי' };
+  }
+  /* An update that matched nothing is not a success. Saying "saved" over an
+     unchanged name is the one outcome worse than failing. */
+  if (!data || data.length === 0) return { ok: false, error: 'לא הצלחנו לשמור את השינוי' };
+
+  touch(clientId);
+  return { ok: true };
+}
+
 export async function deleteGuest(form: FormData): Promise<void> {
   const id = String(form.get('guest_id') ?? '');
   const clientId = String(form.get('client_id') ?? '');

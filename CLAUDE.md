@@ -377,6 +377,23 @@ that has happened once.
   change it, and that one could not. Two implementations of the same rows
   also meant an edit had to be built twice, which is how it got built
   nought times.
+- **A payment and a guest can be corrected too, and until now neither
+  could.** Both panels had add and delete and no update, and in both the
+  delete destroyed more than the mistake. A payment carries `paid` and
+  `paid_on`, so fixing a slipped date on an instalment that had already been
+  settled deleted the record that the money moved — a product asking
+  somebody to choose between a wrong book and a shorter one. A guest carries
+  `status`, `party_size` and `responded_at`, so a typo in a name cost the
+  RSVP, and nobody rings an aunt a second time over a spelling: the name
+  stayed wrong and was printed on the seating chart. `updatePayment` and
+  `updateGuest` write the fields the form carries and deliberately never the
+  reply or the settlement — `togglePaid` and `setGuestStatus` are the other
+  act, and keeping them apart is the point. Both refuse an update that
+  matched no row, because "saved" over an unchanged value is the one outcome
+  worse than failing. The guest's form is a `Sheet` rather than an inline
+  row because that list is drawn twice, as cards and as a table, and a thing
+  built twice is a thing built nought times — which is exactly how it went a
+  year with no way to fix a name at all.
 - **The category on a budget line is a guess you can overrule.**
   `categoryOf` in `lib/budgetPlan.ts` reads `category` first and then the
   label's own Hebrew words, so most lines file themselves; a hall called

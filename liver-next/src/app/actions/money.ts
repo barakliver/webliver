@@ -42,6 +42,55 @@ export async function addPayment(_prev: MoneyResult | null, form: FormData): Pro
   return { ok: true };
 }
 
+/**
+ * Correcting a payment, which until now meant deleting it.
+ *
+ * A date slips and an amount is renegotiated, and on an event booked nine
+ * months out both happen more than once. There was no update, so the only
+ * way to change either was `deletePayment` and type it again — and the row
+ * carries `paid` and `paid_on`, so correcting the date of a payment that had
+ * already been made deleted the record that it was made.
+ *
+ * That is worse than the budget line this mirrors. A budget line is a plan;
+ * a settled payment is money that moved, and a product that asks somebody to
+ * delete the record of money moving in order to fix a typo in its date is
+ * asking them to choose between a wrong book and a shorter one.
+ *
+ * So the title, the amount and the date are editable and the settlement is
+ * not touched. `togglePaid` is the other act, and it is deliberately still
+ * the only thing that writes `paid`: changing what a payment says and saying
+ * it arrived are two different sentences, and one of them is the producer's
+ * alone.
+ */
+export async function updatePayment(_prev: MoneyResult | null, form: FormData): Promise<MoneyResult> {
+  const id = String(form.get('payment_id') ?? '');
+  const clientId = String(form.get('client_id') ?? '');
+  const title = String(form.get('title') ?? '').trim();
+  const amount = amountOf(String(form.get('amount') ?? ''));
+  const dueOn = String(form.get('due_on') ?? '').trim();
+
+  if (!id || !clientId) return { ok: false, error: 'חסר מזהה תשלום' };
+  if (title.length < 2) return { ok: false, error: 'נא לכתוב על מה התשלום' };
+  if (amount === null) return { ok: false, error: 'הסכום צריך להיות גדול מאפס' };
+
+  const sb = await supabaseServer();
+  const { data, error } = await sb
+    .from('payments')
+    /* `paid` and `paid_on` are absent from this object on purpose. */
+    .update({ title, amount, due_on: dueOn || null })
+    .eq('id', id)
+    .select('id');
+
+  if (error) {
+    console.error('[money] updatePayment failed', error);
+    return { ok: false, error: 'לא הצלחנו לשמור את השינוי' };
+  }
+  if (!data || data.length === 0) return { ok: false, error: 'לא הצלחנו לשמור את השינוי' };
+
+  touch(clientId);
+  return { ok: true };
+}
+
 /** Marking a payment settled is the producer's call, so a couple reaching this
  *  action changes nothing: the row is invisible to their update under policy. */
 export async function togglePaid(form: FormData): Promise<void> {

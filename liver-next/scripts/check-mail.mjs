@@ -32,7 +32,13 @@ const arg = (name, fallback) => {
   return i > -1 && process.argv[i + 1] ? process.argv[i + 1] : fallback;
 };
 
-const domain = arg('domain', 'liverproductions.com');
+/* The domain whose mail records are being read. It follows the business
+   rather than being written down here, because the day it moves is the day
+   somebody runs this to find out whether the new domain can send — and a
+   default that silently answers about the old one is a green light for the
+   wrong name. `--domain` still wins, for checking a domain before it is the
+   one in the environment. */
+const domain = arg('domain', process.env.NEXT_PUBLIC_PLATFORM_HOST || 'liverproductions.com');
 /* The name the provider signs under. Resend publishes `resend._domainkey`,
    Postmark uses a per-server selector, Google uses `google`. Checked as a
    list, because the answer to "which provider" is a setting somewhere else. */

@@ -1304,7 +1304,7 @@ export default async function DesignPage() {
           <PrepSheet
             c={prepCopy} clientId={client}
             vips={fixtureVips} looks={fixtureLooks} shares={fixtureShares}
-            siteUrl="https://app.liverproductions.com"
+            siteUrl="https://app.example.com"
           />
         </Panel>
 
@@ -1316,7 +1316,7 @@ export default async function DesignPage() {
           <PrepSheet
             c={prepFor(locale)} clientId={client}
             vips={fixtureVips} looks={fixtureLooks} shares={fixtureShares}
-            siteUrl="https://app.liverproductions.com"
+            siteUrl="https://app.example.com"
           />
         </Panel>
 
@@ -1397,7 +1397,7 @@ export default async function DesignPage() {
 
         <Panel name="LeadChannels" note="one live channel with its address, one paused, and one that has never received anything">
           <LeadChannels
-            origin="https://liverproductions.com"
+            origin="https://example.com"
             channels={[
               { id: 'f1', label: 'אינסטגרם', source: 'instagram', token: 'a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6', enabled: true, last_lead_at: '2026-09-18T09:20:00Z', lead_count: 34 },
               { id: 'f2', label: 'הקמפיין של הסתיו', source: 'google_ads', token: 'b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7', enabled: false, last_lead_at: '2026-08-02T17:05:00Z', lead_count: 6 },

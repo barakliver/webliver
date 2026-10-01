@@ -45,7 +45,7 @@ const data = pieceDataFor({
     { at_time: '22:30', title: 'ריקודים', key_moment: true },
   ],
   tables: [{ name: '1' }, { name: '2' }, { name: '3' }],
-  siteUrl: 'https://liverproductions.com/w/0123456789abcdef0123456789abcdef',
+  siteUrl: 'https://example.com/w/0123456789abcdef0123456789abcdef',
   locale: 'he',
   dateTbd: 'התאריך ייקבע',
 });

@@ -1704,6 +1704,9 @@ export const appCopy = {
     payDue: 'לתשלום עד',
     payAdd: 'הוספת תשלום',
     payAdding: 'מוסיף',
+    /* Opening a payment to correct it. Separate from marking it settled:
+       changing what a payment says and saying it arrived are two acts. */
+    payEdit: 'עריכת התשלום',
     payNone: 'עוד לא נרשמו תשלומים.',
     paid: 'שולם',
     unpaid: 'פתוח',
@@ -2270,6 +2273,17 @@ export const guestsCopy = {
   guest: 'אורח',
   status: 'תשובה',
   party: 'נפשות',
+  /* Correcting who somebody is, which never touches what they answered.
+     A name typed wrong used to cost a delete, and a delete took the reply
+     with it — so nobody fixed a spelling, and it reached the seating chart. */
+  gEdit: 'עריכת האורח',
+  gEditSub: 'שינוי הפרטים. התשובה שלהם לא משתנה.',
+  gSave: 'שמירה',
+  gSaving: 'שומר',
+  gCancel: 'ביטול',
+  gName: 'שם',
+  gSide: 'צד',
+  gPhone: 'טלפון',
   dietCol: 'אוכל',
   noteCol: 'הערה',
 } as const;
