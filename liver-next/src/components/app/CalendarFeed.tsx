@@ -57,7 +57,7 @@ export function CalendarFeed({ clientId }: { clientId?: string }) {
 
   return (
     <div className="card">
-      <h2 className="font-display text-head font-semibold text-ink">{c.title}</h2>
+      <h2 className="head-sub">{c.title}</h2>
       <p className="mt-1 text-body text-ink-soft">{c.sub}</p>
 
       {!token ? (

@@ -98,7 +98,7 @@ export function BudgetPlanner({ clientId, current, target, guestEstimate, defaul
     <section className="card">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="font-display text-subhead font-semibold text-ink">{c.title}</h2>
+          <h2 className="head-panel">{c.title}</h2>
           <p className="mt-1 max-w-prose2 text-body leading-relaxed text-ink-soft">{c.sub}</p>
         </div>
         <button type="button" className="btn-quiet text-body" onClick={() => setOpen(false)}>{c.close}</button>

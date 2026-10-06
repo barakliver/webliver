@@ -163,7 +163,7 @@ export async function RunSheet({
           fresh page so a call list is never split in half. */}
       {staffVisible && (
         <section className="print-block mt-7">
-          <h2 className="border-b border-ink/20 pb-1.5 font-display text-head font-semibold text-ink">
+          <h2 className="head-sub border-b border-ink/20 pb-1.5">
             {c.contacts}
           </h2>
           {people.length === 0 ? (

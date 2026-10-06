@@ -12,7 +12,7 @@ import type { CrewSlot } from '@/lib/crewNeeds';
 function Card({ title, icon, children }: { title: string; icon: React.ReactNode; children: React.ReactNode }) {
   return (
     <section className="card p-4 sm:p-5">
-      <h3 className="flex items-center gap-2 font-display text-head font-semibold text-ink">
+      <h3 className="flex items-center gap-2 head-sub">
         {icon}{title}
       </h3>
       <div className="mt-3">{children}</div>

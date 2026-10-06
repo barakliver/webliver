@@ -36,7 +36,7 @@ export async function FunnelChart({ funnel }: { funnel: Funnel }) {
   const top = Math.max(funnel.total, 1);
   return (
     <section className="card">
-      <h2 className="font-display text-subhead font-semibold text-ink">{c.funnel.title}</h2>
+      <h2 className="head-panel">{c.funnel.title}</h2>
       <p className="mt-1 text-body text-ink-soft">{c.funnel.sub}</p>
 
       <ul className="mt-5 list-none space-y-3 p-0">
@@ -86,7 +86,7 @@ export async function Sources({ rows }: { rows: SourceRow[] }) {
   if (rows.length === 0) return null;
   return (
     <section className="card">
-      <h2 className="font-display text-subhead font-semibold text-ink">{c.sources.title}</h2>
+      <h2 className="head-panel">{c.sources.title}</h2>
       <p className="mt-1 text-body text-ink-soft">{c.sources.sub}</p>
 
       <div className="mt-4 overflow-x-auto">
@@ -144,7 +144,7 @@ export async function CashPanel({ cash }: { cash: Cash }) {
   const c = (await serverCopy()).insights;
   return (
     <section className="card">
-      <h2 className="font-display text-subhead font-semibold text-ink">{c.cash.title}</h2>
+      <h2 className="head-panel">{c.cash.title}</h2>
       <p className="mt-1 text-body text-ink-soft">{c.cash.sub}</p>
       {/* Three across only where three six-figure amounts in the display face
           actually fit. At tablet widths the columns fall to ~180px each and
@@ -169,7 +169,7 @@ export async function ResponsePanel({ r }: { r: Response }) {
   const c = (await serverCopy()).insights;
   return (
     <section className="card">
-      <h2 className="font-display text-subhead font-semibold text-ink">{c.response.title}</h2>
+      <h2 className="head-panel">{c.response.title}</h2>
       <p className="mt-1 text-body text-ink-soft">{c.response.sub}</p>
       <div className="mt-4 grid gap-3 sm:grid-cols-3">
         <Figure
@@ -199,7 +199,7 @@ export async function Health({ signed, overdue, waiting }: {
   const clear = overdue === 0 && waiting === 0;
   return (
     <section className="card">
-      <h2 className="font-display text-subhead font-semibold text-ink">{c.health.title}</h2>
+      <h2 className="head-panel">{c.health.title}</h2>
       <div className="mt-4 grid gap-3 sm:grid-cols-3">
         <Figure
           label={c.health.signed}
@@ -250,14 +250,14 @@ export async function ConversionPanel({ r }: { r: Conversion }) {
   if (r.rate === null) {
     return (
       <section className="card">
-        <h2 className="font-display text-subhead font-semibold text-ink">{cc.title}</h2>
+        <h2 className="head-panel">{cc.title}</h2>
         <p className="mt-3 text-body text-ink-soft">{cc.none}</p>
       </section>
     );
   }
   return (
     <section className="card">
-      <h2 className="font-display text-subhead font-semibold text-ink">{cc.title}</h2>
+      <h2 className="head-panel">{cc.title}</h2>
       <p className="mt-1 text-body text-ink-mute">{cc.sub}</p>
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
         <Figure

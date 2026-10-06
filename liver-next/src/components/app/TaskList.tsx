@@ -237,7 +237,7 @@ export function TaskList({ clientId, tasks, viewer, viewerId }: {
 
   return (
     <section className="card">
-      <h2 className="font-display text-subhead font-semibold text-ink">{c.title}</h2>
+      <h2 className="head-panel">{c.title}</h2>
       <p className="mt-1 text-body text-ink-soft">{viewer === 'producer' ? c.subProducer : c.subClient}</p>
 
       <form action={action} className="mt-5 grid gap-3 sm:grid-cols-[1fr_auto_auto_auto]">

@@ -65,7 +65,7 @@ export function VendorHq({ clientId, vendors, contracts, lines, couple, date, si
   if (rows.length === 0) {
     return (
       <section className="card">
-        <h2 className="font-display text-subhead font-semibold text-ink">{c.title}</h2>
+        <h2 className="head-panel">{c.title}</h2>
         <p className="mt-3 text-body text-ink-mute">{c.none}</p>
       </section>
     );
@@ -75,7 +75,7 @@ export function VendorHq({ clientId, vendors, contracts, lines, couple, date, si
 
   return (
     <section className="card">
-      <h2 className="font-display text-subhead font-semibold text-ink">{c.title}</h2>
+      <h2 className="head-panel">{c.title}</h2>
       <p className="mt-1 max-w-prose2 text-body leading-relaxed text-ink-soft">{viewer === 'client' ? c.subCouple : c.sub}</p>
 
       {/* The four lines first: they are what the Monday letter says, and

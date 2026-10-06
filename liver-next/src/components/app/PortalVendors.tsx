@@ -31,7 +31,7 @@ export function PortalVendors({ vendors, c, locale }: { vendors: Vendor[]; c: Po
 
   return (
     <section className="card">
-      <h2 className="font-display text-panel font-semibold text-ink">{c.vendorsTitle}</h2>
+      <h2 className="head-section">{c.vendorsTitle}</h2>
       <p className="mt-1 text-body text-ink-mute">{c.vendorsSub}</p>
 
       {vendors.length === 0 ? (

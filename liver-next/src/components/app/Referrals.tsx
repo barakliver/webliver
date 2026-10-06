@@ -52,7 +52,7 @@ export function Referrals({ rows, siteUrl, mine, bare = false }: {
           under it. Two headings saying the same thing, one inside the
           other, is what wrapping a self-titled panel produces. */}
       {!bare && <>
-        <h2 className="font-display text-head font-semibold text-ink">{c.title}</h2>
+        <h2 className="head-sub">{c.title}</h2>
         <p className="mt-1 text-body text-ink-soft">{c.sub}</p>
       </>}
 

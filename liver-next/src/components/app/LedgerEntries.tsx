@@ -37,7 +37,7 @@ export function LedgerEntries({ entries, showEvent = true, events = [] }: {
 
   return (
     <section className="card">
-      <h2 className="font-display text-subhead font-semibold text-ink">{c.listTitle}</h2>
+      <h2 className="head-panel">{c.listTitle}</h2>
       <p className="mt-1 max-w-prose2 text-body leading-relaxed text-ink-soft">{c.listSub}</p>
 
       {entries.length === 0 ? (

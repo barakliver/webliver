@@ -121,7 +121,7 @@ export function PaymentsPanel({ clientId, payments, viewer }: {
 
   return (
     <section className="card">
-      <h2 className="font-display text-subhead font-semibold text-ink">{c.payTitle}</h2>
+      <h2 className="head-panel">{c.payTitle}</h2>
       <p className="mt-1 text-body text-ink-soft">
         {viewer === 'producer' ? c.paySubProducer : c.paySubClient}
       </p>

@@ -133,7 +133,7 @@ export function MonthGrid({ items, month, today, locale, ui, open = '', switches
   return (
     <section className="card" aria-labelledby="grid-title">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 id="grid-title" className="font-display text-head font-semibold text-ink">{c.grid}</h2>
+        <h2 id="grid-title" className="head-sub">{c.grid}</h2>
         {/* The switches, as links that rewrite the address: no state to keep
             and nothing to hydrate, and a bookmark keeps the choice.
 
@@ -177,7 +177,7 @@ export function MonthGrid({ items, month, today, locale, ui, open = '', switches
           >
             <ChevronRight size={18} aria-hidden strokeWidth={1.5} className="chev-back" />
           </Link>
-          <h3 className="min-w-[10ch] text-center font-display text-panel font-semibold text-ink">
+          <h3 className="min-w-[10ch] text-center head-section">
             {monthFmt.format(start)}
           </h3>
           <Link

@@ -108,7 +108,7 @@ export function DayDrawer({ day, dayText, items, entries, clients, closeHref = '
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
           <p className="eyebrow">{c.title}</p>
-          <h2 className="mt-1 font-display text-panel font-semibold text-ink">{dayText}</h2>
+          <h2 className="mt-1 head-section">{dayText}</h2>
         </div>
         <Link href={closeHref} className="btn-quiet inline-flex items-center gap-1.5 text-body" aria-label={c.close}>
           <X size={16} aria-hidden strokeWidth={1.5} />{c.close}

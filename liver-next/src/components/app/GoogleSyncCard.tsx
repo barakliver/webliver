@@ -25,7 +25,7 @@ export function GoogleSyncCard({ ui, status, configured, notice }: {
   return (
     <section className="card">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h2 className="inline-flex items-center gap-2 font-display text-head font-semibold text-ink">
+        <h2 className="head-sub inline-flex items-center gap-2">
           <CalendarCheck2 size={18} aria-hidden strokeWidth={1.5} />
           {c.title}
         </h2>

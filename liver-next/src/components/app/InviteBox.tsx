@@ -26,7 +26,7 @@ export function InviteBox({ clientId, invites }: { clientId: string; invites: In
 
   return (
     <section className="card">
-      <h2 className="font-display text-subhead font-semibold text-ink">{c.access}</h2>
+      <h2 className="head-panel">{c.access}</h2>
       <p className="mt-1 text-body text-ink-soft">{c.accessSub}</p>
 
       <ul className="mt-5 space-y-2">

@@ -165,7 +165,7 @@ function Faces({ c, clientId, vips }: { c: PrepCopy; clientId: string; vips: Vip
 
   return (
     <section className="card">
-      <h2 className="font-display text-subhead font-semibold text-ink">{c.facesTitle}</h2>
+      <h2 className="head-panel">{c.facesTitle}</h2>
       <p className="mt-1 text-body text-ink-soft">{c.facesSub}</p>
 
       {vips.length === 0 ? (
@@ -215,7 +215,7 @@ function Looks({ c, clientId, looks }: { c: PrepCopy; clientId: string; looks: L
 
   return (
     <section className="card">
-      <h2 className="font-display text-subhead font-semibold text-ink">{c.looksTitle}</h2>
+      <h2 className="head-panel">{c.looksTitle}</h2>
       <p className="mt-1 text-body text-ink-soft">{c.looksSub}</p>
 
       {looks.length === 0 ? (
@@ -275,7 +275,7 @@ function Shares({ c, clientId, shares, siteUrl }: {
 
   return (
     <section className="card">
-      <h2 className="inline-flex items-center gap-2 font-display text-subhead font-semibold text-ink">
+      <h2 className="head-panel inline-flex items-center gap-2">
         <Share2 size={17} strokeWidth={1.5} aria-hidden />
         {c.shareTitle}
       </h2>

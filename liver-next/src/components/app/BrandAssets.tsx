@@ -39,7 +39,7 @@ export function BrandAssets({ urls }: { urls: BrandAssetUrls }) {
   const c = useCopy().brand.assets;
   return (
     <section className="card">
-      <h2 className="font-display text-head font-semibold text-ink">{c.title}</h2>
+      <h2 className="head-sub">{c.title}</h2>
       <p className="mt-1.5 max-w-2xl text-body leading-relaxed text-ink-soft">{c.sub}</p>
       <div className="mt-5 grid gap-4 lg:grid-cols-3">
         <Asset kind="logo" url={urls.logo} />

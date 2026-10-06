@@ -41,7 +41,7 @@ export function GuestSiteLink({ token }: { token: string }) {
 
   return (
     <section className="card">
-      <h2 className="inline-flex items-center gap-2 font-display text-subhead font-semibold text-ink">
+      <h2 className="head-panel inline-flex items-center gap-2">
         <Globe size={18} aria-hidden strokeWidth={1.5} />
         {c.title}
       </h2>

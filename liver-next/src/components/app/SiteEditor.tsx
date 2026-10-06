@@ -147,7 +147,7 @@ export function SiteEditor({ values, overridden }: {
       <div>
         {EDITABLE.filter((g) => g.id === open).map((g) => (
           <section key={g.id}>
-            <h2 className="font-display text-subhead font-semibold text-ink">{g.title}</h2>
+            <h2 className="head-panel">{g.title}</h2>
             <p className="mt-1 text-body text-ink-soft">{g.sub}</p>
             <div className="mt-5 space-y-3">
               {g.fields.map((f) => (

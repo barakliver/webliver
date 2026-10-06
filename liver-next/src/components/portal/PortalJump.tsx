@@ -151,7 +151,7 @@ export function PortalJump({ c }: { c: JumpCopy }) {
           <div className="max-h-[80svh] w-full overflow-y-auto rounded-t-sheet border border-line-strong bg-card p-6 shadow-pop sm:max-w-[26rem] sm:rounded-sheet">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h2 className="font-display text-panel font-semibold text-ink">{c.title}</h2>
+                <h2 className="head-section">{c.title}</h2>
                 <p className="mt-1 text-body text-ink-soft">{c.sub}</p>
               </div>
               <button

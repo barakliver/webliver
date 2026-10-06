@@ -90,7 +90,7 @@ export async function EventSummary({ clientId, summary }: { clientId: string; su
       )}
 
       <div className="card">
-        <h2 className="font-display text-subhead font-semibold text-ink">{c.nextUp}</h2>
+        <h2 className="head-panel">{c.nextUp}</h2>
         {next.length === 0 ? (
           <p className="mt-3 text-body text-ink-mute">{c.nextUpNone}</p>
         ) : (

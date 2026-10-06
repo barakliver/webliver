@@ -223,7 +223,7 @@ function Panel({ name, note, children }: { name: string; note?: string; children
   return (
     <section className="mt-14 first:mt-0">
       <div className="mb-4 flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b border-line pb-2">
-        <h2 className="font-display text-head font-semibold text-ink">{name}</h2>
+        <h2 className="head-sub">{name}</h2>
         {note && <p className="text-meta text-ink-mute">{note}</p>}
       </div>
       {children}

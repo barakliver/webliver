@@ -194,7 +194,7 @@ export function BrandStudio({ clientId, viewer, brand, images, data, canAi, prin
           {/* ── the sheet ─────────────────────────────────────────────── */}
           <div className="flex flex-wrap items-baseline justify-between gap-2">
             <div>
-              <h3 className="font-display text-panel font-semibold text-ink">{c.sheet.title}</h3>
+              <h3 className="head-section">{c.sheet.title}</h3>
               <p className="text-body text-ink-mute">{producer ? c.sheet.sub : ''}{draft.by && <span className="ms-1">· {draft.by === 'ai' ? c.sheet.byAi : c.sheet.byHand}</span>}</p>
             </div>
             {producer && <div className="flex items-center gap-3">{savedAt > 0 && <span className="text-body text-ok">{c.sheet.saved}</span>}<SaveButton /></div>}
@@ -261,7 +261,7 @@ export function BrandStudio({ clientId, viewer, brand, images, data, canAi, prin
           {/* ── the texts ─────────────────────────────────────────────── */}
           {producer && (
             <div className="mt-8">
-              <h3 className="font-display text-subhead font-semibold text-ink">{c.texts.title}</h3>
+              <h3 className="head-panel">{c.texts.title}</h3>
               <p className="text-body text-ink-mute">{c.texts.sub}</p>
               <div className="mt-3 grid gap-3 sm:grid-cols-2">
                 <label className="grid gap-1 text-body text-ink-soft">{c.texts.story}
@@ -281,7 +281,7 @@ export function BrandStudio({ clientId, viewer, brand, images, data, canAi, prin
       {/* ── the pieces ──────────────────────────────────────────────── */}
       {(producer || hasBrand) && (
         <div className="mt-10">
-          <h3 className="font-display text-panel font-semibold text-ink">{c.pieces.title}</h3>
+          <h3 className="head-section">{c.pieces.title}</h3>
           <p className="max-w-2xl text-body leading-relaxed text-ink-mute">{c.pieces.sub}</p>
           <p className="mt-1 text-meta text-ink-mute">{c.pieces.sizes}</p>
           {data.tables.length === 0 && <p className="mt-1 text-meta text-ink-mute">{c.pieces.tablesNone}</p>}
@@ -338,7 +338,7 @@ export function BrandStudio({ clientId, viewer, brand, images, data, canAi, prin
 
           {/* ── where to print ─────────────────────────────────────────── */}
           <div className="mt-10 border-t border-line pt-6">
-            <h3 className="font-display text-subhead font-semibold text-ink">{c.printers.title}</h3>
+            <h3 className="head-panel">{c.printers.title}</h3>
             <p className="max-w-2xl text-body text-ink-mute">{c.printers.sub}</p>
             <ol className="mt-3 grid gap-3 sm:grid-cols-3">
               {c.printers.list.map((p, i) => (

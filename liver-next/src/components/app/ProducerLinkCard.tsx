@@ -34,7 +34,7 @@ export function ProducerLinkCard({ slug }: { slug: string | null }) {
 
   return (
     <section className="card">
-      <h2 className="inline-flex items-center gap-2 font-display text-head font-semibold text-ink">
+      <h2 className="head-sub inline-flex items-center gap-2">
         <Send size={17} aria-hidden strokeWidth={1.5} />
         {c.shareTitle}
       </h2>

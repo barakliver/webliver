@@ -36,7 +36,7 @@ export function EnvelopesPanel({ c, clientId, items }: {
     <section className="card">
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         <div>
-          <h2 className="font-display text-subhead font-semibold text-ink">{c.title}</h2>
+          <h2 className="head-panel">{c.title}</h2>
           <p className="mt-1 text-body text-ink-soft">{c.sub}</p>
         </div>
         {items.length > 0 && (

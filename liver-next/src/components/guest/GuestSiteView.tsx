@@ -148,7 +148,7 @@ export function GuestSiteView({ site, token, c, locale }: {
 
         {/* ── the reply ─────────────────────────────────────────────────── */}
         <section className="card mt-12">
-          <h2 className="font-display text-panel font-semibold text-ink">{c.rsvpTitle}</h2>
+          <h2 className="head-section">{c.rsvpTitle}</h2>
           <p className="mt-2 text-body leading-relaxed text-ink-soft">{c.rsvpSub}</p>
           <div className="mt-5">
             <FindInvite

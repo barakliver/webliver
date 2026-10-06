@@ -52,7 +52,7 @@ export function MyTasks({ tasks, today, showAdd = true }: {
     <section className="card" aria-labelledby="my-tasks">
       <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
         <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-          <h2 id="my-tasks" className="font-display text-panel font-semibold text-ink">{c.title}</h2>
+          <h2 id="my-tasks" className="head-section">{c.title}</h2>
           {/* Only while it is not zero. A standing "0 להיום" is a number that
               trains people to stop reading the line it is on. */}
           {waiting > 0 && (

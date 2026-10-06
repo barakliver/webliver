@@ -92,7 +92,7 @@ const whenIs = (c: BookCopy, n: number) =>
 function Part({ title, count, children }: { title: string; count?: number; children: React.ReactNode }) {
   return (
     <section className="print-block mt-8">
-      <h2 className="border-b border-ink/20 pb-1.5 font-display text-head font-semibold text-ink">
+      <h2 className="head-sub border-b border-ink/20 pb-1.5">
         {title}
         {count !== undefined && <span className="ms-2 text-body font-normal text-ink-soft">{count}</span>}
       </h2>

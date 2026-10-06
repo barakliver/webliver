@@ -110,7 +110,7 @@ export function BarCalculator({ guestEstimate, confirmedGuests }: {
   return (
     <section className="card">
       <div className="no-print">
-        <h2 className="inline-flex items-center gap-2 font-display text-subhead font-semibold text-ink">
+        <h2 className="head-panel inline-flex items-center gap-2">
           <Martini size={18} aria-hidden strokeWidth={1.5} />
           {c.title}
         </h2>
@@ -132,7 +132,7 @@ export function BarCalculator({ guestEstimate, confirmedGuests }: {
 
       <div className="print-doc mt-8">
         <div className="flex flex-wrap items-baseline justify-between gap-3 border-b border-line pb-3">
-          <h3 className="font-display text-subhead font-semibold text-ink">{c.planTitle}</h3>
+          <h3 className="head-panel">{c.planTitle}</h3>
           <p className="text-body tabular-nums text-ink-mute">
             {plan.litres} {c.litresOut}
             {style !== 'house' && ` · ${plan.servings} ${c.servingsOut}`}

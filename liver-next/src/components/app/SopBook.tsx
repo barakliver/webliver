@@ -90,7 +90,7 @@ export function SopBook() {
               <div className="mt-7 space-y-8">
                 {chapter.sections.map((section) => (
                   <article key={section.id} className="print-block">
-                    <h3 className="font-display text-subhead font-semibold text-ink">{section.title}</h3>
+                    <h3 className="head-panel">{section.title}</h3>
                     <p className="mt-1 max-w-2xl text-body leading-relaxed text-ink-mute">{section.sub}</p>
 
                     <ul className="mt-4 space-y-2.5">

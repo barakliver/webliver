@@ -119,7 +119,7 @@ export function ShareSwitches({ clientId, shares, moneyOn }: {
   return (
     <section className="card">
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-        <h2 className="font-display text-subhead font-semibold text-ink">{c.switchesTitle}</h2>
+        <h2 className="head-panel">{c.switchesTitle}</h2>
         <p className="text-body tabular-nums text-ink-mute">
           {c.openTally.replace('{n}', String(openCount)).replace('{of}', String(PORTAL_SECTIONS.length))}
         </p>

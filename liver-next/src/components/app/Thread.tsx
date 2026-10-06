@@ -71,7 +71,7 @@ export function Thread({ clientId, messages, viewerId }: {
 
   return (
     <section className="card">
-      <h2 className="flex items-center gap-2 font-display text-subhead font-semibold text-ink">
+      <h2 className="head-panel flex items-center gap-2">
         <MessagesSquare size={18} aria-hidden strokeWidth={1.5} />
         {c.title}
       </h2>

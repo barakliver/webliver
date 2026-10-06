@@ -39,7 +39,7 @@ export function CrewNote({ clientId, note }: { clientId: string; note: string })
 
   return (
     <section aria-labelledby="crew-note" className="card p-4 sm:p-5">
-      <h3 id="crew-note" className="flex items-center gap-2 font-display text-head font-semibold text-ink">
+      <h3 id="crew-note" className="flex items-center gap-2 head-sub">
         <NotebookPen size={17} className="text-ink-mute" aria-hidden strokeWidth={1.5} />
         {c.crewNoteTitle}
       </h3>

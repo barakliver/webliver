@@ -158,7 +158,7 @@ export function VendorImport({ existingNames, onDone }: { existingNames: string[
     <section className="card">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="inline-flex items-center gap-2 font-display text-head font-semibold text-ink">
+          <h2 className="head-sub inline-flex items-center gap-2">
             <FileSpreadsheet size={17} strokeWidth={1.5} aria-hidden />
             {c.title}
           </h2>

@@ -90,7 +90,7 @@ export default async function EventOsPage() {
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {c.get.map((item) => (
               <div key={item.title} className="card">
-                <h3 className="font-display text-subhead font-semibold text-ink">{item.title}</h3>
+                <h3 className="head-panel">{item.title}</h3>
                 <p className="mt-2 text-body leading-relaxed text-ink-soft">{item.body}</p>
               </div>
             ))}
@@ -112,7 +112,7 @@ export default async function EventOsPage() {
                 <span aria-hidden className="font-display text-figure font-semibold leading-none text-accent-bright">
                   {i + 1}
                 </span>
-                <h3 className="mt-2 font-display text-head font-semibold text-ink">{step.title}</h3>
+                <h3 className="mt-2 head-sub">{step.title}</h3>
                 <p className="mt-1.5 text-body leading-relaxed text-ink-soft">{step.body}</p>
               </li>
             ))}

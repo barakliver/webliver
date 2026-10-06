@@ -199,7 +199,7 @@ function LogCard({ log, clientId, viewer }: {
     <article className="card">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div className="min-w-0">
-          <h3 className="inline-flex items-center gap-2 font-display text-subhead font-semibold text-ink">
+          <h3 className="head-panel inline-flex items-center gap-2">
             <MapPin size={16} aria-hidden strokeWidth={1.5} className="text-accent" />
             {log.venue_name || c.card.at}
           </h3>
@@ -296,7 +296,7 @@ export function JournalBook({ clientId, logs, viewer }: {
 
       {rows.length > 0 && (
         <section className="card">
-          <h2 className="font-display text-panel font-semibold text-ink">{c.summary.title}</h2>
+          <h2 className="head-section">{c.summary.title}</h2>
           <p className="mt-1 max-w-2xl text-body leading-relaxed text-ink-soft">{c.summary.sub}</p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             {rows.map((r) => (

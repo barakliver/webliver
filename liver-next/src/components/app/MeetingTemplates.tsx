@@ -46,7 +46,7 @@ export function MeetingTemplates({ c, own }: { c: MeetingTemplatesCopy; own: Mee
     <section className="card">
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <div>
-          <h2 className="font-display text-panel font-semibold text-ink">{c.title}</h2>
+          <h2 className="head-section">{c.title}</h2>
           <p className="mt-1 max-w-2xl text-body text-ink-mute">{c.sub}</p>
         </div>
         {!adding && (

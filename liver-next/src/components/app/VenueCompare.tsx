@@ -71,7 +71,7 @@ export function VenueCompare({ c, clientId, venues, guestEstimate, quoteUrls, ca
     <section className="print-doc print-wide space-y-5">
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
-          <h2 className="font-display text-subhead font-semibold text-ink">{c.title}</h2>
+          <h2 className="head-panel">{c.title}</h2>
           <p className="mt-1 max-w-prose text-body text-ink-soft">{c.sub}</p>
         </div>
         <div className="flex shrink-0 gap-2 no-print">
@@ -182,7 +182,7 @@ function Column({ c, clientId, v, k, guests, isBest, over, quoteUrl, canChoose, 
     <article className={`card flex h-full flex-col ${v.isSelected ? 'border-accent' : ''}`}>
       <header>
         <div className="flex items-start justify-between gap-2">
-          <h3 className="font-display text-head font-semibold text-ink">{v.venueName}</h3>
+          <h3 className="head-sub">{v.venueName}</h3>
           <DeleteForm action={removeVenue} className="no-print">
             <input type="hidden" name="id" value={v.id} />
             <input type="hidden" name="client_id" value={clientId} />

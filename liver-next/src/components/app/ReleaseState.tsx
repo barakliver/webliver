@@ -38,7 +38,7 @@ export function ReleaseState({ state }: { state: State }) {
     <section className="card" aria-labelledby="release-title">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 id="release-title" className="flex items-center gap-2 font-display text-head font-semibold text-ink">
+          <h2 id="release-title" className="flex items-center gap-2 head-sub">
             <Rocket size={16} aria-hidden strokeWidth={1.5} />
             {c.title}
           </h2>

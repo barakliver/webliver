@@ -108,7 +108,7 @@ export function EventDetails({ event }: { event: EventCore }) {
          vanish the moment it is used. */
       <section id="event-details" className="card scroll-mt-24">
         <form action={action} noValidate>
-          <h2 className="font-display text-subhead font-semibold text-ink">{c.edit}</h2>
+          <h2 className="head-panel">{c.edit}</h2>
           <input type="hidden" name="client_id" value={event.id} />
 
           {state && !state.ok && state.error && (
@@ -167,7 +167,7 @@ export function EventDetails({ event }: { event: EventCore }) {
        it and asked for a rename that already existed. */
     <section id="event-details" className="card scroll-mt-24">
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <h2 className="font-display text-subhead font-semibold text-ink">{c.details}</h2>
+        <h2 className="head-panel">{c.details}</h2>
         <button
           type="button"
           onClick={() => setEditing(true)}

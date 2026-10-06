@@ -173,7 +173,7 @@ export function CircleFeed({ producerId, clientId, posts, category, viewer }: {
                     {c.categories[p.category as CircleCategory] ?? p.category}
                   </span>
                 </div>
-                <h2 className="mt-2 font-display text-subhead font-semibold text-ink">
+                <h2 className="mt-2 head-panel">
                   <Link href={`/app/portal/community/${p.id}`} className="hover:underline">{p.title}</Link>
                 </h2>
                 <p className="mt-1.5 line-clamp-3 whitespace-pre-line text-lead leading-relaxed text-ink-soft">{p.content}</p>

@@ -299,7 +299,7 @@ function Templates({ clientId }: { clientId: string }) {
 
   return (
     <div className="mt-5 rounded-card-sm border border-dashed border-line-strong bg-surface-100 p-5">
-      <h3 className="inline-flex items-center gap-2 font-display text-head font-semibold text-ink">
+      <h3 className="head-sub inline-flex items-center gap-2">
         <Wand2 size={16} aria-hidden strokeWidth={1.5} />
         {c.templateTitle}
       </h3>
@@ -379,7 +379,7 @@ export function DaySchedule({ clientId, items, labelA, labelB, viewer = 'produce
     <section className="card">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="inline-flex items-center gap-2 font-display text-subhead font-semibold text-ink">
+          <h2 className="head-panel inline-flex items-center gap-2">
             <Clock size={18} aria-hidden strokeWidth={1.5} />
             {c.title}
           </h2>

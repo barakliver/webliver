@@ -355,7 +355,7 @@ export function CrewDesk({ people }: { people: CrewPerson[] }) {
     <section aria-labelledby="crew-desk">
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
-          <h2 id="crew-desk" className="font-display text-panel font-semibold text-ink">{c.deskTitle}</h2>
+          <h2 id="crew-desk" className="head-section">{c.deskTitle}</h2>
           <p className="mt-1 text-body text-ink-soft">{c.deskSub}</p>
         {/* Said out loud, because it is the one thing on this screen somebody
             would otherwise have to assume. */}

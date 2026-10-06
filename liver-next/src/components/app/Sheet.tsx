@@ -97,7 +97,7 @@ export function Sheet({
 
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h2 className="font-display text-panel font-semibold text-ink">{title}</h2>
+            <h2 className="head-section">{title}</h2>
             {sub && <p className="mt-1.5 text-body text-ink-soft">{sub}</p>}
           </div>
           <button

@@ -221,7 +221,7 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
     <section className="card">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="font-display text-subhead font-semibold text-ink">{c.budTitle}</h2>
+          <h2 className="head-panel">{c.budTitle}</h2>
           <p className="mt-1 text-body text-ink-soft">{c.budSub}</p>
         </div>
 

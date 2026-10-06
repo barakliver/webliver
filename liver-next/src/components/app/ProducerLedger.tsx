@@ -40,7 +40,7 @@ export function ProducerLedger({ c, payments, items, crew, fee }: {
 
   return (
     <section className="card" aria-labelledby="ledger-title">
-      <h2 id="ledger-title" className="font-display text-subhead font-semibold text-ink">{c.title}</h2>
+      <h2 id="ledger-title" className="head-panel">{c.title}</h2>
       <p className="mt-1 text-body text-ink-soft">{c.sub}</p>
 
       {nothingYet ? (

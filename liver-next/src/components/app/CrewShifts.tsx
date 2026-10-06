@@ -66,7 +66,7 @@ export function CrewShifts({ shifts, today }: { shifts: Shift[]; today: string }
             <div className="pointer-events-none relative flex items-start gap-4">
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                  <h3 className="font-display text-subhead font-semibold text-ink">{s.display_name}</h3>
+                  <h3 className="head-panel">{s.display_name}</h3>
                   {when === 'today' && (
                     <span className="rounded-xl2 bg-accent-wash px-2 py-0.5 text-meta text-accent">
                       {c.shiftToday}

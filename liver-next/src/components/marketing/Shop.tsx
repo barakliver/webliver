@@ -102,7 +102,7 @@ export function Shop({ producerId, items, copy: c }: {
                 <p className="text-micro tracking-[.14em] text-ink-mute">
                   {i.kind === 'service' ? c.kindService : c.kindProduct}
                 </p>
-                <h3 className="mt-1.5 font-display text-panel font-semibold text-ink">{i.name}</h3>
+                <h3 className="mt-1.5 head-section">{i.name}</h3>
                 {i.blurb && <p className="mt-1.5 text-body text-ink-soft">{i.blurb}</p>}
                 {i.body && <p className="mt-2 whitespace-pre-line text-body text-ink-mute">{i.body}</p>}
 
@@ -149,7 +149,7 @@ export function Shop({ producerId, items, copy: c }: {
             className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-t-sheet border border-line bg-card p-5 sm:rounded-sheet"
           >
             <div className="flex items-center justify-between gap-3">
-              <h2 className="font-display text-panel font-semibold text-ink">{c.cart}</h2>
+              <h2 className="head-section">{c.cart}</h2>
               <button type="button" onClick={() => setOpen(false)} className="btn-quiet px-2 py-1" aria-label={c.cancel}>
                 <X size={18} aria-hidden strokeWidth={1.5} />
               </button>

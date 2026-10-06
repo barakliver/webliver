@@ -49,7 +49,7 @@ export function QuoteCompare({ clientId, vendors, lines, viewer }: {
 
   return (
     <section className="card" aria-labelledby="quotes-title">
-      <h2 id="quotes-title" className="font-display text-subhead font-semibold text-ink">{c.title}</h2>
+      <h2 id="quotes-title" className="head-panel">{c.title}</h2>
       <p className="mt-1 max-w-prose2 text-body leading-relaxed text-ink-soft">
         {viewer === 'client' ? c.coupleSub : c.sub}
       </p>

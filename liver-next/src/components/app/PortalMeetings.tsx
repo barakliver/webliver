@@ -36,7 +36,7 @@ export function PortalMeetings({ meetings, ui }: { meetings: SharedMeeting[]; ui
 
   return (
     <section className="card">
-      <h2 className="font-display text-panel font-semibold text-ink">{c.title}</h2>
+      <h2 className="head-section">{c.title}</h2>
       <p className="mt-1 text-body text-ink-mute">{c.sub}</p>
 
       {meetings.length === 0 ? (

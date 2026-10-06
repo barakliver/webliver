@@ -95,7 +95,7 @@ export function WeddingBingo({ clientId, tasks }: { clientId: string; tasks: Tas
 
 function Title({ id, text }: { id: string; text: string }) {
   return (
-    <h2 id={id} className="font-display text-subhead font-semibold text-ink">{text}</h2>
+    <h2 id={id} className="head-panel">{text}</h2>
   );
 }
 

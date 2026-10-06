@@ -179,7 +179,7 @@ function CreateEventModal({ clientId, onClose, onCreated }: {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-scrim/40 p-4">
       <div className="w-full max-w-md rounded-sheet border border-line bg-card p-6">
-        <h2 className="font-display text-subhead font-semibold text-ink">אירוע נוסף</h2>
+        <h2 className="head-panel">אירוע נוסף</h2>
         <p className="mt-1 text-body text-ink-soft">
           חינה, שבת חתן, ארוחת ערב. לכל אחד התאריך והרשימה שלו.
         </p>

@@ -31,7 +31,7 @@ export function CallsPanel({ calls, leads }: { calls: Call[]; leads: { id: strin
 
   return (
     <section className="card mt-6">
-      <h2 className="font-display text-subhead font-semibold text-ink">📞 {c.callsTitle}</h2>
+      <h2 className="head-panel">📞 {c.callsTitle}</h2>
       <ul className="mt-4 space-y-2">
         {open.map((call) => {
           const st = dueState(call.remind_on);

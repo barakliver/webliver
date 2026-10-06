@@ -162,7 +162,7 @@ export function BrandEditor({ fields, rootDomain }: { fields: BrandFields; rootD
 
       {/* ── your address ───────────────────────────────────────────────── */}
       <section className="card space-y-4">
-        <h2 className="font-display text-head font-semibold text-ink">{c.address}</h2>
+        <h2 className="head-sub">{c.address}</h2>
 
         <div>
           <label className="label" htmlFor="slug">{c.slug}</label>

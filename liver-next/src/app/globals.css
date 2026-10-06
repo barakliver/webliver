@@ -665,6 +665,23 @@
   .chip-bad  { @apply chip border-bad/40  text-bad; }
   .chip-mute { @apply chip border-line-strong text-ink-soft; }
 
+  /* The three heads, and there are only three.
+     Eighty-three headings were written out by hand across the product, and
+     because they were written out they were written out slightly
+     differently: the same size reached four ways, a weight picked by eye in
+     one panel and by memory in the next. Nothing was visibly wrong, which is
+     the whole trouble with it - half a pixel is invisible in one panel and
+     is exactly what makes a whole screen read as assembled rather than
+     designed, and nobody can point at what is off.
+     head-panel is a card's own title, head-section the heading above a group
+     of them, head-sub a heading inside one. They sit here next to .card and
+     .eyebrow rather than in a component, because that is where the rest of
+     this product's vocabulary already is, and a heading that needs an icon
+     beside it just adds inline-flex in the markup where it is needed. */
+  .head-panel   { @apply font-display text-subhead font-semibold text-ink; }
+  .head-section { @apply font-display text-panel font-semibold text-ink; }
+  .head-sub     { @apply font-display text-head font-semibold text-ink; }
+
   .eyebrow {
     @apply text-micro font-medium tracking-[.14em] text-accent;
   }

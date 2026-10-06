@@ -132,7 +132,7 @@ export function DayOfCockpit({
 
       <section className="card">
         <div className="flex items-baseline justify-between gap-3">
-          <h2 className="font-display text-subhead font-semibold text-ink">{c.schedule}</h2>
+          <h2 className="head-panel">{c.schedule}</h2>
           <span className="text-meta text-ink-mute">{plural(c.openCount, open)}</span>
         </div>
 
@@ -251,7 +251,7 @@ function People({ sheet, clientId }: { sheet: Caller[]; clientId: string }) {
   if (sheet.length === 0) {
     return (
       <section className="card">
-        <h2 className="font-display text-subhead font-semibold text-ink">{c.people.title}</h2>
+        <h2 className="head-panel">{c.people.title}</h2>
         <p className="mt-2 text-lead text-ink-mute">{c.people.empty}</p>
       </section>
     );
@@ -259,7 +259,7 @@ function People({ sheet, clientId }: { sheet: Caller[]; clientId: string }) {
 
   return (
     <section className="card">
-      <h2 className="font-display text-subhead font-semibold text-ink">{c.people.title}</h2>
+      <h2 className="head-panel">{c.people.title}</h2>
       <p className="mt-1 text-body text-ink-soft">{c.people.sub}</p>
 
       <ul className="mt-4 list-none space-y-2 p-0">
@@ -449,7 +449,7 @@ function Broadcast({ sheet, late }: { sheet: Caller[]; late: Caller[] }) {
           >
             <div className="flex items-start justify-between gap-3">
               <div>
-                <h2 className="font-display text-subhead font-semibold text-ink">{c.broadcast.title}</h2>
+                <h2 className="head-panel">{c.broadcast.title}</h2>
                 <p className="mt-1 text-body text-ink-soft">{c.broadcast.sub}</p>
               </div>
               <button

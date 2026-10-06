@@ -98,7 +98,7 @@ export function OrdersBoard({ orders }: { orders: Order[] }) {
   return (
     <section className="card">
       <div className="flex flex-wrap items-baseline justify-between gap-3">
-        <h2 className="font-display text-panel font-semibold text-ink">{c.tabOrders}</h2>
+        <h2 className="head-section">{c.tabOrders}</h2>
         <p className="text-body text-ink-mute">{c.ordersHint}</p>
       </div>
 

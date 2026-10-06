@@ -194,7 +194,7 @@ export function SeatingPlan({ clientId, tables, guests }: {
 
   return (
     <section className="card">
-      <h2 className="font-display text-subhead font-semibold text-ink">🪑 {c.title}</h2>
+      <h2 className="head-panel">🪑 {c.title}</h2>
       <p className="mt-1 text-body text-ink-soft">{c.sub}</p>
       <p className="mt-1 text-body text-ink-mute">{c.dragHint}</p>
 
@@ -405,7 +405,7 @@ function RenameTable({ c, clientId, id, name }: {
   if (!editing) {
     return (
       <div className="flex min-w-0 items-start gap-1">
-        <h3 className="font-display text-head font-semibold text-ink">{name}</h3>
+        <h3 className="head-sub">{name}</h3>
         <button
           type="button"
           onClick={() => setEditing(true)}

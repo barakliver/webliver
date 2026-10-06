@@ -117,7 +117,7 @@ export function EventFiles({ clientId, files, viewer }: {
   return (
     <section className="card">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h2 className="font-display text-panel font-semibold text-ink">{c.title}</h2>
+        <h2 className="head-section">{c.title}</h2>
         <p className="text-body text-ink-mute">{viewer === 'client' ? c.subClient : c.subProducer}</p>
       </div>
 

@@ -34,7 +34,7 @@ export function BudgetTracker({ items, payments, plan, target }: {
 
   return (
     <section className="card">
-      <h2 className="font-display text-subhead font-semibold text-ink">{c.trackerTitle}</h2>
+      <h2 className="head-panel">{c.trackerTitle}</h2>
       <p className="mt-1 max-w-prose2 text-body leading-relaxed text-ink-soft">{c.trackerSub}</p>
 
       {t.flagged.length > 0 && (

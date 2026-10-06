@@ -119,7 +119,7 @@ export function A11yPanel({ copy: c }: { copy: A11yCopy }) {
           <div className="max-h-[86svh] w-full overflow-y-auto rounded-t-sheet border border-line-strong bg-card p-6 shadow-pop sm:max-w-[28rem] sm:rounded-sheet">
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0">
-                <h2 className="font-display text-panel font-semibold text-ink">{c.title}</h2>
+                <h2 className="head-section">{c.title}</h2>
                 <p className="mt-1.5 text-body leading-relaxed text-ink-soft">{c.sub}</p>
               </div>
               <button

@@ -59,7 +59,7 @@ export function BeginFlow({ clientId, basics, defaultOpen = false }: {
     const names = (done.wrote ?? []).map((k) => c.wrote[k as keyof typeof c.wrote]).filter(Boolean);
     return (
       <section className="card mt-8 border-ok/30">
-        <h2 className="flex items-center gap-2.5 font-display text-panel font-semibold text-ink">
+        <h2 className="head-section flex items-center gap-2.5">
           <Check size={20} aria-hidden strokeWidth={1.5} className="shrink-0 text-ok" />
           {c.doneTitle}
         </h2>
@@ -76,7 +76,7 @@ export function BeginFlow({ clientId, basics, defaultOpen = false }: {
   if (!open) {
     return (
       <section className="card mt-8">
-        <h2 className="flex items-center gap-2.5 font-display text-panel font-semibold text-ink">
+        <h2 className="head-section flex items-center gap-2.5">
           <Sparkles size={19} aria-hidden strokeWidth={1.5} className="shrink-0 text-accent" />
           {c.title}
         </h2>
@@ -117,7 +117,7 @@ export function BeginFlow({ clientId, basics, defaultOpen = false }: {
   return (
     <section className="card mt-8" aria-labelledby="begin-title">
       <p className="eyebrow">{fill(c.of, { n: at + 1, of: steps.length })}</p>
-      <h2 id="begin-title" className="mt-2 font-display text-panel font-semibold text-ink">
+      <h2 id="begin-title" className="mt-2 head-section">
         {c.q[step].head}
       </h2>
       <p className="mt-1.5 max-w-prose2 text-body leading-relaxed text-ink-soft">{c.q[step].hint}</p>

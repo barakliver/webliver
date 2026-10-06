@@ -55,7 +55,7 @@ export function NewLeadForm({ channels = [] }: {
   return (
     <form action={action} className="card mt-4 space-y-5" noValidate>
       <div>
-        <h2 className="font-display text-subhead font-semibold text-ink">{c.addTitle}</h2>
+        <h2 className="head-panel">{c.addTitle}</h2>
         <p className="mt-1 text-body text-ink-soft">{c.addSub}</p>
       </div>
 

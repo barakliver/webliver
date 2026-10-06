@@ -191,7 +191,7 @@ export function VendorCaptureModal({ task, template, onClose, onSaved, onSkip }:
       onClick={(e) => { if (e.target === e.currentTarget) cancel(); }}
     >
       <div role="dialog" aria-modal="true" aria-labelledby="vendor-capture-title" className="w-full max-w-md rounded-sheet border border-line bg-card p-6">
-        <h2 id="vendor-capture-title" className="font-display text-subhead font-semibold text-ink">{template.title}</h2>
+        <h2 id="vendor-capture-title" className="head-panel">{template.title}</h2>
         {template.description && (
           <p className="mt-1 text-body text-ink-soft">{template.description}</p>
         )}

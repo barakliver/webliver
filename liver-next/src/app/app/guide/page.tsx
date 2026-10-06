@@ -62,7 +62,7 @@ export default async function GuidePage() {
       )}
 
       <section className="card mt-12 max-w-2xl">
-        <h2 className="font-display text-subhead font-semibold text-ink">{c.askTitle}</h2>
+        <h2 className="head-panel">{c.askTitle}</h2>
         <p className="mt-2 text-body leading-relaxed text-ink-soft">{c.askBody}</p>
       </section>
 

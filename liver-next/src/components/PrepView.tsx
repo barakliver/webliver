@@ -49,7 +49,7 @@ export function PrepView({ c, eventName, dateLabel, venue, producer, faces, look
 
       {faces.length > 0 && (
         <section className="mt-8">
-          <h2 className="font-display text-panel font-semibold text-ink">{c.faces}</h2>
+          <h2 className="head-section">{c.faces}</h2>
           <ul className="mt-4 grid list-none gap-4 p-0 sm:grid-cols-2">
             {faces.map((f, i) => (
               <li key={i} className="flex items-start gap-3">
@@ -76,7 +76,7 @@ export function PrepView({ c, eventName, dateLabel, venue, producer, faces, look
 
       {looks.length > 0 && (
         <section className="mt-10">
-          <h2 className="font-display text-panel font-semibold text-ink">{c.looks}</h2>
+          <h2 className="head-section">{c.looks}</h2>
           {ORDER.filter((cat) => looks.some((l) => l.category === cat)).map((cat) => (
             <div key={cat} className="mt-5">
               <h3 className="eyebrow">{c.categories[cat]}</h3>

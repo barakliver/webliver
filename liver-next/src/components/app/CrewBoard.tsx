@@ -366,7 +366,7 @@ export function CrewBoard({
             return (
               <li key={ev.id} className="card p-4 sm:p-5">
                 <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-                  <h4 className="font-display text-head font-semibold text-ink">
+                  <h4 className="head-sub">
                     <Link href={`/app/clients/${ev.id}`} className="transition-colors hover:text-accent">
                       {ev.name}
                     </Link>

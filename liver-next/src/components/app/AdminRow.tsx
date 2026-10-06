@@ -59,7 +59,7 @@ export async function AdminRow({ p }: { p: ProducerRow }) {
       <details className="group rounded-card border border-line-soft bg-card shadow-soft">
         <summary className="flex min-h-[68px] cursor-pointer list-none items-center justify-between gap-4 p-4 transition-colors hover:border-accent sm:p-5 [&::-webkit-details-marker]:hidden">
           <div className="min-w-0">
-            <h3 className="flex flex-wrap items-center gap-2 font-display text-head font-semibold text-ink">
+            <h3 className="flex flex-wrap items-center gap-2 head-sub">
               {p.brand}
               {p.isRoot && (
                 <span className="inline-flex items-center gap-1 rounded-xl2 bg-accent-wash px-2.5 py-0.5 text-meta font-medium text-accent">

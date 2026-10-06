@@ -106,7 +106,7 @@ export function GuideBookView({ book, c }: { book: Book; c: GuideUi }) {
           {book.chapters.map((chapter) => (
             <section key={chapter.id} id={chapter.id}>
               <header className="border-b-2 border-ink pb-3">
-                <h3 className="inline-flex items-center gap-2 font-display text-panel font-semibold text-ink">
+                <h3 className="inline-flex items-center gap-2 head-section">
                   <CircleHelp size={18} aria-hidden strokeWidth={1.5} />
                   {chapter.title}
                 </h3>

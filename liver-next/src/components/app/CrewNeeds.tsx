@@ -62,7 +62,7 @@ export function CrewNeeds({
   return (
     <section aria-labelledby="crew-needs" className="card p-4 sm:p-5">
       <header className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-        <h3 id="crew-needs" className="font-display text-head font-semibold text-ink">{c.ruleTitle}</h3>
+        <h3 id="crew-needs" className="head-sub">{c.ruleTitle}</h3>
         <p className="text-body text-ink-mute">
           {certain
             ? <>{c.ruleBy}: <Ltr>{String(guests)}</Ltr></>
