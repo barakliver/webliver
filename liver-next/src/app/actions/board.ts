@@ -49,6 +49,52 @@ export async function registerBoardImage(input: {
   return { ok: true };
 }
 
+/**
+ * Correcting the words under a picture.
+ *
+ * A caption typed on a phone and a category picked from a select whose
+ * default is wrong for most pictures — and until now the only way to fix
+ * either was to delete the row, which takes the photograph out of the
+ * bucket. So fixing a caption meant finding the picture again and uploading
+ * it again, and the board filled up with pictures filed under the wrong
+ * heading because nobody will do that twice.
+ *
+ * The category is the one that matters: the filter chips above this grid are
+ * built from the categories in use, so a picture under the wrong heading is
+ * not merely mislabelled — it is in the wrong pile when somebody filters.
+ *
+ * `image_path` is never written here. The picture is the row; a different
+ * picture is a different row, and the path is the one field a caller must
+ * not be able to point anywhere it likes.
+ */
+export async function updateBoardImage(_prev: BoardResult | null, form: FormData): Promise<BoardResult> {
+  const id = String(form.get('image_id') ?? '');
+  const clientId = String(form.get('client_id') ?? '');
+  const caption = String(form.get('caption') ?? '').trim().slice(0, 200);
+  const categoryRaw = String(form.get('category') ?? 'other');
+  const category = BOARD_CATEGORIES.some((c) => c.value === categoryRaw) ? categoryRaw : 'other';
+
+  if (!id || !clientId) return { ok: false, error: 'חסרים פרטים על התמונה' };
+
+  const sb = await supabaseServer();
+  const { data, error } = await sb.from('moodboards')
+    .update({ caption, category })
+    .eq('id', id).eq('client_id', clientId)
+    .select('id');
+
+  if (error) {
+    console.error('[board] update failed', error);
+    return { ok: false, error: 'לא הצלחנו לשמור. אפשר לנסות שוב.' };
+  }
+  /* An update that matched no row must not report success. */
+  if (!data || data.length === 0) return { ok: false, error: 'לא הצלחנו לשמור. אפשר לנסות שוב.' };
+
+  revalidatePath('/app/portal');
+  revalidatePath(`/app/clients/${clientId}`);
+  revalidatePath(`/app/clients/${clientId}/preview`);
+  return { ok: true };
+}
+
 export async function deleteBoardImage(form: FormData): Promise<void> {
   const id = String(form.get('image_id') ?? '');
   const clientId = String(form.get('client_id') ?? '');

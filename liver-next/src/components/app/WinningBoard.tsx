@@ -1,11 +1,13 @@
 'use client';
 
-import { useRef, useState } from 'react';
-import { registerBoardImage, deleteBoardImage } from '@/app/actions/board';
+import { useActionState, useRef, useState } from 'react';
+import { useFormStatus } from 'react-dom';
+import { registerBoardImage, deleteBoardImage, updateBoardImage, type BoardResult } from '@/app/actions/board';
 import { supabaseBrowser } from '@/lib/supabase/client';
-import { ImagePlus } from 'lucide-react';
+import { ImagePlus, Pencil } from 'lucide-react';
 import { BOARD_CATEGORIES } from '@/content/lists';
 import { useCopy } from '@/components/app/CopyProvider';
+import type { BoardCopy } from '@/content/appUi';
 import { DeleteForm } from '@/components/app/ConfirmDelete';
 
 export type BoardImage = {
@@ -198,26 +200,103 @@ export function WinningBoard({ clientId, images, viewer }: {
 
           <ul className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {shown.map((img) => (
-              <li key={img.id} className="overflow-hidden rounded-xl2 border border-line bg-surface-100">
-                {/* a plain img: these are signed one-off URLs, not a fixed asset path */}
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={img.url} alt={img.caption || labelOf(img.category)} className="h-52 w-full object-cover" loading="lazy" />
-                <div className="flex items-start justify-between gap-2 p-3">
-                  <div className="min-w-0">
-                    {img.caption && <p className="text-body text-ink">{img.caption}</p>}
-                    <p className="text-meta text-ink-mute">{labelOf(img.category)}</p>
-                  </div>
-                  <DeleteForm action={deleteBoardImage}>
-                    <input type="hidden" name="image_id" value={img.id} />
-                    <input type="hidden" name="client_id" value={clientId} />
-                    <button type="submit" className="btn-quiet px-2 py-1 text-body">{c.remove}</button>
-                  </DeleteForm>
-                </div>
-              </li>
+              <Tile key={img.id} c={c} clientId={clientId} img={img} label={labelOf(img.category)} />
             ))}
           </ul>
         </>
       )}
     </section>
+  );
+}
+
+function SaveEdit({ c }: { c: BoardCopy }) {
+  const { pending } = useFormStatus();
+  return (
+    <button type="submit" disabled={pending} className="btn-primary px-3 py-1 text-body">
+      {pending ? c.editSaving : c.editSave}
+    </button>
+  );
+}
+
+/**
+ * One picture, and the form that corrects the words under it.
+ *
+ * A caption typed on a phone, and a category picked from a select whose
+ * default is wrong for most pictures. Until now the only way to fix either
+ * was the Remove beside it, which takes the photograph out of the bucket —
+ * so a correction meant finding the picture again and uploading it again,
+ * and nobody does that twice. The category matters more than the caption:
+ * the filter chips above this grid are built from the categories in use, so
+ * a picture under the wrong heading is in the wrong pile when somebody
+ * filters, not merely mislabelled.
+ */
+function Tile({ c, clientId, img, label }: {
+  c: BoardCopy; clientId: string; img: BoardImage; label: string;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [state, action] = useActionState<BoardResult | null, FormData>(
+    async (prev, form) => {
+      const r = await updateBoardImage(prev, form);
+      if (r.ok) setEditing(false);
+      return r;
+    },
+    null,
+  );
+
+  return (
+    <li className="overflow-hidden rounded-card-sm border border-line bg-surface-100">
+      {/* a plain img: these are signed one-off URLs, not a fixed asset path */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={img.url} alt={img.caption || label} className="h-52 w-full object-cover" loading="lazy" />
+
+      {editing ? (
+        <form action={action} className="p-3">
+          <input type="hidden" name="image_id" value={img.id} />
+          <input type="hidden" name="client_id" value={clientId} />
+          <label className="block">
+            <span className="label">{c.caption}</span>
+            <input name="caption" maxLength={200} defaultValue={img.caption} placeholder={c.captionPh} className="field mt-1 w-full" />
+          </label>
+          <label className="mt-2 block">
+            <span className="label">{c.category}</span>
+            <select name="category" defaultValue={img.category} className="field mt-1 w-full">
+              {BOARD_CATEGORIES.map((cat) => <option key={cat.value} value={cat.value}>{cat.label}</option>)}
+            </select>
+          </label>
+          <div className="mt-3 flex items-center gap-2">
+            <SaveEdit c={c} />
+            <button type="button" onClick={() => setEditing(false)} className="btn-quiet px-2 py-1 text-body">
+              {c.editCancel}
+            </button>
+          </div>
+          {state?.ok === false && state.error && (
+            <p role="alert" className="mt-2 text-meta text-bad">{state.error}</p>
+          )}
+        </form>
+      ) : (
+        <div className="flex items-start justify-between gap-2 p-3">
+          <div className="min-w-0">
+            {img.caption && <p className="text-body text-ink">{img.caption}</p>}
+            <p className="text-meta text-ink-mute">{label}</p>
+          </div>
+          <div className="flex shrink-0 items-start gap-0.5">
+            <button
+              type="button"
+              onClick={() => setEditing(true)}
+              aria-label={c.edit}
+              title={c.edit}
+              className="grid size-9 place-items-center rounded-control text-ink-mute transition hover:bg-surface-200 hover:text-ink"
+            >
+              <Pencil size={15} strokeWidth={1.5} aria-hidden />
+            </button>
+            <DeleteForm action={deleteBoardImage}>
+              <input type="hidden" name="image_id" value={img.id} />
+              <input type="hidden" name="client_id" value={clientId} />
+              <button type="submit" className="btn-quiet px-2 py-1 text-body">{c.remove}</button>
+            </DeleteForm>
+          </div>
+        </div>
+      )}
+    </li>
   );
 }
