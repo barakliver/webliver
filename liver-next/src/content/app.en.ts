@@ -1025,6 +1025,11 @@ export const vehiclesCopyEn: VehiclesCopy = {
   notePh: 'Leaving home at 16:30',
   add: 'Add a car',
   adding: 'Adding…',
+  edit: 'Edit',
+  editTitle: 'Edit car',
+  editSave: 'Save',
+  editSaving: 'Saving',
+  editCancel: 'Cancel',
   remove: 'Remove',
 };
 

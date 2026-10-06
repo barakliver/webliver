@@ -1,9 +1,9 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useState } from 'react';
 import { useFormStatus } from 'react-dom';
-import { Loader2, Plus, Phone } from 'lucide-react';
-import { addVehicle, removeVehicle, type VehicleResult } from '@/app/actions/vehicles';
+import { Loader2, Plus, Phone, Pencil } from 'lucide-react';
+import { addVehicle, removeVehicle, updateVehicle, type VehicleResult } from '@/app/actions/vehicles';
 import type { VehiclesCopy } from '@/content/appUi';
 import { Ltr } from '@/components/Ltr';
 import { DeleteForm } from '@/components/app/ConfirmDelete';
@@ -54,37 +54,7 @@ export function VehiclesPanel({ c, clientId, items }: {
       ) : (
         <ul className="mt-5 space-y-2">
           {items.map((v) => (
-            <li key={v.id} className="flex flex-wrap items-start gap-3 rounded-xl2 border border-line px-3 py-3">
-              <div className="min-w-0 flex-1">
-                <p className="text-lead text-ink">
-                  {v.name}
-                  {v.driver && <span className="text-ink-soft"> · {v.driver}</span>}
-                  {v.seats !== null && (
-                    <span className="ms-2 whitespace-nowrap rounded-xl2 bg-surface-200 px-2 py-0.5 text-micro text-ink-mute">
-                      <Ltr>{v.seats}</Ltr> {c.seats}
-                    </span>
-                  )}
-                </p>
-                <p className="mt-0.5 text-meta text-ink-mute">
-                  {legLabel(v.leg)}
-                  {v.phone && (
-                    <>
-                      {' · '}
-                      <a href={`tel:${v.phone}`} className="inline-flex items-center gap-1 text-ink-soft hover:text-ink">
-                        <Phone size={11} aria-hidden strokeWidth={1.5} /><Ltr>{v.phone}</Ltr>
-                      </a>
-                    </>
-                  )}
-                </p>
-                {v.riders && <p className="mt-1 text-body text-ink-soft">{v.riders}</p>}
-                {v.note && <p className="mt-0.5 text-meta text-ink-mute">{v.note}</p>}
-              </div>
-              <DeleteForm action={removeVehicle}>
-                <input type="hidden" name="id" value={v.id} />
-                <input type="hidden" name="client_id" value={clientId} />
-                <button type="submit" className="btn-quiet px-3 py-1 text-body">{c.remove}</button>
-              </DeleteForm>
-            </li>
+            <Row key={v.id} c={c} clientId={clientId} v={v} legLabel={legLabel} />
           ))}
         </ul>
       )}
@@ -146,5 +116,146 @@ function Submit({ c, pending }: { c: VehiclesCopy; pending: boolean }) {
         : <Plus size={15} strokeWidth={1.5} aria-hidden />}
       {wait ? c.adding : c.add}
     </button>
+  );
+}
+
+/** One car, and the form that corrects it. */
+function Row({ c, clientId, v, legLabel }: {
+  c: VehiclesCopy; clientId: string; v: Vehicle; legLabel: (leg: string) => string;
+}) {
+  const [editing, setEditing] = useState(false);
+
+  return (
+    <li className="flex flex-wrap items-start gap-3 rounded-card-sm border border-line px-3 py-3">
+      <div className="min-w-0 flex-1">
+        <p className="text-lead text-ink">
+          {v.name}
+          {v.driver && <span className="text-ink-soft"> · {v.driver}</span>}
+          {v.seats !== null && (
+            <span className="ms-2 whitespace-nowrap rounded-control bg-surface-200 px-2 py-0.5 text-micro text-ink-mute">
+              <Ltr>{v.seats}</Ltr> {c.seats}
+            </span>
+          )}
+        </p>
+        <p className="mt-0.5 text-meta text-ink-mute">
+          {legLabel(v.leg)}
+          {v.phone && (
+            <>
+              {' · '}
+              <a href={`tel:${v.phone}`} className="inline-flex items-center gap-1 text-ink-soft hover:text-ink">
+                <Phone size={11} aria-hidden strokeWidth={1.5} /><Ltr>{v.phone}</Ltr>
+              </a>
+            </>
+          )}
+        </p>
+        {v.riders && <p className="mt-1 text-body text-ink-soft">{v.riders}</p>}
+        {v.note && <p className="mt-0.5 text-meta text-ink-mute">{v.note}</p>}
+      </div>
+
+      <button
+        type="button"
+        onClick={() => setEditing((o) => !o)}
+        aria-expanded={editing}
+        aria-label={c.edit}
+        title={c.edit}
+        className="btn-quiet grid size-9 shrink-0 place-items-center px-0 py-0"
+      >
+        <Pencil size={15} strokeWidth={1.5} aria-hidden />
+      </button>
+
+      <DeleteForm action={removeVehicle}>
+        <input type="hidden" name="id" value={v.id} />
+        <input type="hidden" name="client_id" value={clientId} />
+        <button type="submit" className="btn-quiet px-3 py-1 text-body">{c.remove}</button>
+      </DeleteForm>
+
+      {editing && <EditVehicle c={c} clientId={clientId} v={v} onDone={() => setEditing(false)} />}
+    </li>
+  );
+}
+
+function SaveEdit({ c }: { c: VehiclesCopy }) {
+  const { pending } = useFormStatus();
+  return (
+    <button type="submit" disabled={pending} className="btn-primary">
+      {pending ? c.editSaving : c.editSave}
+    </button>
+  );
+}
+
+/**
+ * Correcting a car in place.
+ *
+ * Who is driving changes, the phone was typed with a digit missing, and the
+ * list of who is riding is rewritten about four times in the last fortnight —
+ * that list is free text precisely because it keeps changing in ways no join
+ * could follow. Every one of those used to mean deleting the car and typing
+ * seven fields again.
+ */
+function EditVehicle({ c, clientId, v, onDone }: {
+  c: VehiclesCopy; clientId: string; v: Vehicle; onDone: () => void;
+}) {
+  const [state, action] = useActionState<VehicleResult | null, FormData>(
+    async (prev, form) => {
+      const r = await updateVehicle(prev, form);
+      if (r.ok) onDone();
+      return r;
+    },
+    null,
+  );
+
+  return (
+    <form action={action} className="mt-3 w-full border-t border-line pt-3">
+      <input type="hidden" name="id" value={v.id} />
+      <input type="hidden" name="client_id" value={clientId} />
+
+      <div className="grid gap-3 sm:grid-cols-[1fr_1fr_150px]">
+        <label>
+          <span className="label">{c.name}</span>
+          <input name="name" required maxLength={60} defaultValue={v.name} className="field mt-1 w-full" />
+        </label>
+        <label>
+          <span className="label">{c.driver}</span>
+          <input name="driver" maxLength={80} defaultValue={v.driver} className="field mt-1 w-full" />
+        </label>
+        <label>
+          <span className="label">{c.phone}</span>
+          <input name="phone" type="tel" inputMode="tel" maxLength={30} defaultValue={v.phone} className="field mt-1 w-full" dir="ltr" />
+        </label>
+      </div>
+      <div className="mt-3 grid gap-3 sm:grid-cols-[110px_160px_1fr]">
+        <label>
+          <span className="label">{c.seats}</span>
+          <input name="seats" type="number" inputMode="numeric" min={1} max={60} defaultValue={v.seats ?? ''} className="field mt-1 w-full" />
+        </label>
+        <label>
+          <span className="label">{c.leg}</span>
+          <select name="leg" defaultValue={v.leg} className="field mt-1 w-full">
+            <option value="both">{c.legBoth}</option>
+            <option value="to">{c.legTo}</option>
+            <option value="from">{c.legFrom}</option>
+          </select>
+        </label>
+        <label>
+          <span className="label">{c.riders}</span>
+          <input name="riders" maxLength={400} defaultValue={v.riders} className="field mt-1 w-full" />
+        </label>
+      </div>
+      <label className="mt-3 block">
+        <span className="label">{c.note}</span>
+        <input name="note" maxLength={400} defaultValue={v.note} className="field mt-1 w-full" />
+      </label>
+
+      <div className="mt-3 flex items-center gap-3">
+        <SaveEdit c={c} />
+        <button type="button" onClick={onDone} className="btn-quiet px-3 py-1 text-body">{c.editCancel}</button>
+      </div>
+
+      {state?.ok === false && state.error && (
+        <p role="alert" className="mt-3 rounded-control border border-bad/25 bg-bad-wash px-4 py-2.5 text-body text-bad">
+          {state.error}
+        </p>
+      )}
+    </form>
   );
 }

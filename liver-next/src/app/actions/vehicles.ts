@@ -63,6 +63,65 @@ export async function addVehicle(_prev: VehicleResult | null, form: FormData): P
   return { ok: true };
 }
 
+/**
+ * Correcting a car.
+ *
+ * Who is driving changes, the phone number was typed with a digit missing,
+ * and the list of who is riding is rewritten about four times in the last
+ * fortnight — that list is free text precisely because it keeps changing in
+ * ways no join could follow. Until now every one of those corrections meant
+ * deleting the car and typing seven fields again.
+ *
+ * `sort` is absent on purpose: it is the order this list was arranged in,
+ * and an edit is not a reordering.
+ */
+export async function updateVehicle(_prev: VehicleResult | null, form: FormData): Promise<VehicleResult> {
+  const id = String(form.get('id') ?? '');
+  const clientId = String(form.get('client_id') ?? '');
+  const name = String(form.get('name') ?? '').trim();
+  const driver = String(form.get('driver') ?? '').trim();
+  const phone = String(form.get('phone') ?? '').trim();
+  const riders = String(form.get('riders') ?? '').trim();
+  const note = String(form.get('note') ?? '').trim();
+  const legRaw = String(form.get('leg') ?? 'both');
+  const seatsRaw = String(form.get('seats') ?? '').trim();
+  const seats = seatsRaw ? Number(seatsRaw) : null;
+
+  if (!id || !clientId) return { ok: false, error: MISSING };
+  if (name.length < 1) return { ok: false, error: 'איך קוראים לרכב?' };
+  if (seats !== null && (!Number.isInteger(seats) || seats < 1 || seats > 60)) {
+    return { ok: false, error: 'מספר מקומות לא תקין' };
+  }
+  const leg = LEGS.has(legRaw) ? legRaw : 'both';
+
+  const account = await currentAccount();
+  if (!account) return { ok: false, error: NO_SESSION };
+  const sb = await supabaseServer();
+
+  const { data, error } = await sb.from('event_vehicles')
+    .update({
+      name: name.slice(0, 60),
+      driver: driver.slice(0, 80),
+      phone: phone.slice(0, 30),
+      riders: riders.slice(0, 400),
+      note: note.slice(0, 400),
+      seats,
+      leg,
+    })
+    .eq('id', id).eq('client_id', clientId)
+    .select('id');
+
+  if (error) {
+    console.error('[vehicles] update failed', error);
+    return { ok: false, error: FAILED };
+  }
+  /* An update that matched no row must not report success. */
+  if (!data || data.length === 0) return { ok: false, error: FAILED };
+
+  touch(clientId);
+  return { ok: true };
+}
+
 export async function removeVehicle(form: FormData): Promise<void> {
   const id = String(form.get('id') ?? '');
   const clientId = String(form.get('client_id') ?? '');

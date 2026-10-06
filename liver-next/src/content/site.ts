@@ -3180,6 +3180,11 @@ export const vehiclesCopy = {
   notePh: 'יוצאים ב-16:30 מהבית',
   add: 'הוספת רכב',
   adding: 'מוסיף…',
+  edit: 'עריכה',
+  editTitle: 'עריכת רכב',
+  editSave: 'שמירה',
+  editSaving: 'שומר',
+  editCancel: 'ביטול',
   remove: 'מחיקה',
 } as const;
 
