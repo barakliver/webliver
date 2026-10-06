@@ -146,14 +146,14 @@ export function MonthGrid({ items, month, today, locale, ui, open = '', switches
           <Link
             href={calendarHref(month, { ...switches, jewish: !switches.jewish }, open || undefined)}
             aria-label={`${switches.jewish ? c.filterHide : c.filterShow} ${c.jewishOn}`}
-            className={`rounded-full border px-3 py-1 transition ${switches.jewish ? 'border-accent bg-accent-wash text-ink' : 'border-line text-ink-soft hover:border-accent/40'}`}
+            className={`inline-flex min-h-[24px] items-center rounded-full border px-3 py-1 transition ${switches.jewish ? 'border-accent bg-accent-wash text-ink' : 'border-line text-ink-soft hover:border-accent/40'}`}
           >
             {c.jewishOn}
           </Link>
           <Link
             href={calendarHref(month, { ...switches, christian: !switches.christian }, open || undefined)}
             aria-label={`${switches.christian ? c.filterHide : c.filterShow} ${c.christianOn}`}
-            className={`rounded-full border px-3 py-1 transition ${switches.christian ? 'border-accent bg-accent-wash text-ink' : 'border-line text-ink-soft hover:border-accent/40'}`}
+            className={`inline-flex min-h-[24px] items-center rounded-full border px-3 py-1 transition ${switches.christian ? 'border-accent bg-accent-wash text-ink' : 'border-line text-ink-soft hover:border-accent/40'}`}
           >
             {c.christianOn}
           </Link>
@@ -242,7 +242,7 @@ export function MonthGrid({ items, month, today, locale, ui, open = '', switches
                         href={calendarHref(month, switches, day)}
                         scroll={false}
                         aria-label={`${c.day.add}: ${day}`}
-                        className="mb-1 flex items-center justify-between rounded px-0.5 text-meta tabular-nums transition hover:bg-surface-200"
+                        className="mb-1 flex min-h-[24px] items-center justify-between rounded px-0.5 text-meta tabular-nums transition hover:bg-surface-200"
                       >
                         <span className={isToday
                           ? 'grid size-6 place-items-center rounded-full bg-accent font-semibold text-surface'
@@ -271,6 +271,17 @@ export function MonthGrid({ items, month, today, locale, ui, open = '', switches
                           ))}
                         </p>
                       )}
+                      {/* These stay small deliberately, and that is allowed
+                          rather than overlooked. A month grid whose every
+                          chip was 24px tall would hold one event per cell,
+                          which is not a month grid. WCAG 2.2's target-size
+                          rule exempts an undersized control when the same
+                          function is available through one that meets the
+                          size — and it is: the day number above is the door,
+                          it is 24px now, and the drawer it opens lists every
+                          one of these at px-3 py-2.5. The exception is only
+                          true while that stays true, so the number and the
+                          drawer are load-bearing for this. */}
                       <ul className="hidden space-y-0.5 sm:block">
                         {dayItems.slice(0, SHOW).map((it) => (
                           <li key={it.id}>
