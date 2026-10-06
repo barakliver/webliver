@@ -61,6 +61,44 @@ export async function setTableSeats(_prev: SeatResult | null, form: FormData): P
   return { ok: true };
 }
 
+/**
+ * Renaming a table.
+ *
+ * The seats could be changed from the first day and the name could not, and
+ * the name is the half somebody reads out loud. "שולחן משפחת כהן" typed as
+ * somebody else's family, or table 7 that turned out to be table 8 when the
+ * hall sent its floor plan — the only way to fix either was to delete the
+ * table, and deleting a table unseats everybody at it. The schema does that
+ * on purpose, so nobody vanishes with the table; the cost is that correcting
+ * a word scattered an arrangement somebody spent an evening on.
+ *
+ * `seats` is absent here and the name is absent from `setTableSeats`, so the
+ * two controls cannot overwrite each other with a stale value: the seats box
+ * is a number typed next to a table whose name may have changed in another
+ * tab, and the other way round.
+ */
+export async function renameTable(_prev: SeatResult | null, form: FormData): Promise<SeatResult> {
+  const id = String(form.get('table_id') ?? '');
+  const clientId = String(form.get('client_id') ?? '');
+  const name = String(form.get('name') ?? '').trim();
+
+  if (!id) return { ok: false, error: 'חסר מזהה שולחן' };
+  if (name.length < 1) return { ok: false, error: 'נא לתת שם לשולחן' };
+
+  const sb = await supabaseServer();
+  const { data, error } = await sb.from('tables_seating')
+    .update({ name: name.slice(0, 80) })
+    .eq('id', id)
+    .select('id');
+
+  if (error) return { ok: false, error: readable(error.message) };
+  /* A rename that matched no row must not report success. */
+  if (!data || data.length === 0) return { ok: false, error: 'השולחן לא נמצא' };
+
+  touch(clientId);
+  return { ok: true };
+}
+
 /** Removing a table leaves its guests unseated rather than deleting them:
  *  the schema sets table_id to null on delete, so nobody vanishes with it. */
 export async function deleteTable(form: FormData): Promise<void> {

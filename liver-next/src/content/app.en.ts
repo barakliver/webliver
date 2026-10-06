@@ -570,6 +570,10 @@ export const seatingEn: SeatingCopy = {
   floor: 'Floor plan',
   floorSub: 'Every circle is a table and every dot around it is a chair. A taken chair is a filled dot.',
   openTable: 'Open the table',
+  rename: 'Rename',
+  renameSave: 'Save',
+  renameSaving: 'Saving',
+  renameCancel: 'Cancel',
   seatFree: 'Free chair',
 };
 

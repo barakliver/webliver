@@ -1,9 +1,11 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useState } from 'react';
 import { useFormStatus } from 'react-dom';
-import { addTable, setTableSeats, deleteTable, seatGuest, type SeatResult } from '@/app/actions/seating';
+import { Pencil } from 'lucide-react';
+import { addTable, setTableSeats, deleteTable, renameTable, seatGuest, type SeatResult } from '@/app/actions/seating';
 import { useCopy } from '@/components/app/CopyProvider';
+import type { SeatingCopy } from '@/content/appUi';
 import { Ratio } from '@/components/Ltr';
 import { useDragOnto, Grip, Carried } from '@/components/app/DragOnto';
 import { DeleteForm } from '@/components/app/ConfirmDelete';
@@ -300,7 +302,7 @@ export function SeatingPlan({ clientId, tables, guests }: {
                 }`}
               >
                 <div className="flex items-start justify-between gap-2">
-                  <h3 className="font-display text-head font-semibold text-ink">{t.name}</h3>
+                  <RenameTable c={c} clientId={clientId} id={t.id} name={t.name} />
                   <span className={`rounded-xl2 px-2.5 py-0.5 text-meta ${
                     free === 0 ? 'bg-ok-wash text-ok' : 'bg-surface-200 text-ink-mute'
                   }`}>
@@ -364,5 +366,76 @@ export function SeatingPlan({ clientId, tables, guests }: {
         {dragging?.full_name}
       </Carried>
     </section>
+  );
+}
+
+function RenameSave({ c }: { c: SeatingCopy }) {
+  const { pending } = useFormStatus();
+  return (
+    <button type="submit" disabled={pending} className="btn-primary px-2 py-1 text-meta">
+      {pending ? c.renameSaving : c.renameSave}
+    </button>
+  );
+}
+
+/**
+ * The table's name, and the form that fixes it.
+ *
+ * The seats could be changed from the first day and the name could not, and
+ * the name is the half somebody reads out loud. Table 7 that turns out to be
+ * table 8 when the hall sends its floor plan, or a family's name spelled from
+ * memory: the only way to fix either was to delete the table, and deleting a
+ * table unseats everybody at it. That is right — nobody should vanish with a
+ * table — but it meant correcting a word scattered an arrangement somebody
+ * spent an evening on.
+ */
+function RenameTable({ c, clientId, id, name }: {
+  c: SeatingCopy; clientId: string; id: string; name: string;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [state, action] = useActionState<SeatResult | null, FormData>(
+    async (prev, form) => {
+      const r = await renameTable(prev, form);
+      if (r.ok) setEditing(false);
+      return r;
+    },
+    null,
+  );
+
+  if (!editing) {
+    return (
+      <div className="flex min-w-0 items-start gap-1">
+        <h3 className="font-display text-head font-semibold text-ink">{name}</h3>
+        <button
+          type="button"
+          onClick={() => setEditing(true)}
+          aria-label={c.rename}
+          title={c.rename}
+          className="mt-0.5 grid size-7 shrink-0 place-items-center rounded-control text-ink-mute transition hover:bg-surface-200 hover:text-ink"
+        >
+          <Pencil size={13} strokeWidth={1.5} aria-hidden />
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <form action={action} className="min-w-0 flex-1">
+      <input type="hidden" name="table_id" value={id} />
+      <input type="hidden" name="client_id" value={clientId} />
+      <input
+        name="name" required maxLength={80} defaultValue={name} autoFocus
+        aria-label={c.tableName} className="field w-full py-1 text-body"
+      />
+      <div className="mt-2 flex items-center gap-2">
+        <RenameSave c={c} />
+        <button type="button" onClick={() => setEditing(false)} className="btn-quiet px-2 py-1 text-meta">
+          {c.renameCancel}
+        </button>
+      </div>
+      {state?.ok === false && state.error && (
+        <p role="alert" className="mt-2 text-meta text-bad">{state.error}</p>
+      )}
+    </form>
   );
 }
