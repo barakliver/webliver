@@ -754,6 +754,10 @@ export const prepCopyEn: PrepCopy = {
   photo: 'Photograph',
   add: 'Add',
   adding: 'Adding',
+  edit: 'Edit',
+  editSave: 'Save',
+  editSaving: 'Saving',
+  editCancel: 'Cancel',
   remove: 'Remove',
 
   looksTitle: 'Hair, makeup and outfit references',

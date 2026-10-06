@@ -1,9 +1,10 @@
 'use client';
 
 import { useActionState, useEffect, useRef, useState } from 'react';
-import { Camera, Loader2, Plus, Scissors, Share2, Trash2, X } from 'lucide-react';
+import { useFormStatus } from 'react-dom';
+import { Camera, Loader2, Pencil, Plus, Scissors, Share2, Trash2, X } from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase/client';
-import { addVip, removeVip, addLook, removeLook, mintShare, revokeShare, type PrepResult } from '@/app/actions/prep';
+import { addVip, removeVip, updateVip, addLook, removeLook, updateLook, mintShare, revokeShare, type PrepResult } from '@/app/actions/prep';
 import { DeleteForm } from '@/components/app/ConfirmDelete';
 
 /**
@@ -46,6 +47,7 @@ export type PrepCopy = {
   facesTitle: string; facesSub: string; facesEmpty: string;
   name: string; relation: string; relationPh: string; note: string; notePh: string;
   photo: string; add: string; adding: string; remove: string;
+  edit: string; editSave: string; editSaving: string; editCancel: string;
   looksTitle: string; looksSub: string; looksEmpty: string; kind: string;
   categories: { hair: string; makeup: string; outfit: string; other: string };
   shareTitle: string; shareSub: string; shareAll: string; shareFaces: string; shareLooks: string;
@@ -171,27 +173,7 @@ function Faces({ c, clientId, vips }: { c: PrepCopy; clientId: string; vips: Vip
       ) : (
         <ul className="mt-4 grid list-none gap-3 p-0 sm:grid-cols-2 lg:grid-cols-3">
           {vips.map((v) => (
-            <li key={v.id} className="flex items-start gap-3 rounded-xl2 border border-line p-3">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              {v.url
-                ? <img src={v.url} alt={v.name} className="size-16 shrink-0 rounded-xl2 object-cover" />
-                : <span aria-hidden className="grid size-16 shrink-0 place-items-center rounded-xl2 bg-surface-200 text-ink-mute">
-                    <Camera size={18} strokeWidth={1.5} />
-                  </span>}
-              <div className="min-w-0 flex-1">
-                <p className="text-lead font-medium text-ink">{v.name}</p>
-                {v.relation && <p className="text-body text-ink-soft">{v.relation}</p>}
-                {v.note && <p className="mt-0.5 text-meta leading-snug text-ink-mute">{v.note}</p>}
-              </div>
-              <DeleteForm action={removeVip}>
-                <input type="hidden" name="id" value={v.id} />
-                <input type="hidden" name="client_id" value={clientId} />
-                <button type="submit" aria-label={c.remove}
-                  className="rounded-xl2 p-1.5 text-ink-mute transition hover:bg-bad-wash hover:text-bad">
-                  <Trash2 size={15} strokeWidth={1.5} aria-hidden />
-                </button>
-              </DeleteForm>
-            </li>
+            <VipCard key={v.id} c={c} clientId={clientId} v={v} />
           ))}
         </ul>
       )}
@@ -251,19 +233,7 @@ function Looks({ c, clientId, looks }: { c: PrepCopy; clientId: string; looks: L
                 rather than as one picture. */}
             <ul className="mt-2 grid list-none gap-2 p-0 grid-cols-3 sm:grid-cols-5 lg:grid-cols-7">
               {looks.filter((l) => l.category === cat).map((l) => (
-                <li key={l.id} className="group relative overflow-hidden rounded-xl2 border border-line">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  {l.url && <img src={l.url} alt={l.note || c.categories[cat]} className="aspect-square w-full object-cover" />}
-                  {l.note && <p className="px-1.5 py-1 text-micro leading-snug text-ink-soft">{l.note}</p>}
-                  <DeleteForm action={removeLook} className="absolute end-1.5 top-1.5">
-                    <input type="hidden" name="id" value={l.id} />
-                    <input type="hidden" name="client_id" value={clientId} />
-                    <button type="submit" aria-label={c.remove}
-                      className="grid size-6 place-items-center rounded-full bg-surface/85 text-ink-mute transition hover:text-bad">
-                      <X size={12} strokeWidth={1.5} aria-hidden />
-                    </button>
-                  </DeleteForm>
-                </li>
+                <LookTile key={l.id} c={c} clientId={clientId} l={l} cat={cat} />
               ))}
             </ul>
           </div>
@@ -433,4 +403,174 @@ function Submit({ c, pending, disabled = false }: { c: PrepCopy; pending: boolea
 
 function Err({ text }: { text: string }) {
   return <p role="status" className="mt-2 text-body text-bad">{text}</p>;
+}
+
+function SaveEdit({ c }: { c: PrepCopy }) {
+  const { pending } = useFormStatus();
+  return (
+    <button type="submit" disabled={pending} className="btn-primary px-3 py-1 text-body">
+      {pending ? c.editSaving : c.editSave}
+    </button>
+  );
+}
+
+/**
+ * One face, and the form that corrects the words beside it.
+ *
+ * Deleting a VIP takes the photograph out of storage with the row, which is
+ * right — but it meant that fixing a spelling cost a picture somebody had
+ * scrolled back through a phone to find. So the spelling stayed wrong and the
+ * photographer got a roster with the wrong name under the right face.
+ */
+function VipCard({ c, clientId, v }: { c: PrepCopy; clientId: string; v: Vip }) {
+  const [editing, setEditing] = useState(false);
+  const [state, action] = useActionState<PrepResult | null, FormData>(
+    async (prev, form) => {
+      const r = await updateVip(prev, form);
+      if (r.ok) setEditing(false);
+      return r;
+    },
+    null,
+  );
+
+  return (
+    <li className="flex flex-wrap items-start gap-3 rounded-card-sm border border-line p-3">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      {v.url
+        ? <img src={v.url} alt={v.name} className="size-16 shrink-0 rounded-card-sm object-cover" />
+        : <span aria-hidden className="grid size-16 shrink-0 place-items-center rounded-card-sm bg-surface-200 text-ink-mute">
+            <Camera size={18} strokeWidth={1.5} />
+          </span>}
+
+      {editing ? (
+        <form action={action} className="min-w-0 flex-1">
+          <input type="hidden" name="id" value={v.id} />
+          <input type="hidden" name="client_id" value={clientId} />
+          <label className="block">
+            <span className="label">{c.name}</span>
+            <input name="name" required maxLength={80} defaultValue={v.name} className="field mt-1 w-full" />
+          </label>
+          <label className="mt-2 block">
+            <span className="label">{c.relation}</span>
+            <input name="relation" maxLength={60} defaultValue={v.relation ?? ''} className="field mt-1 w-full" />
+          </label>
+          <label className="mt-2 block">
+            <span className="label">{c.note}</span>
+            <input name="note" maxLength={400} defaultValue={v.note ?? ''} className="field mt-1 w-full" />
+          </label>
+          <div className="mt-2 flex items-center gap-2">
+            <SaveEdit c={c} />
+            <button type="button" onClick={() => setEditing(false)} className="btn-quiet px-2 py-1 text-body">
+              {c.editCancel}
+            </button>
+          </div>
+          {state?.ok === false && state.error && <Err text={state.error} />}
+        </form>
+      ) : (
+        <div className="min-w-0 flex-1">
+          <p className="text-lead font-medium text-ink">{v.name}</p>
+          {v.relation && <p className="text-body text-ink-soft">{v.relation}</p>}
+          {v.note && <p className="mt-0.5 text-meta leading-snug text-ink-mute">{v.note}</p>}
+        </div>
+      )}
+
+      <div className="flex shrink-0 items-start gap-0.5">
+        <button
+          type="button"
+          onClick={() => setEditing((o) => !o)}
+          aria-expanded={editing}
+          aria-label={c.edit}
+          title={c.edit}
+          className="rounded-control p-1.5 text-ink-mute transition hover:bg-surface-200 hover:text-ink"
+        >
+          <Pencil size={15} strokeWidth={1.5} aria-hidden />
+        </button>
+        <DeleteForm action={removeVip}>
+          <input type="hidden" name="id" value={v.id} />
+          <input type="hidden" name="client_id" value={clientId} />
+          <button type="submit" aria-label={c.remove}
+            className="rounded-control p-1.5 text-ink-mute transition hover:bg-bad-wash hover:text-bad">
+            <Trash2 size={15} strokeWidth={1.5} aria-hidden />
+          </button>
+        </DeleteForm>
+      </div>
+    </li>
+  );
+}
+
+/**
+ * One reference picture, and the form that refiles it.
+ *
+ * The category is the field that matters. This panel's whole argument is
+ * that a stylist opens it looking for one of three and should not scroll
+ * past the other two, and a picture filed under the wrong heading defeats
+ * that quietly — and the wrong heading is the one that happens by not
+ * choosing, because the add form's select opens on `hair`.
+ */
+function LookTile({ c, clientId, l, cat }: {
+  c: PrepCopy; clientId: string; l: Look; cat: Look['category'];
+}) {
+  const [editing, setEditing] = useState(false);
+  const [state, action] = useActionState<PrepResult | null, FormData>(
+    async (prev, form) => {
+      const r = await updateLook(prev, form);
+      if (r.ok) setEditing(false);
+      return r;
+    },
+    null,
+  );
+
+  return (
+    <li className="group relative overflow-hidden rounded-card-sm border border-line">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      {l.url && <img src={l.url} alt={l.note || c.categories[cat]} className="aspect-square w-full object-cover" />}
+
+      {editing ? (
+        <form action={action} className="p-1.5">
+          <input type="hidden" name="id" value={l.id} />
+          <input type="hidden" name="client_id" value={clientId} />
+          <label className="block">
+            <span className="sr-only">{c.kind}</span>
+            <select name="category" defaultValue={l.category} className="field w-full text-micro">
+              {ORDER.map((k) => <option key={k} value={k}>{c.categories[k]}</option>)}
+            </select>
+          </label>
+          <label className="mt-1 block">
+            <span className="sr-only">{c.note}</span>
+            <input name="note" maxLength={400} defaultValue={l.note ?? ''} placeholder={c.note} className="field w-full text-micro" />
+          </label>
+          <div className="mt-1 flex items-center gap-1">
+            <SaveEdit c={c} />
+            <button type="button" onClick={() => setEditing(false)} className="btn-quiet px-1.5 py-1 text-micro">
+              {c.editCancel}
+            </button>
+          </div>
+          {state?.ok === false && state.error && <Err text={state.error} />}
+        </form>
+      ) : (
+        l.note && <p className="px-1.5 py-1 text-micro leading-snug text-ink-soft">{l.note}</p>
+      )}
+
+      <div className="absolute end-1.5 top-1.5 flex gap-1">
+        <button
+          type="button"
+          onClick={() => setEditing((o) => !o)}
+          aria-expanded={editing}
+          aria-label={c.edit}
+          title={c.edit}
+          className="grid size-6 place-items-center rounded-full bg-surface/85 text-ink-mute transition hover:text-ink"
+        >
+          <Pencil size={12} strokeWidth={1.5} aria-hidden />
+        </button>
+        <DeleteForm action={removeLook}>
+          <input type="hidden" name="id" value={l.id} />
+          <input type="hidden" name="client_id" value={clientId} />
+          <button type="submit" aria-label={c.remove}
+            className="grid size-6 place-items-center rounded-full bg-surface/85 text-ink-mute transition hover:text-bad">
+            <X size={12} strokeWidth={1.5} aria-hidden />
+          </button>
+        </DeleteForm>
+      </div>
+    </li>
+  );
 }

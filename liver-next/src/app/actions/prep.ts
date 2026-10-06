@@ -83,6 +83,53 @@ export async function addVip(_prev: PrepResult | null, form: FormData): Promise<
   return { ok: true };
 }
 
+/**
+ * Correcting a face.
+ *
+ * This is the sharpest of the panels that could add and delete and nothing
+ * else, because here the delete destroys something nobody can retype. A VIP
+ * row carries a photograph that somebody went and found — scrolled back
+ * through a phone, cropped, uploaded — and `removeVip` takes the picture out
+ * of storage with the row, correctly, because a photograph of somebody's
+ * grandmother that survives its own deletion is not a thing this product gets
+ * to be casual about. The consequence was that fixing a spelling cost the
+ * photograph, so the spelling stayed wrong and the photographer was handed a
+ * roster with the wrong name under the right face.
+ *
+ * `photo_url` is not written here. Replacing the picture means uploading one
+ * and removing the other, which is the add and the delete doing their jobs;
+ * what was missing is that correcting the words should not touch it at all.
+ */
+export async function updateVip(_prev: PrepResult | null, form: FormData): Promise<PrepResult> {
+  const id = String(form.get('id') ?? '');
+  const clientId = String(form.get('client_id') ?? '');
+  const name = String(form.get('name') ?? '').trim();
+  const relation = String(form.get('relation') ?? '').trim();
+  const note = String(form.get('note') ?? '').trim();
+
+  if (!id || !clientId) return { ok: false, error: MISSING };
+  if (name.length < 1) return { ok: false, error: 'נא לכתוב שם' };
+
+  const account = await currentAccount();
+  if (!account) return { ok: false, error: NO_SESSION };
+
+  const sb = await supabaseServer();
+  const { data, error } = await sb.from('event_vips')
+    /* `photo_url` and `sort` are absent on purpose. */
+    .update({ name: name.slice(0, 80), relation: relation.slice(0, 60), note: note.slice(0, 400) })
+    .eq('id', id).eq('client_id', clientId)
+    .select('id');
+
+  if (error) {
+    console.error('[prep] vip update failed', error);
+    return { ok: false, error: FAILED };
+  }
+  if (!data || data.length === 0) return { ok: false, error: FAILED };
+
+  touch(clientId);
+  return { ok: true };
+}
+
 export async function removeVip(form: FormData): Promise<void> {
   const id = String(form.get('id') ?? '');
   const clientId = String(form.get('client_id') ?? '');
@@ -126,6 +173,47 @@ export async function addLook(_prev: PrepResult | null, form: FormData): Promise
     if (image) await sb.storage.from('files').remove([image]);
     return { ok: false, error: FAILED };
   }
+
+  touch(clientId);
+  return { ok: true };
+}
+
+/**
+ * Correcting a reference picture.
+ *
+ * Which of the three it belongs under, and the line of text beside it. The
+ * category is the one that matters: this panel's whole argument is that a
+ * stylist opens it looking for one of three and should not scroll past the
+ * other two, and a picture filed under the wrong heading quietly defeats
+ * that. It was picked from a select whose default is `hair`, so the wrong
+ * answer is the one that happens by not choosing.
+ *
+ * `image_url` is not written here. The picture is the row; a different
+ * picture is a different row.
+ */
+export async function updateLook(_prev: PrepResult | null, form: FormData): Promise<PrepResult> {
+  const id = String(form.get('id') ?? '');
+  const clientId = String(form.get('client_id') ?? '');
+  const raw = String(form.get('category') ?? '');
+  const category: Look = (LOOKS as readonly string[]).includes(raw) ? (raw as Look) : 'other';
+  const note = String(form.get('note') ?? '').trim();
+
+  if (!id || !clientId) return { ok: false, error: MISSING };
+
+  const account = await currentAccount();
+  if (!account) return { ok: false, error: NO_SESSION };
+
+  const sb = await supabaseServer();
+  const { data, error } = await sb.from('event_looks')
+    .update({ category, note: note.slice(0, 400) })
+    .eq('id', id).eq('client_id', clientId)
+    .select('id');
+
+  if (error) {
+    console.error('[prep] look update failed', error);
+    return { ok: false, error: FAILED };
+  }
+  if (!data || data.length === 0) return { ok: false, error: FAILED };
 
   touch(clientId);
   return { ok: true };

@@ -3200,6 +3200,10 @@ export const prepCopy = {
   photo: 'תמונה',
   add: 'הוספה',
   adding: 'מוסיף',
+  edit: 'עריכה',
+  editSave: 'שמירה',
+  editSaving: 'שומר',
+  editCancel: 'ביטול',
   remove: 'מחיקה',
 
   looksTitle: 'השראה לשיער, איפור ולבוש',
