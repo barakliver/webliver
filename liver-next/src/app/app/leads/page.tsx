@@ -27,7 +27,7 @@ export default async function LeadsPage() {
   const channels = await loadLabels(sb, 'lead_channel');
   const [{ data: leads }, { data: calls }, { data: feeds }] = await Promise.all([
     sb.from('leads')
-      .select('id,full_name,email,phone,kind,event_date,guest_count,message,note,status,source,created_at,location')
+      .select('id,full_name,email,phone,kind,event_date,guest_count,message,note,status,source,created_at,location,marketing_consent,marketing_consent_at')
       .order('created_at', { ascending: false }).limit(200),
     sb.from('sales_calls').select('id,lead_id,title,remind_on,done')
       .order('remind_on', { ascending: true, nullsFirst: false }),

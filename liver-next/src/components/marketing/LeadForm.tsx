@@ -94,6 +94,23 @@ export function LeadForm({ compact = false, site, kinds }: {
         <textarea id="lf-msg" name="message" rows={3} className="field resize-y" />
       </div>
 
+      {/* Never checked by default, and separate from the enquiry itself.
+          Section 30א puts the burden of proving consent on whoever sent the
+          message, and a box that arrives already ticked proves nothing: the
+          person did not do anything. The page it was ticked on travels with
+          it, because "the form on the Tel Aviv page, on 6 October" is the
+          sentence that answers a complaint and "true" is not. */}
+      <label className="flex cursor-pointer items-start gap-3 rounded-card-sm border border-line bg-surface-100 p-3.5">
+        <input
+          type="checkbox" name="marketing_consent" value="on"
+          className="mt-0.5 size-4 shrink-0"
+        />
+        <span className="min-w-0">
+          <span className="block text-body text-ink">{site.lead.marketing}</span>
+          <span className="mt-0.5 block text-meta leading-snug text-ink-mute">{site.lead.marketingHint}</span>
+        </span>
+      </label>
+
       <Submit label={site.lead.submit} busy={site.lead.sending} />
     </form>
   );

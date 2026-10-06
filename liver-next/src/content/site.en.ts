@@ -169,6 +169,14 @@ export const siteEn: SiteCopy = {
     sending: 'Sending',
     okTitle: 'Thank you, we have it',
     okBody: 'Your details have been received. We usually come back within one business day.',
+    marketing: 'I would like updates, tips and offers by email',
+    marketingHint: 'Optional, and nothing to do with this enquiry. We come back to you either way, and one press in any email takes you off the list.',
+  },
+
+  unsubscribe: {
+    title: 'You are off the list',
+    body: 'No more marketing emails will be sent to you. If you have an event open with us, messages that belong to the event itself still arrive.',
+    note: 'Pressed by mistake? You can leave your details again on any page of the site.',
   },
 
   fab: {

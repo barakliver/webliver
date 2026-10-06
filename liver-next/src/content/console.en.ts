@@ -94,7 +94,7 @@ export const consoleEn: ConsoleCopy = {
       won: 'Closed',
     },
 
-    sources: {
+  sources: {
       title: 'Where the work comes from',
       sub: 'A channel with one closed enquiry is one enquiry, not a hundred percent.',
       source: 'Channel',
@@ -811,6 +811,8 @@ export const leadEn: LeadCopy = {
   addNeedContact: 'A phone or an email is needed',
   addNeedName: 'Please enter a name',
   addFailed: 'Could not save the enquiry',
+
+  marketingOk: 'Agreed to email',
 
   sources: {
     site: 'From the site',

@@ -4,7 +4,7 @@ import { useActionState, useState } from 'react';
 import { eventKindsFor } from '@/content/ui';
 import type { Locale } from '@/lib/locale';
 import { formatDate } from '@/lib/dates';
-import { MapPin } from 'lucide-react';
+import { MapPin, MailCheck } from 'lucide-react';
 import { useFormStatus } from 'react-dom';
 import { setLeadStatus, setLeadNote, bookCall, convertLead, type LeadActionResult } from '@/app/actions/leads';
 import { type leadsCopy } from '@/content/site';
@@ -19,6 +19,12 @@ export type Lead = {
   status: keyof typeof leadsCopy.statuses; created_at: string;
   source: string;
   location?: string;
+  /* Whether they agreed to be written to, and when. Shown rather than
+     stored quietly: the person who has to answer a complaint is the one
+     reading this screen, and consent nobody can see is consent nobody can
+     check before pressing send. */
+  marketing_consent?: boolean;
+  marketing_consent_at?: string | null;
 };
 export type Call = { id: string; lead_id: string | null; title: string; remind_on: string | null; done: boolean };
 
@@ -72,6 +78,13 @@ export function LeadRow({ lead, calls }: { lead: Lead; calls: Call[] }) {
             {lead.guest_count ? ` · ${lead.guest_count}` : ''}
             {lead.source ? ` · ${sourceLabel(c, lead.source)}` : ''}
           </p>
+          {lead.marketing_consent && (
+            <p className="mt-1 inline-flex items-center gap-1 text-meta text-ok">
+              <MailCheck size={13} strokeWidth={1.5} aria-hidden />
+              {c.marketingOk}
+              {lead.marketing_consent_at ? ` · ${show(locale, lead.marketing_consent_at.slice(0, 10))}` : ''}
+            </p>
+          )}
           {/* Where, on its own line and in ink: it is the first thing the
               producer looks for, and it decides whether to pick up the phone. */}
           {lead.location && (

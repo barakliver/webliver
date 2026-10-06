@@ -56,7 +56,13 @@ export type SiteCopy = {
     /* Six labels, in the reader's language, for the six regions in REGIONS. */
     regions: readonly [string, string, string, string, string, string];
     submit: string; sending: string; okTitle: string; okBody: string;
+    /* The tick box, which is never ticked for somebody. Section 30א puts the
+       burden of showing consent on whoever sent the message, so the words
+       have to say what is being agreed to rather than hint at it. */
+    marketing: string; marketingHint: string;
   };
+  /* The page at the end of the link in every marketing email. */
+  unsubscribe: { title: string; body: string; note: string };
   fab: { whatsapp: string; booking: string; bookingNote: string; lead: string; whatsappMessage: string };
   nav: { philosophy: string; journey: string; about: string; budget: string; shop: string; contact: string; login: string };
   footer: string;
@@ -235,6 +241,14 @@ export const site: SiteCopy = {
     sending: 'שולח',
     okTitle: 'תודה, קיבלנו',
     okBody: 'הפרטים התקבלו. נשוב אליכם בדרך כלל בתוך יום עסקים.',
+    marketing: 'אשמח לקבל עדכונים, טיפים ומבצעים במייל',
+    marketingHint: 'לא חובה, ולא קשור לפנייה הזאת. נחזור אליכם בכל מקרה, ואפשר להסיר את עצמכם בלחיצה אחת מכל מייל.',
+  },
+
+  unsubscribe: {
+    title: 'הוסרתם מרשימת התפוצה',
+    body: 'לא יישלחו אליכם עוד מיילים שיווקיים. אם יש אירוע פתוח מולנו, הודעות ששייכות לאירוע עצמו ימשיכו להגיע.',
+    note: 'נשלח בטעות? אפשר להשאיר פרטים שוב בכל עמוד באתר.',
   },
 
   fab: {
@@ -2423,6 +2437,7 @@ export const leadsCopy = {
   /* Where a lead came from, in the words a producer would use. Anything that
      arrives from a source nobody named yet is shown as it was stored rather
      than hidden, so a new channel is visible the day it starts working. */
+  marketingOk: 'אישר/ה דיוור',
   sources: {
     site: 'מהאתר',
     phone: 'שיחת טלפון',

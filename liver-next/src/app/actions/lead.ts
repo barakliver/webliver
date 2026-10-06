@@ -9,6 +9,7 @@ import { optional } from '@/lib/env';
 import { MIN_EVENT_DATE, MAX_GUESTS } from '@/content/site';
 import { shippedCopy } from '@/lib/siteCopy';
 import { currentLocale } from '@/lib/serverLocale';
+import { headers } from 'next/headers';
 
 export type LeadResult =
   | { ok: true }
@@ -39,6 +40,19 @@ export async function submitLead(_prev: LeadResult | null, form: FormData): Prom
     message: v('message'),
     location: v('location').slice(0, 120),
   };
+
+  /* The tick, and where it was ticked. The moment is written by the
+     database rather than sent from here, because a caller that could choose
+     the timestamp could choose any timestamp, and the timestamp is the
+     evidence. */
+  const consent = v('marketing_consent') === 'on';
+  let consentSource = '';
+  if (consent) {
+    const h = await headers();
+    const host = h.get('host') ?? '';
+    const from = h.get('referer') ?? '';
+    consentSource = `${host}${from ? ` ${from}` : ''}`.slice(0, 200);
+  }
 
   if (payload.full_name.length < 2) return { ok: false, error: say.name, field: 'full_name' };
   /* Both, now, rather than either. One of the two was enough while the form
@@ -82,6 +96,11 @@ export async function submitLead(_prev: LeadResult | null, form: FormData): Prom
       p_guest_count: guests,
       p_message: payload.message,
       p_location: payload.location,
+      /* Unticked unless the person ticked it. Nothing else in this product
+         may set it: a lead arriving through a channel webhook agreed to
+         nothing here, and the column's default says so. */
+      p_marketing_consent: consent,
+      p_consent_source: consent ? consentSource : '',
     });
     if (error) throw new Error(`${error.code ?? ''} ${error.message}`.trim());
   } catch (e) {
