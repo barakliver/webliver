@@ -92,6 +92,73 @@ export async function toggleCircleVote(form: FormData): Promise<void> {
   touch(postId);
 }
 
+/**
+ * Correcting a post, by its author and nobody else.
+ *
+ * Through a function for the same reason the delete is: `select` is revoked
+ * on these tables, so an update cannot ask for RETURNING, and an update the
+ * policy refuses simply matches nothing — which is not an error. Silence and
+ * refusal looked identical, which is how the author's update policy came to
+ * exist in 0078 and never be used by anything.
+ *
+ * Moderation stays removal. A producer may take a post out of their own
+ * circle and may not rewrite what it says under somebody else's name.
+ *
+ * The edit is stamped and the stamp is shown. This is the one panel that
+ * gained an edit this week where the record is not private: a post is read
+ * by strangers and answered underneath it, and a silent rewrite leaves four
+ * replies answering a question that is no longer on the screen, which makes
+ * the people who replied look careless.
+ */
+export async function editCirclePost(_prev: CircleResult | null, form: FormData): Promise<CircleResult> {
+  const account = await currentAccount();
+  if (!account) return { ok: false, error: 'צריך להתחבר' };
+
+  const id = String(form.get('id') ?? '');
+  const title = String(form.get('title') ?? '').trim().slice(0, 140);
+  const content = String(form.get('content') ?? '').trim().slice(0, 6000);
+  const categoryRaw = String(form.get('category') ?? '');
+
+  if (!id) return { ok: false, error: 'חסר מזהה' };
+  if (title.length < 2) return { ok: false, error: 'חסרה כותרת' };
+  if (content.length < 2) return { ok: false, error: 'חסר תוכן' };
+
+  const sb = await supabaseServer();
+  const { data, error } = await sb.rpc('circle_edit_post', {
+    p_post: id, p_title: title, p_content: content,
+    p_category: isCategory(categoryRaw) ? categoryRaw : '',
+  });
+  if (error) {
+    console.error('[circle] edit failed', error);
+    return { ok: false, error: 'לא הצלחנו לשמור. אפשר לנסות שוב.' };
+  }
+  if (data !== true) return { ok: false, error: 'הפוסט לא עודכן. אפשר לערוך פוסט שכתבתם.' };
+
+  touch(id);
+  return { ok: true };
+}
+
+export async function editCircleReply(_prev: CircleResult | null, form: FormData): Promise<CircleResult> {
+  const account = await currentAccount();
+  if (!account) return { ok: false, error: 'צריך להתחבר' };
+
+  const id = String(form.get('id') ?? '');
+  const postId = String(form.get('post_id') ?? '');
+  const content = String(form.get('content') ?? '').trim().slice(0, 4000);
+  if (!id || !content) return { ok: false, error: 'אין מה לשמור' };
+
+  const sb = await supabaseServer();
+  const { data, error } = await sb.rpc('circle_edit_comment', { p_comment: id, p_content: content });
+  if (error) {
+    console.error('[circle] reply edit failed', error);
+    return { ok: false, error: 'לא הצלחנו לשמור. אפשר לנסות שוב.' };
+  }
+  if (data !== true) return { ok: false, error: 'התשובה לא עודכנה. אפשר לערוך תשובה שכתבתם.' };
+
+  touch(postId);
+  return { ok: true };
+}
+
 /** Through the database's own function, which checks, deletes and answers.
  *  A plain delete could do neither half of that here: select is revoked on
  *  these tables so it cannot return the row, and a delete the policy

@@ -67,11 +67,15 @@ export type CirclePost = {
   id: string; category: string; title: string; content: string; upvotes: number;
   created_at: string; is_anonymous: boolean; is_producer: boolean;
   author_name: string; months_out: number | null; mine: boolean; voted: boolean; replies: number;
+  /** When the author last corrected it. Null means never, which is why it is
+   *  nullable rather than defaulting to the creation time. */
+  edited_at: string | null;
 };
 
 export type CircleReply = {
   id: string; content: string; created_at: string;
   is_anonymous: boolean; is_producer: boolean; author_name: string; months_out: number | null; mine: boolean;
+  edited_at: string | null;
 };
 
 export async function loadFeed(sb: SupabaseClient, producerId: string, category = ''): Promise<CirclePost[]> {

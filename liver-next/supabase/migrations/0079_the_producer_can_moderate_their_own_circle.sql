@@ -96,6 +96,14 @@ create policy forum_comments_own_delete on public.forum_comments for delete
 -- ── one post, opened directly ───────────────────────────────────────────────
 --  The same columns forum_feed emits, for one id, so the thread screen and
 --  the feed cannot disagree about what a post says or about who wrote it.
+/* Dropped before it is written, and this line is load-bearing. These files
+   are replayed in full on every deploy, and a later migration widens this
+   reader's return table — so on the second replay `create or replace` here
+   meets a function with a different shape and fails with "cannot change
+   return type", taking the thousands of lines after it down with it. Exactly
+   the shape of the fault that stopped 2.6 and 2.7. A function whose
+   signature may ever move is dropped first. */
+drop function if exists public.forum_post(uuid);
 create or replace function public.forum_post(p_post uuid)
 returns table (
   id uuid, category text, title text, content text, upvotes integer,

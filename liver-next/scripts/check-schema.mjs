@@ -747,6 +747,35 @@ try {
       'a producer removes a post from their own circle, a couple cannot remove somebody else\'s, and one post opens by id',
       `couple:${coupleTriedOther} producer:${producerTook} byId:${byId}`);
 
+    /* 0100: the author corrects their own post and the correction says so;
+       the producer, who may remove it, may not rewrite it. That is the line
+       0079 drew — moderation is removal, not putting words in somebody's
+       mouth under their own name — and it is worth a test because the edit
+       runs through a definer function, where the only thing standing
+       between the two is one `author_id = auth.uid()`. */
+    const authorEdited = asAccount(uidA, mailA,
+      `select public.circle_edit_post('${mineToo}','מהמפיק, מתוקן','שורה אחרת','vendors')::text`);
+    const producerTriedOthers = asAccount(uidA, mailA,
+      `select public.circle_edit_post('${otherPost}','חטיפה','תוכן אחר','general')::text`);
+    const nowSays = ask('one', `select title from public.forum_posts where id='${mineToo}'`);
+    /* Null until edited, and not the creation time: "edited" has to mean
+       edited, or the mark is on every post and says nothing. */
+    const stamped = ask('one',
+      `select (edited_at is not null)::text from public.forum_posts where id='${mineToo}'`);
+    const feedCarries = asAccount(uidA, mailA,
+      `select (edited_at is not null)::text from public.forum_post('${mineToo}')`);
+    /* A title of one character is refused by the function rather than by a
+       constraint, so the screen gets a sentence instead of a Postgres error
+       — and the row is left exactly as it was. */
+    const tooShort = asAccount(uidA, mailA,
+      `select public.circle_edit_post('${mineToo}','x','שורה אחרת','general')::text`);
+    const stillSays = ask('one', `select title from public.forum_posts where id='${mineToo}'`);
+    say(authorEdited === 'true' && producerTriedOthers === 'false'
+        && nowSays === 'מהמפיק, מתוקן' && stamped === 'true' && feedCarries === 'true'
+        && tooShort === 'false' && stillSays === 'מהמפיק, מתוקן',
+      'the author corrects their own post and it says it was edited, and the producer who may remove it may not rewrite it',
+      `author:${authorEdited} producer:${producerTriedOthers} title:${nowSays} stamped:${stamped} reader:${feedCarries} short:${tooShort}`);
+
     /* 0077: the owner sees that Google is connected and whose account,
        through the view, and cannot read the token even from their own row;
        another producer sees no link at all. */

@@ -4474,6 +4474,13 @@ export const circleCopy = {
   all: 'הכל',
   ask: 'לשאול את המעגל',
   asking: 'מפרסם',
+  edit: 'עריכה',
+  editTitle: 'עריכת הפוסט',
+  editReply: 'עריכת התשובה',
+  editSave: 'שמירה',
+  editSaving: 'שומר',
+  editCancel: 'ביטול',
+  edited: 'נערך',
   cancel: 'ביטול',
   form: {
     category: 'לאיזה נושא',

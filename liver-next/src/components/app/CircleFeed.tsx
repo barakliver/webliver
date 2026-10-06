@@ -44,6 +44,15 @@ export function AuthorLine({ post }: {
   );
 }
 
+/** "נערך", said once and quietly, wherever a post or a reply carries a
+ *  stamp. Without it an edit is invisible and the replies underneath are
+ *  answering something nobody can see any more. */
+export function EditedMark({ at }: { at: string | null }) {
+  const c = useCopy().circle;
+  if (!at) return null;
+  return <span className="text-meta text-ink-mute">· {c.edited}</span>;
+}
+
 function PostButton() {
   const c = useCopy().circle;
   const { pending } = useFormStatus();
@@ -155,7 +164,10 @@ export function CircleFeed({ producerId, clientId, posts, category, viewer }: {
             <li key={p.id}>
               <article className="card">
                 <div className="flex flex-wrap items-start justify-between gap-2">
-                  <AuthorLine post={p} />
+                  <span className="inline-flex flex-wrap items-center gap-2">
+                    <AuthorLine post={p} />
+                    <EditedMark at={p.edited_at} />
+                  </span>
                   <span className="text-meta text-ink-mute">
                     <span aria-hidden>{CATEGORY_MARK[p.category as CircleCategory] ?? ''} </span>
                     {c.categories[p.category as CircleCategory] ?? p.category}

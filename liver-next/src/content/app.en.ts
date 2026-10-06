@@ -1368,6 +1368,13 @@ export const circleEn: CircleCopy = {
   all: 'All',
   ask: 'Ask the circle',
   asking: 'Posting',
+  edit: 'Edit',
+  editTitle: 'Edit the post',
+  editReply: 'Edit the reply',
+  editSave: 'Save',
+  editSaving: 'Saving',
+  editCancel: 'Cancel',
+  edited: 'edited',
   cancel: 'Cancel',
   form: {
     category: 'Which topic',

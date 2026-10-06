@@ -254,6 +254,14 @@ create trigger forum_votes_counted after insert or delete on public.forum_votes
 --  the body. An anonymous post emits no author id and no name — only how
 --  many months out its author is, which is the whole point of the label the
 --  screen shows.
+/* Dropped before it is written, and this line is load-bearing. These files
+   are replayed in full on every deploy, and a later migration widens this
+   reader's return table — so on the second replay `create or replace` here
+   meets a function with a different shape and fails with "cannot change
+   return type", taking the thousands of lines after it down with it. Exactly
+   the shape of the fault that stopped 2.6 and 2.7. A function whose
+   signature may ever move is dropped first. */
+drop function if exists public.forum_feed(uuid, text, integer);
 create or replace function public.forum_feed(p_producer uuid, p_category text default '', p_limit integer default 40)
 returns table (
   id uuid, category text, title text, content text, upvotes integer,
@@ -283,6 +291,7 @@ language sql stable security definer set search_path = public as $$
    limit greatest(1, least(coalesce(p_limit, 40), 200))
 $$;
 
+drop function if exists public.forum_thread(uuid);
 create or replace function public.forum_thread(p_post uuid)
 returns table (
   id uuid, content text, created_at timestamptz,
