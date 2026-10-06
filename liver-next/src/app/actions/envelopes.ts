@@ -70,6 +70,56 @@ export async function addEnvelope(_prev: EnvelopeResult | null, form: FormData):
   return { ok: true };
 }
 
+/**
+ * Correcting an envelope.
+ *
+ * The amount in an envelope is agreed late and changes twice before the
+ * night, and the name on it is written from somebody's memory of what the
+ * band is called. Until now the only way to fix either was to delete the row
+ * and write it again — which lost `delivered_at`, the stamp that answers
+ * "when did the photographer get his envelope". That is the one question
+ * this table exists to answer, and the product was asking somebody to
+ * destroy the answer in order to fix a spelling.
+ *
+ * `delivered_at` is absent from this object on purpose. Handing an envelope
+ * over is the button beside this form, and keeping the two apart is the
+ * whole point.
+ */
+export async function updateEnvelope(_prev: EnvelopeResult | null, form: FormData): Promise<EnvelopeResult> {
+  const id = String(form.get('id') ?? '');
+  const clientId = String(form.get('client_id') ?? '');
+  const label = String(form.get('label') ?? '').trim();
+  const recipient = String(form.get('recipient') ?? '').trim();
+  const note = String(form.get('note') ?? '').trim();
+  const amount = money(String(form.get('amount') ?? ''));
+  const cash = String(form.get('cash') ?? 'true') !== 'false';
+
+  if (!id || !clientId) return { ok: false, error: MISSING };
+  if (label.length < 1) return { ok: false, error: 'למי המעטפה?' };
+  if (Number.isNaN(amount)) return { ok: false, error: 'סכום לא תקין' };
+
+  const account = await currentAccount();
+  if (!account) return { ok: false, error: NO_SESSION };
+  const sb = await supabaseServer();
+
+  const { data, error } = await sb.from('event_envelopes')
+    /* `delivered_at` and `sort` are absent on purpose: one is the other
+       button, the other is the order the couple dragged this list into. */
+    .update({ label: label.slice(0, 80), recipient: recipient.slice(0, 80), note: note.slice(0, 400), amount, cash })
+    .eq('id', id).eq('client_id', clientId)
+    .select('id');
+
+  if (error) {
+    console.error('[envelopes] update failed', error);
+    return { ok: false, error: FAILED };
+  }
+  /* "Saved" over an unchanged value is the one outcome worse than failing. */
+  if (!data || data.length === 0) return { ok: false, error: FAILED };
+
+  touch(clientId);
+  return { ok: true };
+}
+
 export async function removeEnvelope(form: FormData): Promise<void> {
   const id = String(form.get('id') ?? '');
   const clientId = String(form.get('client_id') ?? '');
