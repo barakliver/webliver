@@ -135,8 +135,12 @@ function Row({ channel, origin }: { channel: LeadChannel; origin: string }) {
     ? c.kinds[channel.source as keyof typeof c.kinds]
     : channel.source;
 
+  /* A switched-off channel is set back with paper, not with opacity. At 60%
+     every word in the card composited to about 2.5 against white — the label,
+     the address, the buttons, all of it — so the one state a producer most
+     needs to read carefully was the one they could not. */
   return (
-    <li className={cn('rounded-card-sm border border-line bg-card p-4', !channel.enabled && 'opacity-60')}>
+    <li className={cn('rounded-card-sm border p-4', channel.enabled ? 'border-line bg-card' : 'border-line-soft bg-surface-100')}>
       {editing ? (
         <EditRow channel={channel} onDone={() => setEditing(false)} />
       ) : (

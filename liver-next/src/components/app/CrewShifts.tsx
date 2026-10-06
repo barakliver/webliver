@@ -46,8 +46,13 @@ export function CrewShifts({ shifts, today }: { shifts: Shift[]; today: string }
         return (
           <li
             key={s.client_id}
+            /* An evening already worked is set back with paper rather than
+               with opacity. Fading the card faded its words too, and every
+               one of them — who, where, what time — went under the contrast
+               bar at once. Past is a thing to notice, not a thing to have to
+               squint at. */
             className={`card relative p-4 transition-colors focus-within:border-accent hover:border-accent sm:p-5 ${
-              when === 'past' ? 'opacity-70' : ''
+              when === 'past' ? 'bg-surface-100' : ''
             }`}
           >
             <Link

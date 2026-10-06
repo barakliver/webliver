@@ -132,7 +132,12 @@ export function BudgetPlanner({ clientId, current, target, guestEstimate, defaul
               className={`inline-flex min-h-[40px] items-center gap-2 rounded-xl2 border px-3 text-body transition ${stanceClass(s)}`}
             >
               <span>{c.categories[k]}</span>
-              <span className="text-micro opacity-80">{s === 'must' ? c.must : s === 'nice' ? c.nice : c.neutral}</span>
+              {/* No opacity. It was 80%, which on 11.5px text is under the
+                  4.5 bar whatever colour the stance set underneath it — and
+                  this is the word that says what the chip currently is, so
+                  it is the last thing on it that should be hard to read.
+                  The size already says which of the two labels is which. */}
+              <span className="text-micro">{s === 'must' ? c.must : s === 'nice' ? c.nice : c.neutral}</span>
             </button>
           );
         })}

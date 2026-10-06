@@ -166,15 +166,25 @@ function Row({ item, clientId, c, plan }: {
             {(id) => <CategorySelect id={id} value={item.category ?? ''} c={c} plan={plan} />}
           </Field>
 
-          <div className="col-span-2 flex items-center justify-between gap-3">
+          <div className="col-span-2">
             <Submit idle={c.budSave} busy={c.budSaving} />
-            <DeleteForm action={deleteBudgetItem}>
-              <input type="hidden" name="item_id" value={item.id} />
-              <input type="hidden" name="client_id" value={clientId} />
-              <button type="submit" className="btn-quiet px-2 py-1 text-body">{c.remove}</button>
-            </DeleteForm>
           </div>
         </form>
+
+        {/* Outside the form above, and that is the whole point of these three
+            lines. A form inside a form is invalid HTML: the browser drops the
+            inner one while parsing, so React's tree and the DOM stop matching
+            and the whole page is thrown away and rebuilt. It rendered fine
+            and the suite was green, because nothing we ran had ever loaded a
+            page in a browser — which is the reason `npm run check:full`
+            exists and the reason this was found at all. */}
+        <div className="mt-3 flex justify-end">
+          <DeleteForm action={deleteBudgetItem}>
+            <input type="hidden" name="item_id" value={item.id} />
+            <input type="hidden" name="client_id" value={clientId} />
+            <button type="submit" className="btn-quiet px-2 py-1 text-body">{c.remove}</button>
+          </DeleteForm>
+        </div>
 
         {state && !state.ok && state.error && (
           <p role="alert" className="mt-3 rounded-control border border-bad/25 bg-bad-wash px-4 py-2.5 text-body text-bad">

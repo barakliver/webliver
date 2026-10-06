@@ -27,7 +27,8 @@
     "guards": "node scripts/check-guards.mjs",
     "harness": "node scripts/check-harness.mjs",
     "actions": "node scripts/check-actions.mjs",
-    "schema": "node --experimental-strip-types --no-warnings scripts/check-schema.mjs"
+    "schema": "node --experimental-strip-types --no-warnings scripts/check-schema.mjs",
+    "check:full": "node scripts/check-full.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.120.0",

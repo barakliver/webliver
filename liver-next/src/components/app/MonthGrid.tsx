@@ -33,7 +33,11 @@ import { fill } from '@/lib/copyText';
  * A server component still: everything here is arithmetic over rows already
  * fetched, and the arrows are links.
  */
-const SHOW = 3;
+/* Two, not three. Each chip is a link and a link has to be pressable, and
+   three pressable chips do not fit a 96px cell above the day number. The
+   rest are reached through "ועוד N" and the day number beside it, which is
+   where they were always going to be read properly anyway. */
+const SHOW = 2;
 
 const TONE: Record<CalItem['kind'], string> = {
   event: 'bg-accent text-surface',
@@ -232,7 +236,7 @@ export function MonthGrid({ items, month, today, locale, ui, open = '', switches
                     <td
                       key={day}
                       title={reasons || undefined}
-                      className={`group h-[64px] border p-0.5 align-top sm:h-[96px] sm:p-1 ${day === open ? 'border-accent ring-1 ring-accent' : 'border-line'} ${rule ? DAY_TINT[rule.verdict] : ''} ${inMonth ? '' : 'bg-surface-100/60 opacity-60'}`}
+                      className={`group h-[64px] border p-0.5 align-top sm:h-[96px] sm:p-1 ${day === open ? 'border-accent ring-1 ring-accent' : 'border-line'} ${rule ? DAY_TINT[rule.verdict] : ''} ${inMonth ? '' : 'bg-surface-100'}`}
                     >
                       {/* The day itself is the door: press the number and the
                           drawer above opens on that day, with the form that
@@ -285,13 +289,26 @@ export function MonthGrid({ items, month, today, locale, ui, open = '', switches
                       <ul className="hidden space-y-0.5 sm:block">
                         {dayItems.slice(0, SHOW).map((it) => (
                           <li key={it.id}>
+                            {/* The couple's own colour marks the chip and is
+                                never behind its words. An accent is chosen to
+                                be beautiful and that is a different job from
+                                being read — the same thing `readableAccent`
+                                settles on the brand pieces. It was set as the
+                                background here with near-white text on top,
+                                and on a pale colour that is unreadable. */}
                             <Link
                               href={it.href}
                               title={`${it.title}${it.detail ? ` · ${it.detail}` : ''}`}
-                              className={`block truncate rounded px-1.5 py-0.5 text-micro leading-snug ${TONE[it.kind]} ${it.done ? 'line-through opacity-60' : ''}`}
-                              style={it.kind === 'event' && it.color ? { background: it.color } : undefined}
+                              className={`flex min-h-[24px] items-center gap-1.5 truncate rounded px-1.5 py-0.5 text-micro leading-snug ${TONE[it.kind]} ${it.done ? 'line-through' : ''}`}
                             >
-                              {it.title}
+                              {it.kind === 'event' && it.color && (
+                                <span
+                                  aria-hidden
+                                  className="size-2 shrink-0 rounded-full"
+                                  style={{ background: it.color }}
+                                />
+                              )}
+                              <span className="truncate">{it.title}</span>
                             </Link>
                           </li>
                         ))}

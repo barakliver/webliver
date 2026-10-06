@@ -45,6 +45,10 @@ const TONE: Record<Tone, string> = {
   bad:    'text-bad',
 };
 
+/* The same tones at reading size. Only `accent` differs, and it is the
+   whole point: large text clears AA at 3:1 and body text does not. */
+const ROW_TONE: Record<Tone, string> = { ...TONE, accent: 'text-accent' };
+
 const SIZE: Record<Size, string> = {
   /* 62px. One to a screen: the thing the screen is answering. */
   lead: 'text-metric',
@@ -176,10 +180,15 @@ export function MetricRows({ rows, className }: { rows: Row[]; className?: strin
               {row.label}
               <Way on={!!row.href} />
             </span>
+            {/* ROW_TONE and not TONE. `accent-bright` is the colour for a
+                62px numeral, where AA asks 3:1 — and this row is 17px, where
+                it asks 4.5. The map was shared, so every linked figure on
+                every summary measured 3.33 and read as a design choice
+                rather than as the borrowed value it was. */}
             <span className={cn(
               'font-display text-head font-light tabular-nums transition-colors duration-200',
-              TONE[row.tone ?? 'ink'],
-              row.href && 'group-hover/metric:text-accent-bright',
+              ROW_TONE[row.tone ?? 'ink'],
+              row.href && 'group-hover/metric:text-accent',
             )}>
               {row.value}
             </span>

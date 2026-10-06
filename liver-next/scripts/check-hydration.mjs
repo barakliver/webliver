@@ -89,7 +89,22 @@ for (const client of CLIENTS) {
   for (const route of ROUTES) {
     const page = await context.newPage();
     const seen = [];
-    page.on('console', (m) => { if (m.type() === 'error') seen.push(m.text()); });
+    /* React formats these with %s and hands the values separately, so
+       `text()` alone reports "%s cannot be a descendant of <%s>" — a message
+       that names neither tag and sends somebody reading it nowhere. The
+       values are resolved before the message is kept. */
+    page.on('console', (m) => {
+      if (m.type() !== 'error') return;
+      const i = seen.push(m.text()) - 1;
+      void Promise.all(m.args().map((a) => a.jsonValue().catch(() => null)))
+        .then((vals) => {
+          const rest = vals.slice(1).filter((v) => v !== null && v !== undefined);
+          if (!rest.length || !/%[sdoOic]/.test(seen[i])) return;
+          let k = 0;
+          seen[i] = seen[i].replace(/%[sdoOic]/g, () => String(rest[k++] ?? ''));
+        })
+        .catch(() => {});
+    });
     page.on('pageerror', (e) => seen.push(String(e)));
 
     try {
