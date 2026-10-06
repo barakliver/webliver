@@ -59,3 +59,60 @@ export async function removeLedgerEntry(form: FormData): Promise<void> {
   }
   touch(clientId);
 }
+
+/**
+ * Correcting a line after it was written.
+ *
+ * This panel had add and delete and nothing between them, which on this
+ * table is worse than it sounds. The sheet's own words are that the thing
+ * most often recorded here is the one with no file to attach it to — so the
+ * ordinary life of an entry is to be written against no event in the car
+ * park and attached to one a week later, and the only way to do that was to
+ * delete the line and retype five fields from memory. A record of money that
+ * has to be retyped to be corrected stops being a record of money.
+ *
+ * `kind` is editable too, because a tip typed into the wrong half of the
+ * toggle is the mistake this form exists for.
+ */
+export async function updateLedgerEntry(_prev: LedgerResult | null, form: FormData): Promise<LedgerResult> {
+  const account = await requireLiveProducer();
+  const producerId = account.producer?.id;
+  if (!producerId) return { ok: false, error: 'אין מרחב הפקה פעיל' };
+
+  const id = String(form.get('id') ?? '');
+  if (!id) return { ok: false, error: 'חסר מזהה רישום' };
+
+  const kind = String(form.get('kind') ?? '') === 'expense' ? 'expense' : 'income';
+  const amount = parseIls(form.get('amount') as string | null) ?? NaN;
+  const label = String(form.get('label') ?? '').trim().slice(0, 120);
+  const clientId = String(form.get('client_id') ?? '').trim() || null;
+  const party = String(form.get('party') ?? '').trim().slice(0, 120);
+  const note = String(form.get('note') ?? '').trim().slice(0, 500);
+  const onRaw = String(form.get('on_date') ?? '').trim();
+  const onDate = /^\d{4}-\d{2}-\d{2}$/.test(onRaw) ? onRaw : todayInZone();
+
+  if (!Number.isFinite(amount) || amount <= 0) return { ok: false, error: 'הסכום צריך להיות מספר גדול מאפס' };
+  if (!label) return { ok: false, error: 'על מה זה?' };
+
+  const sb = await supabaseServer();
+  const { data, error } = await sb
+    .from('producer_ledger')
+    .update({ kind, amount, label, client_id: clientId, party, note, on_date: onDate })
+    .eq('id', id)
+    .eq('producer_id', producerId)
+    .select('id');
+
+  if (error) {
+    console.error('[ledger] update failed', { message: error.message });
+    return { ok: false, error: 'לא נשמר. אפשר לנסות שוב.' };
+  }
+  /* An update that matched no row must not report success: the screen would
+     say saved and go on showing the old figure. */
+  if (!data || data.length === 0) return { ok: false, error: 'לא נשמר. אפשר לנסות שוב.' };
+
+  /* The event may have moved, so both ends are stale. */
+  touch(clientId);
+  const was = String(form.get('was_client_id') ?? '').trim() || null;
+  if (was && was !== clientId) touch(was);
+  return { ok: true };
+}

@@ -686,6 +686,11 @@ export const consoleEn: ConsoleCopy = {
     totalOut: 'Out',
     net: 'Net',
     unattached: 'No file',
+    edit: 'Edit',
+    editTitle: 'Edit entry',
+    editSave: 'Save',
+    editSaving: 'Saving',
+    editCancel: 'Cancel',
     remove: 'Delete',
   },
 

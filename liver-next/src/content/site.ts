@@ -1479,6 +1479,11 @@ export const appCopy = {
     totalOut: 'יצא',
     net: 'נטו',
     unattached: 'בלי תיק',
+    edit: 'עריכה',
+    editTitle: 'עריכת רישום',
+    editSave: 'שמירה',
+    editSaving: 'שומר',
+    editCancel: 'ביטול',
     remove: 'מחיקה',
   },
 

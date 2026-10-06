@@ -30,7 +30,7 @@ export default async function InsightsPage() {
     sb.from('payments').select('amount,due_on,paid').limit(2000),
     sb.from('tasks').select('due_on,done').limit(4000),
     sb.from('contracts').select('client_id,signed_at').limit(1000),
-    sb.from('clients').select('id,lead_id,created_at').limit(1000),
+    sb.from('clients').select('id,lead_id,created_at,display_name').limit(1000),
   ]);
 
   const leadRows = (leads.data ?? []) as LeadRow[];
@@ -60,6 +60,13 @@ export default async function InsightsPage() {
      cannot give. */
   const conversion = conversionOf(leadRows, (clients.data ?? []) as { lead_id: string | null; created_at: string }[]);
 
+  /* Attaching an entry to an event after the fact is the edit this list
+     exists for, so the select needs every open file by name. */
+  const ledgerEvents = ((clients.data ?? []) as { id: string; display_name: string | null }[])
+    .map((r) => ({ id: String(r.id), name: r.display_name ?? '' }))
+    .filter((e) => e.name)
+    .sort((a, b) => a.name.localeCompare(b.name, 'he'));
+
   return (
     <>
       <PageHead title={ui.insights.title} sub={ui.insights.sub}
@@ -70,7 +77,7 @@ export default async function InsightsPage() {
       <div className="space-y-5">
         <Health signed={signed} overdue={overdue} waiting={response.waiting} />
         <CashPanel cash={cash} />
-        <LedgerEntries entries={await loadLedger(sb, { limit: 60 })} />
+        <LedgerEntries entries={await loadLedger(sb, { limit: 60 })} events={ledgerEvents} />
         <FunnelChart funnel={funnel} />
         <ConversionPanel r={conversion} />
         <ResponsePanel r={response} />
