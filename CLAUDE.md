@@ -394,6 +394,78 @@ that has happened once.
   row because that list is drawn twice, as cards and as a table, and a thing
   built twice is a thing built nought times — which is exactly how it went a
   year with no way to fix a name at all.
+- **Nine panels could add and destroy and not fix, and now none of them
+  can.** After the budget, the payment and the guest came the rest of the
+  class: the ledger entry, the envelope, the car, the face, the reference
+  picture, the table's name, the caption on the board, the wedding in the
+  journal and the post in the circle. The shape is always the same and worth
+  recognising on sight - an `add` and a `delete` in the same actions file
+  with nothing between them - but what the delete costs is different each
+  time, and that is the part to read before writing the fix. Deleting a VIP
+  takes the photograph out of storage, so fixing a spelling cost a picture
+  somebody scrolled back through a phone to find. Deleting a journal entry
+  takes up to twenty. Deleting an envelope takes `delivered_at`, which is the
+  one question that table exists to answer. Deleting a table unseats
+  everybody at it. In every case the product was asking somebody to destroy
+  the record in order to correct it, and the answer is the same each time:
+  the update writes the words and never the other act - never `paid`, never
+  `delivered_at`, never `status`, never `photo_url` or `image_path` or
+  `sort` - and refuses an update that matched no row, because "saved" over
+  an unchanged value is worse than failing. Two of them needed more than
+  that. The journal **appends** its photographs rather than replacing them,
+  because the screen only ever holds signed URLs and never the paths behind
+  them, so a form submitting "the photographs" would submit whichever ones
+  were uploaded in that sitting and silently drop the rest. And the circle
+  is the only one of the nine whose record is not private, which is why it
+  is the only one that stamps `edited_at` and shows "נערך": a post is
+  answered underneath, and a rewrite with no mark leaves four replies
+  answering a question nobody can see, which makes the people who replied
+  look careless. The circle's edit also goes through a definer function
+  rather than a plain update, for the same reason its delete does - `select`
+  is revoked on those tables, so an update can neither ask for RETURNING nor
+  tell a refusal from a miss.
+- **`npm run check:full` boots the product, because two checks needed one
+  and so never ran.** `check-a11y.mjs` and `check-hydration.mjs` had existed
+  for months and neither had ever been run: each needs a `--url` and a server
+  behind it, so neither could go into `npm run check`, and a check that is
+  not in the one command somebody types is a check that does not exist. That
+  is the contrast script's failure a second time. `check:full` starts
+  `next dev` on its own port - dev and not a build, because `/design` is the
+  page both lean on hardest and it is gated on `NODE_ENV` - waits for it,
+  runs both, and puts it away. It stays out of `npm run check`, which has to
+  finish fast enough that nobody skips it. Its first run found six faults
+  nothing else could see, and the one worth naming is **a form inside a
+  form**: the browser drops the inner one while parsing, React's tree and the
+  DOM stop matching, and the whole page is thrown away and rebuilt. It
+  rendered correctly and the suite was green.
+- **Opacity is not a mute.** It was used for three "set back" states - the
+  out-of-month calendar cell, a past crew shift, a switched-off lead channel -
+  and at 60% `ink-mute` composites to 2.51 against white, so every word in
+  those cards went under the bar at once, the buttons included. The one state
+  a producer most needs to read carefully was the one they could not. All
+  three are set back with paper now: a background tint and a softer border,
+  with the ink left alone. The same rule caught two more: the couple's own
+  colour behind the text of a calendar chip (it is a dot beside the words
+  now - an accent is chosen to be beautiful and that is a different job from
+  being read, which is what `readableAccent` already settles on the brand
+  pieces), and `accent-bright` on a 17px metric row, where it gives 3.33
+  against a 4.5 bar. That colour exists for a 62px numeral at the 3:1 large
+  bar; the tone map was shared between the two sizes, so every linked figure
+  on every summary read as a decision rather than as the borrowed value it
+  was.
+- **A heading is one of three classes**, `head-panel`, `head-section` and
+  `head-sub`, in `globals.css` beside `.card` and `.eyebrow`. There were 83
+  written out by hand, and because they were written out they were written
+  out slightly differently. A figure that shares the treatment keeps its own
+  classes: a number is not a heading.
+- **A function whose return table may ever move is dropped before it is
+  created.** `create or replace` cannot change a return type, and sync.sql
+  replays every migration on every deploy - so widening a reader in a later
+  migration makes the earlier `create or replace` fail on the *second*
+  replay, with ON_ERROR_STOP taking the thousands of lines after it. That is
+  the shape of the fault that stopped 2.6 and 2.7, and 0100 walked into it
+  with the three circle readers. `npm run schema` catches it, because it
+  applies the whole thing twice.
 - **The category on a budget line is a guess you can overrule.**
   `categoryOf` in `lib/budgetPlan.ts` reads `category` first and then the
   label's own Hebrew words, so most lines file themselves; a hall called
