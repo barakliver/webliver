@@ -2,11 +2,11 @@
 
 import { useActionState, useEffect, useRef, useState } from 'react';
 import { useFormStatus } from 'react-dom';
-import { Plus, ImagePlus, MapPin } from 'lucide-react';
+import { Plus, ImagePlus, MapPin, Pencil } from 'lucide-react';
 import { useCopy } from '@/components/app/CopyProvider';
 import { DeleteForm } from '@/components/app/ConfirmDelete';
 import { supabaseBrowser } from '@/lib/supabase/client';
-import { saveCritiqueLog, deleteCritiqueLog, type JournalResult } from '@/app/actions/journal';
+import { saveCritiqueLog, updateCritiqueLog, deleteCritiqueLog, type JournalResult } from '@/app/actions/journal';
 import type { JournalLog } from '@/lib/circle';
 import { fill } from '@/lib/copyText';
 import {
@@ -68,11 +68,25 @@ function Chips({ name, tags, labels, picked, onPick }: {
   );
 }
 
-function LogForm({ clientId, onDone }: { clientId: string; onDone: () => void }) {
+/**
+ * The one form, used to write an entry and to correct one.
+ *
+ * Deliberately not two. Everything in here — the chips, the upload straight
+ * to storage, the five fields — would otherwise be built a second time, and
+ * in this product a thing built twice is a thing built nought times: that is
+ * exactly how the guest list went a year with no way to fix a name.
+ *
+ * In edit mode the uploader stays, and the action appends rather than
+ * replaces, because this screen only ever holds signed URLs and never the
+ * paths behind them.
+ */
+function LogForm({ clientId, log, onDone }: { clientId: string; log?: JournalLog; onDone: () => void }) {
   const c = useCopy().journal;
-  const [state, action] = useActionState<JournalResult | null, FormData>(saveCritiqueLog, null);
-  const [pros, setPros] = useState<Set<string>>(new Set());
-  const [cons, setCons] = useState<Set<string>>(new Set());
+  const [state, action] = useActionState<JournalResult | null, FormData>(
+    log ? updateCritiqueLog : saveCritiqueLog, null,
+  );
+  const [pros, setPros] = useState<Set<string>>(new Set(log?.pros ?? []));
+  const [cons, setCons] = useState<Set<string>>(new Set(log?.cons ?? []));
   const [photos, setPhotos] = useState<string[]>([]);
   const [busy, setBusy] = useState<{ n: number; m: number } | null>(null);
   const [upErr, setUpErr] = useState('');
@@ -112,15 +126,16 @@ function LogForm({ clientId, onDone }: { clientId: string; onDone: () => void })
   return (
     <form action={action} className="card space-y-5">
       <input type="hidden" name="client_id" value={clientId} />
+      {log && <input type="hidden" name="id" value={log.id} />}
       {photos.map((p) => <input key={p} type="hidden" name="photos" value={p} />)}
 
       <div className="grid gap-3 sm:grid-cols-3">
         <label className="grid gap-1.5 text-body text-ink-soft sm:col-span-1">{c.form.venue}
-          <input name="venue_name" className="field" placeholder={c.form.venuePh} autoComplete="off" /></label>
+          <input name="venue_name" defaultValue={log?.venue_name ?? ''} className="field" placeholder={c.form.venuePh} autoComplete="off" /></label>
         <label className="grid gap-1.5 text-body text-ink-soft">{c.form.date}
-          <input name="event_date" type="date" className="field" /></label>
+          <input name="event_date" type="date" defaultValue={log?.event_date ?? ''} className="field" /></label>
         <label className="grid gap-1.5 text-body text-ink-soft">{c.form.style}
-          <select name="style" className="field" defaultValue="">
+          <select name="style" className="field" defaultValue={log?.style ?? ''}>
             <option value="" />
             {EVENT_STYLES.map((s) => <option key={s} value={s}>{c.form.styles[s]}</option>)}
           </select>
@@ -130,18 +145,18 @@ function LogForm({ clientId, onDone }: { clientId: string; onDone: () => void })
       <div>
         <p className="label">{c.form.pros}</p>
         <Chips name="pros" tags={PRO_TAGS} labels={c.tags} picked={pros} onPick={toggle(pros, setPros)} />
-        <input name="pros_note" className="field mt-3" placeholder={c.form.prosPh} aria-label={c.form.prosNote} autoComplete="off" />
+        <input name="pros_note" defaultValue={log?.pros_note ?? ''} className="field mt-3" placeholder={c.form.prosPh} aria-label={c.form.prosNote} autoComplete="off" />
       </div>
 
       <div>
         <p className="label">{c.form.cons}</p>
         <Chips name="cons" tags={CON_TAGS} labels={c.tags} picked={cons} onPick={toggle(cons, setCons)} />
-        <input name="cons_note" className="field mt-3" placeholder={c.form.consPh} aria-label={c.form.consNote} autoComplete="off" />
+        <input name="cons_note" defaultValue={log?.cons_note ?? ''} className="field mt-3" placeholder={c.form.consPh} aria-label={c.form.consNote} autoComplete="off" />
       </div>
 
       <div>
         <label className="label" htmlFor="takeaways">{c.form.takeaways}</label>
-        <textarea id="takeaways" name="takeaways" rows={3} className="field" placeholder={c.form.takeawaysPh} />
+        <textarea id="takeaways" name="takeaways" rows={3} defaultValue={log?.takeaways ?? ''} className="field" placeholder={c.form.takeawaysPh} />
         <p className="mt-1.5 text-meta text-ink-mute">{c.form.takeawaysHint}</p>
       </div>
 
@@ -171,9 +186,15 @@ function LogForm({ clientId, onDone }: { clientId: string; onDone: () => void })
   );
 }
 
-function LogCard({ log, viewer }: { log: JournalLog; viewer: 'producer' | 'client' }) {
+function LogCard({ log, clientId, viewer }: {
+  log: JournalLog; clientId: string; viewer: 'producer' | 'client';
+}) {
   const c = useCopy().journal;
+  const [editing, setEditing] = useState(false);
   const lines = log.takeaways.split('\n').map((l) => l.trim()).filter(Boolean);
+
+  if (editing) return <LogForm clientId={clientId} log={log} onDone={() => setEditing(false)} />;
+
   return (
     <article className="card">
       <div className="flex flex-wrap items-start justify-between gap-2">
@@ -188,10 +209,21 @@ function LogCard({ log, viewer }: { log: JournalLog; viewer: 'producer' | 'clien
           </p>
         </div>
         {viewer === 'client' && (
-          <DeleteForm action={deleteCritiqueLog}>
-            <input type="hidden" name="id" value={log.id} />
-            <button type="submit" className="btn-quiet px-2 text-body">{c.remove}</button>
-          </DeleteForm>
+          <div className="flex shrink-0 items-start gap-0.5">
+            <button
+              type="button"
+              onClick={() => setEditing(true)}
+              aria-label={c.edit}
+              title={c.edit}
+              className="grid size-9 place-items-center rounded-control text-ink-mute transition hover:bg-surface-200 hover:text-ink"
+            >
+              <Pencil size={15} strokeWidth={1.5} aria-hidden />
+            </button>
+            <DeleteForm action={deleteCritiqueLog}>
+              <input type="hidden" name="id" value={log.id} />
+              <button type="submit" className="btn-quiet px-2 text-body">{c.remove}</button>
+            </DeleteForm>
+          </div>
         )}
       </div>
 
@@ -302,7 +334,7 @@ export function JournalBook({ clientId, logs, viewer }: {
         <p className="card text-lead text-ink-mute">{viewer === 'client' ? c.none : c.noneProducer}</p>
       ) : (
         <div className="space-y-4">
-          {logs.map((log) => <LogCard key={log.id} log={log} viewer={viewer} />)}
+          {logs.map((log) => <LogCard key={log.id} log={log} clientId={clientId} viewer={viewer} />)}
         </div>
       )}
     </div>

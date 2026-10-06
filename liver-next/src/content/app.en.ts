@@ -1291,6 +1291,7 @@ export const journalEn: JournalCopy = {
   add: 'Add a wedding',
   adding: 'Saving',
   cancel: 'Cancel',
+  edit: 'Edit',
   remove: 'Delete',
   none: 'No weddings written down yet. After the next one you go to, three lines here are worth more than any Pinterest board.',
   noneProducer: 'The couple has not written down any weddings yet.',
