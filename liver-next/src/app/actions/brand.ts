@@ -1,5 +1,7 @@
 'use server';
 
+import { whyNotSaved } from '@/lib/writeFailure';
+
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { currentAccount } from '@/lib/auth';
@@ -54,7 +56,7 @@ export async function saveBrand(_prev: BrandResult | null, form: FormData): Prom
     /* 23505 is a unique violation, which on this table means one of the two
        address fields is already somebody else's. */
     if (error.code === '23505') return { ok: false, error: 'הכתובת הזו כבר תפוסה.' };
-    return { ok: false, error: 'לא הצלחנו לשמור. נסו שוב.' };
+    return { ok: false, error: whyNotSaved(error) };
   }
 
   /* Branding is drawn by the shell, which wraps every screen. */
@@ -129,7 +131,7 @@ export async function uploadBrandAsset(_prev: BrandResult | null, form: FormData
     .eq('id', account.producer.id);
   if (error) {
     console.error('[brand] asset row update failed', error);
-    return { ok: false, error: 'לא הצלחנו לשמור. נסו שוב.' };
+    return { ok: false, error: whyNotSaved(error) };
   }
 
   revalidatePath('/app', 'layout');

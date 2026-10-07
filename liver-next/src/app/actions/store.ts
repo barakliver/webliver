@@ -1,5 +1,7 @@
 'use server';
 
+import { whyNotSaved } from '@/lib/writeFailure';
+
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { requireLiveProducer } from '@/lib/auth';
@@ -41,7 +43,7 @@ export async function saveProduct(_prev: StoreResult | null, form: FormData): Pr
 
   if (id) {
     const { error } = await sb.from('products').update(fields).eq('id', id);
-    if (error) return { ok: false, error: 'לא הצלחנו לשמור את השינוי' };
+    if (error) return { ok: false, error: whyNotSaved(error) };
   } else {
     /* New rows land at the end rather than at the top. A producer adding a
        fourth package does not mean it should be the first thing a visitor

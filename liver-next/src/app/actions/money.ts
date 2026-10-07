@@ -1,5 +1,7 @@
 'use server';
 
+import { whyNotSaved } from '@/lib/writeFailure';
+
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { noteFailure } from '@/lib/flash';
@@ -83,9 +85,15 @@ export async function updatePayment(_prev: MoneyResult | null, form: FormData): 
 
   if (error) {
     console.error('[money] updatePayment failed', error);
-    return { ok: false, error: 'לא הצלחנו לשמור את השינוי' };
+    return { ok: false, error: whyNotSaved(error) };
   }
-  if (!data || data.length === 0) return { ok: false, error: 'לא הצלחנו לשמור את השינוי' };
+  if (!data || data.length === 0) {
+    /* Not a fault: the row is gone, and in practice it was deleted in
+       another tab. The classifier has the sentence for that, so this hands
+       it the code PostgREST uses for "no rows where one was expected"
+       rather than inventing a second way of saying it. */
+    return { ok: false, error: whyNotSaved({ code: 'PGRST116' }) };
+  }
 
   touch(clientId);
   return { ok: true };
@@ -207,12 +215,18 @@ export async function updateBudgetItem(_prev: MoneyResult | null, form: FormData
 
   if (error) {
     console.error('[money] updateBudgetItem failed', error);
-    return { ok: false, error: 'לא הצלחנו לשמור את השינוי' };
+    return { ok: false, error: whyNotSaved(error) };
   }
   /* An update that matched nothing is not a success. Without this the screen
      says "saved" and shows the old figure, which is the worst of the three
      possible outcomes. */
-  if (!data || data.length === 0) return { ok: false, error: 'לא הצלחנו לשמור את השינוי' };
+  if (!data || data.length === 0) {
+    /* Not a fault: the row is gone, and in practice it was deleted in
+       another tab. The classifier has the sentence for that, so this hands
+       it the code PostgREST uses for "no rows where one was expected"
+       rather than inventing a second way of saying it. */
+    return { ok: false, error: whyNotSaved({ code: 'PGRST116' }) };
+  }
 
   touch(clientId);
   return { ok: true };

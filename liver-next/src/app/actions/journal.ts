@@ -1,5 +1,7 @@
 'use server';
 
+import { whyNotSaved } from '@/lib/writeFailure';
+
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { currentAccount } from '@/lib/auth';
@@ -49,7 +51,7 @@ export async function saveCritiqueLog(_prev: JournalResult | null, form: FormDat
   });
   if (error) {
     console.error('[journal] insert failed', error);
-    return { ok: false, error: 'לא הצלחנו לשמור. אפשר לנסות שוב.' };
+    return { ok: false, error: whyNotSaved(error) };
   }
   await noteDone('החתונה נרשמה ביומן.');
   revalidatePath('/app/portal/journal');
@@ -121,9 +123,15 @@ export async function updateCritiqueLog(_prev: JournalResult | null, form: FormD
 
   if (error) {
     console.error('[journal] update failed', error);
-    return { ok: false, error: 'לא הצלחנו לשמור. אפשר לנסות שוב.' };
+    return { ok: false, error: whyNotSaved(error) };
   }
-  if (!data || data.length === 0) return { ok: false, error: 'לא הצלחנו לשמור. אפשר לנסות שוב.' };
+  if (!data || data.length === 0) {
+    /* Not a fault: the row is gone, and in practice it was deleted in
+       another tab. The classifier has the sentence for that, so this hands
+       it the code PostgREST uses for "no rows where one was expected"
+       rather than inventing a second way of saying it. */
+    return { ok: false, error: whyNotSaved({ code: 'PGRST116' }) };
+  }
 
   await noteDone('הרשומה עודכנה.');
   revalidatePath('/app/portal/journal');

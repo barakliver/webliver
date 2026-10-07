@@ -1,5 +1,7 @@
 'use server';
 
+import { whyNotSaved } from '@/lib/writeFailure';
+
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { supabaseAdmin } from '@/lib/supabase/admin';
@@ -51,7 +53,7 @@ export async function addDiaryEntry(_prev: DiaryResult | null, form: FormData): 
   });
   if (error) {
     console.error('[diary] insert failed', error);
-    return { ok: false, error: 'לא הצלחנו לשמור. אפשר לנסות שוב.' };
+    return { ok: false, error: whyNotSaved(error) };
   }
   touch();
   await nudge(account.producer.id);
@@ -71,7 +73,7 @@ export async function updateDiaryEntry(_prev: DiaryResult | null, form: FormData
   }).eq('id', id);
   if (error) {
     console.error('[diary] update failed', error);
-    return { ok: false, error: 'לא הצלחנו לשמור. אפשר לנסות שוב.' };
+    return { ok: false, error: whyNotSaved(error) };
   }
   touch();
   await nudge(account.producer.id);

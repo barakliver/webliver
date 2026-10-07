@@ -1,5 +1,7 @@
 'use server';
 
+import { whyNotSaved } from '@/lib/writeFailure';
+
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { currentAccount } from '@/lib/auth';
@@ -114,7 +116,13 @@ export async function updateEnvelope(_prev: EnvelopeResult | null, form: FormDat
     return { ok: false, error: FAILED };
   }
   /* "Saved" over an unchanged value is the one outcome worse than failing. */
-  if (!data || data.length === 0) return { ok: false, error: FAILED };
+  if (!data || data.length === 0) {
+    /* Not a fault: the row is gone, and in practice it was deleted in
+       another tab. The classifier has the sentence for that, so this hands
+       it the code PostgREST uses for "no rows where one was expected"
+       rather than inventing a second way of saying it. */
+    return { ok: false, error: whyNotSaved({ code: 'PGRST116' }) };
+  }
 
   touch(clientId);
   return { ok: true };

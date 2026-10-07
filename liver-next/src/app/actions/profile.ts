@@ -1,5 +1,7 @@
 'use server';
 
+import { whyNotSaved } from '@/lib/writeFailure';
+
 import { revalidatePath } from 'next/cache';
 import { requireAccount } from '@/lib/auth';
 import { supabaseServer } from '@/lib/supabase/server';
@@ -25,7 +27,7 @@ export async function saveProfile(
     .update({ full_name: fullName })
     .eq('id', account.id);
 
-  if (error) return { ok: false, error: 'לא הצלחנו לשמור. נסו שוב.' };
+  if (error) return { ok: false, error: whyNotSaved(error) };
 
   revalidatePath('/app', 'layout');
   return { ok: true };

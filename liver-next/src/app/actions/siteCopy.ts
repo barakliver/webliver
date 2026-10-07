@@ -1,5 +1,7 @@
 'use server';
 
+import { whyNotSaved } from '@/lib/writeFailure';
+
 import { revalidatePath } from 'next/cache';
 import { forgetSiteCopy } from '@/lib/siteCopy';
 import { supabaseServer } from '@/lib/supabase/server';
@@ -36,7 +38,7 @@ export async function saveSiteCopy(_prev: CopyResult | null, form: FormData): Pr
     if (/insufficient_privilege|אין הרשאה/i.test(`${error.code} ${error.message}`)) {
       return { ok: false, error: 'אין לך הרשאה לערוך את האתר' };
     }
-    return { ok: false, error: 'לא הצלחנו לשמור' };
+    return { ok: false, error: whyNotSaved(error) };
   }
 
   /* The public page is cached so a visitor does not pay for this lookup. An

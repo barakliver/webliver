@@ -1,5 +1,7 @@
 'use server';
 
+import { whyNotSaved } from '@/lib/writeFailure';
+
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { BOARD_CATEGORIES } from '@/content/lists';
@@ -84,10 +86,16 @@ export async function updateBoardImage(_prev: BoardResult | null, form: FormData
 
   if (error) {
     console.error('[board] update failed', error);
-    return { ok: false, error: 'לא הצלחנו לשמור. אפשר לנסות שוב.' };
+    return { ok: false, error: whyNotSaved(error) };
   }
   /* An update that matched no row must not report success. */
-  if (!data || data.length === 0) return { ok: false, error: 'לא הצלחנו לשמור. אפשר לנסות שוב.' };
+  if (!data || data.length === 0) {
+    /* Not a fault: the row is gone, and in practice it was deleted in
+       another tab. The classifier has the sentence for that, so this hands
+       it the code PostgREST uses for "no rows where one was expected"
+       rather than inventing a second way of saying it. */
+    return { ok: false, error: whyNotSaved({ code: 'PGRST116' }) };
+  }
 
   revalidatePath('/app/portal');
   revalidatePath(`/app/clients/${clientId}`);

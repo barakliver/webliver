@@ -1,5 +1,7 @@
 'use server';
 
+import { whyNotSaved } from '@/lib/writeFailure';
+
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { currentAccount } from '@/lib/auth';
@@ -84,7 +86,7 @@ export async function saveBasics(input: {
 
   if (error) {
     console.error('[onboarding] basics failed', error);
-    return { ok: false, error: 'לא הצלחנו לשמור. אפשר לנסות שוב.' };
+    return { ok: false, error: whyNotSaved(error) };
   }
 
   const wrote = readWrote(data);

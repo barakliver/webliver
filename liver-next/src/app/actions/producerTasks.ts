@@ -1,5 +1,7 @@
 'use server';
 
+import { whyNotSaved } from '@/lib/writeFailure';
+
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { currentAccount } from '@/lib/auth';
@@ -77,7 +79,7 @@ export async function updateMyTask(_prev: MyTaskResult | null, form: FormData): 
     .eq('id', id);
   if (error) {
     console.error('[producerTasks] update failed', error);
-    return { ok: false, error: 'לא הצלחנו לשמור את השינוי' };
+    return { ok: false, error: whyNotSaved(error) };
   }
 
   await noteDone('המשימה עודכנה.');

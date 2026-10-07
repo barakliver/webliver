@@ -1,5 +1,7 @@
 'use server';
 
+import { whyNotSaved } from '@/lib/writeFailure';
+
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { currentAccount } from '@/lib/auth';
@@ -130,7 +132,7 @@ export async function editCirclePost(_prev: CircleResult | null, form: FormData)
   });
   if (error) {
     console.error('[circle] edit failed', error);
-    return { ok: false, error: 'לא הצלחנו לשמור. אפשר לנסות שוב.' };
+    return { ok: false, error: whyNotSaved(error) };
   }
   if (data !== true) return { ok: false, error: 'הפוסט לא עודכן. אפשר לערוך פוסט שכתבתם.' };
 
@@ -151,7 +153,7 @@ export async function editCircleReply(_prev: CircleResult | null, form: FormData
   const { data, error } = await sb.rpc('circle_edit_comment', { p_comment: id, p_content: content });
   if (error) {
     console.error('[circle] reply edit failed', error);
-    return { ok: false, error: 'לא הצלחנו לשמור. אפשר לנסות שוב.' };
+    return { ok: false, error: whyNotSaved(error) };
   }
   if (data !== true) return { ok: false, error: 'התשובה לא עודכנה. אפשר לערוך תשובה שכתבתם.' };
 

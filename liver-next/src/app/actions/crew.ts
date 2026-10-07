@@ -1,5 +1,7 @@
 'use server';
 
+import { whyNotSaved } from '@/lib/writeFailure';
+
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { noteFailure } from '@/lib/flash';
@@ -46,7 +48,7 @@ export async function addCrew(_prev: CrewResult | null, form: FormData): Promise
   const { error } = await sb.from('crew').insert({ client_id: clientId, ...f });
   if (error) {
     console.error('[crew] insert failed', error);
-    return { ok: false, error: 'לא הצלחנו לשמור' };
+    return { ok: false, error: whyNotSaved(error) };
   }
   touch(clientId);
   return { ok: true };
@@ -64,7 +66,7 @@ export async function updateCrew(_prev: CrewResult | null, form: FormData): Prom
   const { error } = await sb.from('crew').update(f).eq('id', id);
   if (error) {
     console.error('[crew] update failed', error);
-    return { ok: false, error: 'לא הצלחנו לשמור את השינוי' };
+    return { ok: false, error: whyNotSaved(error) };
   }
   touch(clientId);
   return { ok: true };

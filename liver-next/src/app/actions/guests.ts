@@ -1,5 +1,7 @@
 'use server';
 
+import { whyNotSaved } from '@/lib/writeFailure';
+
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { DIETS } from '@/content/lists';
@@ -95,11 +97,17 @@ export async function updateGuest(_prev: GuestResult | null, form: FormData): Pr
 
   if (error) {
     console.error('[guests] updateGuest failed', error);
-    return { ok: false, error: 'לא הצלחנו לשמור את השינוי' };
+    return { ok: false, error: whyNotSaved(error) };
   }
   /* An update that matched nothing is not a success. Saying "saved" over an
      unchanged name is the one outcome worse than failing. */
-  if (!data || data.length === 0) return { ok: false, error: 'לא הצלחנו לשמור את השינוי' };
+  if (!data || data.length === 0) {
+    /* Not a fault: the row is gone, and in practice it was deleted in
+       another tab. The classifier has the sentence for that, so this hands
+       it the code PostgREST uses for "no rows where one was expected"
+       rather than inventing a second way of saying it. */
+    return { ok: false, error: whyNotSaved({ code: 'PGRST116' }) };
+  }
 
   touch(clientId);
   return { ok: true };

@@ -1,5 +1,7 @@
 'use server';
 
+import { whyNotSaved } from '@/lib/writeFailure';
+
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { TRACKS, AUDIENCES, type Track } from '@/content/lists';
@@ -104,7 +106,7 @@ export async function updateDayItem(_prev: DayResult | null, form: FormData): Pr
   const { error } = await sb.from('day_schedule').update(fields).eq('id', id);
   if (error) {
     console.error('[day] update failed', error);
-    return { ok: false, error: 'לא הצלחנו לשמור את השינוי' };
+    return { ok: false, error: whyNotSaved(error) };
   }
 
   touch(clientId);

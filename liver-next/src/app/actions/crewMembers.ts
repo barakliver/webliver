@@ -1,5 +1,7 @@
 'use server';
 
+import { whyNotSaved } from '@/lib/writeFailure';
+
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { currentAccount } from '@/lib/auth';
@@ -96,7 +98,7 @@ export async function addCrewMember(
     if (/crew_members_producer_email_key/i.test(error.message)) {
       return { ok: false, error: 'כתובת המייל הזו כבר רשומה אצל איש צוות אחר' };
     }
-    return { ok: false, error: 'לא הצלחנו לשמור' };
+    return { ok: false, error: whyNotSaved(error) };
   }
 
   touchDirectory();
@@ -122,7 +124,7 @@ export async function updateCrewMember(
     if (/crew_members_producer_email_key/i.test(error.message)) {
       return { ok: false, error: 'כתובת המייל הזו כבר רשומה אצל איש צוות אחר' };
     }
-    return { ok: false, error: 'לא הצלחנו לשמור' };
+    return { ok: false, error: whyNotSaved(error) };
   }
 
   touchDirectory();
@@ -285,7 +287,7 @@ export async function saveCrewNote(
 
   if (error) {
     console.error('[crew] note failed', error);
-    return { ok: false, error: 'לא הצלחנו לשמור' };
+    return { ok: false, error: whyNotSaved(error) };
   }
   touchEvent(clientId);
   return { ok: true, id: clientId };
@@ -353,7 +355,7 @@ export async function setCrewHours(
 
   if (error) {
     console.error('[crew] hours failed', error);
-    return { ok: false, error: 'לא הצלחנו לשמור' };
+    return { ok: false, error: whyNotSaved(error) };
   }
 
   if (clientId) touchEvent(clientId);
@@ -412,7 +414,7 @@ export async function setCrewFee(
 
   if (error) {
     console.error('[crew] fee failed', error);
-    return { ok: false, error: 'לא הצלחנו לשמור' };
+    return { ok: false, error: whyNotSaved(error) };
   }
 
   if (clientId) touchEvent(clientId);
@@ -453,7 +455,7 @@ export async function setProducerFee(
 
   if (error) {
     console.error('[crew] producer fee failed', error);
-    return { ok: false, error: 'לא הצלחנו לשמור' };
+    return { ok: false, error: whyNotSaved(error) };
   }
 
   touchEvent(clientId);

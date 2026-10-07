@@ -1,5 +1,7 @@
 'use server';
 
+import { whyNotSaved } from '@/lib/writeFailure';
+
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { currentAccount } from '@/lib/auth';
@@ -91,7 +93,7 @@ export async function updateVendor(_prev: VendorResult | null, form: FormData): 
     if (/vendors_producer_name_key|duplicate key/i.test(error.message)) {
       return { ok: false, error: 'ספק בשם הזה כבר קיים אצלכם' };
     }
-    return { ok: false, error: 'לא הצלחנו לשמור את השינוי' };
+    return { ok: false, error: whyNotSaved(error) };
   }
   touchDirectory();
   return { ok: true, id };
