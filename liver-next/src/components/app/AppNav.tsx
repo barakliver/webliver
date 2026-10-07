@@ -67,7 +67,7 @@ export function SidebarNav({ items }: { items: NavItem[] }) {
                 aria-current={current ? 'page' : undefined}
                 className={cn(
                   'relative flex items-center gap-3 py-2.5 pe-4 text-body tracking-[.02em]',
-                  'transition-colors duration-300',
+                  'transition-colors duration-touch',
                   current ? 'text-ink' : 'text-ink-mute hover:text-ink',
                 )}
               >
@@ -79,7 +79,7 @@ export function SidebarNav({ items }: { items: NavItem[] }) {
                 <span
                   aria-hidden
                   className={cn(
-                    'absolute inset-y-1 start-[-1.5rem] w-px transition-opacity duration-300',
+                    'absolute inset-y-1 start-[-1.5rem] w-px transition-opacity duration-touch',
                     current ? 'bg-accent-line opacity-100' : 'opacity-0',
                   )}
                 />
@@ -173,7 +173,7 @@ export function MobileTabBar({ items, extra }: {
                       aria-current={current ? 'page' : undefined}
                       className={cn(
                         'relative flex min-h-[52px] items-center gap-3 border-b border-line px-1 text-lead',
-                        'transition-colors duration-300',
+                        'transition-colors duration-touch',
                         /* A gold mark on the trailing edge rather than a fill.
                            The same mark the desktop nav and the segmented
                            controls use, so the three read as one system. */
@@ -210,7 +210,7 @@ export function MobileTabBar({ items, extra }: {
                   aria-current={current ? 'page' : undefined}
                   className={cn(
                     'flex min-h-[56px] flex-col items-center justify-center gap-1.5 px-1 pt-2',
-                    'text-meta tracking-[.04em] transition-colors duration-300',
+                    'text-meta tracking-[.04em] transition-colors duration-touch',
                     current ? 'text-ink' : 'text-ink-mute',
                   )}
                 >
@@ -227,7 +227,7 @@ export function MobileTabBar({ items, extra }: {
                   <span
                     aria-hidden
                     className={cn(
-                      'h-px w-7 transition-opacity duration-300',
+                      'h-px w-7 transition-opacity duration-touch',
                       current ? 'bg-accent-line opacity-100' : 'opacity-0',
                     )}
                   />
@@ -245,7 +245,7 @@ export function MobileTabBar({ items, extra }: {
                 aria-haspopup="dialog"
                 className={cn(
                   'flex min-h-[56px] w-full flex-col items-center justify-center gap-1.5 px-1 pt-2',
-                  'text-meta tracking-[.04em] transition-colors duration-300',
+                  'text-meta tracking-[.04em] transition-colors duration-touch',
                   /* Lit when the open screen lives behind it, so the nav never
                      reports that you are nowhere. */
                   open || inOverflow ? 'text-ink' : 'text-ink-mute',
@@ -256,7 +256,7 @@ export function MobileTabBar({ items, extra }: {
                 <span
                   aria-hidden
                   className={cn(
-                    'h-[3px] w-6 rounded-full transition-opacity duration-200',
+                    'h-[3px] w-6 rounded-full transition-opacity duration-touch',
                     inOverflow ? 'bg-accent-bright opacity-100' : 'opacity-0',
                   )}
                 />

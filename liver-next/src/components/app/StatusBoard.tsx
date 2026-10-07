@@ -215,7 +215,7 @@ export async function StatusBoard({ items }: { items: ClientStatus[] }) {
                 text, which is why it is this arrow and not a sideways one. */}
             <ChevronDown
               size={20} strokeWidth={1.5} aria-hidden
-              className="shrink-0 text-ink-mute transition-transform duration-200 group-open:rotate-180"
+              className="shrink-0 text-ink-mute transition-transform duration-touch group-open:rotate-180"
             />
           </summary>
 

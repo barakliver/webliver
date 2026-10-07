@@ -294,7 +294,23 @@ const config: Config = {
       maxWidth: { content: '70rem', prose2: '44rem' },
       spacing: { safe: 'env(safe-area-inset-bottom, 0px)' },
       transitionTimingFunction: { out: 'cubic-bezier(.16,1,.3,1)' },
-      transitionDuration: { veil: '650ms', slow: '900ms', stage: '1000ms' },
+      /* Three steps for anything a person can cause, and no fourth. There
+         were four arbitrary values in the markup (200, 300, 500, 700) and
+         none of them chosen against the others; the same way thirty-five
+         type sizes happened, one reasonable local decision at a time.
+
+         `touch` is feedback — a colour, a border, a chevron turning — and it
+         has to be under the threshold where a press feels acknowledged.
+         `move` is a thing changing place or state. `enter` is something
+         arriving, or a bar filling, where the movement itself is the
+         information and wants time to be read.
+
+         The three above them are the long ones that are art direction rather
+         than interface: a veil lifting, a stage. They stay. */
+      transitionDuration: {
+        touch: '150ms', move: '250ms', enter: '400ms',
+        veil: '650ms', slow: '900ms', stage: '1000ms',
+      },
       keyframes: {
         rise:  { '0%': { opacity: '0', transform: 'translateY(12px)' }, '100%': { opacity: '1', transform: 'none' } },
         sheet: { '0%': { opacity: '0', transform: 'translateY(16px) scale(.99)' }, '100%': { opacity: '1', transform: 'none' } },

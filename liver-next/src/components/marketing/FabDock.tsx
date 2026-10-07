@@ -46,7 +46,7 @@ export function FabDock({ site, kinds }: { site: SiteCopy; kinds: EventKinds }) 
                   as a banner ad rather than as a way to reach a producer, and
                   it was the brightest thing on a screen whose whole argument
                   is restraint. The icon still says which app it opens. */
-               className="flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-xl2 bg-ink px-4 text-body tracking-[.03em] text-surface transition-colors duration-300 hover:bg-ink-soft sm:flex-none">
+               className="flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-xl2 bg-ink px-4 text-body tracking-[.03em] text-surface transition-colors duration-touch hover:bg-ink-soft sm:flex-none">
               <MessageCircle size={17} aria-hidden strokeWidth={1.5} /><span>{site.fab.whatsapp}</span>
             </a>
           )}

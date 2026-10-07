@@ -104,7 +104,7 @@ export function CodeInput({ name, label, length }: {
                    this stopped being a box and nobody had looked at it. */
                 'border-0 border-b bg-transparent p-0 text-center tabular-nums',
                 'font-display font-semibold text-ink outline-none',
-                'transition-colors duration-300 ease-out',
+                'transition-colors duration-touch ease-out',
                 d ? 'border-b-2 border-accent-line' : 'border-b border-line-strong',
                 'focus:border-b-2 focus:border-accent',
                 cell,

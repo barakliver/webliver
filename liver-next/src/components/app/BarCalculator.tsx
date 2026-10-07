@@ -181,7 +181,7 @@ export function BarCalculator({ guestEstimate, confirmedGuests }: {
                 onClick={() => setBeerPacks(packs)}
                 aria-pressed={beerPacks === packs}
                 className={[
-                  'min-h-[44px] border-b px-3 text-body tracking-[.04em] transition-colors duration-300',
+                  'min-h-[44px] border-b px-3 text-body tracking-[.04em] transition-colors duration-touch',
                   beerPacks === packs
                     ? 'border-accent-line text-ink'
                     : 'border-transparent text-ink-mute hover:text-ink',

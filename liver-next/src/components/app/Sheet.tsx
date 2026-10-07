@@ -105,7 +105,7 @@ export function Sheet({
             onClick={onClose}
             aria-label={ui.sheets.close}
             className="grid h-11 w-11 shrink-0 place-items-center rounded-full text-ink-mute
-                       transition-colors duration-300 hover:text-ink"
+                       transition-colors duration-touch hover:text-ink"
           >
             <X size={20} strokeWidth={1.5} aria-hidden />
           </button>

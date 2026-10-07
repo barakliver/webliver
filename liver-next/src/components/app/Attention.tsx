@@ -56,7 +56,7 @@ export async function AttentionList({ items }: { items: AttentionItem[] }) {
                 top of it, which is what both of them expect. */}
             <div
               className="group relative flex items-center gap-3.5 rounded-xl2 border border-line bg-card
-                         p-4 transition-colors duration-200 ease-out hover:border-accent
+                         p-4 transition-colors duration-touch ease-out hover:border-accent
                          focus-within:border-accent"
             >
               <Link href={it.href} className="flex min-w-0 flex-1 items-center gap-3.5 after:absolute after:inset-0">
@@ -95,7 +95,7 @@ export async function AttentionList({ items }: { items: AttentionItem[] }) {
                 size={17}
                 strokeWidth={1.5}
                 aria-hidden
-                className="chev-onward shrink-0 text-ink-mute transition-transform duration-200
+                className="chev-onward shrink-0 text-ink-mute transition-transform duration-touch
                            group-hover:-translate-x-0.5"
               />
             </div>

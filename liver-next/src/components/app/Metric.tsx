@@ -111,7 +111,7 @@ function Way({ on }: { on?: boolean }) {
       size={15}
       strokeWidth={1.5}
       aria-hidden
-      className="chev-onward shrink-0 opacity-0 transition-all duration-200
+      className="chev-onward shrink-0 opacity-0 transition-all duration-touch
                  group-hover/metric:-translate-x-1 group-hover/metric:opacity-100
                  group-focus-visible/metric:opacity-100"
     />
@@ -147,7 +147,7 @@ export function Metric({
           (1 at 62px, 1.05 at 42px) and a later font-size wins that conflict
           anyway, so writing it would only look like it did something. */}
       <p className={cn(
-        'font-display font-light tabular-nums transition-colors duration-200',
+        'font-display font-light tabular-nums transition-colors duration-touch',
         SIZE[size], TONE[tone], kicker && 'mt-3',
         (href || onClick) && 'group-hover/metric:text-accent-bright',
       )}>
@@ -186,7 +186,7 @@ export function MetricRows({ rows, className }: { rows: Row[]; className?: strin
                 every summary measured 3.33 and read as a design choice
                 rather than as the borrowed value it was. */}
             <span className={cn(
-              'font-display text-head font-light tabular-nums transition-colors duration-200',
+              'font-display text-head font-light tabular-nums transition-colors duration-touch',
               ROW_TONE[row.tone ?? 'ink'],
               row.href && 'group-hover/metric:text-accent',
             )}>

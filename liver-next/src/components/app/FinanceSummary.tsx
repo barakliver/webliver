@@ -178,8 +178,8 @@ export function FinanceSummary({ clientId, viewer, target, items, payments }: {
           the commitment. Two colours the legend names, no third state. */}
       <div className="mt-6">
         <div className="flex h-3 overflow-hidden rounded-full bg-surface-200" role="img" aria-label={`${c.paid} ${paidPct}%`}>
-          <span className="h-full bg-ok transition-[width] duration-700" style={{ width: `${paidPct}%` }} />
-          <span className="h-full bg-warn/70 transition-[width] duration-700" style={{ width: `${pendingPct}%` }} />
+          <span className="h-full bg-ok transition-[width] duration-enter" style={{ width: `${paidPct}%` }} />
+          <span className="h-full bg-warn/70 transition-[width] duration-enter" style={{ width: `${pendingPct}%` }} />
         </div>
         <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-meta text-ink-mute">
           <span className="inline-flex items-center gap-1.5">

@@ -173,7 +173,7 @@ export function GameTable({ token, names, producer, deck }: GameTableProps) {
             <div>
               <div className="h-px w-full bg-surface/15">
                 <div
-                  className="h-px bg-accent-light transition-all duration-500"
+                  className="h-px bg-accent-light transition-all duration-enter"
                   style={{ width: `${progressOf(at, deck.length)}%` }}
                 />
               </div>

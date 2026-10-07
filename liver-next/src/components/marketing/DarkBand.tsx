@@ -42,7 +42,7 @@ export function DarkBand({
         <div className="mt-9">
           <Link
             href={href}
-            className="btn bg-surface text-ink transition-colors duration-300 hover:bg-surface-200"
+            className="btn bg-surface text-ink transition-colors duration-touch hover:bg-surface-200"
           >
             {cta}
           </Link>

@@ -140,7 +140,7 @@ export function MediaVault({ clientId, photos, viewer }: {
                   <>
                     {/* a plain img: these are signed one-off URLs, not a fixed asset path */}
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={f.url} alt={f.note || f.name} loading="lazy" className="aspect-[4/3] w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]" />
+                    <img src={f.url} alt={f.note || f.name} loading="lazy" className="aspect-[4/3] w-full object-cover transition-transform duration-enter group-hover:scale-[1.03]" />
                   </>
                 )}
                 <span className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 bg-gradient-to-t from-ink/60 to-transparent p-2.5 text-surface opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">

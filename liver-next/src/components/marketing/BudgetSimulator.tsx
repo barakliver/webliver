@@ -165,7 +165,7 @@ export function BudgetSimulator({ copy: c, closing, bookLabel }: {
                     <span className="tabular-nums text-ink"><Money value={l.amount} /></span>
                   </div>
                   <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-surface-200">
-                    <div className="h-full rounded-xl2 bg-accent transition-[width] duration-500" style={{ width: `${pct}%` }} />
+                    <div className="h-full rounded-xl2 bg-accent transition-[width] duration-enter" style={{ width: `${pct}%` }} />
                   </div>
                 </li>
               );

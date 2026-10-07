@@ -1153,9 +1153,13 @@
    naming a side. Hard-coding `translateX(-24px)` would send every forward
    navigation in the product backwards. */
 :root {
-  --move-exit: 150ms;
-  --move-enter: 220ms;
-  --move-slide: 380ms;
+  /* The same three steps the markup uses, named once here so a page
+     transition and a hover cannot drift apart. `touch` for what is leaving,
+     because it should go at the speed of a press; `move` for what arrives;
+     `enter` for how far it travels while arriving. */
+  --move-exit: 150ms;   /* = duration-touch */
+  --move-enter: 250ms;  /* = duration-move  */
+  --move-slide: 400ms;  /* = duration-enter */
   --move-forward: 1;
 }
 html[dir='rtl'] { --move-forward: -1; }

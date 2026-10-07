@@ -256,7 +256,7 @@ export function AppShell({
             <form action={signOut}>
               <button
                 type="submit"
-                className="flex min-h-[52px] w-full items-center gap-3 px-1 text-start text-lead text-ink-soft transition-colors duration-300 hover:text-ink"
+                className="flex min-h-[52px] w-full items-center gap-3 px-1 text-start text-lead text-ink-soft transition-colors duration-touch hover:text-ink"
               >
                 <LogOut size={20} strokeWidth={1.5} aria-hidden />
                 {ui.signOut}

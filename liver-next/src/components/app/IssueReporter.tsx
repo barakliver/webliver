@@ -108,7 +108,7 @@ export function IssueReporter({ userId, compact, row, context, copy }: {
         <button
           type="button"
           onClick={() => { reset(); setOpen(true); }}
-          className="flex min-h-[52px] w-full items-center gap-3 border-b border-line px-1 text-start text-lead text-ink-soft transition-colors duration-300 hover:text-ink"
+          className="flex min-h-[52px] w-full items-center gap-3 border-b border-line px-1 text-start text-lead text-ink-soft transition-colors duration-touch hover:text-ink"
         >
           <Flag size={20} strokeWidth={1.5} aria-hidden />
           {c.open}

@@ -26,7 +26,7 @@ export function Portfolio({ locale }: { locale: Locale }) {
                 /* Only the first row is worth fetching before the scroll. */
                 priority={i < 3}
                 loading={i < 3 ? undefined : 'lazy'}
-                className="object-cover transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.03]"
+                className="object-cover transition-transform duration-enter ease-out motion-safe:group-hover:scale-[1.03]"
               />
             </div>
             {/* The caption in the display face, with a short gold rule where

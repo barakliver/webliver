@@ -312,7 +312,7 @@ function PersonRow({ person }: { person: CrewPerson }) {
           </span>
           <ChevronDown
             size={18} strokeWidth={1.5} aria-hidden
-            className="mt-1 shrink-0 text-ink-mute transition-transform duration-200 group-open:rotate-180"
+            className="mt-1 shrink-0 text-ink-mute transition-transform duration-touch group-open:rotate-180"
           />
         </summary>
         <div className="border-t border-line-soft px-4 pb-4 sm:px-5 sm:pb-5">
@@ -412,7 +412,7 @@ export function CrewDesk({ people }: { people: CrewPerson[] }) {
             <span className="text-body text-ink-mute"><Ltr>{String(shown.length)}</Ltr></span>
             <ChevronDown
               size={17} strokeWidth={1.5} aria-hidden
-              className="shrink-0 text-ink-mute transition-transform duration-200 group-open/list:rotate-180"
+              className="shrink-0 text-ink-mute transition-transform duration-touch group-open/list:rotate-180"
             />
           </summary>
           <ul id="crew-list" className="mt-3 list-none space-y-3 p-0">
@@ -431,7 +431,7 @@ export function CrewDesk({ people }: { people: CrewPerson[] }) {
             <span className="text-body text-ink-mute">{archived.length}</span>
             <ChevronDown
               size={18} strokeWidth={1.5} aria-hidden
-              className="shrink-0 text-ink-mute transition-transform duration-200 group-open:rotate-180"
+              className="shrink-0 text-ink-mute transition-transform duration-touch group-open:rotate-180"
             />
           </summary>
           <p className="mt-1 text-body text-ink-mute">{c.deskArchivedSub}</p>

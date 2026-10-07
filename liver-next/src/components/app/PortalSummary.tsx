@@ -65,7 +65,7 @@ export function PortalSummary({ rows, label }: { rows: SummaryRow[]; label: stri
             <Link
               href={r.href}
               className={`mx-4 flex min-h-[52px] items-center justify-between gap-4
-                          transition-colors duration-300 hover:text-accent
+                          transition-colors duration-touch hover:text-accent
                           ${i > 0 ? 'border-t border-line' : ''}`}
             >
               <span className="text-lead">{r.label}</span>

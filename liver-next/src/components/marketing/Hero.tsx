@@ -82,7 +82,7 @@ export function Hero({ site }: { site: SiteCopy }) {
               dark on dark, so the hero's call inverts to white on ink. */}
           <Link
             href="#contact"
-            className="btn bg-surface text-ink transition-colors duration-300 hover:bg-surface-200"
+            className="btn bg-surface text-ink transition-colors duration-touch hover:bg-surface-200"
           >
             {site.hero.cta}
           </Link>

@@ -165,7 +165,7 @@ function SlotPicker({
         {c.boardAdd}
         <ChevronDown
           size={13} aria-hidden strokeWidth={1.5}
-          className="transition-transform duration-200 group-open/pick:rotate-180"
+          className="transition-transform duration-touch group-open/pick:rotate-180"
         />
       </summary>
 

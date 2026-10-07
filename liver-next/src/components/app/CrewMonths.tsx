@@ -103,7 +103,7 @@ function Hours({ e }: { e: MonthEvening }) {
         {c.hoursAdd}
         <ChevronDown
           size={12} aria-hidden strokeWidth={1.5}
-          className="transition-transform duration-200 group-open/h:rotate-180"
+          className="transition-transform duration-touch group-open/h:rotate-180"
         />
       </summary>
       <form action={action} className="mt-1.5 flex flex-wrap items-end gap-2">
@@ -182,7 +182,7 @@ export function CrewMonths({ months }: { months: MonthRow[] }) {
               </span>
               <ChevronDown
                 size={17} strokeWidth={1.5} aria-hidden
-                className="shrink-0 self-center text-ink-mute transition-transform duration-200 group-open/m:rotate-180"
+                className="shrink-0 self-center text-ink-mute transition-transform duration-touch group-open/m:rotate-180"
               />
             </span>
             <span className="flex items-baseline gap-2 text-body">

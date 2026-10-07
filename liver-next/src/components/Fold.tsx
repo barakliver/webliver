@@ -101,7 +101,7 @@ export function Fold({
             directions of text. */}
         <ChevronDown
           size={19} strokeWidth={1.5} aria-hidden
-          className="shrink-0 text-ink-mute transition-transform duration-200 group-open:rotate-180"
+          className="shrink-0 text-ink-mute transition-transform duration-touch group-open:rotate-180"
         />
       </summary>
       {/* Open, the drawer is a tray sunk into the list rather than a column
