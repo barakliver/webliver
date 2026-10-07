@@ -59,7 +59,7 @@ export function PrepView({ c, eventName, dateLabel, venue, producer, faces, look
                     somebody scans in a hall is how a person gets skipped. */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 {f.url
-                  ? <img src={f.url} alt={f.name} className="size-20 shrink-0 rounded-xl2 object-cover" />
+                  ? <img src={f.url} alt={f.name} className="size-20 shrink-0 rounded-xl2 object-cover" decoding="async" />
                   : <span aria-hidden className="size-20 shrink-0 rounded-xl2 border border-line bg-surface-200" />}
                 <div className="min-w-0">
                   <p className="text-head font-medium text-ink">{f.name}</p>
@@ -84,7 +84,7 @@ export function PrepView({ c, eventName, dateLabel, venue, producer, faces, look
                 {looks.filter((l) => l.category === cat).map((l, i) => (
                   <li key={i} className="overflow-hidden rounded-xl2 border border-line">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    {l.url && <img src={l.url} alt={l.note || c.categories[cat]} className="aspect-square w-full object-cover" />}
+                    {l.url && <img src={l.url} alt={l.note || c.categories[cat]} className="aspect-square w-full object-cover" decoding="async" />}
                     {l.note && <p className="px-2 py-1.5 text-body leading-snug text-ink-soft">{l.note}</p>}
                   </li>
                 ))}

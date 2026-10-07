@@ -77,7 +77,16 @@ function Brand({ brand }: { brand: Brand }) {
       {brand.logoUrl ? (
         <>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={brand.logoUrl} alt={brand.name} className="h-7 w-auto max-w-[140px] object-contain sm:h-8" />
+          {/* The box is reserved, the picture fits inside it. `w-auto` meant
+              the header did not know how wide this was until the file
+              landed, so the producer's name and every control after it
+              stepped sideways on each cold load. A logo is the one image on
+              the screen that is always above the fold, so it is also the one
+              whose shift is always seen. */}
+          <img
+            src={brand.logoUrl} alt={brand.name} decoding="async"
+            className="h-7 w-[140px] max-w-[140px] object-contain ltr:object-left rtl:object-right sm:h-8"
+          />
           <span className="sr-only">{brand.name}</span>
         </>
       ) : (

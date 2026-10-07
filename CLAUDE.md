@@ -453,6 +453,18 @@ that has happened once.
   bar; the tone map was shared between the two sizes, so every linked figure
   on every summary read as a decision rather than as the borrowed value it
   was.
+- **The raw `<img>` tags are deliberate, and `next/image` would be wrong
+  here.** Almost every picture in this product is a signed one-off Supabase
+  URL for somebody's private wedding photograph, valid for an hour. Routing
+  those through the image optimiser would put every guest's face and every
+  supplier contract through a transform and leave the result in a disk cache
+  on a one-gigabyte droplet, keyed by a URL that expires. The three fixed
+  assets that are not private already use `next/image`. Of the fourteen raw
+  ones, eleven reserve their space in CSS and shift nothing; the three that
+  shifted were logos sized `w-auto`, which means the header does not know how
+  wide it is until the file lands, and a logo is the one image always above
+  the fold and therefore the one whose shift is always seen. They have a
+  reserved box now and the picture fits inside it.
 - **The `revalidatePath` calls are not over-invalidation, and narrowing them
   would be churn.** It looks like over-invalidation: `/app/portal` is named in
   31 places and `/app` in 22, so editing one envelope appears to refresh the

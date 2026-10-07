@@ -181,8 +181,7 @@ export function StoreProducts({ producerId, products }: {
                   <img
                     src={storeImageUrl(p.image_path)} alt=""
                     className="size-14 shrink-0 rounded-control object-cover"
-                    loading="lazy"
-                  />
+                    loading="lazy" decoding="async" />
                 ) : (
                   <span className="grid size-14 shrink-0 place-items-center rounded-control bg-surface-200 text-ink-mute">
                     <ImageIcon size={17} aria-hidden strokeWidth={1.5} />

@@ -188,8 +188,7 @@ export function PortalWorkspace({
              itself, where somebody chose it. */
           <img
             src={cover} alt="" aria-hidden
-            className="aspect-[16/9] w-full object-cover sm:aspect-[21/9]"
-          />
+            className="aspect-[16/9] w-full object-cover sm:aspect-[21/9]" decoding="async" />
         )}
 
         <div className="px-5 py-8 sm:px-8 sm:py-10">

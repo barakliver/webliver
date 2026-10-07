@@ -96,7 +96,7 @@ export function Shop({ producerId, items, copy: c }: {
             <li key={i.id} className="card flex flex-col overflow-hidden p-0">
               {i.image && (
                 /* eslint-disable-next-line @next/next/no-img-element */
-                <img src={i.image} alt="" className="h-44 w-full object-cover" loading="lazy" />
+                <img src={i.image} alt="" className="h-44 w-full object-cover" loading="lazy" decoding="async" />
               )}
               <div className="flex flex-1 flex-col p-5">
                 <p className="text-micro tracking-[.14em] text-ink-mute">

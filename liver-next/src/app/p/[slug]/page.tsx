@@ -104,12 +104,11 @@ export default async function ProducerEntryPage({ params }: { params: Promise<{ 
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={b.cover_url} alt=""
-            className="mb-8 aspect-video w-full rounded-card-sm object-cover shadow-pop"
-          />
+            className="mb-8 aspect-video w-full rounded-card-sm object-cover shadow-pop" decoding="async" />
         )}
         {b.logo_url ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={b.logo_url} alt={b.brand} className="mx-auto h-14 w-auto max-w-[220px] object-contain" />
+          <img src={b.logo_url} alt={b.brand} className="mx-auto h-14 w-[220px] max-w-[220px] object-contain" decoding="async" />
         ) : (
           <p className="font-display text-[34px] font-semibold leading-tight text-ink">{b.brand}</p>
         )}

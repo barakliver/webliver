@@ -41,8 +41,7 @@ export function Avatar({
         src={src}
         alt={label}
         style={dim}
-        className={cn('shrink-0 rounded-full object-cover ring-1 ring-line', className)}
-      />
+        className={cn('shrink-0 rounded-full object-cover ring-1 ring-line', className)} decoding="async" />
     );
   }
 

@@ -295,8 +295,7 @@ function Rules({ onBack }: { onBack: () => void }) {
           width={944}
           height={1417}
           className="mx-auto mt-7 w-full max-w-[17rem] rounded-xl2"
-          draggable={false}
-        />
+          draggable={false} decoding="async" />
         <div className="mt-9 space-y-7">
           {game.rules.map((r) => (
             <section key={r.h}>
@@ -350,8 +349,7 @@ function Flip({ card, open, onOpen }: {
             width={944}
             height={1417}
             className="size-full object-contain"
-            draggable={false}
-          />
+            draggable={false} decoding="async" />
         </span>
         {/* Face up: his artwork, unchanged. */}
         <span className="flip-face is-back rounded-xl2 bg-white">
@@ -364,8 +362,7 @@ function Flip({ card, open, onOpen }: {
                right size and already WebP, and asking the droplet to
                re-encode sixty-six of them on demand is work for nothing. */
             className="size-full object-contain"
-            draggable={false}
-          />
+            draggable={false} decoding="async" />
         </span>
       </span>
     </button>
@@ -390,8 +387,7 @@ function Finished({ onRestart }: { onRestart: () => void }) {
         width={944}
         height={1417}
         className="mt-8 w-full max-w-[15rem] rounded-xl2"
-        draggable={false}
-      />
+        draggable={false} decoding="async" />
       <button
         type="button"
         onClick={onRestart}

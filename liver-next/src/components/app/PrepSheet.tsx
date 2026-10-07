@@ -368,7 +368,7 @@ function PhotoButton({ c, photo, icon: Icon = Camera }: {
               there was no sign the right photograph had been chosen. */}
           {photo.preview
             /* eslint-disable-next-line @next/next/no-img-element */
-            ? <img src={photo.preview} alt="" className={`size-full object-cover ${photo.busy ? 'opacity-40' : ''}`} />
+            ? <img src={photo.preview} alt="" className={`size-full object-cover ${photo.busy ? 'opacity-40' : ''}`} decoding="async" />
             : !photo.busy && <Icon size={18} strokeWidth={1.5} aria-hidden />}
           {photo.busy && (
             <Loader2 size={18} strokeWidth={1.5} aria-hidden className="absolute animate-spin text-ink" />
@@ -437,7 +437,7 @@ function VipCard({ c, clientId, v }: { c: PrepCopy; clientId: string; v: Vip }) 
     <li className="flex flex-wrap items-start gap-3 rounded-card-sm border border-line p-3">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       {v.url
-        ? <img src={v.url} alt={v.name} className="size-16 shrink-0 rounded-card-sm object-cover" />
+        ? <img src={v.url} alt={v.name} className="size-16 shrink-0 rounded-card-sm object-cover" decoding="async" />
         : <span aria-hidden className="grid size-16 shrink-0 place-items-center rounded-card-sm bg-surface-200 text-ink-mute">
             <Camera size={18} strokeWidth={1.5} />
           </span>}
@@ -523,7 +523,7 @@ function LookTile({ c, clientId, l, cat }: {
   return (
     <li className="group relative overflow-hidden rounded-card-sm border border-line">
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      {l.url && <img src={l.url} alt={l.note || c.categories[cat]} className="aspect-square w-full object-cover" />}
+      {l.url && <img src={l.url} alt={l.note || c.categories[cat]} className="aspect-square w-full object-cover" decoding="async" />}
 
       {editing ? (
         <form action={action} className="p-1.5">

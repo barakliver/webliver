@@ -247,7 +247,7 @@ function Tile({ c, clientId, img, label }: {
     <li className="overflow-hidden rounded-card-sm border border-line bg-surface-100">
       {/* a plain img: these are signed one-off URLs, not a fixed asset path */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={img.url} alt={img.caption || label} className="h-52 w-full object-cover" loading="lazy" />
+      <img src={img.url} alt={img.caption || label} className="h-52 w-full object-cover" loading="lazy" decoding="async" />
 
       {editing ? (
         <form action={action} className="p-3">

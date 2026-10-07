@@ -262,7 +262,7 @@ function LogCard({ log, clientId, viewer }: {
             <li key={u} className="overflow-hidden rounded-card-sm border border-line">
               {/* signed one-off links, not a fixed asset path */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={u} alt={`${c.card.photos} · ${log.venue_name}`} className="h-24 w-full object-cover" loading="lazy" />
+              <img src={u} alt={`${c.card.photos} · ${log.venue_name}`} className="h-24 w-full object-cover" loading="lazy" decoding="async" />
             </li>
           ))}
         </ul>

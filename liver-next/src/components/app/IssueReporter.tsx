@@ -173,7 +173,7 @@ export function IssueReporter({ userId, compact, row, context, copy }: {
               {shot ? (
                 <div className="flex items-center gap-3 rounded-xl2 border border-line bg-surface-100 p-2">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={URL.createObjectURL(shot)} alt="" className="h-14 w-20 rounded-lg object-cover" />
+                  <img src={URL.createObjectURL(shot)} alt="" className="h-14 w-20 rounded-lg object-cover" decoding="async" />
                   <span className="min-w-0 flex-1 truncate text-body text-ink-soft" dir="ltr">{shot.name}</span>
                   <button
                     type="button" onClick={() => setShot(null)} aria-label={c.screenshotRemove}
