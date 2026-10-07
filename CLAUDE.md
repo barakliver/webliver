@@ -453,6 +453,22 @@ that has happened once.
   bar; the tone map was shared between the two sizes, so every linked figure
   on every summary read as a decision rather than as the borrowed value it
   was.
+- **The `revalidatePath` calls are not over-invalidation, and narrowing them
+  would be churn.** It looks like over-invalidation: `/app/portal` is named in
+  31 places and `/app` in 22, so editing one envelope appears to refresh the
+  couple's whole screen. Two things make that reading wrong. The counts are 31
+  *different actions* each correctly naming a screen their write changes, not
+  one action calling it 31 times; the worst single `touch()` names four paths
+  and the day's data really is on all four. And Next's own documentation for
+  this version says a `revalidatePath` from a server function "currently also
+  causes all previously visited pages to refresh when navigated to again" —
+  so naming a narrower path buys nothing today, and the only effect of the
+  change would be to alter behaviour unpredictably on the day that temporary
+  behaviour is fixed. Every route here reads cookies through `supabaseServer`,
+  which makes it dynamic whether or not it declares `force-dynamic`, so what
+  these calls actually buy is the client Router Cache being dropped: without
+  them a couple edits a row, navigates away and back, and reads the old list.
+  Leave them naming the screens they change.
 - **A heading is one of three classes**, `head-panel`, `head-section` and
   `head-sub`, in `globals.css` beside `.card` and `.eyebrow`. There were 83
   written out by hand, and because they were written out they were written
