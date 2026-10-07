@@ -2,3 +2,8 @@ liver-next/node_modules
 liver-next/.next
 liver-next/.env.local
 liver-next/tsconfig.tsbuildinfo
+
+# Python bytecode. The skills under .claude/ ship scripts, and running one
+# rewrites these — they are build output of a tool, not source.
+__pycache__/
+*.pyc
