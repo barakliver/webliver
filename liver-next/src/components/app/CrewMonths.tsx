@@ -73,7 +73,7 @@ function Fee({ e }: { e: MonthEvening }) {
           id={`f-${e.crewId}`} name="fee" type="number" min="0" step="50"
           defaultValue={e.fee ? String(e.fee) : ''}
           className="field w-28 text-body" inputMode="numeric"
-        />
+         autoComplete="off" enterKeyHint="done" />
       </div>
       <Save />
       {state?.ok && (
@@ -115,7 +115,7 @@ function Hours({ e }: { e: MonthEvening }) {
           id={`h-${e.crewId}`} name="extra_hours" type="number" min="0" max="24" step="0.5"
           defaultValue={e.hours === null ? '' : String(e.hours)}
           className="field w-24 text-body" inputMode="decimal"
-        />
+         autoComplete="off" enterKeyHint="next" />
       </div>
       <div>
         <label className="label text-micro" htmlFor={`hr-${e.crewId}`}>{c.hoursRate}</label>
@@ -123,7 +123,7 @@ function Hours({ e }: { e: MonthEvening }) {
           id={`hr-${e.crewId}`} name="hour_rate" type="number" min="0" step="10"
           defaultValue={e.hourRate === null ? '' : String(e.hourRate)}
           className="field w-24 text-body" inputMode="numeric"
-        />
+         autoComplete="off" enterKeyHint="done" />
       </div>
       <Save />
       {state?.ok && (

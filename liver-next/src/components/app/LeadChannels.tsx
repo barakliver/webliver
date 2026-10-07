@@ -74,7 +74,7 @@ export function LeadChannels({ channels, origin }: {
               <input
                 id="new-channel" name="label" maxLength={40} autoComplete="off"
                 placeholder={c.addPhHint} className="field" autoFocus
-              />
+               enterKeyHint="done" />
             </div>
             <div className="min-w-[150px]">
               <label className="label" htmlFor="new-channel-kind">{c.kind}</label>
@@ -239,7 +239,7 @@ function EditRow({ channel, onDone }: { channel: LeadChannel; onDone: () => void
           <input
             id={`edit-${channel.id}`} name="label" defaultValue={channel.label}
             maxLength={40} autoComplete="off" className="field" autoFocus
-          />
+           enterKeyHint="done" />
         </div>
         <div className="min-w-[150px]">
           <label className="label" htmlFor={`edit-kind-${channel.id}`}>{c.kind}</label>

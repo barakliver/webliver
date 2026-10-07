@@ -141,25 +141,25 @@ function Row({ item, clientId, c, plan }: {
           <Field name="label" label={c.budLabel} className="col-span-2">
             {(id) => (
               <input id={id} name="label" required defaultValue={item.label}
-                     autoComplete="off" className="field" />
+                     autoComplete="off" className="field"  enterKeyHint="next" />
             )}
           </Field>
           <Field name="estimate" label={c.budEstimate}>
             {(id) => (
               <input id={id} name="estimate" required type="number" min={0} step="0.01"
-                     inputMode="decimal" defaultValue={estimate} className="field" />
+                     inputMode="decimal" defaultValue={estimate} className="field"  autoComplete="off" enterKeyHint="next" />
             )}
           </Field>
           <Field name="agreed" label={c.budAgreed} hint={c.budAgreedHint}>
             {(id) => (
               <input id={id} name="agreed" type="number" min={0} step="0.01"
-                     inputMode="decimal" defaultValue={agreed ?? ''} className="field" />
+                     inputMode="decimal" defaultValue={agreed ?? ''} className="field"  autoComplete="off" enterKeyHint="next" />
             )}
           </Field>
           <Field name="vendor" label={c.budVendor} className="col-span-2">
             {(id) => (
               <input id={id} name="vendor" defaultValue={item.vendor}
-                     autoComplete="off" className="field" />
+                     autoComplete="off" className="field"  enterKeyHint="done" />
             )}
           </Field>
           <Field name="category" label={c.budCategory} hint={c.budCategoryWhy} className="col-span-2">
@@ -278,23 +278,23 @@ export function BudgetPanel({ clientId, items, viewer, visible }: {
         <Field name="label" label={c.budLabel} className="col-span-2 lg:col-span-1">
           {(id) => (
             <input id={id} name="label" required placeholder={c.budLabelPh}
-                   autoComplete="off" className="field" />
+                   autoComplete="off" className="field"  enterKeyHint="next" />
           )}
         </Field>
         <Field name="estimate" label={c.budEstimate}>
           {(id) => (
             <input id={id} name="estimate" required type="number" min={0} step="0.01"
-                   inputMode="decimal" className="field" />
+                   inputMode="decimal" className="field"  autoComplete="off" enterKeyHint="next" />
           )}
         </Field>
         <Field name="agreed" label={c.budAgreed} hint={c.budAgreedHint}>
           {(id) => (
             <input id={id} name="agreed" type="number" min={0} step="0.01"
-                   inputMode="decimal" className="field" />
+                   inputMode="decimal" className="field"  autoComplete="off" enterKeyHint="next" />
           )}
         </Field>
         <Field name="vendor" label={c.budVendor} className="col-span-2 lg:col-span-1">
-          {(id) => <input id={id} name="vendor" autoComplete="off" className="field" />}
+          {(id) => <input id={id} name="vendor" autoComplete="off" className="field"  enterKeyHint="done" />}
         </Field>
         <Field name="category" label={c.budCategory} className="col-span-2 lg:col-span-1">
           {(id) => <CategorySelect id={id} value="" c={c} plan={plan} />}

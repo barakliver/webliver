@@ -118,7 +118,7 @@ function PersonFee({ row }: { row: BoardAssignment }) {
         defaultValue={row.fee ? String(row.fee) : ''}
         placeholder={c.fee} aria-label={c.fee}
         className="field w-24 text-meta" inputMode="numeric"
-      />
+       autoComplete="off" enterKeyHint="done" />
       <Saving />
       {state?.ok && <Check size={12} aria-hidden strokeWidth={1.5} className="mb-2 text-good" />}
       {state?.error && <span className="mb-2 text-meta text-bad">{state.error}</span>}

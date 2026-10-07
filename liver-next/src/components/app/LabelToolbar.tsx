@@ -72,7 +72,7 @@ export function LabelToolbar({ kind, labels, builtIn = [] }: {
           <div className="flex flex-wrap items-end gap-2">
             <div className="min-w-[200px] flex-1">
               <label className="label" htmlFor={`new-${kind}`}>{isTags ? c.addPh : c.addChannelPh}</label>
-              <input id={`new-${kind}`} name="label" maxLength={40} autoComplete="off" className="field" autoFocus />
+              <input id={`new-${kind}`} name="label" maxLength={40} autoComplete="off" className="field" autoFocus  enterKeyHint="done" />
             </div>
             <button type="submit" className="btn-primary" disabled={pending}>{pending ? c.saving : c.save}</button>
           </div>
@@ -149,7 +149,7 @@ function EditRow({ label, onDone }: { label: ProducerLabel; onDone: () => void }
         <input
           name="label" defaultValue={label.label} maxLength={40} autoComplete="off"
           className="field min-h-[36px] w-[180px] py-1 text-body" aria-label={c.rename} autoFocus
-        />
+         enterKeyHint="done" />
         <button type="submit" className="btn-primary min-h-[36px] px-3 text-body" disabled={pending}>
           {pending ? c.saving : c.save}
         </button>

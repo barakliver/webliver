@@ -186,17 +186,17 @@ function Faces({ c, clientId, vips }: { c: PrepCopy; clientId: string; vips: Vip
           <PhotoButton c={c} photo={photo} />
           <label className="min-w-[9rem] flex-1">
             <span className="label">{c.name}</span>
-            <input name="name" required maxLength={80} className="field mt-1 w-full" />
+            <input name="name" required maxLength={80} className="field mt-1 w-full"  autoComplete="off" enterKeyHint="next" />
           </label>
           <label className="min-w-[9rem] flex-1">
             <span className="label">{c.relation}</span>
-            <input name="relation" maxLength={60} placeholder={c.relationPh} className="field mt-1 w-full" />
+            <input name="relation" maxLength={60} placeholder={c.relationPh} className="field mt-1 w-full"  autoComplete="off" enterKeyHint="next" />
           </label>
         </div>
 
         <label className="mt-3 block">
           <span className="label">{c.note}</span>
-          <input name="note" maxLength={400} placeholder={c.notePh} className="field mt-1 w-full" />
+          <input name="note" maxLength={400} placeholder={c.notePh} className="field mt-1 w-full"  autoComplete="off" enterKeyHint="done" />
         </label>
 
         <Submit c={c} pending={pending} />
@@ -253,7 +253,7 @@ function Looks({ c, clientId, looks }: { c: PrepCopy; clientId: string; looks: L
           </label>
           <label className="min-w-[10rem] flex-1">
             <span className="label">{c.note}</span>
-            <input name="note" maxLength={400} className="field mt-1 w-full" />
+            <input name="note" maxLength={400} className="field mt-1 w-full"  autoComplete="off" enterKeyHint="done" />
           </label>
         </div>
         <Submit c={c} pending={pending} disabled={!photo.path} />
@@ -448,15 +448,15 @@ function VipCard({ c, clientId, v }: { c: PrepCopy; clientId: string; v: Vip }) 
           <input type="hidden" name="client_id" value={clientId} />
           <label className="block">
             <span className="label">{c.name}</span>
-            <input name="name" required maxLength={80} defaultValue={v.name} className="field mt-1 w-full" />
+            <input name="name" required maxLength={80} defaultValue={v.name} className="field mt-1 w-full"  autoComplete="off" enterKeyHint="next" />
           </label>
           <label className="mt-2 block">
             <span className="label">{c.relation}</span>
-            <input name="relation" maxLength={60} defaultValue={v.relation ?? ''} className="field mt-1 w-full" />
+            <input name="relation" maxLength={60} defaultValue={v.relation ?? ''} className="field mt-1 w-full"  autoComplete="off" enterKeyHint="next" />
           </label>
           <label className="mt-2 block">
             <span className="label">{c.note}</span>
-            <input name="note" maxLength={400} defaultValue={v.note ?? ''} className="field mt-1 w-full" />
+            <input name="note" maxLength={400} defaultValue={v.note ?? ''} className="field mt-1 w-full"  autoComplete="off" enterKeyHint="done" />
           </label>
           <div className="mt-2 flex items-center gap-2">
             <SaveEdit c={c} />
@@ -537,7 +537,7 @@ function LookTile({ c, clientId, l, cat }: {
           </label>
           <label className="mt-1 block">
             <span className="sr-only">{c.note}</span>
-            <input name="note" maxLength={400} defaultValue={l.note ?? ''} placeholder={c.note} className="field w-full text-micro" />
+            <input name="note" maxLength={400} defaultValue={l.note ?? ''} placeholder={c.note} className="field w-full text-micro"  autoComplete="off" enterKeyHint="done" />
           </label>
           <div className="mt-1 flex items-center gap-1">
             <SaveEdit c={c} />

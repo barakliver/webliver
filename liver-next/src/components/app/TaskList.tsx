@@ -201,9 +201,9 @@ function EditForm({ task, clientId, viewer, onDone }: {
         <p role="alert" className="rounded-control border border-bad/25 bg-bad-wash px-4 py-2.5 text-body text-bad sm:col-span-2">{state.error}</p>
       )}
       <label className="grid gap-1 text-meta text-ink-mute sm:col-span-2">{c.titlePh}
-        <input name="title" required maxLength={200} defaultValue={task.title} className="field" autoComplete="off" /></label>
+        <input name="title" required maxLength={200} defaultValue={task.title} className="field" autoComplete="off"  enterKeyHint="next" /></label>
       <label className="grid gap-1 text-meta text-ink-mute">{c.due}
-        <input name="due_on" type="date" defaultValue={task.due_on ?? ''} className="field" /></label>
+        <input name="due_on" type="date" defaultValue={task.due_on ?? ''} className="field"  autoComplete="off" enterKeyHint="done" /></label>
       <label className="grid gap-1 text-meta text-ink-mute">{c.owner}
         <select name="owner" defaultValue={task.owner} className="field">
           <option value="producer">{ownerLabel('producer')}</option>
@@ -242,8 +242,8 @@ export function TaskList({ clientId, tasks, viewer, viewerId }: {
 
       <form action={action} className="mt-5 grid gap-3 sm:grid-cols-[1fr_auto_auto_auto]">
         <input type="hidden" name="client_id" value={clientId} />
-        <input name="title" required placeholder={c.titlePh} autoComplete="off" className="field" aria-label={c.titlePh} />
-        <input name="due_on" type="date" className="field sm:w-[150px]" aria-label={c.due} />
+        <input name="title" required placeholder={c.titlePh} autoComplete="off" className="field" aria-label={c.titlePh}  enterKeyHint="next" />
+        <input name="due_on" type="date" className="field sm:w-[150px]" aria-label={c.due}  autoComplete="off" enterKeyHint="done" />
         <select name="owner" defaultValue={viewer} className="field sm:w-[120px]" aria-label={c.owner}>
           <option value="producer">{viewer === 'producer' ? c.ownerProducer : c.ownerProducerClientView}</option>
           <option value="client">{viewer === 'producer' ? c.ownerClient : c.ownerClientClientView}</option>

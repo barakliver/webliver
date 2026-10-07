@@ -122,7 +122,7 @@ export function ProfileForm({
             maxLength={80}
             className="field"
             autoComplete="name"
-          />
+           enterKeyHint="done" />
         </div>
 
         <div>

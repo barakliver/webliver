@@ -164,15 +164,15 @@ function EditEntry({ entry: e, events, onDone }: {
           <input
             name="amount" required type="number" min="0.01" step="0.01" inputMode="decimal"
             defaultValue={e.amount} className="field"
-          />
+           autoComplete="off" enterKeyHint="next" />
         </label>
         <label className="min-w-0">
           <span className="mb-1 block text-meta font-medium text-ink-soft">{c.date}</span>
-          <input name="on_date" type="date" defaultValue={e.on_date} className="field" />
+          <input name="on_date" type="date" defaultValue={e.on_date} className="field"  autoComplete="off" enterKeyHint="next" />
         </label>
         <label className="col-span-2 min-w-0">
           <span className="mb-1 block text-meta font-medium text-ink-soft">{c.label}</span>
-          <input name="label" required maxLength={120} defaultValue={e.label} autoComplete="off" className="field" />
+          <input name="label" required maxLength={120} defaultValue={e.label} autoComplete="off" className="field"  enterKeyHint="next" />
         </label>
         {events.length > 0 && (
           <label className="col-span-2 min-w-0">
@@ -185,11 +185,11 @@ function EditEntry({ entry: e, events, onDone }: {
         )}
         <label className="col-span-2 min-w-0">
           <span className="mb-1 block text-meta font-medium text-ink-soft">{c.party}</span>
-          <input name="party" maxLength={120} defaultValue={e.party} className="field" />
+          <input name="party" maxLength={120} defaultValue={e.party} className="field"  autoComplete="off" enterKeyHint="next" />
         </label>
         <label className="col-span-2 min-w-0">
           <span className="mb-1 block text-meta font-medium text-ink-soft">{c.note}</span>
-          <input name="note" maxLength={500} defaultValue={e.note} className="field" />
+          <input name="note" maxLength={500} defaultValue={e.note} className="field"  autoComplete="off" enterKeyHint="done" />
         </label>
       </div>
 

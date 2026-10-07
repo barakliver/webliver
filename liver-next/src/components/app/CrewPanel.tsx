@@ -41,7 +41,7 @@ function Fields({ member }: { member?: CrewMember }) {
       <div className="grid gap-3 sm:grid-cols-[1fr_1fr_120px]">
         <div>
           <label className="label">{c.name}</label>
-          <input name="name" required defaultValue={member?.name} autoComplete="off" className="field" />
+          <input name="name" required defaultValue={member?.name} autoComplete="off" className="field"  enterKeyHint="next" />
         </div>
         <div>
           <label className="label">{c.role}</label>
@@ -58,7 +58,7 @@ function Fields({ member }: { member?: CrewMember }) {
         </div>
         <div>
           <label className="label">{c.callTime}</label>
-          <input name="call_time" type="time" defaultValue={member?.call_time ? hhmm(member.call_time) : ''} className="field" />
+          <input name="call_time" type="time" defaultValue={member?.call_time ? hhmm(member.call_time) : ''} className="field"  autoComplete="off" enterKeyHint="next" />
         </div>
       </div>
 
@@ -72,7 +72,7 @@ function Fields({ member }: { member?: CrewMember }) {
           <input
             name="fee" type="number" min={0} step="0.01" inputMode="decimal"
             defaultValue={member?.fee ?? ''} placeholder={c.feePh} className="field"
-          />
+           autoComplete="off" enterKeyHint="next" />
         </div>
         <div>
           <label className="label">{c.notes}</label>

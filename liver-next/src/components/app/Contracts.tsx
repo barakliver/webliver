@@ -90,8 +90,8 @@ function Draft({ clientId }: { clientId: string }) {
       <input type="hidden" name="file_path" value={path} />
 
       <div className="grid gap-3 sm:grid-cols-[1fr_160px]">
-        <input name="title" required maxLength={200} placeholder={c.titlePh} className="field" aria-label={c.titleLabel} />
-        <input name="amount" inputMode="decimal" placeholder={c.amountPh} className="field" aria-label={c.amountLabel} />
+        <input name="title" required maxLength={200} placeholder={c.titlePh} className="field" aria-label={c.titleLabel}  autoComplete="off" enterKeyHint="next" />
+        <input name="amount" inputMode="decimal" placeholder={c.amountPh} className="field" aria-label={c.amountLabel}  autoComplete="off" enterKeyHint="done" />
       </div>
 
       {/* Who the other side is. Optional, because an agreement with the couple

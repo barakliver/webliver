@@ -134,7 +134,7 @@ export function EventVendors({ clientId, vendors, directory }: {
           <div className="grid gap-3 sm:grid-cols-[1fr_160px_1fr]">
             <div>
               <label className="label">{c.name}</label>
-              <input name="name" required autoComplete="off" className="field" />
+              <input name="name" required autoComplete="off" className="field"  enterKeyHint="next" />
             </div>
             <div>
               <label className="label">{c.category}</label>
@@ -156,7 +156,7 @@ export function EventVendors({ clientId, vendors, directory }: {
             </div>
             <div>
               <label className="label">{c.callTime}</label>
-              <input name="call_time" type="time" className="field" />
+              <input name="call_time" type="time" className="field"  autoComplete="off" enterKeyHint="done" />
             </div>
             <div>
               <label className="label">{c.notes}</label>

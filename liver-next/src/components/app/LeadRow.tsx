@@ -127,15 +127,15 @@ export function LeadRow({ lead, calls }: { lead: Lead; calls: Call[] }) {
           <form action={setLeadNote} className="flex flex-wrap gap-2">
             <input type="hidden" name="lead_id" value={lead.id} />
             <input name="note" defaultValue={lead.note} placeholder={c.notePh} autoComplete="off"
-                   className="field flex-1 min-w-[200px]" aria-label={c.note} />
+                   className="field flex-1 min-w-[200px]" aria-label={c.note}  enterKeyHint="done" />
             <button type="submit" className="btn-ghost px-4 py-2 text-body">{c.saveNote}</button>
           </form>
 
           <form action={action} className="flex flex-wrap gap-2">
             <input type="hidden" name="lead_id" value={lead.id} />
             <input type="hidden" name="phone" value={lead.phone} />
-            <input name="title" defaultValue={c.callTitle} className="field flex-1 min-w-[160px]" aria-label={c.callTitle} />
-            <input name="remind_on" type="date" required className="field w-[160px]" aria-label={c.callWhen} />
+            <input name="title" defaultValue={c.callTitle} className="field flex-1 min-w-[160px]" aria-label={c.callTitle}  autoComplete="off" enterKeyHint="next" />
+            <input name="remind_on" type="date" required className="field w-[160px]" aria-label={c.callWhen}  autoComplete="off" enterKeyHint="done" />
             <Book />
           </form>
           {state && !state.ok && state.error && (

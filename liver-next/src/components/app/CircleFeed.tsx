@@ -78,7 +78,7 @@ function AskForm({ producerId, clientId, category, onDone }: {
         </select>
       </label>
       <label className="grid gap-1.5 text-body text-ink-soft">{c.form.title}
-        <input name="title" required minLength={2} maxLength={140} className="field" placeholder={c.form.titlePh} autoComplete="off" /></label>
+        <input name="title" required minLength={2} maxLength={140} className="field" placeholder={c.form.titlePh} autoComplete="off"  enterKeyHint="done" /></label>
       <label className="grid gap-1.5 text-body text-ink-soft">{c.form.content}
         <textarea name="content" required minLength={2} rows={5} className="field" placeholder={c.form.contentPh} /></label>
       <div>

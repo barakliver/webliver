@@ -48,7 +48,7 @@ export function SignForm({ token, defaultName }: { token: string; defaultName: s
         autoComplete="name"
         placeholder={c.namePh}
         className="field"
-      />
+       enterKeyHint="done" />
 
       <p className="mt-4 text-body leading-relaxed text-ink-mute">{c.before}</p>
 

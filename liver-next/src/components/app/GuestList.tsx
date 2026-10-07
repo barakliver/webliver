@@ -137,7 +137,7 @@ function EditGuest({ guest, clientId, open, onClose }: {
 
         <label className="min-w-0">
           <span className="mb-1 block text-meta font-medium text-ink-soft">{c.gName}</span>
-          <input name="full_name" required defaultValue={guest.full_name} autoComplete="off" className="field" />
+          <input name="full_name" required defaultValue={guest.full_name} autoComplete="off" className="field"  enterKeyHint="done" />
         </label>
         <div className="grid grid-cols-2 gap-3">
           <label className="min-w-0">

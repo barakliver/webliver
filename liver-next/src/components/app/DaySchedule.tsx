@@ -63,18 +63,18 @@ function LineFields({ item, labels, showOwner }: {
             dir="ltr" placeholder="19:30" maxLength={8}
             defaultValue={item ? hhmm(item.at_time) : ''}
             className="field text-center tabular-nums"
-          />
+           enterKeyHint="next" />
         </div>
         <div>
           <label className="label">{c.addTitle}</label>
-          <input name="title" required defaultValue={item?.title} placeholder={c.addTitlePh} autoComplete="off" className="field" />
+          <input name="title" required defaultValue={item?.title} placeholder={c.addTitlePh} autoComplete="off" className="field"  enterKeyHint="next" />
         </div>
         <div>
           <label className="label">{c.duration}</label>
           <input
             name="duration_min" type="number" min={1} max={960} inputMode="numeric"
             defaultValue={item?.duration_min ?? ''} placeholder={c.durationPh} className="field"
-          />
+           autoComplete="off" enterKeyHint="next" />
         </div>
       </div>
 
@@ -95,7 +95,7 @@ function LineFields({ item, labels, showOwner }: {
       <div className={`mt-3 grid gap-3 ${showOwner ? 'sm:grid-cols-[1fr_1fr_150px]' : 'sm:grid-cols-[1fr_150px]'}`}>
         <div>
           <label className="label">{c.note}</label>
-          <input name="note" defaultValue={item?.note} placeholder={c.notePh} autoComplete="off" className="field" />
+          <input name="note" defaultValue={item?.note} placeholder={c.notePh} autoComplete="off" className="field"  enterKeyHint="next" />
         </div>
         {/* Who is doing this is a staffing note, and staffing is the producer's
             side of the wall. The couple's copy of the schedule keeps the line
@@ -104,7 +104,7 @@ function LineFields({ item, labels, showOwner }: {
         {showOwner ? (
           <div>
             <label className="label">{c.owner}</label>
-            <input name="owner" defaultValue={item?.owner} placeholder={c.ownerPh} autoComplete="off" className="field" />
+            <input name="owner" defaultValue={item?.owner} placeholder={c.ownerPh} autoComplete="off" className="field"  enterKeyHint="next" />
           </div>
         ) : (
           <input type="hidden" name="owner" value={item?.owner ?? ''} />

@@ -179,7 +179,7 @@ export function Shop({ producerId, items, copy: c }: {
 
             <form action={send} className="mt-5 space-y-3">
               <div className="grid gap-3 sm:grid-cols-2">
-                <input name="name" required maxLength={200} placeholder={c.buyerName} aria-label={c.buyerName} className="field" autoComplete="name" />
+                <input name="name" required maxLength={200} placeholder={c.buyerName} aria-label={c.buyerName} className="field" autoComplete="name"  enterKeyHint="done" />
                 <input name="phone" inputMode="tel" maxLength={60} placeholder={c.buyerPhone} aria-label={c.buyerPhone} className="field" autoComplete="tel" />
               </div>
               <input name="email" type="email" maxLength={200} placeholder={c.buyerEmail} aria-label={c.buyerEmail} className="field w-full" autoComplete="email" />

@@ -48,7 +48,7 @@ export function LeadForm({ compact = false, site, kinds }: {
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label className="label" htmlFor="lf-name">{site.lead.fields.name}</label>
-          <input id="lf-name" name="full_name" required autoComplete="name" className="field" aria-invalid={invalid('full_name')} />
+          <input id="lf-name" name="full_name" required autoComplete="name" className="field" aria-invalid={invalid('full_name')}  enterKeyHint="next" />
         </div>
         <div>
           <label className="label" htmlFor="lf-phone">{site.lead.fields.phone}</label>
@@ -70,11 +70,11 @@ export function LeadForm({ compact = false, site, kinds }: {
         </div>
         <div>
           <label className="label" htmlFor="lf-date">{site.lead.fields.date}</label>
-          <input id="lf-date" name="event_date" type="date" min={MIN_EVENT_DATE} className="field" aria-invalid={invalid('event_date')} />
+          <input id="lf-date" name="event_date" type="date" min={MIN_EVENT_DATE} className="field" aria-invalid={invalid('event_date')}  autoComplete="off" enterKeyHint="next" />
         </div>
         <div>
           <label className="label" htmlFor="lf-guests">{site.lead.fields.guests}</label>
-          <input id="lf-guests" name="guest_count" type="number" min={1} max={MAX_GUESTS} inputMode="numeric" className="field" aria-invalid={invalid('guest_count')} />
+          <input id="lf-guests" name="guest_count" type="number" min={1} max={MAX_GUESTS} inputMode="numeric" className="field" aria-invalid={invalid('guest_count')}  autoComplete="off" enterKeyHint="done" />
         </div>
       </div>
 

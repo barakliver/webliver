@@ -62,15 +62,15 @@ export function EnvelopesPanel({ c, clientId, items }: {
         <div className="grid gap-3 sm:grid-cols-[1fr_1fr_130px]">
           <label>
             <span className="label">{c.label}</span>
-            <input name="label" required maxLength={80} placeholder={c.labelPh} className="field mt-1 w-full" />
+            <input name="label" required maxLength={80} placeholder={c.labelPh} className="field mt-1 w-full"  autoComplete="off" enterKeyHint="next" />
           </label>
           <label>
             <span className="label">{c.recipient}</span>
-            <input name="recipient" maxLength={80} placeholder={c.recipientPh} className="field mt-1 w-full" />
+            <input name="recipient" maxLength={80} placeholder={c.recipientPh} className="field mt-1 w-full"  autoComplete="off" enterKeyHint="next" />
           </label>
           <label>
             <span className="label">{c.amount}</span>
-            <input name="amount" type="number" inputMode="decimal" min={0} step="0.01" className="field mt-1 w-full" />
+            <input name="amount" type="number" inputMode="decimal" min={0} step="0.01" className="field mt-1 w-full"  autoComplete="off" enterKeyHint="next" />
           </label>
         </div>
         <div className="mt-3 grid gap-3 sm:grid-cols-[150px_1fr]">
@@ -83,7 +83,7 @@ export function EnvelopesPanel({ c, clientId, items }: {
           </label>
           <label>
             <span className="label">{c.note}</span>
-            <input name="note" maxLength={400} placeholder={c.notePh} className="field mt-1 w-full" />
+            <input name="note" maxLength={400} placeholder={c.notePh} className="field mt-1 w-full"  autoComplete="off" enterKeyHint="done" />
           </label>
         </div>
         <Submit c={c} pending={pending} />
@@ -218,18 +218,18 @@ function EditEnvelope({ c, clientId, e, onDone }: {
       <div className="grid gap-3 sm:grid-cols-[1fr_1fr_130px]">
         <label>
           <span className="label">{c.label}</span>
-          <input name="label" required maxLength={80} defaultValue={e.label} className="field mt-1 w-full" />
+          <input name="label" required maxLength={80} defaultValue={e.label} className="field mt-1 w-full"  autoComplete="off" enterKeyHint="next" />
         </label>
         <label>
           <span className="label">{c.recipient}</span>
-          <input name="recipient" maxLength={80} defaultValue={e.recipient} className="field mt-1 w-full" />
+          <input name="recipient" maxLength={80} defaultValue={e.recipient} className="field mt-1 w-full"  autoComplete="off" enterKeyHint="next" />
         </label>
         <label>
           <span className="label">{c.amount}</span>
           <input
             name="amount" type="number" inputMode="decimal" min={0} step="0.01"
             defaultValue={e.amount ?? ''} className="field mt-1 w-full"
-          />
+           autoComplete="off" enterKeyHint="next" />
         </label>
       </div>
       <div className="mt-3 grid gap-3 sm:grid-cols-[150px_1fr]">
@@ -242,7 +242,7 @@ function EditEnvelope({ c, clientId, e, onDone }: {
         </label>
         <label>
           <span className="label">{c.note}</span>
-          <input name="note" maxLength={400} defaultValue={e.note} className="field mt-1 w-full" />
+          <input name="note" maxLength={400} defaultValue={e.note} className="field mt-1 w-full"  autoComplete="off" enterKeyHint="done" />
         </label>
       </div>
 

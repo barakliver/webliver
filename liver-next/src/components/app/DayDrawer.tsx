@@ -51,20 +51,20 @@ function EntryForm({ day, entry, clients, onDone }: {
     <form action={action} className="grid gap-3 rounded-card-sm border border-line bg-surface-100 p-4">
       {entry && <input type="hidden" name="id" value={entry.id} />}
       <label className="grid gap-1 text-body text-ink-soft">{c.titleLabel}
-        <input name="title" required defaultValue={entry?.title ?? ''} placeholder={c.titlePh} className="field" autoFocus={!entry} /></label>
+        <input name="title" required defaultValue={entry?.title ?? ''} placeholder={c.titlePh} className="field" autoFocus={!entry}  autoComplete="off" enterKeyHint="next" /></label>
       <div className="grid gap-3 sm:grid-cols-[1fr_1fr_1fr]">
         <label className="grid gap-1 text-body text-ink-soft">{c.time}
-          <input name="on_date" type="date" defaultValue={entry?.on_date ?? day} className="field" aria-label={c.time} /></label>
+          <input name="on_date" type="date" defaultValue={entry?.on_date ?? day} className="field" aria-label={c.time}  autoComplete="off" enterKeyHint="next" /></label>
         <label className="grid gap-1 text-body text-ink-soft">
           <span className="inline-flex items-center gap-2">
             <input type="checkbox" checked={allDay} onChange={(e) => setAllDay(e.target.checked)} className="size-4" />
             {c.allDay}
           </span>
-          <input name="at_time" type="time" defaultValue={entry?.at_time?.slice(0, 5) ?? ''} disabled={allDay} className="field" aria-label={c.time} />
+          <input name="at_time" type="time" defaultValue={entry?.at_time?.slice(0, 5) ?? ''} disabled={allDay} className="field" aria-label={c.time}  autoComplete="off" enterKeyHint="next" />
         </label>
         <label className="grid gap-1 text-body text-ink-soft">{c.duration}
           <span className="flex items-center gap-2">
-            <input name="duration_min" type="number" min={5} max={1440} step={5} defaultValue={entry?.duration_min ?? 60} disabled={allDay} className="field w-24 tabular-nums" />
+            <input name="duration_min" type="number" min={5} max={1440} step={5} defaultValue={entry?.duration_min ?? 60} disabled={allDay} className="field w-24 tabular-nums"  autoComplete="off" enterKeyHint="done" />
             <span className="text-body text-ink-mute">{c.minutes}</span>
           </span>
         </label>

@@ -86,7 +86,7 @@ export function RsvpForm({ token, initial, copy }: {
             <input
               id="rsvp-size" name="party_size" type="number" min={1} max={20} inputMode="numeric"
               defaultValue={initial.partySize || 1} className="field"
-            />
+             autoComplete="off" enterKeyHint="done" />
             <p className="mt-1.5 text-meta text-ink-mute">{c.howManyHint}</p>
           </div>
 

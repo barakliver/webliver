@@ -145,7 +145,7 @@ function PostCard({ post }: { post: CirclePost }) {
           </label>
           <label className="block">
             <span className="label">{c.form.title}</span>
-            <input name="title" required maxLength={140} defaultValue={post.title} className="field mt-1 w-full" />
+            <input name="title" required maxLength={140} defaultValue={post.title} className="field mt-1 w-full"  autoComplete="off" enterKeyHint="done" />
           </label>
           <label className="block">
             <span className="label">{c.form.content}</span>

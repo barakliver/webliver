@@ -68,7 +68,7 @@ export function NewLeadForm({ channels = [] }: {
       <div className="grid gap-4 sm:grid-cols-3">
         <div>
           <label className="label" htmlFor="nl-name">{c.addName}</label>
-          <input id="nl-name" name="full_name" required autoComplete="off" className="field" />
+          <input id="nl-name" name="full_name" required autoComplete="off" className="field"  enterKeyHint="next" />
         </div>
         <div>
           <label className="label" htmlFor="nl-phone">{c.addPhone}</label>
@@ -89,11 +89,11 @@ export function NewLeadForm({ channels = [] }: {
         </div>
         <div>
           <label className="label" htmlFor="nl-date">{c.addDate}</label>
-          <input id="nl-date" name="event_date" type="date" min={MIN_EVENT_DATE} className="field" />
+          <input id="nl-date" name="event_date" type="date" min={MIN_EVENT_DATE} className="field"  autoComplete="off" enterKeyHint="next" />
         </div>
         <div>
           <label className="label" htmlFor="nl-guests">{c.addGuests}</label>
-          <input id="nl-guests" name="guest_count" type="number" min={1} max={MAX_GUESTS} inputMode="numeric" className="field" />
+          <input id="nl-guests" name="guest_count" type="number" min={1} max={MAX_GUESTS} inputMode="numeric" className="field"  autoComplete="off" enterKeyHint="done" />
         </div>
         <div>
           <label className="label" htmlFor="nl-source">{c.addHow}</label>

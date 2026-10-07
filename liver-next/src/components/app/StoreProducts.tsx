@@ -79,11 +79,11 @@ function Form({ producerId, product, onDone }: {
         <input
           name="name" required maxLength={160} defaultValue={product?.name}
           placeholder={c.namePh} className="field" aria-label={c.name} autoComplete="off"
-        />
+         enterKeyHint="next" />
         <input
           name="price" inputMode="decimal" defaultValue={product?.price || ''}
           placeholder={c.pricePh} className="field" aria-label={c.price}
-        />
+         autoComplete="off" enterKeyHint="done" />
         <select name="kind" defaultValue={product?.kind ?? 'product'} className="field" aria-label={c.kind}>
           <option value="product">{c.kindProduct}</option>
           <option value="service">{c.kindService}</option>

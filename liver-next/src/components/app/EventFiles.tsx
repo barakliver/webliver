@@ -245,7 +245,7 @@ function Row({ file: f, clientId, viewer, start, compact }: {
             <input
               name="note" defaultValue={f.note} maxLength={300} placeholder={c.notePh}
               className="field flex-1" aria-label={c.note} autoComplete="off"
-            />
+             enterKeyHint="done" />
             <button type="submit" className="btn-quiet whitespace-nowrap px-3 text-body">{c.noteSave}</button>
           </form>
         )}

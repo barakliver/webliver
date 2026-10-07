@@ -104,7 +104,7 @@ export function BrandEditor({ fields, rootDomain }: { fields: BrandFields; rootD
             id="brand_name" name="brand_name" className="field"
             value={name} onChange={(e) => setName(e.target.value)}
             placeholder={c.namePh} maxLength={80}
-          />
+           autoComplete="off" enterKeyHint="done" />
         </div>
 
         <div>

@@ -131,9 +131,9 @@ function LogForm({ clientId, log, onDone }: { clientId: string; log?: JournalLog
 
       <div className="grid gap-3 sm:grid-cols-3">
         <label className="grid gap-1.5 text-body text-ink-soft sm:col-span-1">{c.form.venue}
-          <input name="venue_name" defaultValue={log?.venue_name ?? ''} className="field" placeholder={c.form.venuePh} autoComplete="off" /></label>
+          <input name="venue_name" defaultValue={log?.venue_name ?? ''} className="field" placeholder={c.form.venuePh} autoComplete="off"  enterKeyHint="next" /></label>
         <label className="grid gap-1.5 text-body text-ink-soft">{c.form.date}
-          <input name="event_date" type="date" defaultValue={log?.event_date ?? ''} className="field" /></label>
+          <input name="event_date" type="date" defaultValue={log?.event_date ?? ''} className="field"  autoComplete="off" enterKeyHint="done" /></label>
         <label className="grid gap-1.5 text-body text-ink-soft">{c.form.style}
           <select name="style" className="field" defaultValue={log?.style ?? ''}>
             <option value="" />

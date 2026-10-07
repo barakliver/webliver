@@ -152,7 +152,7 @@ export function LoginForm({ next, prefill, reason, referral, copy, legal }: {
           dir="ltr"
           defaultValue={prefill ?? ''}
           className="field"
-        />
+         enterKeyHint="next" />
       </div>
 
       {/* The whole row is the target, not the 16px box. A checkbox is the
@@ -172,11 +172,11 @@ export function LoginForm({ next, prefill, reason, referral, copy, legal }: {
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <label className="label" htmlFor="lg-name">{copy.nameLabel}</label>
-            <input id="lg-name" name="full_name" autoComplete="name" className="field" />
+            <input id="lg-name" name="full_name" autoComplete="name" className="field"  enterKeyHint="next" />
           </div>
           <div>
             <label className="label" htmlFor="lg-brand">{copy.brandLabel}</label>
-            <input id="lg-brand" name="brand_name" className="field" />
+            <input id="lg-brand" name="brand_name" className="field"  autoComplete="off" enterKeyHint="done" />
           </div>
         </div>
       )}

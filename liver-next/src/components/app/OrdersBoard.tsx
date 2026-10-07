@@ -210,7 +210,7 @@ export function OrdersBoard({ orders }: { orders: Order[] }) {
                               name="note" defaultValue={o.note} maxLength={2000}
                               placeholder={c.orderNotePh} aria-label={c.orderNote}
                               className="field flex-1" autoComplete="off"
-                            />
+                             enterKeyHint="done" />
                             <button type="submit" className="btn-quiet whitespace-nowrap px-3 text-body">
                               {c.save}
                             </button>

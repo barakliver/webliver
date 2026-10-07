@@ -103,7 +103,7 @@ function MusicList({ clientId, songs }: { clientId: string; songs: Song[] }) {
                     name="note" defaultValue={row?.note} maxLength={500}
                     placeholder={c.music.notePh} aria-label={c.music.note}
                     className="field sm:col-span-3" autoComplete="off"
-                  />
+                   enterKeyHint="done" />
                 </form>
               )}
             </li>
@@ -260,7 +260,7 @@ function Side({ clientId, person, row }: {
         name="name" defaultValue={row?.name} maxLength={120}
         placeholder={c.couple.namePh} aria-label={c.couple.name}
         className="field mt-2 w-full" autoComplete="off"
-      />
+       enterKeyHint="done" />
 
       <div className="mt-3 space-y-2">
         {COUPLE_DETAIL_FIELDS.map((f) => (

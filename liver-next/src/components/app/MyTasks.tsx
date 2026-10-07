@@ -124,11 +124,11 @@ function Fields({ task, withNote }: { task?: ProducerTask; withNote?: boolean })
         name="title" defaultValue={task?.title ?? ''} required minLength={2} maxLength={200}
         placeholder={c.titlePh} aria-label={c.titlePh}
         className="field w-full min-w-0 sm:w-auto sm:flex-1"
-      />
+       autoComplete="off" enterKeyHint="next" />
       <input
         type="date" name="due_on" defaultValue={task?.due_on ?? ''}
         aria-label={c.due} className="field min-w-0 flex-1 basis-[8rem] sm:w-auto sm:flex-none sm:basis-auto"
-      />
+       autoComplete="off" enterKeyHint="next" />
       <select
         name="repeat_every" defaultValue={task?.repeat_every ?? 'none'}
         aria-label={c.repeat} className="field min-w-0 flex-1 basis-[8rem] sm:w-auto sm:flex-none sm:basis-auto"
@@ -140,7 +140,7 @@ function Fields({ task, withNote }: { task?: ProducerTask; withNote?: boolean })
           name="note" defaultValue={task?.note ?? ''} maxLength={1000}
           placeholder={c.notesPh} aria-label={c.notesPh}
           className="field w-full"
-        />
+         autoComplete="off" enterKeyHint="next" />
       )}
     </>
   );

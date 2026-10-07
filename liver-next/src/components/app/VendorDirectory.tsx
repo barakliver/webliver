@@ -40,7 +40,7 @@ function Fields({ vendor }: { vendor?: Vendor }) {
       <div className="grid gap-3 sm:grid-cols-[1fr_180px_1fr]">
         <div>
           <label className="label">{c.name}</label>
-          <input name="name" required defaultValue={vendor?.name} autoComplete="off" className="field" />
+          <input name="name" required defaultValue={vendor?.name} autoComplete="off" className="field"  enterKeyHint="next" />
         </div>
         <div>
           <label className="label">{c.category}</label>

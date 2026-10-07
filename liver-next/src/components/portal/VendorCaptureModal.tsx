@@ -201,7 +201,7 @@ export function VendorCaptureModal({ task, template, onClose, onSaved, onSkip }:
             <input
               name="name" value={form.name} onChange={change}
               placeholder="שם העסק" aria-label="שם העסק" autoFocus className="field"
-            />
+             autoComplete="off" enterKeyHint="next" />
           )}
           {askContact && (
             <input

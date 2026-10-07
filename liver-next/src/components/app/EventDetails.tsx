@@ -136,18 +136,18 @@ export function EventDetails({ event }: { event: EventCore }) {
               <input
                 id="ed-date" name="event_date" type="date" min={MIN_EVENT_DATE}
                 defaultValue={event.event_date ?? ''} className="field"
-              />
+               autoComplete="off" enterKeyHint="next" />
             </div>
             <div>
               <label className="label" htmlFor="ed-venue">{ui.newClient.venue}</label>
-              <input id="ed-venue" name="venue" defaultValue={event.venue ?? ''} className="field" autoComplete="off" />
+              <input id="ed-venue" name="venue" defaultValue={event.venue ?? ''} className="field" autoComplete="off"  enterKeyHint="next" />
             </div>
             <div>
               <label className="label" htmlFor="ed-guests">{ui.newClient.guests}</label>
               <input
                 id="ed-guests" name="guest_estimate" type="number" min={1} max={MAX_GUESTS} inputMode="numeric"
                 defaultValue={event.guest_estimate ?? ''} className="field"
-              />
+               autoComplete="off" enterKeyHint="done" />
             </div>
           </div>
 

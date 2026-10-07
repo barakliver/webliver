@@ -69,16 +69,16 @@ export function QuickLedger({ events, compact = false }: { events: JumpEvent[]; 
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="text-meta text-ink-mute">
               {c.amount}
-              <input name="amount" type="number" inputMode="decimal" min={0} step="0.01" required autoFocus className="field mt-1 w-full" />
+              <input name="amount" type="number" inputMode="decimal" min={0} step="0.01" required autoFocus className="field mt-1 w-full"  autoComplete="off" enterKeyHint="next" />
             </label>
             <label className="text-meta text-ink-mute">
               {c.date}
-              <input name="on_date" type="date" defaultValue={todayInZone()} className="field mt-1 w-full" />
+              <input name="on_date" type="date" defaultValue={todayInZone()} className="field mt-1 w-full"  autoComplete="off" enterKeyHint="next" />
             </label>
           </div>
           <label className="text-meta text-ink-mute">
             {c.label}
-            <input name="label" required maxLength={120} placeholder={c.labelPh} className="field mt-1 w-full" />
+            <input name="label" required maxLength={120} placeholder={c.labelPh} className="field mt-1 w-full"  autoComplete="off" enterKeyHint="next" />
           </label>
           <label className="text-meta text-ink-mute">
             {c.event}
@@ -89,11 +89,11 @@ export function QuickLedger({ events, compact = false }: { events: JumpEvent[]; 
           </label>
           <label className="text-meta text-ink-mute">
             {c.party}
-            <input name="party" maxLength={120} placeholder={c.partyPh} className="field mt-1 w-full" />
+            <input name="party" maxLength={120} placeholder={c.partyPh} className="field mt-1 w-full"  autoComplete="off" enterKeyHint="next" />
           </label>
           <label className="text-meta text-ink-mute">
             {c.note}
-            <input name="note" maxLength={500} className="field mt-1 w-full" />
+            <input name="note" maxLength={500} className="field mt-1 w-full"  autoComplete="off" enterKeyHint="done" />
           </label>
 
           {state && !state.ok && (

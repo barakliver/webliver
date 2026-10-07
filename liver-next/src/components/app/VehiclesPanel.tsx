@@ -64,11 +64,11 @@ export function VehiclesPanel({ c, clientId, items }: {
         <div className="grid gap-3 sm:grid-cols-[1fr_1fr_150px]">
           <label>
             <span className="label">{c.name}</span>
-            <input name="name" required maxLength={60} placeholder={c.namePh} className="field mt-1 w-full" />
+            <input name="name" required maxLength={60} placeholder={c.namePh} className="field mt-1 w-full"  autoComplete="off" enterKeyHint="next" />
           </label>
           <label>
             <span className="label">{c.driver}</span>
-            <input name="driver" maxLength={80} placeholder={c.driverPh} className="field mt-1 w-full" />
+            <input name="driver" maxLength={80} placeholder={c.driverPh} className="field mt-1 w-full"  autoComplete="off" enterKeyHint="next" />
           </label>
           <label>
             <span className="label">{c.phone}</span>
@@ -78,7 +78,7 @@ export function VehiclesPanel({ c, clientId, items }: {
         <div className="mt-3 grid gap-3 sm:grid-cols-[110px_160px_1fr]">
           <label>
             <span className="label">{c.seats}</span>
-            <input name="seats" type="number" inputMode="numeric" min={1} max={60} className="field mt-1 w-full" />
+            <input name="seats" type="number" inputMode="numeric" min={1} max={60} className="field mt-1 w-full"  autoComplete="off" enterKeyHint="next" />
           </label>
           <label>
             <span className="label">{c.leg}</span>
@@ -90,12 +90,12 @@ export function VehiclesPanel({ c, clientId, items }: {
           </label>
           <label>
             <span className="label">{c.riders}</span>
-            <input name="riders" maxLength={400} placeholder={c.ridersPh} className="field mt-1 w-full" />
+            <input name="riders" maxLength={400} placeholder={c.ridersPh} className="field mt-1 w-full"  autoComplete="off" enterKeyHint="next" />
           </label>
         </div>
         <label className="mt-3 block">
           <span className="label">{c.note}</span>
-          <input name="note" maxLength={400} placeholder={c.notePh} className="field mt-1 w-full" />
+          <input name="note" maxLength={400} placeholder={c.notePh} className="field mt-1 w-full"  autoComplete="off" enterKeyHint="done" />
         </label>
         <Submit c={c} pending={pending} />
         {state?.ok === false && state.error && (
@@ -212,11 +212,11 @@ function EditVehicle({ c, clientId, v, onDone }: {
       <div className="grid gap-3 sm:grid-cols-[1fr_1fr_150px]">
         <label>
           <span className="label">{c.name}</span>
-          <input name="name" required maxLength={60} defaultValue={v.name} className="field mt-1 w-full" />
+          <input name="name" required maxLength={60} defaultValue={v.name} className="field mt-1 w-full"  autoComplete="off" enterKeyHint="next" />
         </label>
         <label>
           <span className="label">{c.driver}</span>
-          <input name="driver" maxLength={80} defaultValue={v.driver} className="field mt-1 w-full" />
+          <input name="driver" maxLength={80} defaultValue={v.driver} className="field mt-1 w-full"  autoComplete="off" enterKeyHint="next" />
         </label>
         <label>
           <span className="label">{c.phone}</span>
@@ -226,7 +226,7 @@ function EditVehicle({ c, clientId, v, onDone }: {
       <div className="mt-3 grid gap-3 sm:grid-cols-[110px_160px_1fr]">
         <label>
           <span className="label">{c.seats}</span>
-          <input name="seats" type="number" inputMode="numeric" min={1} max={60} defaultValue={v.seats ?? ''} className="field mt-1 w-full" />
+          <input name="seats" type="number" inputMode="numeric" min={1} max={60} defaultValue={v.seats ?? ''} className="field mt-1 w-full"  autoComplete="off" enterKeyHint="next" />
         </label>
         <label>
           <span className="label">{c.leg}</span>
@@ -238,12 +238,12 @@ function EditVehicle({ c, clientId, v, onDone }: {
         </label>
         <label>
           <span className="label">{c.riders}</span>
-          <input name="riders" maxLength={400} defaultValue={v.riders} className="field mt-1 w-full" />
+          <input name="riders" maxLength={400} defaultValue={v.riders} className="field mt-1 w-full"  autoComplete="off" enterKeyHint="next" />
         </label>
       </div>
       <label className="mt-3 block">
         <span className="label">{c.note}</span>
-        <input name="note" maxLength={400} defaultValue={v.note} className="field mt-1 w-full" />
+        <input name="note" maxLength={400} defaultValue={v.note} className="field mt-1 w-full"  autoComplete="off" enterKeyHint="done" />
       </label>
 
       <div className="mt-3 flex items-center gap-3">

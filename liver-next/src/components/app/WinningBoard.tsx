@@ -255,7 +255,7 @@ function Tile({ c, clientId, img, label }: {
           <input type="hidden" name="client_id" value={clientId} />
           <label className="block">
             <span className="label">{c.caption}</span>
-            <input name="caption" maxLength={200} defaultValue={img.caption} placeholder={c.captionPh} className="field mt-1 w-full" />
+            <input name="caption" maxLength={200} defaultValue={img.caption} placeholder={c.captionPh} className="field mt-1 w-full"  autoComplete="off" enterKeyHint="done" />
           </label>
           <label className="mt-2 block">
             <span className="label">{c.category}</span>

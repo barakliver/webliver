@@ -387,14 +387,14 @@ function VenueForm({ c, clientId, venue, onDone }: {
       <div className="grid gap-3 sm:grid-cols-2">
         <Field label={c.name}>
           <input name="venue_name" required maxLength={120} defaultValue={venue?.venueName}
-            placeholder={c.namePh} className="field w-full" autoComplete="off" />
+            placeholder={c.namePh} className="field w-full" autoComplete="off"  enterKeyHint="next" />
         </Field>
         <Field label={c.location}>
           <input name="location" maxLength={120} defaultValue={venue?.location}
             placeholder={c.locationPh} className="field w-full" autoComplete="off" />
         </Field>
         <Field label={c.contact}>
-          <input name="contact" maxLength={120} defaultValue={venue?.contact} className="field w-full" autoComplete="off" />
+          <input name="contact" maxLength={120} defaultValue={venue?.contact} className="field w-full" autoComplete="off"  enterKeyHint="done" />
         </Field>
         <Field label={c.phone}>
           <input name="phone" inputMode="tel" maxLength={40} defaultValue={venue?.phone} className="field w-full" autoComplete="off" />

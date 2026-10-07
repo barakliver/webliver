@@ -60,15 +60,15 @@ export function NewClientForm() {
       <div className="grid gap-4 sm:grid-cols-3">
         <div>
           <label className="label" htmlFor="nc-date">{c.date}</label>
-          <input id="nc-date" name="event_date" type="date" min={MIN_EVENT_DATE} className="field" />
+          <input id="nc-date" name="event_date" type="date" min={MIN_EVENT_DATE} className="field"  autoComplete="off" enterKeyHint="next" />
         </div>
         <div>
           <label className="label" htmlFor="nc-venue">{c.venue}</label>
-          <input id="nc-venue" name="venue" className="field" autoComplete="off" />
+          <input id="nc-venue" name="venue" className="field" autoComplete="off"  enterKeyHint="next" />
         </div>
         <div>
           <label className="label" htmlFor="nc-guests">{c.guests}</label>
-          <input id="nc-guests" name="guest_estimate" type="number" min={1} max={MAX_GUESTS} inputMode="numeric" className="field" />
+          <input id="nc-guests" name="guest_estimate" type="number" min={1} max={MAX_GUESTS} inputMode="numeric" className="field"  autoComplete="off" enterKeyHint="done" />
         </div>
       </div>
 

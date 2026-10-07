@@ -200,8 +200,8 @@ export function SeatingPlan({ clientId, tables, guests }: {
 
       <form action={addAction} className="mt-5 grid gap-3 sm:grid-cols-[1fr_120px_auto]">
         <input type="hidden" name="client_id" value={clientId} />
-        <input name="name" required placeholder={c.tableNamePh} autoComplete="off" className="field" aria-label={c.tableName} />
-        <input name="seats" type="number" min={1} max={40} defaultValue={12} className="field" aria-label={c.seats} />
+        <input name="name" required placeholder={c.tableNamePh} autoComplete="off" className="field" aria-label={c.tableName}  enterKeyHint="next" />
+        <input name="seats" type="number" min={1} max={40} defaultValue={12} className="field" aria-label={c.seats}  autoComplete="off" enterKeyHint="done" />
         <Busy label={c.add} busy={c.adding} />
       </form>
       <Err state={addState} />
@@ -346,7 +346,7 @@ export function SeatingPlan({ clientId, tables, guests }: {
                     <input
                       name="seats" type="number" min={1} max={40} defaultValue={t.seats}
                       className="field w-[80px] py-1 text-body" aria-label={c.seats}
-                    />
+                     autoComplete="off" enterKeyHint="done" />
                     <button type="submit" className="btn-quiet px-2 py-1 text-meta">{c.seats}</button>
                   </form>
                   <DeleteForm action={deleteTable}>
@@ -426,7 +426,7 @@ function RenameTable({ c, clientId, id, name }: {
       <input
         name="name" required maxLength={80} defaultValue={name} autoFocus
         aria-label={c.tableName} className="field w-full py-1 text-body"
-      />
+       autoComplete="off" enterKeyHint="done" />
       <div className="mt-2 flex items-center gap-2">
         <RenameSave c={c} />
         <button type="button" onClick={() => setEditing(false)} className="btn-quiet px-2 py-1 text-meta">

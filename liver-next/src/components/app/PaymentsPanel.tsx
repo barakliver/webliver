@@ -67,18 +67,18 @@ function EditPayment({ payment, clientId, onDone }: {
       <div className="grid grid-cols-2 gap-3">
         <label className="col-span-2 min-w-0">
           <span className="mb-1 block text-meta font-medium text-ink-soft">{c.payWhat}</span>
-          <input name="title" required defaultValue={payment.title} autoComplete="off" className="field" />
+          <input name="title" required defaultValue={payment.title} autoComplete="off" className="field"  enterKeyHint="next" />
         </label>
         <label className="min-w-0">
           <span className="mb-1 block text-meta font-medium text-ink-soft">{c.payAmount}</span>
           <input
             name="amount" required type="number" min={0} step="0.01" inputMode="decimal"
             defaultValue={Number(payment.amount)} className="field"
-          />
+           autoComplete="off" enterKeyHint="next" />
         </label>
         <label className="min-w-0">
           <span className="mb-1 block text-meta font-medium text-ink-soft">{c.payDue}</span>
-          <input name="due_on" type="date" defaultValue={payment.due_on ?? ''} className="field" />
+          <input name="due_on" type="date" defaultValue={payment.due_on ?? ''} className="field"  autoComplete="off" enterKeyHint="done" />
         </label>
       </div>
 
@@ -152,15 +152,15 @@ export function PaymentsPanel({ clientId, payments, viewer }: {
 
           <label className="col-span-2 min-w-0 lg:col-span-1">
             <span className="mb-1 block text-meta font-medium text-ink-soft">{c.payWhat}</span>
-            <input name="title" required placeholder={c.payWhatPh} autoComplete="off" className="field" />
+            <input name="title" required placeholder={c.payWhatPh} autoComplete="off" className="field"  enterKeyHint="next" />
           </label>
           <label className="min-w-0">
             <span className="mb-1 block text-meta font-medium text-ink-soft">{c.payAmount}</span>
-            <input name="amount" required type="number" min="0.01" step="0.01" inputMode="decimal" className="field" />
+            <input name="amount" required type="number" min="0.01" step="0.01" inputMode="decimal" className="field"  autoComplete="off" enterKeyHint="next" />
           </label>
           <label className="min-w-0">
             <span className="mb-1 block text-meta font-medium text-ink-soft">{c.payDue}</span>
-            <input name="due_on" type="date" className="field" />
+            <input name="due_on" type="date" className="field"  autoComplete="off" enterKeyHint="done" />
           </label>
 
           <div className="col-span-2 lg:col-span-3">

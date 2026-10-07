@@ -101,7 +101,7 @@ function Fields({ person }: { person?: CrewPerson }) {
           <input
             id={`n-${person?.id ?? 'new'}`} name="name" required defaultValue={person?.name}
             autoComplete="off" className="field"
-          />
+           enterKeyHint="next" />
         </div>
         <div>
           <label className="label" htmlFor={`p-${person?.id ?? 'new'}`}>{c.phone}</label>
@@ -127,7 +127,7 @@ function Fields({ person }: { person?: CrewPerson }) {
             id={`r-${person?.id ?? 'new'}`} name="rate" type="number" min="0" step="50"
             defaultValue={person?.rate === null || person?.rate === undefined ? '' : String(person.rate)}
             placeholder={c.feePh} autoComplete="off" className="field" inputMode="numeric"
-          />
+           enterKeyHint="next" />
           <p className="mt-1 text-meta text-ink-mute">{c.deskRateHint}</p>
         </div>
       </div>
