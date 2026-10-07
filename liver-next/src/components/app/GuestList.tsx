@@ -5,12 +5,14 @@ import { Sheet } from '@/components/app/Sheet';
 
 import { MessageCircle } from 'lucide-react';
 
-import { useActionState, useState } from 'react';
+import { useActionState, useDeferredValue, useMemo, useState } from 'react';
+import { Search, Download, X } from 'lucide-react';
 import { useFormStatus } from 'react-dom';
 import { addGuests, deleteGuest, setGuestStatus, updateGuest, type GuestResult } from '@/app/actions/guests';
 import { DIETS } from '@/content/lists';
 import { GuestImport } from '@/components/app/GuestImport';
 import { useCopy } from '@/components/app/CopyProvider';
+import { toCsv } from '@/lib/csv';
 import { DeleteForm } from '@/components/app/ConfirmDelete';
 import { normalizePhone } from '@/lib/phone';
 import { publicEnv } from '@/lib/env';
@@ -231,13 +233,52 @@ export function GuestList({ clientId, guests }: { clientId: string; guests: Gues
   /* the number that matters for catering is people, not invitations */
   const heads = attending.reduce((a, g) => a + Number(g.party_size || 0), 0);
 
-  const shown = filter === 'all' ? guests : guests.filter((g) => g.status === filter);
+  /* Deferred, so typing into a box above three hundred rows stays typing.
+     Without it every keystroke re-filters and re-renders the whole list
+     before the next letter lands, and the box is where that is felt. */
+  const [query, setQuery] = useState('');
+  const seeking = useDeferredValue(query);
+
+  const shown = useMemo(() => {
+    const byStatus = filter === 'all' ? guests : guests.filter((g) => g.status === filter);
+    const q = seeking.trim().toLowerCase();
+    if (!q) return byStatus;
+    /* Name, side and phone: the three things somebody has in their head when
+       they are looking for one guest. A phone typed with or without its
+       dashes finds the same person. */
+    const bare = q.replace(/[^0-9a-z\u0590-\u05ff]/g, '');
+    return byStatus.filter((g) =>
+      g.full_name.toLowerCase().includes(q)
+      || (g.side ?? '').toLowerCase().includes(q)
+      || (bare.length > 2 && (g.phone ?? '').replace(/[^0-9]/g, '').includes(bare)));
+  }, [guests, filter, seeking]);
 
   /* Each tile is the way into the part of the list it counts. The detail
      behind "24 מגיעים" is those twenty four names, and they are already on
      this screen: tapping the figure filters the list under it rather than
      opening another one. The head count filters to the same people, because
      the number is those guests plus their partners. */
+  /* The list somebody takes to the caterer, or opens in a spreadsheet to
+     do the one thing this screen does not do. Exactly what is on screen:
+     the filter and the search are part of the question being asked. */
+  const download = () => {
+    const rows = [
+      [c.guest, c.status, c.party, c.dietCol, c.noteCol],
+      ...shown.map((g) => [
+        g.full_name, c.statuses[g.status] ?? g.status,
+        String(g.party_size ?? ''), g.diet ?? '', g.note ?? '',
+      ]),
+    ];
+    /* A BOM, or Excel opens Hebrew as mojibake and somebody decides the
+       export is broken. */
+    const blob = new Blob(['\uFEFF' + toCsv(rows)], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `${c.exportName}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const tiles: {
     label: string; value: number; tone: 'ink' | 'ok' | 'warn' | 'accent';
     to: 'all' | Guest['status'];
@@ -304,6 +345,50 @@ export function GuestList({ clientId, guests }: { clientId: string; guests: Gues
             )}
           </div>
 
+          {/* Three hundred names is past the point where scrolling is looking.
+              The box sits under the filters because it narrows what they
+              chose rather than replacing it. */}
+          {guests.length > 20 && (
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <label className="relative min-w-[12rem] flex-1">
+                <span className="sr-only">{c.search}</span>
+                <Search
+                  size={15} strokeWidth={1.5} aria-hidden
+                  className="pointer-events-none absolute inset-y-0 my-auto start-3 text-ink-mute"
+                />
+                <input
+                  type="search" value={query} onChange={(e) => setQuery(e.target.value)}
+                  placeholder={c.searchPh} autoComplete="off" enterKeyHint="search"
+                  className="field w-full ps-9"
+                />
+              </label>
+              <button
+                type="button" onClick={download}
+                className="btn-quiet inline-flex min-h-[44px] items-center gap-1.5 px-3 text-body sm:min-h-0"
+              >
+                <Download size={15} strokeWidth={1.5} aria-hidden />
+                {c.exportCsv}
+              </button>
+            </div>
+          )}
+
+          {/* A list filtered down to nothing is the one case where the screen
+              has to offer the way out. Without this somebody clears the box
+              by hand, or decides the guest is not there. */}
+          {shown.length === 0 && (
+            <p className="mt-5 flex flex-wrap items-center gap-3 text-body text-ink-mute">
+              {c.noneMatch}
+              <button
+                type="button"
+                onClick={() => { setQuery(''); setFilter('all'); }}
+                className="btn-quiet inline-flex items-center gap-1.5 px-2 py-1 text-body"
+              >
+                <X size={14} strokeWidth={1.5} aria-hidden />
+                {c.clearFilters}
+              </button>
+            </p>
+          )}
+
           {/* Cards on a phone, a table from the small breakpoint up.
 
               It was one table with a 680px minimum inside a horizontal
@@ -342,7 +427,11 @@ export function GuestList({ clientId, guests }: { clientId: string; guests: Gues
 
           <div className="mt-4 hidden overflow-x-auto sm:block">
             <table className="w-full text-right text-body">
-              <thead>
+              {/* The head stays while the names scroll. Six columns of
+                  figures mean nothing once the row that names them has gone
+                  off the top, and at three hundred rows it goes off the top
+                  immediately. */}
+              <thead className="sticky top-0 z-10 bg-card">
                 <tr className="border-b border-line text-meta text-ink-mute">
                   <th scope="col" className="py-2 font-medium">{c.guest}</th>
                   <th scope="col" className="py-2 font-medium">{c.status}</th>

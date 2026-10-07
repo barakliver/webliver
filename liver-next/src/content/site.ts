@@ -2265,6 +2265,13 @@ export const rsvpCopy = {
 } as const;
 
 export const guestsCopy = {
+  search: 'חיפוש ברשימה',
+  searchPh: 'שם, צד או טלפון',
+  noneMatch: 'אף אורח לא תואם למה שחיפשתם.',
+  clearFilters: 'ניקוי החיפוש והסינון',
+  exportCsv: 'ייצוא',
+  exportName: 'רשימת אורחים',
+  statuses: { attending: 'מגיעים', declined: 'לא מגיעים', pending: 'טרם ענו' },
   title: 'אישורי הגעה',
   sub: 'רשימת האורחים והתשובות שלהם. כל אורח מקבל קישור אישי.',
   attending: 'מגיעים',

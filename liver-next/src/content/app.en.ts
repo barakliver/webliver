@@ -509,6 +509,13 @@ export const boardEn: BoardCopy = {
 };
 
 export const guestsEn: GuestsCopy = {
+  search: 'Search the list',
+  searchPh: 'Name, side or phone',
+  noneMatch: 'No guest matches what you searched for.',
+  clearFilters: 'Clear the search and the filter',
+  exportCsv: 'Export',
+  exportName: 'guest list',
+  statuses: { attending: 'Attending', declined: 'Not attending', pending: 'No reply yet' },
   title: 'Replies',
   sub: 'The guest list and their answers. Every guest gets a personal link.',
   attending: 'Coming',
