@@ -51,6 +51,22 @@ export function Sheet({
     };
     window.addEventListener('keydown', onKey);
 
+    /* Back closes the sheet rather than leaving the screen behind it.
+       On a phone this is not a nicety: a sheet covers the page, so the
+       gesture that means "undo the last thing that happened" is a swipe
+       from the edge, and without an entry of our own in the history that
+       gesture threw away the whole event file instead of the form on top
+       of it. One entry pushed on open, popped on close, and the flag keeps
+       the close from pushing a second one. */
+    let ours = false;
+    try {
+      history.pushState({ sheet: true }, '');
+      ours = true;
+    } catch { /* a browser that refuses the push simply keeps the old behaviour */ }
+
+    const onPop = () => { ours = false; onClose(); };
+    window.addEventListener('popstate', onPop);
+
     /* After paint, or the element is not focusable yet. */
     const id = requestAnimationFrame(() => {
       panel.current?.querySelector<HTMLElement>(
@@ -61,6 +77,11 @@ export function Sheet({
     return () => {
       cancelAnimationFrame(id);
       window.removeEventListener('keydown', onKey);
+      window.removeEventListener('popstate', onPop);
+      /* Closed by Escape, the backdrop or a save rather than by Back, so the
+         entry we pushed is still on the stack and has to come off. Closed by
+         Back and the browser already took it. */
+      if (ours) { try { history.back(); } catch { /* nothing to go back to */ } }
       document.body.style.overflow = overflow;
       window.scrollTo(0, scrollY);
       (opener.current as HTMLElement | null)?.focus?.();

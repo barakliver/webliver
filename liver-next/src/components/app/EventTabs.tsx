@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { serverCopy } from '@/lib/serverLocale';
 import { LinkHint } from './LinkHint';
+import { TabKeys } from './TabKeys';
 
 /* The list itself lives in content, with no server import behind it, because
    the quick search reads it from the browser and this file now reads the
@@ -48,8 +49,17 @@ export async function EventTabs({
          sticky bar this sits inside, on the event screen — one element can
          either scroll its own contents sideways or stick to the top of the
          page, and this one has to do the first. */
+      data-tabstrip
       className="flex flex-nowrap gap-1.5 overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
     >
+      {/* Left and right walk the strip, swapped under RTL because in a Hebrew
+          row the next tab is to the left. Scoped to focus inside the strip,
+          or it would take the arrows off every text field on a screen that is
+          mostly forms. */}
+      <TabKeys
+        hrefs={EVENT_TABS.map((t) => (t === 'overview' ? `/app/clients/${clientId}` : `/app/clients/${clientId}?tab=${t}`))}
+        active={EVENT_TABS.indexOf(active)}
+      />
       {EVENT_TABS.map((tab) => {
         const on = tab === active;
         const count = counts?.[tab];
