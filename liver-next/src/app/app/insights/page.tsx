@@ -1,4 +1,5 @@
 import { Suspense } from 'react';
+import { ViewTransition } from '@/components/ViewTransition';
 import { requireLiveProducer } from '@/lib/auth';
 import { supabaseServer } from '@/lib/supabase/server';
 import { serverCopy } from '@/lib/serverLocale';
@@ -84,8 +85,19 @@ export default async function InsightsPage() {
             back the health panel, the cash panel and every chart under it —
             all of which were already in hand. Now they paint and the ledger
             arrives into the space kept for it. */}
-        <Suspense fallback={<LedgerSkeleton />}>
-          <Ledger sb={sb} events={ledgerEvents} />
+        <Suspense
+          fallback={
+            <ViewTransition exit="yield" default="none">
+              <LedgerSkeleton />
+            </ViewTransition>
+          }
+        >
+          {/* The skeleton yields and the ledger arrives, rather than one
+              popping out and the other popping in. `default="none"` keeps
+              this pair still during every unrelated navigation on the page. */}
+          <ViewTransition enter="arrive" default="none">
+            <Ledger sb={sb} events={ledgerEvents} />
+          </ViewTransition>
         </Suspense>
         <FunnelChart funnel={funnel} />
         <ConversionPanel r={conversion} />

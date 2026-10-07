@@ -322,6 +322,15 @@
        the belt to that pair of braces, so a transform already applied when the
        preference changes is dropped rather than frozen in place. */
     .parallax-layer { transform: none !important; }
+    /* View transitions are a third animation engine and the two rules above
+       do not reach it: the browser drives ::view-transition-* on a pseudo
+       layer of its own. Named explicitly, so a page that slides for everybody
+       else simply cuts for somebody who asked it not to move. */
+    ::view-transition-group(*),
+    ::view-transition-old(*),
+    ::view-transition-new(*) {
+      animation: none !important;
+    }
   }
 
   /* Rubber banding is a thing an installed app should not do, and a thing a
@@ -1126,3 +1135,78 @@
 @media (prefers-reduced-motion: reduce) {
   .flip-inner { transition: none; }
 }
+
+/* ── how a screen moves ──────────────────────────────────────────────────────
+   Three durations and no fourth. There were four in the markup before this
+   (200, 300, 500, 700ms), none of them chosen against the others, which is
+   the same way thirty-five type sizes happened.
+
+   `--move-exit` is faster than `--move-enter` on purpose and in that order:
+   what is leaving should stop competing for attention quickly, and what is
+   arriving should take long enough to be read. The enter is delayed by the
+   exit so the two never overlap into a smear.
+
+   The direction is the part this product has to get right and most do not.
+   The convention is that forward slides the way a page turns — and a Hebrew
+   page turns the other way. So `--move-forward` is a sign, +1 here and -1
+   under `[dir="rtl"]`, and every keyframe multiplies by it rather than
+   naming a side. Hard-coding `translateX(-24px)` would send every forward
+   navigation in the product backwards. */
+:root {
+  --move-exit: 150ms;
+  --move-enter: 220ms;
+  --move-slide: 380ms;
+  --move-forward: 1;
+}
+html[dir='rtl'] { --move-forward: -1; }
+
+@keyframes move-fade {
+  from { opacity: 0; filter: blur(3px); }
+  to   { opacity: 1; filter: blur(0); }
+}
+@keyframes move-up   { from { transform: translateY(10px); } to { transform: none; } }
+@keyframes move-down { from { transform: translateY(-6px); } to { transform: none; } }
+@keyframes move-in   { from { transform: translateX(calc(var(--move-forward) * 24px)); } to { transform: none; } }
+@keyframes move-out  { from { transform: none; } to { transform: translateX(calc(var(--move-forward) * -16px)); } }
+
+/* A skeleton handing over to the thing it stood in for. Down and out, then
+   up and in: vertical direction reads as hierarchy, so the placeholder
+   yields and the real content arrives. */
+::view-transition-old(.yield) {
+  animation: var(--move-exit) ease-out both move-fade reverse,
+             var(--move-exit) ease-out both move-down;
+}
+::view-transition-new(.arrive) {
+  animation: var(--move-enter) ease-in var(--move-exit) both move-fade,
+             var(--move-slide) ease-out both move-up;
+}
+
+/* Going deeper, and coming back. Same pair of animations, opposite sign,
+   which is why the sign is a variable. */
+html:active-view-transition-type(nav-forward) {
+  &::view-transition-old(root) {
+    animation: var(--move-exit) ease-out both move-fade reverse,
+               var(--move-slide) ease-out both move-out;
+  }
+  &::view-transition-new(root) {
+    animation: var(--move-enter) ease-in var(--move-exit) both move-fade,
+               var(--move-slide) ease-out both move-in;
+  }
+}
+html:active-view-transition-type(nav-back) {
+  --move-forward: -1;
+  &::view-transition-old(root) {
+    animation: var(--move-exit) ease-out both move-fade reverse,
+               var(--move-slide) ease-out both move-out;
+  }
+  &::view-transition-new(root) {
+    animation: var(--move-enter) ease-in var(--move-exit) both move-fade,
+               var(--move-slide) ease-out both move-in;
+  }
+}
+/* `dir` sits on <html> itself, so this is the same element rather than a
+   descendant of it — `[dir='rtl'] html` would match nothing at all. Going
+   back in Hebrew is the one case that flips twice: once for the language,
+   once for the direction of travel, which lands it back where it started. */
+html[dir='rtl']:active-view-transition-type(nav-back) { --move-forward: 1; }
+

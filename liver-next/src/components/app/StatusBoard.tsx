@@ -80,8 +80,12 @@ async function Row({ s }: { s: ClientStatus }) {
   const c = (await serverCopy()).statusBoard;
   return (
     <li className="card relative p-0 transition-colors focus-within:border-accent hover:border-accent">
+      {/* Forward, which in Hebrew means the screen slides the way a Hebrew
+          page turns. The sign lives in globals.css so neither this line nor
+          any other has to know which side that is. */}
       <Link
         href={`/app/clients/${s.id}`}
+        transitionTypes={['nav-forward']}
         className="absolute inset-0 z-0 rounded-[inherit]"
         aria-label={`${c.open} ${s.name}`}
       >

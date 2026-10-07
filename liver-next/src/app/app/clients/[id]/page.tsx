@@ -120,7 +120,7 @@ export default async function ClientPage({
   return (
     <>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <Link href="/app/clients" className="btn-quiet inline-block px-0 text-body">← {c.back}</Link>
+        <Link href="/app/clients" transitionTypes={['nav-back']} className="btn-quiet inline-block px-0 text-body">← {c.back}</Link>
         {/* Eight buttons were standing above the couple's own name, in a row
             that scrolled sideways, above a row of tags, above the sections.
             Three bands of chrome before the event itself begins, and he said
