@@ -489,8 +489,13 @@
      navigation is actually taking time (the 120ms delay means a fast one
      never flashes it). Both collapse to nothing under prefers-reduced-motion
      via the global rule at the top of this file. */
+  /* `rounded-card`, because what a skeleton stands in for is almost always a
+     panel, and standing a control's radius where a card is about to land is
+     the same mistake as the thirty-four bordered boxes: the shape changes
+     under the eye at the moment the real thing arrives. A skeleton for an
+     inner surface or a control asks for its own radius in the markup. */
   .skeleton {
-    @apply rounded-xl2 bg-surface-200;
+    @apply rounded-card bg-surface-200;
     animation: skeleton 1.6s ease-in-out infinite;
   }
   @keyframes skeleton {

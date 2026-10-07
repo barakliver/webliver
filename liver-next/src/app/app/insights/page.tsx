@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { requireLiveProducer } from '@/lib/auth';
 import { supabaseServer } from '@/lib/supabase/server';
 import { serverCopy } from '@/lib/serverLocale';
@@ -77,12 +78,51 @@ export default async function InsightsPage() {
       <div className="space-y-5">
         <Health signed={signed} overdue={overdue} waiting={response.waiting} />
         <CashPanel cash={cash} />
-        <LedgerEntries entries={await loadLedger(sb, { limit: 60 })} events={ledgerEvents} />
+        {/* Behind a boundary, and it is the only await left inside this
+            render. Sixty entries joined to their events is the slowest read
+            on the slowest screen in the console, and awaiting it here held
+            back the health panel, the cash panel and every chart under it —
+            all of which were already in hand. Now they paint and the ledger
+            arrives into the space kept for it. */}
+        <Suspense fallback={<LedgerSkeleton />}>
+          <Ledger sb={sb} events={ledgerEvents} />
+        </Suspense>
         <FunnelChart funnel={funnel} />
         <ConversionPanel r={conversion} />
         <ResponsePanel r={response} />
         <Sources rows={bySource(leadRows)} />
       </div>
     </>
+  );
+}
+
+/** The ledger, fetched on its own so nothing above it waits. */
+async function Ledger({ sb, events }: {
+  sb: Awaited<ReturnType<typeof supabaseServer>>; events: { id: string; name: string }[];
+}) {
+  return <LedgerEntries entries={await loadLedger(sb, { limit: 60 })} events={events} />;
+}
+
+/** The shape it will be: a title, three totals, and a run of rows. Held at
+ *  the real heights, so the panels below it do not jump when it lands. */
+function LedgerSkeleton() {
+  return (
+    <section className="card" aria-busy="true">
+      <div className="skeleton h-5 w-36" />
+      <div className="skeleton mt-3 h-4 w-full max-w-prose2" />
+      <div className="mt-5 grid gap-x-8 gap-y-4 sm:grid-cols-3">
+        {Array.from({ length: 3 }, (_, i) => (
+          <div key={i}>
+            <div className="skeleton h-3 w-16" />
+            <div className="skeleton mt-2 h-7 w-24" />
+          </div>
+        ))}
+      </div>
+      <div className="mt-5 space-y-px border-t border-line pt-2.5">
+        {Array.from({ length: 6 }, (_, i) => (
+          <div key={i} className="skeleton h-[46px] w-full rounded-none" />
+        ))}
+      </div>
+    </section>
   );
 }
