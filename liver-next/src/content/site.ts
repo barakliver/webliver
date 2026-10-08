@@ -2151,6 +2151,88 @@ export const appCopy = {
          are a situation, and the difference is worth a line. */
       moreTasks: 'ועוד {n} משימות באיחור',
     },
+    /* The sentence under the countdown, which is the one thing this screen
+       never said.
+       It answered two questions well and never the third. The count says how
+       long is left and the card under it says what to do next; nothing on the
+       screen ever said that a couple is fine. A screen that only ever lists
+       what is open teaches somebody that opening it produces work, and a
+       screen like that gets opened less and less.
+       None of these print a number. The card above already names the one
+       thing that matters and the strip below marks the month it sits in, and
+       a third copy of the same figure is how a screen starts to read as
+       nagging rather than as calm. */
+    standing: {
+      title: 'איפה אנחנו עומדים',
+      say: {
+        behind: {
+          head: 'יש מה לסגור מאחור',
+          why: 'משימה או תשלום שלכם עברו את התאריך שנקבע להם. הכרטיס שמעל אומר במה להתחיל.',
+        },
+        dateless: {
+          head: 'עוד אין תאריך, ולכן אין עוד לוח זמנים',
+          why: 'ברגע שייקבע תאריך, כל מה שרשום כאן יסתדר לפי החודשים שנשארו.',
+        },
+        past: {
+          head: 'החתונה מאחוריכם',
+          why: 'מה שנשאר כאן זה סגירת קצוות, ולזה אין תאריך.',
+        },
+        early: {
+          head: 'יש זמן, ושום דבר לא באיחור',
+          why: 'אין כרגע תקופה שצריך להיערך אליה. לוח החודשים ייפתח כאן בשנה שלפני החתונה.',
+        },
+        fresh: {
+          head: 'הכול פתוח, ושום דבר עוד לא נקבע',
+          why: 'אין עדיין משימה או תשלום עם תאריך, אז אין מה לאחר. כל דבר שיקבל תאריך יופיע בחודש שלו.',
+        },
+        tight: {
+          head: 'שום דבר לא באיחור, והתקופה הקרובה צפופה',
+          why: 'השבועיים הקרובים עמוסים ביחס לשאר הלוח. שווה לדעת את זה מראש ולא באמצע.',
+        },
+        steady: {
+          head: 'אתם בזמן',
+          why: 'יש מה לעשות בשבועיים הקרובים, ואף דבר לא עבר את התאריך שלו.',
+        },
+        calm: {
+          head: 'אתם בזמן, והשבועיים הקרובים פנויים',
+          why: 'אין מה לעשות עכשיו. הדבר הבא בלוח שלכם: {d}.',
+        },
+      },
+      /* Said instead of the line above when the whole schedule is behind them
+         and nothing is left with a date on it. */
+      calmClear: 'אין מה לעשות עכשיו, ואין עוד שום דבר עם תאריך בלוח שלכם.',
+    },
+    /* The year, month by month.
+       Every figure on this screen was about now: what is open, what is owed,
+       who has replied. There was no view of the year at all, so a couple
+       could not tell a crowded fortnight from a crowded wedding, and had no
+       sense of having got anywhere. A couple who sees that אוגוסט is closed
+       and ספטמבר holds two things stops being afraid of ספטמבר.
+       A month with nothing in it is still drawn, because the gap is the
+       information. */
+    months: {
+      title: 'השנה שלכם, חודש אחר חודש',
+      sub: 'רק דברים שלכם, ורק מה שיש לו תאריך.',
+      wedding: 'החתונה',
+      now: 'החודש',
+      progress: '{n} מתוך {of} בלוח כבר מאחוריכם',
+      /* What the strip says when it is read out loud. A row of boxes is a
+         picture; a screen reader gets a sentence per month, in label form so
+         a count of one does not have to inflect anything. The month's own
+         name is put in front of these rather than inside each of them, so a
+         month that is both overdue and part open says its name once. */
+      cell: 'פתוח: {n}. סגור: {c}.',
+      cellClear: 'הכול סגור.',
+      cellEmpty: 'אין כלום בחודש הזה.',
+      cellLate: 'באיחור: {n}.',
+      far: 'הלוח ייפתח כאן בשנה שלפני החתונה. כרגע נשארו {n} חודשים.',
+      farNoDate: 'הלוח ייפתח כאן אחרי שייקבע תאריך לחתונה.',
+      bare: 'אין עדיין משימה או תשלום עם תאריך, אז אין מה לפרוס על החודשים. כל דבר שיקבל תאריך יופיע כאן בחודש שלו.',
+      undated: {
+        one: 'עוד דבר אחד שלכם הוא בלי תאריך, ולכן לא על הלוח',
+        many: 'עוד {n} דברים שלכם הם בלי תאריך, ולכן לא על הלוח',
+      },
+    },
     /* The five questions a couple is worth asking once, and never twice.
        Built from the blanks on the event rather than from a fixed list, so
        a date the producer already agreed with a hall is not a question. */

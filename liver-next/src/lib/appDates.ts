@@ -73,3 +73,29 @@ export const signedAt = (locale: Locale) =>
   new Intl.DateTimeFormat(tag(locale), zoned({
     day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit',
   }));
+
+/** `אוק` / `Oct`. For the strip of months on the couple's screen, where
+ *  twelve of them share the width of a phone and a written out month would
+ *  turn the year into a list.
+ *
+ *  Three characters, which is narrower than either locale's own abbreviation:
+ *  Hebrew puts a geresh on eight of the twelve and English spells September
+ *  with four. At twelve cells across a 360px screen each one has about 23px,
+ *  and four characters is what makes the labels touch. `month: 'narrow'` is
+ *  not the answer, however much it sounds like it: in Hebrew it returns the
+ *  month's number, so the strip would read as twelve counts.
+ *
+ *  The full name goes in the sentence a screen reader gets, because three
+ *  letters is a picture rather than a word. */
+export const shortMonth = (locale: Locale) => {
+  const parts = new Intl.DateTimeFormat(tag(locale), zoned({ month: 'short' }));
+  return {
+    format: (d: Date | number) => parts.format(d).replace(/[\u05F3'.]/g, '').slice(0, 3),
+  };
+};
+
+/** `אוקטובר 2026` / `October 2026`. The year is worth its width here: the
+ *  strip crosses one, and a month with no year on it is the wrong month half
+ *  the time it is read out. */
+export const monthYear = (locale: Locale) =>
+  new Intl.DateTimeFormat(tag(locale), zoned({ month: 'long', year: 'numeric' }));

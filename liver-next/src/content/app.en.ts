@@ -137,6 +137,62 @@ export const portalEn: PortalCopy = {
     },
     moreTasks: 'and {n} more overdue',
   },
+  standing: {
+    title: 'Where we stand',
+    say: {
+      behind: {
+        head: 'There is something to close behind you',
+        why: 'A task or a payment of yours is past the date set for it. The card above says where to start.',
+      },
+      dateless: {
+        head: 'No date yet, so no schedule yet',
+        why: 'As soon as a date is set, everything here arranges itself by the months left.',
+      },
+      past: {
+        head: 'The wedding is behind you',
+        why: 'What is left here is tying off loose ends, and that has no date.',
+      },
+      early: {
+        head: 'There is time, and nothing is late',
+        why: 'There is no stretch to get ready for right now. The months open here in the year before the wedding.',
+      },
+      fresh: {
+        head: 'Everything is open, and nothing is set',
+        why: 'No task or payment has a date yet, so nothing can be late. Anything that gets one appears in its month.',
+      },
+      tight: {
+        head: 'Nothing is late, and the next stretch is busy',
+        why: 'The coming fortnight is fuller than the rest of the schedule. Worth knowing in advance rather than halfway through.',
+      },
+      steady: {
+        head: 'You are on time',
+        why: 'There is something to do in the next fortnight, and nothing has passed its date.',
+      },
+      calm: {
+        head: 'You are on time, and the next fortnight is clear',
+        why: 'Nothing to do right now. The next thing on your schedule is on {d}.',
+      },
+    },
+    calmClear: 'Nothing to do right now, and nothing left with a date on it.',
+  },
+  months: {
+    title: 'Your year, month by month',
+    sub: 'Only your own things, and only what has a date.',
+    wedding: 'The wedding',
+    now: 'This month',
+    progress: '{n} of {of} on the schedule are behind you',
+    cell: 'Open: {n}. Closed: {c}.',
+    cellClear: 'All closed.',
+    cellEmpty: 'Nothing this month.',
+    cellLate: 'Overdue: {n}.',
+    far: 'The months open here in the year before the wedding. {n} months to go for now.',
+    farNoDate: 'The months open here once a date is set for the wedding.',
+    bare: 'No task or payment has a date yet, so there is nothing to lay across the months. Anything that gets one appears here in its month.',
+    undated: {
+      one: 'One more thing of yours has no date, so it is not on the chart',
+      many: '{n} more things of yours have no date, so they are not on the chart',
+    },
+  },
   begin: {
     title: 'A few things about your wedding',
     sub: '{n} short questions. Any of them can be skipped, and anything you do not know yet stays open.',

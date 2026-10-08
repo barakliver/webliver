@@ -14,6 +14,8 @@ import { SeatingPlan } from '@/components/app/SeatingPlan';
 import { DaySchedule } from '@/components/app/DaySchedule';
 import { PortalSummary, summaryRows } from '@/components/app/PortalSummary';
 import { NextAction } from '@/components/app/NextAction';
+import { Standing } from '@/components/app/Standing';
+import { MonthsLeft } from '@/components/app/MonthsLeft';
 import { BeginFlow } from '@/components/app/BeginFlow';
 import { GuestSiteLink } from '@/components/app/GuestSiteLink';
 import { PortalVendors } from '@/components/app/PortalVendors';
@@ -22,7 +24,8 @@ import { QuoteCompare } from '@/components/app/QuoteCompare';
 import { Fold, FoldGroup } from '@/components/Fold';
 import { Ltr } from '@/components/Ltr';
 import type { PortalData, Workspace } from '@/lib/portal';
-import { nextAction, upcoming, type TaskFact } from '@/lib/nextAction';
+import { nextAction, upcoming, type PayFact, type TaskFact } from '@/lib/nextAction';
+import { standing, timeline, type StandingFacts } from '@/lib/standing';
 import { track } from '@/lib/budgetPlan';
 import { todayInZone } from '@/lib/clock';
 
@@ -107,13 +110,14 @@ export function PortalWorkspace({
   const overArea = data.can(c.id, 'budget' as never)
     ? track(budget, c.budget_plan as never).flagged[0]?.key ?? null
     : null;
+  const payFacts: PayFact[] = payments.map((p) => ({
+    title: p.title, amount: Number(p.amount) || 0, due_on: p.due_on, paid: p.paid,
+  }));
   const action = nextAction({
     today: todayInZone(),
     daysLeft: left,
     tasks: openTasks,
-    payments: payments.map((p) => ({
-      title: p.title, amount: Number(p.amount) || 0, due_on: p.due_on, paid: p.paid,
-    })),
+    payments: payFacts,
     guestsInvited: guests.length,
     guestsAnswered: guests.filter((g) => g.status !== 'pending').length,
     budgetLines: budget.length,
@@ -124,6 +128,22 @@ export function PortalWorkspace({
   });
   /* The two after it, and never the one already at the top of the card. */
   const then = upcoming(openTasks, 3).filter((t) => t.title !== action.subject).slice(0, 2);
+
+  /* Where they stand, and the shape of the year, off the same rows as the
+     card above. One fact object for both so the sentence under the countdown
+     and the strip of months can never disagree about what is late. Both
+     gates are passed in rather than applied here: a module switched off must
+     not put a mark on either. */
+  const facts: StandingFacts = {
+    today: todayInZone(),
+    eventDate: c.event_date ?? null,
+    tasks: openTasks,
+    payments: payFacts,
+    money: can('budget'),
+    tasksOn: can('tasks'),
+  };
+  const stand = standing(facts);
+  const year = timeline(facts);
 
   /* The first picture off their own board, and the only source of colour on
      this screen that is not the accent. Read through the same gate the board
@@ -210,6 +230,12 @@ export function PortalWorkspace({
             </p>
           )}
         </div>
+
+        {/* The answer to the number above it, inside the same object rather
+            than in a card of its own. The count is the fear; this is the
+            reply, and it is never absent, because a band that is only there
+            when the news is good is a band nobody believes. */}
+        <Standing s={stand} ui={ui} />
       </header>
 
       {/* The five questions, above everything, and only while any of them is
@@ -231,6 +257,13 @@ export function PortalWorkspace({
       {/* Before the figures, because the figures are the answer to a question
           nobody asked. What to do is the question they arrived with. */}
       <NextAction action={action} then={then} ui={ui} moneyOn={can('budget')} />
+
+      {/* And after "what now", when everything else falls. The figures below
+          are all about today; this is the only thing on the screen that shows
+          a couple the year they are actually in, which is where the sense of
+          getting somewhere comes from. It reads one line and carries no row
+          the screen does not already have. */}
+      <MonthsLeft t={year} s={stand} ui={ui} />
 
       <PortalSummary rows={rows} label={ui.portal.summary} />
 

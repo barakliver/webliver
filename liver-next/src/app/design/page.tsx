@@ -18,6 +18,9 @@ import { GameTable } from '@/components/game/GameTable';
 import { GameSwitch } from '@/components/app/GameSwitch';
 import { dealDeck } from '@/lib/game';
 import { NextAction } from '@/components/app/NextAction';
+import { Standing } from '@/components/app/Standing';
+import { standing, timeline, type StandingFacts } from '@/lib/standing';
+import { MonthsLeft } from '@/components/app/MonthsLeft';
 import { BeginFlow } from '@/components/app/BeginFlow';
 import { PortalVendors } from '@/components/app/PortalVendors';
 import { PortalMeetings } from '@/components/app/PortalMeetings';
@@ -231,6 +234,23 @@ function Panel({ name, note, children }: { name: string; note?: string; children
     </section>
   );
 }
+
+/* Rows for the two panels that read `lib/standing`, dated relative to today
+   so the strip of months always has a this month and a wedding month
+   wherever in the year this page is opened from. */
+const day = (n: number) => {
+  const at = new Date(`${todayInZone()}T12:00:00Z`);
+  at.setUTCDate(at.getUTCDate() + n);
+  return at.toISOString().slice(0, 10);
+};
+const task = (due: string | null, done = false) =>
+  ({ title: 'x', due_on: due, done, owner: 'client' as const });
+const pay = (due: string | null, paid = false) =>
+  ({ title: 'y', amount: 5000, due_on: due, paid });
+const facts = (over: Partial<StandingFacts>): StandingFacts => ({
+  today: todayInZone(), eventDate: null, tasks: [], payments: [],
+  money: true, tasksOn: true, ...over,
+});
 
 export default async function DesignPage() {
   if (process.env.NODE_ENV === 'production') notFound();
@@ -471,6 +491,70 @@ export default async function DesignPage() {
               action={{ code: 'clear', subject: '', n: 0, due: null, late: false, section: 'tasks' }}
               then={[]}
             />
+          </div>
+        </Panel>
+
+        {/* Where they stand, and the year behind the sentence.
+            Both panels are driven by real calls to `lib/standing` over made
+            up rows rather than by hand written props, because a harness fed
+            props can show a state the rules never produce, and the whole
+            question about these two is whether the rules are right. The dates
+            are relative to today, so the strip always has a this month and a
+            wedding month wherever it is read from. */}
+        <Panel name="Standing" note="the sentence under the countdown: where a couple stands, from the same rows as the card above">
+          <div className="space-y-4">
+            {([
+              ['behind', { eventDate: day(90), tasks: [task(day(-6))] }],
+              ['calm', { eventDate: day(120), tasks: [task(day(40)), task(day(-30), true)] }],
+              ['tight', { eventDate: day(120), tasks: [1, 2, 3, 4, 5].map((i) => task(day(i))) }],
+              ['steady', { eventDate: day(60), tasks: [task(day(5))] }],
+              ['early', { eventDate: day(500) }],
+              ['fresh', { eventDate: day(100) }],
+              ['dateless', { eventDate: null, tasks: [task(null)] }],
+            ] as [string, Partial<StandingFacts>][]).map(([name, over]) => (
+              <div key={name}>
+                <p className="mb-1 text-micro text-ink-mute"><Ltr>{name}</Ltr></p>
+                <div className="overflow-hidden rounded-card border border-line-soft bg-card">
+                  <Standing s={standing(facts(over))} ui={appUiFor('he')} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </Panel>
+
+        <Panel name="MonthsLeft" note="the year as one line of months: what is closed, what is open, which month is empty">
+          <div className="space-y-5">
+            {([
+              ['strip', {
+                eventDate: day(130),
+                tasks: [
+                  task(day(-40), true), task(day(-12), true), task(day(-3)),
+                  task(day(6)), task(day(9)), task(day(38)), task(day(128)), task(null),
+                ],
+                payments: [pay(day(-50), true), pay(day(70))],
+              }],
+              ['one month left', { eventDate: day(12), tasks: [task(day(3)), task(day(8), true)] }],
+              ['nothing left in the wedding month', {
+                eventDate: day(80),
+                tasks: [task(day(4)), task(day(30), true), task(day(45))],
+              }],
+              /* The widest the strip ever gets. Twelve cells on a phone is
+                 what decides whether the month labels can be read at all. */
+              ['a full year', {
+                eventDate: day(345),
+                tasks: [task(day(2)), task(day(40), true), task(day(100)), task(day(240)), task(day(344))],
+              }],
+              ['far', { eventDate: day(500), tasks: [task(day(10))] }],
+              ['bare', { eventDate: day(100), tasks: [task(null)] }],
+            ] as [string, Partial<StandingFacts>][]).map(([name, over]) => {
+              const f = facts(over);
+              return (
+                <div key={name}>
+                  <p className="mb-1 text-micro text-ink-mute"><Ltr>{name}</Ltr></p>
+                  <MonthsLeft t={timeline(f)} s={standing(f)} ui={appUiFor('he')} />
+                </div>
+              );
+            })}
           </div>
         </Panel>
 

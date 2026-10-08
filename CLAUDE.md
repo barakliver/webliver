@@ -86,6 +86,55 @@ that has happened once.
   opens it first — the quick-jump uses it and so does `FoldReveal`, which
   catches every ordinary `#` link on the page. Without it the button on "מה
   עכשיו" scrolls nowhere in most browsers.
+- **That screen answered two questions and never the third.** The count says
+  how long is left and the card under it says what to do next; nothing on it
+  ever said that a couple is fine. A screen that only ever lists what is open
+  teaches somebody that opening it produces work, and a screen like that gets
+  opened less and less. "87 ימים" is the fear and there was no reply to it.
+  So `lib/standing.ts`, pure and tested beside `bingo` and `crewNeeds`, with
+  two readings of the same rows and one fact object feeding both, so the
+  sentence and the strip can never disagree about what is late. `standing()`
+  is a ladder of eight verdicts and `behind` is checked first and before the
+  wedding is even known to be in the future, because being told everything is
+  fine while a supplier is unpaid is the one failure that would make the
+  whole sentence worthless. It prints no number: the card above already names
+  the one that matters and the strip marks the month it sits in, and a third
+  copy of the same figure is how a screen starts to read as nagging. Only
+  **their own** rows count, their tasks and their payments and never the
+  producer's work, because telling somebody they are behind on a thing they
+  have no button for is the one move this card must not make; both module
+  gates are applied inside the lib rather than at the call site, which is
+  where they would be forgotten. `Standing` sits inside the header object
+  under the countdown rather than in a card of its own, because it is the
+  answer to that number and not a fourth thing to read, and it is never
+  absent: a band that is only there when the news is good is a band nobody
+  believes. Nothing in it is red. Two verdicts carry no tick at all - a green
+  check beside "עוד אין תאריך" is congratulation for a blank page, which is
+  the kind of praise that teaches somebody the screen is not paying
+  attention.
+- **And the year, which nothing on that screen showed.** Every figure on it
+  was about now, so a couple could not tell a crowded fortnight from a
+  crowded wedding and had no sense of having got anywhere. `timeline()` lays
+  the months from this one to the wedding's across `MonthsLeft`, and four
+  rules are in the lib and tested because each is obviously right and quietly
+  wrong. A month with nothing in it is still a cell: the gap is the
+  information, and a strip drawn only where there is work is a strip whose
+  spacing lies - the thing a couple is looking for is the empty September.
+  Late things fold onto the current month rather than being drawn where they
+  fell, because a strip that grows backwards opens on a couple's own history
+  of being behind. An undated task is open and not due, so it is never given
+  a month and is counted in a line of its own instead. And past twelve months
+  the strip is not drawn and a sentence says why, the same move the bingo
+  makes under nine tasks: thirteen cells on a phone is a bar chart nobody can
+  read. The cells are capsules rather than one of the three radii, because
+  they are marks on a chart and should not be mistakable for something to
+  press, and because at twelve across a phone they are 23px and at three they
+  are 40px, and a 12px corner reads as a rounded box at one of those and as a
+  stadium at the other. Neither it nor the sentence is a row in
+  `portalSections.ts`, for the same reason the countdown and the four figures
+  are not: they carry no row the screen does not already have, ask the
+  database nothing, and belong to the open screen rather than to what is
+  behind the six drawers.
 - **What the couple sees is decided by a switch and by nothing else.** Every
   section of their screen is a row in `content/portalSections.ts`, and that one
   list is read by four things: the couple's screen, the producer's preview of
