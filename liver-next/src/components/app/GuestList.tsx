@@ -1,5 +1,6 @@
 'use client';
 
+import { Name } from '@/components/Ltr';
 import { Pencil } from 'lucide-react';
 import { Sheet } from '@/components/app/Sheet';
 
@@ -487,7 +488,7 @@ export function GuestList({ clientId, guests }: { clientId: string; guests: Gues
                 <div className="flex items-start justify-between gap-3">
                   <Pick on={picked.has(g.id)} onPick={() => toggle(g.id)} name={g.full_name} label={c.choose} />
                   <div className="min-w-0 flex-1">
-                    <p className="font-medium text-ink">{g.full_name}</p>
+                    <p className="font-medium text-ink"><Name>{g.full_name}</Name></p>
                     <p className="text-meta text-ink-mute">
                       {[g.side, g.phone].filter(Boolean).join(' · ') || '·'}
                     </p>
@@ -541,7 +542,7 @@ export function GuestList({ clientId, guests }: { clientId: string; guests: Gues
                       <Pick on={picked.has(g.id)} onPick={() => toggle(g.id)} name={g.full_name} label={c.choose} />
                     </td>
                     <td className="py-3">
-                      <div className="font-medium text-ink">{g.full_name}</div>
+                      <div className="font-medium text-ink"><Name>{g.full_name}</Name></div>
                       <div className="text-meta text-ink-mute">
                         {[g.side, g.phone].filter(Boolean).join(' · ') || '·'}
                       </div>

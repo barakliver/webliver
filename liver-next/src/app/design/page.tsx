@@ -154,7 +154,7 @@ import { ArchiveButton } from '@/components/app/ArchiveButton';
 import { PrintButton } from '@/components/app/PrintButton';
 import { RegionPicker } from '@/components/RegionPicker';
 import { PromiseLine } from '@/components/Promise';
-import { Ltr, Money, Ratio } from '@/components/Ltr';
+import { Ltr, Money, Ratio, Name } from '@/components/Ltr';
 import { REGIONS } from '@/content/site';
 import { PortalActions } from '@/components/app/PortalActions';
 import { EventTabs } from '@/components/app/EventTabs';
@@ -1287,6 +1287,17 @@ export default async function DesignPage() {
             here are quoted the four ways halls quote, on purpose: the one with
             the dearest plate is not the dearest evening, which is the entire
             reason this screen exists. */}
+        <Panel name="Name" note="a name laid out by what somebody typed rather than by the paragraph around it: Hebrew stays right to left, Latin goes left to right, and neither reorders the dot beside it">
+          <ul className="list-none space-y-1.5 p-0 text-body">
+            {['DJ אלון', 'Sarah Cohen', 'משפחת כהן', 'C הגן', 'אחוזת הכפר'].map((n) => (
+              <li key={n} className="flex flex-wrap items-baseline gap-2">
+                <Name className="font-medium text-ink">{n}</Name>
+                <span className="text-meta text-ink-mute">· 050-123-4567</span>
+              </li>
+            ))}
+          </ul>
+        </Panel>
+
         <Panel name="VenueLinks" note="the way to the hall, in both apps Israelis actually use: on the producer's own event file and on the guests' page, from one component so the two cannot offer different things">
           <div className="flex flex-wrap items-center gap-6">
             <VenueLinks venue="אחוזת הכפר" labels={{ waze: 'ניווט', maps: 'מפה' }} />

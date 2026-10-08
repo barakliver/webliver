@@ -36,6 +36,35 @@ export function Ltr({ children, className }: { children: React.ReactNode; classN
 }
 
 /**
+ * A name somebody typed, laid out by what they actually typed.
+ *
+ * `Ltr` above is for a value this product formatted: an amount, a ratio, a
+ * date with dots. This is the opposite case and it had nothing at all. A
+ * supplier is called "DJ אלון". A venue is "C הגן". A guest is "Sarah Cohen"
+ * in a list of Hebrew names. None of that is ours to format, and under
+ * `direction: rtl` the neutrals around it — the dot separating a name from a
+ * phone, a comma, a trailing bracket — resolve against the Hebrew paragraph
+ * rather than against the name, so "DJ אלון · 050" comes out with the pieces
+ * in an order nobody typed.
+ *
+ * `dir="auto"` is the whole answer and it is one attribute: the browser reads
+ * the first strong character of the content and lays that element out
+ * accordingly. A Hebrew name stays right to left, a Latin one goes left to
+ * right, and `isolate` keeps either from reordering what is beside it.
+ *
+ * Not `dir="ltr"`, which is the mistake this would otherwise be: most names
+ * here are Hebrew, and forcing them left to right would break the common
+ * case to fix the rare one.
+ */
+export function Name({ children, className }: { children: React.ReactNode; className?: string }) {
+  return (
+    <span dir="auto" style={{ unicodeBidi: 'isolate' }} className={className}>
+      {children}
+    </span>
+  );
+}
+
+/**
  * Money, formatted and isolated in one step.
  *
  * Western digits with comma groups, which is what `he-IL` produces anyway for

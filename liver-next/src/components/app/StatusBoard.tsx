@@ -5,7 +5,7 @@ import { serverCopy } from '@/lib/serverLocale';
 import type { ClientStatus } from '@/lib/status';
 import { ArchiveButton } from '@/components/app/ArchiveButton';
 import { formatDate } from '@/lib/dates';
-import { Money, Ratio, ils, Ltr } from '@/components/Ltr';
+import { Money, Ratio, ils, Ltr, Name } from '@/components/Ltr';
 import { groupByYear } from '@/lib/eventGroups';
 import { EVENT_ZONE } from '@/lib/clock';
 
@@ -104,7 +104,7 @@ async function Row({ s }: { s: ClientStatus }) {
             </h3>
             <p className="text-body text-ink-mute">
               {formatDate(dateFmtFor(locale), s.eventDate, c.noDate)}
-              {s.venue ? ` · ${s.venue}` : ''}
+              {s.venue ? <> · <Name>{s.venue}</Name></> : ''}
             </p>
           </div>
 
