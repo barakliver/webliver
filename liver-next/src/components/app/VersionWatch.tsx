@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { RefreshCw } from 'lucide-react';
-import { useCopy } from '@/components/app/CopyProvider';
+import type { UpdateCopy } from '@/content/appUi';
 
 /* What this copy of the app was built from. Baked in at build time, so it
    never changes while the app is running — which is the entire point. */
@@ -32,8 +32,14 @@ const EVERY = 30 * 60 * 1000;
  * The check itself is one small request, and the service worker is told to look
  * for a new copy of itself at the same time.
  */
-export function VersionWatch() {
-  const c = useCopy().update;
+/* Its wording arrives as a prop and not through `useCopy()`, which is not a
+   style choice. This component is mounted in the root layout, which stands
+   over the shopfront, the guests' page and the card game as well as the app,
+   and none of those has a CopyProvider. It was the one mount that made the
+   provider's Hebrew default load-bearing, and that default was a quarter of a
+   megabyte of wording in every bundle in the product. The `A11yPanel` beside
+   it in the same layout already took its copy this way. */
+export function VersionWatch({ copy: c }: { copy: UpdateCopy }) {
   const [stale, setStale] = useState(false);
 
   /* True while somebody is actually working in a field. A reload here is the

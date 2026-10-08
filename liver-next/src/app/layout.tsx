@@ -10,6 +10,7 @@ import { VersionWatch } from '@/components/app/VersionWatch';
 import './globals.css';
 import { A11yPanel } from '@/components/a11y/A11yPanel';
 import { a11yFor } from '@/content/ui';
+import { updateFor } from '@/content/appUi';
 import { cookies } from 'next/headers';
 import { LOCALE_COOKIE, dirOf, readLocale } from '@/lib/locale';
 import { BOOT_SCRIPT } from '@/lib/theme';
@@ -199,7 +200,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <A11yPanel copy={a11yFor(locale)} />
         <ThemeScope />
         <ServiceWorker />
-        <VersionWatch />
+        <VersionWatch copy={updateFor(locale)} />
       </body>
     </html>
   );

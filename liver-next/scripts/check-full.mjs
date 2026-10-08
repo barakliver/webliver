@@ -1,5 +1,5 @@
 /**
- * The two checks that need a running product, run against one.
+ * The three checks that need the product built or running, run against it.
  *
  *     node scripts/check-full.mjs
  *
@@ -26,9 +26,16 @@
  * and two browser passes onto it would make the fast check slow enough to
  * skip. This is the longer one, run before a release.
  *
- * Read only: it starts a server, loads pages, and reports. Playwright is not
- * a dependency of this project, so when it is missing both checks say so and
- * exit cleanly, and so does this.
+ * The weight of each screen is the third, and it is here for the same reason
+ * the other two are. It needs a production build, which `npm run check`
+ * cannot afford, so on its own it would be a check nobody types - which is
+ * exactly the failure the first paragraph is about. The build runs first,
+ * before the dev server, because the two write to different places and a
+ * build after a boot would be measuring whatever the dev server left.
+ *
+ * Read only: it builds, starts a server, loads pages, and reports. Playwright
+ * is not a dependency of this project, so when it is missing both browser
+ * checks say so and exit cleanly, and so does this.
  */
 import { spawn } from 'node:child_process';
 import { dirname, join } from 'node:path';
@@ -73,6 +80,15 @@ async function answers(url, within) {
   return false;
 }
 
+/* Built first and weighed, because a bundle grows one reasonable decision at
+   a time and nobody is ever looking at the total. */
+console.log('\nbuilding, to weigh what each screen asks somebody to download …');
+if (await run('npx', ['next', 'build'], { env: { ...process.env, NEXT_TELEMETRY_DISABLED: '1' } })) {
+  console.error('\nthe build failed, so there is nothing to weigh.\n');
+  process.exit(1);
+}
+const weight = await run('node', [join(here, 'check-bundle.mjs')]);
+
 console.log(`\nstarting the product on ${base} …`);
 const server = spawn('npx', ['next', 'dev', '--port', String(PORT)], {
   cwd: root,
@@ -107,6 +123,6 @@ const hydration = await run('node', [join(here, 'check-hydration.mjs'), '--url',
 
 stop();
 
-const bad = a11y || hydration;
+const bad = weight || a11y || hydration;
 console.log(bad ? '\nthe long check found something.\n' : '\nthe long check is clean.\n');
 process.exit(bad ? 1 : 0);

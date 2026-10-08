@@ -108,6 +108,11 @@ export type VendorCopy = Wide<typeof vendorCopy>;
 export type TemplateCopy = Wide<typeof templateCopy>;
 export type BarCopy = Wide<typeof barCopy>;
 export type UpdateCopy = Wide<typeof updateCopy>;
+/** Handed as a prop rather than read through the provider, because the one
+ *  component that shows it sits in the root layout, above every page in the
+ *  product including the ones that have no app on them. Reading it through
+ *  the context there is what kept the whole copy tree in every bundle. */
+export const updateFor = (l: Locale): UpdateCopy => (l === 'en' ? updateEn : updateCopy);
 export type LinkCopy = Wide<typeof linkCopy>;
 export type SignCopy = Wide<typeof signCopy>;
 export type SiteEditorCopy = Wide<typeof siteEditorCopy>;

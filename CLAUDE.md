@@ -524,6 +524,65 @@ that has happened once.
   rather than a plain update, for the same reason its delete does - `select`
   is revoked on those tables, so an update can neither ask for RETURNING nor
   tell a refusal from a miss.
+- **Every route in the product carried 35KB of gzipped Hebrew, including the
+  pages with no app on them.** `CopyProvider` defaulted its context to
+  `APP_UI_HE` so that a screen with no provider rendered Hebrew rather than a
+  blank panel. The reasoning was good and the cost was invisible: a default is
+  an import, `APP_UI_HE` reaches `content/site.ts`, and that file is a quarter
+  of a megabyte of wording for every screen there is. One reference from one
+  client module keeps the whole object alive through tree-shaking, and that
+  was the only one. The guests' page went from 73KB gzipped to 38 the moment
+  the line changed, the card game from 78 to 43, the shopfront from 95 to 60,
+  the couple's screen from 246 to 212. A grandparent opening a wedding
+  invitation on a phone was downloading the producer's crew board labels.
+  `GameTable` already knew: it writes twenty lines of `Sheet`'s behaviour out
+  by hand rather than import it, and says why. So `useCopy()` throws now, and
+  the soft failure is replaced by a proof rather than given up:
+  `npm run copy` walks what every router mount imports and fails if anything
+  that reads the wording sits under no provider. It walks imports rather than
+  trusting a list, it covers `loading` and `error` as well as `page` because
+  those are mounted in the same place, and it strips comments first - its
+  first run reported the card game, whose only `useCopy()` is inside the
+  comment explaining why it does not use one. **The one mount that made the
+  default load-bearing was `VersionWatch`**, which sits in the root layout
+  and so stands over the shopfront, the guests' page and the card game as
+  well as the app, none of which has a provider. It takes its wording as a
+  prop now, the way `A11yPanel` beside it in the same layout already did.
+  The check did not find it: the first version of it walked `src/app/app`
+  only, said every screen was covered, and the dev server threw on `/design`
+  four seconds later. It walks the whole router now, layouts included, and
+  that is the general lesson rather than a detail - a checker that defines
+  its own scope will define it as the part somebody was thinking about.
+- **And a ceiling, because a bundle grows the way a type scale grows.** One
+  reasonable local decision at a time, nobody looking at the total.
+  `npm run weigh` reads each route's own client manifest, gzips what that
+  route asks for, and fails over a budget - the same answer `npm run type` is
+  for font sizes. Three budgets and not sixty, because a number per route is a
+  table nobody maintains and because the three are a real distinction: a
+  stranger or a guest who followed a link to an invitation gets the tightest,
+  the couple's own screen is allowed more because it carries their whole
+  wedding, the console is cached after the first load. The sign-in page has a
+  fourth of its own, caught by the first run being lumped in with the guests:
+  it is the only page that needs the auth client and nobody arrives at it from
+  an invitation. `/design` is exempt and that is not a loophole - it mounts
+  every component at once, it is a 404 in production, and holding it to a
+  budget would mean deleting panels from the harness to stay under a number.
+  **The numbers are set just above where the product is, deliberately.** The
+  first ones written were round and generous, and the regression the check
+  exists to catch would have passed under them with room to spare. It lives
+  inside `check:full` rather than beside it, for the reason the next entry
+  gives.
+- **What the measurement did not find is worth as much.** 148 of 257
+  components carry `'use client'`, which reads as a boundary drawn far too
+  low, and it is not: all but three of them call a hook, and nearly every one
+  of those is `useCopy()`. The three that do not are thin wrappers over a
+  client child and moving them saves nothing. The next real lever is measured
+  and deliberately not taken: the couple's screen is 212KB against an app
+  floor of 127, and the difference is the panels behind the six folds, which
+  are rendered eagerly because a `<details>` holds its children in the DOM.
+  Mounting them lazily would cut it hard and would break the quick-jump,
+  because `lib/reveal.ts` opens a fold to reach an anchor and an anchor that
+  has not mounted is not there. That is a real piece of work and not a tidy-up.
 - **`npm run check:full` boots the product, because two checks needed one
   and so never ran.** `check-a11y.mjs` and `check-hydration.mjs` had existed
   for months and neither had ever been run: each needs a `--url` and a server
