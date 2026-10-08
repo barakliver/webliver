@@ -700,6 +700,31 @@
     @apply text-micro font-medium tracking-[.14em] text-accent;
   }
 
+  /* A list long enough that drawing all of it is the slow part of the screen.
+     A guest list runs to four hundred names and the supplier book to as many
+     as a producer has ever worked with, and every row of those was being laid
+     out and painted whether or not anybody could see it.
+
+     The browser skips the ones that are off screen and keeps them in the
+     document, which is the whole reason this rather than a virtualised list:
+     find-in-page still finds a name, an anchor still resolves, and a screen
+     reader still walks the whole thing. A virtualiser takes all three away in
+     exchange for the same frame rate.
+
+     `contain-intrinsic-size: auto <n>` is the guess at a row's height before
+     it has ever been on screen, and `auto` means the browser remembers the
+     real one afterwards, so the scrollbar settles rather than jumping. The
+     number only has to be the right order of magnitude.
+
+     Measured, not assumed, and the measurement has a sharp edge in it: the
+     same declaration on a `<tr>` does nothing at all. Table layout has to
+     size every row to size the columns, so a table gets no help from this
+     and the only way to make one cheap is to draw fewer rows. */
+  .rows > * {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 88px;
+  }
+
   /* A hairline that reads as a rule rather than a border. */
   .hairline { @apply h-px w-full border-0 bg-line; }
 

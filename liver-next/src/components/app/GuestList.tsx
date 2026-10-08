@@ -18,6 +18,7 @@ import { DeleteForm } from '@/components/app/ConfirmDelete';
 import { normalizePhone } from '@/lib/phone';
 import { publicEnv } from '@/lib/env';
 import { count, fill } from '@/lib/copyText';
+import { useWide } from '@/lib/useWide';
 import { Metric } from '@/components/app/Metric';
 
 export type Guest = {
@@ -249,6 +250,9 @@ function Pick({ on, onPick, name, label }: {
 export function GuestList({ clientId, guests }: { clientId: string; guests: Guest[] }) {
   const [state, action] = useActionState<GuestResult | null, FormData>(addGuests, null);
   const [filter, setFilter] = useState<'all' | Guest['status']>('all');
+  /* Which of the two layouts below is actually on screen. `null` until the
+     browser answers, which is one render and is what the server sent. */
+  const wide = useWide();
   const c = useCopy().guests;
 
   const attending = guests.filter((g) => g.status === 'attending');
@@ -489,7 +493,18 @@ export function GuestList({ clientId, guests }: { clientId: string; guests: Gues
               meaning, the status chip and the row's actions, are shared
               components rather than written twice, so the two layouts cannot
               drift into showing different things. */}
-          <ul className="mt-4 space-y-2.5 sm:hidden">
+          {/* Two layouts, and only the one on screen is built. The CSS
+              still hides the other, so the first render is what the server
+              sent and nothing moves when the real answer arrives; what
+              changes is that at four hundred guests this is four hundred
+              rows rather than eight hundred.
+
+              `.rows` carries the rest of it, and says in `globals.css` what
+              it is for. The table below deliberately does not get it: the
+              same declaration on a `<tr>` does nothing, because table layout
+              has to size every row to size the columns. */}
+          {wide !== true && (
+          <ul className="rows mt-4 space-y-2.5 sm:hidden">
             {shown.map((g) => (
               <li key={g.id} className={`rounded-card-sm border px-4 py-3.5 ${
                 picked.has(g.id) ? 'border-accent/40 bg-accent-wash' : 'border-line'
@@ -518,7 +533,9 @@ export function GuestList({ clientId, guests }: { clientId: string; guests: Gues
               </li>
             ))}
           </ul>
+          )}
 
+          {wide !== false && (
           <div className="mt-4 hidden overflow-x-auto sm:block">
             <table className="w-full text-right text-body">
               {/* The head stays while the names scroll. Six columns of
@@ -570,6 +587,7 @@ export function GuestList({ clientId, guests }: { clientId: string; guests: Gues
               </tbody>
             </table>
           </div>
+          )}
         </>
       )}
     </section>

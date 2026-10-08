@@ -49,7 +49,10 @@ export function LedgerEntries({ entries, showEvent = true, events = [] }: {
             <div><p className="eyebrow">{c.totalOut}</p><p className="mt-1 font-display text-panel font-semibold text-bad"><Money value={expense} /></p></div>
             <div><p className="eyebrow">{c.net}</p><p className={`mt-1 font-display text-panel font-semibold ${income - expense < 0 ? 'text-bad' : 'text-ink'}`}><Money value={income - expense} /></p></div>
           </div>
-          <ul className="mt-5 divide-y divide-line border-t border-line">
+          {/* A year of entries is hundreds of rows, and this panel is also
+              drawn whole on the insights screen where it is every event at
+              once. */}
+          <ul className="rows mt-5 divide-y divide-line border-t border-line">
             {entries.map((e) => (
               <Row key={e.id} entry={e} showEvent={showEvent} events={events} />
             ))}

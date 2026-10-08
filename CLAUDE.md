@@ -597,6 +597,34 @@ that has happened once.
   form**: the browser drops the inner one while parsing, React's tree and the
   DOM stop matching, and the whole page is thrown away and rebuilt. It
   rendered correctly and the suite was green.
+- **A long list drew every row, and the guest list drew every row twice.**
+  The guests panel is two layouts, a stack of cards for a phone and a table
+  for a desk, with CSS hiding one. That design is right and argued for where
+  it is written: six columns is a desktop shape, and a 680px table inside a
+  horizontal scroller on a 390px screen asks a thumb to drag sideways inside
+  a page that also scrolls down. What it cost is that both are built.
+  `display: none` makes the hidden one free to lay out and free to paint, and
+  not free to build, so a four hundred guest wedding was eight hundred rows in
+  the DOM and eight hundred components in React, half of them for a layout
+  nobody on that device can see. `lib/useWide.ts` reads the breakpoint and the
+  panel builds one of them. The server does not know how wide a screen is, so
+  the server snapshot is `null`, meaning "not known yet": the panel draws both,
+  which is byte for byte what it drew before, and the real answer arrives on
+  the same tick as hydration and removes the half that was already hidden.
+  `useSyncExternalStore` and not an effect, because an effect runs after paint
+  and the browser would build both trees and then throw one away.
+- **And the rows that are left are skipped while they are off screen.**
+  `.rows` in `globals.css` is `content-visibility: auto`, on the guests'
+  cards, the supplier book and the ledger. A virtualised list would get the
+  same frame rate and take away find-in-page, anchors and the screen reader's
+  walk through the whole thing; this keeps all three, because the rows are
+  still in the document and only their layout and paint are deferred. **It has
+  one sharp edge and it was measured rather than assumed: the same declaration
+  on a `<tr>` does nothing at all**, since table layout has to size every row
+  to size the columns. So the guests' table gets no help from it, and the only
+  way to make a long table cheap is to draw fewer rows. That is not done here:
+  a cap would have to change what "select all" means, and the comment above
+  that control already says why reaching past what is on screen is wrong.
 - **Opacity is not a mute.** It was used for three "set back" states - the
   out-of-month calendar cell, a past crew shift, a switched-off lead channel -
   and at 60% `ink-mute` composites to 2.51 against white, so every word in

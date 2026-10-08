@@ -314,7 +314,11 @@ export function VendorDirectory({ vendors }: { vendors: Vendor[] }) {
       ) : (
         <>
           <p className="mb-3 text-body text-ink-mute">{fill(c.count, { n: shown.length })}</p>
-          <ul className="space-y-2.5">
+          {/* The whole supplier book, which for a producer who has been
+              at this a few years is hundreds of rows. `.rows` in globals.css
+              lets the browser skip the ones off screen without taking them
+              out of the document. */}
+          <ul className="rows space-y-2.5">
             {shown.map((v) => <Row key={v.id} vendor={v} />)}
           </ul>
         </>
