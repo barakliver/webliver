@@ -695,6 +695,8 @@ export const consoleEn: ConsoleCopy = {
   },
 
   clientPage: {
+    waze: 'Navigate',
+    maps: 'Map',
     back: 'Back to events',
     details: 'Event details',
     tools: 'Printouts and views',

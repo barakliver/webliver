@@ -111,6 +111,7 @@ import { BrandEditor } from '@/components/app/BrandEditor';
 import { BrandAssets } from '@/components/app/BrandAssets';
 import { PrepSheet } from '@/components/app/PrepSheet';
 import { VenueCompare } from '@/components/app/VenueCompare';
+import { VenueLinks } from '@/components/VenueLinks';
 import { venuesFor } from '@/content/appUi';
 import { fixtureVenues } from '@/content/fixtures';
 import { PrepView } from '@/components/PrepView';
@@ -1286,6 +1287,13 @@ export default async function DesignPage() {
             here are quoted the four ways halls quote, on purpose: the one with
             the dearest plate is not the dearest evening, which is the entire
             reason this screen exists. */}
+        <Panel name="VenueLinks" note="the way to the hall, in both apps Israelis actually use: on the producer's own event file and on the guests' page, from one component so the two cannot offer different things">
+          <div className="flex flex-wrap items-center gap-6">
+            <VenueLinks venue="אחוזת הכפר" labels={{ waze: 'ניווט', maps: 'מפה' }} />
+            <VenueLinks venue="אחוזת הכפר" tone="ghost" labels={{ waze: 'ניווט בוויז', maps: 'מפות גוגל' }} />
+          </div>
+        </Panel>
+
         <Panel name="VenueCompare" note="four quotes in four shapes, made into one number each">
           <VenueCompare
             c={venuesFor(locale)} clientId={client}

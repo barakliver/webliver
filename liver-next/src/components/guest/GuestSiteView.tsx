@@ -1,4 +1,5 @@
-import { CalendarPlus, MapPin, Navigation } from 'lucide-react';
+import { CalendarPlus, MapPin } from 'lucide-react';
+import { VenueLinks } from '@/components/VenueLinks';
 import type { Locale } from '@/lib/locale';
 import type { GuestSiteCopy } from '@/content/ui';
 import { weekdayDate } from '@/lib/appDates';
@@ -91,25 +92,10 @@ export function GuestSiteView({ site, token, c, locale }: {
 
         {/* ── the three buttons ─────────────────────────────────────────── */}
         <div className="mt-8 flex flex-wrap justify-center gap-2.5">
+          {/* The same component the producer's own screen uses. Two copies
+              of this drifted into offering different apps once already. */}
           {venue && (
-            <>
-              <a
-                href={`https://waze.com/ul?q=${q}&navigate=yes`}
-                target="_blank" rel="noopener noreferrer"
-                className="btn-ghost"
-              >
-                <Navigation size={16} strokeWidth={1.5} aria-hidden />
-                {c.waze}
-              </a>
-              <a
-                href={`https://www.google.com/maps/search/?api=1&query=${q}`}
-                target="_blank" rel="noopener noreferrer"
-                className="btn-ghost"
-              >
-                <MapPin size={16} strokeWidth={1.5} aria-hidden />
-                {c.maps}
-              </a>
-            </>
+            <VenueLinks venue={venue} tone="ghost" labels={{ waze: c.waze, maps: c.maps }} />
           )}
           {site.event_date && (
             <a href={`/w/${token}/event.ics`} className="btn-ghost">

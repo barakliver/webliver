@@ -8,6 +8,7 @@ import { useFormStatus } from 'react-dom';
 import { CalendarPlus, Pencil } from 'lucide-react';
 import { updateClientDetails, type ActionResult } from '@/app/actions/clients';
 import { MIN_EVENT_DATE, MAX_GUESTS } from '@/content/site';
+import { VenueLinks } from '@/components/VenueLinks';
 import { useCopy } from '@/components/app/CopyProvider';
 import { formatDate, daysUntil } from '@/lib/dates';
 import { EVENT_ZONE } from '@/lib/clock';
@@ -211,7 +212,13 @@ export function EventDetails({ event }: { event: EventCore }) {
         <Line label={ui.newClient.date}>
           {formatDate(dateFmtFor(locale), event.event_date, c.noDateYet)}
         </Line>
-        <Line label={ui.newClient.venue}>{event.venue || c.at.none}</Line>
+        <Line label={ui.newClient.venue}>
+          {event.venue || c.at.none}
+          {/* Standing in a car park at six in the evening is when this is
+              read, and until now it was read and then retyped into another
+              app. */}
+          {event.venue && <VenueLinks venue={event.venue} labels={{ waze: c.waze, maps: c.maps }} className="ms-2" />}
+        </Line>
         <Line label={ui.newClient.guests}>{event.guest_estimate ?? c.at.none}</Line>
 
         {/* The number the producer actually calls, as something they can press

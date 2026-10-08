@@ -1502,6 +1502,8 @@ export const appCopy = {
   },
 
   clientPage: {
+    waze: 'ניווט',
+    maps: 'מפה',
     back: 'חזרה לאירועים',
     details: 'פרטי האירוע',
     /* The one button that now holds the seven printouts and views that used
