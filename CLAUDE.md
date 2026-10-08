@@ -531,9 +531,11 @@ that has happened once.
   an import, `APP_UI_HE` reaches `content/site.ts`, and that file is a quarter
   of a megabyte of wording for every screen there is. One reference from one
   client module keeps the whole object alive through tree-shaking, and that
-  was the only one. The guests' page went from 73KB gzipped to 38 the moment
-  the line changed, the card game from 78 to 43, the shopfront from 95 to 60,
-  the couple's screen from 246 to 212. A grandparent opening a wedding
+  was the only one. Every page in the product got 35KB lighter the moment the
+  line changed: the guests' page from 240KB gzipped to 205, the shopfront from
+  261 to 226, the couple's screen from 413 to 378. (Those were first written
+  as 73 to 38 and so on, which was the bundle checker measuring a fifth of the
+  page; the saving was always 35KB.) A grandparent opening a wedding
   invitation on a phone was downloading the producer's crew board labels.
   `GameTable` already knew: it writes twenty lines of `Sheet`'s behaviour out
   by hand rather than import it, and says why. So `useCopy()` throws now, and
@@ -572,6 +574,21 @@ that has happened once.
   exists to catch would have passed under them with room to spare. It lives
   inside `check:full` rather than beside it, for the reason the next entry
   gives.
+  **And for a day it measured a fifth of the truth.** It summed each route's
+  own `entryJSFiles` and left out the framework, the runtime and the
+  polyfills - Next lists those separately, as `rootMainFiles`, which is
+  exactly how they went missing. It reported the privacy page at 37KB and the
+  live privacy page downloads 200. The saving it was built to measure was
+  real, because before and after were counted the same way; the budgets were
+  nonsense, because they were set against a number nobody waits for. It
+  surfaced only by fetching the live site after a release and weighing what
+  the HTML actually asks for, which is the lesson: **a measurement checked
+  against itself is not checked.** Worth knowing when reading the budgets:
+  166KB of every one of them is React, Next and the polyfills, the same on
+  every page and cached after the first, and nothing in this repository can
+  move it. It is counted anyway, because a budget that excluded the largest
+  thing on the page would be measuring our own work and calling it the
+  visitor's wait.
 - **What the measurement did not find is worth as much.** 148 of 257
   components carry `'use client'`, which reads as a boundary drawn far too
   low, and it is not: all but three of them call a hook, and nearly every one
