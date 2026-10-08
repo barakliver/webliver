@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useTransition } from 'react';
+import { useOverlay } from '@/lib/useOverlay';
 import { useRouter } from 'next/navigation';
 import {
   Bell, CalendarClock, Check, CheckCheck, CheckCircle2, FileText, Heart, KeyRound, LifeBuoy, Mail,
@@ -56,12 +57,12 @@ export function NoticeBell({ notices, copy }: { notices: Notice[]; copy?: Notice
   const panel = useRef<HTMLDivElement>(null);
   const unread = notices.filter((n) => !n.read_at).length;
 
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
-  }, [open]);
+  /* `history: false`: on a desk this hangs under the bell rather than
+     covering anything, and a notice panel that eats somebody's Back is worse
+     than one that does not take it. Escape it already had; focus back to the
+     bell it did not, so reading a notice by keyboard dropped somebody at the
+     top of the page. */
+  useOverlay(open, () => setOpen(false), panel, { history: false });
 
   const follow = (n: Notice) => {
     setOpen(false);

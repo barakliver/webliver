@@ -92,6 +92,34 @@ const link =
  * thing this page cannot render without; everything else degrades to an empty
  * panel and a line in the log naming what broke.
  */
+/**
+ * The couple's name in the browser tab.
+ *
+ * The one screen in the product with no title of its own, and the one where
+ * it is worth the most: a producer works with six of these open at once, and
+ * six tabs all reading the same thing is six tabs somebody clicks through to
+ * find the one they meant.
+ *
+ * One small query of its own, because `generateMetadata` runs beside the
+ * page rather than inside it. It is a single column on a row the page is
+ * about to read anyway, and it is scoped by row level security like
+ * everything else here, so a producer who cannot see the event gets the
+ * plain title rather than somebody else's names.
+ */
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  const ui = await serverCopy();
+  const plain = ui.clients.title;
+  try {
+    const { id } = await params;
+    const sb = await supabaseServer();
+    const { data } = await sb.from('clients').select('display_name').eq('id', id).maybeSingle();
+    return { title: data?.display_name?.trim() || plain };
+  } catch {
+    /* A title is never worth a crashed page. */
+    return { title: plain };
+  }
+}
+
 export default async function ClientPage({
   params, searchParams,
 }: {

@@ -1,6 +1,7 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useRef } from 'react';
+import { useOverlay } from '@/lib/useOverlay';
 import { Minus, Plus, ShoppingBag, X } from 'lucide-react';
 import { placeOrder } from '@/app/actions/shop';
 import type { ShopCopy } from '@/content/ui';
@@ -33,6 +34,11 @@ export function Shop({ producerId, items, copy: c }: {
 }) {
   const [cart, setCart] = useState<Record<string, number>>({});
   const [open, setOpen] = useState(false);
+  /* The cart had no keyboard exit at all. A modal with no Escape is a trap,
+     and this one is on the public site, which is where somebody who is not
+     a user of this product meets it. Focus and the scroll lock came with it. */
+  const cartPanel = useRef<HTMLDivElement>(null);
+  useOverlay(open, () => setOpen(false), cartPanel);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [done, setDone] = useState<string | null>(null);
@@ -145,6 +151,7 @@ export function Shop({ producerId, items, copy: c }: {
       {open && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-dark/40 p-0 backdrop-blur-sm sm:items-center sm:p-6">
           <div
+            ref={cartPanel}
             role="dialog" aria-modal="true" aria-label={c.cart}
             className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-t-sheet border border-line bg-card p-5 sm:rounded-sheet"
           >

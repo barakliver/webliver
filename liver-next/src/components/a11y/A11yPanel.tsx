@@ -1,6 +1,7 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useOverlay } from '@/lib/useOverlay';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Accessibility, Minus, Monitor, Moon, Plus, RotateCcw, Sun, X } from 'lucide-react';
@@ -66,13 +67,15 @@ export function A11yPanel({ copy: c }: { copy: A11yCopy }) {
     try { window.localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); } catch { /* private window */ }
   }, [s, ready]);
 
-  /* Escape closes, and focus goes back to the button that opened it. */
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [open]);
+  /* This said "Escape closes, and focus goes back to the button that opened
+     it" and only did the first half. Somebody who reached this menu by
+     keyboard, turned on larger text and pressed Escape was returned to the
+     top of the document, which on the accessibility menu of all places is
+     the wrong one to get wrong. `history: false` because it is a menu rather
+     than a screen: it is reachable from every page in the product, including
+     the public ones, and should not put an entry in anybody's Back. */
+  const panel = useRef<HTMLDivElement>(null);
+  useOverlay(open, () => setOpen(false), panel, { history: false });
 
   const set = useCallback(<K extends keyof A11ySettings>(key: K, value: A11ySettings[K]) => {
     setS((prev) => ({ ...prev, [key]: value }));
@@ -110,6 +113,7 @@ export function A11yPanel({ copy: c }: { copy: A11yCopy }) {
 
       {open && (
         <div
+          ref={panel}
           role="dialog"
           aria-modal="true"
           aria-label={c.title}

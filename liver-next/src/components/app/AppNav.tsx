@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useOverlay } from '@/lib/useOverlay';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { BookOpen, CalendarDays, Ellipsis, Globe, HeartHandshake, LayoutGrid, LifeBuoy, Palette, ShieldCheck, Sparkles, Store, Target, TrendingUp, Truck, UsersRound, X, type LucideIcon } from 'lucide-react';
@@ -115,12 +116,10 @@ export function MobileTabBar({ items, extra }: {
      asked for. */
   useEffect(() => { setOpen(false); }, [pathname]);
 
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [open]);
+  /* It had Escape and nothing else: no focus back to the dock button that
+     opened it, and no scroll lock under a drawer that covers the screen. */
+  const panel = useRef<HTMLDivElement>(null);
+  useOverlay(open, () => setOpen(false), panel);
 
   if (items.length < 2) return null;
 
@@ -145,6 +144,7 @@ export function MobileTabBar({ items, extra }: {
             className="absolute inset-0 h-full w-full cursor-default bg-scrim/25 backdrop-blur-[2px]"
           />
           <div
+            ref={panel}
             role="dialog"
             aria-modal="true"
             aria-label={ui.nav.moreTitle}

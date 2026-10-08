@@ -625,6 +625,41 @@ that has happened once.
   way to make a long table cheap is to draw fewer rows. That is not done here:
   a cap would have to change what "select all" means, and the comment above
   that control already says why reaching past what is on screen is wrong.
+- **Six of the thirteen things that open over the page gave the keyboard
+  back to nothing, and two had no keyboard exit at all.** `check-a11y` prints
+  this in its own list of what it cannot test: "close a dialog: focus returns
+  to the control that opened it". axe reads a tree and that is a sequence, so
+  no automated pass here was ever going to see it. The sharpest one was the
+  accessibility menu, under a comment that said "Escape closes, and focus
+  goes back to the button that opened it" and did only the first half:
+  somebody who reached it by keyboard, turned on larger text and pressed
+  Escape was returned to the top of the document. `Shop`'s cart, which is on
+  the public site, and the supplier capture, which interrupts a couple
+  ticking a task off, had no Escape at all.
+  The four behaviours are `lib/useOverlay.ts` now, once: Escape closes it,
+  focus moves in and returns to the opener, the page behind holds still, and
+  Back closes the panel rather than the screen. **It asks for no wording,
+  which is the point** - `GameTable` had written the same twenty lines out by
+  hand rather than import `Sheet`, because Sheet reads one label through
+  `useCopy()`, and that reason is gone now. `npm run overlays` is what keeps
+  the fourteenth from being written without it: it requires the hook rather
+  than grepping for something focus-shaped, because a component that reads
+  `activeElement` and throws it away is most of how these went wrong. Five
+  panels that predate the hook and were checked by hand are named in a list
+  the check also fails on if one of them stops being a dialog.
+  One thing came out of it that is worth knowing: **a dialog that locks the
+  page cannot be left mounted open**, and the harness was holding the
+  supplier capture open so it could be looked at, which the moment the lock
+  arrived meant `/design` could not scroll. It is behind a button there now,
+  which is also the more truthful harness.
+- **The event file is the one screen with no title, and the one where it is
+  worth the most.** A producer works with six of them open and six tabs all
+  reading the same thing is six tabs somebody clicks through. It costs one
+  small query of its own, because `generateMetadata` runs beside the page
+  rather than inside it, and it is scoped by row level security like
+  everything else, so a producer who cannot see the event gets the plain
+  title rather than somebody else's names. `/app/sop` still has none and
+  should not: it is a redirect that never renders.
 - **Opacity is not a mute.** It was used for three "set back" states - the
   out-of-month calendar cell, a past crew shift, a switched-off lead channel -
   and at 60% `ink-mute` composites to 2.51 against white, so every word in

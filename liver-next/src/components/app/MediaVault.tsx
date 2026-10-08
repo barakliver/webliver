@@ -1,6 +1,7 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from 'react';
+import { useOverlay } from '@/lib/useOverlay';
 import { ChevronLeft, ChevronRight, Download, ImageOff, Maximize2, Settings2, Tag, X } from 'lucide-react';
 import { deleteFile, tagFile } from '@/app/actions/files';
 import { MEDIA_TAGS, type MediaTag } from '@/lib/fileTypes';
@@ -204,23 +205,28 @@ function Lightbox({ items, index, onIndex, onClose, onRetag }: {
   const prev = useCallback(() => onIndex((index - 1 + items.length) % items.length), [index, items.length, onIndex]);
   const next = useCallback(() => onIndex((index + 1) % items.length), [index, items.length, onIndex]);
 
+  /* Escape, the scroll lock and the way back to the thumbnail somebody
+     opened are `useOverlay`. It had the first two and not the third, so
+     closing a picture by keyboard dropped them at the top of the file list
+     rather than on the file they were looking at. */
+  const panel = useRef<HTMLDivElement>(null);
+  useOverlay(true, onClose, panel);
+
   useEffect(() => {
+    /* Arrow keys follow the reading direction of the page: in Hebrew the
+       next picture is to the left, which is where the next-arrow points. */
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-      /* Arrow keys follow the reading direction of the page: in Hebrew the
-         next picture is to the left, which is where the next-arrow points. */
       const rtl = document.documentElement.dir === 'rtl';
       if (e.key === 'ArrowLeft') (rtl ? next : prev)();
       if (e.key === 'ArrowRight') (rtl ? prev : next)();
     };
     document.addEventListener('keydown', onKey);
-    const { overflow } = document.body.style;
-    document.body.style.overflow = 'hidden';
-    return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = overflow; };
-  }, [next, prev, onClose]);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [next, prev]);
 
   return (
     <div
+      ref={panel}
       role="dialog" aria-modal="true" aria-label={f.note || f.name}
       className="fixed inset-0 z-[80] flex flex-col bg-scrim/90 backdrop-blur-sm"
       onClick={onClose}

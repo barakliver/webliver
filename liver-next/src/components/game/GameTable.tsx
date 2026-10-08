@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
+import { useOverlay } from '@/lib/useOverlay';
 import { NotebookPen, X } from 'lucide-react';
 import { game } from '@/content/game';
 import {
@@ -425,43 +426,19 @@ function NotePad({ card, value, onClose, onSave }: {
   const [saved, setSaved] = useState(false);
   const [pending, start] = useTransition();
   const panel = useRef<HTMLDivElement>(null);
-  /* The caller passes a fresh arrow every render, so naming `onClose` in the
-     dependency list below re-runs the whole effect on every keystroke — which
-     tears down and rebuilds the listener, and, far worse, runs the cleanup's
-     `opener.focus()` and pulls the caret straight back out of the textarea.
-     The pad was unusable after one character. Held in a ref so the effect runs
-     once and still calls the current one. */
-  const close = useRef(onClose);
-  close.current = onClose;
+  /* These twenty lines used to be written out here rather than imported,
+     and the comment said why: `Sheet` reads its close label from
+     `useCopy()`, which means a CopyProvider, which means shipping the whole
+     app's copy to a route whose entire design is that it is not the app.
+     That reason is gone - the behaviour is a hook now and asks for no
+     wording at all, which is exactly what let the copy tree leave every
+     bundle in the product.
 
-  /* The four things `components/app/Sheet.tsx` gets right, written again here
-     rather than imported. Not an oversight: that component reads its close
-     label from `useCopy()`, which means a CopyProvider, which means shipping
-     the whole app's copy to a route whose entire design is that it is not the
-     app. Twenty lines of behaviour is the cheaper of the two.
-       Escape closes it, because a modal with no keyboard exit is a trap.
-       Focus moves in on open and back to the opener on close.
-       The page behind stops scrolling.
-       The backdrop closes it and the panel does not. */
-  useEffect(() => {
-    const opener = document.activeElement as HTMLElement | null;
-    const { overflow } = document.body.style;
-    document.body.style.overflow = 'hidden';
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') { e.stopPropagation(); close.current(); }
-    };
-    window.addEventListener('keydown', onKey);
-    const id = requestAnimationFrame(() => panel.current?.querySelector('textarea')?.focus());
-    return () => {
-      cancelAnimationFrame(id);
-      window.removeEventListener('keydown', onKey);
-      document.body.style.overflow = overflow;
-      opener?.focus?.();
-    };
-    /* Once, on open. Everything it needs that can change is read through a
-       ref, so there is nothing here that should re-run it. */
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+     The pad rather than the first button: a panel whose whole purpose is to
+     type should not land somebody on a control. `history: false` keeps the
+     game's own Back behaviour, which is the way out of the deck rather than
+     out of a note. */
+  useOverlay(true, onClose, panel, { history: false, focus: 'textarea' });
 
   const save = () => {
     setFailed(false);

@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { X } from 'lucide-react';
 import { useCopy } from '@/components/app/CopyProvider';
+import { useOverlay } from '@/lib/useOverlay';
 
 /**
  * A panel that rises from the bottom of the screen.
@@ -11,19 +12,14 @@ import { useCopy } from '@/components/app/CopyProvider';
  * the edge a thumb is already near, it does not lose the screen behind it, and
  * it closes by tapping away rather than by finding a control.
  *
- * Four things a sheet has to get right and most do not:
- *
- *   the backdrop closes it, the sheet itself does not, which is why the click
- *   handler is on the backdrop alone rather than on a wrapper both share
- *
- *   Escape closes it, because a keyboard is not only a desktop thing and a
- *   modal with no keyboard exit is a trap
- *
- *   focus moves into it on open and returns to whatever opened it on close,
- *   so somebody navigating by keyboard is not dropped at the top of the page
- *
- *   the page behind stops scrolling, or a swipe meant for the sheet scrolls
- *   the document under it and the sheet appears frozen
+ * Four things a sheet has to get right and most do not. Three of them are
+ * `useOverlay` now - Escape, focus in and back out, and the page behind
+ * holding still - because this file was the only place in the product that
+ * had them and six other panels that open over the screen had none. The
+ * fourth stays here because it is about this shape rather than about
+ * overlays: the backdrop closes it and the sheet itself does not, which is
+ * why the click handler is on the backdrop alone rather than on a wrapper
+ * they share.
  */
 export function Sheet({
   open, onClose, title, sub, children,
@@ -36,57 +32,8 @@ export function Sheet({
 }) {
   const ui = useCopy();
   const panel = useRef<HTMLDivElement>(null);
-  const opener = useRef<Element | null>(null);
 
-  useEffect(() => {
-    if (!open) return;
-
-    opener.current = document.activeElement;
-    const scrollY = window.scrollY;
-    const { overflow } = document.body.style;
-    document.body.style.overflow = 'hidden';
-
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') { e.stopPropagation(); onClose(); }
-    };
-    window.addEventListener('keydown', onKey);
-
-    /* Back closes the sheet rather than leaving the screen behind it.
-       On a phone this is not a nicety: a sheet covers the page, so the
-       gesture that means "undo the last thing that happened" is a swipe
-       from the edge, and without an entry of our own in the history that
-       gesture threw away the whole event file instead of the form on top
-       of it. One entry pushed on open, popped on close, and the flag keeps
-       the close from pushing a second one. */
-    let ours = false;
-    try {
-      history.pushState({ sheet: true }, '');
-      ours = true;
-    } catch { /* a browser that refuses the push simply keeps the old behaviour */ }
-
-    const onPop = () => { ours = false; onClose(); };
-    window.addEventListener('popstate', onPop);
-
-    /* After paint, or the element is not focusable yet. */
-    const id = requestAnimationFrame(() => {
-      panel.current?.querySelector<HTMLElement>(
-        'button, [href], input, textarea, select, [tabindex]:not([tabindex="-1"])'
-      )?.focus();
-    });
-
-    return () => {
-      cancelAnimationFrame(id);
-      window.removeEventListener('keydown', onKey);
-      window.removeEventListener('popstate', onPop);
-      /* Closed by Escape, the backdrop or a save rather than by Back, so the
-         entry we pushed is still on the stack and has to come off. Closed by
-         Back and the browser already took it. */
-      if (ours) { try { history.back(); } catch { /* nothing to go back to */ } }
-      document.body.style.overflow = overflow;
-      window.scrollTo(0, scrollY);
-      (opener.current as HTMLElement | null)?.focus?.();
-    };
-  }, [open, onClose]);
+  useOverlay(open, onClose, panel);
 
   if (!open) return null;
 

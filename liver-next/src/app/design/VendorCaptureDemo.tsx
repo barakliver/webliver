@@ -1,8 +1,9 @@
 'use client';
 
+import { useState } from 'react';
 import { VendorCaptureModal } from '@/components/portal/VendorCaptureModal';
 
-/** The supplier form, held open so it can be looked at.
+/** The supplier form, opened the way the product opens it.
  *
  *  A client component rather than markup in the page, because the modal takes
  *  onClose and onSaved, and a function cannot cross from a server component to
@@ -14,8 +15,22 @@ import { VendorCaptureModal } from '@/components/portal/VendorCaptureModal';
  *  Nothing is wired up. Saving would write a supplier to a database this page
  *  does not have, and the point of the panel is the form: which fields the
  *  template asks for, how the Hebrew sits in them, and what the two buttons
- *  look like next to each other. */
+ *  look like next to each other.
+ *
+ *  It used to be held open, which was simpler and stopped being possible the
+ *  day the modal learned to hold the page still underneath it: a dialog
+ *  mounted open for the whole of this page meant this page could not scroll.
+ *  Behind a button it is also the more truthful harness, because opening and
+ *  closing is now part of what there is to look at. */
 export function VendorCaptureDemo() {
+  const [open, setOpen] = useState(false);
+  if (!open) {
+    return (
+      <button type="button" onClick={() => setOpen(true)} className="btn-ghost text-body">
+        פתיחת הטופס
+      </button>
+    );
+  }
   return (
     <VendorCaptureModal
       task={{
@@ -47,9 +62,9 @@ export function VendorCaptureDemo() {
         sort_order: 10,
         created_at: '2026-01-01T00:00:00.000Z',
       }}
-      onClose={() => {}}
+      onClose={() => setOpen(false)}
       onSaved={() => {}}
-      onSkip={() => {}}
+      onSkip={() => setOpen(false)}
     />
   );
 }

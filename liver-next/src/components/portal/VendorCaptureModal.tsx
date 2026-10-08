@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import { useOverlay } from '@/lib/useOverlay';
 import { supabaseBrowser } from '@/lib/supabase/client';
 import { productionCategoryOf, categoryLabel } from '@/content/production';
 
@@ -185,12 +186,20 @@ export function VendorCaptureModal({ task, template, onClose, onSaved, onSkip }:
      accept the tick. The backdrop and the third button both just close. */
   const cancel = () => { if (!saving) onClose(); };
 
+  /* It had no keyboard exit at all. This one asks a couple who they hired,
+     in the middle of ticking a task off, and a form that cannot be left by
+     keyboard is the one most likely to be abandoned with the page. `cancel`
+     rather than `onClose`, so Escape cannot throw away a save that is in
+     flight any more than the backdrop can. */
+  const panel = useRef<HTMLDivElement>(null);
+  useOverlay(true, cancel, panel);
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-scrim/40 p-4"
       onClick={(e) => { if (e.target === e.currentTarget) cancel(); }}
     >
-      <div role="dialog" aria-modal="true" aria-labelledby="vendor-capture-title" className="w-full max-w-md rounded-sheet border border-line bg-card p-6">
+      <div ref={panel} role="dialog" aria-modal="true" aria-labelledby="vendor-capture-title" className="w-full max-w-md rounded-sheet border border-line bg-card p-6">
         <h2 id="vendor-capture-title" className="head-panel">{template.title}</h2>
         {template.description && (
           <p className="mt-1 text-body text-ink-soft">{template.description}</p>
