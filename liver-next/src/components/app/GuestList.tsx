@@ -17,7 +17,7 @@ import { toCsv } from '@/lib/csv';
 import { DeleteForm } from '@/components/app/ConfirmDelete';
 import { normalizePhone } from '@/lib/phone';
 import { publicEnv } from '@/lib/env';
-import { fill } from '@/lib/copyText';
+import { count, fill } from '@/lib/copyText';
 import { Metric } from '@/components/app/Metric';
 
 export type Guest = {
@@ -365,8 +365,17 @@ export function GuestList({ clientId, guests }: { clientId: string; guests: Gues
       </form>
 
       {state && !state.ok && state.error && (
-        <p role="alert" className="mt-3 rounded-xl2 border border-bad/25 bg-bad-wash px-4 py-2.5 text-body text-bad">
+        <p role="alert" className="mt-3 rounded-control border border-bad/25 bg-bad-wash px-4 py-2.5 text-body text-bad">
           {state.error}
+        </p>
+      )}
+      {/* The box empties on a write and nothing else on this screen says how
+          many went in, or that two lines did not. A list that silently
+          swallows two of twelve is a list somebody counts by hand later. */}
+      {state?.ok && (state.added ?? 0) > 0 && (
+        <p role="status" className="mt-3 rounded-control bg-ok-wash px-4 py-2.5 text-body text-ok">
+          {count(c.addDone, state.added ?? 0)}
+          {state.skipped ? ` \u00B7 ${count(c.addSkipped, state.skipped)}` : ''}
         </p>
       )}
       <GuestImport clientId={clientId} />

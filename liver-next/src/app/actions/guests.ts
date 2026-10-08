@@ -5,18 +5,40 @@ import { whyNotSaved } from '@/lib/writeFailure';
 import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { DIETS } from '@/content/lists';
-import { readGuestCsv, dedupe, MAX_GUESTS_IMPORT, type ImportReport } from '@/lib/guestImport';
+import {
+  readGuestList, dedupe, MAX_GUESTS_IMPORT, PREVIEW_ROWS,
+  type ImportReport, type ImportRow,
+} from '@/lib/guestImport';
 import { noteFailure } from '@/lib/flash';
 
-export type GuestResult = { ok: boolean; error?: string; added?: number };
+export type GuestResult = {
+  ok: boolean; error?: string; added?: number;
+  /** Lines that carried no usable name. Reported rather than dropped: the
+   *  answer to "why are there eleven and not twelve" has to be on the screen
+   *  that added them. */
+  skipped?: number;
+};
 
 function touch(clientId: string) {
   revalidatePath(`/app/clients/${clientId}`);
   revalidatePath('/app/portal');
 }
 
-/** Guests arrive by the handful, not one at a time, so the form takes a
- *  pasted list: one guest per line, optionally "name, side, phone". */
+/**
+ * Guests arrive by the handful, not one at a time, so the form takes a pasted
+ * list.
+ *
+ * It had a parser of its own, which was `line.split(',')` and nothing else.
+ * That is the right reading of a spreadsheet row and the wrong one of what
+ * somebody pastes into a box on a screen, so "דני כהן 050-1234567" became a
+ * guest called that, with no phone, and a line reading "משפחת לוי 4" became
+ * one person. It also dropped anything it could not use without saying so.
+ *
+ * It reads through `readGuestList` now, the same function the importer uses,
+ * so the two boxes on this screen cannot come to different conclusions about
+ * the same four lines. The side on the form is the fallback for a line that
+ * does not name one, which is what it was always for.
+ */
 export async function addGuests(_prev: GuestResult | null, form: FormData): Promise<GuestResult> {
   const clientId = String(form.get('client_id') ?? '');
   const bulk = String(form.get('names') ?? '');
@@ -24,30 +46,22 @@ export async function addGuests(_prev: GuestResult | null, form: FormData): Prom
 
   if (!clientId) return { ok: false, error: 'חסר מזהה אירוע' };
 
-  const rows = bulk
-    .split('\n')
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .map((line) => {
-      const [name, lineSide, phone] = line.split(',').map((p) => (p ?? '').trim());
-      return {
-        client_id: clientId,
-        full_name: name,
-        side: lineSide || side,
-        phone: phone || '',
-      };
-    })
-    .filter((r) => r.full_name.length >= 2);
-
+  const { rows, skipped } = readGuestList(bulk);
   if (rows.length === 0) return { ok: false, error: 'נא לכתוב לפחות שם אחד' };
   if (rows.length > 300) return { ok: false, error: 'עד 300 אורחים בבת אחת' };
 
   const sb = await supabaseServer();
-  const { error } = await sb.from('guests_rsvp').insert(rows);
-  if (error) return { ok: false, error: 'לא הצלחנו לשמור את האורחים' };
+  const { error } = await sb.from('guests_rsvp').insert(rows.map((r) => ({
+    client_id: clientId,
+    full_name: r.name,
+    side: r.side || side,
+    phone: r.phone,
+    party_size: r.party,
+  })));
+  if (error) return { ok: false, error: whyNotSaved(error) };
 
   touch(clientId);
-  return { ok: true, added: rows.length };
+  return { ok: true, added: rows.length, skipped: skipped.length };
 }
 
 /**
@@ -202,7 +216,34 @@ export async function setManyGuestStatus(form: FormData): Promise<void> {
    is read positionally, and every row that cannot be used is reported with its
    line number instead of being dropped in silence.                          */
 
-export async function importGuests(_prev: ImportReport | null, form: FormData): Promise<ImportReport> {
+/**
+ * Reading the list, and reading it again before writing it.
+ *
+ * `importGuests` used to be the only door: paste two hundred lines, press
+ * once, and they are rows. That is the one write on this screen with no way
+ * back - deleting two hundred guests one at a time is not a recovery - and
+ * it is also the write most likely to be subtly wrong, because the whole job
+ * is guessing where a line comes apart. A couple who pasted their mother's
+ * WhatsApp list had no way to find out that every phone had ended up inside
+ * a name until they scrolled their own guest list.
+ *
+ * So the reading is handed back first and nothing is written. Both doors run
+ * the same two functions over the same text, so the preview is the plan and
+ * not an impression of it. The text is carried between them by the form
+ * rather than held on the server: a server that remembers what somebody
+ * pasted is a server with somebody's guest list sitting in it, and re-reading
+ * the same text gives the same answer because the reader is pure.
+ *
+ * The one thing that can move between the two presses is the list itself, if
+ * the producer adds somebody in another tab. That is handled rather than
+ * guarded: the write dedupes again, so the difference shows up as one more
+ * duplicate and never as a doubled guest.
+ */
+async function plan(form: FormData): Promise<
+  | { ok: false; error: string; skipped?: { line: number; reason: string }[] }
+  | { ok: true; clientId: string; fresh: ImportRow[]; duplicates: number;
+      repeated: ImportRow[]; skipped: { line: number; reason: string }[] }
+> {
   const clientId = String(form.get('client_id') ?? '');
   if (!clientId) return { ok: false, error: 'חסר מזהה אירוע' };
 
@@ -212,40 +253,60 @@ export async function importGuests(_prev: ImportReport | null, form: FormData): 
   if (!text.trim()) return { ok: false, error: 'נא לבחור קובץ או להדביק רשימה' };
   if (text.length > 2_000_000) return { ok: false, error: 'הקובץ גדול מדי' };
 
-  const { rows, skipped } = readGuestCsv(text);
-  if (rows.length === 0) {
-    return { ok: false, error: 'לא נמצאו שורות עם שם', skipped };
+  const { rows, skipped } = readGuestList(text);
+  if (rows.length === 0) return { ok: false, error: 'לא נמצאו שורות עם שם', skipped };
+  if (rows.length > MAX_GUESTS_IMPORT) {
+    return { ok: false, error: `${MAX_GUESTS_IMPORT} אורחים לכל היותר בייבוא אחד`, skipped };
   }
-  if (rows.length > MAX_GUESTS_IMPORT) return { ok: false, error: `${MAX_GUESTS_IMPORT} אורחים לכל היותר בייבוא אחד` };
 
   const sb = await supabaseServer();
-
-  /* Importing the same file twice is a normal accident — a spreadsheet gets
-     re-sent with four names added. Matching on phone first and name second
-     means the second run adds the four and leaves the rest alone, instead of
-     doubling a four-hundred-person list. */
-  /* Importing the same file twice is a normal accident — a spreadsheet gets
+  /* Importing the same file twice is a normal accident: a spreadsheet gets
      re-sent with four names added. The right outcome is four new guests, not
      a doubled list. */
   const { data: existing } = await sb
     .from('guests_rsvp').select('full_name,phone').eq('client_id', clientId);
-  const { fresh, duplicates } = dedupe(rows, existing ?? []);
+  const { fresh, duplicates, repeated } = dedupe(rows, existing ?? []);
 
-  if (fresh.length === 0) {
-    return { ok: true, added: 0, duplicates, skipped };
+  return { ok: true, clientId, fresh, duplicates, repeated, skipped };
+}
+
+/** What the list says, with nothing written. */
+export async function previewGuests(_prev: ImportReport | null, form: FormData): Promise<ImportReport> {
+  const p = await plan(form);
+  if (!p.ok) return { ok: false, error: p.error, skipped: p.skipped };
+  return {
+    ok: true,
+    preview: true,
+    ready: p.fresh.length,
+    sample: p.fresh.slice(0, PREVIEW_ROWS),
+    duplicates: p.duplicates,
+    repeated: p.repeated.slice(0, 30).map((r) => r.name),
+    skipped: p.skipped,
+  };
+}
+
+export async function importGuests(_prev: ImportReport | null, form: FormData): Promise<ImportReport> {
+  const p = await plan(form);
+  if (!p.ok) return { ok: false, error: p.error, skipped: p.skipped };
+
+  if (p.fresh.length === 0) {
+    return { ok: true, added: 0, duplicates: p.duplicates, skipped: p.skipped };
   }
 
+  const sb = await supabaseServer();
   const { error } = await sb.from('guests_rsvp').insert(
-    fresh.map((r) => ({
-      client_id: clientId,
+    p.fresh.map((r) => ({
+      client_id: p.clientId,
       full_name: r.name,
       side: r.side,
       phone: r.phone,
       party_size: r.party,
     }))
   );
-  if (error) return { ok: false, error: 'לא הצלחנו לשמור את הרשימה', skipped };
+  /* The form carries this back to the screen, so it says why rather than
+     collecting a flash the way the actions that return nothing have to. */
+  if (error) return { ok: false, error: whyNotSaved(error), skipped: p.skipped };
 
-  touch(clientId);
-  return { ok: true, added: fresh.length, duplicates, skipped };
+  touch(p.clientId);
+  return { ok: true, added: p.fresh.length, duplicates: p.duplicates, skipped: p.skipped };
 }

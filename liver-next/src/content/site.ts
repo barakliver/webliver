@@ -1217,18 +1217,44 @@ export const appCopy = {
   },
 
   guestImport: {
-    open: 'ייבוא רשימה מקובץ',
+    open: 'ייבוא רשימה',
     export: 'ייצוא לאקסל',
     hint: 'קובץ CSV מאקסל או מגוגל שיטס. הכותרות יכולות להיות בעברית או באנגלית, שם מלא, צד, טלפון, כמות. גם קובץ בלי כותרות יעבוד.',
-    orPaste: 'או להדביק ישירות:',
-    pastePh: 'נועה כהן,כלה,0501111111\nדני לוי,חתן,0502222222',
+    /* The box that matters more than the file picker, and said so: the list
+       a couple has is in a chat, not in a spreadsheet. Nobody is asked to
+       put it in columns first, because a couple who can do that did not
+       need this box. */
+    orPaste: 'או פשוט להדביק את הרשימה כמו שהיא:',
+    pastePh: 'דני כהן 050-1234567\nמשפחת לוי 4\nשרה אברהם\nיוסי ומיכל - 052 999 8877 - חתן',
+    fileLabel: 'טעינת קובץ לתיבה',
     import: 'ייבוא',
     importing: 'מייבא',
     added: 'נוספו',
     duplicates: 'כבר היו ברשימה',
     nothingNew: 'כולם כבר היו ברשימה. לא נוסף אף אחד.',
-    skipped: 'שורות שלא נקלטו',
+      skipped: { one: 'שורה אחת לא נקלטה', many: '{n} שורות לא נקלטו' },
     line: 'שורה',
+    /* The reading, before anything is written. Two hundred אורחים is the one
+       write on this screen that cannot be undone by hand, and it is also the
+       one most likely to be subtly wrong, because the whole job is guessing
+       where a שורה comes apart. */
+    read: 'לראות מה יצא',
+    reading: 'קורא',
+    previewTitle: 'ככה קראנו את הרשימה',
+    previewSub: 'שום דבר עוד לא נשמר. שווה לעבור על השורות הראשונות ובעיקר על הכמויות, כי שם הכי קל לטעות.',
+    ready: 'מוכנים להוספה',
+    colName: 'שם',
+    colPhone: 'טלפון',
+    colSide: 'צד',
+    colParty: 'כמה',
+    andMore: { one: 'ועוד אחד שלא מוצג כאן', many: 'ועוד {n} שלא מוצגים כאן' },
+    confirm: { one: 'להוסיף אורח אחד', many: 'להוסיף {n} אורחים' },
+    back: 'חזרה לרשימה',
+    noneReady: 'כל מי שברשימה כבר נמצא אצלכם. אין מה להוסיף.',
+      /* Who was set aside, and not only how many. The rule has one way to be
+         wrong, two people called the same thing with no phone between them,
+         and its price is a guest who never arrives on the list. */
+      whoRepeated: { one: 'אחד שכבר ברשימה', many: '{n} שכבר ברשימה' },
   },
 
   calendar: {
@@ -2372,8 +2398,12 @@ export const guestsCopy = {
      reader reaching a link called "24" has been told nothing. */
   showOnly: 'הצגה ברשימה',
   addTitle: 'הוספת אורחים',
-  addHint: 'שם בכל שורה. אפשר גם "שם, צד, טלפון".',
-  addPh: 'משפחת כהן, כלה, 0501234567\nדוד ורונית\nיעל מהעבודה',
+  addHint: 'שם בכל שורה, כמו שהוא. טלפון וכמות באותה שורה ייכנסו לשדות שלהם.',
+  addPh: 'משפחת כהן 0501234567\nדוד ורונית 2\nיעל מהעבודה',
+  /* Said after a write, because the box empties and nothing else on the
+     screen tells somebody that eleven of their twelve lines went in. */
+  addDone: { one: 'נוסף אורח אחד', many: 'נוספו {n} אורחים' },
+  addSkipped: { one: 'שורה אחת לא נקלטה, כי לא היה בה שם', many: '{n} שורות לא נקלטו, כי לא היה בהן שם' },
   side: 'צד (ברירת מחדל)',
   add: 'הוספה לרשימה',
   adding: 'מוסיף',

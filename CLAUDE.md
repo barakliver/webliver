@@ -443,6 +443,57 @@ that has happened once.
   row because that list is drawn twice, as cards and as a table, and a thing
   built twice is a thing built nought times — which is exactly how it went a
   year with no way to fix a name at all.
+- **The guest list a couple actually has is in a chat, not in a spreadsheet.**
+  The importer read every paste as a table, which is right for a file out of
+  Excel and wrong for the thing people do, which is paste what their mother
+  sent on WhatsApp. "דני כהן 050-1234567" is one cell, so the phone went into
+  the name, "משפחת לוי 4" became a guest called that, and nothing was reported
+  as skipped: two hundred rows that all have to be retyped, under a green
+  line saying 183 added. `readGuestList` picks the reader off the text rather
+  than off which box it arrived in - most lines having more than one cell is
+  a table and anything else is prose - and `readGuestLine` takes a line apart
+  instead of splitting it. The phone comes out before the count, because a
+  phone ends in digits and a count is digits at the end, and run the other
+  way round the last two digits of every number become a party of 67. The
+  phone pattern is anchored on the Israeli prefix rather than matching any run
+  of digits, because the thing most likely to sit beside a name on a guest
+  list is a small number saying how many of them are coming. A plus means one
+  more than the person named and every other notation means how many
+  altogether, which is the literal reading of each and the single most likely
+  thing in the whole importer to be wrong about somebody's list.
+- **Which is why it is two presses now.** Pasting two hundred lines and
+  pressing once was the only write on that screen with no way back, since
+  deleting two hundred guests one at a time is not a recovery, and it was
+  also the write most likely to be quietly wrong. So the first press reads
+  and shows and the second writes, both running the same two functions over
+  the same text, which travels in the form rather than being remembered on a
+  server - a server that holds what somebody pasted is a server with their
+  guest list sitting in it. The preview puts how many second, directly after
+  the name: it was fourth in a 420px table, which on a phone put the one
+  figure the table exists for off the side of the screen. A chosen file is
+  read into the box rather than posted as a file, because a file input's
+  value cannot be filled in by script and the confirm is a second form: a
+  file would have been read for the preview and then gone missing at the
+  press that writes. It also lets somebody fix a line before importing it.
+  The list can move between the two presses if the producer adds somebody in
+  another tab, and that is handled rather than guarded - the write dedupes again, so it shows
+  up as one more duplicate and never as a doubled guest.
+- **And the quick add box had a parser of its own, which was `split(',')`.**
+  Two boxes on the same panel coming to different conclusions about the same
+  four lines, one of them silently dropping whatever it could not use. It
+  reads through the same function now, writes the party size it was never
+  writing, and says how many went in and how many lines carried no name: a
+  list that swallows two of twelve without a word is a list somebody counts
+  by hand later.
+- **That file had no tests at all, and it is nothing but judgement.** Which
+  line is a header, which run of digits is a phone, who is the same person
+  twice. It could not be tested because it imported `@/lib/csv`, and an alias
+  is a bare specifier to node, so the test would not have run. One relative
+  import with the extension on it was the whole barrier. The preview hands
+  back the names it set aside and not only how many: the dedupe rule has one
+  way to be wrong, two people genuinely called the same thing with no phone
+  between them, and its price is a guest who silently never arrives on the
+  list. A number cannot be checked against anything and a name can.
 - **Nine panels could add and destroy and not fix, and now none of them
   can.** After the budget, the payment and the guest came the rest of the
   class: the ledger entry, the envelope, the car, the face, the reference
