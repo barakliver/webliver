@@ -151,6 +151,50 @@ export async function setGuestStatus(form: FormData): Promise<void> {
   touch(clientId);
 }
 
+/**
+ * The same answer for many people at once.
+ *
+ * One phone call with a family settles six or eight names, and until now that
+ * was six or eight separate presses down a list of three hundred. The press
+ * is identical each time, which is the definition of work a screen should be
+ * doing.
+ *
+ * It writes exactly what `setGuestStatus` writes for one guest, through the
+ * same three fields, rather than a second idea of what answering means. The
+ * ids are capped: a form can carry whatever somebody puts in it, and an
+ * unbounded `in` list is a request that can be made very large by hand.
+ *
+ * `party_size` goes back to one on an answer that is not "declined" for the
+ * same reason it does for one guest, and that is worth knowing before using
+ * this on a family who had already typed their numbers: it resets them. The
+ * screen says so above the button.
+ */
+export async function setManyGuestStatus(form: FormData): Promise<void> {
+  const clientId = String(form.get('client_id') ?? '');
+  const status = String(form.get('status') ?? '');
+  const ids = form.getAll('guest_id').map(String).filter(Boolean).slice(0, 500);
+
+  if (!clientId || !ids.length) return;
+  if (!['pending', 'attending', 'declined'].includes(status)) return;
+
+  const sb = await supabaseServer();
+  const { error } = await sb
+    .from('guests_rsvp')
+    .update({
+      status,
+      party_size: status === 'declined' ? 0 : 1,
+      responded_at: status === 'pending' ? null : new Date().toISOString(),
+    })
+    .in('id', ids)
+    .eq('client_id', clientId);
+
+  if (error) {
+    console.error('[guests] setManyGuestStatus failed', error);
+    await noteFailure('הסטטוס לא נשמר. אפשר לנסות שוב.');
+  }
+  touch(clientId);
+}
+
 /* ── Importing a list somebody already has ─────────────────────────────────
    Nobody types four hundred names into a web form. They have a spreadsheet,
    and the job is to accept it as it is rather than asking them to reshape it

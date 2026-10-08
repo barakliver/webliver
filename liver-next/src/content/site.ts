@@ -2265,6 +2265,11 @@ export const rsvpCopy = {
 } as const;
 
 export const guestsCopy = {
+  choose: 'בחירה',
+  chooseAll: 'בחירת כל מי שמוצג',
+  chosen: 'נבחרו {n}',
+  clearChosen: 'ביטול הבחירה',
+  chosenWarn: 'סימון תשובה מחזיר את מספר הנפשות ל-1. למי שכבר מילא כמה הם, כדאי לענות בנפרד.',
   search: 'חיפוש ברשימה',
   searchPh: 'שם, צד או טלפון',
   noneMatch: 'אף אורח לא תואם למה שחיפשתם.',

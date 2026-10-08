@@ -509,6 +509,11 @@ export const boardEn: BoardCopy = {
 };
 
 export const guestsEn: GuestsCopy = {
+  choose: 'Choose',
+  chooseAll: 'Choose everyone shown',
+  chosen: '{n} chosen',
+  clearChosen: 'Clear the selection',
+  chosenWarn: 'Answering for somebody sets their party back to 1. For anyone who already filled in how many they are, answer separately.',
   search: 'Search the list',
   searchPh: 'Name, side or phone',
   noneMatch: 'No guest matches what you searched for.',

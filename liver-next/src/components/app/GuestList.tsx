@@ -6,9 +6,9 @@ import { Sheet } from '@/components/app/Sheet';
 import { MessageCircle } from 'lucide-react';
 
 import { useActionState, useDeferredValue, useMemo, useState } from 'react';
-import { Search, Download, X } from 'lucide-react';
+import { Search, Download, X, Check } from 'lucide-react';
 import { useFormStatus } from 'react-dom';
-import { addGuests, deleteGuest, setGuestStatus, updateGuest, type GuestResult } from '@/app/actions/guests';
+import { addGuests, setManyGuestStatus, deleteGuest, setGuestStatus, updateGuest, type GuestResult } from '@/app/actions/guests';
 import { DIETS } from '@/content/lists';
 import { GuestImport } from '@/components/app/GuestImport';
 import { useCopy } from '@/components/app/CopyProvider';
@@ -222,6 +222,29 @@ function RowActions({ guest, clientId }: { guest: Guest; clientId: string }) {
   );
 }
 
+/**
+ * The tick that chooses a row.
+ *
+ * One component because this list is drawn twice, as cards on a phone and as
+ * a table above it, and the two layouts have already been warned about once:
+ * a thing built twice is a thing built nought times. A label rather than a
+ * bare input, so the whole box is the target and a screen reader is told
+ * whose row it is.
+ */
+function Pick({ on, onPick, name, label }: {
+  on: boolean; onPick: () => void; name: string; label: string;
+}) {
+  return (
+    <label className="grid size-11 shrink-0 cursor-pointer place-items-center sm:size-9">
+      <span className="sr-only">{`${label}: ${name}`}</span>
+      <input
+        type="checkbox" checked={on} onChange={onPick}
+        className="size-[18px] accent-accent"
+      />
+    </label>
+  );
+}
+
 export function GuestList({ clientId, guests }: { clientId: string; guests: Guest[] }) {
   const [state, action] = useActionState<GuestResult | null, FormData>(addGuests, null);
   const [filter, setFilter] = useState<'all' | Guest['status']>('all');
@@ -236,6 +259,10 @@ export function GuestList({ clientId, guests }: { clientId: string; guests: Gues
   /* Deferred, so typing into a box above three hundred rows stays typing.
      Without it every keystroke re-filters and re-renders the whole list
      before the next letter lands, and the box is where that is felt. */
+  /* Who is selected, as ids rather than rows: the rows are re-derived by
+     every filter and every keystroke, and a set of objects would hold on to
+     the ones that scrolled out of the answer. */
+  const [picked, setPicked] = useState<Set<string>>(new Set());
   const [query, setQuery] = useState('');
   const seeking = useDeferredValue(query);
 
@@ -261,6 +288,22 @@ export function GuestList({ clientId, guests }: { clientId: string; guests: Gues
   /* The list somebody takes to the caterer, or opens in a spreadsheet to
      do the one thing this screen does not do. Exactly what is on screen:
      the filter and the search are part of the question being asked. */
+  const toggle = (id: string) => setPicked((was) => {
+    const next = new Set(was);
+    if (next.has(id)) next.delete(id); else next.add(id);
+    return next;
+  });
+  /* Only ever what is on screen. "Select all" that reaches past the filter
+     is how somebody marks three hundred people attending while looking at
+     eleven. */
+  const allShown = shown.length > 0 && shown.every((g) => picked.has(g.id));
+  const pickAll = () => setPicked((was) => {
+    const next = new Set(was);
+    if (allShown) shown.forEach((g) => next.delete(g.id));
+    else shown.forEach((g) => next.add(g.id));
+    return next;
+  });
+
   const download = () => {
     const rows = [
       [c.guest, c.status, c.party, c.dietCol, c.noteCol],
@@ -389,6 +432,44 @@ export function GuestList({ clientId, guests }: { clientId: string; guests: Gues
             </p>
           )}
 
+          {/* The bar only exists while something is chosen, and it says how
+              many rather than "selected": a number is the thing somebody is
+              checking before they press. It sticks, because the press that
+              applies the answer is at the top and the names being answered
+              for run down past the fold. */}
+          {picked.size > 0 && (
+            <form
+              action={setManyGuestStatus}
+              className="sticky top-16 z-20 mt-4 flex flex-wrap items-center gap-2 rounded-card border border-accent/30 bg-accent-wash px-4 py-3"
+            >
+              <input type="hidden" name="client_id" value={clientId} />
+              {[...picked].map((id) => <input key={id} type="hidden" name="guest_id" value={id} />)}
+
+              <span className="me-auto text-body font-medium text-ink">
+                {fill(c.chosen, { n: picked.size })}
+              </span>
+              {(['attending', 'declined', 'pending'] as const).map((s) => (
+                <button
+                  key={s} type="submit" name="status" value={s}
+                  className="btn-quiet min-h-[44px] rounded-control bg-card px-3 text-body sm:min-h-0"
+                >
+                  {c.statuses[s]}
+                </button>
+              ))}
+              <button
+                type="button" onClick={() => setPicked(new Set())}
+                className="btn-quiet inline-flex min-h-[44px] items-center gap-1.5 px-2 text-body sm:min-h-0"
+              >
+                <X size={14} strokeWidth={1.5} aria-hidden />
+                {c.clearChosen}
+              </button>
+              {/* Said before the press, not after: answering for somebody
+                  sets their party back to one, and a family who had already
+                  typed their numbers would lose them quietly. */}
+              <p className="w-full text-meta text-ink-soft">{c.chosenWarn}</p>
+            </form>
+          )}
+
           {/* Cards on a phone, a table from the small breakpoint up.
 
               It was one table with a 680px minimum inside a horizontal
@@ -400,9 +481,12 @@ export function GuestList({ clientId, guests }: { clientId: string; guests: Gues
               drift into showing different things. */}
           <ul className="mt-4 space-y-2.5 sm:hidden">
             {shown.map((g) => (
-              <li key={g.id} className="rounded-xl2 border border-line px-4 py-3.5">
+              <li key={g.id} className={`rounded-card-sm border px-4 py-3.5 ${
+                picked.has(g.id) ? 'border-accent/40 bg-accent-wash' : 'border-line'
+              }`}>
                 <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
+                  <Pick on={picked.has(g.id)} onPick={() => toggle(g.id)} name={g.full_name} label={c.choose} />
+                  <div className="min-w-0 flex-1">
                     <p className="font-medium text-ink">{g.full_name}</p>
                     <p className="text-meta text-ink-mute">
                       {[g.side, g.phone].filter(Boolean).join(' · ') || '·'}
@@ -433,6 +517,13 @@ export function GuestList({ clientId, guests }: { clientId: string; guests: Gues
                   immediately. */}
               <thead className="sticky top-0 z-10 bg-card">
                 <tr className="border-b border-line text-meta text-ink-mute">
+                  {/* Chooses everything the filter and the search left, and
+                      nothing beyond it. A "select all" that reaches past what
+                      is on screen is how somebody answers for three hundred
+                      people while looking at eleven. */}
+                  <th scope="col" className="w-10 py-2">
+                    <Pick on={allShown} onPick={pickAll} name={c.invited} label={c.chooseAll} />
+                  </th>
                   <th scope="col" className="py-2 font-medium">{c.guest}</th>
                   <th scope="col" className="py-2 font-medium">{c.status}</th>
                   <th scope="col" className="py-2 font-medium">{c.party}</th>
@@ -443,7 +534,12 @@ export function GuestList({ clientId, guests }: { clientId: string; guests: Gues
               </thead>
               <tbody>
                 {shown.map((g) => (
-                  <tr key={g.id} className="border-b border-line last:border-0">
+                  <tr key={g.id} className={`border-b border-line last:border-0 ${
+                    picked.has(g.id) ? 'bg-accent-wash' : ''
+                  }`}>
+                    <td className="py-3">
+                      <Pick on={picked.has(g.id)} onPick={() => toggle(g.id)} name={g.full_name} label={c.choose} />
+                    </td>
                     <td className="py-3">
                       <div className="font-medium text-ink">{g.full_name}</div>
                       <div className="text-meta text-ink-mute">
