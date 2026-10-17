@@ -155,6 +155,22 @@ try {
        about it is untested. */
     psql('one', `-c "insert into public.leads (full_name, phone, kind, producer_id) values ('רוני ועומר','0501234567','wedding','${pid}')"`);
 
+    // ── 3y. the same couple, twice, is one card ──────────────────────────────
+    /* 0102 folds a second arrival onto the first card before it is a row:
+       same producer, same phone in any spelling, within ninety days. Proved
+       here with the number written the way WhatsApp sends it, because the
+       whole point is that the two spellings are one person. The message
+       lands on the timeline, the card is still one row, and a different
+       number is a different couple. */
+    psql('one', `-c "insert into public.leads (full_name, phone, kind, producer_id, message, source) values ('רוני','+972501234567','wedding','${pid}','כתבתי גם בוואטסאפ','whatsapp')"`);
+    psql('one', `-c "insert into public.leads (full_name, phone, kind, producer_id) values ('מישהו אחר','0529999999','wedding','${pid}')"`);
+    const folded = ask('one', [
+      "select (select count(*) from public.leads where producer_id = '" + pid + "')||'/'||",
+      "(select count(*) from public.lead_events e join public.leads l on l.id = e.lead_id where l.phone = '0501234567' and e.type = 'message_in' and e.body = 'כתבתי גם בוואטסאפ')||'/'||",
+      "(select count(*) from public.lead_events e join public.leads l on l.id = e.lead_id where l.producer_id = '" + pid + "' and e.type = 'created')",
+    ].join(' '));
+    say(folded === '2/1/2', 'the same phone in two spellings is one lead, and the second message lands on its timeline', `leads/folded/created=${folded}`);
+
     /* One line, for the same quoting reason as `shape` above.
      *
      * Values, not only counts. The first version of this compared row counts
