@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Heebo } from 'next/font/google';
+import { Heebo, Frank_Ruhl_Libre } from 'next/font/google';
 import { site } from '@/content/site';
 import { siteEn } from '@/content/site.en';
 import { brandForHost } from '@/lib/branding';
@@ -39,7 +39,18 @@ import { ThemeScope } from '@/components/ThemeScope';
    those two files. */
 const heebo = Heebo({
   subsets: ['hebrew', 'latin'], variable: '--font-heebo',
-  display: 'swap', weight: ['400', '500', '600', '700'],
+  /* Three weights and no bold. Emphasis in this interface is 500; a 700
+     anywhere on a working screen is the thing the quiet brief removes. */
+  display: 'swap', weight: ['300', '400', '500'],
+});
+
+/* The display face, back by his brief and for display alone: the page
+   title, the greeting, the one big number. Light and regular, never bolder;
+   a serif at 700 is a newspaper and this is a hotel. Heebo stays behind it
+   in every stack so a glyph it lacks falls to the face beside it. */
+const frank = Frank_Ruhl_Libre({
+  subsets: ['hebrew', 'latin'], variable: '--font-frank',
+  display: 'swap', weight: ['300', '400'],
 });
 
 /* Generated per request rather than exported flat, because the name and the
@@ -172,7 +183,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       suppressHydrationWarning
       lang={locale}
       dir={dir}
-      className={heebo.variable}
+      className={`${heebo.variable} ${frank.variable}`}
     >
       <head>
         {/* First thing in the document, ahead of the stylesheet. Anything

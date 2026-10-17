@@ -38,7 +38,7 @@ function Steps({ icon: Icon, title, steps }: {
       <ol className="mt-4 space-y-3">
         {steps.map((step, i) => (
           <li key={step} className="flex gap-3">
-            <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-accent-wash text-meta font-semibold tabular-nums text-accent">
+            <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-accent-wash text-meta font-medium tabular-nums text-accent">
               {i + 1}
             </span>
             <span className="text-lead leading-relaxed text-ink">{step}</span>
@@ -64,7 +64,7 @@ export default async function InstallPage() {
           {host.isPlatform ? site.brand : host.name}
         </Link>
 
-        <h1 className="mt-5 font-display text-title font-semibold text-ink">{c.title}</h1>
+        <h1 className="mt-5 font-display text-title font-medium text-ink">{c.title}</h1>
         <p className="mt-2 text-lead leading-relaxed text-ink-soft">{c.sub}</p>
 
         <ul className="mt-5 space-y-1.5 text-body text-ink-soft">

@@ -148,7 +148,7 @@ function Row({ channel, origin }: { channel: LeadChannel; origin: string }) {
           <div className="min-w-0">
             <button
               type="button" onClick={() => setEditing(true)}
-              className="text-lead font-semibold text-ink transition hover:text-accent"
+              className="text-lead font-medium text-ink transition hover:text-accent"
               aria-label={`${c.rename}: ${channel.label}`}
             >
               {channel.label}

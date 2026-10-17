@@ -229,7 +229,7 @@ function Counts({ report }: { report: ImportReport }) {
   return (
     <p className="mt-3 flex flex-wrap items-baseline gap-x-4 gap-y-1 text-body">
       <span className="text-ink">
-        <span className="font-semibold tabular-nums">{report.ready}</span>{' '}
+        <span className="font-medium tabular-nums">{report.ready}</span>{' '}
         <span className="text-ink-soft">{c.ready}</span>
       </span>
       {report.duplicates ? (

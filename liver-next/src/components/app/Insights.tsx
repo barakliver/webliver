@@ -15,7 +15,7 @@ async function Rate({ value }: { value: number | null }) {
     return <span className="text-meta font-medium text-ink-mute">{c.thin}</span>;
   }
   return (
-    <span className="text-meta font-semibold tabular-nums text-accent">
+    <span className="text-meta font-medium tabular-nums text-accent">
       {value}% <span className="font-normal text-ink-mute">{c.ofPrev}</span>
     </span>
   );
@@ -59,7 +59,7 @@ export async function FunnelChart({ funnel }: { funnel: Funnel }) {
                 {LABELS[s.key] ?? s.key}
               </span>
               <span className="flex items-baseline gap-2">
-                <span className="text-head font-semibold tabular-nums text-ink transition-colors
+                <span className="text-head font-medium tabular-nums text-ink transition-colors
                                  group-hover/metric:text-accent">
                   {s.count}
                 </span>
@@ -108,7 +108,7 @@ export async function Sources({ rows }: { rows: SourceRow[] }) {
                 <td className="py-2.5">
                   {r.rate === null
                     ? <Ratio of={r.won} total={r.leads} className="text-meta text-ink-mute" />
-                    : <span className="font-semibold tabular-nums text-accent">{r.rate}%</span>}
+                    : <span className="font-medium tabular-nums text-accent">{r.rate}%</span>}
                 </td>
               </tr>
             ))}

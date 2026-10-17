@@ -545,7 +545,7 @@ export function CrewBoard({
             </div>
             <div className="flex items-baseline gap-2">
               <dt className="text-ink-mute">{c.seasonMargin}</dt>
-              <dd className={t.margin < 0 ? 'font-semibold text-bad' : 'font-semibold text-ink'}>
+              <dd className={t.margin < 0 ? 'font-medium text-bad' : 'font-medium text-ink'}>
                 <Money value={t.margin} />
               </dd>
             </div>

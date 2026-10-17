@@ -57,7 +57,7 @@ export function GuestSiteView({ site, token, c, locale }: {
       <div className="mx-auto w-full max-w-xl">
         <header className="text-center">
           <p className="eyebrow">{c.eyebrow}</p>
-          <h1 className="mt-4 font-display text-display-xl font-semibold leading-tight text-ink">
+          <h1 className="mt-4 font-display text-display-xl font-medium leading-tight text-ink">
             {site.event_name}
           </h1>
           <p className="mt-5 text-head text-ink-soft">
@@ -74,13 +74,13 @@ export function GuestSiteView({ site, token, c, locale }: {
             <div className="mt-9">
               {left > 0 ? (
                 <>
-                  <p className="font-display text-[88px] font-semibold leading-none text-ink sm:text-[112px]">
+                  <p className="font-display text-[88px] font-medium leading-none text-ink sm:text-[112px]">
                     <Ltr>{left.toLocaleString('en-US')}</Ltr>
                   </p>
                   <p className="mt-2 text-body tracking-[.06em] text-ink-mute">{c.daysLeft}</p>
                 </>
               ) : left === 0 ? (
-                <p className="font-display text-[40px] font-semibold leading-none text-accent-bright">{c.today}</p>
+                <p className="font-display text-[40px] font-medium leading-none text-accent-bright">{c.today}</p>
               ) : (
                 <p className="text-lead text-ink-soft">{c.passed}</p>
               )}
@@ -112,7 +112,7 @@ export function GuestSiteView({ site, token, c, locale }: {
             <ul className="mx-auto mt-5 max-w-sm list-none divide-y divide-line border-y border-line p-0">
               {site.moments.map((m, i) => (
                 <li key={i} className="flex items-baseline gap-5 py-3 text-head">
-                  <span className="w-[52px] shrink-0 font-display text-subhead font-semibold tabular-nums text-ink" dir="ltr">
+                  <span className="w-[52px] shrink-0 font-display text-subhead font-medium tabular-nums text-ink" dir="ltr">
                     {hhmm(m.at)}
                   </span>
                   <span className="text-ink">{m.title}</span>

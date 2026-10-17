@@ -56,7 +56,7 @@ export function MyTasks({ tasks, today, showAdd = true }: {
           {/* Only while it is not zero. A standing "0 להיום" is a number that
               trains people to stop reading the line it is on. */}
           {waiting > 0 && (
-            <span className="text-body font-semibold text-accent">{fill(c.waiting, { n: waiting })}</span>
+            <span className="text-body font-medium text-accent">{fill(c.waiting, { n: waiting })}</span>
           )}
         </div>
         {/* The plus lives on this panel's own header now. It stood on the
@@ -223,7 +223,7 @@ function Row({ task, today }: { task: ProducerTask; today: string }) {
         <div className="min-w-0 flex-1">
           <p className={`text-lead ${done ? 'text-ink-mute line-through' : 'text-ink'}`}>{task.title}</p>
           <p className="mt-0.5 flex flex-wrap items-center gap-x-1.5 text-meta text-ink-mute">
-            <span className={where === 'late' ? 'font-semibold text-bad' : where === 'today' ? 'font-semibold text-ink' : ''}>
+            <span className={where === 'late' ? 'font-medium text-bad' : where === 'today' ? 'font-medium text-ink' : ''}>
               {where === 'today' ? c.today : formatDate(dateFmt, task.due_on, c.noDue)}
               {where === 'late' ? ` · ${c.overdue}` : ''}
             </span>

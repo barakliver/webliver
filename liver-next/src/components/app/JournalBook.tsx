@@ -229,7 +229,7 @@ function LogCard({ log, clientId, viewer }: {
 
       {(log.pros.length > 0 || log.pros_note) && (
         <div className="mt-4">
-          <p className="text-meta font-semibold tracking-[.06em] text-ok">{c.summary.worked}</p>
+          <p className="text-meta font-medium tracking-[.06em] text-ok">{c.summary.worked}</p>
           <div className="mt-1.5 flex flex-wrap gap-1.5">
             {log.pros.map((k) => <span key={k} className="chip chip-ok">{c.tags[k as keyof typeof c.tags] ?? k}</span>)}
           </div>
@@ -239,7 +239,7 @@ function LogCard({ log, clientId, viewer }: {
 
       {(log.cons.length > 0 || log.cons_note) && (
         <div className="mt-4">
-          <p className="text-meta font-semibold tracking-[.06em] text-bad">{c.summary.avoid}</p>
+          <p className="text-meta font-medium tracking-[.06em] text-bad">{c.summary.avoid}</p>
           <div className="mt-1.5 flex flex-wrap gap-1.5">
             {log.cons.map((k) => <span key={k} className="chip chip-bad">{c.tags[k as keyof typeof c.tags] ?? k}</span>)}
           </div>
@@ -249,7 +249,7 @@ function LogCard({ log, clientId, viewer }: {
 
       {lines.length > 0 && (
         <div className="mt-4 rounded-card-sm bg-accent-wash p-3.5">
-          <p className="text-meta font-semibold tracking-[.06em] text-accent">{c.summary.ours}</p>
+          <p className="text-meta font-medium tracking-[.06em] text-accent">{c.summary.ours}</p>
           <ul className="mt-1.5 list-none space-y-1 p-0">
             {lines.map((l, i) => <li key={i} className="text-body text-ink">{l}</li>)}
           </ul>
@@ -301,7 +301,7 @@ export function JournalBook({ clientId, logs, viewer }: {
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             {rows.map((r) => (
               <div key={r.area} className={`rounded-card-sm p-4 ${AREA_TONE[r.area]}`}>
-                <h3 className="text-lead font-semibold text-ink">{c.summary.areas[r.area]}</h3>
+                <h3 className="text-lead font-medium text-ink">{c.summary.areas[r.area]}</h3>
                 {r.pros.length > 0 && (
                   <p className="mt-2 text-body text-ink-soft">
                     <span className="font-medium text-ok">{c.summary.worked}: </span>

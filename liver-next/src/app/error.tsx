@@ -40,7 +40,7 @@ export default function SiteError({ error, reset }: { error: Error & { digest?: 
   return (
     <main id="main" className="shell flex min-h-[70vh] flex-col justify-center py-16">
       <div className="measure">
-        <h1 className="font-display text-display font-semibold leading-tight text-ink">{c.title}</h1>
+        <h1 className="font-display text-display font-medium leading-tight text-ink">{c.title}</h1>
         <p className="mt-4 text-head leading-relaxed text-ink-soft">{c.body}</p>
 
         <div className="mt-8 flex flex-wrap gap-3">

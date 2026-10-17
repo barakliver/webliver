@@ -145,14 +145,14 @@ export function BrandStudio({ clientId, viewer, brand, images, data, canAi, prin
     <section className="card">
       {hrefs.map((h) => <link key={h} rel="stylesheet" href={h} precedence="default" />)}
       <p className="eyebrow">{c.eyebrow}</p>
-      <h2 className="mt-2 font-display text-figure font-semibold text-ink">{c.title}</h2>
+      <h2 className="mt-2 font-display text-figure font-medium text-ink">{c.title}</h2>
       <p className="mt-2 max-w-2xl text-body leading-relaxed text-ink-soft">{producer ? c.sub : c.subClient}</p>
 
       {!producer && !hasBrand && <p className="mt-6 text-body text-ink-mute">{c.none}</p>}
 
       {producer && (
         <div className="mt-6 rounded-card-sm border border-line bg-surface-100 p-4 sm:p-5">
-          <h3 className="text-lead font-semibold text-ink">{c.inputs.title}</h3>
+          <h3 className="text-lead font-medium text-ink">{c.inputs.title}</h3>
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
             <label className="grid gap-1 text-body text-ink-soft">{c.inputs.words}
               <input className="field" value={draft.inputs.words} onChange={(e) => setInput('words', e.target.value)} placeholder={c.inputs.wordsPh} /></label>
@@ -203,7 +203,7 @@ export function BrandStudio({ clientId, viewer, brand, images, data, canAi, prin
 
           <div className="mt-5 grid gap-6 lg:grid-cols-[1.2fr_1fr]">
             <div>
-              <p className="text-meta font-semibold tracking-[.08em] text-ink-mute">{c.sheet.palette}</p>
+              <p className="text-meta font-medium tracking-[.08em] text-ink-mute">{c.sheet.palette}</p>
               <ul className="mt-2 grid grid-cols-5 gap-2">
                 {PALETTE_ROLES.map((role) => {
                   const s = draft.palette.find((x) => x.role === role)!;
@@ -225,7 +225,7 @@ export function BrandStudio({ clientId, viewer, brand, images, data, canAi, prin
                 })}
               </ul>
 
-              <p className="mt-5 text-meta font-semibold tracking-[.08em] text-ink-mute">{c.sheet.fonts}</p>
+              <p className="mt-5 text-meta font-medium tracking-[.08em] text-ink-mute">{c.sheet.fonts}</p>
               {producer ? (
                 <select className="field mt-2" value={draft.fonts} onChange={(e) => set('fonts', e.target.value as WeddingBrand['fonts'])} aria-label={c.sheet.fonts}>
                   {FONT_PAIRS.map((p) => <option key={p.key} value={p.key}>{p.display} + {p.body}</option>)}
@@ -244,7 +244,7 @@ export function BrandStudio({ clientId, viewer, brand, images, data, canAi, prin
               <Field label={c.sheet.voice} producer={producer} value={draft.voice} onChange={(v) => set('voice', v)} rows={2} placeholder={c.sheet.voicePh} />
               <Field label={c.sheet.direction} producer={producer} value={draft.direction} onChange={(v) => set('direction', v)} rows={4} />
               <div>
-                <p className="text-meta font-semibold tracking-[.08em] text-ink-mute">{c.sheet.lean}</p>
+                <p className="text-meta font-medium tracking-[.08em] text-ink-mute">{c.sheet.lean}</p>
                 <div className="mt-1.5 flex flex-wrap items-center gap-2">
                   {(['safe', 'bold'] as Variant[]).map((v) => (
                     <button key={v} type="button" disabled={!producer} onClick={() => set('lean', v)} aria-pressed={draft.lean === v}
@@ -292,7 +292,7 @@ export function BrandStudio({ clientId, viewer, brand, images, data, canAi, prin
               return (
                 <div key={p.key} className="border-t border-line pt-6">
                   <div className="flex flex-wrap items-center justify-between gap-2">
-                    <h4 className="text-head font-semibold text-ink">{c.pieces.names[p.key]}</h4>
+                    <h4 className="text-head font-medium text-ink">{c.pieces.names[p.key]}</h4>
                     {p.key === 'website' ? (
                       siteUrl ? <a href={siteUrl} target="_blank" rel="noopener noreferrer" className="btn-ghost inline-flex items-center gap-1.5 text-body"><ExternalLink size={14} aria-hidden strokeWidth={1.5} />{c.pieces.openSite}</a> : null
                     ) : producer ? (
@@ -343,7 +343,7 @@ export function BrandStudio({ clientId, viewer, brand, images, data, canAi, prin
             <ol className="mt-3 grid gap-3 sm:grid-cols-3">
               {c.printers.list.map((p, i) => (
                 <li key={p.name} className="rounded-card-sm border border-line bg-surface-100 p-4">
-                  <p className="text-body font-semibold text-ink"><span className="tabular-nums text-ink-mute">{i + 1}.</span> {p.name}</p>
+                  <p className="text-body font-medium text-ink"><span className="tabular-nums text-ink-mute">{i + 1}.</span> {p.name}</p>
                   <p className="text-meta text-accent">{p.level}</p>
                   <p className="mt-1 text-body leading-relaxed text-ink-soft">{p.note}</p>
                 </li>
@@ -362,7 +362,7 @@ function Field({ label, producer, value, onChange, rows, placeholder, chips }: {
 }) {
   return (
     <div>
-      <p className="text-meta font-semibold tracking-[.08em] text-ink-mute">{label}</p>
+      <p className="text-meta font-medium tracking-[.08em] text-ink-mute">{label}</p>
       {producer ? (
         rows ? (
           <textarea className="field mt-1.5" rows={rows} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} aria-label={label} />

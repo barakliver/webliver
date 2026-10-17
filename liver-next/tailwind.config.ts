@@ -265,15 +265,18 @@ const config: Config = {
            The Lux direction had removed every one of them, which is why the
            screens read as a flat document rather than as the stack of panels
            that was designed. */
-        soft: '0 1px 2px rgba(15,23,42,.04)',
-        lift: '0 14px 34px -22px rgba(15,23,42,.30)',
-        cta:  '0 12px 26px -14px rgba(15,23,42,.70)',
+        /* A card is a line and no shadow. `lift` is kept as a name that
+           draws nothing, so the ninety call sites keep compiling and keep
+           reading as the flat surface the brief asks for. */
+        soft: '0 1px 2px rgba(28,26,23,.04)',
+        lift: 'none',
+        cta:  '0 12px 26px -14px rgba(28,26,23,.45)',
         /* Chrome that floats over arbitrary content rather than over the
            page's own ground: a dropdown, the concierge panel. A hairline
            alone cannot say "above" on a ground this light. */
-        pop:  '0 12px 28px -12px rgba(15,23,42,.45)',
+        pop:  '0 12px 40px rgba(28,26,23,.10)',
         dock: '0 -1px 0 var(--line, rgba(15,23,42,.10))',
-        fab:  '0 18px 36px -18px rgba(15,23,42,.55)',
+        fab:  '0 12px 40px rgba(28,26,23,.10)',
       },
       backdropBlur: { xl: '22px', '2xl': '34px' },
       /* Rounded, and rounded through these two names rather than at a
@@ -287,9 +290,11 @@ const config: Config = {
       /* The planning system's geometry: 12px on anything pressed or typed
          in, 16px on a card, a little more on the things that float. */
       borderRadius: {
-        control: '12px', button: '12px', 'card-sm': '14px', kpi: '16px',
-        card: '16px', panel: '18px', sheet: '22px',
-        xl2: '12px', '4xl': '16px',
+        /* Quiet luxury: 10 on a control, 12 on a surface inside a card, 16 on
+           a card and on the things that float. */
+        control: '10px', button: '10px', 'card-sm': '12px', kpi: '16px',
+        card: '16px', panel: '16px', sheet: '16px',
+        xl2: '10px', '4xl': '16px',
       },
       maxWidth: { content: '70rem', prose2: '44rem' },
       spacing: { safe: 'env(safe-area-inset-bottom, 0px)' },

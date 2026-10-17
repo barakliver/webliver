@@ -113,7 +113,7 @@ function Row({ item, clientId, c, plan }: {
             the one that gets the size; the estimate sits under it as what it
             was before somebody negotiated. */}
         <span className="shrink-0 text-left">
-          <span className="block font-display text-head font-semibold tabular-nums text-ink">
+          <span className="block font-display text-head font-medium tabular-nums text-ink">
             <Money value={agreed ?? estimate} />
           </span>
           {agreed !== null && agreed !== estimate && (

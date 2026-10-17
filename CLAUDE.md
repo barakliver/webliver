@@ -356,7 +356,21 @@ that has happened once.
   impression of one. A test walks every id to its file and back and asserts
   the three undealt ones are undealt, so a card without a picture fails the
   build rather than drawing a broken image inside his frame.
-- The ground is a pale blue, #F1F4F9, everywhere: the app, the public site and
+- **The ground is a warm cream, #FAF8F4, everywhere, the ink is a warm
+  near-black, #1C1A17, and the one accent is a deep bronze, #7A5D33.** That
+  is the quiet-luxury brief, in his words: a lot of room, one good face, one
+  quiet colour, no noise; hotel, not bank. The card is white on a hairline
+  #E6E1D8 and carries no shadow (`shadow-lift` is still a name and draws
+  nothing); the step up is #F2EFE9; the statuses are a muted green #3F6A4A,
+  amber #7F5A1B and clay #9B4A3C, each solved on its own wash. The dark
+  palette is #161411 under #EDE8E0 with the accent lifted to #C9A86C. Every
+  one of these clears its bar in `npm run contrast`, which was moved token
+  by token in the same commit. Headings are Heebo at 500, never bolder:
+  every `font-semibold` and `font-bold` in the product became `font-medium`
+  in one pass, and Heebo is loaded at 300, 400 and 500 only.
+  Before this it was a pale blue, #F1F4F9 with #4D68A0, and the paragraph
+  below is kept as the history of that move.
+- The ground was a pale blue, #F1F4F9, everywhere: the app, the public site and
   the guests' page alike, with #4D68A0 as the brand blue. It was warm ivory
   before, and a pale blue before that, and slate before that; the rule that
   settles it is that his latest instruction wins, and the reasoning for each
@@ -390,7 +404,15 @@ that has happened once.
   deliberately, and can no longer do it once and walk away. Three producer
   `light` tones moved by one and two percent when the real dark ground came
   into view for the first time.
-- **The typeface is Heebo and there is only one.** Not Heebo for the
+- **Two faces now, by the same brief: Heebo for everything operated and
+  Frank Ruhl Libre, at 300 and 400, for display alone.** The page title,
+  the couple's greeting and the one big number on a summary; never a panel
+  title, never a table, never bolder than regular. `--font-display` and
+  `--font-editorial` resolve to it, `.app-type` no longer overrides it, and
+  Hebrew is never tracked, so both tracking tokens are 0. The paragraph
+  below is the history of the one-face era and its reasons still hold for
+  the body.
+- **The typeface was Heebo and there was only one.** Not Heebo for the
   interface and a serif for the headings, which is how it was built: Heebo
   everywhere, on `/app`, on the couple's screen, on the shopfront, on the
   guests' page, in Hebrew and in English alike. He asked for it in one

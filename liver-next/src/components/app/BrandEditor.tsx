@@ -68,10 +68,10 @@ export function BrandEditor({ fields, rootDomain }: { fields: BrandFields; rootD
     <form action={action} className="space-y-5">
       {/* ── what it will look like ─────────────────────────────────────── */}
       <section className="card" style={accentVars(chosen) as React.CSSProperties}>
-        <div className="text-meta font-semibold text-ink-mute">{c.preview}</div>
+        <div className="text-meta font-medium text-ink-mute">{c.preview}</div>
         <div className="mt-3 rounded-card-sm border border-line bg-surface p-4">
           <div className="flex items-center justify-between gap-3 border-b border-line pb-3">
-            <span className="font-display text-head font-semibold text-ink">
+            <span className="font-display text-head font-medium text-ink">
               {name || c.namePh}
             </span>
             <span className="chip" style={{ borderColor: chosen.line, color: chosen.base }}>

@@ -50,29 +50,29 @@ const ratio = (a, b) => {
    compared on every run and the build fails naming the token, the value here
    and the value in the stylesheet. */
 const c = {
-  ink: '#24344E', inkSoft: '#52627B', inkMid: '#7A89A3',
-  inkMute: '#586782',              /* solved against the step up */
-  surface: '#F1F4F9', surface100: '#FFFFFF', surface200: '#E4EBF6',
+  ink: '#1C1A17', inkSoft: '#6B665E', inkMid: '#87827A',
+  inkMute: '#645F57',              /* solved against the step up */
+  surface: '#FAF8F4', surface100: '#FFFFFF', surface200: '#F2EFE9',
   card: '#FFFFFF',
-  dark: '#192030',
-  line: '#D4DDEC', lineStrong: '#BCC8DE',
-  lineControl: '#7689A8',
+  dark: '#1C1A17',
+  line: '#E6E1D8', lineStrong: '#CFC8BC',
+  lineControl: '#857F76',
   /* The focus ring, which is not the accent and is measured as a control
      boundary: a ring nobody can find is the accessibility failure this
      token exists to prevent. */
   focus: '#16223A',
-  accent: '#4D68A0',               /* the primary action, safe as words */
-  accentHover: '#3E568A',
-  accentBright: '#6A85BE',         /* large numerals only, 3:1 bar   */
-  accentLine: '#92AAD6',           /* words on the dark ground       */
-  accentLight: '#B9C8E5',
+  accent: '#7A5D33',               /* the primary action, safe as words */
+  accentHover: '#65492A',
+  accentBright: '#A07D4A',         /* large numerals only, 3:1 bar   */
+  accentLine: '#C9A86C',           /* words on the dark ground       */
+  accentLight: '#DCC59A',
   /* The accent at 8% over the canvas, which is what --accent-wash ships.
      Filled in below from the two tones it is made of rather than written,
      so the one blended token cannot drift from its own ingredients. */
   accentWash: '',
-  ok: '#24664B', okWash: '#EAF4EE',
-  warn: '#805311', warnWash: '#FFF4DF',
-  bad: '#B4232B', badWash: '#FDECEE',
+  ok: '#3F6A4A', okWash: '#E8F0EA',
+  warn: '#7F5A1B', warnWash: '#F6EEDC',
+  bad: '#9B4A3C', badWash: '#F5E6E2',
   white: '#FFFFFF',
 };
 
@@ -308,23 +308,23 @@ line('an inverted control edge',         over2(c.surface, 0.45, c.dark),  c.dark
    the dark one becomes the step up, so what is written on it is ordinary
    ink rather than the inverted kind. */
 const d = {
-  ink: '#F2F0E8', inkSoft: '#C3BFB4', inkMid: '#918C82', inkMute: '#ABA69B',
-  surface: '#191816', surface100: '#232120', surface200: '#26231F',
-  card: '#232120',
+  ink: '#EDE8E0', inkSoft: '#A8A298', inkMid: '#7F7A71', inkMute: '#B0AAA0',
+  surface: '#161411', surface100: '#1F1C18', surface200: '#2A2621',
+  card: '#1F1C18',
   /* The band, which in this palette is the step up. */
-  dark: '#26231F',
-  line: '#3A3733', lineStrong: '#4A4641', lineControl: '#7C766C',
-  focus: '#7AA9DE',
+  dark: '#2A2621',
+  line: '#2C2823', lineStrong: '#3C372F', lineControl: '#7A736A',
+  focus: '#EAE1D0',
   /* The accent's night tone, promoted to the main one. */
-  accent: '#C2A472',
-  accentLine: '#B08D57',
+  accent: '#C9A86C',
+  accentLine: '#C9A86C',
   /* 8% of that pale tone over the canvas, which is what --accent-wash
      resolves to once --accent-rgb has moved. */
-  accentWash: '#27241F',
-  ok: '#7FB894', okWash: '#1B2921',
-  warn: '#D9A94A', warnWash: '#2B2416',
-  bad: '#E08278', badWash: '#2E1F1D',
-  sage: '#2A3128', blush: '#322A2A',
+  accentWash: '#241F18',
+  ok: '#7FA98A', okWash: '#1E2A21',
+  warn: '#D1A24F', warnWash: '#2E2616',
+  bad: '#D07A6A', badWash: '#2E1C19',
+  sage: '#2E2C24', blush: '#322A2A',
 };
 
 console.log('\n  כהה');

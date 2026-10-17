@@ -41,7 +41,7 @@ export function CrewClashes({ rows }: { rows: ClashRow[] }) {
       aria-labelledby="crew-clashes"
       className="rounded-card border border-bad/30 bg-bad-wash p-4 sm:p-5"
     >
-      <h3 id="crew-clashes" className="flex items-center gap-2 font-display text-head font-semibold text-bad">
+      <h3 id="crew-clashes" className="flex items-center gap-2 font-display text-head font-medium text-bad">
         <TriangleAlert size={17} aria-hidden strokeWidth={1.5} />
         {rows.length === 1 ? c.clashOne : c.clashMany}
       </h3>
@@ -49,7 +49,7 @@ export function CrewClashes({ rows }: { rows: ClashRow[] }) {
       <ul className="mt-2.5 list-none space-y-2 p-0">
         {rows.map((r) => (
           <li key={`${r.memberId}-${r.date}`} className="text-body text-ink">
-            <b className="font-semibold">{r.name}</b>
+            <b className="font-medium">{r.name}</b>
             {' · '}
             {fmt.format(new Date(r.date))}
             <span className="mt-0.5 block text-body text-ink-soft">

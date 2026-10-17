@@ -127,7 +127,7 @@ export function VendorHq({ clientId, vendors, contracts, lines, couple, date, si
                 </td>
                 <td className="whitespace-nowrap py-2.5 pe-3 text-ink-soft">{lastSpoke(r)}</td>
                 <td className="whitespace-nowrap py-2.5 pe-3 text-ink-soft">{r.waitingOn ? c.turn[r.waitingOn] : c.turn.none}</td>
-                <td className={`py-2.5 pe-3 ${r.tone === 'red' ? 'font-semibold text-bad' : r.tone === 'yellow' ? 'font-medium text-warn' : 'text-ink-soft'}`}>
+                <td className={`py-2.5 pe-3 ${r.tone === 'red' ? 'font-medium text-bad' : r.tone === 'yellow' ? 'font-medium text-warn' : 'text-ink-soft'}`}>
                   {actionWord(r) || c.actions.wait}
                 </td>
                 {viewer === 'producer' && (
@@ -184,7 +184,7 @@ export function VendorHq({ clientId, vendors, contracts, lines, couple, date, si
       </div>
 
       {/* This week: every red and amber row, what to do, and the message. */}
-      <h3 className="mt-6 text-body font-semibold text-ink">{c.weekTitle}</h3>
+      <h3 className="mt-6 text-body font-medium text-ink">{c.weekTitle}</h3>
       <p className="mt-1 text-meta text-ink-mute">{c.weekSub}</p>
       {week.length === 0 ? (
         <p className="mt-2 text-body text-ok">{c.weekNone}</p>
@@ -221,7 +221,7 @@ export function VendorHq({ clientId, vendors, contracts, lines, couple, date, si
       )}
 
       {/* The three to watch. */}
-      <h3 className="mt-6 inline-flex items-center gap-2 text-body font-semibold text-ink">
+      <h3 className="mt-6 inline-flex items-center gap-2 text-body font-medium text-ink">
         <TriangleAlert size={15} aria-hidden strokeWidth={1.5} className="text-warn" />{c.riskTitle}
       </h3>
       <p className="mt-1 text-meta text-ink-mute">{c.riskSub}</p>

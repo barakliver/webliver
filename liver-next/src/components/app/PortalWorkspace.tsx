@@ -212,7 +212,7 @@ export function PortalWorkspace({
         )}
 
         <div className="px-5 py-8 sm:px-8 sm:py-10">
-          <h2 className="font-display text-display font-semibold leading-[1.12] tracking-[-.02em] text-ink">
+          <h2 className="font-display text-display font-medium leading-[1.12] tracking-[-.02em] text-ink">
             {c.display_name}
           </h2>
 
@@ -223,7 +223,7 @@ export function PortalWorkspace({
 
           {left !== null && left >= 0 && (
             <p className="mt-6 inline-flex items-baseline gap-2 rounded-full bg-accent-wash px-5 py-2.5 text-accent">
-              <span className="font-display text-figure font-bold leading-none tracking-[-.03em] tabular-nums">
+              <span className="font-display text-figure font-medium leading-none tracking-[-.03em] tabular-nums">
                 <Ltr>{left.toLocaleString('en-US')}</Ltr>
               </span>
               <span className="text-body">{ui.portal.daysLeft}</span>

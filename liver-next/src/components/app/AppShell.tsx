@@ -91,7 +91,7 @@ function Brand({ brand }: { brand: Brand }) {
           <span className="sr-only">{brand.name}</span>
         </>
       ) : (
-        <span className="truncate font-display text-subhead font-semibold text-ink">{brand.name}</span>
+        <span className="truncate font-display text-subhead font-medium text-ink">{brand.name}</span>
       )}
     </Link>
   );

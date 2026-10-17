@@ -58,6 +58,14 @@
        because a newer document outranks an older one, but because he read
        what he had said before and said blue anyway.
 
+       Quiet luxury, which is the brief this time and in his words: a warm
+       cream ground, a warm near-black for words, one deep bronze for the one
+       action on a screen, and nothing else that is coloured. The reasoning
+       for every earlier move is in this file's history; what settles the
+       palette, as always, is his latest instruction, and this is it. Hotel,
+       not bank: a lot of room, one good face, one quiet colour, no noise.
+
+       Old notes, kept because the measurements in them still hold:
        #F1F4F9 is a pale blue that is not grey: the card above it is white,
        and the canvas has to sit under that without either of them reading as
        a mistake. What the brief specified were the grounds, the brand blues,
@@ -94,21 +102,21 @@
        top of an accent-coloured control.
 
        Structure is untouched, as it was the last three times. */
-    --ink-rgb: 36 52 78;             /* #24344E */
-    --ink-soft-rgb: 82 98 123;       /* #52627B */
-    --ink-mid-rgb: 122 137 163;      /* #7A89A3, large text only */
-    --ink-mute-rgb: 88 103 130;      /* #586782. Solved against #E4EBF6, the
+    --ink-rgb: 28 26 23;             /* #1C1A17, a warm near-black */
+    --ink-soft-rgb: 107 102 94;      /* #6B665E */
+    --ink-mid-rgb: 135 130 122;      /* #87827A, large text only */
+    --ink-mute-rgb: 100 95 87;       /* #645F57. Solved against #F2EFE9, the
                                         darkest ground a kicker sits on. */
 
-    --surface-rgb: 241 244 249;      /* #F1F4F9, the canvas */
+    --surface-rgb: 250 248 244;      /* #FAF8F4, the canvas: warm cream */
     --surface-100-rgb: 255 255 255;  /* #FFFFFF, the card */
-    --surface-200-rgb: 228 235 246;  /* #E4EBF6, the step up */
+    --surface-200-rgb: 242 239 233;  /* #F2EFE9, the step up */
     /* Lifted off the ink rather than equal to it, but only barely. The dark
        band is a surface somebody reads a paragraph on, and it also carries
        each producer's own accent as words: the six white-label accents are
        checked against it, and the palest of them needs the ground this dark
        to clear 4.5. A warmer, lighter band failed three of the six. */
-    --dark-rgb: 25 32 48;            /* #192030. Darker than the ink on purpose:
+    --dark-rgb: 28 26 23;            /* #1C1A17. The ink itself, which is dark enough:
                                         it carries each producer's own accent
                                         as words, and the palest of the six
                                         needs this much ground to clear 4.5. */
@@ -134,14 +142,14 @@
        class checker caught what that costs: eight `bg-bad-wash/40` and the
        like across the product, each compiling to no declaration at all. A
        wash a modifier cannot reach is a row that stops being tinted. */
-    --ok-rgb: 36 102 75;             /* #24664B */
-    --ok-wash-rgb: 234 244 238;      /* #EAF4EE */
-    --warn-rgb: 128 83 17;           /* #805311 */
-    --warn-wash-rgb: 255 244 223;    /* #FFF4DF */
-    --bad-rgb: 180 35 43;            /* #B4232B */
-    --bad-wash-rgb: 253 236 238;     /* #FDECEE */
-    --sage-rgb: 206 215 196;         /* #CED7C4 */
-    --sage-wash-rgb: 230 235 223;    /* #E6EBDF */
+    --ok-rgb: 63 106 74;             /* #3F6A4A */
+    --ok-wash-rgb: 232 240 234;      /* #E8F0EA */
+    --warn-rgb: 127 90 27;           /* #7F5A1B */
+    --warn-wash-rgb: 246 238 220;    /* #F6EEDC */
+    --bad-rgb: 155 74 60;            /* #9B4A3C */
+    --bad-wash-rgb: 245 230 226;     /* #F5E6E2 */
+    --sage-rgb: 212 213 194;         /* #D4D5C2 */
+    --sage-wash-rgb: 232 233 220;    /* #E8E9DC */
     --blush-rgb: 244 228 228;        /* #F4E4E4 */
     --blush-wash-rgb: 250 241 241;   /* #FAF1F1 */
 
@@ -149,7 +157,7 @@
        which is what it used to be: on the dark palette the ink is near-white,
        so every scrim in the product lit the page up instead of dimming it.
        A scrim darkens in both palettes or it is not a scrim. */
-    --scrim-rgb: 24 32 48;           /* the ink, in daylight */
+    --scrim-rgb: 28 26 23;           /* the ink, in daylight */
 
     /* The focus ring, and deliberately not the accent. A ring drawn in the
        accent disappears on top of an accent-coloured control, which is the
@@ -162,12 +170,12 @@
     --focus-rgb: 22 34 58;           /* #16223A */
     --focus: rgb(var(--focus-rgb));
 
-    --line: #D4DDEC;
-    --line-strong: #BCC8DE;
+    --line: #E6E1D8;
+    --line-strong: #CFC8BC;
     /* The design source's own two: a panel edge and the glass it edges. Not
        derived from the ink like the separators above, because these are the
        slate line colour itself rather than a percentage of the text. */
-    --line-soft: rgba(212, 221, 236, .7);
+    --line-soft: rgba(230, 225, 216, .7);
     /* Opaque. It was a translucent panel over a gradient, which is the
        surface a brief asked to stop using: text on a ground that changes
        across the page, with an edge that is barely an edge. */
@@ -180,7 +188,7 @@
        the lightest value that clears it. */
     /* .46 reads 2.97:1 on this ground, just under the 3 a control edge needs.
        The warm palette cleared it at .48; a cooler, lighter ground does not. */
-    --line-control: #7689A8;
+    --line-control: #857F76;
     /* The inside of an input. A token rather than a literal because one
        section of this product inverts the whole palette for a dark band, and
        a hardcoded white here meant a near-white label inside a light grey box
@@ -205,15 +213,15 @@
        interface is full of. Nobody caught it because `npm run contrast` was
        still measuring the bronze from two redesigns ago; it reads the real
        palette now and would have failed the build on the day this moved. */
-    --accent-rgb: 77 104 160;        /* #4D68A0, as words on the canvas */
-    --accent-hover-rgb: 62 86 138;   /* #3E568A, the pressed and hovered fill */
-    --accent-pressed-rgb: 48 68 111; /* #30446F */
+    --accent-rgb: 122 93 51;         /* #7A5D33, deep bronze, as words on the canvas */
+    --accent-hover-rgb: 101 73 42;   /* #65492A, the pressed and hovered fill */
+    --accent-pressed-rgb: 80 56 32;  /* #503820 */
     /* #6A85BE, two percent down from #6C88C2 for the same reason: 2.95
        against a bar of 3 on the step up. A large numeral at 2.95 is not a
        different design from one at 3.07; it is the same design, failing. */
-    --accent-bright-rgb: 106 133 190;/* #6A85BE, large numerals only */
-    --accent-line-rgb: 146 170 214;  /* #92AAD6, as words on the dark */
-    --accent-light-rgb: 185 200 229; /* #B9C8E5, on the dark ground only */
+    --accent-bright-rgb: 160 125 74; /* #A07D4A, large numerals only */
+    --accent-line-rgb: 201 168 108;  /* #C9A86C, as words on the dark */
+    --accent-light-rgb: 220 197 154; /* #DCC59A, on the dark ground only */
     /* The one warm thing left, and it is kept small on purpose: a brand
        detail and a welcoming moment, never an operational state. Danger has
        its own red, and a save that looks like a delete is the failure this
@@ -223,7 +231,7 @@
     /* And the accent on the dark palette, which is a different question from
        the dark band: that band was darker than the dark palette's own card,
        so four of the six white-label tones clear 4.5:1 on it and not here. */
-    --accent-night-rgb: 185 200 229; /* #B9C8E5 */
+    --accent-night-rgb: 201 168 108; /* #C9A86C */
 
     --accent: rgb(var(--accent-rgb));
     --accent-hover: rgb(var(--accent-hover-rgb));
@@ -265,16 +273,17 @@
        positive values are in this file's history, as they were the last two
        times the family moved. */
     --font-ui: var(--font-heebo);
-    --font-editorial: var(--font-ui);
-    --font-display: var(--font-ui);
-    --display-track: -.015em;
-    --heading-track: -.01em;
+    --font-editorial: var(--font-frank);
+    --font-display: var(--font-frank);
+    /* Hebrew is never tracked; a serif display face wants none either. */
+    --display-track: 0;
+    --heading-track: 0;
   }
 
   /* Kept as a marker rather than deleted: the app still carries this class,
      and the day a display face is chosen for the app alone it is one line
      here again. It overrides nothing while there is one face. */
-  .app-type { --font-display: var(--font-ui); }
+  .app-type { --font-display: var(--font-frank); }
 
   html, body {
     /* Nothing may push the page sideways.
@@ -576,17 +585,17 @@
      Shadow still belongs to things that genuinely sit above the page: a
      sheet, a dialog, the dock. `.panel` keeps its lift for the same reason. */
   .card {
-    @apply rounded-card border border-line-soft p-4 sm:p-6;
+    @apply rounded-card border border-line p-4 sm:p-6;
     background: var(--surface-glass);
   }
   /* The solid variant. Where a panel has to hold its own against whatever is
      behind it rather than borrow from it: a sheet, a login card, the result
      of a calculation. */
   .panel {
-    @apply rounded-panel border border-surface bg-card p-5 shadow-lift sm:p-6;
+    @apply rounded-panel border border-line bg-card p-5 sm:p-6;
   }
   .panel-dark {
-    @apply rounded-panel bg-dark p-5 text-surface shadow-lift;
+    @apply rounded-panel bg-dark p-5 text-surface;
   }
   /* And the third: an outline with almost no fill, for a group that needs an
      edge without becoming another panel in a column of panels. */
@@ -607,8 +616,8 @@
      the size rule outranks it, so the mark keeps the drawn size and the target
      grows around it. */
   .btn {
-    @apply inline-flex min-h-[48px] items-center justify-center gap-2 rounded-button
-           px-6 text-head font-semibold
+    @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-button
+           px-5 text-lead font-medium
            transition duration-300 ease-out
            active:translate-y-px active:duration-75
            disabled:pointer-events-none disabled:opacity-50;
@@ -692,9 +701,12 @@
      .eyebrow rather than in a component, because that is where the rest of
      this product's vocabulary already is, and a heading that needs an icon
      beside it just adds inline-flex in the markup where it is needed. */
-  .head-panel   { @apply font-display text-subhead font-semibold text-ink; }
-  .head-section { @apply font-display text-panel font-semibold text-ink; }
-  .head-sub     { @apply font-display text-head font-semibold text-ink; }
+  /* Heebo at 500, not the serif: a panel title is a label on a working
+     screen, and the display face is kept for the page title, the greeting
+     and the one big number. Hierarchy here is size and weight, never colour. */
+  .head-panel   { @apply font-sans text-subhead font-medium text-ink; }
+  .head-section { @apply font-sans text-panel font-medium text-ink; }
+  .head-sub     { @apply font-sans text-head font-medium text-ink; }
 
   .eyebrow {
     @apply text-micro font-medium tracking-[.14em] text-accent;
@@ -829,18 +841,18 @@
        page with scripting off. */
     color-scheme: dark;
 
-    --ink-rgb: 232 237 246;          /* #E8EDF6 on the ground */
-    --ink-soft-rgb: 180 190 208;     /* #B4BED0 */
-    --ink-mid-rgb: 132 145 166;      /* #8491A6, large text only */
-    --ink-mute-rgb: 160 172 192;     /* #A0ACC0 on the step up, the
+    --ink-rgb: 237 232 224;          /* #EDE8E0 on the ground */
+    --ink-soft-rgb: 168 162 152;     /* #A8A298 */
+    --ink-mid-rgb: 127 122 113;      /* #7F7A71, large text only */
+    --ink-mute-rgb: 176 170 160;     /* #B0AAA0 on the step up, the
                                         darkest ground a kicker sits on */
 
-    --surface-rgb: 17 22 33;         /* #111621, the canvas */
-    --surface-100-rgb: 26 33 47;     /* #1A212F, the card, lifted off it */
-    --surface-200-rgb: 32 40 56;     /* #202838, the step up */
+    --surface-rgb: 22 20 17;         /* #161411, the canvas */
+    --surface-100-rgb: 31 28 24;     /* #1F1C18, the card, lifted off it */
+    --surface-200-rgb: 42 38 33;     /* #2A2621, the step up */
     /* The band that was the dark one. Now the step up, because a charcoal
        panel on a charcoal page is not a panel. */
-    --dark-rgb: 32 40 56;
+    --dark-rgb: 42 38 33;
 
     /* Black, not the ink. The ink is near-white here. */
     --scrim-rgb: 0 0 0;
@@ -849,16 +861,16 @@
        not a quieter ring, it is an absent one. Same hue, lifted. */
     /* Lighter than the night accent, for the same reason the daylight ring
        is darker than the daylight one: the accent is a blue on both sides. */
-    --focus-rgb: 234 241 255;        /* #EAF1FF */
+    --focus-rgb: 234 225 208;        /* #EAE1D0 */
 
-    --line: #2A3345;
-    --line-strong: #3A4559;
-    --line-soft: rgba(42, 51, 69, .7);
+    --line: #2C2823;
+    --line-strong: #3C372F;
+    --line-soft: rgba(44, 40, 35, .7);
     /* The edge of a control, held to the same 3:1 it is held to in daylight.
        This one measures 3.9:1 on the canvas. */
-    --line-control: #6D7C93;
-    --surface-glass: #1A212F;
-    --field-bg: #1A212F;
+    --line-control: #7A736A;
+    --surface-glass: #1F1C18;
+    --field-bg: #1F1C18;
 
     /* The accent's own night tone. Written as a reference rather
        than as a value so a producer's accent follows: their five tones
@@ -870,18 +882,18 @@
 
     /* State. Solved against this ground rather than carried over: the light
        palette's green is 2.3:1 here. */
-    --ok-rgb: 127 184 148;           /* #7FB894, 7.8:1 */
-    --ok-wash-rgb: 22 36 30;         /* #16241E */
-    --warn-rgb: 217 169 74;          /* #D9A94A, 8.2:1 */
-    --warn-wash-rgb: 43 36 22;       /* #2B2416 */
-    --bad-rgb: 224 130 120;          /* #E08278, 6.5:1 */
-    --bad-wash-rgb: 46 29 32;        /* #2E1D20 */
+    --ok-rgb: 127 169 138;           /* #7FA98A */
+    --ok-wash-rgb: 30 42 33;         /* #1E2A21 */
+    --warn-rgb: 209 162 79;          /* #D1A24F */
+    --warn-wash-rgb: 46 38 22;       /* #2E2616 */
+    --bad-rgb: 208 122 106;          /* #D07A6A */
+    --bad-wash-rgb: 46 28 25;        /* #2E1C19 */
     /* Softened for the night, where the daylight coral glares. */
     --coral-rgb: 244 122 115;        /* #F47A73 */
     --coral-strong-rgb: 239 69 61;   /* #EF453D */
     /* Grounds only, never carrying words in their own hue. */
-    --sage-rgb: 42 49 40;            /* #2A3128 */
-    --sage-wash-rgb: 34 40 32;       /* #222820 */
+    --sage-rgb: 46 44 36;            /* #2E2C24 */
+    --sage-wash-rgb: 38 36 30;       /* #26241E */
     --blush-rgb: 50 42 42;           /* #322A2A */
     --blush-wash-rgb: 42 35 36;      /* #2A2324 */
   }

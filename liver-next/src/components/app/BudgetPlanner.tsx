@@ -117,7 +117,7 @@ export function BudgetPlanner({ clientId, current, target, guestEstimate, defaul
         </label>
       </div>
 
-      <h3 className="mt-6 text-body font-semibold text-accent">{c.pick}</h3>
+      <h3 className="mt-6 text-body font-medium text-accent">{c.pick}</h3>
       <p className="mt-1 max-w-prose2 text-meta leading-relaxed text-ink-mute">{c.pickHint}</p>
       {/* One button per area that cycles through the three stances, with the
           word on it. A row of three radio buttons per area is thirty controls
@@ -161,7 +161,7 @@ export function BudgetPlanner({ clientId, current, target, guestEstimate, defaul
                   <tr key={l.key} className={`border-b border-line last:border-0 ${l.key === 'contingency' ? 'text-bad' : 'text-ink'}`}>
                     <td className="py-2.5 pe-3 font-medium">{c.categories[l.key]}</td>
                     <td className="py-2.5 pe-3 tabular-nums text-ink-mute">{l.base}%</td>
-                    <td className={`py-2.5 pe-3 tabular-nums ${l.moved ? 'font-semibold' : ''}`}>{l.pct}%</td>
+                    <td className={`py-2.5 pe-3 tabular-nums ${l.moved ? 'font-medium' : ''}`}>{l.pct}%</td>
                     <td className="py-2.5 pe-3 tabular-nums"><Money value={l.amount} /></td>
                     <td className="hidden py-2.5 text-meta text-ink-mute sm:table-cell">{reason(l)}</td>
                   </tr>

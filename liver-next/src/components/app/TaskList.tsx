@@ -142,7 +142,7 @@ function Row({ task, clientId, viewer, canDelete, grip }: {
             column down the list instead of moving row to row. */}
         <div className="mt-1 flex items-center gap-x-2">
           <p className="min-w-0 text-meta text-ink-mute">
-            <span className={late ? 'font-semibold text-bad' : ''}>
+            <span className={late ? 'font-medium text-bad' : ''}>
               {formatDate(dateFmt, task.due_on, c.noDue)}
               {late ? ` \u00B7 ${c.overdue}` : ''}
             </span>
@@ -305,7 +305,7 @@ export function TaskList({ clientId, tasks, viewer, viewerId }: {
           : <p className="mt-6 text-body text-ink-mute">{c.none}</p>
       ) : (
         <>
-          <h3 className="mt-7 text-body font-semibold text-accent">{c.open} · {open.length}</h3>
+          <h3 className="mt-7 text-body font-medium text-accent">{c.open} · {open.length}</h3>
           {/* The order here is a decision, not a sort. What matters this week
               is not the three with the earliest dates; it is the three the
               person doing them decided matter. The finished list below stays a
@@ -331,7 +331,7 @@ export function TaskList({ clientId, tasks, viewer, viewerId }: {
 
           {done.length > 0 && (
             <>
-              <h3 className="mt-7 text-body font-semibold text-ink-mute">{c.done} · {done.length}</h3>
+              <h3 className="mt-7 text-body font-medium text-ink-mute">{c.done} · {done.length}</h3>
               <ul className="mt-3 space-y-2">
                 {done.map((t) => (
                   <li key={t.id}>

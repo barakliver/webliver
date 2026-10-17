@@ -161,7 +161,7 @@ function PostCard({ post }: { post: CirclePost }) {
         </form>
       ) : (
         <>
-          <h1 className="mt-2 font-display text-figure font-semibold text-ink">{post.title}</h1>
+          <h1 className="mt-2 font-display text-figure font-medium text-ink">{post.title}</h1>
           <p className="mt-3 whitespace-pre-line text-head leading-relaxed text-ink">{post.content}</p>
           <div className="mt-4 flex flex-wrap items-center gap-3">
             <VoteButton post={post} />

@@ -205,7 +205,7 @@ function PaymentRow({ payment: p, clientId }: { payment: Payment; clientId: stri
           {p.paid
             ? `${c.paid}${p.paid_on ? ' · ' + formatDate(dateFmt, p.paid_on, '') : ''}`
             : (
-              <span className={late ? 'font-semibold text-bad' : ''}>
+              <span className={late ? 'font-medium text-bad' : ''}>
                 {formatDate(dateFmt, p.due_on, c.noDue)}
                 {late ? ` · ${c.overdue}` : ''}
               </span>
@@ -213,7 +213,7 @@ function PaymentRow({ payment: p, clientId }: { payment: Payment; clientId: stri
         </p>
       </div>
 
-      <span className={`tabular-nums text-lead font-semibold ${p.paid ? 'text-ok' : 'text-ink'}`}>
+      <span className={`tabular-nums text-lead font-medium ${p.paid ? 'text-ok' : 'text-ink'}`}>
         <Money value={Number(p.amount)} />
       </span>
 

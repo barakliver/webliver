@@ -30,7 +30,7 @@ async function Countdown({ days }: { days: number | null }) {
   if (days < 0) {
     return (
       <div className="flex flex-col items-center justify-center rounded-xl2 bg-surface-200 px-3 py-2 text-center">
-        <span className="font-display text-lead font-semibold leading-none text-ink-soft">{c.passed}</span>
+        <span className="font-display text-lead font-medium leading-none text-ink-soft">{c.passed}</span>
         <span className="mt-1 text-micro leading-tight text-ink-mute">
           {Math.abs(days)} {c.daysAgo}
         </span>
@@ -204,7 +204,7 @@ export async function StatusBoard({ items }: { items: ClientStatus[] }) {
             className="mb-4 flex cursor-pointer list-none items-center gap-3 py-1
                        [&::-webkit-details-marker]:hidden"
           >
-            <h2 className="font-display text-figure font-semibold leading-none text-ink">
+            <h2 className="font-display text-figure font-medium leading-none text-ink">
               {g.year ? <Ltr>{g.year}</Ltr> : c.noYear}
             </h2>
             <span className="text-body text-ink-mute">

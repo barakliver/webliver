@@ -125,7 +125,7 @@ export function TimelineBuilder({ clientId, eventDate, guestEstimate, defaultOpe
             </label>
           </div>
 
-          <h3 className="mt-6 text-body font-semibold text-accent">{c.ownersTitle}</h3>
+          <h3 className="mt-6 text-body font-medium text-accent">{c.ownersTitle}</h3>
           <div className="mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
             {TIMELINE_CATEGORIES.map((cat) => (
               <label key={cat} className="text-meta text-ink-mute">
@@ -161,7 +161,7 @@ export function TimelineBuilder({ clientId, eventDate, guestEstimate, defaultOpe
               <li key={r.id} className={`rounded-xl2 border px-3.5 py-2.5 ${r.atRisk ? 'border-warn/40 bg-warn-wash/40' : 'border-line'}`}>
                 <p className="text-body text-ink">
                   {r.title}
-                  {r.atRisk && <span className="ms-2 rounded-xl2 bg-warn-wash px-2 py-0.5 text-micro font-semibold text-warn">{c.atRisk}</span>}
+                  {r.atRisk && <span className="ms-2 rounded-xl2 bg-warn-wash px-2 py-0.5 text-micro font-medium text-warn">{c.atRisk}</span>}
                 </p>
                 <p className="mt-0.5 text-meta text-ink-mute">
                   {dateFmt.format(new Date(`${r.dueOn}T12:00:00Z`))}
@@ -186,7 +186,7 @@ export function TimelineBuilder({ clientId, eventDate, guestEstimate, defaultOpe
               <tbody>
                 {plan.rows.map((r) => (
                   <tr key={r.id} className={`border-b border-line last:border-0 ${r.atRisk ? 'bg-warn-wash/40' : ''}`}>
-                    <td className={`py-2.5 pe-3 ${r.atRisk ? 'font-semibold text-warn' : 'text-ink'}`}>{r.title}</td>
+                    <td className={`py-2.5 pe-3 ${r.atRisk ? 'font-medium text-warn' : 'text-ink'}`}>{r.title}</td>
                     <td className="whitespace-nowrap py-2.5 pe-3 tabular-nums text-ink-soft">{dateFmt.format(new Date(`${r.dueOn}T12:00:00Z`))}</td>
                     <td className="whitespace-nowrap py-2.5 pe-3 text-ink-soft">{c.categories[r.category]}</td>
                     <td className="whitespace-nowrap py-2.5 pe-3 text-ink-soft">{ownerWord(r.owner)}</td>
@@ -200,7 +200,7 @@ export function TimelineBuilder({ clientId, eventDate, guestEstimate, defaultOpe
 
           {late.length > 0 && (
             <div className="mt-5 rounded-xl2 border border-warn/30 bg-warn-wash/50 px-4 py-3">
-              <h3 className="text-body font-semibold text-warn">{c.atRiskTitle}</h3>
+              <h3 className="text-body font-medium text-warn">{c.atRiskTitle}</h3>
               <p className="mt-0.5 text-meta text-ink-soft">{c.atRiskSub}</p>
               <ul className="mt-2 list-disc ps-5 text-body text-ink">
                 {late.map((r) => <li key={r.id}>{r.title}</li>)}
@@ -208,7 +208,7 @@ export function TimelineBuilder({ clientId, eventDate, guestEstimate, defaultOpe
             </div>
           )}
 
-          <h3 className="mt-6 text-body font-semibold text-accent">{c.underestimated}</h3>
+          <h3 className="mt-6 text-body font-medium text-accent">{c.underestimated}</h3>
           <ol className="mt-2 list-decimal space-y-1 ps-5 text-body leading-relaxed text-ink-soft">
             {c.tips.map((t) => <li key={t}>{t}</li>)}
           </ol>
@@ -234,7 +234,7 @@ export function TimelineBuilder({ clientId, eventDate, guestEstimate, defaultOpe
           </div>
 
           <div className="mt-6 border-t border-line pt-4">
-            <h3 className="text-body font-semibold text-ink">{c.calendarTitle}</h3>
+            <h3 className="text-body font-medium text-ink">{c.calendarTitle}</h3>
             <p className="mt-1 max-w-prose2 text-body leading-relaxed text-ink-soft">{c.calendarSub}</p>
           </div>
         </>

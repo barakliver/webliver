@@ -159,13 +159,13 @@ function Cell({ cell, ui, short, full }: {
           ) : allClosed ? (
             <Check size={14} strokeWidth={2} className="text-ok" />
           ) : (
-            <span className={`text-meta font-semibold tabular-nums ${cell.late > 0 ? 'text-bad' : 'text-ink'}`}>
+            <span className={`text-meta font-medium tabular-nums ${cell.late > 0 ? 'text-bad' : 'text-ink'}`}>
               {open}
             </span>
           )}
         </div>
         <p className={`mt-1 truncate text-center text-micro ${
-          cell.wedding ? 'font-semibold text-accent'
+          cell.wedding ? 'font-medium text-accent'
             : cell.thisMonth ? 'font-medium text-ink' : 'text-ink-mute'}`}
         >
           {short.format(at)}

@@ -176,7 +176,7 @@ export function PortalJump({ c }: { c: JumpCopy }) {
                           onClick={() => go(s.id)}
                           aria-current={on ? 'true' : undefined}
                           className={`flex min-h-[48px] w-full items-center justify-between gap-3 border-b border-line px-1 text-start text-lead transition-colors ${
-                            on ? 'font-semibold text-accent' : 'text-ink hover:text-accent'
+                            on ? 'font-medium text-accent' : 'text-ink hover:text-accent'
                           }`}
                         >
                           {s.label}

@@ -60,7 +60,7 @@ export function QuoteCompare({ clientId, vendors, lines, viewer }: {
         <div className="mt-5 space-y-7">
           {groups.map((g) => (
             <div key={g.category}>
-              <h3 className="mb-2 text-meta font-semibold text-accent">{categoryLabelFor(g.category, locale)}</h3>
+              <h3 className="mb-2 text-meta font-medium text-accent">{categoryLabelFor(g.category, locale)}</h3>
               {/* `contain: paint` beside the scroll, the way the venue rail
                   does it: in a right-to-left page a wide table inside a plain
                   scroll box still pushed the whole document 160px to the

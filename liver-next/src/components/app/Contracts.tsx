@@ -184,7 +184,7 @@ function Row({ contract: k, clientId, viewer }: {
       {k.status === 'signed' && (
         <p className="mt-3 flex flex-wrap items-center gap-2 rounded-xl2 bg-ok-wash px-3 py-2 text-body text-ok">
           <Check size={15} aria-hidden strokeWidth={1.5} />
-          {c.signedBy} <strong className="font-semibold">{k.signed_name}</strong>
+          {c.signedBy} <strong className="font-medium">{k.signed_name}</strong>
           {k.signed_at && <span className="text-ink-mute">· {formatDate(dateFmt, k.signed_at, '')}</span>}
         </p>
       )}

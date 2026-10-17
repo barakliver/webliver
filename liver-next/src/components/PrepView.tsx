@@ -40,7 +40,7 @@ export function PrepView({ c, eventName, dateLabel, venue, producer, faces, look
   return (
     <main id="main" className="shell max-w-3xl py-10">
       <header className="border-b border-line pb-5">
-        <h1 className="font-display text-figure font-semibold text-ink">{eventName}</h1>
+        <h1 className="font-display text-figure font-medium text-ink">{eventName}</h1>
         <p className="mt-1.5 text-lead text-ink-soft">
           {dateLabel}
           {venue ? ` · ${venue}` : ''}

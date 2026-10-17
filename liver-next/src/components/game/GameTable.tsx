@@ -187,7 +187,7 @@ export function GameTable({ token, names, producer, deck }: GameTableProps) {
               <button
                 type="button"
                 onClick={open ? advance : () => setOpen(true)}
-                className="flex-1 rounded-xl2 bg-surface px-5 py-3.5 text-lead font-semibold text-dark transition hover:bg-surface/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-light"
+                className="flex-1 rounded-xl2 bg-surface px-5 py-3.5 text-lead font-medium text-dark transition hover:bg-surface/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-light"
               >
                 {open ? game.next : game.tapToOpen}
               </button>
@@ -249,7 +249,7 @@ function Door({ names, producer, onPick, onRules }: {
         <h1 className="mt-3 font-display text-3xl font-medium leading-tight">{game.title}</h1>
         <p className="mt-3 text-lead leading-relaxed text-surface/70">{game.intro}</p>
 
-        <p className="mt-9 text-body font-semibold tracking-wide text-surface/55">{game.who}</p>
+        <p className="mt-9 text-body font-medium tracking-wide text-surface/55">{game.who}</p>
         <div className="mt-3 grid gap-3">
           {([[a, 'a'], [b, 'b']] as const).map(([label, which]) => (
             <button
@@ -300,7 +300,7 @@ function Rules({ onBack }: { onBack: () => void }) {
         <div className="mt-9 space-y-7">
           {game.rules.map((r) => (
             <section key={r.h}>
-              <h2 className="text-lead font-semibold text-accent-light">{r.h}</h2>
+              <h2 className="text-lead font-medium text-accent-light">{r.h}</h2>
               <p className="mt-1.5 text-lead leading-relaxed text-surface/75">{r.p}</p>
             </section>
           ))}
@@ -308,7 +308,7 @@ function Rules({ onBack }: { onBack: () => void }) {
         <button
           type="button"
           onClick={onBack}
-          className="mt-10 w-full rounded-xl2 bg-surface px-5 py-3.5 text-lead font-semibold text-dark transition hover:bg-surface/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-light"
+          className="mt-10 w-full rounded-xl2 bg-surface px-5 py-3.5 text-lead font-medium text-dark transition hover:bg-surface/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-light"
         >
           {game.rulesBack}
         </button>
@@ -392,7 +392,7 @@ function Finished({ onRestart }: { onRestart: () => void }) {
       <button
         type="button"
         onClick={onRestart}
-        className="mt-8 w-full rounded-xl2 bg-surface px-5 py-3.5 text-lead font-semibold text-dark transition hover:bg-surface/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-light"
+        className="mt-8 w-full rounded-xl2 bg-surface px-5 py-3.5 text-lead font-medium text-dark transition hover:bg-surface/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-light"
       >
         {game.restart}
       </button>
@@ -566,7 +566,7 @@ function Notebook({ deck, notes, onBack, onGo }: {
 
         <button
           type="button" onClick={onBack}
-          className="mt-10 w-full rounded-xl2 bg-surface px-5 py-3.5 text-lead font-semibold text-dark transition hover:bg-surface/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-light"
+          className="mt-10 w-full rounded-xl2 bg-surface px-5 py-3.5 text-lead font-medium text-dark transition hover:bg-surface/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-light"
         >
           {game.notebookBack}
         </button>

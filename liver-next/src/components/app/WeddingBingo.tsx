@@ -66,7 +66,7 @@ export function WeddingBingo({ clientId, tasks }: { clientId: string; tasks: Tas
       {lines > 0 && (
         <p
           role="status"
-          className="mt-5 inline-flex items-center gap-2 rounded-xl2 bg-ok-wash px-3 py-2 text-body font-semibold text-ok"
+          className="mt-5 inline-flex items-center gap-2 rounded-xl2 bg-ok-wash px-3 py-2 text-body font-medium text-ok"
         >
           <PartyPopper size={16} aria-hidden strokeWidth={1.75} />
           {board.ticked === board.total

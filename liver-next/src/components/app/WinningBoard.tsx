@@ -126,7 +126,7 @@ export function WinningBoard({ clientId, images, viewer }: {
       } as React.CSSProperties}
     >
       <p className="text-micro tracking-[.14em] text-accent-light">{c.eyebrow}</p>
-      <h2 className="mt-2 font-display text-[30px] font-semibold text-ink">{c.title}</h2>
+      <h2 className="mt-2 font-display text-[30px] font-medium text-ink">{c.title}</h2>
       <p className="mt-2 text-body text-ink-soft">{viewer === 'client' ? c.subClient : c.subProducerAdd}</p>
       <hr className="rule-gold mt-6" />
 

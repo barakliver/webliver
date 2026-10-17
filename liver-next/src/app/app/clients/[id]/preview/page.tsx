@@ -59,7 +59,7 @@ export default async function PreviewPage({ params }: { params: Promise<{ id: st
           <p className="flex items-center gap-2.5 text-body text-accent">
             <Eye size={17} aria-hidden strokeWidth={1.5} />
             <span>
-              <strong className="font-semibold">{c.banner}</strong>
+              <strong className="font-medium">{c.banner}</strong>
               <span className="text-ink-soft"> · {workspace.display_name}</span>
             </span>
           </p>

@@ -117,11 +117,11 @@ export function DayOfCockpit({
 
       {arriving.length > 0 && (
         <section className="card border-warn/40 bg-warn-wash">
-          <h2 className="text-body font-semibold text-warn">{c.people.dueSoon}</h2>
+          <h2 className="text-body font-medium text-warn">{c.people.dueSoon}</h2>
           <ul className="mt-2 list-none space-y-1 p-0 text-lead text-ink">
             {arriving.map((p) => (
               <li key={p.id}>
-                <span className="font-semibold tabular-nums">{hhmm(p.call_time ?? '')}</span>
+                <span className="font-medium tabular-nums">{hhmm(p.call_time ?? '')}</span>
                 {' · '}{p.name}
                 {p.role && <span className="text-ink-soft"> · {p.role}</span>}
               </li>
@@ -152,10 +152,10 @@ function Headline({ label, placed, fallback, tone }: {
   const locale = useCopy().locale;
   return (
     <div className={cn('card', tone === 'now' && 'border-accent bg-accent-wash')}>
-      <div className="text-meta font-semibold text-ink-mute">{label}</div>
+      <div className="text-meta font-medium text-ink-mute">{label}</div>
       {placed ? (
         <>
-          <div className="mt-1 font-display text-panel font-semibold leading-tight text-ink">
+          <div className="mt-1 font-display text-panel font-medium leading-tight text-ink">
             {placed.line.title}
           </div>
           <div className="mt-1 text-body text-ink-soft">
@@ -223,7 +223,7 @@ function Row({ p, clientId }: { p: Placed; clientId: string }) {
 
       <div className="min-w-0 flex-1 pt-1">
         <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-          <span className="text-lead font-semibold tabular-nums text-ink">{hhmm(p.line.at_time)}</span>
+          <span className="text-lead font-medium tabular-nums text-ink">{hhmm(p.line.at_time)}</span>
           <span className={cn('text-lead', done ? 'text-ink-mute line-through' : 'text-ink')}>
             {p.line.title}
           </span>
@@ -315,7 +315,7 @@ function PersonRow({ person, clientId }: { person: Caller; clientId: string }) {
 
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-            <span className="text-lead font-semibold tabular-nums text-ink">
+            <span className="text-lead font-medium tabular-nums text-ink">
               {person.call_time ? hhmm(person.call_time) : c.people.noTime}
             </span>
             <span className="text-lead text-ink">{person.name}</span>
@@ -382,10 +382,10 @@ function Countdown({ placed, onDismiss }: { placed: Placed; onDismiss: () => voi
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="min-w-0">
-          <div className="text-meta font-semibold text-warn">
+          <div className="text-meta font-medium text-warn">
             {mins === 0 ? c.alert.inMinutes.now : mins === 1 ? c.alert.inMinutes.one : fill(c.alert.inMinutes.many, { n: mins })}
           </div>
-          <div className="mt-0.5 font-display text-panel font-semibold leading-tight text-ink">
+          <div className="mt-0.5 font-display text-panel font-medium leading-tight text-ink">
             {placed.line.title}
           </div>
           <div className="mt-0.5 text-body text-ink-soft tabular-nums">{hhmm(placed.line.at_time)}</div>

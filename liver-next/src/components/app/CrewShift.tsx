@@ -54,7 +54,7 @@ export function CrewShift({ detail, today }: { detail: ShiftDetail; today: strin
       </Link>
 
       <header>
-        <h2 className="font-display text-figure font-semibold text-ink">{event.name}</h2>
+        <h2 className="font-display text-figure font-medium text-ink">{event.name}</h2>
         <p className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-body text-ink-soft">
           <span>{event.date ? fmt.format(new Date(event.date)) : c.shiftNoDate}</span>
           {isToday && (

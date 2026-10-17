@@ -43,7 +43,7 @@ export function BudgetTracker({ items, payments, plan, target }: {
             <p key={r.key} className="flex items-start gap-2 text-body text-bad">
               <TriangleAlert size={16} aria-hidden strokeWidth={1.5} className="mt-0.5 shrink-0" />
               <span>
-                <strong className="font-semibold">{fill(c.overTitle, { cat: cat(r.key), pct: r.pct - 100 })}</strong>
+                <strong className="font-medium">{fill(c.overTitle, { cat: cat(r.key), pct: r.pct - 100 })}</strong>
                 {' '}{fill(c.overBody, { actual: ils(r.actual), planned: ils(r.planned) })}
               </span>
             </p>
@@ -78,10 +78,10 @@ export function BudgetTracker({ items, payments, plan, target }: {
                   <td className="py-2.5 pe-3 font-medium">{cat(r.key)}</td>
                   <td className="py-2.5 pe-3 tabular-nums">{r.planned > 0 ? <Money value={r.planned} /> : '·'}</td>
                   <td className="py-2.5 pe-3 tabular-nums">{r.actual > 0 ? <Money value={r.actual} /> : '·'}</td>
-                  <td className={`py-2.5 pe-3 tabular-nums ${r.remaining < 0 ? 'font-semibold text-bad' : ''}`}>
+                  <td className={`py-2.5 pe-3 tabular-nums ${r.remaining < 0 ? 'font-medium text-bad' : ''}`}>
                     {r.planned > 0 ? <Money value={r.remaining} /> : '·'}
                   </td>
-                  <td className={`py-2.5 pe-3 tabular-nums ${r.over ? 'font-semibold text-bad' : ''}`}>{r.planned > 0 ? `${r.pct}%` : '·'}</td>
+                  <td className={`py-2.5 pe-3 tabular-nums ${r.over ? 'font-medium text-bad' : ''}`}>{r.planned > 0 ? `${r.pct}%` : '·'}</td>
                   <td className="hidden py-2.5 text-meta text-ink-mute sm:table-cell">
                     {r.lines === 0 ? c.nothingBooked : plural(c.lines, r.lines)}
                   </td>
@@ -91,7 +91,7 @@ export function BudgetTracker({ items, payments, plan, target }: {
           </tbody>
           {t.planned > 0 && (
             <tfoot>
-              <tr className="border-t border-line-strong font-semibold text-ink">
+              <tr className="border-t border-line-strong font-medium text-ink">
                 <td className="py-2.5 pe-3">{ui.money.budTotalAgreed}</td>
                 <td className="py-2.5 pe-3 tabular-nums"><Money value={t.planned} /></td>
                 <td className="py-2.5 pe-3 tabular-nums"><Money value={t.actual} /></td>
@@ -106,7 +106,7 @@ export function BudgetTracker({ items, payments, plan, target }: {
 
       {/* The three lines. */}
       <div className="mt-5 border-t border-line pt-4">
-        <h3 className="text-body font-semibold text-ink">{c.weekTitle}</h3>
+        <h3 className="text-body font-medium text-ink">{c.weekTitle}</h3>
         <ol className="mt-2 space-y-1 text-body leading-relaxed text-ink-soft">
           <li>
             {w.overall.target && w.overall.pct !== null

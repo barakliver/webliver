@@ -150,7 +150,7 @@ export function VendorScout({ vendors, events, signAs, demo }: {
               <li key={r.vendor.id} className="rounded-xl2 border border-line px-4 py-3.5">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="text-lead font-semibold text-ink">
+                    <p className="text-lead font-medium text-ink">
                       <span className="me-2 text-ink-mute">{i + 1}.</span>{r.vendor.name}
                       {r.areaMatch && <span className="ms-2 rounded-xl2 bg-ok-wash px-2 py-0.5 text-micro text-ok">{c.inArea}</span>}
                     </p>
@@ -160,7 +160,7 @@ export function VendorScout({ vendors, events, signAs, demo }: {
                       {r.vendor.contact_name ? ` · ${r.vendor.contact_name}` : ''}
                     </p>
                   </div>
-                  <p className="font-display text-panel font-semibold tabular-nums text-ink">
+                  <p className="font-display text-panel font-medium tabular-nums text-ink">
                     {r.total}<span className="ms-1 text-meta font-normal text-ink-mute">{c.outOf}</span>
                   </p>
                 </div>
@@ -195,7 +195,7 @@ export function VendorScout({ vendors, events, signAs, demo }: {
                   screen reader reads as "edit text, blank": there is a
                   paragraph of drafted message inside it and nothing says
                   which draft it is. */}
-              <h3 id="scout-outreach" className="text-body font-semibold text-ink">{c.outreachTitle}</h3>
+              <h3 id="scout-outreach" className="text-body font-medium text-ink">{c.outreachTitle}</h3>
               <p className="mt-1 text-meta leading-relaxed text-ink-mute">{c.outreachSub}</p>
               <textarea
                 readOnly value={textOne} rows={10} aria-labelledby="scout-outreach"
@@ -214,7 +214,7 @@ export function VendorScout({ vendors, events, signAs, demo }: {
               </div>
             </div>
             <div>
-              <h3 id="scout-generic" className="text-body font-semibold text-ink">{c.genericTitle}</h3>
+              <h3 id="scout-generic" className="text-body font-medium text-ink">{c.genericTitle}</h3>
               <textarea
                 readOnly value={textRest} rows={10} aria-labelledby="scout-generic"
                 className="field mt-2 w-full resize-y text-body leading-relaxed"

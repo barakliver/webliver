@@ -182,7 +182,7 @@ export function LeadBoard({ leads, now, list }: {
               )}
             >
               <h3 className="flex items-baseline justify-between px-1 pb-2 pt-1">
-                <span className="text-body font-semibold text-ink">{statuses[stage] ?? stage}</span>
+                <span className="text-body font-medium text-ink">{statuses[stage] ?? stage}</span>
                 <span className="text-meta tabular-nums text-ink-mute">{cols[stage].length}</span>
               </h3>
               <ul className="list-none space-y-2 p-0">

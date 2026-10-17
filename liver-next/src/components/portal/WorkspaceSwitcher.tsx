@@ -60,7 +60,7 @@ export function WorkspaceSwitcher({ workspaces, selectedId, label, dateless }: {
                 : 'border-line-strong bg-card text-ink-soft hover:border-accent/50 hover:text-ink'
             }`}
           >
-            <span className={`text-body ${on ? 'font-semibold' : ''}`}>{w.display_name}</span>
+            <span className={`text-body ${on ? 'font-medium' : ''}`}>{w.display_name}</span>
             <span className="text-meta text-ink-mute">{w.event_date ?? dateless}</span>
           </button>
         );

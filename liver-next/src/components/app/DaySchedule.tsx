@@ -192,7 +192,7 @@ function Row({
       {/* Left to right inside a right-to-left page, because a clock reads that
           way in every language. */}
       <div className="w-[62px] shrink-0 text-center" dir="ltr">
-        <div className="font-display text-head font-semibold tabular-nums text-ink">{hhmm(item.at_time)}</div>
+        <div className="font-display text-head font-medium tabular-nums text-ink">{hhmm(item.at_time)}</div>
         {span.minutes !== null && (
           <div className={`mt-0.5 text-micro tabular-nums ${span.stated ? 'text-accent' : 'text-ink-mute'}`}>
             {span.stated ? humanSpan(span.minutes, locale) : `↓ ${humanSpan(span.minutes, locale)}`}
@@ -318,7 +318,7 @@ function Templates({ clientId }: { clientId: string }) {
                 : 'border-line bg-card/60 hover:border-accent/40'
             }`}
           >
-            <span className="block text-body font-semibold text-ink">{t.label}</span>
+            <span className="block text-body font-medium text-ink">{t.label}</span>
             <span className="mt-1 block text-meta leading-relaxed text-ink-mute">{t.sub}</span>
             <span className="mt-2 block text-meta tabular-nums text-accent">{c.totalLines.replace('{n}', String(t.lines.length))}</span>
           </button>

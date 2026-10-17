@@ -178,7 +178,7 @@ export function EventVendors({ clientId, vendors, directory }: {
         <div className="mt-5 space-y-5">
           {groups.map(([category, list]) => (
             <div key={category}>
-              <h3 className="mb-2 text-meta font-semibold text-accent">{categoryLabelFor(category, locale)}</h3>
+              <h3 className="mb-2 text-meta font-medium text-accent">{categoryLabelFor(category, locale)}</h3>
               <ul className="space-y-2.5">
                 {list.map((v) => (
                   <li key={v.id} className="flex flex-wrap items-center gap-3 rounded-xl2 border border-line px-4 py-3.5">

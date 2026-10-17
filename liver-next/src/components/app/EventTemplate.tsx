@@ -138,7 +138,7 @@ export function EventTemplate({ clientId }: { clientId: string }) {
           <div className="space-y-6">
             {TASK_TEMPLATE.map((group) => (
               <div key={group.id}>
-                <h3 className="text-body font-semibold text-accent">{group.title}</h3>
+                <h3 className="text-body font-medium text-accent">{group.title}</h3>
                 <p className="mt-0.5 mb-3 text-meta leading-relaxed text-ink-mute">{group.sub}</p>
 
                 <ul className="space-y-1.5">

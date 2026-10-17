@@ -318,14 +318,14 @@ export default async function PortalPage({ searchParams }: {
         <Link href="/app/portal/journal" className="card flex items-start gap-3 transition hover:border-accent/40">
           <NotebookPen size={20} aria-hidden strokeWidth={1.5} className="mt-0.5 shrink-0 text-accent" />
           <span>
-            <span className="block text-lead font-semibold text-ink">{ui.journal.title}</span>
+            <span className="block text-lead font-medium text-ink">{ui.journal.title}</span>
             <span className="mt-0.5 block text-body leading-relaxed text-ink-soft">{ui.journal.sub}</span>
           </span>
         </Link>
         <Link href="/app/portal/community" className="card flex items-start gap-3 transition hover:border-accent/40">
           <Users size={20} aria-hidden strokeWidth={1.5} className="mt-0.5 shrink-0 text-accent" />
           <span>
-            <span className="block text-lead font-semibold text-ink">{ui.circle.title}</span>
+            <span className="block text-lead font-medium text-ink">{ui.circle.title}</span>
             <span className="mt-0.5 block text-body leading-relaxed text-ink-soft">{ui.circle.sub}</span>
           </span>
         </Link>

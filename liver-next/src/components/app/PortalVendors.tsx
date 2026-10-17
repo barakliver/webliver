@@ -40,7 +40,7 @@ export function PortalVendors({ vendors, c, locale }: { vendors: Vendor[]; c: Po
         <div className="mt-5 space-y-5">
           {ordered.map(([category, list]) => (
             <div key={category}>
-              <h3 className="mb-2 text-meta font-semibold text-accent">{categoryLabelFor(category, locale)}</h3>
+              <h3 className="mb-2 text-meta font-medium text-accent">{categoryLabelFor(category, locale)}</h3>
               <ul className="divide-y divide-line border-t border-line">
                 {list.map((v) => (
                   <li key={v.id} className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 py-2.5">

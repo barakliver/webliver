@@ -33,7 +33,7 @@ export function DarkBand({
         {kicker && (
           <p className="text-micro font-medium tracking-[.14em] text-accent-light">{kicker}</p>
         )}
-        <h2 className="mx-auto mt-4 max-w-[20ch] font-display text-display font-semibold text-surface">
+        <h2 className="mx-auto mt-4 max-w-[20ch] font-display text-display font-medium text-surface">
           {title}
         </h2>
         {body && (

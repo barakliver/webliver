@@ -86,7 +86,7 @@ export function Fold({
         )}
 
         <span className="min-w-0 flex-1">
-          <span className="block font-display text-head font-semibold leading-tight text-ink">{title}</span>
+          <span className="block font-display text-head font-medium leading-tight text-ink">{title}</span>
           <span className="mt-0.5 block truncate text-body leading-relaxed text-ink-soft">{sub}</span>
         </span>
 

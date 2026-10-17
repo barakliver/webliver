@@ -196,11 +196,11 @@ export function EventDetails({ event }: { event: EventCore }) {
         <div className="mt-5 flex items-baseline gap-2.5">
           {left > 1 ? (
             <>
-              <span className="font-display text-[40px] font-semibold leading-none text-ink tabular-nums">{left}</span>
+              <span className="font-display text-[40px] font-medium leading-none text-ink tabular-nums">{left}</span>
               <span className="text-lead text-ink-mute">{c.daysLeft}</span>
             </>
           ) : (
-            <span className="font-display text-figure font-semibold leading-none text-ink">
+            <span className="font-display text-figure font-medium leading-none text-ink">
               {left === 0 ? c.today : left === 1 ? c.tomorrow : `${c.passed} ${fill(c.daysAgo, { n: -left })}`}
             </span>
           )}

@@ -164,7 +164,7 @@ export default async function CalendarPage({ searchParams }: {
                 <div className="space-y-4">
                   {[...byDay.entries()].map(([date, dayItems]) => (
                     <div key={date} className="card">
-                      <h3 className="text-body font-semibold text-ink">
+                      <h3 className="text-body font-medium text-ink">
                         <Link href={`/app/calendar?day=${date}#day`} className="hover:underline">
                           {dayFmtFor(locale).format(new Date(date + 'T00:00:00'))}
                         </Link>

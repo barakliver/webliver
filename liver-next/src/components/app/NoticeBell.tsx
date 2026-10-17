@@ -91,7 +91,7 @@ export function NoticeBell({ notices, copy }: { notices: Notice[]; copy?: Notice
       >
         <Bell size={18} strokeWidth={1.5} aria-hidden />
         {unread > 0 && (
-          <span className="absolute -top-0.5 -end-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-bad px-1 text-micro font-semibold leading-none tabular-nums text-surface ring-2 ring-card">
+          <span className="absolute -top-0.5 -end-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-bad px-1 text-micro font-medium leading-none tabular-nums text-surface ring-2 ring-card">
             {unread > 9 ? '9+' : unread}
           </span>
         )}

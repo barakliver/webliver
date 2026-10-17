@@ -63,7 +63,7 @@ export default async function LoginPage({
             input landed under the keyboard. The wordmark carries the same
             reassurance in a tenth of the height. */}
         <Link href="/" className="mb-7 block text-center">
-          <span className="font-display text-panel font-semibold text-ink">{host.isPlatform ? site.brand : host.name}</span>
+          <span className="font-display text-panel font-medium text-ink">{host.isPlatform ? site.brand : host.name}</span>
           <span className="mt-1 block text-body text-ink-mute">{host.isPlatform ? site.tagline : host.tagline}</span>
         </Link>
         {/* Signing in is the first screen a couple sees that is not the

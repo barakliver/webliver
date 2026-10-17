@@ -153,7 +153,7 @@ export function MobileTabBar({ items, extra }: {
             style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 5.5rem)' }}
           >
             <div className="mb-3 flex items-center justify-between">
-              <h2 className="text-lead font-semibold text-ink">{ui.nav.moreTitle}</h2>
+              <h2 className="text-lead font-medium text-ink">{ui.nav.moreTitle}</h2>
               <button
                 type="button"
                 onClick={() => setOpen(false)}

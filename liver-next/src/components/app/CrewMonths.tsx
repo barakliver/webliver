@@ -177,7 +177,7 @@ export function CrewMonths({ months }: { months: MonthRow[] }) {
                        [&::-webkit-details-marker]:hidden"
           >
             <span className="flex items-baseline gap-3">
-              <span className="font-display text-head font-semibold text-ink">
+              <span className="font-display text-head font-medium text-ink">
                 {monthFmt.format(new Date(`${m.month}-01T12:00:00Z`))}
               </span>
               <ChevronDown
@@ -187,7 +187,7 @@ export function CrewMonths({ months }: { months: MonthRow[] }) {
             </span>
             <span className="flex items-baseline gap-2 text-body">
               <span className="text-ink-mute">{c.monthsTotal}</span>
-              <b className="font-semibold text-ink"><Money value={m.total} /></b>
+              <b className="font-medium text-ink"><Money value={m.total} /></b>
             </span>
           </summary>
 
@@ -198,7 +198,7 @@ export function CrewMonths({ months }: { months: MonthRow[] }) {
                   <span className="font-medium text-lead text-ink">{p.name}</span>
                   <span className="flex items-baseline gap-2 text-body">
                     <span className="text-ink-mute">{c.monthsPay}</span>
-                    <b className="font-semibold text-ink"><Money value={p.total} /></b>
+                    <b className="font-medium text-ink"><Money value={p.total} /></b>
                   </span>
                 </div>
 

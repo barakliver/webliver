@@ -206,7 +206,7 @@ function Column({ c, clientId, v, k, guests, isBest, over, quoteUrl, canChoose, 
       {/* The figure the hall never quotes, given the most room on the card. */}
       <div className="mt-4 border-t border-line pt-3">
         <p className="eyebrow">{c.perGuest}</p>
-        <p className="font-display text-figure font-semibold text-ink">
+        <p className="font-display text-figure font-medium text-ink">
           <Money value={k.perGuest} />
         </p>
         <p className="mt-0.5 text-meta leading-snug text-ink-mute">{c.perGuestHint}</p>
@@ -220,7 +220,7 @@ function Column({ c, clientId, v, k, guests, isBest, over, quoteUrl, canChoose, 
         {k.service > 0 && <Line label={c.service} value={k.service} />}
         <div className="flex items-baseline justify-between gap-2 border-t border-line pt-1.5">
           <dt className="text-ink">{c.total}</dt>
-          <dd className="font-display text-head font-semibold text-ink"><Money value={k.total} /></dd>
+          <dd className="font-display text-head font-medium text-ink"><Money value={k.total} /></dd>
         </div>
       </dl>
 
@@ -297,7 +297,7 @@ function Buffer({ c, clientId, v, total }: {
         <label className="text-body text-ink-soft" htmlFor={`buf-${v.id}`}>
           {c.buffer} <span className="tabular-nums">{pct}%</span>
         </label>
-        <span className="font-display text-lead font-semibold text-ink tabular-nums">
+        <span className="font-display text-lead font-medium text-ink tabular-nums">
           <Money value={shown} />
         </span>
       </div>

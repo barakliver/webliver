@@ -249,7 +249,7 @@ export function MonthGrid({ items, month, today, locale, ui, open = '', switches
                         className="mb-1 flex min-h-[24px] items-center justify-between rounded px-0.5 text-meta tabular-nums transition hover:bg-surface-200"
                       >
                         <span className={isToday
-                          ? 'grid size-6 place-items-center rounded-full bg-accent font-semibold text-surface'
+                          ? 'grid size-6 place-items-center rounded-full bg-accent font-medium text-surface'
                           : 'px-0.5 text-ink-mute'}>
                           {Number(day.slice(8, 10))}
                         </span>
