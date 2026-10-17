@@ -9,7 +9,7 @@ import { useCopy } from '@/components/app/CopyProvider';
 import { DeleteForm } from '@/components/app/ConfirmDelete';
 import { shortDate } from '@/lib/appDates';
 import { isPastDue } from '@/lib/clock';
-import { EyeOff, Pencil } from 'lucide-react';
+import { EyeOff, Pencil, Trash2 } from 'lucide-react';
 import { PlanOffer } from '@/components/app/PlanOffer';
 import { useTaskPress } from '@/components/app/TaskPress';
 
@@ -74,8 +74,18 @@ function Row({ task, clientId, viewer, canDelete, grip }: {
 
   return (
     <>
-      <div className={`flex flex-wrap items-center gap-2 rounded-xl2 border px-3 py-3 ${
-        late ? 'border-bad/25 bg-bad-wash/60' : 'border-line'
+      {/* Not `flex-wrap`, and that one word was the whole bug. The title had
+          `flex-1 min-w-0` and the two action buttons were its siblings, so on
+          a phone flex gave the title whatever was left after a grip, a
+          circle, "עריכה" and "מחיקה" — about forty pixels — and `min-w-0`
+          let it shrink into them rather than wrap. A task read down the
+          screen one or two Hebrew letters to a line.
+
+          So the actions are no longer beside the title. The title owns the
+          full width of the row and the two buttons sit at the end of the
+          meta line under it, which already existed and had room to spare. */}
+      <div className={`flex items-start gap-2 rounded-card-sm border px-3 py-2.5 ${
+        late ? 'border-line border-s-[3px] border-s-bad' : 'border-line'
       }`}>
         {grip}
         <div className="flex items-center">
@@ -105,7 +115,7 @@ function Row({ task, clientId, viewer, canDelete, grip }: {
         </div>
 
       <div className="min-w-0 flex-1">
-        <p className={`text-lead ${done ? 'text-ink-mute line-through' : 'text-ink'}`}>
+        <p className={`text-lead leading-snug ${done ? 'text-ink-mute line-through' : 'text-ink'}`}>
           {task.title}
           {/* Only ever rendered on the producer's screen: a couple is never
               sent these rows in the first place, so the absence of a badge on
@@ -120,37 +130,65 @@ function Row({ task, clientId, viewer, canDelete, grip }: {
             </span>
           )}
         </p>
-        <p className="mt-0.5 text-meta text-ink-mute">
-          <span className={late ? 'font-semibold text-bad' : ''}>
-            {formatDate(dateFmt, task.due_on, c.noDue)}
-            {late ? ` · ${c.overdue}` : ''}
-          </span>
-          {' · '}{ownerLabel}
-        </p>
+        {/* The date, whose it is, and the two things you can do to it, all on
+            one line. The actions are pushed to the far end rather than
+            following the words, so a column of rows has its buttons in a
+            column too. */}
+        {/* Not `flex-wrap`, for the same reason the row above it is not: a
+            wrapping line lets the longest meta text push a button onto a
+            line of its own, and the overdue rows have the longest meta text
+            because they carry an extra word. So the text shrinks and the
+            two marks hold their place, which also means they line up in a
+            column down the list instead of moving row to row. */}
+        <div className="mt-1 flex items-center gap-x-2">
+          <p className="min-w-0 text-meta text-ink-mute">
+            <span className={late ? 'font-semibold text-bad' : ''}>
+              {formatDate(dateFmt, task.due_on, c.noDue)}
+              {late ? ` \u00B7 ${c.overdue}` : ''}
+            </span>
+            {' \u00B7 '}{ownerLabel}
+          </p>
+          <span className="flex-1" />
+          {/* Two marks rather than two words, and that is what makes the row
+              one line instead of three. "עריכה" and "מחיקה" beside a date
+              did not fit a 390px screen, so the second of them dropped to a
+              line of its own on about half the rows and the list came out
+              ragged. It is also a lot of Hebrew to repeat thirty times for
+              two things every row can do. The words are still there for
+              anybody who needs them, on the label and the tooltip.
+
+              Editing after writing: the title, the date, whose it is, and a
+              note. It used to be tick or delete and nothing in between, so a
+              typo in a task was a task deleted and written again. */}
+          <button
+            type="button"
+            onClick={() => setEditing((v) => !v)}
+            aria-expanded={editing}
+            aria-label={c.edit}
+            title={c.edit}
+            className="btn-quiet grid size-8 shrink-0 place-items-center px-0 py-0"
+          >
+            <Pencil size={14} aria-hidden strokeWidth={1.5} />
+          </button>
+          {canDelete && (
+            <DeleteForm action={deleteTask}>
+              <input type="hidden" name="task_id" value={task.id} />
+              <input type="hidden" name="client_id" value={clientId} />
+              <button
+                type="submit"
+                aria-label={c.remove}
+                title={c.remove}
+                className="btn-quiet grid size-8 shrink-0 place-items-center px-0 py-0"
+              >
+                <Trash2 size={14} aria-hidden strokeWidth={1.5} />
+              </button>
+            </DeleteForm>
+          )}
+        </div>
         {task.notes && (
           <p className="mt-1 whitespace-pre-line text-body leading-snug text-ink-soft">{task.notes}</p>
         )}
       </div>
-
-        {/* Editing after writing: the title, the date, whose it is, and a
-            note. It used to be tick or delete and nothing in between, so a
-            typo in a task was a task deleted and written again. */}
-        <button
-          type="button"
-          onClick={() => setEditing((v) => !v)}
-          aria-expanded={editing}
-          className="btn-quiet inline-flex items-center gap-1 px-2 py-1 text-body"
-        >
-          <Pencil size={13} aria-hidden strokeWidth={1.5} />
-          {c.edit}
-        </button>
-        {canDelete && (
-          <DeleteForm action={deleteTask}>
-            <input type="hidden" name="task_id" value={task.id} />
-            <input type="hidden" name="client_id" value={clientId} />
-            <button type="submit" className="btn-quiet px-3 py-1 text-body">{c.remove}</button>
-          </DeleteForm>
-        )}
       </div>
 
       {editing && (

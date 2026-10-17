@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { buildBoard, linesOf, sizeFor, type BingoTask } from '../bingo.ts';
+import { buildBoard, linesOf, markOf, sizeFor, type BingoTask } from '../bingo.ts';
+import { VENDOR_CATEGORIES } from '../../content/eventFile.ts';
 
 const task = (id: string, over: Partial<BingoTask> = {}): BingoTask => ({
   id, title: id, done: false, category: null, ...over,
@@ -110,4 +111,91 @@ test('a full board wins every line at once', () => {
   assert.equal(board.total, 16);
   assert.equal(board.won.length, 10);
   assert.equal(board.winning.size, 16);
+});
+
+/* ── the mark on a square ──────────────────────────────────────────────── */
+
+test('a supplier category answers before the words do', () => {
+  /* The category is written when somebody is hired, so it is the fact and
+     the title is the guess. A task categorised `venue` and titled "לסגור
+     צלם" is a hall, however it was named. */
+  assert.equal(markOf({ category: 'venue', title: 'לסגור צלם' }), 'venue');
+  assert.equal(markOf({ category: 'dj', title: '' }), 'music');
+});
+
+test('and half the board has no category at all', () => {
+  /* A category is only ever on a task that ends with somebody hired, so the
+     rings, the ketubah and the hair carry none. Those are the squares the
+     words are here for. */
+  assert.equal(markOf({ title: 'טבעות לטקס' }), 'rings');
+  assert.equal(markOf({ title: 'כתובה' }), 'ketubah');
+  assert.equal(markOf({ title: 'שיער' }), 'hair');
+  assert.equal(markOf({ title: 'איפור' }), 'makeup');
+  assert.equal(markOf({ title: 'שמלה + הינומה' }), 'dress');
+  assert.equal(markOf({ title: 'לכתוב את רשימת האורחים הראשונה' }), 'guests');
+  assert.equal(markOf({ title: 'בר אלכוהול / קוקטיילים' }), 'bar');
+});
+
+test('the narrower word wins, because one pattern otherwise eats the other', () => {
+  /* "צלם וידאו" is a videographer and contains the word for a photographer;
+     "חליפה" is the suit and sits beside the dress. Both are on the board in
+     the screenshot that prompted this, and both read as the wrong thing if
+     the order is wrong. */
+  assert.equal(markOf({ title: 'צלם וידאו' }), 'video');
+  assert.equal(markOf({ title: 'צלם סטילס' }), 'photo');
+  assert.equal(markOf({ title: 'שמלה + הינומה' }), 'dress');
+  assert.equal(markOf({ title: 'חליפה + בגדים להחלפה' }), 'suit');
+});
+
+test('a square is never blank', () => {
+  /* A cell with no mark among fifteen marked ones reads as one that failed
+     to load, not as one about something unusual. */
+  assert.equal(markOf({ title: 'לדבר עם דודה' }), 'task');
+  assert.equal(markOf({}), 'task');
+  assert.equal(markOf({ category: '', title: '' }), 'task');
+  /* A category this file does not know is not a silent fall-through either:
+     every value in content/production.ts is mapped, and anything else is a
+     task like any other. */
+  assert.equal(markOf({ category: 'rental', title: '' }), 'task');
+});
+
+test('an English or mixed title still lands', () => {
+  assert.equal(markOf({ title: 'DJ' }), 'music');
+  assert.equal(markOf({ title: 'Save the date' }), 'invite');
+});
+
+test('a word glued to a preposition is the same word', () => {
+  /* Hebrew puts the preposition on the front, so the list has to read
+     "לצלם" and "הצלם" as the photographer it would read "צלם" as. */
+  for (const t of ['צלם', 'הצלם', 'לצלם', 'לסגור צלם']) {
+    assert.equal(markOf({ title: t }), 'photo', t);
+  }
+});
+
+test('and a word that merely contains another is not that other', () => {
+  /* Both of these were live for one run of the tests. "לדבר" carries the
+     letters of the bar and "ילדים" carries the letters of the lighting, and
+     a plain substring search called them both. */
+  assert.equal(markOf({ title: 'לדבר עם דודה' }), 'task');
+  assert.equal(markOf({ title: 'רשימת ילדים' }), 'guests');
+  assert.equal(markOf({ title: 'מורכב מדי' }), 'task');
+  assert.equal(markOf({ title: 'לקנות מתנה לאמא' }), 'gift');
+});
+
+test('every category a task can carry has a mark', () => {
+  /* The map was first written from the supplier directory's vocabulary,
+     which is a different list that shares two words with this one. Every
+     real task would have fallen through to the title words and most would
+     have landed anyway, which is exactly how that kind of mistake survives
+     a look at the screen. This walks the list tasks are actually tagged
+     from. */
+  for (const category of VENDOR_CATEGORIES) {
+    assert.notEqual(markOf({ category, title: '' }), 'task', category);
+  }
+});
+
+test('a geresh or a maqaf does not change the word', () => {
+  for (const t of ['דיג׳יי', "דיג'יי", 'די־ג׳יי', 'סגירת דיג׳יי']) {
+    assert.equal(markOf({ title: t }), 'music', t);
+  }
 });

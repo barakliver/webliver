@@ -1,7 +1,12 @@
 'use client';
 
-import { PartyPopper } from 'lucide-react';
-import { buildBoard, MIN_SQUARES } from '@/lib/bingo';
+import {
+  Bus, Cake, Camera, Flower2, Gem, Gift, Lightbulb, ListChecks, Mail, Martini,
+  Music, PartyPopper, ScrollText, Scissors, Shirt, Sparkles, Speaker,
+  UtensilsCrossed,
+  Users, Video, Building2,
+} from 'lucide-react';
+import { buildBoard, markOf, MIN_SQUARES, type Mark } from '@/lib/bingo';
 import { useCopy } from '@/components/app/CopyProvider';
 import { useTaskPress } from '@/components/app/TaskPress';
 import { Ltr } from '@/components/Ltr';
@@ -99,18 +104,53 @@ function Title({ id, text }: { id: string; text: string }) {
   );
 }
 
+/* The picture for each mark. The rule that picks a mark is in `lib/bingo.ts`
+   and knows nothing about icons, so it can be tested without a renderer;
+   this is the only place the two meet. Every mark in the type has a line
+   here, and `task` is the one that means a thing to do, which is what every
+   square is anyway. */
+const PICTURE: Record<Mark, typeof Camera> = {
+  venue: Building2, catering: UtensilsCrossed, photo: Camera, video: Video,
+  music: Music, floral: Flower2, light: Lightbulb, transport: Bus,
+  guests: Users, bar: Martini, attraction: PartyPopper, dress: Sparkles,
+  suit: Shirt, hair: Scissors, makeup: Sparkles, rings: Gem,
+  ketubah: ScrollText, invite: Mail, money: Gift, gift: Gift, cake: Cake,
+  sound: Speaker,
+  task: ListChecks,
+};
+
 /**
  * One cell.
  *
  * A square rather than a row, so the board reads as a board: `aspect-square`
  * and the title clamped, with the full title on the button's accessible name
  * so nothing is lost to the clamp for somebody listening rather than looking.
+ *
+ * The picture is what makes a grid worth being a grid. Sixteen cells of
+ * clamped Hebrew are sixteen identical grey shapes, and finding "the
+ * photographer" among them is reading rather than seeing - which is the
+ * whole thing a board is supposed to spare somebody. It also buys the words
+ * a line back: two lines under a mark say more than three lines ending in an
+ * ellipsis.
+ *
+ * Hidden from a screen reader. The button's accessible name is already the
+ * full title, and a picture that announced "camera" beside it would be the
+ * same square said twice.
  */
 function Square({ task, clientId, onLine }: {
   task: Task; clientId: string; onLine: boolean;
 }) {
   const c = useCopy().portal.bingo;
   const { done, ticking, press, captureForm } = useTaskPress(task, clientId);
+  /* The picture stays when the square is ticked, and that was worth getting
+     wrong once to see. Swapping it for a checkmark looked right in the
+     abstract and on a real board is eleven of sixteen cells drawn as the
+     same grey tick - which is the monotony the pictures were added to
+     break. Done is said three ways instead, none of them the mark: the
+     fill, the ink, and a line through the words. The line is the one that
+     is not a colour, and it is the same line the checklist draws through a
+     finished task. */
+  const Picture = PICTURE[markOf(task)];
 
   return (
     <>
@@ -128,13 +168,10 @@ function Square({ task, clientId, onLine }: {
             : 'border-line bg-card text-ink hover:border-ink'
         }`}
       >
-        <span
-          aria-hidden
-          className={`text-lead leading-none ${done ? '' : 'text-transparent'}`}
-        >
-          ✓
+        <Picture aria-hidden size={20} strokeWidth={1.5} className="shrink-0" />
+        <span className={`line-clamp-2 text-micro leading-tight ${done ? 'line-through' : ''}`}>
+          {task.title}
         </span>
-        <span className="line-clamp-3 text-micro leading-tight">{task.title}</span>
       </button>
       {captureForm}
     </>

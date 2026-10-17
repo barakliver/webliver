@@ -145,3 +145,108 @@ export function buildBoard<T extends BingoTask>(clientId: string, tasks: readonl
     total: size * size,
   };
 }
+
+/* ── the mark on a square ──────────────────────────────────────────────────
+   A board of sixteen squares with nothing on them but clamped Hebrew is a
+   board nobody reads: every cell is the same grey shape, the longer titles
+   run out at three lines with an ellipsis, and finding "the photographer" is
+   reading rather than seeing. A picture is what makes a grid scannable, and
+   scannable is the entire reason this is a grid and not the list it is
+   computed from.
+
+   The same shape as `categoryOf` in `budgetPlan`, and for the same reason:
+   the category is the answer where there is one, and most of these tasks
+   have none. A supplier category is only ever written on a task that ends
+   with somebody hired, so the hall and the photographer carry one and the
+   rings, the ketubah and the hair do not — and those are half the board.
+   So the title's own Hebrew words answer for the rest.
+
+   It never returns nothing. A blank cell among fifteen marked ones reads as
+   a square that failed to load rather than as a square about something
+   unusual, so the fallback is a mark of its own. */
+
+/** What to draw on a square. The screen maps these to pictures; this file
+ *  stays free of them, so it can be tested without a renderer. */
+export type Mark =
+  | 'venue' | 'catering' | 'photo' | 'video' | 'music' | 'floral' | 'light'
+  | 'transport' | 'guests' | 'bar' | 'attraction' | 'dress' | 'suit' | 'hair'
+  | 'makeup' | 'rings' | 'ketubah' | 'invite' | 'money' | 'gift' | 'cake'
+  | 'sound' | 'task';
+
+/* The category a task carries, which is **not** the supplier directory's
+   vocabulary. There are two constants called `VENDOR_CATEGORIES` in this
+   codebase: `content/production.ts` has the twelve the supplier book files
+   people under, and `content/eventFile.ts` has the twenty-two a task is
+   tagged with, and only `venue` and `catering` appear in both. This map was
+   first written from the production list, which is the wrong one - every
+   real task would have fallen through to the words below and most of them
+   would have landed, which is how a mistake like this survives a look at
+   the screen. `bingo.test.ts` walks the real list and fails on anything
+   missing here. */
+const BY_CATEGORY: Record<string, Mark> = {
+  venue: 'venue', catering: 'catering', bar: 'bar',
+  photography: 'photo', video: 'video', magnets: 'photo', photobooth: 'photo',
+  dj: 'music', sound: 'sound', lighting: 'light',
+  decor: 'floral', flowers: 'floral',
+  makeup: 'makeup', hair: 'hair', attire: 'dress', rings: 'rings',
+  printing: 'invite', rabbi: 'ketubah', rsvp: 'guests',
+  attraction: 'attraction', henna: 'attraction', transport: 'transport',
+};
+
+/* Hebrew glues its prepositions onto the front of a word, so the task that
+   says "צלם" elsewhere says "הצלם" and "לצלם", and a bare substring search
+   is wrong in both directions at once. Written as a plain `/בר/` the bar
+   matched "לדבר עם דודה" and `/לדים/` made "ילדים" a lighting job - the
+   first of those was caught by a test on the first run and the second was
+   sitting one word away from it.
+
+   So a match has to begin at a word, after at most one of the letters that
+   glue on. `(?:^|[\s,./|+·-])` is the start of a word here rather than `\b`,
+   which is defined on ASCII and has no opinion about Hebrew. */
+const w = (body: string) => new RegExp(`(?:^|[\\s,./|+·-])[הלבוכמש]?(?:${body})`);
+
+/* A geresh and a maqaf carry no sound and are written or left out by taste,
+   so `די־ג׳יי`, `דיג'יי` and `דיגיי` are one word three people spell three
+   ways. Taken out before matching, so the list below holds one spelling
+   rather than every combination of two optional marks. */
+const flatten = (s: string) => s.replace(/[\u05BE\u05F3\u2019']/g, '');
+
+/* Read in order, so the first match wins and the narrower words come first.
+   "צלם וידאו" has to be video before it is photo, and "שמלה" has to be the
+   dress before "חליפה" is the suit, or one pattern eats the other. */
+const BY_WORDS: [RegExp, Mark][] = [
+  [w('וידאו|מגנט|רחפן'), 'video'],
+  [w('צלם|צילום|סטילס'), 'photo'],
+  [w('אולם|גן אירוע|לוקיישן|מקום'), 'venue'],
+  [w('קייטרינג|אוכל|תפריט|טעימות|שף'), 'catering'],
+  [/(?:^|[\s,./|+·-])DJ\b/i, 'music'],
+  [w('דיגיי|מוזיקה|להקה|זמר'), 'music'],
+  [w('הגברה|סאונד|מערכת'), 'sound'],
+  [w('עיצוב|פרחים|זרים|סידורי'), 'floral'],
+  [w('תאורה|לדים'), 'light'],
+  [w('הסע|אוטובוס|רכב|חניה'), 'transport'],
+  [w('אורחים|מוזמנים|רשימת|הושבה|שולחנות|אישורי'), 'guests'],
+  [w('בר|אלכוהול|קוקטייל|שתיה|שתייה'), 'bar'],
+  [w('אטרקצי|זיקוקים|הפתעה'), 'attraction'],
+  [w('שמלה|הינומה|כלה'), 'dress'],
+  [w('חליפ|נעלי|בגדים|חתן'), 'suit'],
+  [w('שיער|תסרוק'), 'hair'],
+  [w('איפור|טיפוח|ציפורניים'), 'makeup'],
+  [w('טבעו|טבעת|תכשיט'), 'rings'],
+  [w('כתוב|רב|טקס|חופה|רבנות'), 'ketubah'],
+  [/(?:^|[\s,./|+·-])save the date/i, 'invite'],
+  [w('הזמנ|מעטפ'), 'invite'],
+  [w('תקציב|תשלום|מקדמה|כסף|חוזה|הסכם'), 'money'],
+  [w('מתנ|ברכ'), 'gift'],
+  [w('עוג|קינוח|מתוק'), 'cake'],
+];
+
+/** The mark for one square. Category first, then the words, then the one
+ *  that means "a thing to do", which is what every square is anyway. */
+export function markOf(task: { category?: string | null; title?: string | null }): Mark {
+  const key = String(task.category ?? '').trim().toLowerCase();
+  if (key && BY_CATEGORY[key]) return BY_CATEGORY[key];
+  const text = flatten(String(task.title ?? ''));
+  for (const [re, mark] of BY_WORDS) if (re.test(text)) return mark;
+  return 'task';
+}

@@ -172,6 +172,27 @@ that has happened once.
   it. And each task's place comes from a hash of the wedding and the task
   rather than from shuffling the array, because a shuffle re-runs whole and a
   seventeenth task would move the sixteen already there.
+  **Each square carries a picture, and the picture is a guess the words
+  make.** Sixteen squares of two-word Hebrew read as a form, not a game, and
+  a board that looks like a form is opened like one. `markOf` in
+  `lib/bingo.ts` reads the task's category first and its title second, and
+  the title reading is anchored on the start of a word with one Hebrew
+  prefix letter allowed in front of it, because the first version matched
+  substrings and "לדבר עם דודה" got a cocktail glass. The picture never
+  changes when a square is ticked: a tick that swaps every icon for the same
+  check mark makes eleven of sixteen squares identical, which is the board
+  losing the thing the pictures were added for. Nothing falls through to a
+  blank; the last rung is a plain list mark, and a test walks every task
+  category in `content/eventFile.ts` and fails if one of them lands there.
+  That list and not `content/production.ts`: the two vocabularies look alike
+  and only one of them is what a task carries.
+- **A task row on a phone is the title, then everything else.** It was one
+  flex line with four things on it, and the Hebrew sentence got whatever
+  width the checkbox, the date and two text buttons left, which was one or
+  two letters per line. The title has the row now, and the date, the owner
+  and the two actions share one quiet line under it, the actions as icons
+  with their names in `aria-label`. A late row is a red edge rather than a
+  red card, because a card that turns red turns its own text under the bar.
 - The producer has a list of his own, separate from every wedding's:
   `producer_tasks`, drawn by `components/app/MyTasks.tsx` on `/app` under the
   attention pile, and on the calendar for whatever carries a date. The part
