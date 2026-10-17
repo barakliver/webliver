@@ -50,32 +50,35 @@ const ratio = (a, b) => {
    compared on every run and the build fails naming the token, the value here
    and the value in the stylesheet. */
 const c = {
-  /* Plum at night, number 17: powder blush, plum ink, a dusty rose. The
-     secondary ink and the rose are a step darker than the design drew them,
-     because as small text the drawn ones read 4.19 and 4.20 on the blush. */
-  ink: '#3B2E33', inkSoft: '#7A5F67', inkMid: '#957A81',
-  inkMute: '#735A62',              /* solved against the step up */
-  surface: '#FAF3F0', surface100: '#FFFFFF', surface200: '#F4E9E7',
+  /* The palette card he sent: Camel Coat, Boho, Rubine, Tamarind and Italian
+     Roast. The ground is the camel thinned toward paper, because the card has
+     no light ground of its own and a page of camel is not a page you read;
+     the ink is the roast, the action is the rubine, the band is the tamarind.
+     The secondary ink is Boho a step darker, because the card's own Boho
+     reads 4.0 on the step up. */
+  ink: '#280B0F', inkSoft: '#6A5942', inkMid: '#7B694E',
+  inkMute: '#66563F',              /* solved against the step up */
+  surface: '#F3EDE4', surface100: '#FFFFFF', surface200: '#E9DFD1',
   card: '#FFFFFF',
-  dark: '#2B2228',
-  line: '#EBDCDD', lineStrong: '#D9C2C6',
-  lineControl: '#957A81',
+  dark: '#361319',
+  line: '#E2D6C6', lineStrong: '#CDBDA6',
+  lineControl: '#8F7F65',
   /* The focus ring, which is not the accent and is measured as a control
      boundary: a ring nobody can find is the accessibility failure this
      token exists to prevent. */
-  focus: '#4A2E45',
-  accent: '#97535F',               /* the rose, safe as words */
-  accentHover: '#7E4450',
-  accentBright: '#A6616F',         /* the drawn rose, large numerals only */
-  accentLine: '#E3B5BC',           /* words on the plum band             */
-  accentLight: '#EDCBD0',
+  focus: '#7B694E',
+  accent: '#6D3A3C',               /* Rubine, safe as words */
+  accentHover: '#572D30',
+  accentBright: '#8D3A3C',         /* the rubine as the card prints it, large numerals only */
+  accentLine: '#C6B39A',           /* words on the tamarind band         */
+  accentLight: '#DACBB6',
   /* The accent at 8% over the canvas, which is what --accent-wash ships.
      Filled in below from the two tones it is made of rather than written,
      so the one blended token cannot drift from its own ingredients. */
   accentWash: '',
-  ok: '#4F6B52', okWash: '#EAF1E8',
-  warn: '#8A5A1F', warnWash: '#F8EEDF',
-  bad: '#8E3B46', badWash: '#F8E6E8',
+  ok: '#46604A', okWash: '#E4EADC',
+  warn: '#7D511B', warnWash: '#F1E4CF',
+  bad: '#A33A33', badWash: '#F3DDD8',
   white: '#FFFFFF',
 };
 
@@ -311,26 +314,26 @@ line('an inverted control edge',         over2(c.surface, 0.45, c.dark),  c.dark
    the dark one becomes the step up, so what is written on it is ordinary
    ink rather than the inverted kind. */
 const d = {
-  /* The producer's desk: the same plum as a whole screen, the rose as its
-     light. */
-  ink: '#F6EEF0', inkSoft: '#C9AEB4', inkMid: '#9C858C', inkMute: '#D2BAC0',
-  surface: '#2B2228', surface100: '#3A2E34', surface200: '#45373E',
-  card: '#3A2E34',
+  /* The producer's desk: the italian roast as a whole screen, the tamarind
+     for its cards and the camel as its light. */
+  ink: '#F3EDE4', inkSoft: '#C6B39A', inkMid: '#9A8A72', inkMute: '#BBA88E',
+  surface: '#280B0F', surface100: '#361319', surface200: '#4A2228',
+  card: '#361319',
   /* The band, which in this palette is the step up. */
-  dark: '#45373E',
-  line: '#4A3B42', lineStrong: '#5A4951', lineControl: '#8E7680',
-  focus: '#F2D9DD',
-  /* The accent's night tone, promoted to the main one: the rose, with the
-     plum as its label. */
-  accent: '#E3B5BC',
-  accentLine: '#E3B5BC',
-  /* 8% of the rose over the canvas, which is what --accent-wash
+  dark: '#4A2228',
+  line: '#4F2A31', lineStrong: '#6A4048', lineControl: '#84735A',
+  focus: '#E3D6C2',
+  /* The accent's night tone, promoted to the main one: the camel, with the
+     roast as its label. */
+  accent: '#C6B39A',
+  accentLine: '#C6B39A',
+  /* 8% of the camel over the canvas, which is what --accent-wash
      resolves to once --accent-rgb has moved. */
-  accentWash: '#383035',
-  ok: '#9FC3A3', okWash: '#22302A',
-  warn: '#E6B97A', warnWash: '#3A2E1E',
-  bad: '#F4A3AD', badWash: '#3E2229',
-  sage: '#33403A', blush: '#4A3640',
+  accentWash: '#35181A',
+  ok: '#9FC3A3', okWash: '#1F2E24',
+  warn: '#D9A066', warnWash: '#3C2616',
+  bad: '#F0A39B', badWash: '#4A1C20',
+  sage: '#2F3D33', blush: '#4A2A30',
 };
 
 console.log('\n  כהה');
@@ -394,7 +397,7 @@ if (brand) {
 const hc = {
   ink: '#000000', inkSoft: '#1A1A1A', inkMute: '#2D2D2D',
   surface: '#FFFFFF', surface200: '#F0F0F0',
-  accent: '#6A4F1C', accentLine: '#4A3714',
+  accent: '#5A2326', accentLine: '#3A1318',
   line: '#767676', lineStrong: '#4A4A4A', lineControl: '#000000',
   /* The panel edge, which in this mode is a border somebody has to find
      rather than the soft finish it is on the default palette. */

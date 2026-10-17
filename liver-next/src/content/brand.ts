@@ -37,8 +37,11 @@
  *  ground is lighter than the ivory and a lighter ground is kinder to dark
  *  text than a darker one. And then, a fourth time, white: HoneyBook's
  *  ground, which this had stopped matching two palettes ago. And a fifth
- *  time, powder blush, for the plum design. */
-export const PAGE_GROUND = '#FAF3F0';
+ *  time, powder blush, for the plum design. And a sixth, the camel coat
+ *  thinned toward paper, for the palette card he sent: five of the six `base`
+ *  tones moved one to three percent darker, because the ground is a little
+ *  darker than the blush was and a wash over it darker still. */
+export const PAGE_GROUND = '#F3EDE4';
 
 export type Accent = {
   key: string;
@@ -76,7 +79,7 @@ export const ACCENTS: Accent[] = [
   {
     key: 'gold',
     label: 'זהב',
-    base:   '#816740',
+    base:   '#7C633D',
     bright: '#9E7F4E',
     line:   '#B08D57',
     light:  '#B08D57',
@@ -86,7 +89,7 @@ export const ACCENTS: Accent[] = [
   {
     key: 'olive',
     label: 'זית',
-    base:   '#62713F',
+    base:   '#5E6C3C',
     bright: '#7B8E4F',
     line:   '#7A8C4E',
     light:  '#809255',
@@ -100,7 +103,7 @@ export const ACCENTS: Accent[] = [
        the bar by a thousandth, and it had been sitting there passing on a
        rounded display. The warmer ground made the wash lighter and the
        rounding stopped hiding it. */
-    base:   '#985839',
+    base:   '#955638',
     bright: '#C2724D',
     line:   '#C0714C',
     light:  '#C47854',
@@ -110,7 +113,7 @@ export const ACCENTS: Accent[] = [
   {
     key: 'plum',
     label: 'שזיף',
-    base:   '#905685',
+    base:   '#8A5380',
     bright: '#B76DA9',
     line:   '#9A5C8E',
     light:  '#AE7CA4',
@@ -130,7 +133,7 @@ export const ACCENTS: Accent[] = [
   {
     key: 'graphite',
     label: 'גרפיט',
-    base:   '#63676F',
+    base:   '#62666E',
     bright: '#828792',
     line:   '#6B6F78',
     light:  '#888B93',

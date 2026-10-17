@@ -270,15 +270,15 @@ const config: Config = {
            reading as the flat surface the brief asks for. */
         /* HoneyBook's two: the barely-there one and the one under a thing
            that floats. Read out of their stylesheet. */
-        soft: '0 1px 4px rgba(59,46,51,.12)',
+        soft: '0 1px 4px rgba(40,11,15,.12)',
         lift: 'none',
-        cta:  '0 12px 30px rgba(59,46,51,.10)',
+        cta:  '0 12px 30px rgba(40,11,15,.10)',
         /* Chrome that floats over arbitrary content rather than over the
            page's own ground: a dropdown, the concierge panel. A hairline
            alone cannot say "above" on a ground this light. */
-        pop:  '0 12px 30px rgba(59,46,51,.10)',
+        pop:  '0 12px 30px rgba(40,11,15,.10)',
         dock: '0 -1px 0 var(--line, rgba(15,23,42,.10))',
-        fab:  '0 12px 30px rgba(59,46,51,.10)',
+        fab:  '0 12px 30px rgba(40,11,15,.10)',
       },
       backdropBlur: { xl: '22px', '2xl': '34px' },
       /* Rounded, and rounded through these two names rather than at a

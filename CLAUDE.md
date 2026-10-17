@@ -356,7 +356,31 @@ that has happened once.
   impression of one. A test walks every id to its file and back and asserts
   the three undealt ones are undealt, so a card without a picture fails the
   build rather than drawing a broken image inside his frame.
-- **The palette is plum at night, number 17 of seventeen directions, and
+- **The palette is five colours on a card he sent, and it is the whole site.**
+  Camel Coat #C6B39A, Boho #7B694E, Rubine #6D3A3C, Tamarind #361319 and
+  Italian Roast #280B0F: his latest instruction, replacing the plum below, and
+  Heebo stays the one font. The card's hex labels disagree with its own RGB
+  values for two of them (it prints #8D3A3C for the rubine and #3B1319 for the
+  tamarind, and 109 58 60 and 54 19 25 for the same swatches); the RGB is what
+  the swatch is, so that is what ships, and the printed #8D3A3C is kept as
+  `accent-bright`, for large numerals. The card has no light ground, and a page
+  of camel is not a page you read, so the ground is the camel thinned toward
+  paper, #F3EDE4, on white cards over a camel hairline #E2D6C6, with the roast
+  as the ink and the rubine as the action (white label, 9.1:1). The band is the
+  tamarind, with the camel as its light. The secondary ink is Boho a step
+  darker, #6A5942, because the card's own Boho reads 4.0 on the step up #E9DFD1.
+  The producer's desk is the dark palette: the roast as the ground, the
+  tamarind for the cards, #4A2228 for the step up, the camel as the action with
+  the roast on it, and ink #F3EDE4. **The rubine is the action, so "bad" had to
+  be somebody else**: a brick, #A33A33, with the status tones solved around it,
+  and nothing in the product is yellow: the warning is a burnt copper
+  (#7D511B, and #D9A066 after dark). The focus ring is Boho in daylight, which
+  no filled control is. Five of the six producer `base` tones moved one to three
+  percent darker, because the ground is a little darker than the blush and a
+  wash over it darker still. Same rule as every palette before it: this entry,
+  `globals.css`, `PAGE_GROUND` and the hand copy in `scripts/check-contrast.mjs`
+  moved in one commit, and `npm run contrast` passes on all of it.
+- **The palette was plum at night, and the rest of this entry is its history, number 17 of seventeen directions, and
   there is one font, Heebo, everywhere.** He picked it by number with one
   condition: the font the same for everything. So Frank Ruhl Libre is no
   longer downloaded at all, `--font-display` and `--font-editorial` are both
