@@ -288,3 +288,42 @@ curl -sS -X POST -H "x-cron-key: $(grep '^CRON_KEY=' /root/webliver/liver-next/.
 | `errors` לא ריק | הפונקציה במסד נכשלה. הטקסט בשגיאה אומר איזו |
 
 ולראות שהשורה עדיין בתזמון: `crontab -l`
+
+## מנוע הלידים ותיבת הפעולות (2.6)
+
+כל מה שחדש ב-2.6 עובד בלי שום הגדרה: הלוח, הכרטיס, הניקוד, התיבה,
+הגרירה של קובץ על אירוע. מה שכן צריך מפתח הוא ההתראות לטלפון, הקריאה
+במודל, ושלוש הדלתות החיצוניות. כולם נכתבים ל-`/etc/liver-next.env` ולשום
+מקום אחר, דרך הסקריפט שמבקש אותם:
+
+**להריץ בשרת (קונסולת DigitalOcean):**
+
+```
+bash /root/webliver/scripts/set-alerts.sh
+```
+
+הוא מייצר לבד את זוג מפתחות ה-VAPID להתראות לטלפון, ושואל על השאר רק אם
+רוצים. אפשר להריץ אותו שוב בכל פעם: הוא מחליף רק את השורות שלו.
+
+| מפתח | מה הוא פותח | מאיפה |
+|---|---|---|
+| `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` | התראות לטלפון | הסקריפט מייצר |
+| `ANTHROPIC_API_KEY` | קריאת פניות ופריטים | כבר קיים לעוזר באתר |
+| `ANTHROPIC_MODEL_FAST` | המודל המהיר לקריאה (ברירת מחדל `claude-haiku-5-5`) | לא חובה |
+| `WHATSAPP_WEBHOOK_URL`, `WHATSAPP_ALERT_TO` | וואטסאפ יוצא אל ברק | כבר קיימים |
+| `TWILIO_AUTH_TOKEN`, `TWILIO_ACCOUNT_SID` | וואטסאפ נכנס דרך Twilio | מהקונסולה של Twilio |
+| `GREEN_API_WEBHOOK_TOKEN` | וואטסאפ נכנס דרך Green API | מגדירים ב-Green API תחת Webhook URL Token |
+| `RESEND_WEBHOOK_SECRET` | מייל נכנס | מהוובהוק ב-Resend, מתחיל ב-`whsec_` |
+
+הכתובות שנותנים לספקים, כולן על הדומיין הראשי:
+
+| ספק | כתובת |
+|---|---|
+| Twilio או Green API, הודעה נכנסת | `https://liverproductions.com/api/leads/whatsapp` |
+| Resend, אירוע `email.received` | `https://liverproductions.com/api/inbox/email` |
+| המשחק, Make, Zapier, כל דבר שאנחנו כותבים | `https://liverproductions.com/api/leads/ingest` עם `secret` שהוא טוקן של ערוץ ממסך הלידים |
+
+אחרי הפריסה הסוכן מריץ `ensure-schedule.sh` ומוסיף ארבע שורות לתזמון:
+08:00 מכתב הבוקר, חמש אחרי כל שעה תזכורות על פנייה בלי מענה, כל שעתיים
+בשעות העבודה שורה על מה שמחכה בתיבה, וכל עשר דקות קריאה חוזרת למה שלא
+נקרא.

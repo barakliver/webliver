@@ -464,6 +464,67 @@ that has happened once.
   row because that list is drawn twice, as cards and as a table, and a thing
   built twice is a thing built nought times — which is exactly how it went a
   year with no way to fix a name at all.
+- **An enquiry is one card, and the same couple twice is one card.** 0102.
+  Five doors end in `leads` (the site form, a channel address, the shared
+  key, a phone call typed in, `/api/leads/ingest` for anything we write
+  ourselves), and before 0102 none of them could recognise a couple who had
+  written on Sunday and again on Tuesday. The fold is a `before insert`
+  trigger, `leads_fold_twin`, and not a branch in one function, because a
+  rule that lives in one of five doors is a rule four of them do not have:
+  same producer, same phone in any spelling or the same address, ninety days
+  back, not lost, and the second arrival is a `message_in` on the first
+  card's timeline. The trigger returns null, which drops the row; a caller
+  that needs the id asks `lead_twin()`, and `submit_lead` was dropped and
+  re-created to return it. `lead_events` is the timeline: arrival and status
+  moves by trigger, messages, calls and readings by the app, `first_response_at`
+  stamped by whichever came first. The schema check plants the same number in
+  two spellings and proves one row.
+- **Then it is read, scored and announced, and each of those is best effort
+  beside the row that already exists.** `lib/leadIntake.ts` is where every
+  door ends. One fast-model call turns a paragraph into the card's fields, an
+  intent and a draft reply, and fills only what is blank; the score is rules
+  in `lib/leadScore.ts`, tested, with its reasoning kept beside the number,
+  because a score the model invents is a score nobody can explain to the
+  producer asking why. Spam is zero and rings nobody. The alert is three
+  channels with one text: WhatsApp through the webhook the producer already
+  had, a Web Push to every browser they said yes in (`push_subscriptions`,
+  VAPID keys in the environment file, no provider), and the bell. Quiet hours
+  are the producer's own, in `notification_preferences`, and a lead at 80 or
+  more rings through them because that is the one that is answered by whoever
+  answers first. The site form runs the intake in `after()`, so the visitor
+  is not waiting on a model call. The cron grew `?job=morning` and
+  `?job=leads`; both lines are in `ensure-schedule.sh`, which the agent runs.
+- **The leads screen is the pipeline, and the select is the real control.**
+  Columns by status, moved by `useDragOnto` the way every drag in this app is
+  moved, with the select on each card being the implementation and the drag
+  the decoration over it. The list view is the old rows handed in by the page,
+  so the two views cannot drift. `lib/pipeline.ts` is pure and tested: the
+  three figures at the top and the morning letter count the same cards with
+  the same function, so they cannot disagree about who is waiting. The card
+  page's WhatsApp button writes a `message_out` on press; not because the
+  message was certainly sent, but because the first response is the number
+  the screen is judged on and the moment the producer reached for the phone
+  is the honest stamp for it.
+- **What arrives is read, and what is read waits for a yes.** 0103, and the
+  rule is in capitals in the brief: nothing a model reads is written to an
+  event without a press. `inbox_items` is what arrived, whole; `suggested_actions`
+  is what the reading proposes, each a kind from `lib/inbox/kinds.ts`, a
+  payload and a sentence; `activity_log` is what happened, written always.
+  A payload is validated twice, into the row and again at the press, and
+  `applyAction` in `lib/inbox/apply.ts` is the only way a proposal becomes a
+  row: it writes exactly the columns the kind allows, checks the event
+  belongs to the producer on the action, and ticks a task through
+  `toggleTask` like every other tick, because the actions check holds every
+  file to that. Whose a message is comes from the sender's phone or address
+  first (`lib/inbox/context.ts`) and from the text only when it must, and a
+  supplier on three weddings is a medium match on purpose. The doors are
+  Resend's receiving webhook, Twilio or Green API for the business WhatsApp
+  (each verified the way its maker documents), and a file or a paragraph
+  dropped on the event file, which is the door that proves the pipeline with
+  no provider at all. Every reading is a line in `ai_calls` with a rough cost.
+  **Buckets are rows and sync.sql carries no rows**, so the inbox bucket is
+  made at first use by `ensureInboxBucket` rather than by a migration anybody
+  has to remember to replay.
 - **The guest list a couple actually has is in a chat, not in a spreadsheet.**
   The importer read every paste as a table, which is right for a file out of
   Excel and wrong for the thing people do, which is paste what their mother
