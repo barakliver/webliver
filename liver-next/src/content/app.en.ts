@@ -43,6 +43,8 @@ export const portalEn: PortalCopy = {
     + 'attach this address to the event.',
   daysLeft: 'days to the wedding',
   dateTbd: 'The date is not set yet',
+  weekTitle: 'This week',
+  weekEmpty: 'A quiet week. When something moves on our side, you will see it here.',
   summary: 'A quick look',
   rowBudget: 'Budget',
   rowRsvp: 'Replies',

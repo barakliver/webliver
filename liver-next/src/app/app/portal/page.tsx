@@ -38,6 +38,7 @@ import { EnvelopesPanel } from '@/components/app/EnvelopesPanel';
 import { VehiclesPanel } from '@/components/app/VehiclesPanel';
 import { CalendarFeed } from '@/components/app/CalendarFeed';
 import { VendorHq } from '@/components/app/VendorHq';
+import { WeekLog } from '@/components/app/WeekLog';
 import { BrandStudio } from '@/components/app/BrandStudio';
 import { NotebookPen, Users } from 'lucide-react';
 import { loadBrandScreen } from '@/lib/brandLoad';
@@ -187,6 +188,7 @@ export default async function PortalPage({ searchParams }: {
                   vehicles: cars.length,
                 }}
                 slots={{
+                  week: <WeekLog clientId={w.id} title={ui.portal.weekTitle} empty={ui.portal.weekEmpty} producer={brand.name} />,
                   /* Behind the switch and nothing else. It used to need a
                      supplier to exist before it would draw, which hid the desk
                      from exactly the couple who has not booked anybody yet —

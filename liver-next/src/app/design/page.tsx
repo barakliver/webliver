@@ -154,6 +154,9 @@ import { accentByKey } from '@/content/brand';
 import type { Account } from '@/lib/auth';
 import { PortalSummary, summaryRows } from '@/components/app/PortalSummary';
 import { Metric, MetricRows, MetricBlock } from '@/components/app/Metric';
+import { StatBar } from '@/components/app/StatBar';
+import { StatusDot } from '@/components/app/StatusDot';
+import { WeekLogView } from '@/components/app/WeekLog';
 import { PageHead, Empty } from '@/components/app/PageHead';
 import { TroubleLine } from '@/components/app/LoadTrouble';
 import { FlashLine } from '@/components/app/Flash';
@@ -1798,6 +1801,49 @@ export default async function DesignPage() {
             makes this box their containing block, so they sit inside the
             panel here instead of floating over the whole harness — the same
             pixels, somewhere they can be looked at. */}
+        <Panel name="StatBar" note="the summary row: label over figure in the display face, forty pixels of air, a three-pixel bar; over the top it turns to the danger colour">
+          <div className="space-y-6 rounded-card border border-line">
+            <StatBar progress={0.62} stats={[
+              { label: 'תקציב', value: <Money value={180000} /> },
+              { label: 'מחיר שנסגר', value: <Money value={112000} />, sub: 'שבעה ספקים' },
+              { label: 'שולם', value: <Money value={64000} /> },
+              { label: 'נותר', value: <Money value={68000} />, tone: 'ok' },
+            ]} />
+            <StatBar progress={1.14} stats={[
+              { label: 'תקציב', value: <Money value={150000} /> },
+              { label: 'מחיר שנסגר', value: <Money value={171000} />, tone: 'bad', sub: 'חריגה של 21,000 ש"ח' },
+            ]} />
+          </div>
+        </Panel>
+
+        <Panel name="StatusDot" note="a state as a dot and a word, never a filled badge: the six tones, and the product's own words mapped onto them">
+          <div className="flex flex-wrap gap-x-6 gap-y-2">
+            <StatusDot tone="faint" label="רעיון" />
+            <StatusDot tone="info" label="הצעה נשלחה" />
+            <StatusDot tone="warn" label="פגישה" />
+            <StatusDot tone="ok" label="נחתם" />
+            <StatusDot tone="bad" label="בוטל" />
+            <StatusDot tone="accent" label="מועדף" />
+          </div>
+          <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2">
+            <StatusDot tone="quoted" label="quoted" />
+            <StatusDot tone="paid" label="paid" />
+            <StatusDot tone="lost" label="lost" />
+            <StatusDot tone="nonsense" label="unknown falls to faint" />
+          </div>
+        </Panel>
+
+        <Panel name="WeekLog" note="what the producer did this week on the couple's screen: four lines at most, and the empty sentence it draws rather than vanishing">
+          <div className="grid gap-8 sm:grid-cols-2">
+            <WeekLogView title="מה קרה השבוע" empty="שבוע שקט." producer="ברק" rows={[
+              { id: '1', title: 'הצעת מחיר מהצלם נכנסה', actor: 'producer', created_at: '2026-10-16T09:00:00Z' },
+              { id: '2', title: 'התשלום השני לאולם נרשם', actor: 'system', created_at: '2026-10-15T09:00:00Z' },
+              { id: '3', title: 'סימנתם את הדי-ג׳יי כסגור', actor: 'couple', created_at: '2026-10-13T09:00:00Z' },
+            ]} />
+            <WeekLogView title="מה קרה השבוע" empty="שבוע שקט. כשמשהו יזוז אצלנו, תראו את זה כאן." producer="ברק" rows={[]} />
+          </div>
+        </Panel>
+
         <Panel name="Metric" note="one figure at both sizes, the five tones, and a block with rows under it">
           <div className="space-y-6">
             <div className="flex flex-wrap items-end gap-10">

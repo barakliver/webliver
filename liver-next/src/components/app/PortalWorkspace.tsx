@@ -57,6 +57,9 @@ export type PortalSlots = {
   transport?: React.ReactNode;
   thread?: React.ReactNode;
   calendar?: React.ReactNode;
+  /** What the producer did this week, from the activity log. Not a drawer:
+   *  it sits in the open part of the screen, under what to do next. */
+  week?: React.ReactNode;
 };
 
 /** One event, as the couple sees it.
@@ -212,7 +215,7 @@ export function PortalWorkspace({
         )}
 
         <div className="px-5 py-8 sm:px-8 sm:py-10">
-          <h2 className="font-display text-display font-medium leading-[1.12] tracking-[-.02em] text-ink">
+          <h2 className="font-display text-display font-light leading-[1.12] text-ink">
             {c.display_name}
           </h2>
 
@@ -223,7 +226,7 @@ export function PortalWorkspace({
 
           {left !== null && left >= 0 && (
             <p className="mt-6 inline-flex items-baseline gap-2 rounded-full bg-accent-wash px-5 py-2.5 text-accent">
-              <span className="font-display text-figure font-medium leading-none tracking-[-.03em] tabular-nums">
+              <span className="font-display text-figure font-normal leading-none tabular-nums">
                 <Ltr>{left.toLocaleString('en-US')}</Ltr>
               </span>
               <span className="text-body">{ui.portal.daysLeft}</span>
@@ -257,6 +260,11 @@ export function PortalWorkspace({
       {/* Before the figures, because the figures are the answer to a question
           nobody asked. What to do is the question they arrived with. */}
       <NextAction action={action} then={then} ui={ui} moneyOn={can('budget')} />
+
+      {/* And what happened without them: the lines the producer marked for
+          them this week. The part of the screen that proves the system is
+          working between visits. */}
+      {slots.week}
 
       {/* And after "what now", when everything else falls. The figures below
           are all about today; this is the only thing on the screen that shows

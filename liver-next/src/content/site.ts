@@ -2026,6 +2026,11 @@ export const appCopy = {
       + 'שאליה קיבלתם את ההזמנה, או פשוט לכתוב לנו ונחבר את הכתובת הזאת לאירוע.',
     daysLeft: 'ימים לאירוע',
     dateTbd: 'התאריך עוד לא נקבע',
+    /* What the producer did this week, under the one thing to do next. The
+       part of the screen that says the system is alive between visits; it is
+       drawn empty as one sentence rather than not at all. */
+    weekTitle: 'מה קרה השבוע',
+    weekEmpty: 'שבוע שקט. כשמשהו יזוז אצלנו, תראו את זה כאן.',
     summary: 'סקירה מהירה',
     rowBudget: 'תקציב',
     rowRsvp: 'אישורי הגעה',
