@@ -1,10 +1,10 @@
 'use client';
 
-import { useActionState, useState } from 'react';
+import { useActionState, useEffect, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import Link from 'next/link';
 import {
-  Mail, MessageCircle, CalendarDays, Upload, Mic, Check, X, Pencil, Paperclip, AlertTriangle, ChevronDown, type LucideIcon,
+  Mail, MessageCircle, CalendarDays, Upload, Mic, Check, X, Pencil, Paperclip, AlertTriangle, ChevronDown, ChevronRight, type LucideIcon,
 } from 'lucide-react';
 import { useCopy } from '@/components/app/CopyProvider';
 import { approveActions, rejectActions, rematchItem, type InboxResult } from '@/app/actions/inbox';
@@ -12,9 +12,17 @@ import { fill } from '@/lib/copyText';
 import { cn } from '@/lib/utils';
 import { shortDate, clock } from '@/lib/appDates';
 import { formatDate } from '@/lib/dates';
+import { useDesk } from '@/lib/useWide';
 
 /**
- * The box, as cards.
+ * The box: a list of what arrived and the one that is open.
+ *
+ * From a laptop up the list is a column and the open one is beside it, so
+ * moving down the morning is one press per message and the answer never
+ * leaves the screen. On a phone it is the list, and a press opens the
+ * message with a way back. The same detail either way.
+ *
+ * The detail, as it has always been:
  *
  * One card per thing that arrived: who sent it, which event it is about
  * (a chip that can be changed, because the match is a guess), the one
@@ -61,7 +69,7 @@ function ActionRow({ a, checked, onCheck }: { a: InboxAction; checked: boolean; 
   const open = a.status === 'pending';
   const tone = a.status === 'applied' ? 'text-ok' : a.status === 'failed' ? 'text-bad' : a.status === 'rejected' ? 'text-ink-mute line-through' : 'text-ink';
   return (
-    <li className="rounded-card-sm border border-line px-3 py-2">
+    <li className="rounded-card-sm bg-surface-200 px-4 py-3">
       <div className="flex items-start gap-2">
         {open ? (
           <input type="checkbox" name="action_id" value={a.id} checked={checked} onChange={(e) => onCheck(e.target.checked)}
@@ -97,7 +105,7 @@ function ActionRow({ a, checked, onCheck }: { a: InboxAction; checked: boolean; 
   );
 }
 
-function Card({ item, clients }: { item: InboxItem; clients: { id: string; name: string }[] }) {
+function Detail({ item, clients }: { item: InboxItem; clients: { id: string; name: string }[] }) {
   const ui = useCopy();
   const c = ui.inbox;
   const dateFmt = shortDate(ui.locale);
@@ -114,7 +122,7 @@ function Card({ item, clients }: { item: InboxItem; clients: { id: string; name:
   const conf = (c.item.confidence as Record<string, string>)[item.match_confidence];
 
   return (
-    <li id={`item-${item.id}`} className="card scroll-mt-24 space-y-3">
+    <div id={`item-${item.id}`} className="card scroll-mt-24 space-y-4">
       <div className="flex items-start gap-3">
         <span className="grid size-10 shrink-0 place-items-center rounded-full bg-surface-200 text-ink-mute">
           <Icon size={18} strokeWidth={1.5} aria-hidden />
@@ -149,7 +157,10 @@ function Card({ item, clients }: { item: InboxItem; clients: { id: string; name:
 
       {sorting && <p className="rounded-card-sm bg-warn-wash px-3 py-2 text-body text-warn">{c.item.unknown}</p>}
 
-      {item.ai_summary && <p className="text-body text-ink">{item.ai_summary}</p>}
+      {/* The sentence the reading made of it, as large as anything on the
+          screen: it is the thing the producer came to read, and the rows
+          under it are only what follows from it. */}
+      {item.ai_summary && <p className="font-display text-figure font-light leading-snug text-ink">{item.ai_summary}</p>}
 
       <form action={approveAction} className="space-y-2">
         <input type="hidden" name="item_id" value={item.id} />
@@ -191,35 +202,107 @@ function Card({ item, clients }: { item: InboxItem; clients: { id: string; name:
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+/* One line of the list: who, how long ago, the sentence, and how many things
+   are waiting on a yes. The open one sits on the card colour. */
+function Row({ item, selected, onPress }: { item: InboxItem; selected: boolean; onPress: () => void }) {
+  const ui = useCopy();
+  const c = ui.inbox;
+  const Icon = CHANNEL_ICON[item.channel] ?? Mail;
+  const waiting = item.actions.filter((a) => a.status === 'pending').length;
+  const dateFmt = shortDate(ui.locale);
+  return (
+    <li>
+      <button type="button" onClick={onPress} aria-current={selected ? 'true' : undefined}
+        className={cn('flex w-full items-start gap-3 rounded-card px-4 py-3.5 text-start transition-colors duration-touch',
+          selected ? 'bg-card' : 'hover:bg-surface-100')}>
+        <span className="grid size-10 shrink-0 place-items-center rounded-full bg-surface-200 text-ink-mute">
+          <Icon size={18} strokeWidth={1.5} aria-hidden />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="flex items-baseline justify-between gap-2">
+            <span className="truncate text-lead text-ink">{item.from_name || item.from_identity || c.channels[item.channel]}</span>
+            <span className="shrink-0 text-micro text-ink-mute">{formatDate(dateFmt, item.received_at.slice(0, 10), '')}</span>
+          </span>
+          <span className="mt-0.5 line-clamp-2 block text-meta text-ink-mute">{item.ai_summary || item.subject || item.body_text}</span>
+          <span className={cn('mt-2 inline-block rounded-full px-2.5 py-0.5 text-micro',
+            waiting > 0 ? 'bg-accent-wash text-accent' : 'border border-line text-ink-mute')}>
+            {waiting > 0 ? fill(c.counts.pending, { n: waiting }) : c.item.logged}
+          </span>
+        </span>
+        <ChevronRight size={16} strokeWidth={1.5} aria-hidden className="mt-1 shrink-0 text-ink-mute lg:hidden rtl:rotate-180" />
+      </button>
     </li>
   );
 }
 
 export function InboxList({ items, clients }: { items: InboxItem[]; clients: { id: string; name: string }[] }) {
-  const c = useCopy().inbox;
+  const ui = useCopy();
+  const c = ui.inbox;
   const [tab, setTab] = useState<'pending' | 'review' | 'done'>('pending');
+  const [sel, setSel] = useState<string | null>(null);
+  /* Null until the browser has said how wide it is: the desk is what the
+     server drew, and the phone's list is the same rows without the pane. */
+  const desk = useDesk();
   const groups = {
     pending: items.filter((i) => i.status !== 'needs_review' && i.status !== 'ignored' && i.actions.some((a) => a.status === 'pending')),
     review: items.filter((i) => i.status === 'needs_review'),
     done: items.filter((i) => i.status !== 'needs_review' && !i.actions.some((a) => a.status === 'pending')),
   };
   const shown = groups[tab];
+
+  /* A link to one message (`#item-<id>`) opens that message, on the tab it
+     is on. Without this the anchor lands on a pane that was never drawn. */
+  useEffect(() => {
+    const m = /^#item-(.+)$/.exec(window.location.hash);
+    if (!m) return;
+    const hit = items.find((i) => i.id === m[1]);
+    if (!hit) return;
+    const t = (['pending', 'review', 'done'] as const).find((k) => groups[k].some((i) => i.id === hit.id));
+    if (t) setTab(t);
+    setSel(hit.id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  /* On a desk something is always open: the one pressed, or the first. Once
+     what was open has been handled and left the tab, the next takes its place. */
+  const current = shown.find((i) => i.id === sel) ?? (desk === false ? undefined : shown[0]);
+
+  const list = (
+    <ul className="m-0 list-none space-y-1 p-0">
+      {shown.map((item) => <Row key={item.id} item={item} selected={current?.id === item.id && desk !== false} onPress={() => setSel(item.id)} />)}
+    </ul>
+  );
+
   return (
-    <div className="space-y-4">
-      <div className="inline-flex rounded-control border border-line p-0.5" role="tablist">
+    <div className="space-y-5">
+      <div className="inline-flex max-w-full gap-1 overflow-x-auto rounded-full bg-surface-200 p-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" role="tablist">
         {(['pending', 'review', 'done'] as const).map((t) => (
-          <button key={t} type="button" role="tab" aria-selected={tab === t} onClick={() => setTab(t)}
-            className={cn('rounded-[10px] px-3 py-1.5 text-body transition-colors duration-touch', tab === t ? 'bg-ink text-card' : 'text-ink-soft hover:text-ink')}>
+          <button key={t} type="button" role="tab" aria-selected={tab === t} onClick={() => { setTab(t); setSel(null); }}
+            className={cn('min-h-[40px] shrink-0 whitespace-nowrap rounded-full px-4 text-body transition-colors duration-touch', tab === t ? 'bg-ink text-surface' : 'text-ink-soft hover:text-ink')}>
             {c.tabs[t]} <span className="tabular-nums opacity-70">{groups[t].length}</span>
           </button>
         ))}
       </div>
       {shown.length === 0 ? (
         <p className="card text-center text-body text-ink-mute">{c.empty}</p>
+      ) : desk === false ? (
+        current ? (
+          <div className="space-y-3">
+            <button type="button" onClick={() => setSel(null)} className="btn-quiet inline-flex items-center gap-1 px-0 text-body">
+              <ChevronRight size={15} strokeWidth={1.5} aria-hidden className="rtl:rotate-0 ltr:rotate-180" />{c.title}
+            </button>
+            <Detail key={current.id} item={current} clients={clients} />
+          </div>
+        ) : list
       ) : (
-        <ul className="list-none space-y-4 p-0">
-          {shown.map((item) => <Card key={item.id} item={item} clients={clients} />)}
-        </ul>
+        <div className="grid grid-cols-[minmax(0,360px)_minmax(0,1fr)] items-start gap-7">
+          {list}
+          {current && <Detail key={current.id} item={current} clients={clients} />}
+        </div>
       )}
     </div>
   );

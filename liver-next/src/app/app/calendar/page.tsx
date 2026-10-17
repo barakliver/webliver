@@ -9,6 +9,7 @@ import { PageHead, Empty } from '@/components/app/PageHead';
 import { Live } from '@/components/app/Live';
 import { CalendarFeed } from '@/components/app/CalendarFeed';
 import { HebrewCalendar } from '@/components/app/HebrewCalendar';
+import { CalendarViews } from '@/components/app/CalendarViews';
 import { MonthGrid, calendarHref, type GridSwitches } from '@/components/app/MonthGrid';
 import { LabelToolbar } from '@/components/app/LabelToolbar';
 import { Fold } from '@/components/Fold';
@@ -29,13 +30,14 @@ export const dynamic = 'force-dynamic';
 
 const monthFmtFor = (l: Locale) => new Intl.DateTimeFormat(l === 'en' ? 'en-GB' : 'he-IL', { timeZone: EVENT_ZONE, month: 'long', year: 'numeric' });
 const dayFmtFor = (l: Locale) => new Intl.DateTimeFormat(l === 'en' ? 'en-GB' : 'he-IL', { timeZone: EVENT_ZONE, weekday: 'long', day: 'numeric', month: 'long' });
+const weekdayFmtFor = (l: Locale) => new Intl.DateTimeFormat(l === 'en' ? 'en-GB' : 'he-IL', { timeZone: EVENT_ZONE, weekday: 'long' });
 const fullDayFmtFor = (l: Locale) => new Intl.DateTimeFormat(l === 'en' ? 'en-GB' : 'he-IL', { timeZone: EVENT_ZONE, weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
 const ICON = { event: CalendarHeart, task: CheckCircle2, payment: Wallet, entry: NotebookPen };
 const TONE: Record<CalItem['kind'], string> = {
   event: 'bg-accent-wash text-accent',
   task: 'bg-surface-200 text-ink-soft',
-  payment: 'bg-warn-wash text-warn',
+  payment: 'border border-accent text-accent',
   entry: 'bg-ok-wash text-ok',
 };
 
@@ -108,24 +110,82 @@ export default async function CalendarPage({ searchParams }: {
         report={<IssueReporter userId={account.id} context={c.title} />}
       />
 
-      {/* The open day first, where the eye lands after pressing a cell.
-          Then the month as a table: every couple's deadline in its cell,
-          the day tinted by the Hebrew calendar. Then which evenings are
-          available at all, with the reasons, and then the list. */}
-      <div className="mb-7 space-y-6">
-        {openDay && (
-          <div id="day">
-            <DayDrawer
-              day={openDay}
-              dayText={fullDayFmtFor(locale).format(new Date(`${openDay}T12:00:00Z`))}
-              items={all.filter((i) => i.date === openDay)}
-              entries={dayEntries}
-              clients={clients.map((k) => ({ id: k.id, name: k.display_name }))}
-              closeHref={calendarHref(month, switches)}
-            />
-          </div>
-        )}
-        <MonthGrid items={all} month={month} today={today} locale={locale} ui={ui} open={openDay} switches={switches} />
+      {/* The diary, drawn two ways and read whichever way the person likes:
+          the month as a board with the open day beside it, or everything
+          ahead as a running list. Both are handed the same rows. */}
+      <div className="mb-7">
+        <CalendarViews
+          month={(
+            <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
+              <MonthGrid items={all} month={month} today={today} locale={locale} ui={ui} open={openDay} switches={switches} />
+              {/* The open day beside the month on a desk, under it on a
+                  phone: the anchor the cells link to is the same either way. */}
+              <div id="day" className="scroll-mt-24 lg:sticky lg:top-6">
+                {openDay ? (
+                  <DayDrawer
+                    day={openDay}
+                    dayText={fullDayFmtFor(locale).format(new Date(`${openDay}T12:00:00Z`))}
+                    items={all.filter((i) => i.date === openDay)}
+                    entries={dayEntries}
+                    clients={clients.map((k) => ({ id: k.id, name: k.display_name }))}
+                    closeHref={calendarHref(month, switches)}
+                  />
+                ) : (
+                  <p className="card text-body text-ink-mute">{c.pickDay}</p>
+                )}
+              </div>
+            </div>
+          )}
+          agenda={items.length === 0 ? <Empty text={c.empty} /> : (
+            <div className="space-y-9">
+              <h2 className="sr-only">{c.foldList}</h2>
+              {[...byMonth.entries()].map(([m, monthItems]) => {
+                const byDay = new Map<string, CalItem[]>();
+                for (const i of monthItems) byDay.set(i.date, [...(byDay.get(i.date) ?? []), i]);
+                return (
+                  <section key={m}>
+                    <h3 className="mb-1 font-display text-subhead font-light text-ink">{monthFmtFor(locale).format(new Date(m + '-01T00:00:00'))}</h3>
+                    {[...byDay.entries()].map(([date, dayItems]) => (
+                      <div key={date} className="flex gap-4 border-t border-line py-4 sm:gap-6">
+                        <Link href={`/app/calendar?day=${date}#day`} className="w-14 shrink-0 text-center sm:w-20"
+                          aria-label={dayFmtFor(locale).format(new Date(date + 'T00:00:00'))}>
+                          <span className="block font-display text-[32px] font-light leading-none text-ink sm:text-[44px]">{Number(date.slice(8, 10))}</span>
+                          <span className="mt-1 block text-meta text-ink-mute">{weekdayFmtFor(locale).format(new Date(date + 'T00:00:00'))}</span>
+                        </Link>
+                        <ul className="m-0 min-w-0 flex-1 list-none space-y-2 p-0">
+                          {dayItems.map((i) => {
+                            const Icon = ICON[i.kind];
+                            return (
+                              <li key={i.id}>
+                                <Link
+                                  href={i.href}
+                                  className={`flex items-center gap-3 rounded-card-sm px-3 py-2.5 transition hover:brightness-[0.98] ${TONE[i.kind]}`}
+                                >
+                                  {/* The producer's own colour, when they gave
+                                      this event one. A dot rather than a
+                                      fill: the row already carries a tone for
+                                      what kind of thing it is. */}
+                                  {i.color
+                                    ? <span aria-hidden className="size-2.5 shrink-0 rounded-full" style={{ background: i.color }} />
+                                    : <Icon size={16} aria-hidden strokeWidth={1.5} className="shrink-0" />}
+                                  <span className="min-w-0 flex-1">
+                                    <span className={`block truncate text-lead ${i.done ? 'line-through' : ''}`}>{i.title}</span>
+                                    {i.detail && <span className="block truncate text-body opacity-75">{i.detail}</span>}
+                                  </span>
+                                  {i.amount ? <span className="shrink-0 text-body tabular-nums"><Money value={i.amount} /></span> : null}
+                                </Link>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </div>
+                    ))}
+                  </section>
+                );
+              })}
+            </div>
+          )}
+        />
       </div>
 
       {/* One month on one board, and nothing else drawn.
@@ -150,67 +210,8 @@ export default async function CalendarPage({ searchParams }: {
           </a>
           <CalendarFeed />
         </Fold>
-
-        {items.length === 0 ? null : (
-          <Fold id="fold-list" title={c.foldList} sub={c.foldListSub}>
-            <div className="space-y-9">
-          {[...byMonth.entries()].map(([month, monthItems]) => {
-            const byDay = new Map<string, CalItem[]>();
-            for (const i of monthItems) byDay.set(i.date, [...(byDay.get(i.date) ?? []), i]);
-
-            return (
-              <section key={month}>
-                <h2 className="eyebrow mb-3">{monthFmtFor(locale).format(new Date(month + '-01T00:00:00'))}</h2>
-                <div className="space-y-4">
-                  {[...byDay.entries()].map(([date, dayItems]) => (
-                    <div key={date} className="card">
-                      <h3 className="text-body font-medium text-ink">
-                        <Link href={`/app/calendar?day=${date}#day`} className="hover:underline">
-                          {dayFmtFor(locale).format(new Date(date + 'T00:00:00'))}
-                        </Link>
-                      </h3>
-                      <ul className="mt-3 space-y-2">
-                        {dayItems.map((i) => {
-                          const Icon = ICON[i.kind];
-                          return (
-                            <li key={i.id}>
-                              <Link
-                                href={i.href}
-                                className={`flex items-center gap-3 rounded-xl2 px-3 py-2.5 transition hover:brightness-[0.98] ${TONE[i.kind]}`}
-                              >
-                                {/* The producer's own colour, when they gave
-                                    this event one. A hairline rather than a
-                                    fill: the row already carries a tone for
-                                    what kind of thing it is. */}
-                                {i.color
-                                  ? <span aria-hidden className="size-2.5 shrink-0 rounded-full" style={{ background: i.color }} />
-                                  : <Icon size={16} aria-hidden strokeWidth={1.5} className="shrink-0" />}
-                                <span className="min-w-0 flex-1">
-                                  <span className={`block truncate text-lead ${i.done ? 'line-through opacity-60' : ''}`}>
-                                    {i.title}
-                                  </span>
-                                  {i.detail && <span className="block truncate text-body opacity-75">{i.detail}</span>}
-                                </span>
-                                {i.amount ? (
-                                  <span className="shrink-0 text-body tabular-nums"><Money value={i.amount} /></span>
-                                ) : null}
-                              </Link>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    </div>
-                  ))}
-                </div>
-              </section>
-              );
-            })}
-            </div>
-          </Fold>
-        )}
       </div>
 
-      {items.length === 0 && <Empty text={c.empty} />}
 
       <Live sources={[{ table: 'clients' }, { table: 'tasks' }, { table: 'payments' }, { table: 'diary_entries' }]} />
     </>

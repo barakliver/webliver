@@ -42,12 +42,15 @@ const SHOW = 2;
 const TONE: Record<CalItem['kind'], string> = {
   event: 'bg-accent text-surface',
   task: 'bg-surface-200 text-ink',
-  payment: 'bg-warn-wash text-warn',
+  payment: 'border border-accent text-accent',
   entry: 'bg-ok-wash text-ok',
+};
+const DOT: Record<CalItem['kind'], string> = {
+  event: 'bg-accent', task: 'bg-ink-mute', payment: 'border border-accent', entry: 'bg-ok',
 };
 const DAY_TINT: Record<Verdict, string> = {
   clear: '',
-  check: 'bg-warn-wash/50',
+  check: 'bg-accent-wash',
   blocked: 'bg-bad-wash/60',
 };
 const HOLIDAY_TONE: Record<Holiday['tone'], string> = {
@@ -173,18 +176,18 @@ export function MonthGrid({ items, month, today, locale, ui, open = '', switches
             href={calendarHref(prev, switches)}
             aria-label={c.prevMonth}
             title={c.prevMonth}
-            className="grid size-11 place-items-center rounded-xl2 text-ink-soft transition hover:bg-surface-200 hover:text-ink"
+            className="grid size-11 place-items-center rounded-full border border-line-strong text-ink-soft transition hover:bg-surface-200 hover:text-ink"
           >
             <ChevronRight size={18} aria-hidden strokeWidth={1.5} className="chev-back" />
           </Link>
-          <h3 className="min-w-[10ch] text-center head-section">
+          <h3 className="min-w-[10ch] text-center font-display text-figure font-light text-ink">
             {monthFmt.format(start)}
           </h3>
           <Link
             href={calendarHref(next, switches)}
             aria-label={c.nextMonth}
             title={c.nextMonth}
-            className="grid size-11 place-items-center rounded-xl2 text-ink-soft transition hover:bg-surface-200 hover:text-ink"
+            className="grid size-11 place-items-center rounded-full border border-line-strong text-ink-soft transition hover:bg-surface-200 hover:text-ink"
           >
             <ChevronLeft size={18} aria-hidden strokeWidth={1.5} className="chev-onward" />
           </Link>
@@ -197,12 +200,12 @@ export function MonthGrid({ items, month, today, locale, ui, open = '', switches
       </div>
 
       <div className="mt-3 flex flex-wrap gap-2 text-meta text-ink-soft">
-        <span className="inline-flex items-center gap-1.5"><span aria-hidden className={`size-2.5 rounded-full ${TONE.event.split(' ')[0]}`} />{c.legendEvent}</span>
+        <span className="inline-flex items-center gap-1.5"><span aria-hidden className="size-2.5 rounded-full bg-accent" />{c.legendEvent}</span>
         <span className="inline-flex items-center gap-1.5"><span aria-hidden className="size-2.5 rounded-full bg-ink-mute" />{c.legendTask}</span>
-        <span className="inline-flex items-center gap-1.5"><span aria-hidden className="size-2.5 rounded-full bg-warn" />{c.legendPayment}</span>
+        <span className="inline-flex items-center gap-1.5"><span aria-hidden className="size-2.5 rounded-full border border-accent" />{c.legendPayment}</span>
         <span className="inline-flex items-center gap-1.5"><span aria-hidden className="size-2.5 rounded-full bg-ok" />{c.legendEntry}</span>
         <span className="inline-flex items-center gap-1.5"><span aria-hidden className="size-2.5 rounded-full bg-bad" />{ui.hebrewCal.blockedLegend}</span>
-        <span className="inline-flex items-center gap-1.5"><span aria-hidden className="size-2.5 rounded-full bg-warn/60" />{ui.hebrewCal.checkLegend}</span>
+        <span className="inline-flex items-center gap-1.5"><span aria-hidden className="size-2.5 rounded-full bg-accent-wash outline outline-1 -outline-offset-1 outline-accent/40" />{ui.hebrewCal.checkLegend}</span>
         {anyHoliday && <span className="inline-flex items-center gap-1.5 text-accent">{c.holidayLegend}</span>}
       </div>
 
@@ -212,11 +215,11 @@ export function MonthGrid({ items, month, today, locale, ui, open = '', switches
           a scrollbar. The day is still the door, and the drawer names
           everything the dots stand for. */}
       <div className="mt-4">
-        <table className="w-full table-fixed border-collapse text-meta">
+        <table className="w-full table-fixed border-separate border-spacing-1 text-meta sm:border-spacing-1.5">
           <thead>
             <tr>
               {weekdays.map((w) => (
-                <th key={w} scope="col" className="border-b border-line py-1.5 text-start text-meta font-medium text-ink-mute">{w}</th>
+                <th key={w} scope="col" className="py-1.5 text-center text-meta font-normal text-ink-mute">{w}</th>
               ))}
             </tr>
           </thead>
@@ -236,7 +239,7 @@ export function MonthGrid({ items, month, today, locale, ui, open = '', switches
                     <td
                       key={day}
                       title={reasons || undefined}
-                      className={`group h-[64px] border p-0.5 align-top sm:h-[96px] sm:p-1 ${day === open ? 'border-accent ring-1 ring-accent' : 'border-line'} ${rule ? DAY_TINT[rule.verdict] : ''} ${inMonth ? '' : 'bg-surface-100'}`}
+                      className={`group h-[64px] rounded-card-sm p-0.5 align-top sm:h-[96px] sm:p-1.5 ${day === open ? 'outline outline-2 -outline-offset-2 outline-accent' : ''} ${rule && rule.verdict !== 'clear' ? DAY_TINT[rule.verdict] : day === open ? 'bg-surface-200' : inMonth ? 'bg-surface-100' : 'bg-transparent'}`}
                     >
                       {/* The day itself is the door: press the number and the
                           drawer above opens on that day, with the form that
@@ -269,7 +272,7 @@ export function MonthGrid({ items, month, today, locale, ui, open = '', switches
                           {dayItems.slice(0, 6).map((it) => (
                             <span
                               key={it.id}
-                              className={`size-1.5 rounded-full ${TONE[it.kind].split(' ')[0]}`}
+                              className={`size-1.5 rounded-full ${DOT[it.kind]}`}
                               style={it.kind === 'event' && it.color ? { background: it.color } : undefined}
                             />
                           ))}

@@ -28,7 +28,7 @@ const ICON = { event: CalendarHeart, task: CheckCircle2, payment: Wallet, entry:
 const TONE: Record<CalItem['kind'], string> = {
   event: 'bg-accent-wash text-accent',
   task: 'bg-surface-200 text-ink-soft',
-  payment: 'bg-warn-wash text-warn',
+  payment: 'border border-accent text-accent',
   entry: 'bg-ok-wash text-ok',
 };
 

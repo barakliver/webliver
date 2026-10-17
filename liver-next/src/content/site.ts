@@ -1324,6 +1324,9 @@ export const appCopy = {
     foldLabelsSub: 'הצבע שכל אירוע מקבל על הלוח',
     foldSync: 'סנכרון והורדה',
     foldSyncSub: 'היומן בטלפון, בגוגל או כקובץ',
+    /* The two ways to read the diary, chosen by the person reading it. */
+    views: { label: 'צורת התצוגה', month: 'לוח חודשי', agenda: 'סדר יום' },
+    pickDay: 'בחרו יום כדי לראות מה יש בו ולהוסיף לו.',
     foldList: 'הכל קדימה, לפי חודש',
     foldListSub: 'כל אירוע, משימה ותשלום ברשימה אחת',
 
@@ -2937,6 +2940,7 @@ export const inboxCopy = {
   item: {
     about: 'על', unknown: 'לא זיהיתי לאיזה אירוע זה שייך', pick: 'בחירת אירוע', notRelated: 'לא קשור לאירוע',
     assign: 'שיוך', open: 'ההודעה המלאה', close: 'סגירה', attachments: 'קבצים', noActions: 'אין פעולות מוצעות. רק תיעוד.',
+    logged: 'רק תיעוד',
     needsHuman: 'כדאי לקרוא בעצמך', confidence: { high: 'זיהוי ודאי', medium: 'זיהוי סביר', low: 'זיהוי חלש' },
     status: { new: 'ממתין לקריאה', processed: 'נקרא', needs_review: 'למיון', ignored: 'הוסר', failed: 'הקריאה נכשלה' },
   },

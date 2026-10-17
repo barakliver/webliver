@@ -438,6 +438,20 @@ that has happened once.
   boxes on the dark desk. They are `field` now, which is the class every other
   form is built from; the classes check did not catch it because the word is
   also an HTML element.
+  **Group 4, chosen: a for the inbox and a for the calendar, and the calendar
+  gets both.** The inbox is a list of what arrived and the open message beside
+  it from `lg` up, so a morning is one press per message and the answer never
+  leaves the screen; on a phone it is the list and a press opens the message
+  with a way back, and a push link to `#item-<id>` opens that message on its
+  own tab. The sentence the reading made of a message is the largest thing in
+  the pane. The calendar is the month as a board of tiles with the open day
+  beside it (under it on a phone), and the same rows as a running list with the
+  day as a big numeral. The choice between them is the reader's:
+  `CalendarViews` draws both on the server, hides one, and remembers the
+  choice in the browser; a day in the address brings the month forward,
+  because that day's panel lives there. The Hebrew calendar's verdicts are no
+  longer yellow: a day that depends on custom is a rose wash and a payment is a
+  rose outline, so the only amber left on that screen is the one warning.
 - **The screens are the plum design's screens, not only its colours.**
   He asked why the app did not look like the mockups, and the answer was
   that 3.1 had changed the skin and not the layout. So 3.2 rebuilt three:

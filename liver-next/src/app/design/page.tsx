@@ -46,6 +46,7 @@ import { InboxList } from '@/components/app/InboxList';
 import { InboxDrop } from '@/components/app/InboxDrop';
 import { LedgerEntries } from '@/components/app/LedgerEntries';
 import { MonthGrid } from '@/components/app/MonthGrid';
+import { CalendarViews } from '@/components/app/CalendarViews';
 import { VendorHq } from '@/components/app/VendorHq';
 import { PlanOffer } from '@/components/app/PlanOffer';
 import { ProductionBook } from '@/components/app/ProductionBook';
@@ -902,6 +903,13 @@ export default async function DesignPage() {
               { id: 'l3', client_id: null, kind: 'expense', amount: 60, label: 'חניה', party: '', note: 'אולם, סיור', on_date: '2026-09-05', event_name: null },
             ]} />
           </div>
+        </Panel>
+
+        <Panel name="CalendarViews" note="the diary as a month or as a running list, chosen by the person and remembered">
+          <CalendarViews
+            month={<div className="card text-body text-ink-soft">{ui.calendar.grid}</div>}
+            agenda={<div className="card text-body text-ink-soft">{ui.calendar.foldList}</div>}
+          />
         </Panel>
 
         <Panel name="MonthGrid" note="one month, any year, with the holidays named: every couple's deadline in its cell, the day tinted by the Hebrew calendar, today in a circle">

@@ -528,6 +528,8 @@ export const consoleEn: ConsoleCopy = {
     foldLabelsSub: 'The colour each event carries on the board',
     foldSync: 'Sync and download',
     foldSyncSub: 'The diary on a phone, in Google, or as a file',
+    views: { label: 'How to read it', month: 'Month', agenda: 'Agenda' },
+    pickDay: 'Pick a day to see what is on it and add to it.',
     foldList: 'Everything ahead, month by month',
     foldListSub: 'Every event, task and payment in one list',
 
@@ -1910,6 +1912,7 @@ export const inboxEn: InboxCopy = {
   item: {
     about: 'About', unknown: 'Could not tell which event this belongs to', pick: 'Choose an event', notRelated: 'Not about an event',
     assign: 'Assign', open: 'The full message', close: 'Close', attachments: 'Files', noActions: 'No actions proposed. Logged only.',
+    logged: 'Logged only',
     needsHuman: 'Worth reading yourself', confidence: { high: 'Sure match', medium: 'Likely match', low: 'Weak match' },
     status: { new: 'Waiting to be read', processed: 'Read', needs_review: 'To sort', ignored: 'Removed', failed: 'Reading failed' },
   },
