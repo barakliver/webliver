@@ -39,6 +39,9 @@ import { CircleFeed } from '@/components/app/CircleFeed';
 import { GoogleSyncCard } from '@/components/app/GoogleSyncCard';
 import { QuickLedger } from '@/components/app/QuickLedger';
 import { AlertSettings } from '@/components/app/AlertSettings';
+import { LeadBoard } from '@/components/app/LeadBoard';
+import { LeadCard } from '@/components/app/LeadCard';
+import { QuickLead } from '@/components/app/QuickLead';
 import { LedgerEntries } from '@/components/app/LedgerEntries';
 import { MonthGrid } from '@/components/app/MonthGrid';
 import { VendorHq } from '@/components/app/VendorHq';
@@ -1136,6 +1139,49 @@ export default async function DesignPage() {
 
         <Panel name="NewLeadForm" note="a lead typed in from a phone call">
           <NewLeadForm />
+        </Panel>
+
+        <Panel name="LeadBoard" note="the pipeline as columns; drag or use the select, the three figures above">
+          <LeadBoard
+            now={Date.now()}
+            leads={[
+              { id: 'b1', full_name: 'רוני ועומר', phone: '0521111111', email: 'roni@example.com', event_date: new Date(Date.now() + 240 * 86_400_000).toISOString().slice(0, 10), guest_count: 250, source: 'site', status: 'new', score: 85, summary: 'הפקה מלאה לחתונת שטח בקיץ, מחפשים מקום במרכז', created_at: new Date(Date.now() - 40 * 60_000).toISOString() },
+              { id: 'b2', full_name: 'מאיה', partner_name: 'עידו', phone: '0523333333', email: '', event_date: null, guest_count: null, source: 'whatsapp', status: 'new', score: 35, summary: 'שאלו על מחיר לליווי בלבד', created_at: new Date(Date.now() - 5 * 3_600_000).toISOString() },
+              { id: 'b3', full_name: 'חברת אופק אנרגיה', phone: '036666666', email: 'events@ofek.example', event_date: null, guest_count: 120, source: 'referral', status: 'contacted', score: 55, created_at: new Date(Date.now() - 5 * 86_400_000).toISOString(), first_response_at: new Date(Date.now() - 4 * 86_400_000).toISOString() },
+              { id: 'b4', full_name: 'שירה ואורי', phone: '0507777777', email: '', event_date: new Date(Date.now() + 150 * 86_400_000).toISOString().slice(0, 10), guest_count: 320, source: 'instagram', status: 'meeting', score: 90, created_at: new Date(Date.now() - 12 * 86_400_000).toISOString(), first_response_at: new Date(Date.now() - 11.9 * 86_400_000).toISOString() },
+              { id: 'b5', full_name: 'נועה ואיתי', phone: '0509999999', email: '', event_date: new Date(Date.now() + 90 * 86_400_000).toISOString().slice(0, 10), guest_count: 180, source: 'before_i_do', status: 'proposal_sent', score: 80, created_at: new Date(Date.now() - 20 * 86_400_000).toISOString(), first_response_at: new Date(Date.now() - 19.8 * 86_400_000).toISOString() },
+              { id: 'b6', full_name: 'דנה', partner_name: 'יואב', phone: '0501234567', email: '', event_date: null, guest_count: null, source: 'phone', status: 'nurture', score: 20, created_at: new Date(Date.now() - 60 * 86_400_000).toISOString(), first_response_at: new Date(Date.now() - 59 * 86_400_000).toISOString() },
+            ]}
+            list={<p className="text-body text-ink-mute">the list view: the rows above</p>}
+          />
+        </Panel>
+
+        <Panel name="LeadCard" note="one enquiry whole: actions, the reading, the fields, the next action and the timeline">
+          <LeadCard
+            now={Date.now()}
+            lead={{
+              id: 'b1', full_name: 'רוני', partner_name: 'עומר', phone: '0521111111', email: 'roni@example.com', instagram_handle: 'roni.and.omer',
+              kind: 'wedding', event_date: new Date(Date.now() + 240 * 86_400_000).toISOString().slice(0, 10), event_date_flexible: true,
+              guest_count: 250, location: 'שרון', budget_min: 120000, budget_max: 160000, venue_booked: false,
+              message: 'היי, מתחתנים בקיץ הבא, מחפשים הפקה מלאה לחתונת שטח באזור המרכז. בערך 250 אורחים, תקציב 120 עד 160. עוד לא סגרנו מקום.',
+              note: '', source: 'site', status: 'new', intent: 'full_production', urgency: 'medium', score: 85,
+              score_reason: 'ארבעה עד ארבעה עשר חודשים (30) · הפקה מלאה (30) · יש טלפון (15) · תקציב מעל 100 אלף (15)',
+              summary: 'הפקה מלאה לחתונת שטח בקיץ הבא, 250 אורחים, תקציב 120 עד 160 אלף, בלי מקום עדיין',
+              suggested_reply: 'היי רוני ועומר, תודה שכתבתם. חתונת שטח בקיץ עם 250 אורחים זה בדיוק מה שאנחנו הכי אוהבים לעשות. מתאים לכם שיחה קצרה השבוע כדי שאשמע מה דמיינתם?\nברק',
+              next_action: 'לחזור אליהם אחרי הצהריים', next_action_at: new Date(Date.now() + 3 * 3_600_000).toISOString(),
+              lost_reason: '', first_response_at: null, created_at: new Date(Date.now() - 40 * 60_000).toISOString(),
+            }}
+            events={[
+              { id: 'e1', type: 'created', channel: 'site', body: 'היי, מתחתנים בקיץ הבא…', meta: null, created_at: new Date(Date.now() - 40 * 60_000).toISOString() },
+              { id: 'e2', type: 'ai_summary', channel: 'system', body: 'הפקה מלאה לחתונת שטח בקיץ הבא', meta: null, created_at: new Date(Date.now() - 39 * 60_000).toISOString() },
+              { id: 'e3', type: 'notification_sent', channel: 'system', body: 'וואטסאפ · פוש ×2', meta: null, created_at: new Date(Date.now() - 39 * 60_000).toISOString() },
+            ]}
+            calls={[{ id: 'k1', title: 'שיחת מעקב', remind_on: new Date(Date.now() + 2 * 86_400_000).toISOString().slice(0, 10), done: false }]}
+          />
+        </Panel>
+
+        <Panel name="QuickLead" note="three fields from a ringing phone; the button opens the sheet">
+          <QuickLead sources={[{ value: 'phone', label: 'שיחת טלפון' }, { value: 'referral', label: 'המלצה' }]} />
         </Panel>
 
         <Panel name="AlertSettings" note="how a producer is told about an enquiry; the push switch asks the browser">

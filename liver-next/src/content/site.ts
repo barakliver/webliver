@@ -2609,6 +2609,76 @@ export const alertsCopy = {
   saved: 'נשמר',
 } as const;
 
+/** The leads board, the card behind it, and the quick add. */
+export const pipelineCopy = {
+  view: { board: 'לוח', list: 'רשימה' },
+  filters: {
+    source: 'מקור', allSources: 'כל המקורות',
+    score: 'ציון', anyScore: 'כל ציון', score50: '50 ומעלה', score80: '80 ומעלה',
+    unanswered: 'רק בלי מענה',
+  },
+  stats: {
+    newWeek: 'חדשים השבוע',
+    toMeeting: 'הגיעו לפגישה',
+    toMeetingSub: 'מתוך הפניות של 90 הימים האחרונים',
+    response: 'זמן מענה',
+    responseSub: 'חציון, בשעות',
+    none: 'עוד אין מספיק',
+    unanswered: 'בלי מענה',
+  },
+  card: {
+    unanswered: 'לא נענה',
+    noDate: 'בלי תאריך',
+    guests: '{n} אורחים',
+    ago: { minutes: 'לפני {n} דק׳', hours: 'לפני {n} שע׳', days: 'לפני {n} ימים' },
+    open: 'פתיחת הכרטיס',
+    move: 'העברה לשלב',
+    drag: 'גרירה',
+    empty: 'ריק',
+  },
+  page: {
+    back: 'כל הלידים',
+    title: 'כרטיס ליד',
+    whatsapp: 'וואטסאפ',
+    call: 'שיחה',
+    mail: 'מייל',
+    meeting: 'תזכורת',
+    convert: 'פתיחת אירוע',
+    summary: 'מה הם רוצים',
+    reason: 'למה הציון',
+    reply: 'טיוטת תשובה',
+    replyHint: 'נפתח בוואטסאפ עם הטקסט הזה. אפשר לערוך שם לפני השליחה.',
+    details: 'פרטים',
+    name: 'שם', partner: 'בן או בת הזוג', phone: 'טלפון', email: 'אימייל', instagram: 'אינסטגרם',
+    date: 'תאריך האירוע', flexible: 'התאריך גמיש', guests: 'אורחים', location: 'איפה',
+    budgetMin: 'תקציב מ', budgetMax: 'תקציב עד', venueBooked: 'האולם כבר סגור',
+    lostReason: 'למה לא',
+    save: 'שמירה', saving: 'שומר', saved: 'נשמר',
+    next: { title: 'הפעולה הבאה', what: 'מה', when: 'מתי', save: 'קביעה', none: 'לא נקבעה פעולה הבאה', clear: 'ניקוי' },
+    timeline: {
+      title: 'מה קרה',
+      empty: 'עוד לא קרה כלום.',
+      note: 'הערה', notePh: 'מה סוכם, מה נאמר', add: 'הוספה',
+      types: {
+        created: 'הפנייה הגיעה', message_in: 'הודעה נכנסה', message_out: 'הודעה יצאה', call: 'שיחה',
+        status_change: 'שלב השתנה', note: 'הערה', meeting_scheduled: 'נקבעה פגישה',
+        proposal_sent: 'נשלחה הצעה', notification_sent: 'נשלחה התראה', ai_summary: 'קריאה אוטומטית',
+      },
+    },
+    message: 'ההודעה המקורית',
+    notFound: 'הליד לא נמצא.',
+  },
+  quick: {
+    button: 'ליד מהיר',
+    title: 'ליד מהיר',
+    sub: 'שם, טלפון, ומה נאמר. את השאר ממלאים אחר כך מהכרטיס.',
+    name: 'שם', phone: 'טלפון', note: 'מה נאמר', notePh: 'חתונה בקיץ, שמעו עלינו מחברים',
+    source: 'איך הגיעו',
+    save: 'שמירה', saving: 'שומר',
+  },
+  more: { title: 'פנייה עם כל הפרטים', sub: 'הטופס המלא, למי שיש לו את כל הפרטים ביד.' },
+} as const;
+
 /** The ways a producer would say a lead reached them, for the manual form.
  *  Stored as the same slugs the webhook stores, so one report counts both. */
 export const LEAD_SOURCES = [

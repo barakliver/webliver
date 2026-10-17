@@ -1,7 +1,7 @@
 import type {
   ConsoleCopy, LeadCopy, CrewCopy, VendorCopy, TemplateCopy, BarCopy, UpdateCopy, LinkCopy,
   SignCopy, SiteEditorCopy, HebrewCalCopy, LabelCopy, ChannelCopy, KnowledgeCopy, JumpCopy, CopilotCopy,
-  ArchiveCopy, MeetingCopy, NoteCopy, WorkflowCopy, ReferralCopy, HolidayCopy, AlertsCopy,
+  ArchiveCopy, MeetingCopy, NoteCopy, WorkflowCopy, ReferralCopy, HolidayCopy, AlertsCopy, PipelineCopy,
 } from './appUi.ts';
 
 /**
@@ -1799,4 +1799,73 @@ export const alertsEn: AlertsCopy = {
   save: 'Save',
   saving: 'Saving',
   saved: 'Saved',
+};
+
+export const pipelineEn: PipelineCopy = {
+  view: { board: 'Board', list: 'List' },
+  filters: {
+    source: 'Source', allSources: 'All sources',
+    score: 'Score', anyScore: 'Any score', score50: '50 and up', score80: '80 and up',
+    unanswered: 'Unanswered only',
+  },
+  stats: {
+    newWeek: 'New this week',
+    toMeeting: 'Reached a meeting',
+    toMeetingSub: 'Of the enquiries in the last 90 days',
+    response: 'Response time',
+    responseSub: 'Median, in hours',
+    none: 'Not enough yet',
+    unanswered: 'Unanswered',
+  },
+  card: {
+    unanswered: 'Unanswered',
+    noDate: 'No date',
+    guests: '{n} guests',
+    ago: { minutes: '{n} min ago', hours: '{n} h ago', days: '{n} days ago' },
+    open: 'Open the card',
+    move: 'Move to stage',
+    drag: 'Drag',
+    empty: 'Empty',
+  },
+  page: {
+    back: 'All leads',
+    title: 'Lead card',
+    whatsapp: 'WhatsApp',
+    call: 'Call',
+    mail: 'Email',
+    meeting: 'Reminder',
+    convert: 'Open an event',
+    summary: 'What they want',
+    reason: 'Why this score',
+    reply: 'Draft reply',
+    replyHint: 'Opens in WhatsApp with this text. You can edit it there before sending.',
+    details: 'Details',
+    name: 'Name', partner: 'Partner', phone: 'Phone', email: 'Email', instagram: 'Instagram',
+    date: 'Event date', flexible: 'Date is flexible', guests: 'Guests', location: 'Where',
+    budgetMin: 'Budget from', budgetMax: 'Budget to', venueBooked: 'Venue already booked',
+    lostReason: 'Why not',
+    save: 'Save', saving: 'Saving', saved: 'Saved',
+    next: { title: 'Next action', what: 'What', when: 'When', save: 'Set', none: 'No next action set', clear: 'Clear' },
+    timeline: {
+      title: 'What happened',
+      empty: 'Nothing yet.',
+      note: 'Note', notePh: 'What was agreed, what was said', add: 'Add',
+      types: {
+        created: 'Enquiry arrived', message_in: 'Message in', message_out: 'Message out', call: 'Call',
+        status_change: 'Stage changed', note: 'Note', meeting_scheduled: 'Meeting set',
+        proposal_sent: 'Proposal sent', notification_sent: 'Alert sent', ai_summary: 'Automatic reading',
+      },
+    },
+    message: 'The original message',
+    notFound: 'Lead not found.',
+  },
+  quick: {
+    button: 'Quick lead',
+    title: 'Quick lead',
+    sub: 'A name, a phone and what was said. The rest is filled in later from the card.',
+    name: 'Name', phone: 'Phone', note: 'What was said', notePh: 'Summer wedding, heard about us from friends',
+    source: 'How they reached you',
+    save: 'Save', saving: 'Saving',
+  },
+  more: { title: 'An enquiry with every detail', sub: 'The full form, for when you have everything to hand.' },
 };

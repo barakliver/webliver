@@ -1,9 +1,12 @@
 import { Live } from '@/components/app/Live';
+import { ClipboardList } from 'lucide-react';
 import { requireLiveProducer } from '@/lib/auth';
 import { supabaseServer } from '@/lib/supabase/server';
 import { serverCopy } from '@/lib/serverLocale';
 import { PageHead, Empty } from '@/components/app/PageHead';
 import { LeadRow, type Lead, type Call } from '@/components/app/LeadRow';
+import { LeadBoard } from '@/components/app/LeadBoard';
+import { QuickLead } from '@/components/app/QuickLead';
 import { CallsPanel } from '@/components/app/CallsPanel';
 import { NewLeadForm } from '@/components/app/NewLeadForm';
 import { LabelToolbar } from '@/components/app/LabelToolbar';
@@ -13,12 +16,24 @@ import { LEAD_SOURCES } from '@/content/site';
 import { LeadChannels } from '@/components/app/LeadChannels';
 import type { LeadChannel } from '@/content/channels';
 import { publicEnv } from '@/lib/env';
+import { Fold } from '@/components/Fold';
+import type { BoardLead } from '@/lib/pipeline';
 
 export const dynamic = 'force-dynamic';
 export async function generateMetadata() {
   return { title: (await serverCopy()).leads.title };
 }
 
+/**
+ * The pipeline.
+ *
+ * It was two lists, "new" and "the rest", and a form at the top. It is the
+ * board now: every enquiry in the column its status puts it in, the three
+ * figures that say how the funnel is doing, and a quick add for the phone
+ * that is still ringing. The full form, the channel addresses and the
+ * follow-up calls are still here, behind a row, because they are things to
+ * set up rather than things to read every morning.
+ */
 export default async function LeadsPage() {
   const ui = await serverCopy();
   const account = await requireLiveProducer();
@@ -27,78 +42,60 @@ export default async function LeadsPage() {
   const channels = await loadLabels(sb, 'lead_channel');
   const [{ data: leads }, { data: calls }, { data: feeds }] = await Promise.all([
     sb.from('leads')
-      .select('id,full_name,email,phone,kind,event_date,guest_count,message,note,status,source,created_at,location,marketing_consent,marketing_consent_at')
-      .order('created_at', { ascending: false }).limit(200),
+      .select('id,full_name,partner_name,email,phone,kind,event_date,guest_count,message,note,status,source,created_at,location,marketing_consent,marketing_consent_at,score,summary,first_response_at,next_action,next_action_at')
+      .order('created_at', { ascending: false }).limit(300),
     sb.from('sales_calls').select('id,lead_id,title,remind_on,done')
       .order('remind_on', { ascending: true, nullsFirst: false }),
-    /* The policy scopes this to the producer's own rows, tokens and all. */
     sb.from('lead_channels')
       .select('id,label,source,token,enabled,last_lead_at,lead_count')
       .order('created_at', { ascending: false }),
   ]);
 
-  const rows = (leads ?? []) as Lead[];
+  const rows = (leads ?? []) as (Lead & BoardLead)[];
   const allCalls = (calls ?? []) as Call[];
   const callsFor = (leadId: string) => allCalls.filter((x) => x.lead_id === leadId);
-
-  /* the ones that have not been answered yet are the ones worth seeing first */
-  const fresh = rows.filter((l) => l.status === 'new');
-  const rest = rows.filter((l) => l.status !== 'new');
+  const sourceOptions = [
+    ...LEAD_SOURCES.map((s) => ({ value: s.value, label: (ui.lead.sources as Record<string, string>)[s.value] ?? s.label })),
+    ...channels.map((ch) => ({ value: ch.label, label: ch.label })),
+  ];
 
   return (
     <>
       <PageHead
         title={ui.leads.title} sub={ui.leads.sub}
+        actions={<QuickLead sources={sourceOptions} />}
         report={<IssueReporter userId={account.id} context={ui.leads.title} />}
       />
-
-      {/* Ahead of the list on purpose. The enquiry a producer is holding in
-          their head, still on the phone, is the one at risk of never being
-          written down at all. */}
-      <NewLeadForm channels={channels.map((ch) => ({ value: ch.label, label: ch.label }))} />
-
-      {/* The producer's own channels, edited where the funnel is read. A
-          channel nobody can add is a funnel that measures our guesses. */}
-      <div className="my-6 space-y-6">
-        <LabelToolbar
-          kind="lead_channel"
-          labels={channels}
-          builtIn={LEAD_SOURCES.map((s) => s.label)}
-        />
-
-        {/* The same funnel, wired up rather than typed in. The toolbar above
-            is what a producer writes down after a phone call; this is the
-            advertising filling the list in without them. */}
-        <LeadChannels channels={(feeds ?? []) as LeadChannel[]} origin={publicEnv.siteUrl} />
-      </div>
-
-      <CallsPanel calls={allCalls} leads={rows.map((l) => ({ id: l.id, name: l.full_name }))} />
-
 
       {rows.length === 0 ? (
         <Empty text={ui.leads.empty} />
       ) : (
-        <div className="mt-6 space-y-6">
-          {fresh.length > 0 && (
-            <div>
-              <h2 className="mb-3 text-body font-semibold text-accent">
-                {ui.lead.statuses.new} · {fresh.length}
-              </h2>
-              <ul className="space-y-3">
-                {fresh.map((l) => <LeadRow key={l.id} lead={l} calls={callsFor(l.id)} />)}
-              </ul>
-            </div>
-          )}
-          {rest.length > 0 && (
-            <div>
-              <h2 className="mb-3 text-body font-semibold text-ink-mute">{ui.leads.title} · {rest.length}</h2>
-              <ul className="space-y-3">
-                {rest.map((l) => <LeadRow key={l.id} lead={l} calls={callsFor(l.id)} />)}
-              </ul>
-            </div>
-          )}
-        </div>
+        <LeadBoard
+          leads={rows}
+          now={Date.now()}
+          list={
+            <ul className="list-none space-y-3 p-0">
+              {rows.map((l) => <LeadRow key={l.id} lead={l} calls={callsFor(l.id)} />)}
+            </ul>
+          }
+        />
       )}
+
+      <div className="mt-8">
+        <Fold id="fold-lead-setup" icon={ClipboardList} title={ui.pipeline.more.title} sub={ui.pipeline.more.sub}>
+          <div className="space-y-6">
+            <NewLeadForm channels={channels.map((ch) => ({ value: ch.label, label: ch.label }))} />
+            <LabelToolbar
+              kind="lead_channel"
+              labels={channels}
+              builtIn={LEAD_SOURCES.map((s) => s.label)}
+            />
+            <LeadChannels channels={(feeds ?? []) as LeadChannel[]} origin={publicEnv.siteUrl} />
+            <CallsPanel calls={allCalls} leads={rows.map((l) => ({ id: l.id, name: l.full_name }))} />
+          </div>
+        </Fold>
+      </div>
+
       <Live sources={[{ table: 'leads' }, { table: 'sales_calls' }]} />
     </>
   );

@@ -201,3 +201,127 @@ export async function convertLead(form: FormData): Promise<void> {
   touch();
   redirect(`/app/clients/${client.id}`);
 }
+
+/* ── the card ──────────────────────────────────────────────────────────── */
+
+/** The fields the card's form carries, and never the status: that is the
+ *  column it sits in, moved by its own control. Blank clears a value on
+ *  purpose, because a date somebody typed wrong has to be removable. */
+export async function updateLead(_prev: LeadActionResult | null, form: FormData): Promise<LeadActionResult> {
+  const id = String(form.get('lead_id') ?? '');
+  if (!id) return { ok: false, error: 'חסר מזהה ליד' };
+  const v = (k: string) => String(form.get(k) ?? '').trim();
+  const num = (k: string, lo: number, hi: number): number | null => {
+    const raw = v(k);
+    if (!raw) return null;
+    const n = Number(raw);
+    return Number.isFinite(n) && n >= lo && n <= hi ? Math.round(n) : null;
+  };
+  const name = v('full_name');
+  if (name.length < 2) return { ok: false, error: 'נא למלא שם' };
+  const email = v('email').toLowerCase();
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { ok: false, error: 'האימייל לא תקין' };
+  const date = v('event_date');
+  if (date && Number.isNaN(Date.parse(date))) return { ok: false, error: 'התאריך לא תקין' };
+
+  const sb = await supabaseServer();
+  const { data, error } = await sb.from('leads').update({
+    full_name: name.slice(0, 120),
+    partner_name: v('partner_name').slice(0, 120),
+    phone: v('phone').slice(0, 40),
+    email: email.slice(0, 160),
+    instagram_handle: v('instagram_handle').replace(/^@/, '').slice(0, 80),
+    event_date: date || null,
+    event_date_flexible: v('event_date_flexible') === 'on',
+    guest_count: num('guest_count', 1, 1500),
+    location: v('location').slice(0, 120),
+    budget_min: num('budget_min', 0, 10_000_000),
+    budget_max: num('budget_max', 0, 10_000_000),
+    venue_booked: v('venue_booked') === 'on',
+    lost_reason: v('lost_reason').slice(0, 300),
+  }).eq('id', id).select('id');
+  if (error) {
+    console.error('[leads] updateLead failed', { code: error.code, message: error.message });
+    return { ok: false, error: 'לא הצלחנו לשמור' };
+  }
+  if (!data?.length) return { ok: false, error: 'הליד לא נמצא' };
+  touch();
+  revalidatePath(`/app/leads/${id}`);
+  return { ok: true };
+}
+
+export async function setNextAction(_prev: LeadActionResult | null, form: FormData): Promise<LeadActionResult> {
+  const id = String(form.get('lead_id') ?? '');
+  if (!id) return { ok: false, error: 'חסר מזהה ליד' };
+  const what = String(form.get('next_action') ?? '').trim().slice(0, 300);
+  const when = String(form.get('next_action_at') ?? '').trim();
+  if (what && !when) return { ok: false, error: 'מתי?' };
+  const at = when ? new Date(when) : null;
+  if (at && Number.isNaN(at.getTime())) return { ok: false, error: 'התאריך לא תקין' };
+  const sb = await supabaseServer();
+  const { data, error } = await sb.from('leads')
+    .update({ next_action: what, next_action_at: what && at ? at.toISOString() : null })
+    .eq('id', id).select('id');
+  if (error) {
+    console.error('[leads] setNextAction failed', { code: error.code, message: error.message });
+    return { ok: false, error: 'לא הצלחנו לשמור' };
+  }
+  if (!data?.length) return { ok: false, error: 'הליד לא נמצא' };
+  touch();
+  revalidatePath(`/app/leads/${id}`);
+  return { ok: true };
+}
+
+/** Something happened that only the producer knows about: a note, or a
+ *  message that went out through WhatsApp from the button on the card. A
+ *  message out also stamps the first response, by trigger. */
+export async function addLeadEvent(_prev: LeadActionResult | null, form: FormData): Promise<LeadActionResult> {
+  const id = String(form.get('lead_id') ?? '');
+  const type = String(form.get('type') ?? '');
+  if (!id) return { ok: false, error: 'חסר מזהה ליד' };
+  if (!['note', 'message_out', 'call'].includes(type)) return { ok: false, error: 'סוג לא מוכר' };
+  const body = String(form.get('body') ?? '').trim().slice(0, 8000);
+  if (type === 'note' && !body) return { ok: false, error: 'הערה ריקה' };
+  const account = await currentAccount();
+  const sb = await supabaseServer();
+  const { error } = await sb.from('lead_events').insert({
+    lead_id: id, type, channel: String(form.get('channel') ?? '').slice(0, 40), body,
+    created_by: account?.id ?? null,
+  });
+  if (error) {
+    console.error('[leads] addLeadEvent failed', { code: error.code, message: error.message });
+    return { ok: false, error: 'לא הצלחנו לשמור' };
+  }
+  touch();
+  revalidatePath(`/app/leads/${id}`);
+  return { ok: true };
+}
+
+/** Three fields, from a phone that is still ringing. Everything else is
+ *  the card's to fill in later. */
+export async function quickLead(_prev: LeadActionResult | null, form: FormData): Promise<LeadActionResult> {
+  const v = (k: string) => String(form.get(k) ?? '').trim();
+  const name = v('full_name');
+  const phone = v('phone');
+  if (name.length < 2) return { ok: false, error: 'נא למלא שם' };
+  if (!phone) return { ok: false, error: 'צריך טלפון' };
+  const sb = await supabaseServer();
+  const { data, error } = await sb.rpc('record_lead', {
+    p_full_name: name,
+    p_phone: phone,
+    p_email: '',
+    p_kind: 'wedding',
+    p_event_date: null,
+    p_guest_count: null,
+    p_message: v('note'),
+    p_source: v('source') || 'phone',
+    p_location: '',
+  });
+  if (error) {
+    console.error('[leads] quickLead failed', { code: error.code, message: error.message });
+    return { ok: false, error: 'לא הצלחנו לשמור את הפנייה' };
+  }
+  touch();
+  if (typeof data === 'string' && data) redirect(`/app/leads/${data}`);
+  return { ok: true };
+}

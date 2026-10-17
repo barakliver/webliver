@@ -4,6 +4,7 @@ import { useActionState, useState } from 'react';
 import { eventKindsFor } from '@/content/ui';
 import type { Locale } from '@/lib/locale';
 import { formatDate } from '@/lib/dates';
+import Link from 'next/link';
 import { MapPin, MailCheck } from 'lucide-react';
 import { useFormStatus } from 'react-dom';
 import { setLeadStatus, setLeadNote, bookCall, convertLead, type LeadActionResult } from '@/app/actions/leads';
@@ -68,7 +69,7 @@ export function LeadRow({ lead, calls }: { lead: Lead; calls: Call[] }) {
             intact status select. With a floor the fixed controls wrap below
             instead, which is what the wrap was for. */}
         <div className="min-w-[200px] flex-1">
-          <p className="font-medium text-ink">{lead.full_name}</p>
+          <Link href={`/app/leads/${lead.id}`} className="font-medium text-ink hover:text-accent">{lead.full_name}</Link>
           <p className="text-meta text-ink-mute" dir="ltr">
             {[lead.phone, lead.email].filter(Boolean).join(' · ') || '·'}
           </p>
