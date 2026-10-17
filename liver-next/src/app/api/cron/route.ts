@@ -7,6 +7,7 @@ import { sendVendorDigests } from '@/lib/notify/vendorDigest';
 import { syncAll } from '@/lib/google/sync';
 import { sendMorningDigest, sendLeadSla } from '@/lib/notify/leadDigest';
 import { sendInboxBatch, meetingFollowUps } from '@/lib/notify/inboxAlert';
+import { sendPaymentReminders, flagStaleQuotes } from '@/lib/notify/budgetReminders';
 
 /**
  * The nightly sweep: close what the calendar has closed, and send the
@@ -97,8 +98,13 @@ export async function POST(req: Request) {
      without running the rest. */
   if (job === 'morning') {
     const m = await sendMorningDigest(sb);
-    if (m.errors.length) console.error('[cron] morning finished with problems', m);
-    return NextResponse.json({ ok: m.errors.length === 0, ...m });
+    /* The same morning: who is owed money this week, and which quote has
+       waited a fortnight for a decision. */
+    const pay = await sendPaymentReminders(sb, todayInZone());
+    const quotes = await flagStaleQuotes(sb);
+    const errors = [...m.errors, ...pay.errors, ...quotes.errors];
+    if (errors.length) console.error('[cron] morning finished with problems', { m, pay, quotes });
+    return NextResponse.json({ ok: errors.length === 0, ...m, reminders: pay.sent, staleQuotes: quotes.added, errors });
   }
   if (job === 'inbox') {
     const b = await sendInboxBatch(sb);

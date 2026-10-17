@@ -32,7 +32,8 @@ import { loadTemplates } from '@/lib/workflow';
 import { InviteBox, type Invite } from '@/components/app/InviteBox';
 import { TaskList, type Task } from '@/components/app/TaskList';
 import { PaymentsPanel, type Payment } from '@/components/app/PaymentsPanel';
-import { BudgetPanel, type BudgetItem } from '@/components/app/BudgetPanel';
+import { BudgetGrid } from '@/components/app/BudgetGrid';
+import type { GridItem as BudgetItem, GridPayment } from '@/lib/budgetGrid';
 import { FinanceSummary } from '@/components/app/FinanceSummary';
 import { ProducerLedger } from '@/components/app/ProducerLedger';
 import { WinningBoard } from '@/components/app/WinningBoard';
@@ -135,7 +136,7 @@ export default async function ClientPage({
   const sb = await supabaseServer();
   const { data: client } = await sb
     .from('clients')
-    .select('id,display_name,kind,event_date,venue,guest_estimate,budget_visible,budget_target,shared_sections,crew_note,producer_fee,budget_plan,label_id,track_a_label,track_b_label,guest_token,guest_site_on,guest_note,game_token,game_on,contact_email,contact_phone,brief,brand,service')
+    .select('id,display_name,kind,event_date,venue,guest_estimate,budget_visible,budget_target,budget_approved_at,budget_approval_asked_at,shared_sections,crew_note,producer_fee,budget_plan,label_id,track_a_label,track_b_label,guest_token,guest_site_on,guest_note,game_token,game_on,contact_email,contact_phone,brief,brand,service')
     .eq('id', id)
     .maybeSingle();
 
@@ -304,6 +305,7 @@ type Client = {
   venue: string | null; guest_estimate: number | null; budget_visible: boolean | null;
   crew_note: string | null; producer_fee: number | string | null;
   budget_target: number | null;
+  budget_approved_at: string | null; budget_approval_asked_at: string | null;
   shared_sections: unknown;
   budget_plan: unknown;
   label_id: string | null;
@@ -497,18 +499,36 @@ async function Section({ tab, client, viewerId, isRoot }: {
   }
 
   if (tab === 'money') {
-    const [payments, budget, crewFees, ledger] = await Promise.all([
+    const [payments, budget, crewFees, ledger, budgetPays, privates, history, vendorNames] = await Promise.all([
       safeRows<Payment>('payments', sb.from('payments')
         .select('id,title,amount,due_on,paid,paid_on').eq('client_id', id)
         .order('paid').order('due_on', { ascending: true, nullsFirst: false })),
       safeRows<BudgetItem>('budget', sb.from('budget_items')
-        .select('id,category,label,estimate,agreed,vendor,created_at').eq('client_id', id).order('created_at')),
+        .select('id,category,label,estimate,quoted,agreed,vendor,event_vendor_id,status,includes_vat,vat_rate,per_guest,guest_count_override,notes,paid_by,due_date,visible_to_couple,sort_order,source,created_at,updated_at')
+        .eq('client_id', id).order('sort_order').order('created_at')),
       /* Fees only. The names belong on the crew screen; what this needs is a
          column that until now nothing anywhere had ever added up. */
       safeRows<{ fee: number | string | null; extra_hours: number | string | null; hour_rate: number | string | null }>('crew fees', sb.from('crew')
         .select('fee,extra_hours,hour_rate').eq('client_id', id)),
       loadLedger(sb, { clientId: id }),
+      safeRows<GridPayment>('budget payments', sb.from('budget_payments')
+        .select('id,item_id,amount,paid_at,due_at,method,paid_by,reference,notes').eq('client_id', id)
+        .order('due_at', { ascending: true, nullsFirst: false })),
+      safeRows<{ item_id: string; internal_notes: string }>('private notes', sb.from('budget_item_private')
+        .select('item_id,internal_notes').in('item_id', [])),
+      safeRows<{ id: string; title: string; body: string; actor: string; created_at: string }>('budget history', sb.from('activity_log')
+        .select('id,title,body,actor,created_at').eq('client_id', id).eq('kind', 'budget_change')
+        .order('created_at', { ascending: false }).limit(30)),
+      safeRows<{ name: string }>('vendor names', sb.from('event_vendors').select('name').eq('client_id', id)),
     ]);
+    /* The private notes are read by the lines they belong to, after the
+       lines are known: a second small query rather than a join the couple's
+       policy would have to be trusted to cut. */
+    const privateRows = budget.length
+      ? await safeRows<{ item_id: string; internal_notes: string }>('private notes', sb.from('budget_item_private')
+        .select('item_id,internal_notes').in('item_id', budget.map((b) => b.id)))
+      : privates;
+    const privateNotes = Object.fromEntries(privateRows.map((r) => [r.item_id, r.internal_notes]));
     return (
       <div className="space-y-6">
         {/* The five figures first, then the two lists they are made of. */}
@@ -539,7 +559,14 @@ async function Section({ tab, client, viewerId, isRoot }: {
           target={client.budget_target === null ? null : Number(client.budget_target)}
         />
         <PaymentsPanel clientId={id} payments={payments} viewer="producer" />
-        <BudgetPanel clientId={id} items={budget} viewer="producer" visible={!!client.budget_visible} />
+        <BudgetGrid
+          clientId={id} viewer="producer" items={budget} payments={budgetPays}
+          guests={client.guest_estimate}
+          target={client.budget_target === null ? null : Number(client.budget_target)}
+          approvedAt={client.budget_approved_at} askedAt={client.budget_approval_asked_at}
+          vendors={[...new Set(vendorNames.map((v) => v.name).filter(Boolean))]}
+          privateNotes={privateNotes} history={history}
+        />
         {/* What the plus in the header recorded against this event. */}
         <LedgerEntries entries={ledger} showEvent={false} />
       </div>

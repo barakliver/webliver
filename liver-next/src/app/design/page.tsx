@@ -6,7 +6,7 @@ import { currentLocale } from '@/lib/serverLocale';
 import { TaskList } from '@/components/app/TaskList';
 import { WeddingBingo } from '@/components/app/WeddingBingo';
 import { PaymentsPanel } from '@/components/app/PaymentsPanel';
-import { BudgetPanel } from '@/components/app/BudgetPanel';
+import { BudgetGrid } from '@/components/app/BudgetGrid';
 import { BudgetPlanner } from '@/components/app/BudgetPlanner';
 import { BudgetTracker } from '@/components/app/BudgetTracker';
 import { GuestList } from '@/components/app/GuestList';
@@ -93,7 +93,7 @@ import { NewLeadForm } from '@/components/app/NewLeadForm';
 import { CalendarFeed } from '@/components/app/CalendarFeed';
 import {
   FIXTURE_CLIENT, FIXTURE_VIEWER,
-  fixtureTasks, fixtureBingoTasks, fixturePayments, fixtureBudget, fixtureGuests, fixtureTables,
+  fixtureTasks, fixtureBingoTasks, fixturePayments, fixtureBudget, fixtureBudgetPayments, fixtureGuests, fixtureTables,
   fixtureSeatGuests, fixtureDay, fixtureMessages, fixtureContracts, fixtureFiles, fixtureMedia,
   fixtureSongs, fixtureKit, fixturePeople, fixtureBoard, fixtureShopItems,
   fixtureStatus, fixtureAttention, fixtureOrders, fixtureShelf, fixtureCrew,
@@ -393,8 +393,15 @@ export default async function DesignPage() {
           <ProducerLedger c={ui.money.ledger} payments={[]} items={[]} crew={[]} />
         </Panel>
 
-        <Panel name="BudgetPanel · producer" note="an agreed figure, two still open">
-          <BudgetPanel clientId={client} items={fixtureBudget} viewer="producer" visible />
+        <Panel name="BudgetGrid · producer" note="the sheet: a per-plate hall, a quote before VAT, a line hidden from the couple, a line from the inbox; press a cell to type">
+          <BudgetGrid clientId={client} viewer="producer" items={fixtureBudget} payments={fixtureBudgetPayments} guests={380} target={240000}
+            approvedAt={null} askedAt={null} vendors={['גני ורדים', 'סטודיו לביא']} privateNotes={{ b1: 'עמלה 4% מהאולם' }}
+            history={[{ id: 'h1', title: 'צילום ווידאו: agreed', body: '14000 ⇒ 13500', actor: 'producer', created_at: '2026-10-10T09:00:00Z' }]} />
+        </Panel>
+
+        <Panel name="BudgetGrid · client, asked to approve" note="the same sheet as the couple reads it: no private column, the banner asking for a yes">
+          <BudgetGrid clientId={client} viewer="client" items={fixtureBudget.filter((b) => b.visible_to_couple)} payments={fixtureBudgetPayments} guests={380} target={240000}
+            approvedAt={null} askedAt="2026-10-12T09:00:00Z" />
         </Panel>
 
         <Panel name="GuestList" note="attending, declined, no answer, a six person party">
@@ -601,7 +608,7 @@ export default async function DesignPage() {
                  feature look missing. */
               event_date: '2026-12-05',
               venue: 'אחוזת הכפר', guest_estimate: 180, region: 'השרון', budget_visible: true, shared_sections: {}, budget_plan: null,
-              budget_target: 260000, track_a_label: 'נועה', track_b_label: 'איתי',
+              budget_target: 260000, budget_approved_at: null, budget_approval_asked_at: null, track_a_label: 'נועה', track_b_label: 'איתי',
               guest_token: 'demo-token', guest_site_on: true,
               game_token: '0123456789abcdef0123456789abcdef', game_on: true, brand: null,
             }}
@@ -611,6 +618,7 @@ export default async function DesignPage() {
               tasksFor: () => fixtureTasks,
               paymentsFor: () => fixturePayments,
               budgetFor: () => fixtureBudget,
+              budgetPaymentsFor: () => fixtureBudgetPayments,
               guestsFor: () => fixtureGuests,
               tablesFor: () => fixtureTables,
               dayFor: () => fixtureDay,

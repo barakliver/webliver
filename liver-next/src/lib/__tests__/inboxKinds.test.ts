@@ -12,7 +12,9 @@ test('every kind in the enum answers, and an unknown one is refused', () => {
 test('a budget line needs a name and an amount, and reads the amount from the model\'s own words', () => {
   const v = validateAction('budget_add_item', { category: 'צילום', vendor_name: 'דני כהן', amount_quoted: '12,000 ₪', notes: 'כולל אלבום' });
   assert.ok(v.ok);
-  if (v.ok) assert.deepEqual(v.data, { category: 'צילום', label: 'דני כהן', estimate: 12000, agreed: null, vendor: 'דני כהן', notes: 'כולל אלבום' });
+  /* A line born from a quote is a quote: the figure sits in the quote
+     column and in the plan, and the status says so. */
+  if (v.ok) assert.deepEqual(v.data, { category: 'צילום', label: 'דני כהן', estimate: 12000, quoted: 12000, agreed: null, status: 'quoted', vendor: 'דני כהן', notes: 'כולל אלבום' });
   assert.equal(validateAction('budget_add_item', { label: 'צלם' }).ok, false, 'no amount');
   assert.equal(validateAction('budget_add_item', { amount: 100 }).ok, false, 'no name');
 });
@@ -30,6 +32,10 @@ test('marking paid takes a real date or none, never a broken one', () => {
   const b = validateAction('budget_mark_paid', { payment_id: ID, paid_on: 'next week' });
   assert.ok(b.ok && b.data.paid_on === null);
   assert.equal(validateAction('budget_mark_paid', { paid_on: '2026-10-01' }).ok, false);
+  /* Paid to a supplier against a line: a new payment on that line. */
+  const c = validateAction('budget_mark_paid', { budget_item_id: ID, amount: '4,000', paid_on: '2026-10-01' });
+  assert.ok(c.ok && c.data.item_id === ID && c.data.amount === 4000);
+  assert.equal(validateAction('budget_mark_paid', { budget_item_id: ID }).ok, false, 'no amount');
 });
 
 test('a task needs a title; its owner is the producer unless the couple is named', () => {

@@ -2,7 +2,7 @@ import 'server-only';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Task } from '@/components/app/TaskList';
 import type { Payment } from '@/components/app/PaymentsPanel';
-import type { BudgetItem } from '@/components/app/BudgetPanel';
+import type { GridItem as BudgetItem, GridPayment } from '@/lib/budgetGrid';
 import type { Guest } from '@/components/app/GuestList';
 import type { SeatTable } from '@/components/app/SeatingPlan';
 import type { DayItem } from '@/components/app/DaySchedule';
@@ -20,6 +20,8 @@ export type Workspace = {
    *  hall by name. Empty until somebody says. */
   region: string;
   budget_target: number | null;
+  budget_approved_at: string | null;
+  budget_approval_asked_at: string | null;
   /** The doors the producer has closed on the couple's screen. Empty means
    *  all open. */
   shared_sections: SharedSections;
@@ -99,6 +101,7 @@ export type PortalData = {
   tasksFor: (id: string) => Task[];
   paymentsFor: (id: string) => Payment[];
   budgetFor: (id: string) => BudgetItem[];
+  budgetPaymentsFor: (id: string) => GridPayment[];
   guestsFor: (id: string) => Guest[];
   tablesFor: (id: string) => SeatTable[];
   dayFor: (id: string) => DayItem[];
@@ -112,7 +115,7 @@ export type PortalData = {
 };
 
 const WORKSPACE_COLS =
-  'id,display_name,event_date,venue,guest_estimate,region,budget_visible,budget_target,shared_sections,budget_plan,track_a_label,track_b_label,guest_token,guest_site_on,game_token,game_on,brand';
+  'id,display_name,event_date,venue,guest_estimate,region,budget_visible,budget_target,budget_approved_at,budget_approval_asked_at,shared_sections,budget_plan,track_a_label,track_b_label,guest_token,guest_site_on,game_token,game_on,brand';
 
 type WithClient<T> = T & { client_id: string };
 const by = <T,>(rows: WithClient<T>[] | null | undefined, id: string): T[] =>
@@ -149,7 +152,7 @@ export async function loadPortal(
   const empty: PortalData = {
     workspaces,
     can: () => true,
-    tasksFor: () => [], paymentsFor: () => [], budgetFor: () => [],
+    tasksFor: () => [], paymentsFor: () => [], budgetFor: () => [], budgetPaymentsFor: () => [],
     guestsFor: () => [], tablesFor: () => [], dayFor: () => [], boardFor: () => [],
     vendorsFor: () => [], meetingsFor: () => [], eventsFor: () => [],
   };
@@ -167,14 +170,14 @@ export async function loadPortal(
 
   const events = (eventsData ?? []) as PortalEvent[];
 
-  const [tasks, payments, budget, guests, tables, day, boardRows, vendorRows, meetingRows] = await Promise.all([
+  const [tasks, payments, budget, guests, tables, day, boardRows, vendorRows, meetingRows, budgetPays] = await Promise.all([
     sb.from('tasks').select('id,client_id,title,due_on,done,owner,notes,created_by,event_id,category,vendor_id')
       .in('client_id', ids).order('done').order('sort_order')
       .order('due_on', { ascending: true, nullsFirst: false }),
     sb.from('payments').select('id,client_id,title,amount,due_on,paid,paid_on')
       .in('client_id', ids).order('paid').order('due_on', { ascending: true, nullsFirst: false }),
-    sb.from('budget_items').select('id,client_id,category,label,estimate,agreed,vendor,event_vendor_id,created_at')
-      .in('client_id', ids).order('created_at'),
+    sb.from('budget_items').select('id,client_id,category,label,estimate,quoted,agreed,vendor,event_vendor_id,status,includes_vat,vat_rate,per_guest,guest_count_override,notes,paid_by,due_date,visible_to_couple,sort_order,source,created_at,updated_at')
+      .in('client_id', ids).order('sort_order').order('created_at'),
     sb.from('guests_rsvp')
       .select('id,client_id,full_name,side,phone,status,party_size,diet,note,invite_token,table_id')
       .in('client_id', ids).order('full_name'),
@@ -190,6 +193,8 @@ export async function loadPortal(
     sb.from('meeting_logs').select('id,client_id,kind,title,held_on,summary')
       .in('client_id', ids).eq('visible_to_client', true)
       .order('held_on', { ascending: false, nullsFirst: false }).order('created_at', { ascending: false }),
+    sb.from('budget_payments').select('id,client_id,item_id,amount,paid_at,due_at,method,paid_by,reference,notes')
+      .in('client_id', ids).order('due_at', { ascending: true, nullsFirst: false }),
   ]);
 
   /* One row per workspace and module rather than a call per panel. A gate that
@@ -240,6 +245,7 @@ export async function loadPortal(
     paymentsFor: (id) => (moneyVisible(id) ? by(payments.data as WithClient<Payment>[], id) : []),
     can: (id, key) => !closed.has(`${id}:${key}`) && producerOpened(id, key),
     budgetFor: (id) => (moneyVisible(id) ? by(budget.data as WithClient<BudgetItem>[], id) : []),
+    budgetPaymentsFor: (id) => (moneyVisible(id) ? by(budgetPays.data as WithClient<GridPayment>[], id) : []),
     guestsFor: (id) => by(guests.data as WithClient<Guest>[], id),
     tablesFor: (id) => by(tables.data as WithClient<SeatTable>[], id),
     dayFor: (id) => by(day.data as WithClient<DayItem>[], id),

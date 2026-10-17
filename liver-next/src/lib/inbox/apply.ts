@@ -53,7 +53,8 @@ export async function applyAction(sb: SupabaseClient, action: StoredAction, acto
   try {
     switch (kind) {
       case 'budget_add_item': {
-        const { data: row, error } = await sb.from('budget_items').insert({ client_id: clientId, ...data }).select('id').single();
+        const { data: row, error } = await sb.from('budget_items')
+          .insert({ client_id: clientId, ...data, source: `ai_suggestion:${action.id}` }).select('id').single();
         if (error) throw error;
         ref = { table: 'budget_items', id: row.id }; logKind = 'budget_change';
         break;
@@ -67,7 +68,17 @@ export async function applyAction(sb: SupabaseClient, action: StoredAction, acto
         break;
       }
       case 'budget_mark_paid': {
-        const { id, paid_on } = data as { id: string; paid_on: string | null };
+        const d = data as { id?: string; item_id?: string; amount?: number; reference?: string; paid_on: string | null };
+        if (d.item_id) {
+          const { data: row, error } = await sb.from('budget_payments')
+            .insert({ item_id: d.item_id, client_id: clientId, amount: d.amount, reference: d.reference ?? '',
+              paid_at: d.paid_on ?? new Date().toISOString().slice(0, 10) })
+            .select('id').single();
+          if (error) throw error;
+          ref = { table: 'budget_payments', id: row.id }; logKind = 'budget_change';
+          break;
+        }
+        const { id, paid_on } = d as { id: string; paid_on: string | null };
         const { data: rows, error } = await sb.from('payments')
           .update({ paid: true, paid_on: paid_on ?? new Date().toISOString().slice(0, 10) })
           .eq('id', id).eq('client_id', clientId).select('id');

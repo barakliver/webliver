@@ -5,7 +5,7 @@ import { formatDate, daysUntil } from '@/lib/dates';
 import { TaskList } from '@/components/app/TaskList';
 import { WeddingBingo } from '@/components/app/WeddingBingo';
 import { PaymentsPanel } from '@/components/app/PaymentsPanel';
-import { BudgetPanel } from '@/components/app/BudgetPanel';
+import { BudgetGrid } from '@/components/app/BudgetGrid';
 import { BudgetTracker } from '@/components/app/BudgetTracker';
 import { FinanceSummary } from '@/components/app/FinanceSummary';
 import { WinningBoard } from '@/components/app/WinningBoard';
@@ -344,7 +344,12 @@ export function PortalWorkspace({
                 plan={c.budget_plan}
                 target={c.budget_target === null || c.budget_target === undefined ? null : Number(c.budget_target)}
               />
-              <BudgetPanel clientId={c.id} items={budget} viewer="client" visible />
+              <BudgetGrid
+                clientId={c.id} viewer="client" items={budget} payments={data.budgetPaymentsFor(c.id)}
+                guests={c.guest_estimate}
+                target={c.budget_target === null || c.budget_target === undefined ? null : Number(c.budget_target)}
+                approvedAt={c.budget_approved_at ?? null} askedAt={c.budget_approval_asked_at ?? null}
+              />
             </div>
           </Fold>
         )}

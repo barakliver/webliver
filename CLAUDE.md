@@ -453,6 +453,31 @@ that has happened once.
   as panels at the radius of a button. Nested surfaces step down rather than
   matching: an inner box at the outer box's radius is what makes a card look
   like a sticker on a card.
+- **The budget is a sheet now, and "paid" is never typed.** `BudgetGrid`
+  replaced the list of rows that each opened onto a form: press a cell,
+  type, Enter, and every total moves before the server is told. The sheet
+  moves first and `patchBudgetCell` is called four hundred milliseconds
+  later with one field, so a write that fails puts the one figure back and
+  says so rather than losing a form. All the arithmetic is
+  `lib/budgetGrid.ts`, pure and tested: VAT on a price quoted without it, a
+  hall priced per plate, three payments against one line, `12k` and
+  `12 אלף` as numbers. Four things are deliberate. `budget_payments` is a
+  table of its own and not more columns on `payments`, because `payments` is
+  the couple's schedule to the producer and `ledgerOf` counts it as income;
+  a photographer's deposit written there would read as money arriving. The
+  producer's note on a line is `budget_item_private`, a table the couple has
+  no policy on, for the crew's reason: a private column on a shared row is
+  not private. The couple may type into their own sheet, and two figures
+  are refused by the action rather than hidden by the screen, the plan once
+  they approved it and the agreed price once booked, because the screen is
+  not the fence. And `estimate` is still called `estimate`: it is the
+  planned figure, fifteen weddings carry it, and a rename is a data
+  migration wearing a tidier name. The backfill in 0104 runs inside the
+  branch that adds `status`, because sync.sql replays the file every five
+  minutes and an unguarded update would put a line back to booked every
+  time somebody moved it off. The Excel export writes formulas, not
+  values, so a parent who changes one price sees the total move.
+
 - **A budget line can be corrected, and that was missing for a year.**
   `budget_items` had add and delete and no update at all, so the agreed
   price - the one figure that by definition arrives late, after somebody

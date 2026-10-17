@@ -58,28 +58,45 @@ export function validateAction(kind: string, payload: unknown): Valid {
       const estimate = money(p.amount_quoted ?? p.estimate ?? p.amount);
       if (!label) return { ok: false, error: 'שורת תקציב בלי שם' };
       if (estimate === null) return { ok: false, error: 'שורת תקציב בלי סכום' };
+      /* A line born from a quote is a quote: the figure goes into the
+         quote column and the status says so, and the plan takes the same
+         figure so the sheet has something to measure against. */
+      const agreed = money(p.agreed);
       return { ok: true, kind, data: {
-        category: str(p.category, 40), label, estimate,
-        agreed: money(p.agreed), vendor: str(p.vendor_name ?? p.vendor, 120), notes: str(p.notes, 2000),
+        category: str(p.category, 40), label, estimate, quoted: estimate, agreed,
+        status: agreed !== null ? 'booked' : 'quoted',
+        vendor: str(p.vendor_name ?? p.vendor, 120), notes: str(p.notes, 2000),
       } };
     }
     case 'budget_update_item': {
       const id = uuid(p.budget_item_id ?? p.id);
       if (!id) return { ok: false, error: 'עדכון תקציב בלי שורה' };
       const data: Record<string, unknown> = { id };
-      const agreed = money(p.agreed ?? p.amount_quoted ?? p.amount);
-      if (agreed !== null) data.agreed = agreed;
+      const agreed = money(p.agreed);
+      if (agreed !== null) { data.agreed = agreed; data.status = 'booked'; }
+      const quoted = money(p.quoted ?? p.amount_quoted ?? p.amount);
+      if (quoted !== null) data.quoted = quoted;
       const estimate = money(p.estimate);
       if (estimate !== null) data.estimate = estimate;
+      if (str(p.status, 20) && ['idea', 'quoted', 'booked', 'paid', 'cancelled'].includes(str(p.status, 20))) data.status = str(p.status, 20);
       if (str(p.vendor_name ?? p.vendor, 120)) data.vendor = str(p.vendor_name ?? p.vendor, 120);
       if (str(p.notes, 2000)) data.notes = str(p.notes, 2000);
       if (Object.keys(data).length === 1) return { ok: false, error: 'עדכון תקציב בלי מה לעדכן' };
       return { ok: true, kind, data };
     }
     case 'budget_mark_paid': {
+      /* Two shapes. A payment on the couple's schedule is marked paid; a
+         sum paid to a supplier against a budget line is recorded as a new
+         payment on that line. */
+      const itemId = uuid(p.budget_item_id);
+      const paid_on = isoDate(p.paid_on) ?? null;
+      if (itemId) {
+        const amount = money(p.amount ?? p.amount_paid);
+        if (amount === null || amount <= 0) return { ok: false, error: 'תשלום לספק בלי סכום' };
+        return { ok: true, kind, data: { item_id: itemId, amount, paid_on, reference: str(p.reference, 80) } };
+      }
       const id = uuid(p.payment_id ?? p.id);
       if (!id) return { ok: false, error: 'תשלום בלי שורה' };
-      const paid_on = isoDate(p.paid_on) ?? null;
       return { ok: true, kind, data: { id, paid_on } };
     }
     case 'vendor_create': {

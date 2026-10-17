@@ -1,6 +1,6 @@
 import type { Task } from '@/components/app/TaskList';
 import type { Payment } from '@/components/app/PaymentsPanel';
-import type { BudgetItem } from '@/components/app/BudgetPanel';
+import type { GridItem as BudgetItem, GridPayment } from '@/lib/budgetGrid';
 import type { BoardImage } from '@/components/app/WinningBoard';
 import type { Guest } from '@/components/app/GuestList';
 import type { SeatTable, SeatGuest } from '@/components/app/SeatingPlan';
@@ -106,12 +106,24 @@ export const fixturePayments: Payment[] = [
   { id: 'p3', title: 'יתרה, שבוע לפני', amount: 55000, due_on: day(23), paid: false, paid_on: null },
 ];
 
+const line = (id: string, category: string, label: string, estimate: number, agreed: number | null, vendor: string, over: Partial<BudgetItem> = {}): BudgetItem => ({
+  id, category, label, estimate, agreed, vendor, quoted: null, status: agreed === null ? 'idea' : 'booked',
+  includes_vat: true, vat_rate: 0.18, per_guest: false, guest_count_override: null, notes: '', paid_by: 'couple',
+  due_date: null, visible_to_couple: true, sort_order: 0, source: 'manual', created_at: day(-40), ...over,
+});
 export const fixtureBudget: BudgetItem[] = [
-  { id: 'b1', category: 'מקום', label: 'אולם וקייטרינג', estimate: 150000, agreed: 162000, vendor: 'גני ורדים' },
-  { id: 'b2', category: 'צילום', label: 'צילום ווידאו', estimate: 14000, agreed: 13500, vendor: 'סטודיו לביא' },
-  { id: 'b3', category: 'מוזיקה', label: 'דיג׳יי והגברה', estimate: 9000, agreed: null, vendor: '' },
-  { id: 'b4', category: 'עיצוב', label: 'חופה, שולחנות ופרחים', estimate: 22000, agreed: 24800, vendor: 'סטודיו פרח לבן בע״מ' },
-  { id: 'b5', category: 'בר', label: 'בר ואלכוהול', estimate: 18000, agreed: null, vendor: '' },
+  line('b1', 'venue', 'אולם וקייטרינג', 150000, 380, 'גני ורדים', { per_guest: true, guest_count_override: 420, sort_order: 1, notes: 'כולל בר בסיסי' }),
+  line('b2', 'photo', 'צילום ווידאו', 14000, 13500, 'סטודיו לביא', { sort_order: 1, source: 'ai_suggestion:x' }),
+  line('b3', 'music', 'דיג׳יי והגברה', 9000, null, '', { quoted: 9800, status: 'quoted', includes_vat: false, sort_order: 1 }),
+  line('b4', 'design', 'חופה, שולחנות ופרחים', 22000, 24800, 'סטודיו פרח לבן בע״מ', { sort_order: 1 }),
+  line('b5', 'bar', 'בר ואלכוהול', 18000, null, '', { sort_order: 1, visible_to_couple: false }),
+];
+
+export const fixtureBudgetPayments: GridPayment[] = [
+  { id: 'bp1', item_id: 'b1', amount: 40000, paid_at: day(-30), due_at: day(-30), method: 'transfer', paid_by: 'הזוג', reference: '1042', notes: '' },
+  { id: 'bp2', item_id: 'b1', amount: 60000, paid_at: null, due_at: day(12), method: '', paid_by: '', reference: '', notes: '' },
+  { id: 'bp3', item_id: 'b2', amount: 3500, paid_at: day(-10), due_at: null, method: 'bit', paid_by: '', reference: '', notes: '' },
+  { id: 'bp4', item_id: 'b4', amount: 24800, paid_at: null, due_at: day(40), method: '', paid_by: '', reference: '', notes: '' },
 ];
 
 export const fixtureGuests: Guest[] = [

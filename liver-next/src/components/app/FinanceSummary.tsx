@@ -8,7 +8,7 @@ import { useCopy } from '@/components/app/CopyProvider';
 import { Money } from '@/components/Ltr';
 import { cn } from '@/lib/utils';
 import { summarise } from '@/lib/finance';
-import type { BudgetItem } from './BudgetPanel';
+import type { GridItem as BudgetItem } from '@/lib/budgetGrid';
 import type { Payment } from './PaymentsPanel';
 
 /**

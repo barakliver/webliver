@@ -56,7 +56,7 @@ const SYSTEM = `אתה קורא דברים שמגיעים למפיק חתונו�
 סוגי פעולות ושדות ה-payload שלהם:
 - budget_add_item: { category, vendor_name, amount_quoted, notes }. רק אם יש סכום בטקסט. אם יש כבר שורת תקציב לאותה קטגוריה או אותו ספק ברשימה שקיבלת, הצע budget_update_item במקום.
 - budget_update_item: { budget_item_id, agreed או estimate, vendor_name, notes }.
-- budget_mark_paid: { payment_id, paid_on }. רק אם כתוב במפורש ששולם.
+- budget_mark_paid: { payment_id, paid_on } לתשלום של הזוג למפיק, או { budget_item_id, amount, paid_on, reference } לסכום ששולם לספק על שורת תקציב. רק אם כתוב במפורש ששולם.
 - vendor_create: { name, category, contact_name, phone, email, notes }. רק לספק שלא ברשימה.
 - vendor_update: { vendor_id, phone, email, contact_name, notes }.
 - task_create: { title, due_date, owner }. owner הוא producer או client.
