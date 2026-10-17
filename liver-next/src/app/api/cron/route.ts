@@ -6,6 +6,7 @@ import { sendBudgetDigests } from '@/lib/notify/budgetDigest';
 import { sendVendorDigests } from '@/lib/notify/vendorDigest';
 import { syncAll } from '@/lib/google/sync';
 import { sendMorningDigest, sendLeadSla } from '@/lib/notify/leadDigest';
+import { sendInboxBatch, meetingFollowUps } from '@/lib/notify/inboxAlert';
 
 /**
  * The nightly sweep: close what the calendar has closed, and send the
@@ -99,6 +100,11 @@ export async function POST(req: Request) {
     if (m.errors.length) console.error('[cron] morning finished with problems', m);
     return NextResponse.json({ ok: m.errors.length === 0, ...m });
   }
+  if (job === 'inbox') {
+    const b = await sendInboxBatch(sb);
+    if (b.errors.length) console.error('[cron] inbox finished with problems', b);
+    return NextResponse.json({ ok: b.errors.length === 0, ...b });
+  }
   if (job === 'leads') {
     const s = await sendLeadSla(sb);
     if (s.errors.length) console.error('[cron] leads finished with problems', s);
@@ -145,6 +151,11 @@ export async function POST(req: Request) {
   const { data: closed, error: closeErr } = await sb.rpc('archive_past_events', { p_grace: 14 });
   if (closeErr) out.errors.push(`archive: ${closeErr.message}`);
   else out.archived = Number(closed) || 0;
+
+  /* Yesterday's meetings with nothing written about them: one push each,
+     asking for the summary while it is still in somebody's head. */
+  const f = await meetingFollowUps(sb, today);
+  out.errors.push(...f.errors);
 
   const { data: due, error: dueErr } = await sb.rpc('fire_due_anniversaries');
   if (dueErr) {

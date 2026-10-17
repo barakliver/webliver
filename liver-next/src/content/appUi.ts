@@ -5,7 +5,7 @@ import {
   meetingTemplatesCopy, timelineCopy, studioCopy, journalCopy, circleCopy, confirmCopy,
   leadsCopy, crewCopy, vendorCopy, templateCopy, barCopy, updateCopy, linkCopy, signCopy,
   siteEditorCopy, hebrewCalCopy, labelCopy, channelCopy, knowledgeCopy, jumpCopy, copilotCopy, archiveCopy,
-  meetingCopy, noteCopy, workflowCopy, referralCopy, holidayCopy, alertsCopy, pipelineCopy,
+  meetingCopy, noteCopy, workflowCopy, referralCopy, holidayCopy, alertsCopy, pipelineCopy, inboxCopy,
 } from './site.ts';
 import {
   noticeCopyEn, ticketCopyEn, companionCopyEn, prepCopyEn, venueCopyEn, envelopesCopyEn, vehiclesCopyEn, confirmEn,
@@ -16,7 +16,7 @@ import {
 import {
   consoleEn, leadEn, crewEn, vendorEn, templateEn, barEn, updateEn, linkEn, signEn,
   siteEditorEn, hebrewCalEn, labelEn, channelEn, knowledgeEn, jumpEn, copilotEn, archiveEn,
-  meetingEn, noteEn, workflowEn, referralEn, holidayEn, alertsEn, pipelineEn,
+  meetingEn, noteEn, workflowEn, referralEn, holidayEn, alertsEn, pipelineEn, inboxEn,
 } from './console.en.ts';
 
 /**
@@ -132,6 +132,7 @@ export type WorkflowCopy = Wide<typeof workflowCopy>;
 export type ReferralCopy = Wide<typeof referralCopy>;
 export type AlertsCopy = Wide<typeof alertsCopy>;
 export type PipelineCopy = Wide<typeof pipelineCopy>;
+export type InboxCopy = Wide<typeof inboxCopy>;
 
 /** Everything a screen reads, resolved together. One object rather than
  *  forty lookups, because it travels as one value through one context rather
@@ -161,6 +162,7 @@ export type AppUi = {
   holiday: HolidayCopy;
   alerts: AlertsCopy;
   pipeline: PipelineCopy;
+  inbox: InboxCopy;
   meetingTemplates: MeetingTemplatesCopy;
   timeline: TimelineCopy;
   studio: StudioCopy;
@@ -196,6 +198,7 @@ export const APP_UI_HE: AppUi = {
   holiday: holidayCopy,
   alerts: alertsCopy,
   pipeline: pipelineCopy,
+  inbox: inboxCopy,
   meetingTemplates: meetingTemplatesCopy,
   timeline: timelineCopy,
   studio: studioCopy,
@@ -220,6 +223,7 @@ const APP_UI_EN: AppUi = {
   holiday: holidayEn,
   alerts: alertsEn,
   pipeline: pipelineEn,
+  inbox: inboxEn,
   meetingTemplates: meetingTemplatesCopyEn,
   timeline: timelineCopyEn,
   studio: studioCopyEn,

@@ -1,7 +1,7 @@
 import type {
   ConsoleCopy, LeadCopy, CrewCopy, VendorCopy, TemplateCopy, BarCopy, UpdateCopy, LinkCopy,
   SignCopy, SiteEditorCopy, HebrewCalCopy, LabelCopy, ChannelCopy, KnowledgeCopy, JumpCopy, CopilotCopy,
-  ArchiveCopy, MeetingCopy, NoteCopy, WorkflowCopy, ReferralCopy, HolidayCopy, AlertsCopy, PipelineCopy,
+  ArchiveCopy, MeetingCopy, NoteCopy, WorkflowCopy, ReferralCopy, HolidayCopy, AlertsCopy, PipelineCopy, InboxCopy,
 } from './appUi.ts';
 
 /**
@@ -276,6 +276,7 @@ export const consoleEn: ConsoleCopy = {
   nav: {
     overview: 'Overview',
     leads: 'Leads',
+    inbox: 'Inbox',
     clients: 'Events',
     calendar: 'Calendar',
     insights: 'Insights',
@@ -1868,4 +1869,41 @@ export const pipelineEn: PipelineCopy = {
     save: 'Save', saving: 'Saving',
   },
   more: { title: 'An enquiry with every detail', sub: 'The full form, for when you have everything to hand.' },
+};
+
+export const inboxEn: InboxCopy = {
+  title: 'Action inbox',
+  sub: 'What came in by mail, WhatsApp and files, already read. You only approve.',
+  empty: 'The inbox is empty. Whatever arrives is read and waits here.',
+  tabs: { pending: 'Waiting for approval', review: 'Unclear whose', done: 'Handled' },
+  counts: { pending: '{n} actions waiting', items: '{n} items' },
+  item: {
+    about: 'About', unknown: 'Could not tell which event this belongs to', pick: 'Choose an event', notRelated: 'Not about an event',
+    assign: 'Assign', open: 'The full message', close: 'Close', attachments: 'Files', noActions: 'No actions proposed. Logged only.',
+    needsHuman: 'Worth reading yourself', confidence: { high: 'Sure match', medium: 'Likely match', low: 'Weak match' },
+    status: { new: 'Waiting to be read', processed: 'Read', needs_review: 'To sort', ignored: 'Removed', failed: 'Reading failed' },
+  },
+  channels: { email: 'Email', whatsapp: 'WhatsApp', calendar: 'Calendar', upload: 'Uploaded', voice: 'Recording' },
+  categories: {
+    vendor_quote: 'Quote', vendor_invoice: 'Invoice', couple_message: 'Message from the couple', meeting: 'Meeting',
+    contract: 'Contract', payment: 'Payment', spam: 'Spam', other: 'Other',
+  },
+  action: {
+    approveAll: 'Approve all', approveSelected: 'Approve selected', reject: 'Reject', rejectAll: 'Reject all',
+    applied: 'Done', rejected: 'Rejected', failed: 'Failed', pending: 'Waiting', edit: 'Edit', editHint: 'The fields as they will be written. JSON.',
+    working: 'Applying', done: '{n} applied', someFailed: '{n} applied, {m} failed',
+    confidence: 'Confidence',
+  },
+  drop: {
+    title: 'Read a file or a message',
+    sub: 'A quote, an invoice, a screenshot, or pasted text. It is read and actions are proposed.',
+    drop: 'Drop here or choose a file',
+    paste: 'Or paste text',
+    read: 'Read',
+    busy: 'Reading',
+    done: 'Read. {n} actions are waiting for approval in the inbox.',
+    doneNone: 'Read. Nothing to propose.',
+    failed: 'Reading failed',
+    toInbox: 'To the action inbox',
+  },
 };

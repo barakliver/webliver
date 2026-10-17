@@ -1011,6 +1011,7 @@ export const appCopy = {
   nav: {
     overview: 'סקירה',
     leads: 'לידים',
+    inbox: 'תיבה',
     clients: 'אירועים',
     calendar: 'יומן',
     insights: 'נתונים',
@@ -2677,6 +2678,44 @@ export const pipelineCopy = {
     save: 'שמירה', saving: 'שומר',
   },
   more: { title: 'פנייה עם כל הפרטים', sub: 'הטופס המלא, למי שיש לו את כל הפרטים ביד.' },
+} as const;
+
+/** The inbox: what arrived, what it proposes, and the yes or the no. */
+export const inboxCopy = {
+  title: 'תיבת הפעולות',
+  sub: 'מה שהגיע במייל, בוואטסאפ ובקבצים, כבר קרוא. אתם רק מאשרים.',
+  empty: 'התיבה ריקה. מה שיגיע ייקרא ויחכה כאן.',
+  tabs: { pending: 'מחכה לאישור', review: 'לא ברור של מי', done: 'טופל' },
+  counts: { pending: '{n} פעולות מחכות', items: '{n} פריטים' },
+  item: {
+    about: 'על', unknown: 'לא זיהיתי לאיזה אירוע זה שייך', pick: 'בחירת אירוע', notRelated: 'לא קשור לאירוע',
+    assign: 'שיוך', open: 'ההודעה המלאה', close: 'סגירה', attachments: 'קבצים', noActions: 'אין פעולות מוצעות. רק תיעוד.',
+    needsHuman: 'כדאי לקרוא בעצמך', confidence: { high: 'זיהוי ודאי', medium: 'זיהוי סביר', low: 'זיהוי חלש' },
+    status: { new: 'ממתין לקריאה', processed: 'נקרא', needs_review: 'למיון', ignored: 'הוסר', failed: 'הקריאה נכשלה' },
+  },
+  channels: { email: 'מייל', whatsapp: 'וואטסאפ', calendar: 'יומן', upload: 'הועלה', voice: 'הקלטה' },
+  categories: {
+    vendor_quote: 'הצעת מחיר', vendor_invoice: 'חשבונית', couple_message: 'הודעה מהזוג', meeting: 'פגישה',
+    contract: 'חוזה', payment: 'תשלום', spam: 'ספאם', other: 'אחר',
+  },
+  action: {
+    approveAll: 'אישור הכל', approveSelected: 'אישור המסומנות', reject: 'דחייה', rejectAll: 'דחיית הכל',
+    applied: 'בוצע', rejected: 'נדחה', failed: 'נכשל', pending: 'מחכה', edit: 'עריכה', editHint: 'השדות כפי שייכתבו. JSON.',
+    working: 'מבצע', done: '{n} בוצעו', someFailed: '{n} בוצעו, {m} נכשלו',
+    confidence: 'ביטחון',
+  },
+  drop: {
+    title: 'לקרוא קובץ או הודעה',
+    sub: 'הצעת מחיר, חשבונית, צילום מסך, או טקסט שהודבק. ייקרא ויוצע מה לעשות.',
+    drop: 'גררו לכאן או בחרו קובץ',
+    paste: 'או הדביקו טקסט',
+    read: 'לקרוא',
+    busy: 'קורא',
+    done: 'נקרא. {n} פעולות מחכות לאישור בתיבה.',
+    doneNone: 'נקרא. אין פעולות להציע.',
+    failed: 'הקריאה נכשלה',
+    toInbox: 'לתיבת הפעולות',
+  },
 } as const;
 
 /** The ways a producer would say a lead reached them, for the manual form.

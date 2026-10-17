@@ -69,6 +69,7 @@ import { loadFiles } from '@/lib/files';
 import { loadEventSummary } from '@/lib/eventSummary';
 import { Contracts } from '@/components/app/Contracts';
 import { EventFiles } from '@/components/app/EventFiles';
+import { InboxDrop } from '@/components/app/InboxDrop';
 import { MeetingDrawer, type MeetingLog } from '@/components/app/MeetingDrawer';
 import { QuoteCompare } from '@/components/app/QuoteCompare';
 import { loadMeetingTemplates } from '@/lib/meetingTemplateRows';
@@ -552,7 +553,14 @@ async function Section({ tab, client, viewerId, isRoot }: {
 
   if (tab === 'files') {
     const files = await safeValue('files', loadFiles(sb, [id]), new Map());
-    return <EventFiles clientId={id} files={files.get(id) ?? []} viewer="producer" />;
+    return (
+      <div className="space-y-6">
+        {/* The box's door on this event: a quote or a message read and
+            turned into proposals, above the plain file shelf. */}
+        <InboxDrop clientId={id} />
+        <EventFiles clientId={id} files={files.get(id) ?? []} viewer="producer" />
+      </div>
+    );
   }
 
   if (tab === 'meetings') {

@@ -49,6 +49,7 @@ function navFor(a: Account, nav: AppUi['nav'], clientNav?: ClientNavLabels): Nav
     { href: '/app',          label: nav.overview,  icon: 'overview' },
     { href: '/app/clients',  label: nav.clients,   icon: 'clients' },
     { href: '/app/leads',    label: nav.leads,     icon: 'leads' },
+    { href: '/app/inbox',    label: nav.inbox,     icon: 'inbox' },
     { href: '/app/calendar', label: nav.calendar,  icon: 'calendar' },
     { href: '/app/insights', label: nav.insights,  icon: 'insights' },
     { href: '/app/vendors',  label: nav.vendors,   icon: 'vendors' },

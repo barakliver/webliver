@@ -42,6 +42,8 @@ import { AlertSettings } from '@/components/app/AlertSettings';
 import { LeadBoard } from '@/components/app/LeadBoard';
 import { LeadCard } from '@/components/app/LeadCard';
 import { QuickLead } from '@/components/app/QuickLead';
+import { InboxList } from '@/components/app/InboxList';
+import { InboxDrop } from '@/components/app/InboxDrop';
 import { LedgerEntries } from '@/components/app/LedgerEntries';
 import { MonthGrid } from '@/components/app/MonthGrid';
 import { VendorHq } from '@/components/app/VendorHq';
@@ -1178,6 +1180,49 @@ export default async function DesignPage() {
             ]}
             calls={[{ id: 'k1', title: 'שיחת מעקב', remind_on: new Date(Date.now() + 2 * 86_400_000).toISOString().slice(0, 10), done: false }]}
           />
+        </Panel>
+
+        <Panel name="InboxList" note="what arrived, read, with its proposals waiting; the second card is the sorting box">
+          <InboxList
+            clients={[{ id: 'c1', name: 'נועה ואיתי' }, { id: 'c2', name: 'שירה ואורי' }]}
+            items={[
+              {
+                id: 'i1', channel: 'email', from_identity: 'danny@photo.example', from_name: 'דני כהן צילום', subject: 'הצעת מחיר לחתונה של נועה ואיתי',
+                body_text: 'היי ברק, מצורפת הצעת מחיר לצילום: 12,000 ש"ח כולל אלבום ומגנטים. ההצעה בתוקף עד 1.11. דני',
+                attachments: [{ name: 'quote.pdf', mime: 'application/pdf', path: 'x', size: 120000 }],
+                received_at: new Date(Date.now() - 50 * 60_000).toISOString(), client_id: 'c1', client_name: 'נועה ואיתי',
+                match_confidence: 'high', match_reason: 'ספק (דני כהן) על אירוע אחד', status: 'processed',
+                ai_summary: 'הצעת מחיר מדני כהן לצילום החתונה של נועה ואיתי: 12,000 ש"ח כולל אלבום, תוקף עד 1.11', category: 'vendor_quote',
+                actions: [
+                  { id: 'a1', kind: 'budget_add_item', title: 'הוסף לתקציב: צילום – דני כהן – 12,000 ש"ח', payload: { category: 'צילום', vendor_name: 'דני כהן', amount_quoted: 12000, notes: 'כולל אלבום, תוקף עד 1.11' }, confidence: 0.9, status: 'pending', error: '' },
+                  { id: 'a2', kind: 'task_create', title: 'להחליט על צלם עד 1.11', payload: { title: 'להחליט על צלם – תוקף הצעה 1.11', due_date: '2026-10-30' }, confidence: 0.8, status: 'pending', error: '' },
+                  { id: 'a3', kind: 'reply_draft', title: 'טיוטת תשובה לדני', payload: { channel: 'email', text: 'היי דני, קיבלתי, תודה. עובר על זה עם הזוג ביומיים הקרובים וחוזר אליך.' }, confidence: 0.7, status: 'pending', error: '' },
+                ],
+              },
+              {
+                id: 'i2', channel: 'whatsapp', from_identity: '+972501234567', from_name: 'מישהי', subject: '',
+                body_text: 'היי, רציתי לשאול לגבי הטעימות ביום חמישי, אפשר להזיז לשש?',
+                attachments: [], received_at: new Date(Date.now() - 3 * 3_600_000).toISOString(), client_id: null, client_name: null,
+                match_confidence: 'low', match_reason: 'שולח לא מוכר', status: 'needs_review',
+                ai_summary: 'בקשה להזיז טעימות ביום חמישי לשש', category: 'couple_message', needs_human: true,
+                actions: [],
+              },
+              {
+                id: 'i3', channel: 'upload', from_identity: 'barak', from_name: 'ברק ליור', subject: 'invoice-dj.pdf',
+                body_text: 'קובץ שהועלה על שירה ואורי', attachments: [{ name: 'invoice-dj.pdf', mime: 'application/pdf', path: 'y', size: 90000 }],
+                received_at: new Date(Date.now() - 26 * 3_600_000).toISOString(), client_id: 'c2', client_name: 'שירה ואורי',
+                match_confidence: 'high', match_reason: 'ידוע בכניסה', status: 'processed',
+                ai_summary: 'חשבונית מהדיג׳יי על 4,500 ש"ח, שולמה ב-12.10', category: 'vendor_invoice',
+                actions: [
+                  { id: 'a4', kind: 'budget_mark_paid', title: 'סמן כשולם: דיג׳יי – 4,500 ש"ח', payload: { payment_id: '00000000-0000-4000-8000-000000000001', paid_on: '2026-10-12' }, confidence: 0.85, status: 'applied', error: '' },
+                ],
+              },
+            ]}
+          />
+        </Panel>
+
+        <Panel name="InboxDrop" note="a file or a paragraph dropped on an event; posting needs a session">
+          <InboxDrop clientId="00000000-0000-4000-8000-000000000001" />
         </Panel>
 
         <Panel name="QuickLead" note="three fields from a ringing phone; the button opens the sheet">

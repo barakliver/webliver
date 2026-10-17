@@ -38,7 +38,9 @@ fi
 #                     nothing at all until a producer has connected one;
 #   08:00 daily:      the morning letter about enquiries, once per producer;
 #   five past each hour: the two nudges about an enquiry nobody answered,
-#                     once per card.
+#                     once per card;
+#   every two hours, eight to eight: one line about what waits in the box;
+#   every 10 minutes: a second reading for anything the box did not read.
 # The weekly letters are once per week per event, so the extra runs are quiet
 # when the nightly one already sent them.
 CALL="curl -sS -m 120 -X POST -H \"x-cron-key: \$(grep '^CRON_KEY=' $ENVFILE | cut -d= -f2-)\""
@@ -47,7 +49,9 @@ LINES="17 4 * * * $CALL $HOST/api/cron >> $LOG 2>&1 $TAG
 0 8 * * 1 $CALL '$HOST/api/cron?job=vendors' >> $LOG 2>&1 $TAG
 */15 * * * * $CALL '$HOST/api/cron?job=gsync' > /dev/null 2>&1 $TAG
 0 8 * * * $CALL '$HOST/api/cron?job=morning' >> $LOG 2>&1 $TAG
-5 * * * * $CALL '$HOST/api/cron?job=leads' > /dev/null 2>&1 $TAG"
+5 * * * * $CALL '$HOST/api/cron?job=leads' > /dev/null 2>&1 $TAG
+0 8-20/2 * * * $CALL '$HOST/api/cron?job=inbox' > /dev/null 2>&1 $TAG
+*/10 * * * * $CALL -X POST '$HOST/api/inbox/process' > /dev/null 2>&1 $TAG"
 
 CURRENT="$(crontab -l 2>/dev/null || true)"
 WANTED="$(printf '%s\n' "$CURRENT" | grep -v "$TAG" | grep -v '/api/cron' || true)"

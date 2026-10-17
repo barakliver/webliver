@@ -5,6 +5,7 @@ import { sendPush } from '@/lib/notify/push';
 import { publicEnv } from '@/lib/env';
 import { EVENT_ZONE, todayInZone } from '@/lib/clock';
 import { UNANSWERED_AFTER_MS } from '@/lib/pipeline';
+import { inboxLine } from '@/lib/notify/inboxAlert';
 
 /**
  * The morning letter about enquiries, and the two nudges during the day.
@@ -78,7 +79,8 @@ export async function sendMorningDigest(sb: SupabaseClient, now: Date = new Date
     const todays = rows.filter((l) => l.next_action && l.next_action_at && todayInZone(new Date(l.next_action_at)) === today)
       .sort((a, b) => String(a.next_action_at).localeCompare(String(b.next_action_at)));
 
-    if (!fresh.length && !waiting.length && !todays.length) { out.skipped += 1; continue; }
+    const box = await inboxLine(sb, pr.id, new Date(since).toISOString());
+    if (!fresh.length && !waiting.length && !todays.length && !box) { out.skipped += 1; continue; }
 
     const name = await firstName(sb, pr.owner_id);
     const lines = [
@@ -88,6 +90,7 @@ export async function sendMorningDigest(sb: SupabaseClient, now: Date = new Date
       todays.length
         ? `• היום: ${todays.map((l) => `${l.full_name}: ${l.next_action} (${timeFmt.format(new Date(l.next_action_at as string))})`).join(' · ')}`
         : '',
+      box,
       `👉 ${publicEnv.siteUrl}/app/leads`,
     ].filter(Boolean);
     const text = lines.join('\n');
