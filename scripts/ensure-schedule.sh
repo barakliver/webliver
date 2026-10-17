@@ -35,14 +35,19 @@ fi
 #   Sunday 09:00:     the budget letter at the hour it was asked for;
 #   Monday 08:00:     the supplier letter at the hour it was asked for;
 #   every 15 minutes: the Google Calendar twins, both directions, which does
-#                     nothing at all until a producer has connected one.
+#                     nothing at all until a producer has connected one;
+#   08:00 daily:      the morning letter about enquiries, once per producer;
+#   five past each hour: the two nudges about an enquiry nobody answered,
+#                     once per card.
 # The weekly letters are once per week per event, so the extra runs are quiet
 # when the nightly one already sent them.
 CALL="curl -sS -m 120 -X POST -H \"x-cron-key: \$(grep '^CRON_KEY=' $ENVFILE | cut -d= -f2-)\""
 LINES="17 4 * * * $CALL $HOST/api/cron >> $LOG 2>&1 $TAG
 0 9 * * 0 $CALL '$HOST/api/cron?job=digest' >> $LOG 2>&1 $TAG
 0 8 * * 1 $CALL '$HOST/api/cron?job=vendors' >> $LOG 2>&1 $TAG
-*/15 * * * * $CALL '$HOST/api/cron?job=gsync' > /dev/null 2>&1 $TAG"
+*/15 * * * * $CALL '$HOST/api/cron?job=gsync' > /dev/null 2>&1 $TAG
+0 8 * * * $CALL '$HOST/api/cron?job=morning' >> $LOG 2>&1 $TAG
+5 * * * * $CALL '$HOST/api/cron?job=leads' > /dev/null 2>&1 $TAG"
 
 CURRENT="$(crontab -l 2>/dev/null || true)"
 WANTED="$(printf '%s\n' "$CURRENT" | grep -v "$TAG" | grep -v '/api/cron' || true)"
@@ -56,4 +61,4 @@ fi
 # Any older line that calls the sweep goes with them: one was installed by
 # hand before these scripts existed, at the same minute, with a key of its own.
 printf '%s\n' "$WANTED" | crontab -
-echo "  the schedule was brought up to date: nightly 04:17, Sunday 09:00, Monday 08:00, Google every 15 minutes"
+echo "  the schedule was brought up to date: nightly 04:17, Sunday 09:00, Monday 08:00, Google every 15 minutes, enquiries at 08:00 and five past each hour"
