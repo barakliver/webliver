@@ -37,7 +37,9 @@ export default async function StorePage() {
       <PageHead title={storeCopy.title} sub={storeCopy.sub}
         report={<IssueReporter userId={account.id} context={storeCopy.title} />}
       />
-      <div className="space-y-6">
+      {/* The shelf and the orders side by side on a wide screen, so a sale is
+          seen next to the thing sold; one under the other below that. */}
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] xl:items-start">
         <StoreProducts
           producerId={account.producer?.id ?? ''}
           products={products}

@@ -24,15 +24,13 @@ export default async function BrandPage() {
       />
       {/* First on the screen, above the editor: the reason most producers
           open this page after the first week is to get the link they send. */}
-      <div className="mb-6 space-y-6">
-        <ProducerLinkCard slug={p?.slug ?? null} />
-        {/* The pictures, before the words: the logo is the first thing a new
-            producer looks for on this screen, and it was the one thing the
-            screen could not take. */}
-        <BrandAssets urls={{ logo: p?.logoUrl ?? null, icon: p?.iconUrl ?? null, cover: p?.coverUrl ?? null }} />
-      </div>
+      <div className="mb-5"><ProducerLinkCard slug={p?.slug ?? null} /></div>
       <BrandEditor
         rootDomain={platformRoot()}
+        /* The pictures, with the words: the logo is the first thing a new
+           producer looks for on this screen. Passed in rather than drawn
+           above because they sit beside the preview, outside the form. */
+        assets={<BrandAssets urls={{ logo: p?.logoUrl ?? null, icon: p?.iconUrl ?? null, cover: p?.coverUrl ?? null }} />}
         fields={{
           brandName: p?.brandName ?? '',
           tagline: p?.tagline ?? '',

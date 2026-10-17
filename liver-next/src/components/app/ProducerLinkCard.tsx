@@ -33,35 +33,37 @@ export function ProducerLinkCard({ slug }: { slug: string | null }) {
   };
 
   return (
-    <section className="card">
-      <h2 className="head-sub inline-flex items-center gap-2">
-        <Send size={17} aria-hidden strokeWidth={1.5} />
-        {c.shareTitle}
-      </h2>
-      <p className="mt-1.5 max-w-2xl text-body leading-relaxed text-ink-soft">{c.shareSub}</p>
-      {slug ? (
-        <>
+    <section className="card flex flex-wrap items-center gap-x-5 gap-y-3">
+      <div className="min-w-0 flex-1 basis-[260px]">
+        <h2 className="head-sub inline-flex items-center gap-2">
+          <Send size={17} aria-hidden strokeWidth={1.5} />
+          {c.shareTitle}
+        </h2>
+        <p className="mt-1 max-w-2xl text-body leading-relaxed text-ink-soft">{c.shareSub}</p>
+        {slug ? (
           <input
             readOnly value={url} dir="ltr" aria-label={c.shareTitle}
             onFocus={(e) => e.currentTarget.select()}
-            className="field mt-4 w-full font-mono text-body"
+            className="field mt-3 w-full font-mono text-body"
           />
-          <div className="mt-3 flex flex-wrap gap-2">
-            <a
-              href={`https://wa.me/?text=${encodeURIComponent(`${c.shareText}\n${url}`)}`}
-              target="_blank" rel="noopener noreferrer" className="btn-primary"
-            >
-              <MessageCircle size={15} strokeWidth={1.5} aria-hidden />
-              {c.shareWhatsapp}
-            </a>
-            <button type="button" onClick={copy} className="btn-ghost">
-              {copied ? <Check size={15} strokeWidth={1.5} aria-hidden /> : <Copy size={15} strokeWidth={1.5} aria-hidden />}
-              {copied ? c.shareCopied : c.shareCopy}
-            </button>
-          </div>
-        </>
-      ) : (
-        <p className="mt-3 text-body text-ink-mute">{c.shareNoSlug}</p>
+        ) : (
+          <p className="mt-3 text-body text-ink-mute">{c.shareNoSlug}</p>
+        )}
+      </div>
+      {slug && (
+        <div className="flex flex-wrap gap-2">
+          <a
+            href={`https://wa.me/?text=${encodeURIComponent(`${c.shareText}\n${url}`)}`}
+            target="_blank" rel="noopener noreferrer" className="btn-primary"
+          >
+            <MessageCircle size={15} strokeWidth={1.5} aria-hidden />
+            {c.shareWhatsapp}
+          </a>
+          <button type="button" onClick={copy} className="btn-ghost">
+            {copied ? <Check size={15} strokeWidth={1.5} aria-hidden /> : <Copy size={15} strokeWidth={1.5} aria-hidden />}
+            {copied ? c.shareCopied : c.shareCopy}
+          </button>
+        </div>
       )}
     </section>
   );

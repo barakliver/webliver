@@ -484,6 +484,18 @@ that has happened once.
   time. **A note on any line of the evening**, kept on that phone only: a crew
   member has nowhere to write to, by design in 0091, and a private reminder
   does not need a place. The screen says it is saved on this device.
+  **Group 7, chosen: a throughout.** The brand screen is the link as a slim
+  banner, the form on one side and what it will look like on the other, sticky
+  while the page scrolls (under the fields on a phone); the pictures sit beside
+  the form rather than in it, because a form inside a form is dropped by the
+  browser while it parses. The store is the shelf and the orders side by side
+  from `xl`, and the shelf stays a sortable list: a grid would have broken the
+  drag that orders it. The admin screen puts the queue of accounts waiting beside
+  the release card, and the release card says the version as a numeral, because
+  it is the answer to the question that screen is asked most. The reports are a
+  list and the open report, chosen in the address (`?t=`) so a report can be
+  sent and a reload keeps it; on a phone the list, then the report with a way
+  back. The site editor already had the rail and needed nothing.
 - **The screens are the plum design's screens, not only its colours.**
   He asked why the app did not look like the mockups, and the answer was
   that 3.1 had changed the skin and not the layout. So 3.2 rebuilt three:

@@ -58,7 +58,7 @@ export function ReleaseState({ state }: { state: State }) {
               actually gets deployed. A release made before version.json
               existed has no number, and then the commit is all there is. */}
           <dl className="mt-4 grid gap-x-8 gap-y-3 text-body sm:grid-cols-3">
-            <Row label={c.running} version={VERSION} value={state.running} />
+            <Row label={c.running} version={VERSION} value={state.running} big />
             <Row label={c.live} version={state.liveVersion} value={shortSha(state.live) || '·'} />
             <Row label={c.previous} version={state.previousVersion} value={shortSha(state.previous) || '·'} />
           </dl>
@@ -103,7 +103,7 @@ export function ReleaseState({ state }: { state: State }) {
   );
 }
 
-function Row({ label, version, value }: { label: string; version?: string | null; value: string }) {
+function Row({ label, version, value, big }: { label: string; version?: string | null; value: string; big?: boolean }) {
   const c = useCopy().admin.release;
   return (
     <div className="flex items-baseline justify-between gap-3 border-b border-line py-1.5 sm:block sm:border-0 sm:py-0">
@@ -111,7 +111,7 @@ function Row({ label, version, value }: { label: string; version?: string | null
       <dd className="m-0 text-end sm:text-start">
         {version ? (
           <>
-            <span className="block font-display text-lead font-normal text-ink">
+            <span className={big ? 'block font-display text-[40px] font-light leading-none text-ink' : 'block font-display text-lead font-normal text-ink'}>
               {fill(c.version, { v: version })}
             </span>
             <span className="block font-mono text-meta text-ink-mute"><Ltr>{value}</Ltr></span>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState, useEffect, useState } from 'react';
+import { useActionState, useEffect, useState, type ReactNode } from 'react';
 import { Check } from 'lucide-react';
 import { useCopy } from '@/components/app/CopyProvider';
 import { ACCENTS, accentByKey, accentVars } from '@/content/brand';
@@ -32,7 +32,7 @@ export type BrandFields = {
  * from six circles is a guess and a colour choice made from a rendered header
  * is a decision.
  */
-export function BrandEditor({ fields, rootDomain }: { fields: BrandFields; rootDomain: string }) {
+export function BrandEditor({ fields, rootDomain, assets }: { fields: BrandFields; rootDomain: string; assets?: ReactNode }) {
   const ui = useCopy();
   const c = useCopy().brand;
   const [state, action, pending] = useActionState<BrandResult | null, FormData>(saveBrand, null);
@@ -65,37 +65,15 @@ export function BrandEditor({ fields, rootDomain }: { fields: BrandFields; rootD
   const chosen = accentByKey(accent);
 
   return (
+    /* The form on one side and what it will look like on the other, so the
+       change is seen where it is made: the name, the line and the colour
+       are typed on the right and drawn on the left, and the preview stays
+       in view while the page scrolls. On a phone it is under the fields. The
+       pictures are a form of their own and sit outside this one: a form
+       inside a form is dropped by the browser while parsing. */
+    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
+    <div className="space-y-5">
     <form action={action} className="space-y-5">
-      {/* ── what it will look like ─────────────────────────────────────── */}
-      <section className="card" style={accentVars(chosen) as React.CSSProperties}>
-        <div className="text-meta font-medium text-ink-mute">{c.preview}</div>
-        <div className="mt-3 rounded-card-sm border border-line bg-surface p-4">
-          <div className="flex items-center justify-between gap-3 border-b border-line pb-3">
-            <span className="font-display text-head font-normal text-ink">
-              {name || c.namePh}
-            </span>
-            <span className="chip" style={{ borderColor: chosen.line, color: chosen.base }}>
-              {ui.nav.overview}
-            </span>
-          </div>
-          <p className="mt-3 text-body text-ink-soft">{tagline || c.taglinePh}</p>
-          <div className="mt-3 flex flex-wrap gap-2">
-            <span
-              className="inline-flex min-h-[36px] items-center rounded-xl2 px-4 text-body font-medium text-surface"
-              style={{ background: chosen.base }}
-            >
-              {ui.brand.save}
-            </span>
-            <span
-              className="inline-flex min-h-[36px] items-center rounded-xl2 border px-4 text-body"
-              style={{ borderColor: chosen.line, color: chosen.base }}
-            >
-              {ui.nav.clients}
-            </span>
-          </div>
-        </div>
-      </section>
-
       {/* ── who you are ────────────────────────────────────────────────── */}
       <section className="card space-y-4">
         <div>
@@ -222,5 +200,38 @@ export function BrandEditor({ fields, rootDomain }: { fields: BrandFields; rootD
         {state?.error && <span className="text-body text-bad">{state.error}</span>}
       </div>
     </form>
+    {assets}
+    </div>
+    <aside className="lg:sticky lg:top-6">
+      <section className="card" style={accentVars(chosen) as React.CSSProperties}>
+        <div className="text-meta font-medium text-ink-mute">{c.preview}</div>
+        <div className="mt-3 rounded-card-sm border border-line bg-surface p-4">
+          <div className="flex items-center justify-between gap-3 border-b border-line pb-3">
+            <span className="font-display text-head font-normal text-ink">
+              {name || c.namePh}
+            </span>
+            <span className="chip" style={{ borderColor: chosen.line, color: chosen.base }}>
+              {ui.nav.overview}
+            </span>
+          </div>
+          <p className="mt-3 text-body text-ink-soft">{tagline || c.taglinePh}</p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <span
+              className="inline-flex min-h-[36px] items-center rounded-xl2 px-4 text-body font-medium text-surface"
+              style={{ background: chosen.base }}
+            >
+              {ui.brand.save}
+            </span>
+            <span
+              className="inline-flex min-h-[36px] items-center rounded-xl2 border px-4 text-body"
+              style={{ borderColor: chosen.line, color: chosen.base }}
+            >
+              {ui.nav.clients}
+            </span>
+          </div>
+        </div>
+      </section>
+    </aside>
+    </div>
   );
 }

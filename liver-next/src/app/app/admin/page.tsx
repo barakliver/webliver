@@ -126,16 +126,18 @@ export default async function AdminPage() {
             only thing on this screen that is costing somebody time right now.
             Never folded: a queue behind a closed row is a queue nobody
             empties. */}
-        {waiting.length > 0 && (
-          <section className="mb-5">
-            <h2 className="eyebrow mb-3">{c.waiting} · {waiting.length}</h2>
-            <ul className="list-none space-y-3 p-0">
-              {waiting.map((p) => <AdminRow key={p.id} p={p} />)}
-            </ul>
-          </section>
-        )}
-
-        <div className="mb-5">
+        <div className={`mb-5 grid gap-5 ${waiting.length > 0 ? 'lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]' : ''} lg:items-start`}>
+          {waiting.length > 0 && (
+            <section>
+              <h2 className="eyebrow mb-3">{c.waiting} · {waiting.length}</h2>
+              <ul className="list-none space-y-3 p-0">
+                {waiting.map((p) => <AdminRow key={p.id} p={p} />)}
+              </ul>
+            </section>
+          )}
+          {/* The version, large: it is the answer to the question this screen
+              is asked most, and the queue beside it is the thing costing
+              somebody time. */}
           <ReleaseState state={release} />
         </div>
 
