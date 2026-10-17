@@ -6,6 +6,8 @@ import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { noteFailure } from '@/lib/flash';
 import { parseIls } from '@/lib/money';
+import { todayInZone } from '@/lib/clock';
+import { PAY_METHODS } from '@/lib/payMethods';
 
 export type MoneyResult = { ok: boolean; error?: string };
 
@@ -24,6 +26,22 @@ function amountOf(raw: string): number | null {
   return n !== null && n > 0 ? n : null;
 }
 
+/** How a payment was made, from the closed set the cash-flow screen groups
+ *  by. Anything else is "not said" rather than an error: the field is a
+ *  convenience, and refusing a whole payment over it would be the wrong
+ *  trade. */
+const methodOf = (raw: FormDataEntryValue | null): string => {
+  const m = String(raw ?? '').trim();
+  return (PAY_METHODS as readonly string[]).includes(m) ? m : '';
+};
+
+/** Who paid: a name as typed, or the word for joint. Free text, trimmed and
+ *  cut to the column's length, because the couple's names are typed by hand
+ *  and a closed set would refuse the row the day one was corrected. */
+const payerOf = (raw: FormDataEntryValue | null): string => String(raw ?? '').trim().slice(0, 60);
+
+const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/;
+
 export async function addPayment(_prev: MoneyResult | null, form: FormData): Promise<MoneyResult> {
   const clientId = String(form.get('client_id') ?? '');
   const title = String(form.get('title') ?? '').trim();
@@ -37,6 +55,7 @@ export async function addPayment(_prev: MoneyResult | null, form: FormData): Pro
   const sb = await supabaseServer();
   const { error } = await sb.from('payments').insert({
     client_id: clientId, title, amount, due_on: dueOn || null,
+    method: methodOf(form.get('method')),
   });
   if (error) return { ok: false, error: 'לא הצלחנו לשמור את התשלום' };
 
@@ -70,6 +89,7 @@ export async function updatePayment(_prev: MoneyResult | null, form: FormData): 
   const title = String(form.get('title') ?? '').trim();
   const amount = amountOf(String(form.get('amount') ?? ''));
   const dueOn = String(form.get('due_on') ?? '').trim();
+  const paidOn = String(form.get('paid_on') ?? '').trim();
 
   if (!id || !clientId) return { ok: false, error: 'חסר מזהה תשלום' };
   if (title.length < 2) return { ok: false, error: 'נא לכתוב על מה התשלום' };
@@ -78,8 +98,13 @@ export async function updatePayment(_prev: MoneyResult | null, form: FormData): 
   const sb = await supabaseServer();
   const { data, error } = await sb
     .from('payments')
-    /* `paid` and `paid_on` are absent from this object on purpose. */
-    .update({ title, amount, due_on: dueOn || null })
+    /* `paid` is absent from this object on purpose, and so is `paid_on`: the
+       day it was paid is written below, and only on a row that is paid. */
+    .update({
+      title, amount, due_on: dueOn || null,
+      method: methodOf(form.get('method')),
+      paid_by: payerOf(form.get('paid_by')),
+    })
     .eq('id', id)
     .select('id');
 
@@ -94,6 +119,60 @@ export async function updatePayment(_prev: MoneyResult | null, form: FormData): 
        rather than inventing a second way of saying it. */
     return { ok: false, error: whyNotSaved({ code: 'PGRST116' }) };
   }
+
+  /* The day it was paid, corrected. Guarded by `paid = true` in the query
+     itself, because the table refuses a paid_on on an unpaid row and a form
+     is not allowed to be the thing that decides which kind of row this is. A
+     blank is left alone: a settled payment always has a day. */
+  if (ISO_DAY.test(paidOn)) {
+    const { error: dayError } = await sb.from('payments').update({ paid_on: paidOn }).eq('id', id).eq('paid', true);
+    if (dayError) {
+      console.error('[money] updatePayment paid_on failed', dayError);
+      return { ok: false, error: whyNotSaved(dayError) };
+    }
+  }
+
+  touch(clientId);
+  return { ok: true };
+}
+
+/**
+ * Marking a payment settled, and saying how.
+ *
+ * The press used to be one button that flipped a flag and let the database
+ * write today's date, which is the whole of what it could say: that it was
+ * paid. A producer asked "by whom, and when, and how" had nowhere to put the
+ * answer. So settling is a small form of its own - the day, who of the two,
+ * and the method - and the day is the one the money moved, which is often not
+ * the day somebody got round to recording it.
+ *
+ * Only this and `togglePaid` write `paid`; editing what a payment says
+ * stays a different act, in `updatePayment`.
+ */
+export async function settlePayment(_prev: MoneyResult | null, form: FormData): Promise<MoneyResult> {
+  const id = String(form.get('payment_id') ?? '');
+  const clientId = String(form.get('client_id') ?? '');
+  const paidOn = String(form.get('paid_on') ?? '').trim();
+
+  if (!id || !clientId) return { ok: false, error: 'חסר מזהה תשלום' };
+
+  const sb = await supabaseServer();
+  const { data, error } = await sb
+    .from('payments')
+    .update({
+      paid: true,
+      paid_on: ISO_DAY.test(paidOn) ? paidOn : todayInZone(),
+      paid_by: payerOf(form.get('paid_by')),
+      method: methodOf(form.get('method')),
+    })
+    .eq('id', id)
+    .select('id');
+
+  if (error) {
+    console.error('[money] settlePayment failed', error);
+    return { ok: false, error: whyNotSaved(error) };
+  }
+  if (!data || data.length === 0) return { ok: false, error: whyNotSaved({ code: 'PGRST116' }) };
 
   touch(clientId);
   return { ok: true };

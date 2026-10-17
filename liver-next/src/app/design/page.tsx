@@ -348,7 +348,7 @@ export default async function DesignPage() {
         </Panel>
 
         <Panel name="PaymentsPanel · client" note="one paid, one overdue, one ahead">
-          <PaymentsPanel clientId={client} payments={fixturePayments} viewer="client" />
+          <PaymentsPanel clientId={client} payments={fixturePayments} viewer="client" eventDate={day(40)} names={['נועה', 'איתי']} />
         </Panel>
 
         <Panel name="FinanceSummary · producer" note="the five figures and the working; a target is set and the event is inside it">

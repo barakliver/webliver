@@ -7,7 +7,10 @@ import { isPastDue } from '@/lib/clock';
 import { useActionState, useState } from 'react';
 import { formatDate } from '@/lib/dates';
 import { useFormStatus } from 'react-dom';
-import { addPayment, togglePaid, deletePayment, updatePayment, type MoneyResult } from '@/app/actions/money';
+import { addPayment, togglePaid, deletePayment, updatePayment, settlePayment, type MoneyResult } from '@/app/actions/money';
+import { paymentFlow } from '@/lib/paymentFlow';
+import { PAY_METHODS, JOINT_PAYER } from '@/lib/payMethods';
+import { todayInZone } from '@/lib/clock';
 import { useCopy } from '@/components/app/CopyProvider';
 import { shortDate } from '@/lib/appDates';
 import { Money, ils } from '@/components/Ltr';
@@ -18,12 +21,52 @@ import { sumIls } from '@/lib/money';
 export type Payment = {
   id: string; title: string; amount: number;
   due_on: string | null; paid: boolean; paid_on: string | null;
+  /** One of the couple's names, or `JOINT_PAYER`. Empty or absent: not said. */
+  paid_by?: string | null;
+  /** One of `PAY_METHODS`. Empty or absent: not said. */
+  method?: string | null;
 };
 
 
 /** Late where the event is, so one instalment cannot read as overdue on the
  *  producer's phone and on time on the server that rendered the same row. */
 const isOverdue = (due: string | null): boolean => isPastDue(due);
+
+/* Date inputs on a phone have an intrinsic width of their own and ignore the
+   column they are in, which is how the due date on the add form ran off the
+   left edge of a 390px screen. Width and min-width are stated, and the native
+   appearance is dropped, which is what makes iOS listen to them. */
+const DATE_FIELD = 'field w-full min-w-0 max-w-full appearance-none';
+
+/** Which of the two paid, or both. The two names come from the event's own
+ *  name; where it does not read as two names the choice is joint alone, and a
+ *  value already on the row that is no longer in the list stays on it, so
+ *  correcting a spelling never silently reassigns an old payment. */
+function PayerSelect({ names, defaultValue = '', name = 'paid_by' }: {
+  names: string[]; defaultValue?: string | null; name?: string;
+}) {
+  const c = useCopy().money;
+  const current = defaultValue ?? '';
+  const known = current === '' || current === JOINT_PAYER || names.includes(current);
+  return (
+    <select name={name} defaultValue={current} className="field w-full min-w-0 max-w-full">
+      <option value="">{c.payWhoNone}</option>
+      {names.map((n) => <option key={n} value={n}>{n}</option>)}
+      <option value={JOINT_PAYER}>{c.payJoint}</option>
+      {!known && <option value={current}>{current}</option>}
+    </select>
+  );
+}
+
+function MethodSelect({ defaultValue = '' }: { defaultValue?: string | null }) {
+  const c = useCopy().money;
+  return (
+    <select name="method" defaultValue={defaultValue ?? ''} className="field w-full min-w-0 max-w-full">
+      <option value="">{c.payMethodNone}</option>
+      {PAY_METHODS.map((m) => <option key={m} value={m}>{c.methods[m]}</option>)}
+    </select>
+  );
+}
 
 function Add() {
   const ui = useCopy();
@@ -46,8 +89,8 @@ function Add() {
  * has already been settled, and before this the only way to fix it was to
  * delete the row, which deleted the record that the money arrived.
  */
-function EditPayment({ payment, clientId, onDone }: {
-  payment: Payment; clientId: string; onDone: () => void;
+function EditPayment({ payment, clientId, names, onDone }: {
+  payment: Payment; clientId: string; names: string[]; onDone: () => void;
 }) {
   const c = useCopy().money;
   const [state, action] = useActionState<MoneyResult | null, FormData>(
@@ -78,8 +121,26 @@ function EditPayment({ payment, clientId, onDone }: {
         </label>
         <label className="min-w-0">
           <span className="mb-1 block text-meta font-medium text-ink-soft">{c.payDue}</span>
-          <input name="due_on" type="date" defaultValue={payment.due_on ?? ''} className="field"  autoComplete="off" enterKeyHint="done" />
+          <input name="due_on" type="date" defaultValue={payment.due_on ?? ''} className={DATE_FIELD} autoComplete="off" enterKeyHint="done" />
         </label>
+        <label className="min-w-0">
+          <span className="mb-1 block text-meta font-medium text-ink-soft">{c.payMethod}</span>
+          <MethodSelect defaultValue={payment.method} />
+        </label>
+        {/* Only on a settled one: who paid and on what day are facts about
+            money that moved, and an open instalment has neither yet. */}
+        {payment.paid && (
+          <>
+            <label className="min-w-0">
+              <span className="mb-1 block text-meta font-medium text-ink-soft">{c.payWho}</span>
+              <PayerSelect names={names} defaultValue={payment.paid_by} />
+            </label>
+            <label className="col-span-2 min-w-0 sm:col-span-1">
+              <span className="mb-1 block text-meta font-medium text-ink-soft">{c.payPaidOn}</span>
+              <input name="paid_on" type="date" defaultValue={payment.paid_on ?? ''} className={DATE_FIELD} autoComplete="off" />
+            </label>
+          </>
+        )}
       </div>
 
       <div className="mt-3 flex items-center gap-3">
@@ -108,8 +169,12 @@ function Save() {
   );
 }
 
-export function PaymentsPanel({ clientId, payments, viewer }: {
+export function PaymentsPanel({ clientId, payments, viewer, eventDate = null, names = [] }: {
   clientId: string; payments: Payment[]; viewer: 'producer' | 'client';
+  /** The evening, for the cut between before and after. Null: no cut. */
+  eventDate?: string | null;
+  /** The couple's two names, for "who paid". Empty: joint is the only choice. */
+  names?: string[];
 }) {
   const [state, action] = useActionState<MoneyResult | null, FormData>(addPayment, null);
   const ui = useCopy();
@@ -139,6 +204,7 @@ export function PaymentsPanel({ clientId, payments, viewer }: {
         </div>
       )}
 
+
       {/* Both sides may add a payment and mark one paid: the couple is the
           one who made the transfer. */}
       {/* Each field says what it is above itself rather than inside itself.
@@ -160,7 +226,11 @@ export function PaymentsPanel({ clientId, payments, viewer }: {
           </label>
           <label className="min-w-0">
             <span className="mb-1 block text-meta font-medium text-ink-soft">{c.payDue}</span>
-            <input name="due_on" type="date" className="field"  autoComplete="off" enterKeyHint="done" />
+            <input name="due_on" type="date" className={DATE_FIELD} autoComplete="off" enterKeyHint="done" />
+          </label>
+          <label className="col-span-2 min-w-0 lg:col-span-1">
+            <span className="mb-1 block text-meta font-medium text-ink-soft">{c.payMethod}</span>
+            <MethodSelect />
           </label>
 
           <div className="col-span-2 lg:col-span-3">
@@ -179,20 +249,25 @@ export function PaymentsPanel({ clientId, payments, viewer }: {
       ) : (
         <ul className="mt-5 space-y-2">
           {payments.map((p) => (
-            <PaymentRow key={p.id} payment={p} clientId={clientId} />
+            <PaymentRow key={p.id} payment={p} clientId={clientId} names={names} />
           ))}
         </ul>
       )}
+
+      {/* Under the list rather than above the form: the form and the rows are
+          what is pressed, and this is what is read once they are right. */}
+      {payments.length > 0 && <Flow payments={payments} eventDate={eventDate} />}
     </section>
   );
 }
 
 /** One instalment, and the form that corrects it. */
-function PaymentRow({ payment: p, clientId }: { payment: Payment; clientId: string }) {
+function PaymentRow({ payment: p, clientId, names }: { payment: Payment; clientId: string; names: string[] }) {
   const ui = useCopy();
   const c = ui.money;
   const dateFmt = shortDate(ui.locale);
   const [editing, setEditing] = useState(false);
+  const [settling, setSettling] = useState(false);
   const late = !p.paid && isOverdue(p.due_on);
 
   return (
@@ -201,9 +276,13 @@ function PaymentRow({ payment: p, clientId }: { payment: Payment; clientId: stri
     }`}>
       <div className="min-w-0 flex-1">
         <p className="text-lead text-ink">{p.title}</p>
-        <p className="mt-0.5 whitespace-nowrap text-meta text-ink-mute">
+        <p className="mt-0.5 text-meta text-ink-mute">
           {p.paid
-            ? `${c.paid}${p.paid_on ? ' · ' + formatDate(dateFmt, p.paid_on, '') : ''}`
+            ? [
+                `${c.paid}${p.paid_on ? ' · ' + formatDate(dateFmt, p.paid_on, '') : ''}`,
+                p.paid_by ? `${c.paidBy} ${p.paid_by === JOINT_PAYER ? c.payJoint : p.paid_by}` : '',
+                p.method && (PAY_METHODS as readonly string[]).includes(p.method) ? c.methods[p.method as (typeof PAY_METHODS)[number]] : '',
+              ].filter(Boolean).join(' · ')
             : (
               <span className={late ? 'font-medium text-bad' : ''}>
                 {formatDate(dateFmt, p.due_on, c.noDue)}
@@ -236,14 +315,23 @@ function PaymentRow({ payment: p, clientId }: { payment: Payment; clientId: stri
           <Pencil size={15} strokeWidth={1.5} aria-hidden />
         </button>
 
-        <form action={togglePaid}>
-          <input type="hidden" name="payment_id" value={p.id} />
-          <input type="hidden" name="client_id" value={clientId} />
-          <input type="hidden" name="paid" value={String(p.paid)} />
-          <button type="submit" className="btn-ghost px-3 py-1.5 text-body">
-            {p.paid ? c.markUnpaid : c.markPaid}
+        {p.paid ? (
+          <form action={togglePaid}>
+            <input type="hidden" name="payment_id" value={p.id} />
+            <input type="hidden" name="client_id" value={clientId} />
+            <input type="hidden" name="paid" value="true" />
+            <button type="submit" className="btn-ghost px-3 py-1.5 text-body">{c.markUnpaid}</button>
+          </form>
+        ) : (
+          /* Settling asks three small things - the day, who, how - so it is
+             a form that opens rather than a button that flips. */
+          <button
+            type="button" onClick={() => setSettling((v) => !v)} aria-expanded={settling}
+            className="btn-ghost px-3 py-1.5 text-body"
+          >
+            {c.markPaid}
           </button>
-        </form>
+        )}
         <DeleteForm action={deletePayment}>
           <input type="hidden" name="payment_id" value={p.id} />
           <input type="hidden" name="client_id" value={clientId} />
@@ -251,9 +339,145 @@ function PaymentRow({ payment: p, clientId }: { payment: Payment; clientId: stri
         </DeleteForm>
       </div>
 
+      {settling && !p.paid && (
+        <SettlePayment payment={p} clientId={clientId} names={names} onDone={() => setSettling(false)} />
+      )}
       {editing && (
-        <EditPayment payment={p} clientId={clientId} onDone={() => setEditing(false)} />
+        <EditPayment payment={p} clientId={clientId} names={names} onDone={() => setEditing(false)} />
       )}
     </li>
+  );
+}
+
+/**
+ * Saying that an instalment was paid, and filling in the three things a
+ * producer is asked about it: the day the money moved, which of the two paid,
+ * and how. The day starts as today, in the event's time zone, and is the one
+ * thing that is usually wrong by a few days, which is why it is a field and
+ * not a stamp.
+ */
+function SettlePayment({ payment, clientId, names, onDone }: {
+  payment: Payment; clientId: string; names: string[]; onDone: () => void;
+}) {
+  const c = useCopy().money;
+  const [state, action] = useActionState<MoneyResult | null, FormData>(
+    async (prev, form) => {
+      const r = await settlePayment(prev, form);
+      if (r.ok) onDone();
+      return r;
+    },
+    null,
+  );
+  return (
+    <form action={action} className="mt-3 w-full border-t border-line pt-3">
+      <input type="hidden" name="payment_id" value={payment.id} />
+      <input type="hidden" name="client_id" value={clientId} />
+      <div className="grid grid-cols-2 gap-3">
+        <label className="col-span-2 min-w-0 sm:col-span-1">
+          <span className="mb-1 block text-meta font-medium text-ink-soft">{c.payPaidOn}</span>
+          <input name="paid_on" type="date" required defaultValue={todayInZone()} className={DATE_FIELD} autoComplete="off" />
+        </label>
+        <label className="min-w-0">
+          <span className="mb-1 block text-meta font-medium text-ink-soft">{c.payWho}</span>
+          <PayerSelect names={names} />
+        </label>
+        <label className="min-w-0">
+          <span className="mb-1 block text-meta font-medium text-ink-soft">{c.payMethod}</span>
+          <MethodSelect defaultValue={payment.method} />
+        </label>
+      </div>
+      <div className="mt-3 flex items-center gap-3">
+        <SettleSave />
+        <button type="button" onClick={onDone} className="btn-quiet px-2 py-1 text-body">{c.budCancel}</button>
+      </div>
+      {state && !state.ok && state.error && (
+        <p role="alert" className="mt-3 rounded-control border border-bad/25 bg-bad-wash px-4 py-2.5 text-body text-bad">
+          {state.error}
+        </p>
+      )}
+    </form>
+  );
+}
+
+function SettleSave() {
+  const c = useCopy().money;
+  const { pending } = useFormStatus();
+  return <button type="submit" className="btn-primary" disabled={pending}>{pending ? c.budSaving : c.settleSave}</button>;
+}
+
+/**
+ * The money cut at the evening: what went out before the wedding, what is
+ * still due by then, what is expected after it, and the paid part of it by how
+ * and by whom. Computed by `paymentFlow`, which is pure and tested; this only
+ * draws it.
+ */
+function Flow({ payments, eventDate }: { payments: Payment[]; eventDate: string | null }) {
+  const c = useCopy().money;
+  const f = c.flow;
+  const flow = paymentFlow(payments.map((p) => ({ ...p, amount: Number(p.amount) })), eventDate);
+
+  const methodLabel = (k: string) =>
+    k === '' ? f.unsaid : (PAY_METHODS as readonly string[]).includes(k) ? c.methods[k as (typeof PAY_METHODS)[number]] : k;
+  const payerLabel = (k: string) => (k === '' ? f.unsaid : k === JOINT_PAYER ? c.payJoint : k);
+
+  const half = (title: string, h: { paid: number; due: number }) => (
+    <div className="min-w-0 rounded-card-sm bg-surface-100 p-4">
+      <p className="eyebrow">{title}</p>
+      <dl className="mt-2 space-y-1.5 text-body">
+        <div className="flex items-baseline justify-between gap-3">
+          <dt className="text-ink-soft">{f.paidLabel}</dt>
+          <dd className="tabular-nums text-ink"><Money value={h.paid} /></dd>
+        </div>
+        <div className="flex items-baseline justify-between gap-3">
+          <dt className="text-ink-soft">{f.dueLabel}</dt>
+          <dd className="tabular-nums text-ink"><Money value={h.due} /></dd>
+        </div>
+      </dl>
+    </div>
+  );
+
+  const rows = (title: string, list: { key: string; amount: number }[], label: (k: string) => string) =>
+    list.length === 0 ? null : (
+      <div className="min-w-0">
+        <p className="eyebrow">{title}</p>
+        <ul className="mt-2 list-none space-y-1.5 p-0 text-body">
+          {list.map((r) => (
+            <li key={r.key || 'unsaid'} className="flex items-baseline justify-between gap-3">
+              <span className="text-ink-soft">{label(r.key)}</span>
+              <span className="tabular-nums text-ink"><Money value={r.amount} /></span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+
+  return (
+    <div className="mt-6 border-t border-line pt-5">
+      <h3 className="head-sub">{f.title}</h3>
+      <p className="mt-1 text-body text-ink-mute">{f.sub}</p>
+
+      {flow.split ? (
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          {half(f.before, flow.before)}
+          {half(f.after, flow.after)}
+        </div>
+      ) : (
+        <p className="mt-4 text-body text-ink-soft">{f.noEventDate}</p>
+      )}
+
+      {flow.undated > 0 && (
+        <p className="mt-3 flex items-baseline justify-between gap-3 text-body text-ink-soft">
+          <span>{f.undated}</span>
+          <span className="tabular-nums text-ink"><Money value={flow.undated} /></span>
+        </p>
+      )}
+
+      {(flow.byMethod.length > 0 || flow.byPayer.length > 0) && (
+        <div className="mt-5 grid gap-6 sm:grid-cols-2">
+          {rows(f.byMethod, flow.byMethod, methodLabel)}
+          {rows(f.byPayer, flow.byPayer, payerLabel)}
+        </div>
+      )}
+    </div>
   );
 }

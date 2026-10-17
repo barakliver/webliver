@@ -34,6 +34,7 @@ import { loadTemplates } from '@/lib/workflow';
 import { InviteBox, type Invite } from '@/components/app/InviteBox';
 import { TaskList, type Task } from '@/components/app/TaskList';
 import { PaymentsPanel, type Payment } from '@/components/app/PaymentsPanel';
+import { coupleNames } from '@/lib/coupleNames';
 import { BudgetGrid } from '@/components/app/BudgetGrid';
 import { CoupleProfile, type IntakeNote, type PrivateProfile } from '@/components/app/CoupleProfile';
 import { RunOfShowTools } from '@/components/app/RunOfShowTools';
@@ -537,7 +538,7 @@ async function Section({ tab, client, viewerId, isRoot }: {
   if (tab === 'money') {
     const [payments, budget, crewFees, ledger, budgetPays, privates, history, vendorNames] = await Promise.all([
       safeRows<Payment>('payments', sb.from('payments')
-        .select('id,title,amount,due_on,paid,paid_on').eq('client_id', id)
+        .select('id,title,amount,due_on,paid,paid_on,paid_by,method').eq('client_id', id)
         .order('paid').order('due_on', { ascending: true, nullsFirst: false })),
       safeRows<BudgetItem>('budget', sb.from('budget_items')
         .select('id,category,label,estimate,quoted,agreed,vendor,event_vendor_id,status,includes_vat,vat_rate,per_guest,guest_count_override,notes,paid_by,due_date,visible_to_couple,sort_order,source,created_at,updated_at')
@@ -594,7 +595,7 @@ async function Section({ tab, client, viewerId, isRoot }: {
           plan={readPlan(client.budget_plan)}
           target={client.budget_target === null ? null : Number(client.budget_target)}
         />
-        <PaymentsPanel clientId={id} payments={payments} viewer="producer" />
+        <PaymentsPanel clientId={id} payments={payments} viewer="producer" eventDate={client.event_date} names={coupleNames(client.display_name)} />
         <BudgetGrid
           clientId={id} viewer="producer" items={budget} payments={budgetPays}
           guests={client.guest_estimate}

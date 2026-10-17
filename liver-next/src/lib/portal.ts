@@ -197,7 +197,7 @@ export async function loadPortal(
     sb.from('tasks').select('id,client_id,title,due_on,done,owner,notes,created_by,event_id,category,vendor_id')
       .in('client_id', ids).order('done').order('sort_order')
       .order('due_on', { ascending: true, nullsFirst: false }),
-    sb.from('payments').select('id,client_id,title,amount,due_on,paid,paid_on')
+    sb.from('payments').select('id,client_id,title,amount,due_on,paid,paid_on,paid_by,method')
       .in('client_id', ids).order('paid').order('due_on', { ascending: true, nullsFirst: false }),
     sb.from('budget_items').select('id,client_id,category,label,estimate,quoted,agreed,vendor,event_vendor_id,status,includes_vat,vat_rate,per_guest,guest_count_override,notes,paid_by,due_date,visible_to_couple,sort_order,source,created_at,updated_at')
       .in('client_id', ids).order('sort_order').order('created_at'),

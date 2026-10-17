@@ -7,6 +7,7 @@ import { formatDate, daysUntil } from '@/lib/dates';
 import { TaskList } from '@/components/app/TaskList';
 import { WeddingBingo } from '@/components/app/WeddingBingo';
 import { PaymentsPanel } from '@/components/app/PaymentsPanel';
+import { coupleNames } from '@/lib/coupleNames';
 import { BudgetGrid } from '@/components/app/BudgetGrid';
 import { BudgetTracker } from '@/components/app/BudgetTracker';
 import { FinanceSummary } from '@/components/app/FinanceSummary';
@@ -381,7 +382,7 @@ export function PortalWorkspace({
                 items={budget} payments={data.paymentsFor(c.id)}
               />
             )}
-            <div id="payments" data-jump={ui.portal.rowPayments} data-jump-group="money" className="scroll-mt-28"><PaymentsPanel clientId={c.id} payments={payments} viewer="client" /></div>
+            <div id="payments" data-jump={ui.portal.rowPayments} data-jump-group="money" className="scroll-mt-28"><PaymentsPanel clientId={c.id} payments={payments} viewer="client" eventDate={c.event_date} names={coupleNames(c.display_name)} /></div>
             <div id="budget" data-jump={ui.portal.rowBudget} data-jump-group="money" className="scroll-mt-28 space-y-10">
               <BudgetTracker
                 items={budget}

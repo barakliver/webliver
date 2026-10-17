@@ -356,6 +356,37 @@ that has happened once.
   impression of one. A test walks every id to its file and back and asserts
   the three undealt ones are undealt, so a card without a picture fails the
   build rather than drawing a broken image inside his frame.
+- **An instalment says who paid it, how, and on what day, and the panel cuts
+  the money at the evening.** 3.13, migration 0108. `payments` is the
+  couple's schedule to the producer, and it could say what, how much, when due
+  and whether paid - not who of the two paid, not through what, and not the
+  day the money really moved, which is the thing a producer is asked while a
+  couple works out what the wedding costs month by month. Two text columns,
+  empty by default so older rows read "not said": `paid_by` is free text,
+  because a couple's names are typed by hand and a closed set would refuse the
+  row the day a spelling was corrected, and holds one of the two names or
+  `JOINT_PAYER` (a sentinel and not the word, so Hebrew and English group
+  together); `method` is a closed set in `lib/payMethods.ts` because the
+  cash-flow groups by it, and the constraint is `not valid`, as every one is.
+  The two names come from `coupleNames` in `lib/coupleNames.ts`, read out of
+  the event's name ("נועה ואיתי": the ו stuck to the second name is the "and"),
+  because there is no column of partner names and adding one is a second place
+  to type the same two words; anything that is not clearly two names gives none
+  and "joint" is the only choice. A name already on a row that is no longer in
+  the list stays selectable, so correcting a spelling never silently
+  reassigns an old payment. Marking paid is a form that opens (`settlePayment`:
+  the day, who, how) rather than a flag that flips, because the day is usually
+  not today; `togglePaid` is still the undo, and `updatePayment` still never
+  writes `paid` - it writes `paid_on` only on a row that is paid, guarded in the
+  query, since the table refuses a day on an unpaid one. The cut is
+  `paymentFlow` in `lib/paymentFlow.ts`, pure and tested: paid and due, before
+  and after the evening, and the paid part by method and by payer. The day
+  itself is before; an unpaid instalment with no date is in neither half and on
+  its own line, because filing it under either would misstate the year; with no
+  event date there is no cut to make and the panel says so. The date field on a
+  phone ran off the edge of a 390px screen, because date inputs carry an
+  intrinsic width of their own: width and min-width are stated and the native
+  appearance dropped, which is what makes iOS listen.
 - **The palette is varied by tone, not only used.** 3.12. The five colours on
   the card were one rubine action on a camel page, and the card itself is
   four blocks of colour with something written on each. So the four that are

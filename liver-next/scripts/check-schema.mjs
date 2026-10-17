@@ -994,6 +994,23 @@ try {
     say(stillPending === 'pending' && opened.endsWith('diy-created') && eventKind === 'corporate' && nowRole === 'client',
       'saying so grants nothing; the root approval opens a business event for a business answer and a wedding otherwise',
       `before:${stillPending} opened:${opened.split('\n').pop()} kind:${eventKind} role:${nowRole}`);
+
+    // ── 7. who paid an instalment, and how ───────────────────────────────────
+    /* 0108. Two text columns on payments, empty by default so every existing
+       row reads as "not said". The method is a closed set because the
+       cash-flow screen groups by it, so an unknown one is refused by the
+       table and not only by the form; and a settled row keeps the day it was
+       given rather than having today's stamped over it. */
+    const payRow = (extra) => `insert into public.payments (client_id, title, amount, paid, paid_on${extra.cols}) values ('${cid}','בדיקה',100,${extra.paid},${extra.on}${extra.vals})`;
+    psql('one', `-c "${payRow({ paid: 'true', on: "'2026-09-01'", cols: ', method, paid_by', vals: ", 'card', 'נועה'" })}"`);
+    let badMethod = '';
+    try { psql('one', `-c "${payRow({ paid: 'false', on: 'null', cols: ', method', vals: ", 'bitcoin'" })}"`); }
+    catch (e) { badMethod = (e.stdout || e.stderr || e.message || '').toString(); }
+    const kept = ask('one', "select paid_on::text||'/'||method||'/'||paid_by from public.payments where title='בדיקה' and paid");
+    const blank = ask('one', `select count(*) from public.payments where client_id='${cid}' and title='מקדמה' and method='' and paid_by=''`);
+    say(kept === '2026-09-01/card/נועה' && /payments_method_known|violates check/.test(badMethod) && blank === '1',
+      'a payment keeps the day, the payer and the method it was given, an unknown method is refused, and older rows read as not said',
+      `kept:${kept} refused:${/violates check|payments_method_known/.test(badMethod)} blank:${blank}`);
   }
 } catch (e) {
   failures++;

@@ -102,7 +102,7 @@ export const fixtureBingoTasks: Task[] = [
 ];
 
 export const fixturePayments: Payment[] = [
-  { id: 'p1', title: 'מקדמה', amount: 15000, due_on: day(-30), paid: true, paid_on: day(-29) },
+  { id: 'p1', title: 'מקדמה', amount: 15000, due_on: day(-30), paid: true, paid_on: day(-29), paid_by: 'נועה', method: 'transfer' },
   { id: 'p2', title: 'תשלום שני', amount: 40000, due_on: day(-2), paid: false, paid_on: null },
   { id: 'p3', title: 'יתרה, שבוע לפני', amount: 55000, due_on: day(23), paid: false, paid_on: null },
 ];
