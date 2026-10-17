@@ -38,6 +38,7 @@ import { CircleThread } from '@/components/app/CircleThread';
 import { CircleFeed } from '@/components/app/CircleFeed';
 import { GoogleSyncCard } from '@/components/app/GoogleSyncCard';
 import { QuickLedger } from '@/components/app/QuickLedger';
+import { AlertSettings } from '@/components/app/AlertSettings';
 import { LedgerEntries } from '@/components/app/LedgerEntries';
 import { MonthGrid } from '@/components/app/MonthGrid';
 import { VendorHq } from '@/components/app/VendorHq';
@@ -1135,6 +1136,10 @@ export default async function DesignPage() {
 
         <Panel name="NewLeadForm" note="a lead typed in from a phone call">
           <NewLeadForm />
+        </Panel>
+
+        <Panel name="AlertSettings" note="how a producer is told about an enquiry; the push switch asks the browser">
+          <AlertSettings prefs={{ whatsapp_number: '+972501234567', push_enabled: true, quiet_start: '23:00', quiet_end: '07:30' }} phones={2} publicKey={null} />
         </Panel>
 
         <Panel name="CalendarFeed" note="the subscription link; creating one needs a session">

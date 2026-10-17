@@ -1,7 +1,7 @@
 import type {
   ConsoleCopy, LeadCopy, CrewCopy, VendorCopy, TemplateCopy, BarCopy, UpdateCopy, LinkCopy,
   SignCopy, SiteEditorCopy, HebrewCalCopy, LabelCopy, ChannelCopy, KnowledgeCopy, JumpCopy, CopilotCopy,
-  ArchiveCopy, MeetingCopy, NoteCopy, WorkflowCopy, ReferralCopy, HolidayCopy,
+  ArchiveCopy, MeetingCopy, NoteCopy, WorkflowCopy, ReferralCopy, HolidayCopy, AlertsCopy,
 } from './appUi.ts';
 
 /**
@@ -322,7 +322,7 @@ export const consoleEn: ConsoleCopy = {
     sub: 'Every enquiry that came in from the site, in order of arrival.',
     empty: 'No enquiries yet.',
     cols: { name: 'Name', contact: 'Contact', event: 'Event', date: 'Date', guests: 'Guests', status: 'Status' },
-    statuses: { new: 'New', contacted: 'Contacted', meeting: 'Meeting set', won: 'Closed', lost: 'Not relevant' },
+    statuses: { new: 'New', contacted: 'Contacted', meeting: 'Meeting set', proposal_sent: 'Proposal sent', won: 'Closed', lost: 'Not relevant', nurture: 'Not now' },
   },
   clients: {
     title: 'Events',
@@ -788,7 +788,7 @@ export const consoleEn: ConsoleCopy = {
 };
 
 export const leadEn: LeadCopy = {
-  statuses: { new: 'New', contacted: 'Contacted', meeting: 'Meeting set', won: 'Closed', lost: 'Not relevant' },
+  statuses: { new: 'New', contacted: 'Contacted', meeting: 'Meeting set', proposal_sent: 'Proposal sent', won: 'Closed', lost: 'Not relevant', nurture: 'Not now' },
   note: 'Note',
   notePh: 'What was agreed',
   saveNote: 'Save',
@@ -1769,4 +1769,34 @@ export const referralEn: ReferralCopy = {
   claimSave: 'Link it',
   claimed: 'The link was saved',
   claimFailed: 'The code was not found, or you are already linked.',
+};
+
+export const alertsEn: AlertsCopy = {
+  title: 'Alerts',
+  sub: 'How you hear about a new enquiry: on your phone, on WhatsApp, and when not to.',
+  push: {
+    title: 'Phone notifications',
+    on: 'This device receives notifications.',
+    off: 'This device does not receive notifications yet.',
+    turnOn: 'Turn on for this device',
+    turnOff: 'Turn off for this device',
+    blocked: 'The browser has blocked notifications for this site. You can allow them again in the browser settings.',
+    unsupported: 'This browser does not support notifications. On a phone, add the site to the home screen and open it from there.',
+    notConfigured: 'The server is not set up to send notifications yet.',
+    onePhone: 'One device is listening',
+    phones: '{n} devices are listening',
+  },
+  whatsapp: {
+    label: 'WhatsApp for alerts',
+    hint: 'The number a new enquiry is sent to. Empty: the business number.',
+  },
+  quiet: {
+    title: 'Quiet hours',
+    sub: 'Between these hours no WhatsApp is sent and the phone notification is silent. An enquiry scoring 80 or more rings regardless.',
+    from: 'From',
+    to: 'Until',
+  },
+  save: 'Save',
+  saving: 'Saving',
+  saved: 'Saved',
 };

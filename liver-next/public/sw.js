@@ -50,3 +50,42 @@ self.addEventListener('fetch', (event) => {
   if (event.request.mode !== 'navigate') return;
   event.respondWith(fetch(event.request).catch(() => offlineFallback()));
 });
+
+/* ---------------------------------------------------------------------------
+   Push. The server sends a small JSON note — title, body, url, tag, silent —
+   and the worker shows it. Tap focuses a window of the app that is already
+   open, if there is one, and otherwise opens the url. Nothing from a push is
+   cached: the note is shown and forgotten.
+   --------------------------------------------------------------------------- */
+self.addEventListener('push', (event) => {
+  let note = { title: 'ליור', body: '', url: '/app', tag: undefined, silent: false };
+  try { note = Object.assign(note, event.data ? event.data.json() : {}); } catch { /* a bare push shows the default */ }
+  event.waitUntil(
+    self.registration.showNotification(note.title, {
+      body: note.body,
+      icon: '/icon-192.png',
+      badge: '/icon-192.png',
+      tag: note.tag,
+      silent: Boolean(note.silent),
+      data: { url: note.url || '/app' },
+      dir: 'rtl',
+      lang: 'he',
+    })
+  );
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const url = new URL((event.notification.data && event.notification.data.url) || '/app', self.location.origin).href;
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((list) => {
+      for (const client of list) {
+        if ('focus' in client && new URL(client.url).origin === self.location.origin) {
+          client.navigate(url);
+          return client.focus();
+        }
+      }
+      return self.clients.openWindow(url);
+    })
+  );
+});

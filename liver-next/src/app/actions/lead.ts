@@ -1,9 +1,10 @@
 'use server';
 
 import { supabaseServer } from '@/lib/supabase/server';
+import { after } from 'next/server';
 import { sendMail } from '@/lib/notify/mail';
-import { sendWhatsApp } from '@/lib/notify/whatsapp';
-import { adminLeadEmail, clientConfirmEmail, clientConfirmSubject, adminLeadWhatsApp, type LeadPayload, type MailBrand } from '@/lib/notify/templates';
+import { intakeLead } from '@/lib/leadIntake';
+import { adminLeadEmail, clientConfirmEmail, clientConfirmSubject, type LeadPayload, type MailBrand } from '@/lib/notify/templates';
 import { brandForHost } from '@/lib/branding';
 import { optional } from '@/lib/env';
 import { MIN_EVENT_DATE, MAX_GUESTS } from '@/content/site';
@@ -85,9 +86,10 @@ export async function submitLead(_prev: LeadResult | null, form: FormData): Prom
      why every enquiry was being lost. One narrow door beats one broad key.
      producer_id is not passed: a trigger attributes the enquiry to whoever the
      public site belongs to, so no code path can drop it somewhere unread. */
+  let storedId: string | null = null;
   try {
     const sb = await supabaseServer();
-    const { error } = await sb.rpc('submit_lead', {
+    const { data, error } = await sb.rpc('submit_lead', {
       p_full_name: payload.full_name,
       p_phone: payload.phone,
       p_email: payload.email,
@@ -103,9 +105,20 @@ export async function submitLead(_prev: LeadResult | null, form: FormData): Prom
       p_consent_source: consent ? consentSource : '',
     });
     if (error) throw new Error(`${error.code ?? ''} ${error.message}`.trim());
+    storedId = typeof data === 'string' ? data : null;
   } catch (e) {
     console.error('[lead] save failed', e);
     return { ok: false, error: say.saveFailed };
+  }
+
+  /* Read, score and ring after the visitor has their answer. The reading is
+     a model call and the ring is three network hops; a couple pressing
+     "send" on a phone should not wait for either, and `after` runs them once
+     the response has gone out. The WhatsApp line that used to be sent from
+     here is one of the three channels the alert now owns. */
+  if (storedId) {
+    const id = storedId;
+    after(() => intakeLead(id));
   }
 
   /* The confirmation goes back to a visitor who was reading somebody's site.
@@ -121,7 +134,6 @@ export async function submitLead(_prev: LeadResult | null, form: FormData): Prom
   const adminTo = optional('ADMIN_ALERT_EMAIL');
   const results = await Promise.allSettled([
     adminTo ? sendMail({ to: adminTo, subject: `פנייה חדשה מהאתר: ${payload.full_name}`, html: adminLeadEmail(payload), replyTo: payload.email || undefined }) : Promise.resolve({ sent: false }),
-    sendWhatsApp(adminLeadWhatsApp(payload)),
     payload.email
       ? sendMail({
           to: payload.email,

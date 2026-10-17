@@ -1062,7 +1062,7 @@ export const appCopy = {
     sub: 'כל פנייה שהגיעה מהאתר, לפי סדר הגעה.',
     empty: 'עוד לא הגיעו פניות.',
     cols: { name: 'שם', contact: 'יצירת קשר', event: 'אירוע', date: 'תאריך', guests: 'אורחים', status: 'סטטוס' },
-    statuses: { new: 'חדש', contacted: 'יצרנו קשר', meeting: 'נקבעה פגישה', won: 'נסגר', lost: 'לא רלוונטי' },
+    statuses: { new: 'חדש', contacted: 'יצרנו קשר', meeting: 'נקבעה פגישה', proposal_sent: 'נשלחה הצעה', won: 'נסגר', lost: 'לא רלוונטי', nurture: 'לא עכשיו' },
   },
   clients: {
     title: 'אירועים',
@@ -2519,7 +2519,7 @@ export const dayCopy = {
 } as const;
 
 export const leadsCopy = {
-  statuses: { new: 'חדש', contacted: 'יצרנו קשר', meeting: 'נקבעה פגישה', won: 'נסגר', lost: 'לא רלוונטי' },
+  statuses: { new: 'חדש', contacted: 'יצרנו קשר', meeting: 'נקבעה פגישה', proposal_sent: 'נשלחה הצעה', won: 'נסגר', lost: 'לא רלוונטי', nurture: 'לא עכשיו' },
   note: 'הערה',
   notePh: 'מה סוכם',
   saveNote: 'שמירה',
@@ -2576,6 +2576,37 @@ export const leadsCopy = {
     walk_in: 'הגיעו אלינו',
     webhook: 'מערכת מחוברת',
   } as Record<string, string>,
+} as const;
+
+/** How a producer wants to be told about an enquiry. */
+export const alertsCopy = {
+  title: 'התראות',
+  sub: 'איך מספרים לכם על פנייה חדשה: לטלפון, בוואטסאפ, ומתי לא.',
+  push: {
+    title: 'התראות לטלפון',
+    on: 'המכשיר הזה מקבל התראות.',
+    off: 'המכשיר הזה עוד לא מקבל התראות.',
+    turnOn: 'להפעיל במכשיר הזה',
+    turnOff: 'לכבות במכשיר הזה',
+    blocked: 'הדפדפן חסם התראות לאתר הזה. אפשר לפתוח מחדש בהגדרות הדפדפן.',
+    unsupported: 'הדפדפן הזה לא תומך בהתראות. בטלפון: להוסיף את האתר למסך הבית ולפתוח משם.',
+    notConfigured: 'השרת עוד לא הוגדר לשלוח התראות.',
+    onePhone: 'מכשיר אחד מאזין',
+    phones: '{n} מכשירים מאזינים',
+  },
+  whatsapp: {
+    label: 'וואטסאפ להתראות',
+    hint: 'המספר שאליו נשלחת הודעה על פנייה חדשה. ריק: המספר של העסק.',
+  },
+  quiet: {
+    title: 'שעות שקט',
+    sub: 'בין השעות האלה לא נשלח וואטסאפ וההתראה לטלפון שקטה. פנייה עם ציון 80 ומעלה מצלצלת בכל מקרה.',
+    from: 'מ',
+    to: 'עד',
+  },
+  save: 'שמירה',
+  saving: 'שומר',
+  saved: 'נשמר',
 } as const;
 
 /** The ways a producer would say a lead reached them, for the manual form.

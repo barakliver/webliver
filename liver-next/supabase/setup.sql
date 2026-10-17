@@ -13137,3 +13137,75 @@ comment on table public.lead_events is
 comment on function public.lead_twin(uuid, text, text) is
   'The same producer''s open lead with the same phone or address in the last ninety days, or null. '
   'What the fold-on-insert trigger and store_lead both ask.';
+
+-- ── the site form answers with the card it made ────────────────────────────
+--  submit_lead returned nothing, which was fine while the only thing that
+--  happened next was an email. Now the card is read, scored and announced,
+--  and all of that needs its id. Dropped before it is created, because a
+--  return type cannot be changed in place and sync.sql replays every file.
+--  Folded onto a twin, it answers with the twin, the same as store_lead.
+drop function if exists public.submit_lead(text, text, text, text, date, integer, text, text, boolean, text);
+
+create function public.submit_lead(
+  p_full_name   text,
+  p_phone       text default '',
+  p_email       text default '',
+  p_kind        text default 'wedding',
+  p_event_date  date default null,
+  p_guest_count integer default null,
+  p_message     text default '',
+  p_location    text default '',
+  p_marketing_consent boolean default false,
+  p_consent_source    text default ''
+) returns uuid
+language plpgsql security definer set search_path = public, extensions as $$
+declare
+  v_name  text := btrim(coalesce(p_full_name, ''));
+  v_phone text := btrim(coalesce(p_phone, ''));
+  v_email text := lower(btrim(coalesce(p_email, '')));
+  v_yes   boolean := coalesce(p_marketing_consent, false);
+  v_id    uuid;
+begin
+  if length(v_name) < 2 then
+    raise exception 'שם מלא חסר' using errcode = 'check_violation';
+  end if;
+  if v_phone = '' and v_email = '' then
+    raise exception 'צריך טלפון או אימייל' using errcode = 'check_violation';
+  end if;
+  if v_email <> '' and v_email !~ '^[^\s@]+@[^\s@]+\.[^\s@]+$' then
+    raise exception 'אימייל לא תקין' using errcode = 'check_violation';
+  end if;
+  if p_guest_count is not null and (p_guest_count <= 0 or p_guest_count > 5000) then
+    raise exception 'כמות אורחים לא תקינה' using errcode = 'check_violation';
+  end if;
+
+  insert into public.leads (
+    full_name, phone, email, kind, event_date, guest_count, message, source, location,
+    marketing_consent, marketing_consent_at, marketing_consent_source, unsubscribe_token
+  )
+  values (
+    left(v_name, 120),
+    left(v_phone, 40),
+    left(v_email, 160),
+    (case when p_kind = 'corporate' then 'corporate' else 'wedding' end)::event_class,
+    p_event_date,
+    p_guest_count,
+    left(coalesce(p_message, ''), 4000),
+    'site',
+    left(btrim(coalesce(p_location, '')), 120),
+    v_yes,
+    case when v_yes then now() else null end,
+    case when v_yes then left(btrim(coalesce(p_consent_source, '')), 200) else '' end,
+    case when v_yes then encode(gen_random_bytes(24), 'hex') else null end
+  )
+  returning id into v_id;
+
+  if v_id is null then
+    v_id := public.lead_twin(public.public_site_producer(), v_phone, v_email);
+  end if;
+  return v_id;
+end $$;
+
+revoke all on function public.submit_lead(text, text, text, text, date, integer, text, text, boolean, text) from public;
+grant execute on function public.submit_lead(text, text, text, text, date, integer, text, text, boolean, text)
+  to anon, authenticated, service_role;

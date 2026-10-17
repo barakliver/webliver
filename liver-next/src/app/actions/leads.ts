@@ -8,7 +8,7 @@ import { noteFailure } from '@/lib/flash';
 
 export type LeadActionResult = { ok: boolean; error?: string };
 
-const STATUSES = ['new', 'contacted', 'meeting', 'won', 'lost'] as const;
+const STATUSES = ['new', 'contacted', 'meeting', 'proposal_sent', 'won', 'lost', 'nurture'] as const;
 
 function touch() {
   revalidatePath('/app/leads');

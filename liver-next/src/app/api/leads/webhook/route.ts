@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { timingSafeEqual } from 'node:crypto';
 import { supabaseServer } from '@/lib/supabase/server';
 import { readLead } from '@/lib/leadPayload';
+import { intakeLead } from '@/lib/leadIntake';
 
 /**
  * The door an enquiry comes through when it did not come through our form.
@@ -204,6 +205,10 @@ export async function POST(req: Request) {
   }
 
   console.info('[leads/webhook] stored', { source: lead.source, id: data });
+  /* Read, score, ring. After the row is safe and before the sender is
+     answered: the sender is a machine and the two seconds are nothing to it,
+     while a card announced before it is scored is announced twice. */
+  await intakeLead(String(data ?? ''), { extra: { source_payload: body } });
   return NextResponse.json({ ok: true, id: data });
 }
 
@@ -278,5 +283,6 @@ async function postToChannel(req: Request, token: string) {
   }
 
   console.info('[leads/webhook] stored through a channel', { id: data });
+  await intakeLead(String(data ?? ''), { extra: { source_payload: body } });
   return NextResponse.json({ ok: true, id: data });
 }
