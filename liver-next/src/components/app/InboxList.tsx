@@ -81,7 +81,7 @@ function ActionRow({ a, checked, onCheck }: { a: InboxAction; checked: boolean; 
           {editing && (
             <>
               <textarea name={`payload_${a.id}`} value={text} onChange={(e) => setText(e.target.value)} rows={5} dir="ltr"
-                className="input mt-2 font-mono text-meta" aria-label={c.edit} />
+                className="field mt-2 font-mono text-meta" aria-label={c.edit} />
               <p className="text-micro text-ink-mute">{c.editHint}</p>
             </>
           )}

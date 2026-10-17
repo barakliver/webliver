@@ -149,7 +149,7 @@ export function AlertSettings({ prefs, publicKey, phones }: {
         <div>
           <label htmlFor="alerts-wa" className="block text-body font-medium text-ink">{c.whatsapp.label}</label>
           <input id="alerts-wa" name="whatsapp_number" type="tel" inputMode="tel" autoComplete="tel"
-            defaultValue={prefs.whatsapp_number} className="input mt-1 max-w-xs" dir="ltr" />
+            defaultValue={prefs.whatsapp_number} className="field mt-1 max-w-xs" dir="ltr" />
           <p className="mt-1 text-meta text-ink-mute">{c.whatsapp.hint}</p>
         </div>
 
@@ -166,11 +166,11 @@ export function AlertSettings({ prefs, publicKey, phones }: {
             <div className="mt-2 flex flex-wrap items-end gap-3">
               <label className="text-meta text-ink-soft">
                 {c.quiet.from}
-                <input name="quiet_start" type="time" defaultValue={prefs.quiet_start ?? '23:00'} className="input mt-1 block w-32" dir="ltr" />
+                <input name="quiet_start" type="time" defaultValue={prefs.quiet_start ?? '23:00'} className="field mt-1 block w-32" dir="ltr" />
               </label>
               <label className="text-meta text-ink-soft">
                 {c.quiet.to}
-                <input name="quiet_end" type="time" defaultValue={prefs.quiet_end ?? '07:30'} className="input mt-1 block w-32" dir="ltr" />
+                <input name="quiet_end" type="time" defaultValue={prefs.quiet_end ?? '07:30'} className="field mt-1 block w-32" dir="ltr" />
               </label>
             </div>
           )}

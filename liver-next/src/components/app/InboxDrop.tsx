@@ -68,7 +68,7 @@ export function InboxDrop({ clientId }: { clientId: string }) {
       </button>
       <input ref={input} type="file" multiple accept="application/pdf,image/*,text/plain" className="sr-only" aria-label={c.drop}
         onChange={(e) => setFiles(Array.from(e.target.files ?? []).slice(0, 5))} />
-      <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={3} placeholder={c.paste} aria-label={c.paste} className="input" />
+      <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={3} placeholder={c.paste} aria-label={c.paste} className="field" />
       <div className="flex flex-wrap items-center gap-3">
         <button type="button" onClick={send} disabled={busy || (!files.length && !note.trim())} className="btn-primary disabled:opacity-60">
           {busy ? c.busy : c.read}

@@ -48,3 +48,22 @@ export function useWide(): boolean | null {
     () => null,
   );
 }
+
+/** Tailwind's `lg`, where the leads board stops being a short list and
+ *  becomes columns. Same contract as `useWide`: `null` until the browser has
+ *  said, and a reader treats that as "draw the one the server drew". */
+const DESK = '(min-width: 1024px)';
+
+const subscribeDesk = (fire: () => void) => {
+  const mq = window.matchMedia(DESK);
+  mq.addEventListener('change', fire);
+  return () => mq.removeEventListener('change', fire);
+};
+
+export function useDesk(): boolean | null {
+  return useSyncExternalStore(
+    subscribeDesk,
+    () => window.matchMedia(DESK).matches,
+    () => null,
+  );
+}

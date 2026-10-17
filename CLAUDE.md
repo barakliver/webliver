@@ -415,6 +415,29 @@ that has happened once.
   is the list's own reading of one event, because a second reading of what
   is missing would give two answers by the first week somebody fixed one.
   `PageHead` is gone from this screen, so `LoadTrouble` is drawn by the page.
+  **Group 3, chosen: a on a desk, and b's short list on a phone.** The leads
+  board is five columns across (new to won) with the two a lead steps off the
+  path into, nurture and lost, folded to a strip that is still a drop target
+  and opens on a press; the three figures are one object with hairlines
+  between them, and every card carries its score as a ring (`ScoreRing`, the
+  chip's three-way colour, a dashed ring and no number for a lead nobody has
+  scored). On a phone it is not seven lanes to drag through but the answer to
+  the one question the screen is opened for: who is waiting, then everything
+  else that is open, with stage tabs that filter it. `useDesk` in
+  `lib/useWide.ts` reads the `lg` breakpoint so only one of the two is built,
+  with the same null-means-the-server-drew-it contract as `useWide`. The row
+  on the phone opens the card and does not carry a WhatsApp button of its
+  own: the press that writes the first-response stamp is on the card, and a
+  second one here would be a second place to forget it. The card is a header
+  with the ring, five stages as the real control on a desk (a press is the
+  select's write) and a bar and a sentence on a phone, where the select is the
+  control; its message, draft and summary reorder with `order-*` rather than
+  being drawn twice, and WhatsApp and the call sit in a bar over the tab bar.
+  **`input` was never a class.** Five files wrote `className="input"` and it
+  compiled to nothing, so the lead card's fields were the browser's own, white
+  boxes on the dark desk. They are `field` now, which is the class every other
+  form is built from; the classes check did not catch it because the word is
+  also an HTML element.
 - **The screens are the plum design's screens, not only its colours.**
   He asked why the app did not look like the mockups, and the answer was
   that 3.1 had changed the skin and not the layout. So 3.2 rebuilt three:

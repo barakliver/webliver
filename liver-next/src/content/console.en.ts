@@ -1843,6 +1843,8 @@ export const pipelineEn: PipelineCopy = {
     none: 'Not enough yet',
     unanswered: 'Unanswered',
   },
+  groups: { all: 'All', waiting: 'Waiting for an answer', moving: 'In progress' },
+  lane: { open: 'Open the column', close: 'Fold the column' },
   card: {
     unanswered: 'Unanswered',
     noDate: 'No date',
@@ -1856,6 +1858,9 @@ export const pipelineEn: PipelineCopy = {
   page: {
     back: 'All leads',
     title: 'Lead card',
+    stage: 'Stage',
+    stageOf: 'Stage {n} of {total}',
+    stages: 'Lead stages',
     whatsapp: 'WhatsApp',
     call: 'Call',
     mail: 'Email',

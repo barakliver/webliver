@@ -11,7 +11,9 @@ import { useCopy } from '@/components/app/CopyProvider';
 import {
   setLeadStatus, updateLead, setNextAction, addLeadEvent, bookCall, convertLead, type LeadActionResult,
 } from '@/app/actions/leads';
-import { SourceMark, ScoreChip } from '@/components/app/LeadBoard';
+import { SourceMark, ScoreRing } from '@/components/app/LeadBoard';
+import { cn } from '@/lib/utils';
+import { fill } from '@/lib/copyText';
 import { PIPELINE } from '@/lib/pipeline';
 import { shortDate, clock } from '@/lib/appDates';
 import { formatDate } from '@/lib/dates';
@@ -69,7 +71,7 @@ function Field({ label, name, defaultValue, type = 'text', dir, inputMode }: {
     <div>
       <label htmlFor={id} className="block text-meta font-medium text-ink-soft">{label}</label>
       <input id={id} name={name} type={type} defaultValue={defaultValue ?? ''} dir={dir} inputMode={inputMode}
-        autoComplete="off" className="input mt-1" />
+        autoComplete="off" className="field mt-1" />
     </div>
   );
 }
@@ -111,6 +113,35 @@ export function LeadCard({ lead, events, calls, now }: { lead: FullLead; events:
     : '';
   const overdueNext = lead.next_action_at ? new Date(lead.next_action_at).getTime() < now : false;
 
+  const PATH = ['new', 'contacted', 'meeting', 'proposal_sent', 'won'] as const;
+  const stepAt = (PATH as readonly string[]).indexOf(lead.status);
+
+  const actions = (
+    <>
+      {wa && (
+        <a href={wa} target="_blank" rel="noopener" onClick={noteOut} className="btn-primary inline-flex items-center gap-1.5">
+          <MessageCircle size={16} strokeWidth={1.5} aria-hidden />{c.whatsapp}
+        </a>
+      )}
+      {tel && (
+        <a href={`tel:${tel}`} className="btn-ghost inline-flex items-center gap-1.5">
+          <Phone size={16} strokeWidth={1.5} aria-hidden />{c.call}
+        </a>
+      )}
+      {lead.email && (
+        <a href={`mailto:${lead.email}`} className="btn-ghost inline-flex items-center gap-1.5">
+          <Mail size={16} strokeWidth={1.5} aria-hidden />{c.mail}
+        </a>
+      )}
+      <form action={convertLead}>
+        <input type="hidden" name="lead_id" value={lead.id} />
+        <button type="submit" className="btn-ghost inline-flex items-center gap-1.5">
+          <HeartHandshake size={16} strokeWidth={1.5} aria-hidden />{c.convert}
+        </button>
+      </form>
+    </>
+  );
+
   return (
     <div className="space-y-6">
       <Link href="/app/leads" className="btn-quiet inline-flex items-center gap-1 px-0 text-body">
@@ -118,36 +149,73 @@ export function LeadCard({ lead, events, calls, now }: { lead: FullLead; events:
         {c.back}
       </Link>
 
-      <header className="card space-y-4">
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div className="min-w-0">
-            <h1 className="head-panel">{who}</h1>
+      {/* The same ring the list wears, bigger, and the five stages as one
+          path. On a desk the stages are the control: a press is the same
+          write the select makes. On a phone they are a bar and a sentence,
+          because five targets a thumb can hit do not fit on one line, and
+          the select is the control there. */}
+      <header className="card">
+        <div className="flex items-center gap-4 lg:gap-6">
+          <span className="lg:hidden"><ScoreRing score={lead.score} size={56} /></span>
+          <span className="hidden lg:block"><ScoreRing score={lead.score} size={84} /></span>
+          <div className="min-w-0 flex-1">
+            <h1 className="head-panel lg:font-display lg:text-title lg:font-light">{who}</h1>
             <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-meta text-ink-mute">
               <SourceMark source={lead.source} label={sources[lead.source] ?? lead.source} />
-              <ScoreChip score={lead.score} />
               <span dir="ltr">{[lead.phone, lead.email].filter(Boolean).join(' · ')}</span>
             </p>
           </div>
+          <div className="hidden flex-wrap justify-end gap-2 lg:flex">{actions}</div>
+        </div>
+
+        <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-line pt-4">
+          <form action={setLeadStatus} className="hidden min-w-0 flex-1 lg:block">
+            <input type="hidden" name="lead_id" value={lead.id} />
+            <ol aria-label={c.stages} className="flex list-none items-start p-0">
+              {PATH.map((st, i) => {
+                const done = stepAt >= 0 && i <= stepAt;
+                const here = i === stepAt;
+                return (
+                  <li key={st} className="relative flex min-w-0 flex-1 flex-col items-center gap-1.5">
+                    <span aria-hidden className="flex w-full items-center">
+                      <span className={cn('h-0.5 flex-1', i === 0 ? 'bg-transparent' : done ? 'bg-accent' : 'bg-surface-200')} />
+                      <span className={cn('rounded-full', here ? 'size-3.5 bg-accent ring-4 ring-accent/25' : done ? 'size-2.5 bg-accent' : 'size-2.5 bg-surface-200')} />
+                      <span className={cn('h-0.5 flex-1', i === PATH.length - 1 ? 'bg-transparent' : i < stepAt ? 'bg-accent' : 'bg-surface-200')} />
+                    </span>
+                    <button type="submit" name="status" value={st} aria-current={here ? 'step' : undefined}
+                      className={cn('min-h-[32px] px-2 text-meta transition-colors duration-touch', here ? 'text-ink' : 'text-ink-mute hover:text-ink')}>
+                      {statuses[st] ?? st}
+                    </button>
+                  </li>
+                );
+              })}
+            </ol>
+          </form>
+
+          {stepAt >= 0 && (
+            <div className="min-w-0 flex-1 lg:hidden">
+              <span aria-hidden className="flex gap-1.5">
+                {PATH.map((st, i) => <span key={st} className={cn('h-1.5 flex-1 rounded-full', i <= stepAt ? 'bg-accent' : 'bg-surface-200')} />)}
+              </span>
+              <p className="mt-2 text-body text-ink">
+                {statuses[lead.status] ?? lead.status}
+                <span className="text-ink-mute"> · {fill(c.stageOf, { n: stepAt + 1, total: PATH.length })}</span>
+              </p>
+            </div>
+          )}
+
           <form action={setLeadStatus}>
             <input type="hidden" name="lead_id" value={lead.id} />
             <select name="status" defaultValue={lead.status} onChange={(e) => e.currentTarget.form?.requestSubmit()}
               className="field w-[160px] py-1.5 text-body" aria-label={ui.leads.cols.status}>
-              {PIPELINE.map((s) => <option key={s} value={s}>{statuses[s] ?? s}</option>)}
+              {PIPELINE.map((st) => <option key={st} value={st}>{statuses[st] ?? st}</option>)}
             </select>
           </form>
         </div>
 
-        <div className="flex flex-wrap gap-2">
-          {wa && (
-            <a href={wa} target="_blank" rel="noopener" onClick={noteOut} className="btn-primary inline-flex items-center gap-1.5">
-              <MessageCircle size={16} strokeWidth={1.5} aria-hidden />{c.whatsapp}
-            </a>
-          )}
-          {tel && (
-            <a href={`tel:${tel}`} className="btn-ghost inline-flex items-center gap-1.5">
-              <Phone size={16} strokeWidth={1.5} aria-hidden />{c.call}
-            </a>
-          )}
+        {/* Mail and the end of the card are one press away on a phone; the
+            two the thumb reaches for first are in the bar below it. */}
+        <div className="mt-4 flex flex-wrap gap-2 lg:hidden">
           {lead.email && (
             <a href={`mailto:${lead.email}`} className="btn-ghost inline-flex items-center gap-1.5">
               <Mail size={16} strokeWidth={1.5} aria-hidden />{c.mail}
@@ -160,43 +228,61 @@ export function LeadCard({ lead, events, calls, now }: { lead: FullLead; events:
             </button>
           </form>
         </div>
-
-        {(lead.summary || lead.score_reason) && (
-          <div className="grid gap-3 sm:grid-cols-2">
-            {lead.summary && (
-              <div className="rounded-card-sm bg-accent-wash p-3">
-                <p className="eyebrow flex items-center gap-1.5"><Sparkles size={13} aria-hidden />{c.summary}</p>
-                <p className="mt-1 text-body text-ink">{lead.summary}</p>
-              </div>
-            )}
-            {lead.score_reason && (
-              <div className="rounded-card-sm bg-surface-100 p-3">
-                <p className="eyebrow">{c.reason}</p>
-                <p className="mt-1 text-body text-ink-soft">{lead.score_reason}</p>
-              </div>
-            )}
-          </div>
-        )}
-
-        {lead.suggested_reply && (
-          <div className="rounded-card-sm border border-line p-3">
-            <p className="eyebrow">{c.reply}</p>
-            <p className="mt-1 whitespace-pre-line text-body text-ink">{lead.suggested_reply}</p>
-            <p className="mt-1 text-meta text-ink-mute">{c.replyHint}</p>
-          </div>
-        )}
-
-        {lead.message && (
-          <blockquote className="rounded-card-sm bg-surface-100 px-4 py-3 text-body leading-relaxed text-ink-soft">
-            <p className="eyebrow mb-1">{c.message}</p>
-            “{lead.message}”
-          </blockquote>
-        )}
       </header>
 
+      {(wa || tel) && (
+        <div className="fixed inset-x-0 bottom-[calc(57px+env(safe-area-inset-bottom,0px))] z-30 flex gap-2 border-t border-line bg-card px-4 py-3 lg:hidden">
+          {wa && (
+            <a href={wa} target="_blank" rel="noopener" onClick={noteOut} className="btn-primary inline-flex min-h-[48px] flex-1 items-center justify-center gap-1.5">
+              <MessageCircle size={17} strokeWidth={1.5} aria-hidden />{c.whatsapp}
+            </a>
+          )}
+          {tel && (
+            <a href={`tel:${tel}`} className="btn-ghost inline-flex min-h-[48px] items-center justify-center gap-1.5 px-5">
+              <Phone size={17} strokeWidth={1.5} aria-hidden />{c.call}
+            </a>
+          )}
+        </div>
+      )}
+
       <div className="grid gap-6 lg:grid-cols-[1.2fr_1fr]">
-        <div className="space-y-6">
-          <section className="card" aria-labelledby="lead-next">
+        {/* On a desk what is next comes first and the message last; on a
+            phone the conversation reads in the order it happened, the
+            message and then the draft that answers it. */}
+        <div className="flex flex-col gap-4 lg:gap-6">
+          {lead.message && (
+            <blockquote className="order-1 rounded-card-sm bg-surface-100 px-4 py-3 text-body leading-relaxed text-ink-soft lg:order-4">
+              <p className="eyebrow mb-1">{c.message}</p>
+              “{lead.message}”
+            </blockquote>
+          )}
+
+          {lead.suggested_reply && (
+            <div className="order-2 rounded-card-sm border border-line-strong p-4 lg:order-3">
+              <p className="eyebrow">{c.reply}</p>
+              <p className="mt-1 whitespace-pre-line text-body text-ink">{lead.suggested_reply}</p>
+              <p className="mt-1 text-meta text-ink-mute">{c.replyHint}</p>
+            </div>
+          )}
+
+          {(lead.summary || lead.score_reason) && (
+            <div className="order-4 grid gap-3 sm:grid-cols-2 lg:order-2">
+              {lead.summary && (
+                <div className="rounded-card-sm bg-accent-wash p-3">
+                  <p className="eyebrow flex items-center gap-1.5"><Sparkles size={13} aria-hidden />{c.summary}</p>
+                  <p className="mt-1 text-body text-ink">{lead.summary}</p>
+                </div>
+              )}
+              {lead.score_reason && (
+                <div className="rounded-card-sm bg-surface-100 p-3">
+                  <p className="eyebrow">{c.reason}</p>
+                  <p className="mt-1 text-body text-ink-soft">{lead.score_reason}</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          <section className="card order-3 lg:order-1" aria-labelledby="lead-next">
             <h2 id="lead-next" className="head-section flex items-center gap-2">
               <CalendarClock size={17} strokeWidth={1.5} aria-hidden className="text-accent" />
               {c.next.title}
@@ -208,11 +294,11 @@ export function LeadCard({ lead, events, calls, now }: { lead: FullLead; events:
               <input type="hidden" name="lead_id" value={lead.id} />
               <label className="min-w-[180px] flex-1 text-meta text-ink-soft">
                 {c.next.what}
-                <input name="next_action" defaultValue={lead.next_action} className="input mt-1" autoComplete="off" enterKeyHint="next" />
+                <input name="next_action" defaultValue={lead.next_action} className="field mt-1" autoComplete="off" enterKeyHint="next" />
               </label>
               <label className="text-meta text-ink-soft">
                 {c.next.when}
-                <input name="next_action_at" type="datetime-local" defaultValue={nextLocal} className="input mt-1 block" dir="ltr" />
+                <input name="next_action_at" type="datetime-local" defaultValue={nextLocal} className="field mt-1 block" dir="ltr" />
               </label>
               <Busy idle={c.next.save} busy={c.saving} className="btn-ghost" />
               {nextState && !nextState.ok && <span role="alert" className="text-body text-bad">{nextState.error}</span>}
@@ -231,7 +317,9 @@ export function LeadCard({ lead, events, calls, now }: { lead: FullLead; events:
               {callState && !callState.ok && <span role="alert" className="text-body text-bad">{callState.error}</span>}
             </form>
           </section>
+        </div>
 
+        <div className="space-y-6">
           <section className="card" aria-labelledby="lead-details">
             <h2 id="lead-details" className="head-section">{c.details}</h2>
             <form action={editAction} className="mt-3 grid gap-3 sm:grid-cols-2">
@@ -262,7 +350,6 @@ export function LeadCard({ lead, events, calls, now }: { lead: FullLead; events:
               </div>
             </form>
           </section>
-        </div>
 
         <section className="card" aria-labelledby="lead-timeline">
           <h2 id="lead-timeline" className="head-section">{c.timeline.title}</h2>
@@ -297,6 +384,7 @@ export function LeadCard({ lead, events, calls, now }: { lead: FullLead; events:
             </ol>
           )}
         </section>
+        </div>
       </div>
     </div>
   );

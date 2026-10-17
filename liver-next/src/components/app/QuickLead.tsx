@@ -36,15 +36,15 @@ export function QuickLead({ sources }: { sources: { value: string; label: string
         <form action={action} className="mt-5 space-y-4">
           <div>
             <label htmlFor="ql-name" className="block text-body font-medium text-ink">{c.name}</label>
-            <input id="ql-name" name="full_name" required autoComplete="off" enterKeyHint="next" className="input mt-1" />
+            <input id="ql-name" name="full_name" required autoComplete="off" enterKeyHint="next" className="field mt-1" />
           </div>
           <div>
             <label htmlFor="ql-phone" className="block text-body font-medium text-ink">{c.phone}</label>
-            <input id="ql-phone" name="phone" type="tel" inputMode="tel" required autoComplete="off" enterKeyHint="next" className="input mt-1" dir="ltr" />
+            <input id="ql-phone" name="phone" type="tel" inputMode="tel" required autoComplete="off" enterKeyHint="next" className="field mt-1" dir="ltr" />
           </div>
           <div>
             <label htmlFor="ql-note" className="block text-body font-medium text-ink">{c.note}</label>
-            <textarea id="ql-note" name="note" rows={3} placeholder={c.notePh} enterKeyHint="done" className="input mt-1" />
+            <textarea id="ql-note" name="note" rows={3} placeholder={c.notePh} enterKeyHint="done" className="field mt-1" />
           </div>
           <div>
             <label htmlFor="ql-source" className="block text-body font-medium text-ink">{c.source}</label>

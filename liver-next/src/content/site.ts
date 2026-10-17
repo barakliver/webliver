@@ -2867,6 +2867,10 @@ export const pipelineCopy = {
     none: 'עוד אין מספיק',
     unanswered: 'בלי מענה',
   },
+  /* The phone's board is a short list in the order of who needs an answer,
+     not seven columns: what is waiting first, everything else under it. */
+  groups: { all: 'הכול', waiting: 'מחכים לתשובה', moving: 'בתהליך' },
+  lane: { open: 'פתיחת העמודה', close: 'קיפול העמודה' },
   card: {
     unanswered: 'לא נענה',
     noDate: 'בלי תאריך',
@@ -2880,6 +2884,9 @@ export const pipelineCopy = {
   page: {
     back: 'כל הלידים',
     title: 'כרטיס ליד',
+    stage: 'שלב',
+    stageOf: 'שלב {n} מתוך {total}',
+    stages: 'שלבי הליד',
     whatsapp: 'וואטסאפ',
     call: 'שיחה',
     mail: 'מייל',
