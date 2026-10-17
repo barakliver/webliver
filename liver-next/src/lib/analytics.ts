@@ -150,6 +150,33 @@ function median(xs: number[]): number | null {
  * the second, and the third is the only one that needs doing something about
  * today.
  */
+/** What is still to come in, month by month: the month it is today and the
+ *  `n - 1` after it. Only money not yet paid. A payment already late is
+ *  counted in the current month rather than in the one it was due in, because
+ *  a chart that grows backwards shows a producer their own history of being
+ *  owed; what is late is money that should arrive now. A month with nothing in
+ *  it is still a month, since a gap in the year is the thing worth seeing. A
+ *  payment with no date has no month and is left out; the figures beside the
+ *  chart still count it. */
+export type CashMonth = { ym: string; amount: number };
+
+export function cashByMonth(payments: PaymentRow[], today = new Date(), n = 6): CashMonth[] {
+  const y0 = today.getUTCFullYear();
+  const m0 = today.getUTCMonth();
+  const months: CashMonth[] = Array.from({ length: n }, (_, i) => {
+    const d = new Date(Date.UTC(y0, m0 + i, 1));
+    return { ym: d.toISOString().slice(0, 7), amount: 0 };
+  });
+  const first = months[0].ym;
+  for (const p of payments) {
+    if (p.paid || !p.due_on) continue;
+    const ym = p.due_on.slice(0, 7);
+    const hit = months.find((m) => m.ym === (ym < first ? first : ym));
+    if (hit) hit.amount += Number(p.amount) || 0;
+  }
+  return months.map((m) => ({ ...m, amount: Math.round(m.amount) }));
+}
+
 export type Cash = { collected: number; due: number; overdue: number; overdueCount: number };
 
 export function cashOf(payments: PaymentRow[], today = new Date()): Cash {

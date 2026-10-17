@@ -9,7 +9,7 @@ import { LedgerEntries } from '@/components/app/LedgerEntries';
 import { loadLedger } from '@/lib/ledger';
 import { FunnelChart, Sources, ResponsePanel, CashPanel, Health, ConversionPanel } from '@/components/app/Insights';
 import {
-  funnelOf, bySource, responseTime, cashOf, overdueTasks, signedShare, conversionOf,
+  funnelOf, bySource, responseTime, cashOf, cashByMonth, overdueTasks, signedShare, conversionOf,
   type LeadRow, type CallRow, type PaymentRow, type TaskRow, type ContractRow,
 } from '@/lib/analytics';
 
@@ -55,6 +55,7 @@ export default async function InsightsPage() {
   const funnel = funnelOf(leadRows, callRows);
   const response = responseTime(leadRows, callRows);
   const cash = cashOf((payments.data ?? []) as PaymentRow[]);
+  const months = cashByMonth((payments.data ?? []) as PaymentRow[]);
   const overdue = overdueTasks((tasks.data ?? []) as TaskRow[]);
   const signed = signedShare((contracts.data ?? []) as ContractRow[], clientCount);
   /* Counted from events that exist rather than from a status somebody set
@@ -77,8 +78,19 @@ export default async function InsightsPage() {
 
       {/* What needs doing today comes before what happened this quarter. */}
       <div className="space-y-5">
-        <Health signed={signed} overdue={overdue} waiting={response.waiting} />
-        <CashPanel cash={cash} />
+        <Health signed={signed} overdue={overdue} waiting={response.waiting} overdueMoney={cash.overdue} />
+        {/* Tiles, two across from a laptop up: the months ahead beside the
+            funnel, the channels beside what became of the enquiries. One
+            column on a phone, in the same order. */}
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] lg:items-start">
+          <CashPanel cash={cash} months={months} />
+          <FunnelChart funnel={funnel} />
+          <Sources rows={bySource(leadRows)} />
+          <div className="space-y-5">
+            <ConversionPanel r={conversion} />
+            <ResponsePanel r={response} />
+          </div>
+        </div>
         {/* Behind a boundary, and it is the only await left inside this
             render. Sixty entries joined to their events is the slowest read
             on the slowest screen in the console, and awaiting it here held
@@ -99,10 +111,6 @@ export default async function InsightsPage() {
             <Ledger sb={sb} events={ledgerEvents} />
           </ViewTransition>
         </Suspense>
-        <FunnelChart funnel={funnel} />
-        <ConversionPanel r={conversion} />
-        <ResponsePanel r={response} />
-        <Sources rows={bySource(leadRows)} />
       </div>
     </>
   );

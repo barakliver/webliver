@@ -452,6 +452,21 @@ that has happened once.
   because that day's panel lives there. The Hebrew calendar's verdicts are no
   longer yellow: a day that depends on custom is a rose wash and a payment is a
   rose outline, so the only amber left on that screen is the one warning.
+  **Group 5, chosen: a, except that suppliers on a phone are b's plain list.**
+  Insights are four tiles in the order a morning asks them (what is signed,
+  what is late in work, what is late in money, who is waiting), the months
+  ahead beside the funnel and the channels beside what became of the
+  enquiries, one column on a phone in the same order. The months ahead are
+  `cashByMonth` in `lib/analytics.ts`, pure and tested, with the same rules
+  as the couple's year strip: only unpaid money, late money counted in this
+  month because a chart that grows backwards shows a producer their own
+  history of being owed, an empty month still a column, and a payment with no
+  date left out of the chart while the figures beside it still count it. Late
+  is the wine and nothing on that screen is amber. The supplier book is cards
+  three across on a desk and, on a phone, a row per supplier with a circle
+  for the initial, because a book of hundreds is read with a thumb and a card
+  each is a screen per three; the kinds are a row of pills in place of a
+  select, and the scout is a banner whose button opens it.
 - **The screens are the plum design's screens, not only its colours.**
   He asked why the app did not look like the mockups, and the answer was
   that 3.1 had changed the skin and not the layout. So 3.2 rebuilt three:

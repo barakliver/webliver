@@ -132,6 +132,7 @@ export const consoleEn: ConsoleCopy = {
     },
 
     cash: {
+      chart: 'What is still to come in, month by month',
       title: 'Money',
       sub: 'Three numbers, not one. What came in, what is still due, and what was due and has not arrived.',
       collected: 'Collected',
@@ -1188,6 +1189,7 @@ export const vendorEn: VendorCopy = {
   scout: {
     title: 'Supplier scout for an event',
     sub: 'Five of your own suppliers who best fit one couple: by the style in their words, by the budget, and by how often you have worked together. With an outreach message ready to send.',
+    openSub: 'Pick an event and a kind of supplier, and get five from your own book, with an outreach message ready.',
     open: 'Scout suppliers for an event',
     close: 'Close',
     category: 'Which supplier',
@@ -1228,6 +1230,7 @@ export const vendorEn: VendorCopy = {
   dirSub: 'The notebook that stays between events. A supplier saved here is assigned to the next event in one press, without typing the number again.',
   dirNone: 'No suppliers saved yet.',
   dirAdd: 'Add a supplier',
+  whatsapp: 'WhatsApp',
   dirSearch: 'Find a supplier',
   dirSearchPh: 'Name, category or area',
   dirActive: 'Active',

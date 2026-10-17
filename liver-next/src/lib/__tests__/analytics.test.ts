@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  funnelOf, bySource, responseTime, cashOf, overdueTasks, signedShare, conversionOf,
+  funnelOf, bySource, responseTime, cashOf, cashByMonth, overdueTasks, signedShare, conversionOf,
   type LeadRow, type CallRow,
 } from '../analytics.ts';
 import { appCopy } from '../../content/site.ts';
@@ -300,4 +300,18 @@ test('an event dated before its own enquiry does not become a negative wait', ()
   ]);
   assert.equal(r.converted, 1);
   assert.equal(r.medianDays, null);
+});
+
+test('the months ahead: unpaid only, late money in this month, gaps kept', () => {
+  const today = new Date('2026-10-17T12:00:00Z');
+  const m = cashByMonth([
+    { amount: 1000, due_on: '2026-09-01', paid: false },   // late: folds onto October
+    { amount: 500, due_on: '2026-10-30', paid: false },
+    { amount: 700, due_on: '2026-12-05', paid: false },    // November is left empty
+    { amount: 9000, due_on: '2026-12-06', paid: true },    // paid: not to come
+    { amount: 300, due_on: null, paid: false },            // no date: no month
+    { amount: 400, due_on: '2028-01-01', paid: false },    // beyond the six
+  ], today, 6);
+  assert.deepEqual(m.map((x) => x.ym), ['2026-10', '2026-11', '2026-12', '2027-01', '2027-02', '2027-03']);
+  assert.deepEqual(m.map((x) => x.amount), [1500, 0, 700, 0, 0, 0]);
 });

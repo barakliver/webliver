@@ -3,12 +3,13 @@
 import { fill } from '@/lib/copyText';
 import { useActionState, useMemo, useState } from 'react';
 import { useFormStatus } from 'react-dom';
-import { Archive, ArchiveRestore, FileSpreadsheet, Pencil, Plus, Search, X } from 'lucide-react';
+import { Archive, ArchiveRestore, FileSpreadsheet, MessageCircle, Pencil, Plus, Search, X } from 'lucide-react';
 import { VendorImport } from './VendorImport';
 import { Ltr } from '@/components/Ltr';
 import { addVendor, updateVendor, setVendorArchived, type VendorResult } from '@/app/actions/vendors';
 import { categoryLabelFor, vendorCategoriesFor } from '@/content/production';
 import { useCopy } from '@/components/app/CopyProvider';
+import { normalizePhone } from '@/lib/phone';
 
 export type Vendor = {
   id: string; name: string; category: string; contact_name: string;
@@ -115,52 +116,83 @@ function Row({ vendor }: { vendor: Vendor }) {
   }
 
   const archived = !!vendor.archived_at;
+  const tel = normalizePhone(vendor.phone);
 
+  /* A card from a laptop up and a plain row on a phone. The phone's row is
+     the same facts on one line each with a circle for the initial: a book of
+     hundreds is read by running a thumb down it, and a card per supplier is a
+     screen per three of them. */
   return (
-    <li id={`vendor-${vendor.id}`} className={`scroll-mt-24 flex flex-wrap items-center gap-3 rounded-xl2 border px-4 py-3.5 ${
-      archived ? 'border-line bg-surface-100' : 'border-line'
+    <li id={`vendor-${vendor.id}`} className={`scroll-mt-24 flex items-start gap-1 border-b border-line py-3 lg:flex-col lg:gap-3 lg:rounded-card lg:border lg:p-5 ${
+      archived ? 'lg:bg-surface-100' : 'lg:bg-card'
     }`}>
-      <div className="min-w-0 flex-1">
-        <p className={`text-lead ${archived ? 'text-ink-mute' : 'text-ink'}`}>{vendor.name}</p>
-        <div className="mt-0.5 flex flex-wrap items-center gap-x-3 text-body text-ink-mute">
-          <span>{categoryLabelFor(vendor.category, locale)}</span>
-          {vendor.contact_name && <span>{vendor.contact_name}</span>}
-          {vendor.phone && <a href={`tel:${vendor.phone}`} dir="ltr" className="hover:text-accent">{vendor.phone}</a>}
-          {vendor.area && <span>{vendor.area}</span>}
-          {vendor.agreed_price !== null && (
-            <span>{c.agreedPrice} <Ltr>{shekels.format(vendor.agreed_price)}</Ltr></span>
-          )}
-          {vendor.deposit_paid !== null && vendor.deposit_paid > 0 && (
-            <span>{c.depositPaid} <Ltr>{shekels.format(vendor.deposit_paid)}</Ltr></span>
-          )}
+      <div className="flex min-w-0 flex-1 items-start gap-3 lg:w-full lg:flex-none">
+        <span aria-hidden className="grid size-10 shrink-0 place-items-center rounded-full bg-surface-200 text-lead text-ink-soft lg:hidden">
+          {vendor.name.trim().slice(0, 1)}
+        </span>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-baseline justify-between gap-2">
+            <p className={`truncate text-lead lg:text-head ${archived ? 'text-ink-mute' : 'text-ink'}`}>{vendor.name}</p>
+            <span className="hidden shrink-0 rounded-full border border-line-strong px-3 py-0.5 text-meta text-ink-soft lg:inline">
+              {categoryLabelFor(vendor.category, locale)}
+            </span>
+          </div>
+          <p className="mt-0.5 text-meta text-ink-mute">
+            <span className="lg:hidden">{categoryLabelFor(vendor.category, locale)}{vendor.area ? ' · ' : ''}</span>
+            {vendor.area && <span>{vendor.area}</span>}
+            {vendor.phone && <span className="hidden lg:inline"> · <a href={`tel:${vendor.phone}`} dir="ltr" className="hover:text-accent">{vendor.phone}</a></span>}
+          </p>
+          <div className="mt-1 flex flex-wrap items-center gap-x-3 text-meta text-ink-mute">
+            {vendor.contact_name && <span>{vendor.contact_name}</span>}
+            {vendor.phone && <a href={`tel:${vendor.phone}`} dir="ltr" className="hover:text-accent lg:hidden">{vendor.phone}</a>}
+            {vendor.agreed_price !== null && (
+              <span>{c.agreedPrice} <Ltr>{shekels.format(vendor.agreed_price)}</Ltr></span>
+            )}
+            {vendor.deposit_paid !== null && vendor.deposit_paid > 0 && (
+              <span>{c.depositPaid} <Ltr>{shekels.format(vendor.deposit_paid)}</Ltr></span>
+            )}
+          </div>
+          {vendor.notes && <p className="mt-1 line-clamp-2 text-meta text-ink-soft">{vendor.notes}</p>}
         </div>
-        {vendor.notes && <p className="mt-1 text-body text-ink-soft">{vendor.notes}</p>}
       </div>
 
-      <button
-        type="button" onClick={() => setEditing(true)} title={c.edit}
-        aria-label={`${c.edit} ${vendor.name}`}
-        className="grid size-11 place-items-center rounded-xl2 text-ink-mute transition hover:bg-surface-200 hover:text-ink sm:size-9"
-      >
-        <Pencil size={15} aria-hidden strokeWidth={1.5} />
-      </button>
-
-      {/* Retired rather than deleted, and reversible. A supplier no longer used
-          still appears on last year's events, and deleting the row would blank
-          the supplier on a finished file rather than tidy anything. */}
-      <form action={setVendorArchived}>
-        <input type="hidden" name="vendor_id" value={vendor.id} />
-        <input type="hidden" name="archived" value={String(!archived)} />
+      <div className="flex shrink-0 items-center justify-end gap-0.5 lg:w-full lg:gap-1.5">
+        {/* The two ways to reach them, as the pair a card needs: the one
+            press that opens the conversation and the quieter one. Only from
+            a laptop up, where there is a card to hold them; on a phone the
+            number in the row is already a link. */}
+        {tel && (
+          <a href={`https://wa.me/${tel.replace('+', '')}`} target="_blank" rel="noopener"
+            aria-label={`${c.whatsapp} ${vendor.name}`} title={c.whatsapp}
+            className="hidden size-9 place-items-center rounded-full bg-accent text-surface transition hover:bg-accent-hover lg:grid">
+            <MessageCircle size={16} aria-hidden strokeWidth={1.5} />
+          </a>
+        )}
         <button
-          type="submit" title={archived ? c.unarchive : c.archive}
-          aria-label={`${archived ? c.unarchive : c.archive} ${vendor.name}`}
-          className="grid size-11 place-items-center rounded-xl2 text-ink-mute transition hover:bg-surface-200 hover:text-ink sm:size-9"
+          type="button" onClick={() => setEditing(true)} title={c.edit}
+          aria-label={`${c.edit} ${vendor.name}`}
+          className="grid size-11 place-items-center rounded-control text-ink-mute transition hover:bg-surface-200 hover:text-ink sm:size-9"
         >
-          {archived
-            ? <ArchiveRestore size={15} aria-hidden strokeWidth={1.5} />
-            : <Archive size={15} aria-hidden strokeWidth={1.5} />}
+          <Pencil size={15} aria-hidden strokeWidth={1.5} />
         </button>
-      </form>
+
+        {/* Retired rather than deleted, and reversible. A supplier no longer used
+            still appears on last year's events, and deleting the row would blank
+            the supplier on a finished file rather than tidy anything. */}
+        <form action={setVendorArchived}>
+          <input type="hidden" name="vendor_id" value={vendor.id} />
+          <input type="hidden" name="archived" value={String(!archived)} />
+          <button
+            type="submit" title={archived ? c.unarchive : c.archive}
+            aria-label={`${archived ? c.unarchive : c.archive} ${vendor.name}`}
+            className="grid size-11 place-items-center rounded-control text-ink-mute transition hover:bg-surface-200 hover:text-ink sm:size-9"
+          >
+            {archived
+              ? <ArchiveRestore size={15} aria-hidden strokeWidth={1.5} />
+              : <Archive size={15} aria-hidden strokeWidth={1.5} />}
+          </button>
+        </form>
+      </div>
     </li>
   );
 }
@@ -230,14 +262,6 @@ export function VendorDirectory({ vendors }: { vendors: Vendor[] }) {
           )}
         </div>
 
-        <select
-          value={category} onChange={(e) => setCategory(e.target.value)}
-          aria-label={c.category} className="field w-auto min-w-[160px]"
-        >
-          <option value="">{c.allCategories}</option>
-          {vendorCategoriesFor(locale).map((k) => <option key={k.value} value={k.value}>{k.label}</option>)}
-        </select>
-
         <button
           type="button" onClick={() => { setImporting((v) => !v); setAdding(false); }}
           aria-pressed={importing}
@@ -253,6 +277,20 @@ export function VendorDirectory({ vendors }: { vendors: Vendor[] }) {
           <Plus size={16} aria-hidden strokeWidth={1.5} />
           {adding ? c.close : c.dirAdd}
         </button>
+      </div>
+
+      {/* The kinds of supplier as a row of pills: one press narrows the book,
+          and the one that is on is filled. It scrolls rather than wraps on a
+          phone. A select hid the choices behind a press of its own. */}
+      <div className="-mx-4 mb-5 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0 [&::-webkit-scrollbar]:hidden" role="group" aria-label={c.category}>
+        {[{ value: '', label: c.allCategories }, ...vendorCategoriesFor(locale)].map((k) => (
+          <button key={k.value || 'all'} type="button" onClick={() => setCategory(k.value)} aria-pressed={category === k.value}
+            className={`min-h-[40px] shrink-0 whitespace-nowrap rounded-full px-4 text-body transition-colors duration-touch ${
+              category === k.value ? 'bg-ink text-surface' : 'bg-surface-200 text-ink-soft hover:text-ink'
+            }`}>
+            {k.label}
+          </button>
+        ))}
       </div>
 
       {importing && (
@@ -318,7 +356,7 @@ export function VendorDirectory({ vendors }: { vendors: Vendor[] }) {
               at this a few years is hundreds of rows. `.rows` in globals.css
               lets the browser skip the ones off screen without taking them
               out of the document. */}
-          <ul className="rows space-y-2.5">
+          <ul className="rows m-0 grid list-none grid-cols-1 gap-x-4 p-0 lg:grid-cols-3 lg:gap-4">
             {shown.map((v) => <Row key={v.id} vendor={v} />)}
           </ul>
         </>

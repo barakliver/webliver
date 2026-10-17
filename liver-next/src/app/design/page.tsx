@@ -1140,7 +1140,7 @@ export default async function DesignPage() {
           <div className="space-y-5">
             <FunnelChart funnel={fixtureFunnel} />
             <Sources rows={fixtureSources} />
-            <CashPanel cash={fixtureCash} />
+            <CashPanel cash={fixtureCash} months={[{ ym: '2026-10', amount: 30000 }, { ym: '2026-11', amount: 48000 }, { ym: '2026-12', amount: 72000 }, { ym: '2027-01', amount: 0 }, { ym: '2027-02', amount: 40000 }, { ym: '2027-03', amount: 58000 }]} />
             <ResponsePanel r={fixtureResponse} />
           </div>
         </Panel>

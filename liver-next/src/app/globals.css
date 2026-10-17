@@ -679,7 +679,9 @@
 
   /* A bar that grows from where a line starts, once: from the right in
      Hebrew, from the left in English. */
-  .grow-x {
+    .grow-y { transform-origin: 50% 100%; animation: grow-y .9s cubic-bezier(.2,.9,.2,1) both; }
+  @keyframes grow-y { from { transform: scaleY(0); } to { transform: none; } }
+.grow-x {
     transform-origin: 0 50%;
     animation: grow-x 1s cubic-bezier(.2,.9,.2,1) both;
   }

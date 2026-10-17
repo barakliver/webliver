@@ -2,7 +2,7 @@ import { count as plural, fill } from '@/lib/copyText';
 import Link from 'next/link';
 import { serverCopy } from '@/lib/serverLocale';
 import type { Conversion } from '@/lib/analytics';
-import type { Funnel, SourceRow, Response, Cash } from '@/lib/analytics';
+import type { Funnel, SourceRow, Response, Cash, CashMonth } from '@/lib/analytics';
 import { Money, Ratio, ils } from '@/components/Ltr';
 import { Metric } from '@/components/app/Metric';
 
@@ -68,8 +68,8 @@ export async function FunnelChart({ funnel }: { funnel: Funnel }) {
             </Link>
             <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-surface-200">
               <div
-                className="h-full rounded-xl2 bg-accent transition-[width] duration-enter"
-                style={{ width: `${Math.round((s.count / top) * 100)}%` }}
+                className="grow-x h-full rounded-full bg-accent"
+                style={{ width: `${Math.round((s.count / top) * 100)}%`, animationDelay: `${0.2 + i * 0.1}s` }}
               />
             </div>
           </li>
@@ -84,37 +84,33 @@ export async function FunnelChart({ funnel }: { funnel: Funnel }) {
 export async function Sources({ rows }: { rows: SourceRow[] }) {
   const c = (await serverCopy()).insights;
   if (rows.length === 0) return null;
+  const topLeads = Math.max(...rows.map((r) => r.leads), 1);
   return (
     <section className="card">
       <h2 className="head-panel">{c.sources.title}</h2>
       <p className="mt-1 text-body text-ink-soft">{c.sources.sub}</p>
 
-      <div className="mt-4 overflow-x-auto">
-        <table className="w-full min-w-[380px] border-collapse text-body">
-          <thead>
-            <tr className="border-b border-line text-meta text-ink-mute">
-              <th className="py-2 text-start font-medium">{c.sources.source}</th>
-              <th className="py-2 text-start font-medium">{c.sources.leads}</th>
-              <th className="py-2 text-start font-medium">{c.sources.won}</th>
-              <th className="py-2 text-start font-medium">{c.sources.rate}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((r) => (
-              <tr key={r.source} className="border-b border-line last:border-0">
-                <td className="py-2.5 text-ink">{r.source === 'unknown' ? c.sources.unknown : r.source}</td>
-                <td className="py-2.5 tabular-nums text-ink-soft">{r.leads}</td>
-                <td className="py-2.5 tabular-nums text-ink-soft">{r.won}</td>
-                <td className="py-2.5">
-                  {r.rate === null
-                    ? <Ratio of={r.won} total={r.leads} className="text-meta text-ink-mute" />
-                    : <span className="font-medium tabular-nums text-accent">{r.rate}%</span>}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {/* A bar per channel, measured against the busiest, with the closing
+          rate beside it in words. A channel with one enquiry that closed is
+          one enquiry, not a hundred percent, and a bar the width of its
+          enquiries says so before the number does. */}
+      <ul className="mt-5 list-none space-y-4 p-0">
+        {rows.map((r, i) => (
+          <li key={r.source}>
+            <div className="flex items-baseline justify-between gap-3 text-body">
+              <span className="text-ink">{r.source === 'unknown' ? c.sources.unknown : r.source}</span>
+              <span className="tabular-nums text-ink-soft">
+                {r.rate === null
+                  ? <Ratio of={r.won} total={r.leads} className="text-meta text-ink-mute" />
+                  : <><Ratio of={r.won} total={r.leads} /> · <span className="font-medium text-accent">{r.rate}%</span></>}
+              </span>
+            </div>
+            <div aria-hidden className="mt-1.5 h-2 overflow-hidden rounded-full bg-surface-200">
+              <div className="grow-x h-full rounded-full bg-accent" style={{ width: `${Math.round((r.leads / topLeads) * 100)}%`, animationDelay: `${0.2 + i * 0.08}s` }} />
+            </div>
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }
@@ -140,8 +136,12 @@ function Figure({ label, value, tone = 'ink', note, href }: {
   return <Metric kicker={label} value={value} sub={note} tone={tone} href={href} />;
 }
 
-export async function CashPanel({ cash }: { cash: Cash }) {
-  const c = (await serverCopy()).insights;
+export async function CashPanel({ cash, months }: { cash: Cash; months: CashMonth[] }) {
+  const ui = await serverCopy();
+  const c = ui.insights;
+  const monthFmt = new Intl.DateTimeFormat(ui.locale === 'en' ? 'en-GB' : 'he-IL', { timeZone: 'UTC', month: 'short' });
+  const peak = Math.max(...months.map((m) => m.amount), 0);
+  const peakAt = peak > 0 ? months.findIndex((m) => m.amount === peak) : -1;
   return (
     <section className="card">
       <h2 className="head-panel">{c.cash.title}</h2>
@@ -161,6 +161,28 @@ export async function CashPanel({ cash }: { cash: Cash }) {
           href={cash.overdue > 0 ? '/app/clients' : undefined}
         />
       </div>
+
+      {/* The months ahead. Heights are against the busiest month, so a quiet
+          September is visibly quiet; the one that is most is the rose. Late
+          money is counted in this month (see `cashByMonth`). The bars are
+          drawn for the eye and the list under them says the same in words. */}
+      <p className="mt-6 text-meta text-ink-mute">{c.cash.chart}</p>
+      <div aria-hidden className="mt-3 flex h-40 items-end gap-3">
+        {months.map((m, i) => (
+          <div key={m.ym} className="flex h-full flex-1 flex-col items-center justify-end gap-1.5">
+            <div
+              className={`grow-y w-full rounded-t-[10px] rounded-b-[4px] ${i === peakAt ? 'bg-accent' : 'bg-ink-mute/40'}`}
+              style={{ height: m.amount > 0 ? `${Math.max(4, Math.round((m.amount / peak) * 100))}%` : '2px', animationDelay: `${0.15 + i * 0.07}s` }}
+            />
+            <span className="text-micro text-ink-mute">{monthFmt.format(new Date(`${m.ym}-01T12:00:00Z`))}</span>
+          </div>
+        ))}
+      </div>
+      <ul className="sr-only">
+        {months.map((m) => (
+          <li key={m.ym}>{monthFmt.format(new Date(`${m.ym}-01T12:00:00Z`))}: <Money value={m.amount} /></li>
+        ))}
+      </ul>
     </section>
   );
 }
@@ -184,7 +206,7 @@ export async function ResponsePanel({ r }: { r: Response }) {
         <Figure
           label={c.response.waiting}
           value={String(r.waiting)}
-          tone={r.waiting > 0 ? 'warn' : 'ok'}
+          tone={r.waiting > 0 ? 'bad' : 'ok'}
           href={r.waiting > 0 ? '/app/leads' : undefined}
         />
       </div>
@@ -192,32 +214,42 @@ export async function ResponsePanel({ r }: { r: Response }) {
   );
 }
 
-export async function Health({ signed, overdue, waiting }: {
-  signed: { signed: number; of: number }; overdue: number; waiting: number;
+export async function Health({ signed, overdue, waiting, overdueMoney }: {
+  signed: { signed: number; of: number }; overdue: number; waiting: number; overdueMoney: number;
 }) {
   const c = (await serverCopy()).insights;
-  const clear = overdue === 0 && waiting === 0;
+  const clear = overdue === 0 && waiting === 0 && overdueMoney === 0;
   return (
-    <section className="card">
-      <h2 className="head-panel">{c.health.title}</h2>
-      <div className="mt-4 grid gap-3 sm:grid-cols-3">
-        <Figure
+    <section aria-labelledby="health-title">
+      <h2 id="health-title" className="sr-only">{c.health.title}</h2>
+      {/* Four tiles, one thing each, in the order a morning asks them: what
+          is signed, what is late in work, what is late in money, who is
+          waiting. Nothing here is amber: late is the wine and nothing is
+          the ink. */}
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <div className="card"><Figure
           label={c.health.signed}
           value={<Ratio of={signed.signed} total={signed.of} />}
           href="/app/clients"
-        />
-        <Figure
+        /></div>
+        <div className="card"><Figure
           label={c.health.overdueTasks}
           value={String(overdue)}
           tone={overdue > 0 ? 'bad' : 'ok'}
           href={overdue > 0 ? '/app/clients' : undefined}
-        />
-        <Figure
+        /></div>
+        <div className="card"><Figure
+          label={c.cash.overdue}
+          value=<Money value={overdueMoney} />
+          tone={overdueMoney > 0 ? 'bad' : 'ok'}
+          href={overdueMoney > 0 ? '/app/clients' : undefined}
+        /></div>
+        <div className="card"><Figure
           label={c.health.waiting}
           value={String(waiting)}
-          tone={waiting > 0 ? 'warn' : 'ok'}
+          tone={waiting > 0 ? 'bad' : 'ok'}
           href={waiting > 0 ? '/app/leads' : undefined}
-        />
+        /></div>
       </div>
 
       {clear ? (
@@ -228,7 +260,7 @@ export async function Health({ signed, overdue, waiting }: {
               take you somewhere, and dressing one as the other is how a person
               learns not to tap either. */}
           {waiting > 0 && <Link href="/app/leads" className="btn-ghost">{c.health.toLeads}</Link>}
-          {overdue > 0 && <Link href="/app/clients" className="btn-ghost">{c.health.toClients}</Link>}
+          {(overdue > 0 || overdueMoney > 0) && <Link href="/app/clients" className="btn-ghost">{c.health.toClients}</Link>}
         </div>
       )}
     </section>
