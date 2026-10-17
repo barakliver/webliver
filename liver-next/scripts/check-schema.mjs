@@ -959,6 +959,41 @@ try {
       leaked(rootTenant).length === 0 ? '' : `visible to root: ${leaked(rootTenant).join(', ')}`);
     say(rootTicket === '1', 'and does read the ticket filed with them',
       rootTicket === '1' ? '' : `tickets visible to root: ${rootTicket || '(error)'}`);
+
+    // ── 6. a new account says what it came for, and is let in by a press ──────
+    /* 0107. Somebody signs in with Google for the first time, nobody invited
+       them, and they answer one question. The answer is a request: it is
+       written to their own profile by one function, it rings the root bell
+       once, and it grants nothing - the approval is a second act by the root
+       address, and what it opens is the kind of event they said. */
+    const uidW = person(4), mailW = 'newcomer@example.com';
+    psql('one', `-c "insert into auth.users (id, email) values ('${uidW}','${mailW}') on conflict do nothing"`);
+    const asked = asAccount(uidW, mailW, "select public.choose_my_path('business')");
+    asAccount(uidW, mailW, "select public.choose_my_path('business')");
+    const bell = ask('one', "select count(*) from public.notifications n join public.profiles p on p.id = n.profile_id"
+      + " where lower(p.email) = 'barakliver@gmail.com' and n.title = 'בקשה חדשה לאישור' and n.body like '%newcomer@example.com%'");
+    const stored = ask('one', `select signup_intent from public.profiles where id = '${uidW}'`);
+    say(asked.endsWith('business') && stored === 'business' && bell === '1',
+      'a new account states what it came for, and the bell rings once however often it presses',
+      `answer:${asked.split('\n').pop()} stored:${stored} bell:${bell}`);
+
+    const refusal = (id, mail, sql) => {
+      try { return asAccount(id, mail, sql); } catch (e) { return (e.stdout || e.message || '').toString(); }
+    };
+    const refusedPath = refusal(uidW, mailW, "select public.choose_my_path('astronaut')");
+    const refusedApproved = refusal(uidA, mailA, "select public.choose_my_path('wedding')");
+    const refusedRoot = refusal(uid, 'barakliver@gmail.com', "select public.choose_my_path('wedding')");
+    say(/unknown path/.test(refusedPath) && /not waiting/.test(refusedApproved) && /no path/.test(refusedRoot),
+      'an unknown answer, an approved producer and the root address are all refused',
+      `${refusedPath.split('\n')[0].slice(0, 30)} | ${refusedApproved.split('\n')[0].slice(0, 40)} | ${refusedRoot.split('\n')[0].slice(0, 40)}`);
+
+    const stillPending = ask('one', `select status::text from public.producers where owner_id = '${uidW}'`);
+    const opened = asAccount(uid, 'barakliver@gmail.com', `select public.set_account_kind('${uidW}', 'diy')`);
+    const eventKind = ask('one', `select c.kind::text from public.clients c join public.client_authorized_emails e on e.client_id = c.id where e.email = '${mailW}'`);
+    const nowRole = ask('one', `select role::text from public.profiles where id = '${uidW}'`);
+    say(stillPending === 'pending' && opened.endsWith('diy-created') && eventKind === 'corporate' && nowRole === 'client',
+      'saying so grants nothing; the root approval opens a business event for a business answer and a wedding otherwise',
+      `before:${stillPending} opened:${opened.split('\n').pop()} kind:${eventKind} role:${nowRole}`);
   }
 } catch (e) {
   failures++;

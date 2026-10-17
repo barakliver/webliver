@@ -209,14 +209,14 @@ export const siteEn: SiteCopy = {
 
 export const authEn: AuthCopy = {
   title: 'Sign in to your area',
-  sub: 'We will send you a one time code. No password to remember.',
+  sub: 'Signing in is with a Google account. No password to remember.',
   emailLabel: 'Email address',
   newHere: 'This is my first time here',
   nameLabel: 'Full name',
   brandLabel: 'Business name (producers)',
   submit: 'Send code',
   sending: 'Sending',
-  note: 'Invited couples sign in with the address the invitation was sent to. A new producer goes to approval before the account opens.',
+  note: 'Anyone who was invited goes straight to their own area, with the address the invitation was sent to. Anyone signing in for the first time without an invitation says what they are looking for, and gets in after approval.',
   codeTitle: 'The code is on its way',
   codeSentEmail: 'We sent a one time code to',
   codeSentPhone: 'We sent a one time code by text to',
@@ -234,13 +234,13 @@ export const authEn: AuthCopy = {
   resentPhone: 'We sent a new code by text.',
   google: 'Sign in with Google',
   googleGoing: 'Taking you to Google',
-  googleFailed: 'We could not open the Google window. You can sign in with a code below.',
+  googleFailed: 'We could not open the Google window. You can try again.',
   or: 'or',
   privacyNote: 'By signing in you agree to the ',
   legalJoin: ' and the ',
   signingIn: 'Signing you in',
-  linkExpired: 'That link has already been used, or it expired. We will send a new code to the same address.',
-  linkMissing: 'The link was incomplete. You can sign in from here.',
+  linkExpired: 'That link has already been used, or it expired. You can sign in with Google.',
+  linkMissing: 'The link was incomplete. You can sign in with Google.',
 };
 
 export const privacyCopyEn: PrivacyCopy = {

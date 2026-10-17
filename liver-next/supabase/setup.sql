@@ -13410,3 +13410,878 @@ comment on table public.suggested_actions is
   'What a reading proposes to write, waiting for the producer. Only applyAction turns one into a row, and only after a yes.';
 comment on table public.activity_log is
   'What happened to an event, in order. Written always; shown to the couple one line at a time, on purpose.';
+
+-- 0104  A budget you can type into.
+--
+--  The budget was a list of rows that each opened onto a form, and a form
+--  per row is four presses to change one number. What a couple and a
+--  producer both reach for is a spreadsheet: press a cell, type, Enter,
+--  and the totals move. This migration gives `budget_items` what a
+--  spreadsheet row needs and the old rows never had: a state, a quote
+--  beside the plan and the agreed price, whether the price is before or
+--  after VAT, a per-plate switch, an order, and a source saying where the
+--  line came from. Nothing is renamed and nothing is dropped - `estimate`
+--  is the planned figure and stays `estimate`, because fifteen weddings'
+--  rows carry it and a column rename is a data migration in disguise.
+--
+--  Two tables beside it. `budget_payments` is money paid to a supplier
+--  against one line, and it is a table of its own rather than more columns
+--  on `payments` because `payments` is the couple's schedule to the
+--  producer, and `ledgerOf` counts it as income: a supplier's deposit
+--  written there would read as money arriving. `budget_item_private` holds
+--  the producer's own note on a line, in a table the couple has no policy
+--  on, for the reason the crew functions give - a policy grants rows and
+--  rows carry columns, so a private column on a shared row is not private.
+--
+--  The backfill runs once, inside the branch that adds the column. sync.sql
+--  replays this file on every deploy, and an unguarded `update ... where
+--  agreed is not null` would set a line back to booked every five minutes
+--  after somebody deliberately moved it off.
+
+-- ── the line ──────────────────────────────────────────────────────────────
+do $$
+begin
+  if not exists (
+    select 1 from information_schema.columns
+    where table_schema = 'public' and table_name = 'budget_items' and column_name = 'status'
+  ) then
+    alter table public.budget_items add column status text not null default 'idea';
+    /* A row with a price agreed is a booking; everything else is still an
+       idea. Quoted and paid cannot be told from the old columns, so they
+       are not guessed. */
+    update public.budget_items set status = 'booked' where agreed is not null;
+  end if;
+end $$;
+
+alter table public.budget_items
+  add column if not exists quoted               numeric(12,2) check (quoted is null or quoted >= 0),
+  add column if not exists includes_vat         boolean not null default true,
+  add column if not exists vat_rate             numeric(4,3) not null default 0.18,
+  add column if not exists per_guest            boolean not null default false,
+  add column if not exists guest_count_override int check (guest_count_override is null or guest_count_override >= 0),
+  add column if not exists paid_by              text not null default 'couple',
+  add column if not exists due_date             date,
+  add column if not exists visible_to_couple    boolean not null default true,
+  add column if not exists sort_order           int not null default 0,
+  add column if not exists source               text not null default 'manual',
+  add column if not exists updated_at           timestamptz not null default now();
+
+/* `not valid`, because the table has rows and a constraint that one old row
+   refuses fails every deploy forever. The values are the five the screen
+   draws. */
+alter table public.budget_items drop constraint if exists budget_items_status_chk;
+alter table public.budget_items add constraint budget_items_status_chk
+  check (status in ('idea', 'quoted', 'booked', 'paid', 'cancelled')) not valid;
+alter table public.budget_items drop constraint if exists budget_items_paid_by_chk;
+alter table public.budget_items add constraint budget_items_paid_by_chk
+  check (paid_by in ('couple', 'parents_a', 'parents_b', 'split')) not valid;
+alter table public.budget_items drop constraint if exists budget_items_source_len;
+alter table public.budget_items add constraint budget_items_source_len
+  check (char_length(source) <= 80) not valid;
+
+create index if not exists budget_items_order_idx
+  on public.budget_items (client_id, category, sort_order, created_at);
+
+drop trigger if exists budget_items_touch on public.budget_items;
+create trigger budget_items_touch before update on public.budget_items
+  for each row execute function public.touch_updated_at();
+
+-- ── who sees which line ───────────────────────────────────────────────────
+-- The couple's branch gains one condition: a line the producer has turned
+-- off is not theirs to read. The producer's branch is unchanged.
+drop policy if exists budget_read on public.budget_items;
+create policy budget_read on public.budget_items for select
+  using (
+    public.owns_producer(public.producer_of_client(client_id))
+    or public.is_super_admin()
+    or (
+      public.can_read_client(client_id)
+      and visible_to_couple
+      and exists (select 1 from public.clients c where c.id = client_id and c.budget_visible)
+    )
+  );
+
+/* The couple may correct their own lines - the hall's quote arrives on
+   their phone, not the producer's - but never the two figures the producer
+   locks: the plan once approved, and the agreed price once booked. Those
+   are refused in the action; here the row is theirs to write when the
+   budget is open to them at all. */
+drop policy if exists budget_couple_write on public.budget_items;
+create policy budget_couple_write on public.budget_items for update
+  using (
+    public.can_read_client(client_id)
+    and visible_to_couple
+    and exists (select 1 from public.clients c where c.id = client_id and c.budget_visible)
+  )
+  with check (
+    public.can_read_client(client_id)
+    and visible_to_couple
+    and exists (select 1 from public.clients c where c.id = client_id and c.budget_visible)
+  );
+drop policy if exists budget_couple_insert on public.budget_items;
+create policy budget_couple_insert on public.budget_items for insert
+  with check (
+    public.can_read_client(client_id)
+    and exists (select 1 from public.clients c where c.id = client_id and c.budget_visible)
+  );
+
+-- ── the producer's own note on a line ─────────────────────────────────────
+create table if not exists public.budget_item_private (
+  item_id        uuid primary key references public.budget_items(id) on delete cascade,
+  internal_notes text not null default '',
+  updated_at     timestamptz not null default now(),
+  constraint budget_item_private_len check (char_length(internal_notes) <= 4000)
+);
+alter table public.budget_item_private enable row level security;
+drop policy if exists budget_item_private_producer on public.budget_item_private;
+create policy budget_item_private_producer on public.budget_item_private for all
+  using (
+    public.is_super_admin() or exists (
+      select 1 from public.budget_items b
+      where b.id = item_id and public.owns_producer(public.producer_of_client(b.client_id))
+    )
+  )
+  with check (
+    public.is_super_admin() or exists (
+      select 1 from public.budget_items b
+      where b.id = item_id and public.owns_producer(public.producer_of_client(b.client_id))
+    )
+  );
+drop trigger if exists budget_item_private_touch on public.budget_item_private;
+create trigger budget_item_private_touch before update on public.budget_item_private
+  for each row execute function public.touch_updated_at();
+
+-- ── money paid against a line ─────────────────────────────────────────────
+create table if not exists public.budget_payments (
+  id           uuid primary key default gen_random_uuid(),
+  item_id      uuid not null references public.budget_items(id) on delete cascade,
+  client_id    uuid not null references public.clients(id) on delete cascade,
+  amount       numeric(12,2) not null check (amount > 0),
+  /* Null is planned and not yet paid. */
+  paid_at      date,
+  due_at       date,
+  method       text not null default '',
+  paid_by      text not null default '',
+  reference    text not null default '',
+  receipt_path text,
+  notes        text not null default '',
+  created_at   timestamptz not null default now(),
+  constraint budget_payments_len check (
+    char_length(method) <= 20 and char_length(paid_by) <= 20
+    and char_length(reference) <= 80 and char_length(notes) <= 2000
+  )
+);
+create index if not exists budget_payments_item_idx on public.budget_payments (item_id, due_at);
+create index if not exists budget_payments_client_idx on public.budget_payments (client_id, paid_at, due_at);
+
+alter table public.budget_payments enable row level security;
+/* Read follows the line: whoever may read the line may read what was paid
+   against it, which is how the couple's branch inherits `visible_to_couple`
+   and `budget_visible` without restating them. */
+drop policy if exists budget_payments_read on public.budget_payments;
+create policy budget_payments_read on public.budget_payments for select
+  using (exists (select 1 from public.budget_items b where b.id = item_id));
+drop policy if exists budget_payments_write on public.budget_payments;
+create policy budget_payments_write on public.budget_payments for all
+  using (public.owns_producer(public.producer_of_client(client_id)) or public.is_super_admin())
+  with check (public.owns_producer(public.producer_of_client(client_id)) or public.is_super_admin());
+/* The couple records their own payments too - they are the ones who paid
+   the photographer's deposit - but may not touch a row once it is marked
+   paid, so a settled payment is corrected by the producer alone. */
+drop policy if exists budget_payments_couple_insert on public.budget_payments;
+create policy budget_payments_couple_insert on public.budget_payments for insert
+  with check (
+    public.can_read_client(client_id)
+    and exists (select 1 from public.budget_items b where b.id = item_id and b.visible_to_couple)
+    and exists (select 1 from public.clients c where c.id = client_id and c.budget_visible)
+  );
+drop policy if exists budget_payments_couple_update on public.budget_payments;
+create policy budget_payments_couple_update on public.budget_payments for update
+  using (
+    paid_at is null and public.can_read_client(client_id)
+    and exists (select 1 from public.budget_items b where b.id = item_id and b.visible_to_couple)
+    and exists (select 1 from public.clients c where c.id = client_id and c.budget_visible)
+  )
+  with check (
+    public.can_read_client(client_id)
+    and exists (select 1 from public.budget_items b where b.id = item_id and b.visible_to_couple)
+    and exists (select 1 from public.clients c where c.id = client_id and c.budget_visible)
+  );
+
+-- ── the approved baseline ─────────────────────────────────────────────────
+-- Variance is measured against something, and until the couple says "this
+-- is the plan" there is nothing to measure against. The producer asks, the
+-- couple approves, the plan locks and a snapshot is kept so the number
+-- they agreed to survives every edit after it.
+alter table public.clients
+  add column if not exists budget_approval_asked_at timestamptz,
+  add column if not exists budget_approved_at       timestamptz;
+
+create table if not exists public.budget_snapshots (
+  id            uuid primary key default gen_random_uuid(),
+  client_id     uuid not null references public.clients(id) on delete cascade,
+  total_planned numeric(12,2) not null default 0,
+  total_agreed  numeric(12,2) not null default 0,
+  total_paid    numeric(12,2) not null default 0,
+  /* approved / daily / manual */
+  reason        text not null default 'manual',
+  taken_at      timestamptz not null default now(),
+  constraint budget_snapshots_reason_len check (char_length(reason) <= 20)
+);
+create index if not exists budget_snapshots_client_idx on public.budget_snapshots (client_id, taken_at desc);
+alter table public.budget_snapshots enable row level security;
+drop policy if exists budget_snapshots_read on public.budget_snapshots;
+create policy budget_snapshots_read on public.budget_snapshots for select
+  using (public.can_read_client(client_id));
+drop policy if exists budget_snapshots_write on public.budget_snapshots;
+create policy budget_snapshots_write on public.budget_snapshots for insert
+  with check (public.can_read_client(client_id));
+
+comment on table public.budget_payments is
+  'Money paid to a supplier against one budget line. Not the couple''s schedule to the producer, which is public.payments.';
+comment on table public.budget_item_private is
+  'The producer''s own note on a budget line, in a table the couple has no policy on.';
+comment on table public.budget_snapshots is
+  'The three totals on a day, kept when the couple approves the plan so variance has a baseline.';
+
+-- 0105  The questionnaire is where a couple is known from.
+--
+--  Every couple's screen looked the same, because nothing on the platform
+--  had ever asked them who they are. This is one questionnaire in six
+--  short chapters, answered in stages from a phone, by either partner, and
+--  from the moment it is answered the product knows a religious wedding
+--  of three hundred from a secular one of a hundred and twenty.
+--
+--  The questions themselves live in code (`content/intake.ts`), not in a
+--  table: they are Hebrew wording, versioned with the product, and a
+--  table of questions nobody can edit from a screen is a table somebody
+--  has to maintain in SQL. What the database holds is the answers, keyed
+--  by question, and a profile derived from them by a trigger so every
+--  screen reads one row rather than thirty-six.
+--
+--  Three privacy rules, each a table and not a column. An answer in the
+--  "between us" chapter is `private`: the partner who wrote it and the
+--  producer read it, the other partner does not, and that is a row
+--  condition on the policy. The producer's note on an answer is its own
+--  table with no policy for the couple. And the sensitivities (who must
+--  not sit together, a loss in the family) are `couple_profiles_private`,
+--  for the crew's reason: a policy grants rows and rows carry columns.
+
+create table if not exists public.questionnaire_responses (
+  id           uuid primary key default gen_random_uuid(),
+  client_id    uuid not null references public.clients(id) on delete cascade,
+  /* couple_intake / wedding_day */
+  form_key     text not null default 'couple_intake',
+  question_key text not null,
+  answered_by  uuid not null references public.profiles(id) on delete cascade,
+  value        jsonb not null,
+  /* couple: both partners read it. private: the writer and the producer. */
+  visibility   text not null default 'couple',
+  created_at   timestamptz not null default now(),
+  updated_at   timestamptz not null default now(),
+  constraint questionnaire_responses_len check (
+    char_length(form_key) <= 40 and char_length(question_key) <= 60
+    and visibility in ('couple', 'private')
+    and pg_column_size(value) <= 20000
+  ),
+  unique (client_id, form_key, question_key, answered_by)
+);
+create index if not exists questionnaire_responses_client_idx
+  on public.questionnaire_responses (client_id, form_key, question_key);
+
+alter table public.questionnaire_responses enable row level security;
+drop policy if exists questionnaire_responses_producer on public.questionnaire_responses;
+create policy questionnaire_responses_producer on public.questionnaire_responses for all
+  using (public.owns_producer(public.producer_of_client(client_id)) or public.is_super_admin())
+  with check (public.owns_producer(public.producer_of_client(client_id)) or public.is_super_admin());
+drop policy if exists questionnaire_responses_couple_read on public.questionnaire_responses;
+create policy questionnaire_responses_couple_read on public.questionnaire_responses for select
+  using (public.can_read_client(client_id) and (visibility = 'couple' or answered_by = auth.uid()));
+drop policy if exists questionnaire_responses_couple_write on public.questionnaire_responses;
+create policy questionnaire_responses_couple_write on public.questionnaire_responses for all
+  using (public.can_read_client(client_id) and answered_by = auth.uid())
+  with check (public.can_read_client(client_id) and answered_by = auth.uid());
+
+drop trigger if exists questionnaire_responses_touch on public.questionnaire_responses;
+create trigger questionnaire_responses_touch before update on public.questionnaire_responses
+  for each row execute function public.touch_updated_at();
+
+-- ── the producer's note beside an answer ──────────────────────────────────
+create table if not exists public.questionnaire_notes (
+  id           uuid primary key default gen_random_uuid(),
+  client_id    uuid not null references public.clients(id) on delete cascade,
+  question_key text not null,
+  note         text not null,
+  created_by   uuid references public.profiles(id) on delete set null,
+  created_at   timestamptz not null default now(),
+  constraint questionnaire_notes_len check (char_length(question_key) <= 60 and char_length(note) between 1 and 4000)
+);
+create index if not exists questionnaire_notes_client_idx on public.questionnaire_notes (client_id, question_key);
+alter table public.questionnaire_notes enable row level security;
+drop policy if exists questionnaire_notes_producer on public.questionnaire_notes;
+create policy questionnaire_notes_producer on public.questionnaire_notes for all
+  using (public.owns_producer(public.producer_of_client(client_id)) or public.is_super_admin())
+  with check (public.owns_producer(public.producer_of_client(client_id)) or public.is_super_admin());
+
+-- ── the profile, derived ──────────────────────────────────────────────────
+create table if not exists public.couple_profiles (
+  client_id          uuid primary key references public.clients(id) on delete cascade,
+  nickname           text not null default '',
+  style_tags         text[] not null default '{}',
+  religious_level    text not null default '',
+  ceremony           text not null default '',
+  kosher_level       text not null default '',
+  shabbat_constraint boolean not null default false,
+  estimated_guests   int,
+  venue_type         text not null default '',
+  region             text not null default '',
+  priorities         text[] not null default '{}',
+  music_genres       jsonb not null default '{}'::jsonb,
+  no_play_songs      text[] not null default '{}',
+  must_play_songs    text[] not null default '{}',
+  colors             text[] not null default '{}',
+  avoid_color        text not null default '',
+  key_people         jsonb not null default '[]'::jsonb,
+  children           int,
+  afterparty         boolean not null default false,
+  food               text not null default '',
+  service_style      text not null default '',
+  alcohol            text not null default '',
+  budget_range       text not null default '',
+  paid_by            text not null default '',
+  comms_channel      text not null default '',
+  comms_frequency    text not null default '',
+  quiet_hours        text not null default '',
+  primary_contact    text not null default '',
+  /* Answered required questions over all of them, 0 to 1. */
+  completeness       numeric(3,2) not null default 0,
+  updated_at         timestamptz not null default now()
+);
+alter table public.couple_profiles enable row level security;
+drop policy if exists couple_profiles_read on public.couple_profiles;
+create policy couple_profiles_read on public.couple_profiles for select
+  using (public.can_read_client(client_id));
+/* Written by the trigger alone, which is security definer. No insert or
+   update policy for anybody: a profile typed by hand is a profile that
+   disagrees with its own answers. */
+
+create table if not exists public.couple_profiles_private (
+  client_id     uuid primary key references public.clients(id) on delete cascade,
+  sensitivities text not null default '',
+  surprises     text not null default '',
+  /* "Prepare me for the meeting": the one-page brief, and when it was made. */
+  brief         text not null default '',
+  brief_at      timestamptz,
+  updated_at    timestamptz not null default now()
+);
+alter table public.couple_profiles_private enable row level security;
+drop policy if exists couple_profiles_private_producer on public.couple_profiles_private;
+create policy couple_profiles_private_producer on public.couple_profiles_private for all
+  using (public.owns_producer(public.producer_of_client(client_id)) or public.is_super_admin())
+  with check (public.owns_producer(public.producer_of_client(client_id)) or public.is_super_admin());
+
+-- ── the rebuild ───────────────────────────────────────────────────────────
+-- One answer per question, the latest, with the `couple` visibility
+-- preferred so a profile is built from what both partners can see. The
+-- keys are the ones `content/intake.ts` names, and the test beside it
+-- reads this file and fails if a key the content uses is not read here.
+create or replace function public.intake_text(p_client uuid, p_key text) returns text
+language sql stable as $$
+  select case
+    when jsonb_typeof(value) = 'string' then value #>> '{}'
+    when jsonb_typeof(value) = 'array' then (select string_agg(x, ', ') from jsonb_array_elements_text(value) x)
+    else value::text end
+  from public.questionnaire_responses
+  where client_id = p_client and form_key = 'couple_intake' and question_key = p_key
+  order by (visibility = 'couple') desc, updated_at desc limit 1
+$$;
+
+create or replace function public.intake_json(p_client uuid, p_key text) returns jsonb
+language sql stable as $$
+  select value from public.questionnaire_responses
+  where client_id = p_client and form_key = 'couple_intake' and question_key = p_key
+  order by (visibility = 'couple') desc, updated_at desc limit 1
+$$;
+
+create or replace function public.intake_list(p_client uuid, p_key text) returns text[]
+language sql stable as $$
+  select case
+    when v is null then '{}'::text[]
+    when jsonb_typeof(v) = 'array' then (select coalesce(array_agg(x), '{}') from jsonb_array_elements_text(v) x)
+    when jsonb_typeof(v) = 'string' then array[v #>> '{}']
+    else '{}'::text[] end
+  from (select public.intake_json(p_client, p_key) v) s
+$$;
+
+create or replace function public.rebuild_couple_profile(p_client uuid) returns void
+language plpgsql security definer set search_path = public as $$
+declare
+  answered int;
+  total int := 52;
+  guests text;
+  kids text;
+begin
+  select count(distinct question_key) into answered
+    from public.questionnaire_responses
+    where client_id = p_client and form_key = 'couple_intake'
+      and value is not null and value::text not in ('""', 'null', '[]', '{}');
+  guests := public.intake_text(p_client, 'b9_guests');
+  kids := public.intake_text(p_client, 'c19_children');
+
+  insert into public.couple_profiles as cp (
+    client_id, nickname, style_tags, religious_level, ceremony, kosher_level, shabbat_constraint,
+    estimated_guests, venue_type, region, priorities, music_genres, no_play_songs, must_play_songs,
+    colors, avoid_color, key_people, children, afterparty, food, service_style, alcohol,
+    budget_range, paid_by, comms_channel, comms_frequency, quiet_hours, primary_contact, completeness, updated_at
+  ) values (
+    p_client,
+    coalesce(public.intake_text(p_client, 'a1_nickname'), ''),
+    public.intake_list(p_client, 'b11_style'),
+    coalesce(public.intake_text(p_client, 'b13_religious'), ''),
+    coalesce(public.intake_text(p_client, 'b13_ceremony'), ''),
+    coalesce(public.intake_text(p_client, 'b15_kosher'), ''),
+    coalesce(public.intake_text(p_client, 'b14_shabbat'), '') in ('after_shabbat', 'both'),
+    case when guests ~ '^\d+$' then guests::int else null end,
+    coalesce(public.intake_text(p_client, 'b10_venue_type'), ''),
+    coalesce(public.intake_text(p_client, 'b10_region'), ''),
+    public.intake_list(p_client, 'd28_priorities'),
+    coalesce(public.intake_json(p_client, 'd23_genres'), '{}'::jsonb),
+    public.intake_list(p_client, 'd22_no_play'),
+    public.intake_list(p_client, 'd22_must_play'),
+    public.intake_list(p_client, 'd26_colors'),
+    coalesce(public.intake_text(p_client, 'd26_avoid'), ''),
+    coalesce(public.intake_json(p_client, 'c20_key_people'), '[]'::jsonb),
+    case when kids ~ '^\d+$' then kids::int else null end,
+    coalesce(public.intake_text(p_client, 'b12_afterparty'), '') = 'yes',
+    coalesce(public.intake_text(p_client, 'd24_food'), ''),
+    coalesce(public.intake_text(p_client, 'd24_service'), ''),
+    coalesce(public.intake_text(p_client, 'd25_alcohol'), ''),
+    coalesce(public.intake_text(p_client, 'f34_budget'), ''),
+    coalesce(public.intake_text(p_client, 'f34_paid_by'), ''),
+    coalesce(public.intake_text(p_client, 'f35_channel'), ''),
+    coalesce(public.intake_text(p_client, 'f35_frequency'), ''),
+    coalesce(public.intake_text(p_client, 'f35_quiet'), ''),
+    coalesce(public.intake_text(p_client, 'f36_contact'), ''),
+    least(1, round(answered::numeric / total, 2)),
+    now()
+  )
+  on conflict (client_id) do update set
+    nickname = excluded.nickname, style_tags = excluded.style_tags, religious_level = excluded.religious_level,
+    ceremony = excluded.ceremony, kosher_level = excluded.kosher_level, shabbat_constraint = excluded.shabbat_constraint,
+    estimated_guests = excluded.estimated_guests, venue_type = excluded.venue_type, region = excluded.region,
+    priorities = excluded.priorities, music_genres = excluded.music_genres, no_play_songs = excluded.no_play_songs,
+    must_play_songs = excluded.must_play_songs, colors = excluded.colors, avoid_color = excluded.avoid_color,
+    key_people = excluded.key_people, children = excluded.children, afterparty = excluded.afterparty,
+    food = excluded.food, service_style = excluded.service_style, alcohol = excluded.alcohol,
+    budget_range = excluded.budget_range, paid_by = excluded.paid_by, comms_channel = excluded.comms_channel,
+    comms_frequency = excluded.comms_frequency, quiet_hours = excluded.quiet_hours, primary_contact = excluded.primary_contact,
+    completeness = excluded.completeness, updated_at = now();
+
+  /* The private half: only ever the producer's. Both partners' answers
+     are kept, one under the other, because the two may differ and that
+     difference is the point of the chapter. */
+  insert into public.couple_profiles_private as pp (client_id, sensitivities, surprises, updated_at)
+  values (
+    p_client,
+    coalesce((select string_agg(value #>> '{}', E'\n---\n' order by updated_at) from public.questionnaire_responses
+      where client_id = p_client and form_key = 'couple_intake' and question_key = 'c21_sensitivities'), ''),
+    coalesce((select string_agg(value #>> '{}', E'\n---\n' order by updated_at) from public.questionnaire_responses
+      where client_id = p_client and form_key = 'couple_intake' and question_key = 'e31_surprise'), ''),
+    now()
+  )
+  on conflict (client_id) do update set
+    sensitivities = excluded.sensitivities, surprises = excluded.surprises, updated_at = now();
+end $$;
+
+create or replace function public.questionnaire_rebuild() returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  perform public.rebuild_couple_profile(coalesce(new.client_id, old.client_id));
+  return coalesce(new, old);
+end $$;
+drop trigger if exists questionnaire_responses_rebuild on public.questionnaire_responses;
+create trigger questionnaire_responses_rebuild after insert or update or delete on public.questionnaire_responses
+  for each row execute function public.questionnaire_rebuild();
+
+comment on table public.questionnaire_responses is
+  'One answer per question per partner. private rows are read by their writer and the producer only.';
+comment on table public.couple_profiles is
+  'Derived from the answers by rebuild_couple_profile; never written by hand.';
+comment on table public.couple_profiles_private is
+  'The answers only the producer reads: sensitivities, surprises, and the meeting brief.';
+
+-- 0106  The run of show is built from the answers.
+--
+--  The day schedule is already the run sheet: rows with a time, a track,
+--  an audience and a tick on the evening. What it could not carry was the
+--  detail the day is actually run from - which song, from which minute,
+--  who walks in with whom - and the one thing a run sheet must never do,
+--  which is print a surprise in the version of the person it is for.
+--
+--  So the row gains a song, the people on it, a place, what it needs, a
+--  source saying it was generated from the questionnaire, and `is_secret`
+--  with `secret_from`. A secret row is the producer's alone: the couple's
+--  policy excludes it, and the printed versions exclude it for every
+--  audience but the producer's own. Nothing is renamed and no row moves.
+--
+--  Two columns are the evening's: `actual_at`, where a line really
+--  started once the day slipped, and `note_live`, the line typed on the
+--  phone between two things happening.
+
+alter table public.day_schedule
+  add column if not exists song_title  text not null default '',
+  add column if not exists song_artist text not null default '',
+  add column if not exists song_cue    text not null default '',
+  add column if not exists people      jsonb not null default '[]'::jsonb,
+  add column if not exists location    text not null default '',
+  add column if not exists needs       text[] not null default '{}',
+  add column if not exists is_secret   boolean not null default false,
+  add column if not exists secret_from text[] not null default '{}',
+  add column if not exists source      text not null default 'manual',
+  add column if not exists actual_at   time,
+  add column if not exists note_live   text not null default '';
+
+alter table public.day_schedule drop constraint if exists day_schedule_extra_len;
+alter table public.day_schedule add constraint day_schedule_extra_len check (
+  char_length(song_title) <= 200 and char_length(song_artist) <= 120 and char_length(song_cue) <= 40
+  and char_length(location) <= 120 and char_length(source) <= 60 and char_length(note_live) <= 2000
+) not valid;
+
+/* The couple built this with the producer and still does; what they no
+   longer see is a row marked secret. One policy rather than two, so the
+   producer's branch is written beside the couple's and cannot drift. */
+drop policy if exists day_schedule_all on public.day_schedule;
+create policy day_schedule_all on public.day_schedule for all
+  using (
+    public.can_read_client(client_id)
+    and (not is_secret or public.owns_producer(public.producer_of_client(client_id)) or public.is_super_admin())
+  )
+  with check (
+    public.can_read_client(client_id)
+    and (not is_secret or public.owns_producer(public.producer_of_client(client_id)) or public.is_super_admin())
+  );
+
+-- ── the sheet's version and its lock ──────────────────────────────────────
+-- Forty-eight hours before the evening the producer locks the sheet, and
+-- a change after that is a new version the suppliers are told about. The
+-- number is what a producer says on the phone: "you have version 3".
+alter table public.clients
+  add column if not exists runsheet_version   int not null default 1,
+  add column if not exists runsheet_locked_at timestamptz;
+
+comment on column public.day_schedule.is_secret is
+  'A surprise. Never in the couple''s rows and never printed for anybody but the producer.';
+comment on column public.day_schedule.source is
+  'manual, template, or questionnaire:<key> when the generator wrote the line from an answer.';
+
+-- ============================================================================
+--  0107 — a new account says what it came for
+-- ============================================================================
+--  Everybody who signed in for the first time and was not invited was guessed
+--  to be a producer, and the console then had to ask a question the person
+--  themselves could have answered in one press. Now they answer it.
+--
+--  There are three answers: a production business, a wedding, a business
+--  event. Nothing is let in by saying so. The answer is a request, written to
+--  one column on the profile, and the bell of the root address rings; the
+--  existing queue on /app/admin is where it is granted, and nothing about
+--  authorisation moves — role and producers.status are still the only things
+--  every screen decides from.
+--
+--  An address somebody invited beforehand never reaches this: handle_new_user
+--  already makes it a client at the door, bound to the event it was invited
+--  to, and that has not changed.
+--
+--  Nothing here touches a row. The columns are added empty, and an account
+--  that has not answered reads as it did before: asked, once, on its next
+--  visit to the waiting screen.
+-- ============================================================================
+
+alter table public.profiles
+  add column if not exists signup_intent    text,
+  add column if not exists signup_intent_at timestamptz;
+
+alter table public.profiles drop constraint if exists profiles_signup_intent;
+alter table public.profiles add constraint profiles_signup_intent
+  check (signup_intent is null or signup_intent in ('producer', 'wedding', 'business')) not valid;
+
+comment on column public.profiles.signup_intent is
+  'What the person said they came for, the first time they signed in: a '
+  'production business, a wedding or a business event. A request, not a '
+  'permission - role and producers.status are what every screen decides from.';
+
+
+-- ── the one door that writes it ─────────────────────────────────────────────
+--  profiles_update_self would let a person write any column of their own row,
+--  and a request that anybody can rewrite after it was granted is a record
+--  that says nothing. So the app goes through here: only somebody still
+--  waiting, never the root address, and only a change rings the bell.
+create or replace function public.choose_my_path(p_intent text)
+returns text
+language plpgsql security definer set search_path = public as $$
+declare
+  v_uid    uuid := auth.uid();
+  v_email  text;
+  v_name   text;
+  v_prev   text;
+  v_root   uuid;
+begin
+  if v_uid is null then
+    raise exception 'not signed in' using errcode = 'insufficient_privilege';
+  end if;
+
+  if p_intent not in ('producer', 'wedding', 'business') then
+    raise exception 'unknown path: %', p_intent;
+  end if;
+
+  select lower(email), coalesce(nullif(btrim(full_name), ''), split_part(lower(email), '@', 1)), signup_intent
+    into v_email, v_name, v_prev
+    from public.profiles where id = v_uid;
+
+  if v_email is null then
+    raise exception 'no such account';
+  end if;
+
+  if v_email = public.root_admin_email() then
+    raise exception 'the root account has no path to choose';
+  end if;
+
+  /* Still waiting, and nothing else. An approved producer, a couple, a crew
+     member or a suspended account has been decided about, and a form must
+     not be able to reopen that. */
+  if not exists (
+    select 1 from public.profiles p
+      join public.producers pr on pr.owner_id = p.id
+     where p.id = v_uid and p.role = 'producer'::app_role and pr.status = 'pending'::producer_state
+  ) then
+    raise exception 'this account is not waiting for a decision';
+  end if;
+
+  update public.profiles
+     set signup_intent = p_intent, signup_intent_at = now()
+   where id = v_uid;
+
+  if v_prev is distinct from p_intent then
+    select id into v_root from public.profiles
+     where lower(email) = public.root_admin_email() limit 1;
+
+    perform public.notify(
+      v_root, 'invite',
+      'בקשה חדשה לאישור',
+      v_name || ' (' || v_email || ') · ' || case p_intent
+        when 'producer' then 'מפיק/ה אירועים'
+        when 'wedding'  then 'עושים חתונה'
+        else 'עושים אירוע עסקי'
+      end,
+      '/app/admin'
+    );
+  end if;
+
+  return p_intent;
+end $$;
+
+comment on function public.choose_my_path(text) is
+  'A new account saying what it came for. Writes profiles.signup_intent for '
+  'the caller only, only while their workspace is pending, and rings the '
+  'root bell. It grants nothing.';
+
+revoke all on function public.choose_my_path(text) from public, anon;
+grant execute on function public.choose_my_path(text) to authenticated;
+
+
+-- ── approving a couple opens the kind of event they asked for ──────────────
+--  The function is the one from 0081 with one line changed: the workspace it
+--  opens for a couple planning alone is a business event when that is what
+--  they said, and a wedding otherwise. Same signature and return type, so a
+--  plain create or replace is safe to replay.
+create or replace function public.set_account_kind(p_owner uuid, p_kind text)
+returns text
+language plpgsql security definer set search_path = public as $$
+declare
+  v_email   text;
+  v_name    text;
+  v_intent  text;
+  v_client  uuid;
+  v_producer uuid;
+begin
+  if not public.is_super_admin() then
+    raise exception 'only % may decide what an account is', public.root_admin_email();
+  end if;
+
+  if p_kind not in ('producer', 'diy', 'managed') then
+    raise exception 'unknown kind: %', p_kind;
+  end if;
+
+  select lower(email), coalesce(nullif(btrim(full_name), ''), split_part(lower(email), '@', 1)), signup_intent
+    into v_email, v_name, v_intent
+    from public.profiles where id = p_owner;
+
+  if v_email is null then
+    raise exception 'no such account';
+  end if;
+
+  if v_email = public.root_admin_email() then
+    raise exception 'the root account cannot be reassigned';
+  end if;
+
+  if p_kind = 'producer' then
+    update public.profiles
+       set role = 'producer'::app_role, account_kind = 'producer'
+     where id = p_owner;
+    update public.producers set status = 'pending'::producer_state
+     where owner_id = p_owner and status = 'rejected'::producer_state;
+    return 'producer';
+  end if;
+
+  update public.profiles
+     set role = 'client'::app_role, account_kind = p_kind
+   where id = p_owner;
+
+  update public.producers set status = 'rejected'::producer_state
+   where owner_id = p_owner and status <> 'rejected'::producer_state;
+
+  if p_kind = 'managed' then
+    return 'managed';
+  end if;
+
+  select e.client_id into v_client
+    from public.client_authorized_emails e
+   where e.email = v_email or e.profile_id = p_owner
+   limit 1;
+
+  if v_client is not null then
+    update public.clients set plan = 'diy'::client_plan where id = v_client;
+    return 'diy-existing';
+  end if;
+
+  v_producer := public.public_site_producer();
+  if v_producer is null then
+    raise exception 'the platform has no producer of its own to hang a workspace on';
+  end if;
+
+  insert into public.clients (producer_id, display_name, kind, plan)
+  values (v_producer, v_name,
+          case when v_intent = 'business' then 'corporate'::event_class else 'wedding'::event_class end,
+          'diy'::client_plan)
+  returning id into v_client;
+
+  insert into public.client_authorized_emails (client_id, email)
+  values (v_client, v_email)
+  on conflict do nothing;
+
+  return 'diy-created';
+end $$;
+
+comment on function public.set_account_kind(uuid, text) is
+  'Root decides whether a sign-up is a production business, a couple planning '
+  'alone, or a couple who will be invited onto a producer''s event. Writes '
+  'profiles.role and profiles.account_kind, so it checks is_super_admin() '
+  'itself rather than trusting the screen that calls it. A couple planning '
+  'alone gets the kind of event they asked for in signup_intent.';
+
+revoke all on function public.set_account_kind(uuid, text) from public, anon;
+grant execute on function public.set_account_kind(uuid, text) to authenticated;
+
+
+-- ── and the queue shows what each account asked for ─────────────────────────
+--  One more column on the leaderboard, so it is dropped before it is
+--  replaced: create or replace cannot change a return type, and replaying the
+--  earlier definition after this one would otherwise fail on the second run.
+drop function if exists public.producer_leaderboard();
+
+create or replace function public.producer_leaderboard()
+returns table (
+  producer_id   uuid,
+  brand         text,
+  contact_email text,
+  status        text,
+  last_seen_at  timestamptz,
+  events_live   integer,
+  events_total  integer,
+  leads_total   integer,
+  leads_30d     integer,
+  signed_total  integer,
+  owner_id      uuid,
+  owner_role    text,
+  owner_kind    text,
+  owner_intent  text
+)
+language plpgsql stable security definer set search_path = public as $$
+begin
+  if not public.is_super_admin() then
+    raise exception 'אין הרשאה' using errcode = 'insufficient_privilege';
+  end if;
+
+  return query
+  select
+    pr.id,
+    coalesce(nullif(pr.brand_name, ''), nullif(pr.contact_name, ''), pr.contact_email),
+    pr.contact_email,
+    pr.status::text,
+    p.last_seen_at,
+    (select count(*)::int from public.clients c
+      where c.producer_id = pr.id and c.archived_at is null),
+    (select count(*)::int from public.clients c where c.producer_id = pr.id),
+    (select count(*)::int from public.leads l where l.producer_id = pr.id),
+    (select count(*)::int from public.leads l
+      where l.producer_id = pr.id and l.created_at > now() - interval '30 days'),
+    (select count(distinct ct.client_id)::int
+       from public.contracts ct
+       join public.clients c on c.id = ct.client_id
+      where c.producer_id = pr.id and ct.signed_at is not null),
+    pr.owner_id,
+    p.role::text,
+    coalesce(
+      p.account_kind,
+      case when p.role = 'client'::app_role then 'managed' else 'producer' end
+    ),
+    p.signup_intent
+  from public.producers pr
+  left join public.profiles p on p.id = pr.owner_id
+  order by 6 desc, 8 desc;
+end $$;
+
+revoke all on function public.producer_leaderboard() from public;
+grant execute on function public.producer_leaderboard() to authenticated;
+
+
+-- ── and the platform owner reads no producer's budget again ─────────────────
+--  Found by the schema check, which the last four releases had not been
+--  running against a regenerated sync.sql. 0104 wrote `or is_super_admin()`
+--  into three policies on the budget, which hands the root address every
+--  producer's budget lines, their private notes on a line and every payment
+--  against it - the one thing 0030 took away on purpose, and the line
+--  "the owner reads no producer's private rows" exists to keep taken away.
+--
+--  Policies only. No row is read, written or moved, and what the owner of a
+--  workspace and its couple may do is exactly what it was.
+drop policy if exists budget_read on public.budget_items;
+create policy budget_read on public.budget_items for select
+  using (
+    public.owns_producer(public.producer_of_client(client_id))
+    or (
+      public.can_read_client(client_id)
+      and visible_to_couple
+      and exists (select 1 from public.clients c where c.id = client_id and c.budget_visible)
+    )
+  );
+
+drop policy if exists budget_item_private_producer on public.budget_item_private;
+create policy budget_item_private_producer on public.budget_item_private for all
+  using (
+    exists (
+      select 1 from public.budget_items b
+      where b.id = item_id and public.owns_producer(public.producer_of_client(b.client_id))
+    )
+  )
+  with check (
+    exists (
+      select 1 from public.budget_items b
+      where b.id = item_id and public.owns_producer(public.producer_of_client(b.client_id))
+    )
+  );
+
+drop policy if exists budget_payments_write on public.budget_payments;
+create policy budget_payments_write on public.budget_payments for all
+  using (public.owns_producer(public.producer_of_client(client_id)))
+  with check (public.owns_producer(public.producer_of_client(client_id)));

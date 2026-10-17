@@ -92,6 +92,15 @@ export async function AdminRow({ p }: { p: ProducerRow }) {
                 {' · '}{c.board.signed} {p.signedTotal}
               </p>
 
+              {/* What they said they came for. Only on a card that is still
+                  waiting: once somebody is decided about, the kind switch
+                  underneath is the record of what they are. */}
+              {!p.isRoot && p.status === 'pending' && (
+                <p className="mt-1.5 text-body font-medium text-ink">
+                  {p.intent ? c.request[p.intent] : c.request.none}
+                </p>
+              )}
+
               <p className="mt-0.5 text-body text-ink-mute">
                 {p.lastSeen ? `${c.lastSeen} ${formatDate(dateFmtFor(locale), p.lastSeen, '·')}` : c.never}
               </p>
@@ -108,7 +117,24 @@ export async function AdminRow({ p }: { p: ProducerRow }) {
                 open. What to do with her account is the decision underneath. */}
             {!p.isRoot && p.ownerKind === 'producer' && (
               <div className="flex flex-wrap gap-2">
-                {p.status !== 'approved' && <StatusButton id={p.id} status="approved" label={c.approve} tone="primary" />}
+                {/* Somebody who said they are making an event is not a
+                    producer, and approving them as one would open a client
+                    list for a wedding. One press opens the event they asked
+                    for instead; the producer approval stays for everybody
+                    else. */}
+                {p.status === 'pending' && p.ownerId && (p.intent === 'wedding' || p.intent === 'business') && (
+                  <form action={setAccountKind}>
+                    <input type="hidden" name="owner_id" value={p.ownerId} />
+                    <input type="hidden" name="kind" value="diy" />
+                    <button type="submit" className="btn-primary px-3.5 text-body">
+                      <Check size={15} aria-hidden strokeWidth={1.5} />
+                      {c.request.approveEvent}
+                    </button>
+                  </form>
+                )}
+                {p.status !== 'approved' && !(p.status === 'pending' && (p.intent === 'wedding' || p.intent === 'business')) && (
+                  <StatusButton id={p.id} status="approved" label={c.approve} tone="primary" />
+                )}
                 {p.status === 'pending' && <StatusButton id={p.id} status="rejected" label={c.reject} tone="quiet" />}
                 {p.status === 'approved' && <StatusButton id={p.id} status="suspended" label={c.suspend} tone="quiet" />}
                 {p.status === 'suspended' && <StatusButton id={p.id} status="approved" label={c.restore} tone="ghost" />}

@@ -28,6 +28,13 @@ export type Channel = 'email' | 'phone';
 /** The single place the door is bolted, so it is one edit to unbolt. */
 const PHONE_SIGN_IN = false;
 
+/** The emailed code is closed as well: sign-in is Google's alone. The screen
+ *  no longer draws the form, and this is the half that matters, because a
+ *  form is a suggestion and an action is a URL anybody can post to. The
+ *  one-click links already sent still work - they go through
+ *  /auth/callback, not through here. */
+const CODE_SIGN_IN = false;
+
 export type AuthResult = {
   ok: boolean;
   error?: string;
@@ -78,6 +85,10 @@ export async function requestCode(_prev: AuthResult | null, form: FormData): Pro
   const hintRaw = String(form.get('channel') ?? '');
   const hint: Channel | null = hintRaw === 'phone' || hintRaw === 'email' ? hintRaw : null;
   const who = resolve(String(form.get('contact') ?? form.get('email') ?? ''), hint);
+
+  if (!CODE_SIGN_IN) {
+    return { ok: false, error: 'הכניסה היא עם חשבון גוגל.' };
+  }
 
   if (!who) {
     return { ok: false, error: 'כתובת האימייל לא תקינה' };
@@ -134,6 +145,7 @@ export async function requestCode(_prev: AuthResult | null, form: FormData): Pro
 
 /** Step two: exchange the code for a session. */
 export async function verifyCode(_prev: AuthResult | null, form: FormData): Promise<AuthResult> {
+  if (!CODE_SIGN_IN) return { ok: false, error: 'הכניסה היא עם חשבון גוגל.' };
   const channel: Channel = String(form.get('channel') ?? '') === 'phone' ? 'phone' : 'email';
   const contact = String(form.get('contact') ?? '').trim();
   const display = String(form.get('display') ?? '') || contact;

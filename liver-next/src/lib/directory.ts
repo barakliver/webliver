@@ -54,9 +54,15 @@ export type ProducerRow = {
    *  role, so the role cannot tell them apart and the screen that offers the
    *  choice could not mark the one it was already on. */
   ownerKind: AccountKind;
+  /** What the account said it came for when it first signed in. A request,
+   *  not a permission: null until they answer. */
+  intent: SignupIntent | null;
 };
 
 export type AccountKind = 'producer' | 'diy' | 'managed';
+
+export type SignupIntent = 'producer' | 'wedding' | 'business';
+export const SIGNUP_INTENTS: readonly SignupIntent[] = ['producer', 'wedding', 'business'];
 
 export type Flag = { key: string; label: string; diy: boolean; managed: boolean };
 
@@ -122,6 +128,7 @@ export async function getConsole(rootEmail: string): Promise<Console> {
     ownerKind: (['producer', 'diy', 'managed'].includes(String(p.owner_kind))
       ? String(p.owner_kind)
       : p.owner_role === 'client' ? 'managed' : 'producer') as AccountKind,
+    intent: SIGNUP_INTENTS.includes(p.owner_intent as SignupIntent) ? (p.owner_intent as SignupIntent) : null,
     /* The root account is not something to approve, suspend or reject. It is
        the thing doing the approving, and offering those buttons against it is
        an invitation to lock yourself out of your own platform. */

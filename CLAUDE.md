@@ -356,6 +356,48 @@ that has happened once.
   impression of one. A test walks every id to its file and back and asserts
   the three undealt ones are undealt, so a card without a picture fails the
   build rather than drawing a broken image inside his frame.
+- **The way in is Google's alone, and a new account says what it came for.**
+  3.11, migration 0107. The sign-in screen is one button: the emailed code
+  and the form that asked for it are off the screen, and the two actions
+  behind them refuse on `CODE_SIGN_IN` in `actions/auth.ts`, because a form is
+  a suggestion and an action is a URL anybody can post to. It is one constant
+  to unbolt, and `/auth/callback` still honours a link carrying a token, so a
+  mail sent before the change keeps working. What somebody *is* is still
+  decided at the door by their address in `handle_new_user`, which has not
+  moved: an address he invited beforehand is a client bound to that event the
+  moment it signs in and lands on its own screen, a crew address is crew, the
+  root address is root. Everybody else is a pending producer, as before, and
+  that is where the new question lives - on `/app/pending`, which was already
+  where a not-yet-let-in account goes, not on a screen of its own. First
+  "producer or making an event", then for the second "which event, a wedding
+  or a business one"; two steps in the address bar, so Back works and nothing
+  needs a script, drawn by `SignupPath` so `/design` can show it. The answer is
+  `profiles.signup_intent` and it is a **request**: `choose_my_path` is the
+  only writer, only for the caller, only while their producer row is pending,
+  never for the root address, and a changed answer rings the root bell once.
+  It grants nothing - `role` and `producers.status` are still the only things
+  any screen decides from. The queue on `/app/admin` shows the request on the
+  card, and for a wedding or a business event the primary button is "approve
+  and open their event", which is `set_account_kind('diy')`; that function now
+  opens a `corporate` event for a business answer and a `wedding` otherwise.
+  The producer approval stays for everybody else and is hidden for somebody
+  who said they are making an event, because approving them as a producer
+  opens a client list for a wedding. Referral codes ride the Google round trip
+  as `?ref=` on the callback, which claims them once there is a session; they
+  used to be claimed after the code step, which no longer exists.
+  **0107 also closes a hole 0104 opened.** The budget sheet wrote
+  `or is_super_admin()` into the policies on `budget_items`,
+  `budget_item_private` and `budget_payments`, so the platform owner could
+  read every producer's budget, their private notes on a line and every
+  payment - the one thing 0030 took away on purpose. It was found because
+  `npm run schema` had not been run against a regenerated `sync.sql` for four
+  releases: the generator read the second line of a block comment in 0105 that
+  began with the word "update" as a data statement and cut the comment in
+  half, so regenerating produced a file that would not load, and the committed
+  copy had simply stopped being regenerated. `build-setup-sql.mjs` now skips
+  block comments, and the schema check proves the sign-up path against a real
+  Postgres: the request, the bell once, the three refusals, and the approval
+  opening a business event.
 - **The palette is five colours on a card he sent, and it is the whole site.**
   Camel Coat #C6B39A, Boho #7B694E, Rubine #6D3A3C, Tamarind #361319 and
   Italian Roast #280B0F: his latest instruction, replacing the plum below, and

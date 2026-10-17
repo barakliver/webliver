@@ -288,14 +288,14 @@ export const MAX_GUESTS = 1500;
 /** Copy for the signed-in area. Same house rule: no long dashes. */
 export const auth = {
   title: 'כניסה לאזור האישי',
-  sub: 'נשלח לכם קוד חד פעמי. אין סיסמאות לזכור.',
+  sub: 'הכניסה היא עם חשבון גוגל. אין סיסמאות לזכור.',
   emailLabel: 'כתובת אימייל',
   newHere: 'זו הפעם הראשונה שלי כאן',
   nameLabel: 'שם מלא',
   brandLabel: 'שם העסק (למפיקים)',
   submit: 'שליחת קוד',
   sending: 'שולח',
-  note: 'זוגות מוזמנים נכנסים עם הכתובת שאליה נשלחה ההזמנה. מפיק חדש נכנס לאישור לפני שהחשבון נפתח.',
+  note: 'מי שהוזמן נכנס ישר לאזור שלו, עם אותה כתובת שאליה נשלחה ההזמנה. מי שנכנס בפעם הראשונה בלי הזמנה אומר מה הוא מחפש, ונכנס אחרי אישור.',
   codeTitle: 'הקוד בדרך',
   codeSentEmail: 'שלחנו קוד חד פעמי לכתובת',
   codeSentPhone: 'שלחנו קוד חד פעמי במסרון למספר',
@@ -320,7 +320,7 @@ export const auth = {
   resentPhone: 'שלחנו קוד חדש במסרון.',
   google: 'כניסה עם גוגל',
   googleGoing: 'מעבירים לגוגל',
-  googleFailed: 'לא הצלחנו לפתוח את החלון של גוגל. אפשר להיכנס עם קוד למטה.',
+  googleFailed: 'לא הצלחנו לפתוח את החלון של גוגל. אפשר לנסות שוב.',
   or: 'או',
   privacyNote: 'בכניסה אתם מסכימים ל',
   /* The word between the two documents. It was a literal in the component,
@@ -328,8 +328,8 @@ export const auth = {
      "Terms of use ול Privacy policy". */
   legalJoin: ' ול',
   signingIn: 'מכניסים אתכם',
-  linkExpired: 'הקישור כבר שימש או שפג תוקפו. נשלח לכם קוד חדש לאותה כתובת.',
-  linkMissing: 'הקישור לא היה שלם. אפשר להיכנס מכאן.',
+  linkExpired: 'הקישור כבר שימש או שפג תוקפו. אפשר להיכנס עם גוגל.',
+  linkMissing: 'הקישור לא היה שלם. אפשר להיכנס עם גוגל.',
 } as const;
 
 /* ── מחשבון התקציב ────────────────────────────────────────────────────────
@@ -1066,6 +1066,31 @@ export const appCopy = {
       'עד אז אין גישה לנתונים ואין מה לעשות כאן.',
       'ברגע שהחשבון יאושר, הכניסה תעבוד מאותה כתובת בדיוק.',
     ],
+    /* The question a new account is asked once, and what the waiting screen
+       says back. Plural throughout: a wedding is two people, and a producer
+       reads the same sentence as a couple does. */
+    ask: {
+      title: 'ברוכים הבאים. מה מביא אתכם?',
+      sub: 'שאלה אחת, ואחריה ממתינים לאישור. מי שהוזמן לאירוע לא רואה את זה: הוא נכנס ישר לאזור שלו.',
+      producer: 'אני מפיק או מפיקה של אירועים',
+      producerNote: 'יש לי עסק הפקה, ואני רוצה לנהל בו את הלקוחות שלי.',
+      event: 'אני עושה אירוע',
+      eventNote: 'אני מתכנן או מתכננת אירוע משלי.',
+      eventTitle: 'איזה אירוע?',
+      eventSub: 'ברק יראה את הבחירה ויפתח לכם מקום מתאים.',
+      wedding: 'חתונה',
+      weddingNote: 'לוח זמנים, תקציב, אורחים וספקים.',
+      business: 'אירוע עסקי',
+      businessNote: 'כנס, ערב חברה, השקה או כל אירוע של עסק.',
+      back: 'חזרה',
+    },
+    sent: {
+      producer: 'ביקשתם להצטרף כמפיקים של אירועים.',
+      wedding: 'ביקשתם לעשות חתונה.',
+      business: 'ביקשתם לעשות אירוע עסקי.',
+      waiting: 'הבקשה הגיעה לברק. כשהיא תאושר, מסך הכניסה הזה ייפתח לאזור שלכם והכניסה תעבוד מאותה כתובת בדיוק.',
+      change: 'לשנות את התשובה',
+    },
     statusLabel: 'סטטוס',
     statuses: {
       pending: 'ממתין לאישור',
@@ -1118,6 +1143,15 @@ export const appCopy = {
        "אישור" and "דחייה" were two answers to a question nobody had asked.
        The words here name what the person is, not what the database does to
        them: nobody thinks of themselves as a row with a role column. */
+    /* What the account said it came for, on the card that is waiting. Said in
+       the third person because this is read by the person deciding. */
+    request: {
+      none: 'עוד לא ענו מה הם מחפשים',
+      producer: 'מבקשים להצטרף כמפיקים של אירועים',
+      wedding: 'מבקשים לעשות חתונה',
+      business: 'מבקשים לעשות אירוע עסקי',
+      approveEvent: 'אישור והכנסה לאירוע שלהם',
+    },
     kind: {
       title: 'מה החשבון הזה',
       sub: 'כל מי שנרשם מוגדר כמפיק כברירת מחדל. כאן מתקנים.',

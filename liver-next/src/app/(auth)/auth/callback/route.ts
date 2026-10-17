@@ -69,6 +69,7 @@ export async function GET(request: Request) {
   const type = url.searchParams.get('type') ?? 'magiclink';
   const email = url.searchParams.get('email') ?? '';
   const next = safeNext(url.searchParams.get('next'));
+  const ref = (url.searchParams.get('ref') ?? '').trim();
 
   const backToLogin = (reason: string) => {
     const to = new URL('/login', origin);
@@ -108,6 +109,13 @@ export async function GET(request: Request) {
         at: '/auth/callback', role: 'anon', doing: 'exchange-code', reason: 'rejected',
       });
       return backToLogin('expired');
+    }
+    /* Attribution, now that there is a session to attribute. Silent when it
+       fails: a spent or wrong code is a gap in a report, and refusing
+       somebody their own account over it would be absurd. */
+    if (ref) {
+      const { error: refErr } = await sb.rpc('claim_referral', { p_code: ref });
+      if (refErr) logFailure('auth', 'referral not claimed', { at: '/auth/callback', role: 'anon', doing: 'claim-referral', reason: 'rejected' });
     }
     return NextResponse.redirect(new URL(next, origin));
   }

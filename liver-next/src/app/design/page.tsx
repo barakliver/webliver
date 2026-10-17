@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
+import { SignupPath } from '@/components/app/SignupPath';
 import { appUiFor, prepFor, envelopesFor, vehiclesFor, meetingTemplatesFor } from '@/content/appUi';
 import { CopyProvider } from '@/components/app/CopyProvider';
 import { currentLocale } from '@/lib/serverLocale';
@@ -1414,13 +1415,30 @@ export default async function DesignPage() {
             only and behind a real session. The decision under it is the one
             this screen exists for: an account is guessed to be a producer on
             sign-up, and about half those guesses are wrong. */}
+        {/* The first screen anybody new sees, and the one nobody could open
+            without being somebody new: the question, its second step, and
+            what it says once it was answered. */}
+        <Panel name="Sign-up · the question, then the wait" note="what a new account is asked once, which event, and what it reads after answering">
+          <div className="grid gap-5 lg:grid-cols-3">
+            <SignupPath p={appUiFor('he').pending} intent={null} status="pending" mayAnswer />
+            <SignupPath p={appUiFor('he').pending} step="event" intent={null} status="pending" mayAnswer />
+            <SignupPath p={appUiFor('he').pending} intent="business" status="pending" mayAnswer />
+          </div>
+        </Panel>
+
         <Panel name="Admin · one account" note="a sign-up waiting to be decided, and the same account once it was decided a couple">
           <ul className="list-none space-y-3 p-0">
             <AdminRow p={{
               id: 'p-1', brand: 'שיר', email: 'shir.aeo@gmail.com', status: 'pending',
               lastSeen: '2026-09-08T07:00:00.000Z', eventsLive: 0, eventsTotal: 0,
               leadsTotal: 0, leads30d: 0, signedTotal: 0, isRoot: false,
-              ownerId: FIXTURE_VIEWER, ownerRole: 'producer', ownerKind: 'producer',
+              ownerId: FIXTURE_VIEWER, ownerRole: 'producer', ownerKind: 'producer', intent: 'wedding',
+            }} />
+            <AdminRow p={{
+              id: 'p-3', brand: 'הפקות הים', email: 'sea@example.com', status: 'pending',
+              lastSeen: '2026-09-08T07:00:00.000Z', eventsLive: 0, eventsTotal: 0,
+              leadsTotal: 0, leads30d: 0, signedTotal: 0, isRoot: false,
+              ownerId: FIXTURE_VIEWER, ownerRole: 'producer', ownerKind: 'producer', intent: 'producer',
             }} />
             {/* The second state, which is the one that read as a broken
                 button: an account already decided a couple. The approve and
@@ -1430,7 +1448,7 @@ export default async function DesignPage() {
               id: 'p-2', brand: 'דני דנדוש', email: 'dani@example.com', status: 'rejected',
               lastSeen: '2026-09-07T07:00:00.000Z', eventsLive: 0, eventsTotal: 0,
               leadsTotal: 0, leads30d: 0, signedTotal: 0, isRoot: false,
-              ownerId: FIXTURE_CLIENT, ownerRole: 'client', ownerKind: 'diy',
+              ownerId: FIXTURE_CLIENT, ownerRole: 'client', ownerKind: 'diy', intent: 'business',
             }} />
           </ul>
         </Panel>

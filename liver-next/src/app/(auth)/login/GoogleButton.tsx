@@ -20,14 +20,14 @@ function GoogleMark() {
 }
 
 /**
- * One tap instead of a code that has to arrive.
+ * The way in.
  *
- * The most common way somebody fails to get into this product is not a wrong
- * password — there are no passwords — it is a code that landed in spam, or
- * arrived while they were standing in a venue not looking at their email. This
- * removes that failure for the large majority of people, and removes nothing:
- * the code and the phone are still under it, because an older parent without a
- * Google account on their phone is a real person who has to get in.
+ * It used to sit above an email form as the quick option. It is the only
+ * option now: the most common way somebody failed to get into this product
+ * was never a wrong password - there are none - but a code that landed in spam
+ * or arrived while they were standing in a venue not looking at their email.
+ * A Google account removes that failure and proves the address in the same
+ * press.
  *
  * The exchange happens through the callback route this app already has. The
  * browser client uses PKCE, so what comes back is a code the server trades for
@@ -40,7 +40,7 @@ function GoogleMark() {
  * nothing. The screen they land on says so by name rather than showing them an
  * empty page.
  */
-export function GoogleButton({ next = '/app', copy }: { next?: string; copy: AuthCopy }) {
+export function GoogleButton({ next = '/app', copy, referral }: { next?: string; copy: AuthCopy; referral?: string }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
 
@@ -50,6 +50,9 @@ export function GoogleButton({ next = '/app', copy }: { next?: string; copy: Aut
 
     const to = new URL('/auth/callback', window.location.origin);
     if (next.startsWith('/') && !next.startsWith('//')) to.searchParams.set('next', next);
+    /* A referral rides the round trip in the address the callback is sent
+       back to, and is claimed there once there is a session. */
+    if (referral) to.searchParams.set('ref', referral);
 
     const { error: err } = await supabaseBrowser().auth.signInWithOAuth({
       provider: 'google',
@@ -80,15 +83,6 @@ export function GoogleButton({ next = '/app', copy }: { next?: string; copy: Aut
       </button>
 
       {error && <p role="alert" className="text-body text-bad">{error}</p>}
-
-      {/* A rule with the word on it, rather than a bare rule. The point is to
-          say these are two ways to do the same thing, not that one of them is
-          a footnote. */}
-      <div className="flex items-center gap-3" aria-hidden>
-        <span className="h-px flex-1 bg-line" />
-        <span className="text-meta text-ink-mute">{copy.or}</span>
-        <span className="h-px flex-1 bg-line" />
-      </div>
     </div>
   );
 }

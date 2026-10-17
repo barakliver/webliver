@@ -15,6 +15,8 @@ export type Account = {
   fullName: string;
   avatarUrl: string | null;
   role: Role;
+  /** What they said they came for, the first time. A request, never a permission. */
+  intent: 'producer' | 'wedding' | 'business' | null;
   producer: {
     id: string; brandName: string; status: ProducerStatus;
     /* Branding travels with the account rather than being fetched again by
@@ -51,7 +53,7 @@ export const currentAccount = cache(async function currentAccount(): Promise<Acc
 
   const { data: profile } = await sb
     .from('profiles')
-    .select('id,email,full_name,role,avatar_url')
+    .select('id,email,full_name,role,avatar_url,signup_intent')
     .eq('id', user.id)
     .maybeSingle();
 
@@ -78,6 +80,8 @@ export const currentAccount = cache(async function currentAccount(): Promise<Acc
     fullName: profile?.full_name ?? '',
     avatarUrl: profile?.avatar_url ?? null,
     role,
+    intent: (['producer', 'wedding', 'business'].includes(String(profile?.signup_intent))
+      ? profile?.signup_intent : null) as Account['intent'],
     producer: producer
       ? {
           id: producer.id,

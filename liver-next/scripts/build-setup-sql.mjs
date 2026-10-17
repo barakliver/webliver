@@ -82,9 +82,28 @@ function schemaOnly(sql) {
   const kept = [];
   let inBody = false;      // inside a $$ … $$ function body
   let skipping = false;    // dropping a top-level DML statement
+  let inComment = false;   // inside a /* … */ block, where "update" is a word
   let dropped = 0;
 
   for (const line of lines) {
+    /* A block comment is prose. One whose second line begins with the word
+       "update" was read as a statement and cut in half, which left the file
+       with a comment that never closed - and nothing noticed, because the
+       committed copy had stopped being regenerated two migrations earlier. */
+    if (inComment) {
+      kept.push(line);
+      if (line.includes('*/')) inComment = false;
+      continue;
+    }
+    if (!inBody && !skipping) {
+      const open = line.lastIndexOf('/*');
+      if (open !== -1 && line.indexOf('*/', open) === -1) {
+        kept.push(line);
+        inComment = true;
+        continue;
+      }
+    }
+
     /* Dollar quotes come in pairs on the same line often enough that counting
        them is the only reading that survives `as $$ select 1 $$;`. */
     const marks = (line.match(/\$\$/g) ?? []).length;
