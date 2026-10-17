@@ -271,7 +271,7 @@ function Lightbox({ items, index, onIndex, onClose, onRetag }: {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={f.url} alt={f.note || f.name}
-              className="max-h-full max-w-full rounded-card-sm object-contain shadow-pop"
+              className="max-h-full max-w-full rounded-card-sm object-contain"
               onClick={(e) => e.stopPropagation()} decoding="async" />
           </>
         )}

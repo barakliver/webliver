@@ -91,7 +91,7 @@ function Asset({ kind, url }: { kind: BrandAsset; url: string | null }) {
         {url ? (
           kind === 'icon' ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={url} alt={rule.title} className="size-16 rounded-[18px] object-cover shadow-pop" decoding="async" />
+            <img src={url} alt={rule.title} className="size-16 rounded-[18px] object-cover" decoding="async" />
           ) : (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={url} alt={rule.title} className={cn('object-contain', kind === 'cover' ? 'size-full object-cover' : 'max-h-16 max-w-[80%]')} decoding="async" />

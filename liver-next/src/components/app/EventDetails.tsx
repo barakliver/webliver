@@ -48,7 +48,7 @@ function Line({ label, children }: { label: string; children: React.ReactNode })
   return (
     <div className="flex justify-between gap-4">
       <dt className="text-ink-mute">{label}</dt>
-      <dd className="text-left text-ink-soft">{children}</dd>
+      <dd className="text-end text-ink-soft">{children}</dd>
     </div>
   );
 }

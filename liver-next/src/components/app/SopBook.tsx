@@ -35,7 +35,7 @@ export function SopBook() {
           size={17}
           strokeWidth={1.5}
           aria-hidden
-          className="pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-ink-mute"
+          className="pointer-events-none absolute top-1/2 start-4 -translate-y-1/2 text-ink-mute"
         />
         <input
           type="search"
@@ -43,14 +43,14 @@ export function SopBook() {
           onChange={(e) => setQuery(e.target.value)}
           placeholder={c.searchPh}
           aria-label={c.search}
-          className="field w-full pr-11 pl-11"
+          className="field w-full ps-11 pe-11"
         />
         {query && (
           <button
             type="button"
             onClick={() => setQuery('')}
             aria-label={c.clear}
-            className="absolute top-1/2 left-3 -translate-y-1/2 rounded-xl2 p-1.5 text-ink-mute transition hover:bg-surface-200 hover:text-ink"
+            className="absolute top-1/2 end-3 -translate-y-1/2 rounded-xl2 p-1.5 text-ink-mute transition hover:bg-surface-200 hover:text-ink"
           >
             <X size={15} strokeWidth={1.5} aria-hidden />
           </button>

@@ -453,6 +453,21 @@ that has happened once.
   as panels at the radius of a button. Nested surfaces step down rather than
   matching: an inner box at the outer box's radius is what makes a card look
   like a sticker on a card.
+- **Every side is a logical side, and the check is at zero.** `npm run
+  rtl` tokenises every class string under `src` and fails on `ml-`, `mr-`,
+  `pl-`, `pr-`, `left-`, `right-`, `border-l`, `border-r`, `rounded-l`,
+  `rounded-r`, `text-left` and `text-right`, with two exceptions that are
+  physical on purpose: a line that declares `dir="ltr"`, and a token with
+  an `ltr:` or `rtl:` prefix. It was written as a ratchet with a baseline
+  and the baseline is zero now, because the twenty-one it found were the
+  search box's two icons, a form's accent border, and a column of numbers
+  aligned "left" by habit where `text-end` is the word. `DESIGN_MIGRATION.md`
+  is the brief's §6 as a table of what was removed and what was kept on
+  purpose; `design-qa/` holds the harness at 375 and 1280 in both
+  palettes. The countdown on the couple's screen is one muted line under
+  their name now, not a pill in the accent, because the brief is right
+  that a number drawn that way is a timer.
+
 - **The run of show is built from the wedding-day answers, and a secret
   never reaches the couple.** `content/weddingDay.ts` is forty questions
   in six chapters, drawn by the same `Questionnaire` as the intake with

@@ -8,6 +8,7 @@ import { formatDate } from '@/lib/dates';
 import { PageHead, Empty } from '@/components/app/PageHead';
 import { DayOfCockpit } from '@/components/app/DayOfCockpit';
 import { LiveTools } from '@/components/app/LiveTools';
+import { SunsetDark } from '@/components/app/SunsetDark';
 import { Live } from '@/components/app/Live';
 import type { Line, Caller } from '@/lib/dayof';
 import { EVENT_ZONE } from '@/lib/clock';
@@ -68,6 +69,7 @@ export default async function DayOfPage({ params }: { params: Promise<{ id: stri
 
   return (
     <>
+      <SunsetDark />
       <Link href={`/app/clients/${id}`} className="btn-quiet mb-2 -ms-3">
         <ArrowLeft size={16} strokeWidth={1.5} aria-hidden /> {ui.dayOf.toEvent}
       </Link>

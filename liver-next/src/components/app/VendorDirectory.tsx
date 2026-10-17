@@ -213,17 +213,17 @@ export function VendorDirectory({ vendors }: { vendors: Vendor[] }) {
         <div className="relative min-w-[220px] flex-1">
           <Search
             size={17} strokeWidth={1.5} aria-hidden
-            className="pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-ink-mute"
+            className="pointer-events-none absolute top-1/2 start-4 -translate-y-1/2 text-ink-mute"
           />
           <input
             type="search" value={query} onChange={(e) => setQuery(e.target.value)}
             placeholder={c.dirSearchPh} aria-label={c.dirSearch}
-            className="field w-full pr-11 pl-11"
+            className="field w-full ps-11 pe-11"
           />
           {query && (
             <button
               type="button" onClick={() => setQuery('')} aria-label={c.cancel}
-              className="absolute top-1/2 left-1.5 grid size-10 -translate-y-1/2 place-items-center rounded-xl2 text-ink-mute transition hover:bg-surface-200 hover:text-ink"
+              className="absolute top-1/2 end-1.5 grid size-10 -translate-y-1/2 place-items-center rounded-xl2 text-ink-mute transition hover:bg-surface-200 hover:text-ink"
             >
               <X size={15} strokeWidth={1.5} aria-hidden />
             </button>

@@ -170,7 +170,7 @@ export function LeadBoard({ leads, now, list }: {
       </div>
 
       {view === 'list' ? list : (
-        <div className="flex snap-x gap-3 overflow-x-auto pb-3">
+        <div className="flex snap-x gap-3 overflow-x-auto pb-3 [contain:paint]">
           {PIPELINE.map((stage) => (
             <section
               key={stage}

@@ -177,7 +177,7 @@ function Swatches({ value, onPick }: { value: string; onPick: (hex: string) => v
               aria-pressed={on} aria-label={s.label} title={s.label}
               className={cn(
                 'grid size-8 place-items-center rounded-full transition',
-                on ? 'ring-2 ring-ink ring-offset-2 ring-offset-surface-100' : 'hover:scale-110',
+                on ? 'ring-2 ring-ink ring-offset-2 ring-offset-surface-100' : 'hover:ring-2 hover:ring-line-strong hover:ring-offset-2 hover:ring-offset-surface-100',
               )}
               style={{ background: s.hex }}
             >

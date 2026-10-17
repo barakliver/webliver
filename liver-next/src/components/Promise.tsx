@@ -30,17 +30,18 @@ export function PromiseLine({ className = '', tone = 'accent', text = PROMISE }:
   text?: string;
 }) {
   const ink = tone === 'light' ? 'text-accent-light' : 'text-accent';
-  const rule = tone === 'light'
-    ? 'from-transparent via-accent-light/45 to-transparent'
-    : 'from-transparent via-accent-line/55 to-transparent';
+  /* A plain hairline rather than a gradient fading at both ends: the brief
+     removes every gradient, and a rule that is simply a rule reads as
+     quieter than one pretending to dissolve. */
+  const rule = tone === 'light' ? 'bg-accent-light/45' : 'bg-accent-line/55';
 
   return (
     <p className={cn('flex items-center justify-center gap-3', className)}>
-      <span aria-hidden className={cn('h-px w-8 bg-gradient-to-l sm:w-12', rule)} />
+      <span aria-hidden className={cn('h-px w-8 sm:w-12', rule)} />
       <span className={cn('font-serif text-body font-medium tracking-[.16em] whitespace-nowrap', ink)}>
         {text}
       </span>
-      <span aria-hidden className={cn('h-px w-8 bg-gradient-to-r sm:w-12', rule)} />
+      <span aria-hidden className={cn('h-px w-8 sm:w-12', rule)} />
     </p>
   );
 }

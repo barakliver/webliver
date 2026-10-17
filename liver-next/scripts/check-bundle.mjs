@@ -89,7 +89,10 @@ const BUDGET = [
   /* The couple's own screens. */
   { kb: 395, is: (r) => r.startsWith('/app/portal'), say: "the couple's screen" },
   /* The console. */
-  { kb: 425, is: () => true, say: "the producer's console" },
+  /* 425 until 2.8: the event file gained the budget sheet, the profile tab
+     and the run-of-show tools, which is three screens' worth of work on one
+     route and 3KB over the old number. */
+  { kb: 435, is: () => true, say: "the producer's console" },
 ];
 
 /* The harness, which is every component at once and is a 404 in production. */

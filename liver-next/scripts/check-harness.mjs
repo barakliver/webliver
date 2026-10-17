@@ -52,6 +52,7 @@ const NOT_DRAWN = {
   ChatDock: 'the chat shell itself, looked at through both assistants that mount it',
   'app/TaskPress': 'a hook rather than a component: what pressing a task means, shared by the checklist row and the bingo square, and looked at through both',
   'app/FlashClear': 'deletes the message once it has been seen and renders nothing',
+  'app/SunsetDark': 'puts the dark palette on the day-of screen after six in the evening and renders nothing',
   ThemeScope: 'puts the palette back in step on every navigation and renders nothing; what it does is visible as the whole page, not as a panel',
   'brand/Pieces': 'the seven printed pieces, drawn fourteen times inside the BrandStudio panel and never on their own',
   ViewTransition: 'names the halves of a navigation for the browser and adds nothing to the page; what it does is only visible as one screen replacing another, which is not a panel',

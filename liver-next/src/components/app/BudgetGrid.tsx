@@ -491,11 +491,11 @@ export function BudgetGrid({
     <div
       ref={sheetRef}
       tabIndex={0}
-      role="grid"
+      role="group"
       aria-label={c.title}
       onKeyDown={onKey}
       onPaste={onPaste}
-      className="mt-5 overflow-x-auto rounded-card-sm border border-line outline-none focus-visible:ring-2 focus-visible:ring-accent"
+      className={cn('mt-5 overflow-x-auto rounded-card-sm border border-line outline-none focus-visible:ring-2 focus-visible:ring-accent', wide === null && 'hidden sm:block')}
     >
       <datalist id={`vendors-${clientId}`}>{vendors.map((v) => <option key={v} value={v} />)}</datalist>
       <table className="w-full border-collapse text-body">
@@ -503,7 +503,7 @@ export function BudgetGrid({
           <tr className="bg-card">
             <th className="w-8 border-b border-line" />
             {cols.map((col) => (
-              <th key={col.key} scope="col" className={cn('border-b border-line px-2 py-2 text-start text-micro font-medium text-ink-mute', col.width, col.align === 'end' && 'text-left')}>{col.label}</th>
+              <th key={col.key} scope="col" className={cn('border-b border-line px-2 py-2 text-start text-micro font-medium text-ink-mute', col.width, col.align === 'end' && 'text-end')}>{col.label}</th>
             ))}
             <th className="w-8 border-b border-line" />
           </tr>
@@ -520,7 +520,7 @@ export function BudgetGrid({
                  cell under it, so no cell could be pressed. */
               ...(open ? g.items.map((item, k) => (
                 <tr key={item.id} {...drag.zone(`row:${item.id}`)}
-                  className={cn('bg-card', drag.over === `row:${item.id}` && 'border-t-2 border-t-accent', !item.visible_to_couple && producer && 'opacity-80')}>
+                  className={cn('bg-card', drag.over === `row:${item.id}` && 'border-t-2 border-t-accent', !item.visible_to_couple && producer && 'bg-surface-200')}>
                   <td className="border-b border-line"><Grip label={`${c.drag}: ${item.label}`} {...drag.grip(item.id)} /></td>
                   {cols.map((col, ci) => {
                     const pos = { row: offset + k, col: ci };
@@ -556,12 +556,12 @@ export function BudgetGrid({
           <tr className="sticky bottom-0 bg-surface-200 text-body font-medium text-ink">
             <td className="px-2 py-2" />
             <td className="px-2 py-2" colSpan={3}>{c.total}</td>
-            <td className="px-2 py-2 text-left tabular-nums"><Money value={sums.planned} /></td>
+            <td className="px-2 py-2 text-end tabular-nums"><Money value={sums.planned} /></td>
             <td className="px-2 py-2" />
-            <td className="px-2 py-2 text-left tabular-nums"><Money value={sums.agreed} className={cn(sums.overrun !== null && sums.overrun > 0 && 'text-bad')} /></td>
+            <td className="px-2 py-2 text-end tabular-nums"><Money value={sums.agreed} className={cn(sums.overrun !== null && sums.overrun > 0 && 'text-bad')} /></td>
             <td className="px-2 py-2" />
-            <td className="px-2 py-2 text-left tabular-nums"><Money value={sums.paid} /></td>
-            <td className="px-2 py-2 text-left tabular-nums"><Money value={sums.remaining} /></td>
+            <td className="px-2 py-2 text-end tabular-nums"><Money value={sums.paid} /></td>
+            <td className="px-2 py-2 text-end tabular-nums"><Money value={sums.remaining} /></td>
             <td className="px-2 py-2" colSpan={cols.length - 9 + 1} />
           </tr>
         </tfoot>
@@ -570,7 +570,7 @@ export function BudgetGrid({
   );
 
   const cards = (
-    <div className="mt-4 space-y-5">
+    <div className={cn('mt-4 space-y-5', wide === null && 'sm:hidden')}>
       {groups.map((g) => {
         const t = groupTotal(g);
         return (
@@ -592,7 +592,7 @@ export function BudgetGrid({
                           {m.nextDue && <span>· <Money value={m.nextDue.amount} /> {fmt(m.nextDue.date)}</span>}
                         </span>
                       </span>
-                      <span className="shrink-0 text-left">
+                      <span className="shrink-0 text-end">
                         <span className="block text-body tabular-nums text-ink"><Money value={m.agreedIncl ?? m.expected} /></span>
                         <span className="block text-meta tabular-nums text-ink-mute">{c.colPaid} <Money value={m.paid} /></span>
                       </span>
@@ -713,7 +713,7 @@ function Cell({ item, col, math, pos, selected, isEditing, initial, c, notes, pr
   const editable = col.kind !== 'derived';
   const base = cn(
     'relative h-11 whitespace-nowrap border-b border-line px-2 text-body',
-    col.align === 'end' ? 'text-left tabular-nums' : '',
+    col.align === 'end' ? 'text-end tabular-nums' : '',
     selected && 'outline outline-2 -outline-offset-2 outline-accent',
     col.kind === 'derived' ? 'text-ink-soft' : 'text-ink',
   );
@@ -752,7 +752,7 @@ function Cell({ item, col, math, pos, selected, isEditing, initial, c, notes, pr
           defaultValue={initial ?? rawOf(item, col)}
           inputMode={col.kind === 'money' ? 'decimal' : undefined}
           dir={col.kind === 'money' ? 'ltr' : undefined}
-          className={cn('field h-8 w-full py-0 text-body', col.align === 'end' && 'text-left')}
+          className={cn('field h-8 w-full py-0 text-body', col.align === 'end' && 'text-end')}
           onFocus={(e) => { if (initial === undefined) e.currentTarget.select(); }}
           onKeyDown={(e) => {
             if (e.key === 'Enter') { e.preventDefault(); onFinish(item, col, e.currentTarget.value, 'Enter'); }

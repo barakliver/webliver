@@ -224,7 +224,7 @@ export function CrewPanel({ clientId, crew }: { clientId: string; crew: CrewMemb
             {ordered.map((m) => <Row key={m.id} member={m} clientId={clientId} />)}
           </ul>
           {total > 0 && (
-            <p className="mt-4 text-left text-body text-ink-soft">
+            <p className="mt-4 text-end text-body text-ink-soft">
               {c.totalFee} <b className="tabular-nums text-ink"><Money value={total} /></b>
             </p>
           )}

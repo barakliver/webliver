@@ -166,7 +166,7 @@ export function FinanceSummary({ clientId, viewer, target, items, payments }: {
           {variance !== null && (
             <span className={cn(
               'hidden rounded-control px-2 py-0.5 text-micro font-medium sm:mt-2 sm:inline-block',
-              underTarget ? 'bg-ok/10 text-ok' : 'bg-bad/10 text-bad',
+              underTarget ? 'bg-ok-wash text-ok' : 'bg-bad-wash text-bad',
             )}>
               {underTarget ? c.underBadge : c.overBadge}
             </span>

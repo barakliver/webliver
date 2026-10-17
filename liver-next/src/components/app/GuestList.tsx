@@ -537,7 +537,7 @@ export function GuestList({ clientId, guests }: { clientId: string; guests: Gues
 
           {wide !== false && (
           <div className="mt-4 hidden overflow-x-auto sm:block">
-            <table className="w-full text-right text-body">
+            <table className="w-full text-start text-body">
               {/* The head stays while the names scroll. Six columns of
                   figures mean nothing once the row that names them has gone
                   off the top, and at three hundred rows it goes off the top

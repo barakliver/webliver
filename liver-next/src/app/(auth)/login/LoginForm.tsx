@@ -20,7 +20,7 @@ function Submit({ label, busy }: { label: string; busy: string }) {
 
 function Alert({ text }: { text: string }) {
   return (
-    <p role="alert" className="border-r-2 border-bad bg-transparent py-2 pe-3 text-body text-bad">
+    <p role="alert" className="border-s-2 border-bad bg-transparent py-2 pe-3 text-body text-bad">
       {text}
     </p>
   );
@@ -28,7 +28,7 @@ function Alert({ text }: { text: string }) {
 
 function Note({ text }: { text: string }) {
   return (
-    <p role="status" className="border-r-2 border-ok bg-transparent py-2 pe-3 text-body text-ok">
+    <p role="status" className="border-s-2 border-ok bg-transparent py-2 pe-3 text-body text-ok">
       {text}
     </p>
   );
@@ -110,7 +110,7 @@ export function LoginForm({ next, prefill, reason, referral, copy, legal }: {
   }
 
   return (
-    <form action={askAction} className="card space-y-5" noValidate>
+    <form action={askAction} className="space-y-5" noValidate>
       <div>
         <h1 className="font-display text-title font-medium text-ink">{copy.title}</h1>
         <p className="mt-2 text-lead text-ink-soft">{copy.sub}</p>
@@ -129,7 +129,7 @@ export function LoginForm({ next, prefill, reason, referral, copy, legal }: {
           client. Said plainly and once: the address is already in the field
           below, so this is a sentence and a button rather than a dead end. */}
       {!askState && reason && (
-        <p role="status" className="border-r-2 border-line-strong bg-transparent py-2 pe-3 text-body text-ink-soft">
+        <p role="status" className="border-s-2 border-line-strong bg-transparent py-2 pe-3 text-body text-ink-soft">
           {reason === 'expired' ? copy.linkExpired : copy.linkMissing}
         </p>
       )}
@@ -257,7 +257,7 @@ function CodeStep({
   const failed = state && !state.ok && state.error && state.sentAt === at;
 
   return (
-    <form action={action} className="card space-y-5" noValidate>
+    <form action={action} className="space-y-5" noValidate>
       <div>
         <h1 className="font-display text-title font-medium text-ink">{copy.codeTitle}</h1>
         <p className="mt-2 text-lead text-ink-soft">

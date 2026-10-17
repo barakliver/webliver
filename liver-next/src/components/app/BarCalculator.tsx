@@ -155,14 +155,14 @@ export function BarCalculator({ guestEstimate, confirmedGuests }: {
                 </span>
               </span>
               {l.total > 0 && (
-                <span className="w-[86px] shrink-0 text-left text-body tabular-nums text-ink-soft"><Money value={l.total} /></span>
+                <span className="w-[86px] shrink-0 text-end text-body tabular-nums text-ink-soft"><Money value={l.total} /></span>
               )}
             </li>
           ))}
         </ul>
 
         {total > 0 && (
-          <p className="mt-4 text-left text-lead text-ink-soft">
+          <p className="mt-4 text-end text-lead text-ink-soft">
             {c.grandTotal} <b className="font-display text-subhead tabular-nums text-ink"><Money value={total} /></b>
           </p>
         )}

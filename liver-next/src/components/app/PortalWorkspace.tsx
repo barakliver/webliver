@@ -221,19 +221,21 @@ export function PortalWorkspace({
             {c.profile?.nickname || c.display_name}
           </h2>
 
+          {/* One line under the name, in the muted ink: the days, the date,
+              the place. The count used to be a pill of its own in the accent
+              at figure size, and the brief is right that a number drawn that
+              way is a timer. It is still the first figure on the screen; it
+              is simply said rather than displayed. */}
           <p className="mt-2 text-body text-ink-mute">
+            {left !== null && left >= 0 && (
+              <>
+                <span className="tabular-nums"><Ltr>{left.toLocaleString('en-US')}</Ltr></span> {ui.portal.daysLeft}
+                {' \u00B7 '}
+              </>
+            )}
             {formatDate(dateFmt, c.event_date, ui.portal.dateTbd)}
             {c.venue ? ` \u00B7 ${c.venue}` : ''}
           </p>
-
-          {left !== null && left >= 0 && (
-            <p className="mt-6 inline-flex items-baseline gap-2 rounded-full bg-accent-wash px-5 py-2.5 text-accent">
-              <span className="font-display text-figure font-normal leading-none tabular-nums">
-                <Ltr>{left.toLocaleString('en-US')}</Ltr>
-              </span>
-              <span className="text-body">{ui.portal.daysLeft}</span>
-            </p>
-          )}
         </div>
 
         {/* The answer to the number above it, inside the same object rather

@@ -104,7 +104,7 @@ export default async function ProducerEntryPage({ params }: { params: Promise<{ 
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={b.cover_url} alt=""
-            className="mb-8 aspect-video w-full rounded-card-sm object-cover shadow-pop" decoding="async" />
+            className="mb-8 aspect-video w-full rounded-card-sm object-cover" decoding="async" />
         )}
         {b.logo_url ? (
           // eslint-disable-next-line @next/next/no-img-element
