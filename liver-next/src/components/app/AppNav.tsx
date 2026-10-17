@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useOverlay } from '@/lib/useOverlay';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BookOpen, CalendarDays, Ellipsis, Globe, HeartHandshake, Inbox, LayoutGrid, LifeBuoy, Palette, ShieldCheck, Sparkles, Store, Target, TrendingUp, Truck, UsersRound, X, type LucideIcon } from 'lucide-react';
+import { BookOpen, CalendarDays, Globe, HeartHandshake, Inbox, LayoutGrid, LifeBuoy, Palette, ShieldCheck, Sparkles, Store, Target, TrendingUp, Truck, UsersRound, X, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useCopy } from '@/components/app/CopyProvider';
 import { LinkHint } from './LinkHint';
@@ -198,7 +198,7 @@ export function MobileTabBar({ items, extra }: {
 
       <nav
         aria-label="ניווט ראשי"
-        className="glass fixed inset-x-0 bottom-0 z-40 border-t border-line shadow-dock lg:hidden"
+        className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-card lg:hidden"
         style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
       >
         <ul className="mx-auto flex max-w-lg list-none items-stretch justify-around p-0">
@@ -212,9 +212,19 @@ export function MobileTabBar({ items, extra }: {
                   className={cn(
                     'flex min-h-[56px] flex-col items-center justify-center gap-1.5 px-1 pt-2',
                     'text-meta tracking-[.04em] transition-colors duration-touch',
-                    current ? 'text-ink' : 'text-ink-mute',
+                    current ? 'text-accent' : 'text-ink-mute',
                   )}
                 >
+                  {/* The plum design's mark: a small dot above the word.
+                      A shape as well as a colour, so the state survives
+                      greyscale and a low-contrast display. */}
+                  <span
+                    aria-hidden
+                    className={cn(
+                      'h-1.5 w-1.5 rounded-full transition-transform duration-move',
+                      current ? 'scale-100 bg-accent' : 'scale-0',
+                    )}
+                  />
                   {/* Labels, not icons. The handoff drops icons from the bar
                       entirely: five short Hebrew words read faster at this
                       size than five glyphs somebody has to learn, and the
@@ -223,15 +233,6 @@ export function MobileTabBar({ items, extra }: {
                     <span className="truncate">{i.label}</span>
                     <LinkHint />
                   </span>
-                  {/* The active mark is a shape as well as a colour, so the
-                      state survives greyscale and a low-contrast display. */}
-                  <span
-                    aria-hidden
-                    className={cn(
-                      'h-px w-7 transition-opacity duration-touch',
-                      current ? 'bg-accent-line opacity-100' : 'opacity-0',
-                    )}
-                  />
                 </Link>
               </li>
             );
@@ -249,18 +250,17 @@ export function MobileTabBar({ items, extra }: {
                   'text-meta tracking-[.04em] transition-colors duration-touch',
                   /* Lit when the open screen lives behind it, so the nav never
                      reports that you are nowhere. */
-                  open || inOverflow ? 'text-ink' : 'text-ink-mute',
+                  open || inOverflow ? 'text-accent' : 'text-ink-mute',
                 )}
               >
-                <Ellipsis size={21} strokeWidth={1.5} aria-hidden />
-                <span className="max-w-full truncate">{ui.nav.more}</span>
                 <span
                   aria-hidden
                   className={cn(
-                    'h-[3px] w-6 rounded-full transition-opacity duration-touch',
-                    inOverflow ? 'bg-accent-bright opacity-100' : 'opacity-0',
+                    'h-1.5 w-1.5 rounded-full transition-transform duration-move',
+                    open || inOverflow ? 'scale-100 bg-accent' : 'scale-0',
                   )}
                 />
+                <span className="max-w-full truncate">{ui.nav.more}</span>
               </button>
             </li>
           )}

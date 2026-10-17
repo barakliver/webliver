@@ -3,6 +3,7 @@ import { supabaseServer } from '@/lib/supabase/server';
 import { EVENT_ZONE } from './clock.ts';
 import { standingOf } from './phase.ts';
 import { phaseCopy } from '@/content/site';
+import { pipelineStats, type BoardLead, type Stats } from './pipeline.ts';
 
 /* ── What actually needs a person ──────────────────────────────────────────
    The brief is explicit: "three things need your decision this week", not
@@ -34,8 +35,23 @@ export type AttentionItem = {
   clientId?: string;
 };
 
+/** One live event as the season column draws it: the date as a circle, the
+ *  name, where and how many, which of the two things the couple is buying,
+ *  and how far away it is. */
+export type SeasonEvent = {
+  id: string;
+  name: string;
+  date: string | null;
+  venue: string | null;
+  guests: number | null;
+  service: string | null;
+  days: number | null;
+};
+
 export type Overview = {
   items: AttentionItem[];
+  season: SeasonEvent[];
+  leads: Stats;
   next: { name: string; date: string; days: number; href: string } | null;
   money: { paid: number; owed: number; overdue: number };
   counts: { clients: number };
@@ -62,7 +78,8 @@ export async function getOverview(): Promise<Overview> {
 
   /* Every read goes through row level security as the signed-in person, so
      none of these need a producer filter of their own. */
-  const [leadsQ, tasksQ, paysQ, clientsQ] = await Promise.all([
+  const ninetyIso = new Date(today - 90 * DAY).toISOString();
+  const [leadsQ, tasksQ, paysQ, clientsQ, pipeQ] = await Promise.all([
     sb.from('leads')
       .select('id,full_name,kind,event_date,created_at')
       .eq('status', 'new')
@@ -84,9 +101,17 @@ export async function getOverview(): Promise<Overview> {
        make the closing meaningless — the archived tab still carries the row,
        its balance included, so nothing is lost, only quietened. */
     sb.from('clients')
-      .select('id,display_name,event_date,venue,guest_estimate,budget_target')
+      .select('id,display_name,event_date,venue,guest_estimate,budget_target,service')
       .is('archived_at', null)
       .order('event_date', { ascending: true }),
+    /* The three lead figures, counted by the same function the leads board
+       and the morning letter count them with, so this screen can never
+       disagree with either about who is waiting. Ninety days is the window
+       all three figures read. */
+    sb.from('leads')
+      .select('id,full_name,phone,email,event_date,guest_count,source,status,score,created_at,first_response_at')
+      .gte('created_at', ninetyIso)
+      .limit(2000),
   ]);
 
   const clients = clientsQ.data ?? [];
@@ -246,5 +271,18 @@ export async function getOverview(): Promise<Overview> {
       : null,
     money: { paid, owed, overdue },
     counts: { clients: clients.length },
+    /* Every live event, in date order with the dateless ones last, which is
+       the order `groupByYear` keeps. Nothing is filtered out here: a past
+       date that was never closed is still a live event and still his. */
+    season: clients.map((c) => ({
+      id: c.id,
+      name: c.display_name,
+      date: c.event_date ?? null,
+      venue: c.venue ?? null,
+      guests: c.guest_estimate ?? null,
+      service: (c as { service?: string | null }).service ?? null,
+      days: c.event_date ? daysUntil(c.event_date, today) : null,
+    })),
+    leads: pipelineStats((pipeQ.data ?? []) as BoardLead[], now.getTime()),
   };
 }

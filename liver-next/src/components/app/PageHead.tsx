@@ -13,7 +13,7 @@ export function PageHead({ title, sub, actions, report }: {
   /** A string almost everywhere; a node where a name inside it needs its
    *  own direction, as in a greeting to somebody called Barak. */
   title: React.ReactNode;
-  sub?: string;
+  sub?: React.ReactNode;
   /** Buttons that belong to this screen, at the end of the title line. */
   actions?: React.ReactNode;
   /** The 16px report icon, named by this screen. */

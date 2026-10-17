@@ -676,6 +676,21 @@
   @media (prefers-reduced-motion: reduce) {
     .write-in { animation: none; }
   }
+
+  /* A bar that grows from where a line starts, once: from the right in
+     Hebrew, from the left in English. */
+  .grow-x {
+    transform-origin: 0 50%;
+    animation: grow-x 1s cubic-bezier(.2,.9,.2,1) both;
+  }
+  [dir='rtl'] .grow-x { transform-origin: 100% 50%; }
+  @keyframes grow-x {
+    from { transform: scaleX(0); }
+    to   { transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .grow-x { animation: none; }
+  }
   /* And the third: an outline with almost no fill, for a group that needs an
      edge without becoming another panel in a column of panels. */
   .panel-outline {

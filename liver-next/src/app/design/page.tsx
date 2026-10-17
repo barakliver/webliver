@@ -196,6 +196,7 @@ import { EventSelector } from '@/components/portal/EventSelector';
 import { VendorCaptureDemo } from './VendorCaptureDemo';
 import { EnvelopesPanel } from '@/components/app/EnvelopesPanel';
 import { VehiclesPanel } from '@/components/app/VehiclesPanel';
+import { SeasonColumn, LeadFigures, MoneyBars } from '@/components/app/Desk';
 
 /**
  * Every panel in the product, on one page, with no database behind it.
@@ -1157,6 +1158,31 @@ export default async function DesignPage() {
 
         <Panel name="NewLeadForm" note="a lead typed in from a phone call">
           <NewLeadForm />
+        </Panel>
+
+        <Panel name="Desk · the producer's season, leads and money" note="the plum desk's three columns: the season by year with the next event filled, the three lead figures, the money as bars on one scale">
+          <div className="grid gap-5 xl:grid-cols-[4fr_3fr]">
+            <SeasonColumn
+              dateLocale="he-IL"
+              events={[
+                { id: 'e1', name: 'נועה ואיתי', date: new Date(Date.now() + 49 * 86_400_000).toISOString().slice(0, 10), venue: 'אחוזת הכפר', guests: 420, service: 'production', days: 49 },
+                { id: 'e2', name: 'שיר ודניאל', date: new Date(Date.now() + 152 * 86_400_000).toISOString().slice(0, 10), venue: 'גני ורדים', guests: 300, service: 'management', days: 152 },
+                { id: 'e3', name: 'רוני ועומר', date: new Date(Date.now() + 240 * 86_400_000).toISOString().slice(0, 10), venue: null, guests: 250, service: 'production', days: 240 },
+                { id: 'e4', name: 'מאיה ועידו', date: null, venue: null, guests: null, service: 'management', days: null },
+              ]}
+              copy={{ season: 'העונה', seasonN: '{n} אירועים', seasonOne: 'אירוע אחד', noDate: 'בלי תאריך', daysN: '{n} ימים', today: 'היום', tomorrow: 'מחר', production: 'הפקה', management: 'ניהול ערב', allClients: 'לכל האירועים' }}
+            />
+            <div className="grid content-start gap-5">
+              <LeadFigures
+                stats={{ newThisWeek: 3, toMeeting: 33, responseHours: 24, unanswered: 2 }}
+                copy={{ leads: 'לידים', leadsWeek: 'חדשים השבוע', leadsMeeting: 'הגיעו לפגישה', leadsHours: 'שעות עד מענה', unknown: 'עוד אין', allLeads: 'ללוח הלידים' }}
+              />
+              <MoneyBars
+                money={{ paid: 412000, owed: 186000, overdue: 40000 }}
+                copy={{ money: 'כסף', paid: 'שולם', owed: 'פתוח', overdue: 'באיחור' }}
+              />
+            </div>
+          </div>
         </Panel>
 
         <Panel name="LeadBoard" note="the pipeline as columns; drag or use the select, the three figures above">

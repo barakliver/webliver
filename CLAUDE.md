@@ -385,6 +385,25 @@ that has happened once.
   `light` tones and five `night` tones moved two to four percent to clear
   the new plum grounds. The paragraph below is the history of the
   HoneyBook move.
+- **The screens are the plum design's screens, not only its colours.**
+  He asked why the app did not look like the mockups, and the answer was
+  that 3.1 had changed the skin and not the layout. So 3.2 rebuilt three:
+  the producer's home is a desk of three columns on a wide screen (two on
+  a laptop, one on a phone, same order): his own tasks and the folded pile
+  first, as he ruled; the season by year in the middle (`SeasonColumn` in
+  `components/app/Desk.tsx`), the next event as the filled rose circle,
+  which is where the old "next event" card went; and the lead figures and
+  the money as bars on one scale on the far side, each row still a way in
+  to the same screen it went to before. The figures come from
+  `pipelineStats`, the same function the leads board and the morning
+  letter use, and `getOverview` now returns `season` and `leads`. Under the
+  greeting is the morning in one sentence, each part dropped at zero. The
+  phone bar marks the current tab with a rose dot above the word, on the
+  card colour, and the "more" button matches it. The couple's band draws
+  the days as one 64px number in the light rose beside "ימים לאירוע",
+  start-aligned; the one-muted-line rule from the quiet-luxury round is
+  overruled by the design he chose. The desk is in `/design` like every
+  other component.
 - **The palette was HoneyBook's, exactly, read out of their own stylesheet
   rather than guessed from a screenshot.** He asked for it in one sentence
   and his latest instruction wins. White ground, #FFFFFF, with the card

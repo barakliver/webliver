@@ -212,7 +212,7 @@ export function PortalWorkspace({
           the lid of this object rather than a picture floating above it: a
           couple who has saved nothing gets a card that starts at their name,
           which is a first screen rather than a gap where something failed. */}
-      <header className="mt-6 overflow-hidden rounded-panel border border-line-soft bg-card text-center">
+      <header className="mt-6 overflow-hidden rounded-panel border border-line-soft bg-card">
         {cover && (
           /* Decoration, so it is hidden from a screen reader rather than
              described: the caption that belongs to it lives on the board
@@ -223,26 +223,26 @@ export function PortalWorkspace({
         )}
 
         {/* The plum band from the design he chose: their name on deep plum,
-            the line under it in the light rose. The heading takes its colour
-            from the band rather than naming one, because the band turns
-            over in the dark palette and a named colour would not. */}
-        <div className="band-dark px-5 py-8 sm:px-8 sm:py-10">
-          <h2 className="font-display text-display font-light leading-[1.12]">
+            the days as one large rose number beside the words that say what
+            it counts, and the date and the place under it. The count was one
+            muted line for a release because a number drawn large reads as a
+            timer; he chose the design that draws it large, and his latest
+            instruction is the rule. The text takes its colour from the band
+            rather than naming one, because the band turns over in the dark
+            palette and a named colour would not. */}
+        <div className="band-dark px-5 py-7 sm:px-8 sm:py-9">
+          <h2 className="animate-rise font-display text-display font-light leading-[1.12]">
             {c.profile?.nickname || c.display_name}
           </h2>
-
-          {/* One line under the name, in the muted ink: the days, the date,
-              the place. The count used to be a pill of its own in the accent
-              at figure size, and the brief is right that a number drawn that
-              way is a timer. It is still the first figure on the screen; it
-              is simply said rather than displayed. */}
-          <p className="mt-2 text-body text-accent-light">
-            {left !== null && left >= 0 && (
-              <>
-                <span className="tabular-nums"><Ltr>{left.toLocaleString('en-US')}</Ltr></span> {ui.portal.daysLeft}
-                {' \u00B7 '}
-              </>
-            )}
+          {left !== null && left >= 0 && (
+            <p className="mt-4 flex animate-rise items-end gap-3" style={{ animationDelay: '.2s' }}>
+              <span className="font-display text-[64px] font-light leading-[.9] text-accent-light tabular-nums">
+                <Ltr>{left.toLocaleString('en-US')}</Ltr>
+              </span>
+              <span className="pb-1.5 text-body text-accent-light">{ui.portal.daysLeft}</span>
+            </p>
+          )}
+          <p className="mt-3 animate-rise text-body text-accent-light" style={{ animationDelay: '.35s' }}>
             {formatDate(dateFmt, c.event_date, ui.portal.dateTbd)}
             {c.venue ? ` \u00B7 ${c.venue}` : ''}
           </p>

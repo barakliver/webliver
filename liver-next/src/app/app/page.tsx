@@ -1,15 +1,14 @@
 import { fill } from '@/lib/copyText';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { CalendarHeart, Wallet, ChevronLeft, Inbox } from 'lucide-react';
+import { Inbox } from 'lucide-react';
 import { requireAccount, isLive } from '@/lib/auth';
 import { getOverview } from '@/lib/attention';
 import { Live } from '@/components/app/Live';
-import { serverCopy } from '@/lib/serverLocale';
+import { serverCopy, currentLocale } from '@/lib/serverLocale';
 import { PageHead } from '@/components/app/PageHead';
 import { AttentionList } from '@/components/app/Attention';
-import { Money, ils } from '@/components/Ltr';
-import { MetricRows } from '@/components/app/Metric';
+import { SeasonColumn, LeadFigures, MoneyBars } from '@/components/app/Desk';
 import { Anniversaries } from '@/components/app/Anniversaries';
 import { supabaseServer } from '@/lib/supabase/server';
 import { loadAnniversaries } from '@/lib/workflow';
@@ -34,7 +33,8 @@ export default async function OverviewPage() {
   if (account.role === 'staff') redirect('/app/shifts');
   if (!isLive(account)) redirect('/app/pending');
 
-  const { items, next, money } = await getOverview();
+  const { items, money, season, leads } = await getOverview();
+  const locale = await currentLocale();
   const first = account.fullName.split(' ')[0];
 
   /* Renders nothing at all when there is none, which is most mornings. A panel
@@ -54,26 +54,36 @@ export default async function OverviewPage() {
   const { count } = await sb.from('clients').select('id', { count: 'exact', head: true });
   const fresh = (count ?? 0) === 0;
 
+  /* The morning in one line under the greeting, from the plum design: how
+     many are open, how many leads wait, how many payments are late. A part
+     whose number is zero is left out rather than said, and a quiet morning
+     keeps its own sentence. */
+  const late = items.filter((i) => i.kind === 'payment').length;
+  const summary = [
+    season.length ? (season.length === 1 ? c.sumEventsOne : fill(c.sumEvents, { n: season.length })) : null,
+    leads.unanswered ? (leads.unanswered === 1 ? c.sumLeadsOne : fill(c.sumLeads, { n: leads.unanswered })) : null,
+    late ? (late === 1 ? c.sumLateOne : fill(c.sumLate, { n: late })) : null,
+  ].filter(Boolean).join(' \u00B7 ');
+  const sub = summary || (items.length ? undefined : c.clearSub);
+
   return (
     <>
       <PageHead
         /* The name in its own direction: "שלום barak" reordered the Latin
            name to the wrong side of the greeting without the isolate. */
         title={first ? <>{ui.overview.greeting} <bdi>{first}</bdi></> : ui.overview.greeting}
-        /* The count moved down to the row that holds the pile, where it
-           belongs now, so this line does not repeat it one line above. Left
-           with the quiet morning's own sentence and nothing on a busy one.
-           It was also the last hard-coded Hebrew sentence on this screen: an
-           English producer read the greeting in English and this in
-           Hebrew. */
-        sub={items.length ? undefined : c.clearSub}
+        sub={sub ? <span className="write-in block">{sub}</span> : undefined}
         report={<IssueReporter userId={account.id} context={ui.overview.greeting} />}
       />
 
-      <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr] lg:gap-8">
-        {/* The pile, first and biggest, because it is the reason to open the
-            screen at all. */}
-        <section aria-labelledby="needs-you" className="min-w-0 space-y-4">
+      {/* The plum desk: three columns where there is room for three, his
+          morning first, the season beside it, the leads and the money after.
+          Two columns on a laptop with the third under the first, one on a
+          phone in the same order. Nothing that was on this screen is gone:
+          the next event is the filled circle at the top of the season, and
+          the money keeps its three ways in. */}
+      <div className="grid gap-5 lg:grid-cols-[1.3fr_1fr] xl:grid-cols-[5fr_4fr_3fr] xl:gap-6">
+        <section aria-labelledby="needs-you" className="min-w-0 space-y-5">
           {/* First, because it is his. */}
           <MyTasks tasks={myTasks} today={todayInZone()} />
 
@@ -90,9 +100,8 @@ export default async function OverviewPage() {
             /* His own list first and open, the clients' pile under it behind
                a row. It was the other way round, and he turned it over: what
                he opens this screen to do is his own morning, and the pile is
-               everybody else's — real, and not the thing he came for. The
-               count rides on the row, so a folded pile still says how much is
-               in it and nothing goes quiet by being closed. */
+               everybody else's. The count rides on the row, so a folded pile
+               still says how much is in it. */
             <Fold
               id="fold-clients"
               icon={Inbox}
@@ -105,61 +114,28 @@ export default async function OverviewPage() {
           )}
         </section>
 
+        {season.length > 0 && (
+          <div className="min-w-0">
+            <SeasonColumn
+              events={season}
+              dateLocale={locale === 'en' ? 'en-GB' : 'he-IL'}
+              copy={{
+                season: c.season, seasonN: c.seasonN, seasonOne: c.seasonOne, noDate: c.noDate,
+                daysN: c.daysN, today: c.inDays.today, tomorrow: c.inDays.tomorrow,
+                production: ui.statusBoard.serviceProduction, management: ui.statusBoard.serviceManagement,
+                allClients: c.allClients,
+              }}
+            />
+          </div>
+        )}
+
         <div className="grid min-w-0 content-start gap-5">
           <Anniversaries items={anniversaries} />
-          {next && (
-            <Link
-              href={next.href}
-              className="card group block transition-colors duration-touch hover:border-accent"
-            >
-              <div className="flex items-center gap-2 text-accent">
-                <CalendarHeart size={16} strokeWidth={1.5} aria-hidden />
-                <span className="eyebrow">{c.nextEvent}</span>
-              </div>
-              <p className="mt-3 font-display text-figure font-light leading-tight text-ink">
-                {next.name}
-              </p>
-              <p className="mt-1 text-body text-ink-soft">{next.date}</p>
-              <p className="mt-4 font-display text-[32px] font-normal leading-none text-ink">
-                {next.days === 0 ? c.inDays.today : next.days === 1 ? c.inDays.tomorrow : fill(c.inDays.later, { n: next.days })}
-              </p>
-            </Link>
-          )}
-
-          <section className="card">
-            <div className="flex items-center gap-2 text-accent">
-              <Wallet size={16} strokeWidth={1.5} aria-hidden />
-              <span className="eyebrow">{c.money}</span>
-            </div>
-
-            {/* Every one of these is a way in rather than a read-out. An
-                amount owed is a question, and the answer is on another screen;
-                until now the only way to get there was to remember where it
-                was. The three do not go to the same place, which is the point:
-                collected and owed are explained on the numbers screen, and
-                money that is late is explained by the events carrying it. */}
-            <MetricRows
-              className="mt-4"
-              rows={[
-                { label: c.paid, value: <Money value={money.paid} />, href: '/app/insights' },
-                { label: c.owed, value: <Money value={money.owed} />, href: '/app/insights' },
-                ...(money.overdue > 0
-                  ? [{
-                      label: c.overdue,
-                      value: <Money value={money.overdue} />,
-                      tone: 'bad' as const,
-                      href: '/app/clients',
-                    }]
-                  : []),
-              ]}
-            />
-
-            <hr className="hairline my-4" />
-            <Link href="/app/clients" className="btn-quiet px-0 text-body">
-              {c.allClients}
-              <ChevronLeft size={16} strokeWidth={1.5} aria-hidden className="chev-onward" />
-            </Link>
-          </section>
+          <LeadFigures
+            stats={leads}
+            copy={{ leads: c.leads, leadsWeek: c.leadsWeek, leadsMeeting: c.leadsMeeting, leadsHours: c.leadsHours, unknown: c.unknown, allLeads: c.allLeads }}
+          />
+          <MoneyBars money={money} copy={{ money: c.money, paid: c.paid, owed: c.owed, overdue: c.overdue }} />
         </div>
       </div>
       {/* A link into the folded pile opens it on the way. */}

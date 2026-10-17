@@ -735,6 +735,28 @@ export const appCopy = {
     overdue: 'באיחור',
     allClients: 'לכל האירועים',
     seeAll: 'הצגת הכל',
+    /* The plum desk. The sentence under the greeting says the morning in
+       one line, and each part of it is dropped when its number is zero:
+       "0 לידים מחכים" is a sentence about nothing. */
+    sumEvents: '{n} אירועים פתוחים',
+    sumEventsOne: 'אירוע אחד פתוח',
+    sumLeads: '{n} לידים מחכים',
+    sumLeadsOne: 'ליד אחד מחכה',
+    sumLate: '{n} תשלומים באיחור',
+    sumLateOne: 'תשלום אחד באיחור',
+    season: 'העונה',
+    seasonN: '{n} אירועים',
+    seasonOne: 'אירוע אחד',
+    noDate: 'בלי תאריך',
+    daysN: '{n} ימים',
+    leads: 'לידים',
+    leadsWeek: 'חדשים השבוע',
+    leadsMeeting: 'הגיעו לפגישה',
+    leadsHours: 'שעות עד מענה',
+    /* A figure that is not known yet, under five cards or three answers.
+       Words rather than a zero, because zero is a claim. */
+    unknown: 'עוד אין',
+    allLeads: 'ללוח הלידים',
   },
 
   profile: {
