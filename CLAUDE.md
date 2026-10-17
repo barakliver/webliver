@@ -385,6 +385,24 @@ that has happened once.
   `light` tones and five `night` tones moved two to four percent to clear
   the new plum grounds. The paragraph below is the history of the
   HoneyBook move.
+- **The pages are being rebuilt one group at a time, each chosen from two
+  drawn options (a or b) on a canvas before any code is written.** He asked
+  for every page of both the producer's side and the couple's, two options
+  per page, and chooses by letter. A five-minute reminder in the session
+  keeps the order; the groups are twelve and the first is the events list.
+  **Group 1, chosen: b.** The list of events is cards, two across on a wide
+  screen and one on a phone (`StatusBoard`), each with a ring that is a
+  year long, empty at a year away and full on the day, so two cards side by
+  side compare without reading the numbers (`.ring-arc`, drawn once, the
+  undrawn length passed in as `--to`); the name beside a pill that says
+  whether the couple bought the production or the evening; the date, place
+  and guest estimate; the gaps as outlined pills, red and amber by level;
+  the next task; and the attending figure over a bar that grows from where a
+  line starts (`.grow-x`). The years are still drawers with only the
+  nearest open, and the two kinds are still a subheading only when both are
+  in one year. The tabs are a pill track, the summary under the title writes
+  itself in. A grid column is `grid-cols-1` and the card `min-w-0`: a long
+  event name pushed a card past the edge of a phone until both were there.
 - **The screens are the plum design's screens, not only its colours.**
   He asked why the app did not look like the mockups, and the answer was
   that 3.1 had changed the skin and not the layout. So 3.2 rebuilt three:

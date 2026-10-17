@@ -691,6 +691,20 @@
   @media (prefers-reduced-motion: reduce) {
     .grow-x { animation: none; }
   }
+
+  /* The ring that fills toward the day: drawn once from empty to what the
+     card says is left undrawn, passed in as a custom property. */
+  .ring-arc {
+    stroke-dasharray: 176;
+    stroke-dashoffset: 176;
+    animation: ring-arc 1.4s cubic-bezier(.2,.9,.2,1) .2s forwards;
+  }
+  @keyframes ring-arc {
+    to { stroke-dashoffset: var(--to, 88); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ring-arc { animation: none; stroke-dashoffset: var(--to, 88); }
+  }
   /* And the third: an outline with almost no fill, for a group that needs an
      edge without becoming another panel in a column of panels. */
   .panel-outline {

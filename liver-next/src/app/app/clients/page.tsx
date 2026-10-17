@@ -32,16 +32,18 @@ export default async function ClientsPage({
         sub={
           archived
             ? undefined
-            : openGaps > 0
-              ? `${openGaps} ${openGaps === 1 ? 'פער פתוח' : 'פערים פתוחים'} על פני ${items.length} ${items.length === 1 ? 'אירוע' : 'אירועים'}`
-              : ui.clients.sub
+            : <span className="write-in block">{
+                openGaps > 0
+                  ? `${openGaps} ${openGaps === 1 ? 'פער פתוח' : 'פערים פתוחים'} על פני ${items.length} ${items.length === 1 ? 'אירוע' : 'אירועים'}`
+                  : ui.clients.sub
+              }</span>
         }
         report={<IssueReporter userId={account.id} context={ui.clients.title} />}
       />
 
       {/* Two lists, not a filter menu: live work and closed files are different
           questions, and one of them is asked far more often than the other. */}
-      <nav className="mb-6 inline-flex rounded-xl2 border border-line bg-surface-100 p-1 text-body" aria-label={ui.clients.title}>
+      <nav className="mb-6 inline-flex rounded-full bg-surface-200 p-1 text-body" aria-label={ui.clients.title}>
         {[
           { key: 'live', href: '/app/clients', label: c.tabLive, on: !archived },
           { key: 'done', href: '/app/clients?show=done', label: c.tabDone, on: archived },
@@ -54,8 +56,8 @@ export default async function ClientsPage({
             key={t.key}
             href={t.href}
             aria-current={t.on ? 'page' : undefined}
-            className={`min-h-[44px] rounded-xl2 px-4 leading-[44px] sm:min-h-[36px] sm:leading-[36px] transition ${
-              t.on ? 'bg-card font-medium text-ink' : 'text-ink-mute hover:text-ink'
+            className={`min-h-[44px] rounded-full px-5 leading-[44px] sm:min-h-[38px] sm:leading-[38px] transition ${
+              t.on ? 'bg-ink text-surface' : 'text-ink-soft hover:text-ink'
             }`}
           >
             {t.label}

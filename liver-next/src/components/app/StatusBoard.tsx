@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import type { Locale } from '@/lib/locale';
-import { ChevronLeft, ChevronDown, CalendarX2, Users, Wallet } from 'lucide-react';
+import { ChevronLeft, ChevronDown } from 'lucide-react';
 import { serverCopy } from '@/lib/serverLocale';
 import type { ClientStatus } from '@/lib/status';
 import { ArchiveButton } from '@/components/app/ArchiveButton';
@@ -12,46 +12,56 @@ import { EVENT_ZONE } from '@/lib/clock';
 const dateFmtFor = (l: Locale) => new Intl.DateTimeFormat(l === 'en' ? 'en-GB' : 'he-IL', { timeZone: EVENT_ZONE, day: 'numeric', month: 'short', year: 'numeric' });
 
 
-/** The number that answers "how soon".
+/** The number that answers "how soon", inside a ring that fills as the day
+ *  comes closer.
  *
- *  Deliberately the loudest thing on the row, because it is the one fact that
- *  reorders everything else: the same empty guest list is patience at eight
- *  months and a phone call at five weeks. */
+ *  Deliberately the loudest thing on the card, because it is the one fact
+ *  that reorders everything else: the same empty guest list is patience at
+ *  eight months and a phone call at five weeks. The ring is a year: empty at
+ *  a year away or more, full on the day, so two cards side by side can be
+ *  compared without reading either number. */
 async function Countdown({ days }: { days: number | null }) {
   const c = (await serverCopy()).statusBoard;
+  const box = 'relative grid size-[76px] shrink-0 place-items-center text-center';
   if (days === null) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-xl2 bg-surface-200 px-3 py-2 text-center">
-        <CalendarX2 size={18} className="text-ink-mute" aria-hidden strokeWidth={1.5} />
-        <span className="mt-1 text-micro leading-tight text-ink-mute">{c.noDate}</span>
+      <div className={box} role="img" aria-label={c.noDate}>
+        <span aria-hidden className="grid size-[76px] place-items-center rounded-full border border-dashed border-line-strong font-display text-figure font-light text-ink-mute">?</span>
       </div>
     );
   }
-  if (days < 0) {
-    return (
-      <div className="flex flex-col items-center justify-center rounded-xl2 bg-surface-200 px-3 py-2 text-center">
-        <span className="font-display text-lead font-normal leading-none text-ink-soft">{c.passed}</span>
-        <span className="mt-1 text-micro leading-tight text-ink-mute">
-          {Math.abs(days)} {c.daysAgo}
-        </span>
-      </div>
-    );
-  }
-
-  /* Under a fortnight the row is this week's work, so it gets the accent.
+  const passed = days < 0;
+  /* Under a fortnight the card is this week's work, so it gets the accent.
      Everything else stays quiet, or the board is all shouting and nothing
      stands out. */
-  const soon = days <= 14;
+  const soon = !passed && days <= 14;
+  const filled = passed ? 1 : 1 - Math.min(days, 365) / 365;
+  /* 176 is the circumference of the ring in its own units; the animation
+     draws the line from there down to what is left undrawn. */
+  const rest = Math.round(176 * (1 - filled));
   return (
-    /* The number of days is the first thing read on a row, so it is the
-       thing that is large. The filled tile it sat in was carrying the
-       urgency; the tone on the numeral carries it now, and the row keeps its
-       hairline instead of growing a box. */
-    <div className="text-center">
-      <span className={`block font-display text-metric-sm font-light tabular-nums ${
-        soon ? 'text-accent-bright' : 'text-ink'
-      }`}>{days}</span>
-      <span className="mt-0.5 block text-micro leading-tight text-ink-mute">{c.daysLeft}</span>
+    <div className={box}>
+      <svg aria-hidden width="76" height="76" viewBox="0 0 64 64" className="absolute inset-0 -rotate-90 rtl:rotate-90 rtl:-scale-x-100">
+        <circle cx="32" cy="32" r="28" fill="none" stroke="currentColor" strokeWidth="3" className="text-surface-200" />
+        <circle
+          cx="32" cy="32" r="28" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"
+          className={`ring-arc ${soon ? 'text-accent' : 'text-ink-mid'}`}
+          style={{ ['--to' as string]: rest }}
+        />
+      </svg>
+      <span className="relative leading-none">
+        {passed ? (
+          <>
+            <span className="block text-body text-ink-soft">{c.passed}</span>
+            <span className="mt-1 block text-micro text-ink-mute">{Math.abs(days)} {c.daysAgo}</span>
+          </>
+        ) : (
+          <>
+            <span className={`block font-display text-figure font-light tabular-nums ${soon ? 'text-accent' : 'text-ink'}`}>{days}</span>
+            <span className="mt-1 block text-micro text-ink-mute">{c.daysLeft}</span>
+          </>
+        )}
+      </span>
     </div>
   );
 }
@@ -59,10 +69,8 @@ async function Countdown({ days }: { days: number | null }) {
 function GapChip({ label, level }: { label: string; level: 'now' | 'soon' }) {
   return (
     <span
-      className={`inline-flex items-center rounded-xl2 px-2.5 py-1 text-meta font-medium ${
-        level === 'now'
-          ? 'bg-bad-wash text-bad'
-          : 'bg-warn-wash text-warn'
+      className={`inline-flex items-center rounded-full border px-3 py-1 text-meta ${
+        level === 'now' ? 'border-bad/50 text-bad' : 'border-warn/50 text-warn'
       }`}
     >
       {label}
@@ -70,16 +78,17 @@ function GapChip({ label, level }: { label: string; level: 'now' | 'soon' }) {
   );
 }
 
-/* The card is the link, not the title inside it. A row that only responds to a
-   three-word target is a row people miss on a phone, when every other pixel of
-   it looks equally clickable. The link is an overlay covering the card, the
+/* The card is the link, not the title inside it. A card that only responds to
+   a three-word target is a card people miss on a phone, when every other pixel
+   of it looks equally clickable. The link is an overlay covering the card, the
    content above it is inert, and the archive control is lifted back out so it
    stays its own button rather than a hole in the link. */
 async function Row({ s }: { s: ClientStatus }) {
   const locale = (await serverCopy()).locale;
   const c = (await serverCopy()).statusBoard;
+  const share = s.guests.invited > 0 ? Math.round((100 * s.guests.attending) / s.guests.invited) : 0;
   return (
-    <li className="card relative p-0 transition-colors focus-within:border-accent hover:border-accent">
+    <li className="card relative min-w-0 p-0 transition-colors focus-within:border-accent hover:border-accent">
       {/* Forward, which in Hebrew means the screen slides the way a Hebrew
           page turns. The sign lives in globals.css so neither this line nor
           any other has to know which side that is. */}
@@ -91,64 +100,72 @@ async function Row({ s }: { s: ClientStatus }) {
       >
         <span className="sr-only">{s.name}</span>
       </Link>
-      <div className="pointer-events-none relative flex items-stretch gap-4 p-4 sm:p-5">
-        <div className="w-[74px] shrink-0">
+      <div className="pointer-events-none relative p-5 sm:p-6">
+        <div className="flex items-start gap-4">
           <Countdown days={s.daysLeft} />
-        </div>
 
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-            <h3 className="head-panel inline-flex items-center gap-2">
-              {s.color && <span aria-hidden className="size-2.5 shrink-0 rounded-full" style={{ background: s.color }} />}
-              {s.name}
-            </h3>
-            <p className="text-body text-ink-mute">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-baseline justify-between gap-3">
+              <h3 className="head-panel inline-flex min-w-0 items-center gap-2">
+                {s.color && <span aria-hidden className="size-2.5 shrink-0 rounded-full" style={{ background: s.color }} />}
+                <span className="truncate">{s.name}</span>
+              </h3>
+              <span className="shrink-0 rounded-full bg-surface-200 px-3 py-0.5 text-micro text-ink-soft">
+                {s.service === 'management' ? c.serviceManagement : c.serviceProduction}
+              </span>
+            </div>
+            <p className="mt-1 text-body text-ink-mute">
               {formatDate(dateFmtFor(locale), s.eventDate, c.noDate)}
               {s.venue ? <> · <Name>{s.venue}</Name></> : ''}
+              {s.guestEstimate ? <> · <Ltr>{s.guestEstimate.toLocaleString('en-US')}</Ltr></> : ''}
             </p>
+
+            {s.gaps.length > 0 && (
+              <ul className="mt-3 flex list-none flex-wrap gap-1.5 p-0">
+                {s.gaps.map((g) => (
+                  <li key={g.code}><GapChip label={g.label} level={g.level} /></li>
+                ))}
+              </ul>
+            )}
           </div>
-
-          {s.gaps.length > 0 && (
-            <ul className="mt-2.5 flex flex-wrap gap-1.5">
-              {s.gaps.map((g) => (
-                <li key={g.code}><GapChip label={g.label} level={g.level} /></li>
-              ))}
-            </ul>
-          )}
-
-          <dl className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-body text-ink-soft">
-            {s.nextTask && (
-              <div className="flex min-w-0 items-center gap-1.5">
-                <dt className="text-ink-mute">{c.next}</dt>
-                <dd className="truncate">{s.nextTask.title}</dd>
-              </div>
-            )}
-            {s.guests.invited > 0 && (
-              <div className="flex items-center gap-1.5">
-                {/* The word was already printed after the figure; it is the
-                    term for it, so it is marked as one. A `dd` with no `dt`
-                    reads as a value nobody named. */}
-                <Users size={14} className="text-ink-mute" aria-hidden strokeWidth={1.5} />
-                <dt className="text-ink-mute">{c.attending}</dt>
-                <dd className="tabular-nums">
-                  <Ratio of={s.guests.attending} total={s.guests.invited} />
-                </dd>
-              </div>
-            )}
-            {s.money.owed > 0 && (
-              <div className="flex items-center gap-1.5">
-                <Wallet size={14} className="text-ink-mute" aria-hidden strokeWidth={1.5} />
-                <dt className="text-ink-mute">{c.owed}</dt>
-                <dd className={`tabular-nums ${s.money.overdue > 0 ? 'text-bad' : ''}`}>
-                  <Money value={s.money.owed} />
-                </dd>
-              </div>
-            )}
-          </dl>
         </div>
 
-        <div className="flex shrink-0 flex-col items-end justify-between gap-2">
-          <ChevronLeft size={18} aria-hidden strokeWidth={1.5} className="chev-onward mt-1.5 text-ink-mute" />
+        {s.nextTask && (
+          <p className="mt-4 flex min-w-0 items-baseline gap-1.5 text-body text-ink-soft">
+            <span className="shrink-0 text-ink-mute">{c.next}</span>
+            <span className="truncate">{s.nextTask.title}</span>
+          </p>
+        )}
+
+        {(s.guests.invited > 0 || s.money.owed > 0) && (
+          <div className="mt-4">
+            <dl className="flex flex-wrap items-baseline justify-between gap-x-5 gap-y-1 text-meta text-ink-mute">
+              {s.guests.invited > 0 && (
+                <div className="flex items-baseline gap-1.5">
+                  {/* The word was already printed after the figure; it is the
+                      term for it, so it is marked as one. A `dd` with no `dt`
+                      reads as a value nobody named. */}
+                  <dt>{c.attending}</dt>
+                  <dd className="tabular-nums text-ink-soft"><Ratio of={s.guests.attending} total={s.guests.invited} /></dd>
+                </div>
+              )}
+              {s.money.owed > 0 && (
+                <div className="flex items-baseline gap-1.5">
+                  <dt>{c.owed}</dt>
+                  <dd className={`tabular-nums ${s.money.overdue > 0 ? 'text-bad' : 'text-ink-soft'}`}><Money value={s.money.owed} /></dd>
+                </div>
+              )}
+            </dl>
+            {s.guests.invited > 0 && (
+              <span aria-hidden className="mt-2 block h-1.5 overflow-hidden rounded-full bg-surface-200">
+                <span className="grow-x block h-full rounded-full bg-accent" style={{ width: `${share}%`, animationDelay: '.5s' }} />
+              </span>
+            )}
+          </div>
+        )}
+
+        <div className="mt-4 flex items-center justify-between gap-3">
+          <ChevronLeft size={18} aria-hidden strokeWidth={1.5} className="chev-onward text-ink-mute" />
           <div className="pointer-events-auto relative z-10">
             <ArchiveButton clientId={s.id} archived={!!s.archivedAt} highlight={s.needsClosing} />
           </div>
@@ -157,6 +174,9 @@ async function Row({ s }: { s: ClientStatus }) {
     </li>
   );
 }
+
+/* Two cards across where there is room for two, one on a phone. */
+const GRID = 'grid list-none grid-cols-1 gap-4 p-0 lg:grid-cols-2';
 
 export async function StatusBoard({ items }: { items: ClientStatus[] }) {
   const c = (await serverCopy()).statusBoard;
@@ -184,7 +204,7 @@ export async function StatusBoard({ items }: { items: ClientStatus[] }) {
   const flat = groups.length <= 1 && (groups[0]?.services.length ?? 0) <= 1;
   if (flat) {
     return (
-      <ul className="list-none space-y-3.5 p-0">
+      <ul className={GRID}>
         {sorted.map((s) => <Row key={s.id} s={s} />)}
       </ul>
     );
@@ -232,7 +252,7 @@ export async function StatusBoard({ items }: { items: ClientStatus[] }) {
                     {' · '}{sv.rows.length}
                   </h3>
                 )}
-                <ul className="list-none space-y-3.5 p-0">
+                <ul className={GRID}>
                   {sv.rows.map((s) => <Row key={s.id} s={s} />)}
                 </ul>
               </div>
