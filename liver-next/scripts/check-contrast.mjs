@@ -50,29 +50,31 @@ const ratio = (a, b) => {
    compared on every run and the build fails naming the token, the value here
    and the value in the stylesheet. */
 const c = {
-  ink: '#1C1A17', inkSoft: '#6B665E', inkMid: '#87827A',
-  inkMute: '#645F57',              /* solved against the step up */
-  surface: '#FAF8F4', surface100: '#FFFFFF', surface200: '#F2EFE9',
+  /* HoneyBook's own, out of their stylesheet: black #142127, the grey ramp
+     under it, white, and honey. */
+  ink: '#142127', inkSoft: '#63696C', inkMid: '#7D8488',
+  inkMute: '#5E6467',              /* solved against the step up */
+  surface: '#FFFFFF', surface100: '#FFFFFF', surface200: '#F3F5F6',
   card: '#FFFFFF',
-  dark: '#1C1A17',
-  line: '#E6E1D8', lineStrong: '#CFC8BC',
-  lineControl: '#857F76',
+  dark: '#142127',
+  line: '#E0E5E7', lineStrong: '#B0B8BC',
+  lineControl: '#7D8488',
   /* The focus ring, which is not the accent and is measured as a control
      boundary: a ring nobody can find is the accessibility failure this
      token exists to prevent. */
-  focus: '#16223A',
-  accent: '#7A5D33',               /* the primary action, safe as words */
-  accentHover: '#65492A',
-  accentBright: '#A07D4A',         /* large numerals only, 3:1 bar   */
-  accentLine: '#C9A86C',           /* words on the dark ground       */
-  accentLight: '#DCC59A',
+  focus: '#1E5BD6',
+  accent: '#142127',               /* the primary action, safe as words: the ink */
+  accentHover: '#343C40',
+  accentBright: '#343C40',         /* large numerals only, 3:1 bar   */
+  accentLine: '#FFFA56',           /* honey, as words on the dark ground only */
+  accentLight: '#FFDA00',          /* manuka, on the dark ground only */
   /* The accent at 8% over the canvas, which is what --accent-wash ships.
      Filled in below from the two tones it is made of rather than written,
      so the one blended token cannot drift from its own ingredients. */
   accentWash: '',
-  ok: '#3F6A4A', okWash: '#E8F0EA',
-  warn: '#7F5A1B', warnWash: '#F6EEDC',
-  bad: '#9B4A3C', badWash: '#F5E6E2',
+  ok: '#027A48', okWash: '#ECFDF3',
+  warn: '#B54708', warnWash: '#FFFAEB',
+  bad: '#B42318', badWash: '#FEF3F2',
   white: '#FFFFFF',
 };
 
@@ -308,23 +310,25 @@ line('an inverted control edge',         over2(c.surface, 0.45, c.dark),  c.dark
    the dark one becomes the step up, so what is written on it is ordinary
    ink rather than the inverted kind. */
 const d = {
-  ink: '#EDE8E0', inkSoft: '#A8A298', inkMid: '#7F7A71', inkMute: '#B0AAA0',
-  surface: '#161411', surface100: '#1F1C18', surface200: '#2A2621',
-  card: '#1F1C18',
+  /* HoneyBook's black band as a whole screen: #142127 under white. */
+  ink: '#F3F5F6', inkSoft: '#B0B8BC', inkMid: '#8A9296', inkMute: '#B8C0C4',
+  surface: '#142127', surface100: '#1C2B32', surface200: '#25353C',
+  card: '#1C2B32',
   /* The band, which in this palette is the step up. */
-  dark: '#2A2621',
-  line: '#2C2823', lineStrong: '#3C372F', lineControl: '#7A736A',
-  focus: '#EAE1D0',
-  /* The accent's night tone, promoted to the main one. */
-  accent: '#C9A86C',
-  accentLine: '#C9A86C',
-  /* 8% of that pale tone over the canvas, which is what --accent-wash
+  dark: '#25353C',
+  line: '#25353C', lineStrong: '#34464E', lineControl: '#7A868C',
+  focus: '#8AB4F8',
+  /* The accent's night tone, promoted to the main one: honey, with the
+     ink as its label. */
+  accent: '#FFFA56',
+  accentLine: '#FFFA56',
+  /* 8% of honey over the canvas, which is what --accent-wash
      resolves to once --accent-rgb has moved. */
-  accentWash: '#241F18',
-  ok: '#7FA98A', okWash: '#1E2A21',
-  warn: '#D1A24F', warnWash: '#2E2616',
-  bad: '#D07A6A', badWash: '#2E1C19',
-  sage: '#2E2C24', blush: '#322A2A',
+  accentWash: '#27322B',
+  ok: '#75E0A7', okWash: '#10281C',
+  warn: '#FEC84B', warnWash: '#2E2110',
+  bad: '#FDA29B', badWash: '#2E1614',
+  sage: '#2A3A41', blush: '#2E2A33',
 };
 
 console.log('\n  כהה');

@@ -71,7 +71,7 @@ export function BrandEditor({ fields, rootDomain }: { fields: BrandFields; rootD
         <div className="text-meta font-medium text-ink-mute">{c.preview}</div>
         <div className="mt-3 rounded-card-sm border border-line bg-surface p-4">
           <div className="flex items-center justify-between gap-3 border-b border-line pb-3">
-            <span className="font-display text-head font-medium text-ink">
+            <span className="font-display text-head font-normal text-ink">
               {name || c.namePh}
             </span>
             <span className="chip" style={{ borderColor: chosen.line, color: chosen.base }}>

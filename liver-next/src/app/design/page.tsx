@@ -276,7 +276,7 @@ export default async function DesignPage() {
     <CopyProvider value={ui}>
       <main id="main" className="shell py-10">
         <p className="eyebrow">design harness</p>
-        <h1 className="mt-3 font-display text-display font-medium text-ink">
+        <h1 className="mt-3 font-display text-display font-normal text-ink">
           {locale === 'en' ? 'Every panel, no database' : 'כל הפאנלים, בלי מסד נתונים'}
         </h1>
         <p className="measure mt-3 text-body text-ink-soft">

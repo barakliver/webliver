@@ -56,7 +56,7 @@ export function NextAction({ action, then, ui, moneyOn }: {
           three lines on the screen this is most often read on. */}
       <div className="mt-3 flex flex-col items-start gap-4 sm:flex-row sm:justify-between sm:gap-x-6">
         <div className="min-w-0 flex-1">
-          <h2 className="flex items-start gap-2.5 font-display text-panel font-medium leading-snug text-ink sm:text-figure">
+          <h2 className="flex items-start gap-2.5 font-display text-panel font-normal leading-snug text-ink sm:text-figure">
             {done && <Check size={22} aria-hidden strokeWidth={1.5} className="mt-1 shrink-0 text-ok" />}
             <span className="min-w-0">{head}</span>
           </h2>

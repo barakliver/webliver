@@ -43,7 +43,7 @@ export function VehiclesPanel({ c, clientId, items }: {
         </div>
         {seats > 0 && (
           <p className="text-body text-ink-mute">
-            <span className="font-display text-panel font-medium text-ink"><Ltr>{seats}</Ltr></span>
+            <span className="font-display text-panel font-normal text-ink"><Ltr>{seats}</Ltr></span>
             {' '}{c.seatsTotal}
           </p>
         )}

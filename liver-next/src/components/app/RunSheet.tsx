@@ -85,7 +85,7 @@ export async function RunSheet({
     <div className="print-doc">
       <header className="print-block border-b-2 border-ink pb-4">
         <p className="text-meta uppercase tracking-[0.14em] text-ink-soft">{brand.name}</p>
-        <h1 className="mt-1.5 font-display text-figure font-medium text-ink">{client.display_name}</h1>
+        <h1 className="mt-1.5 font-display text-figure font-normal text-ink">{client.display_name}</h1>
         <p className="mt-1.5 text-lead text-ink-soft">
           {dateLabel || c.noDate}
           {client.venue ? ` · ${client.venue}` : ''}
@@ -120,7 +120,7 @@ export async function RunSheet({
                 {/* Left to right inside a right-to-left page, because a clock
                     reads that way in every language. */}
                 <span className="w-[86px] shrink-0 text-center" dir="ltr">
-                  <span className="block font-display text-panel font-medium leading-none tabular-nums text-ink">
+                  <span className="block font-display text-panel font-normal leading-none tabular-nums text-ink">
                     {hhmm(i.at_time)}
                   </span>
                   {/* Two corrections to one small line. It is kept on a single

@@ -72,7 +72,7 @@ export default async function GuestSitePage({ params }: { params: Promise<{ toke
     return (
       <main id="main" className="flex min-h-dvh items-center justify-center px-5 py-14">
         <div className="card w-full max-w-md text-center">
-          <h1 className="font-display text-title font-medium text-ink">{c.gone}</h1>
+          <h1 className="font-display text-title font-normal text-ink">{c.gone}</h1>
           <p className="mt-3 text-lead leading-relaxed text-ink-soft">{c.goneBody}</p>
         </div>
       </main>

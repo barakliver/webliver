@@ -45,7 +45,7 @@ export function GuideBookView({ book, c }: { book: Book; c: GuideUi }) {
         <ol className="mt-5 grid list-none gap-x-8 gap-y-4 p-0 sm:grid-cols-2 lg:grid-cols-3">
           {book.start.steps.map((step, i) => (
             <li key={step.title} className="flex items-baseline gap-3.5">
-              <span aria-hidden className="font-display text-[34px] font-medium leading-none text-accent-bright">
+              <span aria-hidden className="font-display text-[34px] font-normal leading-none text-accent-bright">
                 {i + 1}
               </span>
               <span className="min-w-0">

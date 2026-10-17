@@ -116,11 +116,11 @@ export default async function OverviewPage() {
                 <CalendarHeart size={16} strokeWidth={1.5} aria-hidden />
                 <span className="eyebrow">{c.nextEvent}</span>
               </div>
-              <p className="mt-3 font-display text-figure font-medium leading-tight text-ink">
+              <p className="mt-3 font-display text-figure font-normal leading-tight text-ink">
                 {next.name}
               </p>
               <p className="mt-1 text-body text-ink-soft">{next.date}</p>
-              <p className="mt-4 font-display text-[32px] font-medium leading-none text-ink">
+              <p className="mt-4 font-display text-[32px] font-normal leading-none text-ink">
                 {next.days === 0 ? c.inDays.today : next.days === 1 ? c.inDays.tomorrow : fill(c.inDays.later, { n: next.days })}
               </p>
             </Link>

@@ -280,7 +280,7 @@ export function NotePad({ clientId, eventName, note, takeFocus = true }: {
           placeholder={c.titlePh}
           aria-label={c.title}
           maxLength={200}
-          className="mt-5 w-full border-0 bg-transparent p-0 font-display text-panel font-medium text-ink placeholder:text-ink-mute/70 focus:outline-none sm:text-figure"
+          className="mt-5 w-full border-0 bg-transparent p-0 font-display text-panel font-normal text-ink placeholder:text-ink-mute/70 focus:outline-none sm:text-figure"
         />
 
         <hr className="hairline mt-4" />

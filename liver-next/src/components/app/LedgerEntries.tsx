@@ -45,9 +45,9 @@ export function LedgerEntries({ entries, showEvent = true, events = [] }: {
       ) : (
         <>
           <div className="mt-5 grid gap-x-8 gap-y-4 sm:grid-cols-3">
-            <div><p className="eyebrow">{c.totalIn}</p><p className="mt-1 font-display text-panel font-medium text-ok"><Money value={income} /></p></div>
-            <div><p className="eyebrow">{c.totalOut}</p><p className="mt-1 font-display text-panel font-medium text-bad"><Money value={expense} /></p></div>
-            <div><p className="eyebrow">{c.net}</p><p className={`mt-1 font-display text-panel font-medium ${income - expense < 0 ? 'text-bad' : 'text-ink'}`}><Money value={income - expense} /></p></div>
+            <div><p className="eyebrow">{c.totalIn}</p><p className="mt-1 font-display text-panel font-normal text-ok"><Money value={income} /></p></div>
+            <div><p className="eyebrow">{c.totalOut}</p><p className="mt-1 font-display text-panel font-normal text-bad"><Money value={expense} /></p></div>
+            <div><p className="eyebrow">{c.net}</p><p className={`mt-1 font-display text-panel font-normal ${income - expense < 0 ? 'text-bad' : 'text-ink'}`}><Money value={income - expense} /></p></div>
           </div>
           {/* A year of entries is hundreds of rows, and this panel is also
               drawn whole on the insights screen where it is every event at

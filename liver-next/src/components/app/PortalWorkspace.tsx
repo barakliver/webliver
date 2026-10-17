@@ -508,7 +508,7 @@ export function PortalWorkspace({
           className="mt-8 block rounded-panel bg-dark px-6 py-7 text-surface transition hover:bg-dark/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
         >
           <span aria-hidden className="text-2xl text-coral">&#9829;</span>
-          <span className="mt-2 block font-display text-panel font-medium">{ui.portal.gameCta}</span>
+          <span className="mt-2 block font-display text-panel font-normal">{ui.portal.gameCta}</span>
           <span className="mt-1.5 block max-w-md text-body leading-relaxed text-surface/70">
             {ui.portal.gameSub}
           </span>

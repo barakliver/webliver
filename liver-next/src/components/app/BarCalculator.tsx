@@ -55,7 +55,7 @@ function Number_({ label, hint, value, onChange, min, max, step = 1, suffix }: {
         />
         {/* dir="ltr", because "10%" in an rtl run renders as "% 10". The
             number and its unit are one token and read left to right. */}
-        <span dir="ltr" className="w-[74px] shrink-0 text-left font-display text-head font-medium tabular-nums text-ink">
+        <span dir="ltr" className="w-[74px] shrink-0 text-left font-display text-head font-normal tabular-nums text-ink">
           {value}{suffix ? ` ${suffix}` : ''}
         </span>
       </div>
@@ -148,7 +148,7 @@ export function BarCalculator({ guestEstimate, confirmedGuests }: {
           {lines.map((l) => (
             <li key={l.key} className="flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b border-line py-2.5 last:border-0">
               <span className="min-w-0 flex-1 text-lead text-ink">{c.items[l.key]}</span>
-              <span className="font-display text-head font-medium tabular-nums text-ink">
+              <span className="font-display text-head font-normal tabular-nums text-ink">
                 {l.key === 'beer' && beerPacks ? plan.beerSixPacks : l.qty}{' '}
                 <span className="text-body font-normal text-ink-mute">
                   {l.key === 'beer' && beerPacks ? c.beerAsPacks : c.units[l.key]}

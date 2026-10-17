@@ -111,7 +111,7 @@ function Row({ label, version, value }: { label: string; version?: string | null
       <dd className="m-0 text-end sm:text-start">
         {version ? (
           <>
-            <span className="block font-display text-lead font-medium text-ink">
+            <span className="block font-display text-lead font-normal text-ink">
               {fill(c.version, { v: version })}
             </span>
             <span className="block font-mono text-meta text-ink-mute"><Ltr>{value}</Ltr></span>

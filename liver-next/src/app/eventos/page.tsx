@@ -109,7 +109,7 @@ export default async function EventOsPage() {
           <ol className="grid list-none gap-6 p-0 sm:grid-cols-3">
             {c.start.map((step, i) => (
               <li key={step.title}>
-                <span aria-hidden className="font-display text-figure font-medium leading-none text-accent-bright">
+                <span aria-hidden className="font-display text-figure font-normal leading-none text-accent-bright">
                   {i + 1}
                 </span>
                 <h3 className="mt-2 head-sub">{step.title}</h3>

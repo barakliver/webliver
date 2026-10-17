@@ -142,7 +142,7 @@ export function ProductionBook(props: BookProps) {
       {/* ── cover ─────────────────────────────────────────────────────────── */}
       <header className="print-block border-b-2 border-ink pb-5">
         <p className="text-meta uppercase tracking-[0.14em] text-ink-soft">{brand.name}</p>
-        <h1 className="mt-2 font-display text-[30px] font-medium leading-tight">{client.display_name}</h1>
+        <h1 className="mt-2 font-display text-[30px] font-normal leading-tight">{client.display_name}</h1>
         <p className="mt-1.5 text-lead text-ink-soft">
           {date || c.noDate}
           {client.venue ? ` · ${client.venue}` : ''}

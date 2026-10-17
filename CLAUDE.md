@@ -356,9 +356,37 @@ that has happened once.
   impression of one. A test walks every id to its file and back and asserts
   the three undealt ones are undealt, so a card without a picture fails the
   build rather than drawing a broken image inside his frame.
-- **The ground is a warm cream, #FAF8F4, everywhere, the ink is a warm
-  near-black, #1C1A17, and the one accent is a deep bronze, #7A5D33.** That
-  is the quiet-luxury brief, in his words: a lot of room, one good face, one
+- **The palette is HoneyBook's, exactly, read out of their own stylesheet
+  rather than guessed from a screenshot.** He asked for it in one sentence
+  and his latest instruction wins. White ground, #FFFFFF, with the card
+  white on a hairline #E0E5E7 at a 20px corner and the step up #F3F5F6;
+  the ink is their near-black #142127 and so is the accent, because their
+  one action on a screen is a black pill with a regular-weight label and
+  their links are black words underlined. Secondary text #63696C, the
+  control edge #7D8488 (theirs is #B0B8BC at 2.0:1 and the 3:1 rule
+  outranks it). The brand's one colour is honey, #FFFA56, and it is never
+  words and never a ground under words on the light palette: it is
+  `--accent-line`, so it is the line under the selected tab and the rule
+  under a section (`.rule-gold` is 3px of it, the marker they draw under a
+  word), and on the dark band it is the words, at 14.9:1. Statuses are the
+  Untitled UI pairs they use, #027A48 on #ECFDF3, #B54708 on #FFFAEB and
+  #B42318 on #FEF3F2; `sage` and `blush` carry their mist and oat. Buttons
+  are pills (`rounded-button` is 9999px), controls 10px, a surface inside a
+  card 12px. Headings are the sans at regular weight and the hierarchy is
+  size, so `--font-display` is Heebo again and every `font-display` site
+  went from 500 to 400 in one pass; `head-sub`, the small one inside a
+  card, keeps 500 because at 17px over a 14px body a regular heading is a
+  line of body. Frank Ruhl Libre is reachable only as `font-serif`, for
+  the one accent word, which is how their serif is used too. The focus
+  ring is a blue, #1E5BD6, because a ring in the ink looks like the button
+  it is drawn beside. They have no dark palette, so ours is their black
+  band as a whole screen: #142127 under #F3F5F6, the card #1C2B32, the
+  step up #25353C, and the action is honey with the ink on it. Five
+  producer `night` tones moved two to three percent for the lighter step
+  up. The paragraph below is the history of the quiet-luxury move.
+- **The ground was a warm cream, #FAF8F4, everywhere, the ink was a warm
+  near-black, #1C1A17, and the one accent was a deep bronze, #7A5D33.** That
+  was the quiet-luxury brief, in his words: a lot of room, one good face, one
   quiet colour, no noise; hotel, not bank. The card is white on a hairline
   #E6E1D8 and carries no shadow (`shadow-lift` is still a name and draws
   nothing); the step up is #F2EFE9; the statuses are a muted green #3F6A4A,
@@ -404,8 +432,10 @@ that has happened once.
   deliberately, and can no longer do it once and walk away. Three producer
   `light` tones moved by one and two percent when the real dark ground came
   into view for the first time.
-- **Two faces now, by the same brief: Heebo for everything operated and
-  Frank Ruhl Libre, at 300 and 400, for display alone.** The page title,
+- **Two faces were kept for a release: Heebo for everything operated and
+  Frank Ruhl Libre, at 300 and 400, for display alone.** Display is Heebo
+  again under the HoneyBook entry above; the serif stays loaded for
+  `font-serif`. The rest of this entry is the history of that round. The page title,
   the couple's greeting and the one big number on a summary; never a panel
   title, never a table, never bolder than regular. `--font-display` and
   `--font-editorial` resolve to it, `.app-type` no longer overrides it, and

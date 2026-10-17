@@ -263,7 +263,7 @@ function PersonRow({ person }: { person: CrewPerson }) {
                      [&::-webkit-details-marker]:hidden"
         >
           <span className="min-w-0 flex-1">
-            <span className="block font-display text-head font-medium text-ink">{person.name}</span>
+            <span className="block font-display text-head font-normal text-ink">{person.name}</span>
             <span className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1.5">
               <RoleBadges roles={person.roles} />
               {/* The clash, on the person rather than only in the list above:
@@ -408,7 +408,7 @@ export function CrewDesk({ people }: { people: CrewPerson[] }) {
             className="flex cursor-pointer list-none items-center gap-3 py-1
                        [&::-webkit-details-marker]:hidden"
           >
-            <span className="font-display text-head font-medium text-ink">{c.deskPeople}</span>
+            <span className="font-display text-head font-normal text-ink">{c.deskPeople}</span>
             <span className="text-body text-ink-mute"><Ltr>{String(shown.length)}</Ltr></span>
             <ChevronDown
               size={17} strokeWidth={1.5} aria-hidden
@@ -427,7 +427,7 @@ export function CrewDesk({ people }: { people: CrewPerson[] }) {
             className="flex cursor-pointer list-none items-center gap-3 py-1
                        [&::-webkit-details-marker]:hidden"
           >
-            <span className="font-display text-head font-medium text-ink">{c.deskArchivedTitle}</span>
+            <span className="font-display text-head font-normal text-ink">{c.deskArchivedTitle}</span>
             <span className="text-body text-ink-mute">{archived.length}</span>
             <ChevronDown
               size={18} strokeWidth={1.5} aria-hidden

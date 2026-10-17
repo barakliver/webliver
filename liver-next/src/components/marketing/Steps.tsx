@@ -19,7 +19,7 @@ const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
 export function Steps({ site }: { site: SiteCopy }) {
   return (
     <section id="journey" className="section shell">
-      <h2 className="font-display text-display font-medium text-editorial">{site.journey.title}</h2>
+      <h2 className="font-display text-display font-normal text-editorial">{site.journey.title}</h2>
 
       <ol className="mt-10 list-none p-0">
         {site.journey.steps.map((step, i) => (
@@ -36,7 +36,7 @@ export function Steps({ site }: { site: SiteCopy }) {
                  by the accessibility audit, which is not part of `npm run
                  check` because it needs a server, which is most of why it sat
                  here. */
-              className="w-8 shrink-0 font-display text-subhead font-medium tracking-[.06em] text-accent sm:w-12 sm:text-panel"
+              className="w-8 shrink-0 font-display text-subhead font-normal tracking-[.06em] text-accent sm:w-12 sm:text-panel"
             >
               {ROMAN[i] ?? i + 1}
             </span>

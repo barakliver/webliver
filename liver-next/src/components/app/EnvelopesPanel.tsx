@@ -41,7 +41,7 @@ export function EnvelopesPanel({ c, clientId, items }: {
         </div>
         {items.length > 0 && (
           <p className="text-body text-ink-mute">
-            <span className="font-display text-panel font-medium text-ink"><Money value={total} /></span>
+            <span className="font-display text-panel font-normal text-ink"><Money value={total} /></span>
             {' · '}{c.handed.replace('{n}', String(handed)).replace('{of}', String(items.length))}
           </p>
         )}
@@ -150,7 +150,7 @@ function Row({ c, clientId, e }: { c: EnvelopesCopy; clientId: string; e: Envelo
         </p>
       </div>
 
-      <span className="font-display text-head font-medium tabular-nums text-ink">
+      <span className="font-display text-head font-normal tabular-nums text-ink">
         {e.amount === null ? '·' : <Money value={e.amount} />}
       </span>
 

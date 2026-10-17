@@ -64,7 +64,7 @@ export default async function InstallPage() {
           {host.isPlatform ? site.brand : host.name}
         </Link>
 
-        <h1 className="mt-5 font-display text-title font-medium text-ink">{c.title}</h1>
+        <h1 className="mt-5 font-display text-title font-normal text-ink">{c.title}</h1>
         <p className="mt-2 text-lead leading-relaxed text-ink-soft">{c.sub}</p>
 
         <ul className="mt-5 space-y-1.5 text-body text-ink-soft">

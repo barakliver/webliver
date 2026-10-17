@@ -155,7 +155,7 @@ function Headline({ label, placed, fallback, tone }: {
       <div className="text-meta font-medium text-ink-mute">{label}</div>
       {placed ? (
         <>
-          <div className="mt-1 font-display text-panel font-medium leading-tight text-ink">
+          <div className="mt-1 font-display text-panel font-normal leading-tight text-ink">
             {placed.line.title}
           </div>
           <div className="mt-1 text-body text-ink-soft">
@@ -385,7 +385,7 @@ function Countdown({ placed, onDismiss }: { placed: Placed; onDismiss: () => voi
           <div className="text-meta font-medium text-warn">
             {mins === 0 ? c.alert.inMinutes.now : mins === 1 ? c.alert.inMinutes.one : fill(c.alert.inMinutes.many, { n: mins })}
           </div>
-          <div className="mt-0.5 font-display text-panel font-medium leading-tight text-ink">
+          <div className="mt-0.5 font-display text-panel font-normal leading-tight text-ink">
             {placed.line.title}
           </div>
           <div className="mt-0.5 text-body text-ink-soft tabular-nums">{hhmm(placed.line.at_time)}</div>

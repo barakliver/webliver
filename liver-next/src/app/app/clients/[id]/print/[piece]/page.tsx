@@ -76,7 +76,7 @@ export default async function PrintPiecePage({ params }: { params: Promise<{ id:
         <PrintButton label={c.printPage.print} />
       </div>
       <div className="no-print mb-6 max-w-2xl">
-        <h1 className="font-display text-figure font-medium text-ink">{c.pieces.names[p.key]}</h1>
+        <h1 className="font-display text-figure font-normal text-ink">{c.pieces.names[p.key]}</h1>
         <p className="mt-1 text-body leading-relaxed text-ink-soft">{c.printPage.note}</p>
         {p.pages === 'tables' && <p className="mt-1 text-body text-ink-mute">{c.printPage.tables}: {pages.length}</p>}
       </div>

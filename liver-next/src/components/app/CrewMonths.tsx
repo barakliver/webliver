@@ -177,7 +177,7 @@ export function CrewMonths({ months }: { months: MonthRow[] }) {
                        [&::-webkit-details-marker]:hidden"
           >
             <span className="flex items-baseline gap-3">
-              <span className="font-display text-head font-medium text-ink">
+              <span className="font-display text-head font-normal text-ink">
                 {monthFmt.format(new Date(`${m.month}-01T12:00:00Z`))}
               </span>
               <ChevronDown

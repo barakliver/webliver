@@ -246,7 +246,7 @@ function Door({ names, producer, onPick, onRules }: {
     <div className="flex min-h-[100svh] flex-col justify-center bg-dark px-6 py-12 text-surface">
       <div className="mx-auto w-full max-w-md">
         <p className="text-micro uppercase tracking-[.22em] text-accent-light">{game.kicker}</p>
-        <h1 className="mt-3 font-display text-3xl font-medium leading-tight">{game.title}</h1>
+        <h1 className="mt-3 font-display text-3xl font-normal leading-tight">{game.title}</h1>
         <p className="mt-3 text-lead leading-relaxed text-surface/70">{game.intro}</p>
 
         <p className="mt-9 text-body font-medium tracking-wide text-surface/55">{game.who}</p>
@@ -283,7 +283,7 @@ function Rules({ onBack }: { onBack: () => void }) {
   return (
     <div className="min-h-[100svh] bg-dark px-6 py-12 text-surface">
       <div className="mx-auto w-full max-w-md">
-        <h1 className="font-display text-3xl font-medium">{game.rulesTitle}</h1>
+        <h1 className="font-display text-3xl font-normal">{game.rulesTitle}</h1>
         {/* His own instruction card, card 102, rather than a paragraph saying
             the same thing worse. It carries the whole of how the game is
             played, in his handwriting and his frame, so the sections under it
@@ -375,7 +375,7 @@ function Flip({ card, open, onOpen }: {
 function Finished({ onRestart }: { onRestart: () => void }) {
   return (
     <div className="mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center text-center">
-      <h2 className="font-display text-3xl font-medium">{game.done}</h2>
+      <h2 className="font-display text-3xl font-normal">{game.done}</h2>
       <p className="mt-3 text-lead leading-relaxed text-surface/70">{game.doneBody}</p>
       {/* His contact card, card 103, which in the printed box is the one at the
           bottom of the pile. Here rather than in the deck for the same reason:
@@ -535,7 +535,7 @@ function Notebook({ deck, notes, onBack, onGo }: {
   return (
     <div className="min-h-[100svh] bg-dark px-6 py-12 text-surface">
       <div className="mx-auto w-full max-w-md">
-        <h1 className="font-display text-3xl font-medium">{game.notebook}</h1>
+        <h1 className="font-display text-3xl font-normal">{game.notebook}</h1>
         <p className="mt-2 text-body text-surface/55">{game.notebookMine}</p>
 
         {written.length === 0 ? (

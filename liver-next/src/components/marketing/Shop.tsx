@@ -79,7 +79,7 @@ export function Shop({ producerId, items, copy: c }: {
   if (done !== null) {
     return (
       <div className="card mx-auto max-w-xl text-center">
-        <h2 className="font-display text-figure font-medium text-ink">{c.thanksTitle}</h2>
+        <h2 className="font-display text-figure font-normal text-ink">{c.thanksTitle}</h2>
         <p className="mt-3 text-lead text-ink-soft">{c.thanks}</p>
         <p className="mt-2 font-display text-figure text-accent"><Ltr>{done}</Ltr></p>
         <button type="button" onClick={() => setDone(null)} className="btn-quiet mt-5 text-body">

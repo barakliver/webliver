@@ -76,7 +76,7 @@ export function CodeInput({ name, label, length }: {
           aria-label={label}
           value={plain}
           onChange={(e) => setPlain(e.target.value.replace(/\D/g, '').slice(0, 12))}
-          className="field mt-1.5 w-full text-center font-display text-figure font-medium tracking-[0.4em] tabular-nums"
+          className="field mt-1.5 w-full text-center font-display text-figure font-normal tracking-[0.4em] tabular-nums"
         />
       ) : (
         /* Left to right inside a right-to-left page, because a number reads
@@ -103,7 +103,7 @@ export function CodeInput({ name, label, length }: {
                    rather than a line — which is what it had been drawing since
                    this stopped being a box and nobody had looked at it. */
                 'border-0 border-b bg-transparent p-0 text-center tabular-nums',
-                'font-display font-medium text-ink outline-none',
+                'font-display font-normal text-ink outline-none',
                 'transition-colors duration-touch ease-out',
                 d ? 'border-b-2 border-accent-line' : 'border-b border-line-strong',
                 'focus:border-b-2 focus:border-accent',

@@ -28,7 +28,7 @@ export function LeadForm({ compact = false, site, kinds }: {
     return (
       <div className="card text-center" role="status">
         <div aria-hidden className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-accent-wash text-panel">✓</div>
-        <h3 className="mt-4 font-display text-title font-medium text-ink">{site.lead.okTitle}</h3>
+        <h3 className="mt-4 font-display text-title font-normal text-ink">{site.lead.okTitle}</h3>
         <p className="mt-2 text-head text-ink-soft">{site.lead.okBody}</p>
       </div>
     );

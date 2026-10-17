@@ -25,7 +25,7 @@ export function DarkBand({
         className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2 animate-shimmer rounded-full"
         style={{
           background:
-            'radial-gradient(circle, rgba(176,141,87,.22) 0%, rgba(176,141,87,.06) 45%, transparent 70%)',
+            'radial-gradient(circle, rgba(255,250,86,.18) 0%, rgba(255,250,86,.05) 45%, transparent 70%)',
         }}
       />
 
@@ -33,7 +33,7 @@ export function DarkBand({
         {kicker && (
           <p className="text-micro font-medium tracking-[.14em] text-accent-light">{kicker}</p>
         )}
-        <h2 className="mx-auto mt-4 max-w-[20ch] font-display text-display font-medium text-surface">
+        <h2 className="mx-auto mt-4 max-w-[20ch] font-display text-display font-normal text-surface">
           {title}
         </h2>
         {body && (

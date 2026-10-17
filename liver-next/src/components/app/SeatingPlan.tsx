@@ -128,7 +128,7 @@ function Table({ table, seated, taken, dim, active, onOpen, drop }: {
           <Chair key={i} i={i} of={table.seats} taken={i < taken} name={occupant[i] ?? c.seatFree} />
         ))}
         <span className="pointer-events-none flex flex-col items-center gap-0.5 px-4 text-center">
-          <span className="font-display text-lead font-medium leading-tight text-ink">{table.name}</span>
+          <span className="font-display text-lead font-normal leading-tight text-ink">{table.name}</span>
           <span className="text-meta tabular-nums text-ink-mute">
             <Ratio of={taken} total={table.seats} />
           </span>

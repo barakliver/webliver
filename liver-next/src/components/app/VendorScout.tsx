@@ -160,7 +160,7 @@ export function VendorScout({ vendors, events, signAs, demo }: {
                       {r.vendor.contact_name ? ` · ${r.vendor.contact_name}` : ''}
                     </p>
                   </div>
-                  <p className="font-display text-panel font-medium tabular-nums text-ink">
+                  <p className="font-display text-panel font-normal tabular-nums text-ink">
                     {r.total}<span className="ms-1 text-meta font-normal text-ink-mute">{c.outOf}</span>
                   </p>
                 </div>
