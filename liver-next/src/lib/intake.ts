@@ -8,7 +8,17 @@
  * completeness here is the same ratio the trigger writes, so the bar on
  * the screen and the card on the producer's side cannot say two numbers.
  */
-import { INTAKE, INTAKE_QUESTIONS, type Chapter, type Question } from '../content/intake.ts';
+import { INTAKE, INTAKE_KEY, INTAKE_QUESTIONS, type Chapter, type Question } from '../content/intake.ts';
+import { WEDDING_DAY, WEDDING_DAY_KEY, WEDDING_DAY_QUESTIONS } from '../content/weddingDay.ts';
+
+/** The two forms by key. The intake is the default everywhere, so a
+ *  caller that names no form gets the one that existed first. */
+export type Form = { key: string; chapters: readonly Chapter[]; questions: readonly Question[] };
+export const FORMS: readonly Form[] = [
+  { key: INTAKE_KEY, chapters: INTAKE, questions: INTAKE_QUESTIONS },
+  { key: WEDDING_DAY_KEY, chapters: WEDDING_DAY, questions: WEDDING_DAY_QUESTIONS },
+];
+export const formOf = (key: string | null | undefined): Form => FORMS.find((f) => f.key === key) ?? FORMS[0];
 
 export type Answer = {
   question_key: string;
@@ -37,8 +47,8 @@ export const isAnswered = (value: unknown): boolean => {
 
 /** Answered questions over all of them, 0 to 1, to two places: the same
  *  figure the trigger writes. A chapter's share counts the chapter alone. */
-export function completeness(answers: readonly Answer[], chapter?: Chapter): number {
-  const qs = chapter ? chapter.questions : INTAKE_QUESTIONS;
+export function completeness(answers: readonly Answer[], chapter?: Chapter, form: Form = FORMS[0]): number {
+  const qs = chapter ? chapter.questions : form.questions;
   const done = new Set(answers.filter((a) => isAnswered(a.value)).map((a) => a.question_key));
   const n = qs.filter((q) => done.has(q.key)).length;
   return qs.length === 0 ? 0 : Math.round((n / qs.length) * 100) / 100;
@@ -46,24 +56,24 @@ export function completeness(answers: readonly Answer[], chapter?: Chapter): num
 
 /** How many questions are still open, for the card on the couple's
  *  screen that says "n more and we know you". */
-export function openCount(answers: readonly Answer[]): number {
+export function openCount(answers: readonly Answer[], form: Form = FORMS[0]): number {
   const done = new Set(answers.filter((a) => isAnswered(a.value)).map((a) => a.question_key));
-  return INTAKE_QUESTIONS.filter((q) => !done.has(q.key)).length;
+  return form.questions.filter((q) => !done.has(q.key)).length;
 }
 
 /** The first chapter with something still unanswered, where "continue"
  *  takes a couple to. Null once everything is answered. */
-export function nextChapter(answers: readonly Answer[]): Chapter | null {
-  return INTAKE.find((c) => completeness(answers, c) < 1) ?? null;
+export function nextChapter(answers: readonly Answer[], form: Form = FORMS[0]): Chapter | null {
+  return form.chapters.find((c) => completeness(answers, c) < 1) ?? null;
 }
 
 export type Gap = { key: string; a: Answer; b: Answer };
 
 /** Where the two partners answered the same shared question differently.
  *  Only shared questions: the private chapter is meant to differ. */
-export function gaps(answers: readonly Answer[]): Gap[] {
+export function gaps(answers: readonly Answer[], form: Form = FORMS[0]): Gap[] {
   const out: Gap[] = [];
-  for (const q of INTAKE_QUESTIONS) {
+  for (const q of form.questions) {
     const rows = answers.filter((a) => a.question_key === q.key && a.visibility === 'couple' && isAnswered(a.value));
     if (rows.length < 2) continue;
     const [a, b] = rows;
@@ -89,6 +99,7 @@ export function answerText(q: Question, value: unknown, locale: 'he' | 'en' = 'h
   if (typeof value === 'number') return String(value);
   if (Array.isArray(value)) {
     if (q.type === 'people') return value.map((p) => { const x = p as { name?: string; relation?: string; role?: string }; return [x.name, x.relation, x.role].filter(Boolean).join(', '); }).filter(Boolean).join(' · ');
+    if (q.type === 'table') return value.map((r) => Object.values((r ?? {}) as Record<string, unknown>).map((x) => String(x ?? '').trim()).filter(Boolean).join(', ')).filter(Boolean).join(' · ');
     return value.map((v) => (typeof v === 'string' ? label(v) : String(v))).filter(Boolean).join(' · ');
   }
   if (typeof value === 'object') {

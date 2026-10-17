@@ -4,7 +4,8 @@ import { revalidatePath } from 'next/cache';
 import { supabaseServer } from '@/lib/supabase/server';
 import { requireAccount } from '@/lib/auth';
 import { whyNotSaved } from '@/lib/writeFailure';
-import { INTAKE, INTAKE_KEY, INTAKE_QUESTIONS } from '@/content/intake';
+import { INTAKE_KEY } from '@/content/intake';
+import { formOf } from '@/lib/intake';
 import { writeBrief } from '@/lib/ai/profileBrief';
 
 /**
@@ -19,8 +20,8 @@ import { writeBrief } from '@/lib/ai/profileBrief';
  */
 export type IntakeResult = { ok: boolean; error?: string };
 
-const PRIVATE_KEYS = new Set(INTAKE.filter((c) => c.private).flatMap((c) => c.questions.map((q) => q.key)));
-const KNOWN = new Set(INTAKE_QUESTIONS.map((q) => q.key));
+const privateKeys = (formKey: string) => new Set(formOf(formKey).chapters.filter((c) => c.private).flatMap((c) => c.questions.map((q) => q.key)));
+const known = (formKey: string) => new Set(formOf(formKey).questions.map((q) => q.key));
 
 function touch(clientId: string) {
   revalidatePath('/app/portal');
@@ -40,15 +41,16 @@ function readValue(raw: string): unknown {
 export async function saveAnswer(_prev: IntakeResult | null, form: FormData): Promise<IntakeResult> {
   const clientId = String(form.get('client_id') ?? '');
   const key = String(form.get('question_key') ?? '');
-  if (!clientId || !KNOWN.has(key)) return { ok: false, error: 'שאלה לא מוכרת' };
+  const formKey = formOf(String(form.get('form_key') ?? INTAKE_KEY)).key;
+  if (!clientId || !known(formKey).has(key)) return { ok: false, error: 'שאלה לא מוכרת' };
   const account = await requireAccount();
   const value = readValue(String(form.get('value') ?? ''));
   if (JSON.stringify(value).length > 20000) return { ok: false, error: 'התשובה ארוכה מדי' };
 
   const sb = await supabaseServer();
   const { error } = await sb.from('questionnaire_responses').upsert({
-    client_id: clientId, form_key: INTAKE_KEY, question_key: key, answered_by: account.id,
-    value, visibility: PRIVATE_KEYS.has(key) ? 'private' : 'couple',
+    client_id: clientId, form_key: formKey, question_key: key, answered_by: account.id,
+    value, visibility: privateKeys(formKey).has(key) ? 'private' : 'couple',
   }, { onConflict: 'client_id,form_key,question_key,answered_by' });
   if (error) {
     console.error('[intake] save failed', error);
@@ -60,7 +62,7 @@ export async function saveAnswer(_prev: IntakeResult | null, form: FormData): Pr
   const { data: c } = await sb.from('clients').select('producer_id').eq('id', clientId).maybeSingle();
   const producerId = (c as { producer_id?: string } | null)?.producer_id;
   if (producerId) {
-    const q = INTAKE_QUESTIONS.find((x) => x.key === key);
+    const q = formOf(formKey).questions.find((x) => x.key === key);
     await sb.from('activity_log').insert({
       producer_id: producerId, client_id: clientId, kind: 'questionnaire', title: `שאלון: ${q?.he ?? key}`,
       body: '', ref_table: 'questionnaire_responses', actor: account.role === 'client' ? 'couple' : 'producer',
@@ -74,7 +76,7 @@ export async function saveIntakeNote(_prev: IntakeResult | null, form: FormData)
   const clientId = String(form.get('client_id') ?? '');
   const key = String(form.get('question_key') ?? '');
   const note = String(form.get('note') ?? '').trim().slice(0, 4000);
-  if (!clientId || !KNOWN.has(key)) return { ok: false, error: 'שאלה לא מוכרת' };
+  if (!clientId || !(known(INTAKE_KEY).has(key) || known('wedding_day').has(key))) return { ok: false, error: 'שאלה לא מוכרת' };
   if (!note) return { ok: false, error: 'הערה ריקה' };
   const account = await requireAccount();
   const sb = await supabaseServer();

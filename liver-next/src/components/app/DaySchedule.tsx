@@ -2,7 +2,8 @@
 
 import { useActionState, useState } from 'react';
 import { useFormStatus } from 'react-dom';
-import { ChevronDown, ChevronUp, Clock, GripVertical, Pencil, Plus, Trash2, TriangleAlert, Wand2 } from 'lucide-react';
+import { ChevronDown, ChevronUp, Clock, GripVertical, Lock, Pencil, Plus, Trash2, TriangleAlert, Wand2 } from 'lucide-react';
+import { fill } from '@/lib/copyText';
 import {
   addDayItem, updateDayItem, deleteDayItem, moveDayItem, renameTracks, applyRunsheetTemplate, type DayResult,
 } from '@/app/actions/day';
@@ -16,6 +17,11 @@ export type DayItem = {
   id: string; track: Track; at_time: string; title: string; note: string;
   owner: string; audience: string[]; duration_min: number | null;
   key_moment?: boolean | null;
+  /* From the run of show (0106): a song for the DJ, and a surprise that
+     is the producer's alone. The couple's rows never carry a secret one. */
+  song_title?: string | null; song_artist?: string | null; song_cue?: string | null;
+  is_secret?: boolean | null; secret_from?: string[] | null;
+  actual_at?: string | null; note_live?: string | null;
 };
 
 
@@ -201,8 +207,19 @@ function Row({
       </div>
 
       <div className="min-w-0 flex-1">
-        <p className="text-lead text-ink">{item.title}</p>
+        <p className="text-lead text-ink">
+          {item.is_secret && <Lock size={13} strokeWidth={1.5} aria-label={c.secret} className="me-1 inline text-ink-mute" />}
+          {item.title}
+        </p>
         {item.note && <p className="mt-0.5 text-body text-ink-soft">{item.note}</p>}
+        {item.song_title && (
+          <p className="mt-0.5 text-meta text-ink-mute">
+            {c.song}: <bdi>{item.song_title}</bdi>{item.song_artist ? <> · <bdi>{item.song_artist}</bdi></> : ''}{item.song_cue ? <> · <bdi>{item.song_cue}</bdi></> : ''}
+          </p>
+        )}
+        {item.is_secret && item.secret_from && item.secret_from.length > 0 && (
+          <p className="mt-0.5 text-meta text-warn">{fill(c.secretFrom, { names: item.secret_from.join(', ') })}</p>
+        )}
 
         <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-meta">
           <span className={`rounded-xl2 px-2 py-0.5 ${trackTone[item.track]}`}>{labels[item.track]}</span>

@@ -34,6 +34,9 @@ import { TaskList, type Task } from '@/components/app/TaskList';
 import { PaymentsPanel, type Payment } from '@/components/app/PaymentsPanel';
 import { BudgetGrid } from '@/components/app/BudgetGrid';
 import { CoupleProfile, type IntakeNote, type PrivateProfile } from '@/components/app/CoupleProfile';
+import { RunOfShowTools } from '@/components/app/RunOfShowTools';
+import { WEDDING_DAY_KEY } from '@/content/weddingDay';
+import { completeness, formOf } from '@/lib/intake';
 import { INTAKE_KEY } from '@/content/intake';
 import type { Answer } from '@/lib/intake';
 import type { GridItem as BudgetItem, GridPayment } from '@/lib/budgetGrid';
@@ -139,7 +142,7 @@ export default async function ClientPage({
   const sb = await supabaseServer();
   const { data: client } = await sb
     .from('clients')
-    .select('id,display_name,kind,event_date,venue,guest_estimate,budget_visible,budget_target,budget_approved_at,budget_approval_asked_at,shared_sections,crew_note,producer_fee,budget_plan,label_id,track_a_label,track_b_label,guest_token,guest_site_on,guest_note,game_token,game_on,contact_email,contact_phone,brief,brand,service')
+    .select('id,display_name,kind,event_date,venue,guest_estimate,budget_visible,budget_target,budget_approved_at,budget_approval_asked_at,runsheet_version,runsheet_locked_at,shared_sections,crew_note,producer_fee,budget_plan,label_id,track_a_label,track_b_label,guest_token,guest_site_on,guest_note,game_token,game_on,contact_email,contact_phone,brief,brand,service')
     .eq('id', id)
     .maybeSingle();
 
@@ -309,6 +312,7 @@ type Client = {
   crew_note: string | null; producer_fee: number | string | null;
   budget_target: number | null;
   budget_approved_at: string | null; budget_approval_asked_at: string | null;
+  runsheet_version: number | null; runsheet_locked_at: string | null;
   shared_sections: unknown;
   budget_plan: unknown;
   label_id: string | null;
@@ -378,16 +382,27 @@ async function Section({ tab, client, viewerId, isRoot }: {
   }
 
   if (tab === 'day') {
-    const day = await safeRows<DayItem>('schedule', sb.from('day_schedule')
-      .select('id,track,at_time,title,note,owner,audience,duration_min,key_moment')
-      .eq('client_id', id).order('at_time'));
+    const [day, dayAnswers] = await Promise.all([
+      safeRows<DayItem>('schedule', sb.from('day_schedule')
+        .select('id,track,at_time,title,note,owner,audience,duration_min,key_moment,song_title,song_artist,song_cue,is_secret,secret_from,actual_at,note_live')
+        .eq('client_id', id).order('at_time')),
+      safeRows<Answer>('day answers', sb.from('questionnaire_responses')
+        .select('question_key,answered_by,value,visibility,updated_at').eq('client_id', id).eq('form_key', WEDDING_DAY_KEY)),
+    ]);
     return (
-      <DaySchedule
-        clientId={id}
-        items={day}
-        labelA={client.track_a_label}
-        labelB={client.track_b_label}
-      />
+      <div className="space-y-6">
+        <RunOfShowTools
+          clientId={id}
+          answered={dayAnswers.length ? completeness(dayAnswers, undefined, formOf(WEDDING_DAY_KEY)) : null}
+          lockedAt={client.runsheet_locked_at} version={client.runsheet_version ?? 1}
+        />
+        <DaySchedule
+          clientId={id}
+          items={day}
+          labelA={client.track_a_label}
+          labelB={client.track_b_label}
+        />
+      </div>
     );
   }
 

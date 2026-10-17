@@ -1808,6 +1808,39 @@ export const appCopy = {
     briefAt: 'נכתב ב-{date}',
     briefNone: 'עוד לא נכתב תקציר. לחיצה אחת, ותוך רגע יש עמוד: מי הם, שלושה דברים לזכור, שלוש שאלות לפגישה, דגלים.',
     tab: 'מי הם',
+    /* The wedding-day questionnaire and the run of show built from it. */
+    dayTitle: 'יום החתונה',
+    daySub: 'ארבעים שאלות על היום עצמו: הבוקר, קבלת הפנים, החופה, המסיבה והסיום. מזה נבנה הלו"ז, ומזה כל ספק מקבל את הגרסה שלו.',
+    dayCardTitle: 'עוד {n} ימים. בואו נבנה את היום',
+    dayCardSub: 'שאלון יום החתונה: מי נכנס עם מי, איזה שיר, מתי מגיע הפנדוצ׳י. עשרים דקות, אפשר מהטלפון.',
+    rosTitle: 'הלו"ז מהשאלון',
+    rosSub: 'מהתשובות של הזוג לשאלון יום החתונה נבנות שורות הלו"ז: עוגנים לקבלת הפנים, לחופה, לריקודים ולסיום, וכל השאר נגזר מהם. שורות שכתבתם ביד לא נוגעות.',
+    rosAnswered: '{pct}% משאלון יום החתונה מולא',
+    rosNotStarted: 'הזוג עוד לא פתח את שאלון יום החתונה.',
+    rosBuild: 'לבנות את הלו"ז',
+    rosRebuild: 'לבנות מחדש מהתשובות',
+    rosBuilding: 'בונה',
+    rosBuilt: 'נבנו {n} שורות.',
+    rosShiftTitle: 'הזזה מדורגת',
+    rosShiftFrom: 'כל מה שמשעה',
+    rosShiftBy: 'זז בדקות',
+    rosShiftGo: 'להזיז',
+    rosShifted: '{n} שורות זזו.',
+    rosLock: 'נעילת הלו"ז',
+    rosUnlock: 'פתיחה לעריכה',
+    rosLocked: 'נעול מ-{date}. גרסה {n}.',
+    rosVersion: 'גרסה {n}',
+    rosLockHint: 'ארבעים ושמונה שעות לפני הערב. פתיחה אחרי נעילה היא גרסה חדשה, ומי שמחזיק הדפסה מחזיק ישנה.',
+    rosSecret: 'סודי',
+    rosSecretFrom: 'סודי מ{names}',
+    rosSong: 'שיר',
+    rosDelayTitle: 'הערב זז',
+    rosDelayFrom: 'משעה',
+    rosDelayBy: 'בדקות',
+    rosDelayGo: 'לעדכן את כל מה שאחרי',
+    rosDelayed: '{n} שורות קיבלו שעה בפועל.',
+    rosNoteLive: 'הערה מהערב',
+    rosNoteSave: 'שמירה',
   },
 
   money: {
@@ -2678,6 +2711,11 @@ export const dayCopy = {
   templateOr: 'או להתחיל משורה ריקה',
   keyMoment: 'רגע מרכזי',
   keyMomentHint: 'החמ״ל יתריע 10 דקות לפני',
+  /* From the run of show: a song on a line, and a surprise the couple's
+     rows never carry. */
+  song: 'שיר',
+  secret: 'סודי',
+  secretFrom: 'סודי מ{names}',
 } as const;
 
 export const leadsCopy = {

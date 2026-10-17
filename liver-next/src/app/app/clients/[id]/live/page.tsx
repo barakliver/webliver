@@ -7,6 +7,7 @@ import { serverCopy } from '@/lib/serverLocale';
 import { formatDate } from '@/lib/dates';
 import { PageHead, Empty } from '@/components/app/PageHead';
 import { DayOfCockpit } from '@/components/app/DayOfCockpit';
+import { LiveTools } from '@/components/app/LiveTools';
 import { Live } from '@/components/app/Live';
 import type { Line, Caller } from '@/lib/dayof';
 import { EVENT_ZONE } from '@/lib/clock';
@@ -44,7 +45,7 @@ export default async function DayOfPage({ params }: { params: Promise<{ id: stri
   if (!client) notFound();
 
   const [schedule, crew, vendors] = await Promise.all([
-    sb.from('day_schedule').select('id,at_time,title,duration_min,done_at,key_moment').eq('client_id', id),
+    sb.from('day_schedule').select('id,at_time,title,duration_min,done_at,key_moment,note_live,actual_at').eq('client_id', id),
     sb.from('crew').select('id,name,role,phone,call_time,arrived_at').eq('client_id', id),
     /* Only suppliers who are actually coming. A shortlist is a decision that
        has not been made, and putting three candidate photographers on a call
@@ -80,13 +81,18 @@ export default async function DayOfPage({ params }: { params: Promise<{ id: stri
       {lines.length === 0 && crewRows.length === 0 && vendorRows.length === 0 ? (
         <Empty text={ui.dayOf.empty} />
       ) : (
-        <DayOfCockpit
-          clientId={id}
-          eventDate={client.event_date}
-          lines={lines}
-          crew={crewRows}
-          vendors={vendorRows}
-        />
+        <>
+          <DayOfCockpit
+            clientId={id}
+            eventDate={client.event_date}
+            lines={lines}
+            crew={crewRows}
+            vendors={vendorRows}
+          />
+          <div className="mt-6">
+            <LiveTools clientId={id} lines={lines as { id: string; title: string; at_time: string; note_live?: string | null; done_at?: string | null }[]} />
+          </div>
+        </>
       )}
 
       {/* Two phones on the same evening is the normal case, not the edge one.

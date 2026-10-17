@@ -157,6 +157,8 @@ import { Metric, MetricRows, MetricBlock } from '@/components/app/Metric';
 import { StatBar } from '@/components/app/StatBar';
 import { Questionnaire } from '@/components/app/Questionnaire';
 import { CoupleProfile } from '@/components/app/CoupleProfile';
+import { RunOfShowTools } from '@/components/app/RunOfShowTools';
+import { LiveTools } from '@/components/app/LiveTools';
 import { StatusDot } from '@/components/app/StatusDot';
 import { WeekLogView } from '@/components/app/WeekLog';
 import { PageHead, Empty } from '@/components/app/PageHead';
@@ -1847,6 +1849,31 @@ export default async function DesignPage() {
           <div className="max-w-3xl">
             <Questionnaire clientId={client} viewerId={FIXTURE_VIEWER} locale="he" answers={fixtureAnswers} />
           </div>
+        </Panel>
+
+        <Panel name="Questionnaire · wedding day" note="the same renderer on the forty questions of the day: a time, and tables for the entrances and the surprises; chapter C open">
+          <div className="max-w-3xl">
+            <Questionnaire clientId={client} viewerId={FIXTURE_VIEWER} locale="he" formKey="wedding_day" answers={[
+              { question_key: 'wd_b7_reception', answered_by: FIXTURE_VIEWER, value: '19:00', visibility: 'couple' },
+              { question_key: 'wd_c15_entrances', answered_by: FIXTURE_VIEWER, value: [{ who: 'סבתא רחל', with: 'אבא', song: 'Can\'t Help Falling in Love', artist: 'Elvis', cue: '0:40' }], visibility: 'couple' },
+            ]} />
+          </div>
+        </Panel>
+
+        <Panel name="RunOfShowTools" note="build, cascade and lock, above the sheet; half the questionnaire answered, version 2 open">
+          <div className="max-w-3xl"><RunOfShowTools clientId={client} answered={0.52} lockedAt={null} version={2} /></div>
+        </Panel>
+
+        <Panel name="RunOfShowTools · locked" note="the same, locked two days out">
+          <div className="max-w-3xl"><RunOfShowTools clientId={client} answered={1} lockedAt="2026-10-15T09:00:00Z" version={3} /></div>
+        </Panel>
+
+        <Panel name="LiveTools" note="the evening slipped ten minutes, and a note on each of the next three lines">
+          <div className="max-w-md"><LiveTools clientId={client} lines={[
+            { id: 'l1', title: 'חופה', at_time: '20:10', note_live: 'הרב איחר בחמש דקות' },
+            { id: 'l2', title: 'כניסה לריקודים', at_time: '20:55' },
+            { id: 'l3', title: 'הגשה: מנה ראשונה', at_time: '21:15' },
+          ]} /></div>
         </Panel>
 
         <Panel name="CoupleProfile" note="the producer's card of the same answers: a gap on the style, the private chapter in two columns, a note, no brief yet">

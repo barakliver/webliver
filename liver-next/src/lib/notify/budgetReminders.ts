@@ -126,3 +126,32 @@ export async function remindQuestionnaire(sb: SupabaseClient, today: string): Pr
   }
   return out;
 }
+
+/** The wedding-day questionnaire, forty-five, thirty-five and twenty-eight
+ *  days out, to the couple's bell, once per day of the three. */
+export async function remindWeddingDay(sb: SupabaseClient, today: string): Promise<{ sent: number; errors: string[] }> {
+  const out = { sent: 0, errors: [] as string[] };
+  const days = [45, 35, 28];
+  const dates = days.map((d) => shift(today, d));
+  const { data, error } = await sb.from('clients').select('id,event_date').is('archived_at', null).in('event_date', dates);
+  if (error) { out.errors.push(`clients: ${error.message}`); return out; }
+  for (const c of (data ?? []) as { id: string; event_date: string }[]) {
+    const left = days[dates.indexOf(c.event_date)];
+    const { count } = await sb.from('questionnaire_responses').select('id', { count: 'exact', head: true }).eq('client_id', c.id).eq('form_key', 'wedding_day');
+    if ((count ?? 0) >= 30) continue;
+    const title = `עוד ${left} ימים. בואו נבנה את היום`;
+    const { data: people } = await sb.from('client_authorized_emails').select('profile_id').eq('client_id', c.id);
+    for (const row of (people ?? []) as { profile_id: string | null }[]) {
+      if (!row.profile_id) continue;
+      const { data: before } = await sb.from('notifications').select('id').eq('profile_id', row.profile_id).eq('title', title).limit(1);
+      if (before?.length) continue;
+      await sb.rpc('notify', {
+        p_profile: row.profile_id, p_kind: 'task', p_title: title,
+        p_body: 'שאלון יום החתונה: מי נכנס עם מי, איזה שיר, מתי מגיע האוכל לאפטר. עשרים דקות, אפשר מהטלפון.',
+        p_href: `/app/portal/questionnaire?w=${c.id}&form=wedding_day`,
+      });
+      out.sent += 1;
+    }
+  }
+  return out;
+}

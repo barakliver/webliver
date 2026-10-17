@@ -14,8 +14,12 @@
  */
 
 export type QuestionType =
-  | 'text' | 'textarea' | 'number' | 'date' | 'date_range'
-  | 'single' | 'multi' | 'scale' | 'rank' | 'list' | 'people';
+  | 'text' | 'textarea' | 'number' | 'date' | 'date_range' | 'time'
+  | 'single' | 'multi' | 'scale' | 'rank' | 'list' | 'people' | 'table';
+
+/** A column of a `table` question: the entrances, the blessings, the
+ *  surprises and the day's contacts are all rows of a few short cells. */
+export type Column = { key: string; he: string; en: string; kind?: 'text' | 'phone' | 'time' | 'number' };
 
 export type Option = { value: string; he: string; en: string };
 
@@ -30,8 +34,10 @@ export type Question = {
   options?: readonly Option[];
   /** For a scale: the things rated, each on 1 to 5. */
   items?: readonly Option[];
-  /** For `list` and `people`: the most entries the box takes. */
+  /** For `list`, `people` and `table`: the most entries the box takes. */
   max?: number;
+  /** For `table`: the cells of one row. */
+  columns?: readonly Column[];
   /** Counts toward completeness. */
   required?: boolean;
 };

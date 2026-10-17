@@ -10,6 +10,7 @@ import { PrintButton } from '@/components/app/PrintButton';
 import { RunSheet } from '@/components/app/RunSheet';
 import { brandFor } from '@/lib/branding';
 import { safeRows } from '@/lib/safe';
+import { forAudience } from '@/lib/runOfShow';
 import { hhmm, inDayOrder, spanOf, humanSpan, crossesMidnight } from '@/lib/runsheet';
 import { EVENT_ZONE } from '@/lib/clock';
 
@@ -62,7 +63,7 @@ export default async function RunsheetPage({
   const sb = await supabaseServer();
   const [{ data: client }, { data: rows }, brand] = await Promise.all([
     sb.from('clients').select('id,display_name,event_date,venue').eq('id', id).maybeSingle(),
-    sb.from('day_schedule').select('id,track,at_time,title,note,audience,owner,duration_min')
+    sb.from('day_schedule').select('id,track,at_time,title,note,audience,owner,duration_min,is_secret,song_title,song_artist,song_cue')
       .eq('client_id', id).order('at_time'),
     brandFor(account),
   ]);
@@ -88,7 +89,10 @@ export default async function RunsheetPage({
      filter. That is the default, and it is why filtering never silently
      empties a sheet somebody spent an evening writing. */
   const all = (rows ?? []) as Item[];
-  const filtered = role ? all.filter((i) => i.audience.length === 0 || i.audience.includes(role)) : all;
+  /* And a secret line is on nobody's sheet but the producer's own, whatever
+     audience it carries: the version printed for the couple is the version
+     the surprise is kept from. One function decides, and a test holds it. */
+  const filtered = forAudience(all, role, staffVisible && role === null);
 
   /* Sorted here rather than by the query. `order by at_time` is alphabetical
      on the clock, so an evening that ends at 01:00 prints the pack-down as its

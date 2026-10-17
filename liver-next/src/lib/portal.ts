@@ -12,6 +12,8 @@ import type { Message as ThreadMessage } from '@/components/app/Thread';
 import type { Contract as ContractRow } from '@/components/app/Contracts';
 import { readShares, sectionOpen, type SharedSections } from '@/content/portalSections';
 import { readPlan, type BudgetPlan } from '@/lib/budgetPlan';
+import { completeness, formOf, type Answer } from '@/lib/intake';
+import { WEDDING_DAY_KEY } from '@/content/weddingDay';
 
 export type Workspace = {
   id: string; display_name: string; event_date: string | null;
@@ -25,6 +27,8 @@ export type Workspace = {
   /** From the questionnaire (0105): the name they asked to be called, and
    *  how much of it they answered. Absent until the first answer. */
   profile?: { nickname: string; completeness: number; priorities: string[] } | null;
+  /** How much of the wedding-day questionnaire is answered, 0 to 1. */
+  dayAnswered?: number;
   /** The doors the producer has closed on the couple's screen. Empty means
    *  all open. */
   shared_sections: SharedSections;
@@ -157,6 +161,14 @@ export async function loadPortal(
   for (const w of workspaces) {
     const p = (profiles ?? []).find((x) => x.client_id === w.id) as { nickname: string; completeness: number | string; priorities: string[] } | undefined;
     w.profile = p ? { nickname: p.nickname, completeness: Number(p.completeness) || 0, priorities: p.priorities ?? [] } : null;
+  }
+  /* The wedding-day questionnaire's share, counted from the couple's own
+     rows: enough for the card that asks for it in the last forty-five days. */
+  const { data: dayRows } = await sb.from('questionnaire_responses').select('client_id,question_key,answered_by,value,visibility')
+    .in('client_id', workspaces.map((w) => w.id)).eq('form_key', WEDDING_DAY_KEY);
+  for (const w of workspaces) {
+    const mine = ((dayRows ?? []) as (Answer & { client_id: string })[]).filter((r) => r.client_id === w.id);
+    w.dayAnswered = mine.length ? completeness(mine, undefined, formOf(WEDDING_DAY_KEY)) : 0;
   }
   const ids = workspaces.map((w) => w.id);
 

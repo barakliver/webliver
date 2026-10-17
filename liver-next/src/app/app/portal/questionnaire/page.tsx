@@ -12,8 +12,8 @@ import { Questionnaire } from '@/components/app/Questionnaire';
 import { loadPortal } from '@/lib/portal';
 import { pickWorkspace } from '@/lib/portalScope';
 import { safeRows } from '@/lib/safe';
+import { formOf, type Answer } from '@/lib/intake';
 import { INTAKE_KEY } from '@/content/intake';
-import type { Answer } from '@/lib/intake';
 
 export async function generateMetadata() {
   return { title: appUiFor(await currentLocale()).intake.title };
@@ -30,17 +30,20 @@ export const dynamic = 'force-dynamic';
  * through the couple's own policy: a partner's private answers are not
  * in the rows at all.
  */
-export default async function QuestionnairePage({ searchParams }: { searchParams: Promise<{ w?: string }> }) {
+export default async function QuestionnairePage({ searchParams }: { searchParams: Promise<{ w?: string; form?: string }> }) {
   const account = await requireAccount();
   const locale = await currentLocale();
   const ui = appUiFor(locale);
   const sb = await supabaseServer();
   const data = await loadPortal(sb, { asClient: true });
-  const w = pickWorkspace(data.workspaces, (await searchParams).w);
+  const params = await searchParams;
+  const w = pickWorkspace(data.workspaces, params.w);
+  const form = formOf(params.form);
   const answers = w
     ? await safeRows<Answer>('answers', sb.from('questionnaire_responses')
-      .select('question_key,answered_by,value,visibility,updated_at').eq('client_id', w.id).eq('form_key', INTAKE_KEY))
+      .select('question_key,answered_by,value,visibility,updated_at').eq('client_id', w.id).eq('form_key', form.key))
     : [];
+  const title = form.key === INTAKE_KEY ? ui.intake.title : ui.intake.dayTitle;
 
   return (
     <CopyProvider value={ui}>
@@ -48,11 +51,11 @@ export default async function QuestionnairePage({ searchParams }: { searchParams
         <ArrowLeft size={16} aria-hidden strokeWidth={1.5} />
         {ui.intake.backToPortal}
       </Link>
-      <PageHead title={ui.intake.title} sub={w?.display_name ?? ''}
-        report={<IssueReporter userId={account.id} context={ui.intake.title} />} />
+      <PageHead title={title} sub={w?.display_name ?? ''}
+        report={<IssueReporter userId={account.id} context={title} />} />
       <LoadTrouble />
       {w
-        ? <Questionnaire clientId={w.id} viewerId={account.id} answers={answers} locale={locale} />
+        ? <Questionnaire clientId={w.id} viewerId={account.id} answers={answers} locale={locale} formKey={form.key} />
         : <p className="card text-lead text-ink-mute">{ui.portal.empty}</p>}
     </CopyProvider>
   );

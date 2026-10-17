@@ -453,6 +453,31 @@ that has happened once.
   as panels at the radius of a button. Nested surfaces step down rather than
   matching: an inner box at the outer box's radius is what makes a card look
   like a sticker on a card.
+- **The run of show is built from the wedding-day answers, and a secret
+  never reaches the couple.** `content/weddingDay.ts` is forty questions
+  in six chapters, drawn by the same `Questionnaire` as the intake with
+  two more kinds of answer, a time and a table; `lib/runOfShow.ts` turns
+  the answers into lines on `day_schedule`, deterministically, from four
+  anchors (the reception, the chuppah, the party, the end) with everything
+  else derived by the brief's offsets, and three weddings are held in a
+  test. Every entrance to the chuppah is its own line with its own song,
+  because "the song for entrance four" is what the DJ reads at 19:42.
+  Building replaces only lines whose `source` begins `questionnaire:`; a
+  line typed by hand is never touched, so "build" after a changed answer
+  is the same press as the first. A surprise is `is_secret` with
+  `secret_from`: the couple's policy on `day_schedule` excludes it, and
+  `forAudience` is the one function every printed version goes through,
+  with a test that the couple's version holds none and the DJ's holds the
+  songs. The cascade is `shiftAfter`: everything at or after a time moves,
+  nothing before it. `runsheet_locked_at` and `runsheet_version` on the
+  client are the lock two days out; opening it is a new number, which is
+  what a producer says on the phone. The evening writes two columns and
+  rewrites nothing: `actual_at` when the night slips, `note_live` between
+  two things happening. Not built: the per-audience PDF pipeline (the run
+  sheet prints from the browser by audience as before), offline caching of
+  the live screen, realtime between two producers, and the supplier
+  send-outs.
+
 - **A couple is known from one questionnaire, and the screen bends to
   it.** Six chapters in `content/intake.ts`, fifty-two questions with
   stable keys, answered in stages from a phone by either partner;

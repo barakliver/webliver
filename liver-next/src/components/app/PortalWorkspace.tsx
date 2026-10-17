@@ -270,6 +270,15 @@ export function PortalWorkspace({
           because that is what it is, and gone at seventy percent because a
           card that asks for the last three answers forever is a card nobody
           believes in. */}
+      {left !== null && left >= 0 && left <= 45 && (c.dayAnswered ?? 0) < 0.8 && (
+        <Link href={`/app/portal/questionnaire?w=${c.id}&form=wedding_day`} className="mt-6 flex items-center justify-between gap-3 rounded-card-sm border border-accent-line bg-accent-wash px-4 py-3 text-start transition-colors duration-touch hover:border-accent">
+          <span className="min-w-0">
+            <span className="block text-lead text-ink">{fill(ui.intake.dayCardTitle, { n: left })}</span>
+            <span className="block text-meta text-ink-soft">{ui.intake.dayCardSub}</span>
+          </span>
+          <span className="shrink-0 text-body text-accent">{(c.dayAnswered ?? 0) > 0 ? ui.intake.cardCta : ui.intake.cardStart}</span>
+        </Link>
+      )}
       {(c.profile?.completeness ?? 0) < 0.7 && (
         <Link href={`/app/portal/questionnaire?w=${c.id}`} className="mt-6 flex items-center justify-between gap-3 rounded-card-sm border border-accent-line bg-accent-wash px-4 py-3 text-start transition-colors duration-touch hover:border-accent">
           <span className="min-w-0">

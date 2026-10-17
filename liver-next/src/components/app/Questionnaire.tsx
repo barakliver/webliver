@@ -8,8 +8,8 @@ import { useWide } from '@/lib/useWide';
 import { Ratio } from '@/components/Ltr';
 import { fill } from '@/lib/copyText';
 import { cn } from '@/lib/utils';
-import { INTAKE, type Chapter, type Question } from '@/content/intake';
-import { answerFor, completeness, isAnswered, nextChapter, type Answer } from '@/lib/intake';
+import { INTAKE_KEY, type Chapter, type Question } from '@/content/intake';
+import { answerFor, completeness, isAnswered, nextChapter, formOf, type Answer } from '@/lib/intake';
 import { saveAnswer } from '@/app/actions/intake';
 
 /**
@@ -29,10 +29,13 @@ import { saveAnswer } from '@/app/actions/intake';
  */
 const SAVE_AFTER = 800;
 
-export function Questionnaire({ clientId, viewerId, answers: given, locale, backHref = '/app/portal' }: {
+export function Questionnaire({ clientId, viewerId, answers: given, locale, backHref = '/app/portal', formKey = INTAKE_KEY }: {
   clientId: string; viewerId: string; answers: Answer[]; locale: 'he' | 'en'; backHref?: string;
+  /** Which questionnaire: the intake by default, or the wedding day. */
+  formKey?: string;
 }) {
   const c = useCopy().intake;
+  const form = formOf(formKey);
   const wide = useWide();
   const t = (he: string, en: string) => (locale === 'en' ? en : he);
 
@@ -46,12 +49,12 @@ export function Questionnaire({ clientId, viewerId, answers: given, locale, back
   const timers = useRef(new Map<string, ReturnType<typeof setTimeout>>());
   const [, start] = useTransition();
 
-  const total = useMemo(() => completeness(answers), [answers]);
+  const total = useMemo(() => completeness(answers, undefined, form), [answers, form]);
 
   const write = useCallback((key: string, value: unknown) => {
     setAnswers((prev) => {
       const rest = prev.filter((a) => !(a.question_key === key && a.answered_by === viewerId));
-      const ch = INTAKE.find((x) => x.questions.some((qq) => qq.key === key));
+      const ch = form.chapters.find((x) => x.questions.some((qq) => qq.key === key));
       return [...rest, { question_key: key, answered_by: viewerId, value, visibility: ch?.private ? 'private' : 'couple' }];
     });
     const old = timers.current.get(key);
@@ -63,12 +66,13 @@ export function Questionnaire({ clientId, viewerId, answers: given, locale, back
         const f = new FormData();
         f.set('client_id', clientId);
         f.set('question_key', key);
+        f.set('form_key', form.key);
         f.set('value', typeof value === 'string' ? value : JSON.stringify(value));
         const r = await saveAnswer(null, f);
         setState((s) => ({ ...s, [key]: r.ok ? 'saved' : 'failed' }));
       });
     }, SAVE_AFTER));
-  }, [clientId, viewerId]);
+  }, [clientId, viewerId, form]);
 
   const open = (ch: Chapter) => {
     setChapter(ch);
@@ -80,7 +84,7 @@ export function Questionnaire({ clientId, viewerId, answers: given, locale, back
 
   const closeChapter = () => {
     setChapter(null);
-    if (!nextChapter(answers)) setFinished(true);
+    if (!nextChapter(answers, form)) setFinished(true);
   };
 
   /* ── the landing ──────────────────────────────────────────────────────── */
@@ -98,14 +102,14 @@ export function Questionnaire({ clientId, viewerId, answers: given, locale, back
   if (!chapter) {
     return (
       <section className="card">
-        <h2 className="head-panel">{c.title}</h2>
-        <p className="mt-1 text-body text-ink-soft">{c.sub}</p>
+        <h2 className="head-panel">{form.key === INTAKE_KEY ? c.title : c.dayTitle}</h2>
+        <p className="mt-1 text-body text-ink-soft">{form.key === INTAKE_KEY ? c.sub : c.daySub}</p>
         <div className="mt-4 h-[3px] w-full overflow-hidden rounded-full bg-line" role="presentation">
           <div className="h-full rounded-full bg-accent transition-[width] duration-slow" style={{ width: `${Math.round(total * 100)}%` }} />
         </div>
         <p className="mt-1 text-meta text-ink-mute">{fill(c.progress, { pct: Math.round(total * 100) })}</p>
         <ul className="mt-5 grid list-none gap-3 p-0 sm:grid-cols-2">
-          {INTAKE.map((ch) => {
+          {form.chapters.map((ch) => {
             const share = completeness(answers, ch);
             const openN = ch.questions.filter((qq) => !isAnswered(answerFor(answers, qq.key, viewerId)?.value)).length;
             return (
@@ -249,6 +253,33 @@ function Field({ q, value, locale, c, onChange }: { q: Question; value: unknown;
       return <input className="field w-40" type="number" min={0} inputMode="numeric" dir="ltr" defaultValue={str} onChange={(e) => onChange(e.target.value === '' ? '' : Number(e.target.value))} />;
     case 'date':
       return <input className="field w-48" type="date" defaultValue={str} onChange={(e) => onChange(e.target.value)} />;
+    case 'time':
+      return <input className="field w-36" type="time" dir="ltr" defaultValue={str} onChange={(e) => onChange(e.target.value)} />;
+    case 'table': {
+      const cols = q.columns ?? [];
+      const list = Array.isArray(value) ? (value as Record<string, string>[]) : [];
+      const blank = Object.fromEntries(cols.map((cc) => [cc.key, '']));
+      const rows = list.length < (q.max ?? 6) ? [...list, blank] : list;
+      const set = (k: number, key: string, v: string) => {
+        const next = rows.map((r, i) => (i === k ? { ...r, [key]: v } : r));
+        onChange(next.filter((r) => Object.values(r).some((x) => String(x ?? '').trim())));
+      };
+      return (
+        <ul className="list-none space-y-2 p-0">
+          {rows.map((r, k) => (
+            <li key={k} className="grid gap-2" style={{ gridTemplateColumns: `repeat(${Math.min(cols.length, 3)}, minmax(0, 1fr))` }}>
+              {cols.map((cc) => (
+                <input key={cc.key} className="field" placeholder={t(cc.he, cc.en)} defaultValue={r[cc.key] ?? ''} autoComplete="off"
+                  type={cc.kind === 'time' ? 'time' : cc.kind === 'number' ? 'number' : cc.kind === 'phone' ? 'tel' : 'text'}
+                  dir={cc.kind === 'time' || cc.kind === 'number' || cc.kind === 'phone' ? 'ltr' : undefined}
+                  inputMode={cc.kind === 'phone' ? 'tel' : cc.kind === 'number' ? 'numeric' : undefined}
+                  onChange={(e) => set(k, cc.key, e.target.value)} />
+              ))}
+            </li>
+          ))}
+        </ul>
+      );
+    }
     case 'textarea':
       return <textarea className="field min-h-[96px]" defaultValue={str} onChange={(e) => onChange(e.target.value)} />;
     case 'date_range': {
