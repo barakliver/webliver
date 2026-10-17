@@ -39,7 +39,7 @@ export function CrewClashes({ rows }: { rows: ClashRow[] }) {
     <section
       role="alert"
       aria-labelledby="crew-clashes"
-      className="rounded-card border border-bad/30 bg-bad-wash p-4 sm:p-5"
+      className="rounded-card border-s-[3px] border-bad bg-bad-wash p-4 sm:p-5"
     >
       <h3 id="crew-clashes" className="flex items-center gap-2 font-display text-head font-normal text-bad">
         <TriangleAlert size={17} aria-hidden strokeWidth={1.5} />

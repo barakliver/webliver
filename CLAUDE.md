@@ -467,6 +467,23 @@ that has happened once.
   for the initial, because a book of hundreds is read with a thumb and a card
   each is a screen per three; the kinds are a row of pills in place of a
   select, and the scout is a banner whose button opens it.
+  **Group 6, chosen in pieces: people first on the producer's desk, the
+  season as a card per evening on his phone, and the crew member's evening as
+  a list beside one evening.** `/app/crew` is one column whose order is set per
+  screen: clashes, then the people as cards in a grid (the one being edited
+  takes the whole row, with `:has(details[open])`, because a form does not fit
+  in a third of a screen), then the season board, then what to pay; on a phone
+  the board comes before the people, because who is on Saturday is what a phone
+  is opened for. A card draws how busy somebody is against the busiest.
+  The crew member's `/app/shifts/<id>` has the other evenings in a margin from
+  `lg` up (`ShiftRail`, read through the same `crew_my_events`), the days left
+  as a numeral, and two things for the person working. **An alarm**, which a
+  web page cannot set on a phone and can hand the calendar: `alarm.ics` is one
+  entry at the call time with a ring before it, read through `crew_my_event`
+  like the screen, so it can carry no fee, and there is no file without a call
+  time. **A note on any line of the evening**, kept on that phone only: a crew
+  member has nowhere to write to, by design in 0091, and a private reminder
+  does not need a place. The screen says it is saved on this device.
 - **The screens are the plum design's screens, not only its colours.**
   He asked why the app did not look like the mockups, and the answer was
   that 3.1 had changed the skin and not the layout. So 3.2 rebuilt three:

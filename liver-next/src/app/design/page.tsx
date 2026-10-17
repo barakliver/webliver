@@ -66,7 +66,7 @@ import { CrewDesk } from '@/components/app/CrewDesk';
 import { CrewNeeds } from '@/components/app/CrewNeeds';
 import { CrewNote } from '@/components/app/CrewNote';
 import { todayInZone } from '@/lib/clock';
-import { CrewShifts } from '@/components/app/CrewShifts';
+import { CrewShifts, ShiftRail } from '@/components/app/CrewShifts';
 import { CrewBoard } from '@/components/app/CrewBoard';
 import { CrewClashes } from '@/components/app/CrewClashes';
 import { FillFees } from '@/components/app/FillFees';
@@ -1077,7 +1077,7 @@ export default async function DesignPage() {
         </Panel>
 
         <Panel name="CrewShift" note="one evening, for the person working it. No money anywhere on it">
-          <CrewShift detail={fixtureShift} today={todayInZone()} />
+          <CrewShift detail={fixtureShift} today={todayInZone()} rail={<ShiftRail shifts={fixtureShifts} today={todayInZone()} current={fixtureShifts[0]?.client_id} />} />
         </Panel>
 
         <Panel name="OrdersBoard" note="pending, paid and a draft">

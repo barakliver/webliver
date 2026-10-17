@@ -3055,6 +3055,22 @@ export const crewCopy = {
   shiftToday: 'היום',
   shiftOpen: 'פרטי הערב',
   shiftBack: 'לכל האירועים',
+  /* The phone's own alarm clock, by way of its calendar: a file with one
+     entry at the call time and a ring before it. A web page cannot set an
+     alarm; it can hand the calendar one. */
+  shiftAlarmTitle: 'שעון מעורר',
+  shiftAlarmBefore: 'להתריע',
+  shiftAlarmOpts: { 30: 'חצי שעה לפני', 60: 'שעה לפני', 90: 'שעה וחצי לפני', 120: 'שעתיים לפני' },
+  shiftAlarmAdd: 'הוספה ליומן עם התראה',
+  shiftAlarmHint: 'היומן בטלפון יצלצל לפני שעת ההגעה.',
+  shiftAlarmSummary: 'עבודה: {name}',
+  shiftDaysLeft: 'ימים',
+  /* A note of the crew member's own on a line of the evening. Kept on their
+     phone and nowhere else: a crew member has no place to write to, by design
+     (0091), and a private reminder does not need one. */
+  shiftLineNoteAdd: 'להוסיף הערה',
+  shiftLineNotePh: 'מה לזכור',
+  shiftLineNoteHint: 'נשמר רק במכשיר הזה',
   shiftWhere: 'איפה',
   shiftNoVenue: 'המקום עוד לא נקבע',
   shiftNoDate: 'התאריך עוד לא נקבע',

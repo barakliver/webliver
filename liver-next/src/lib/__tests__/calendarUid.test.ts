@@ -41,9 +41,10 @@ function icsRoutes(dir: string, found: string[] = []): string[] {
 test('every calendar feed mints its UIDs in the frozen namespace', () => {
   const routes = icsRoutes(join(root, 'app'));
 
-  /* Four of them. If this number moves, a fifth feed was added and it has to
-     make the same promise as the other four. */
-  assert.equal(routes.length, 4, `expected four UID-minting feeds, found ${routes.length}`);
+  /* Five of them: the fifth is the crew member's alarm file. If this number
+     moves, another feed was added and it has to make the same promise as the
+     rest, which the loop below checks for each one found. */
+  assert.equal(routes.length, 5, `expected five UID-minting feeds, found ${routes.length}`);
 
   for (const file of routes) {
     const text = readFileSync(file, 'utf8');

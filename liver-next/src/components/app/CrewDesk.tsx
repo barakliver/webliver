@@ -253,15 +253,20 @@ function RoleBadges({ roles }: { roles: string[] }) {
   );
 }
 
-function PersonRow({ person }: { person: CrewPerson }) {
+function PersonRow({ person, maxEvents = 0 }: { person: CrewPerson; maxEvents?: number }) {
   const c = useCopy().crew;
   return (
-    <li data-crew={`${person.name} ${person.phone} ${person.email}`}>
-      <details className="card group p-0">
+    /* A card in a grid from a laptop up; the one being edited takes the whole
+       row, because a form is not a thing to fit into a third of a screen. */
+    <li data-crew={`${person.name} ${person.phone} ${person.email}`} className="lg:[&:has(details[open])]:col-span-full">
+      <details className="card group h-full p-0">
         <summary
           className="flex cursor-pointer list-none items-start justify-between gap-4 p-4 sm:p-5
                      [&::-webkit-details-marker]:hidden"
         >
+          <span aria-hidden className="grid size-11 shrink-0 place-items-center rounded-full bg-surface-200 text-lead text-ink-soft">
+            {person.name.trim().slice(0, 1)}
+          </span>
           <span className="min-w-0 flex-1">
             <span className="block font-display text-head font-normal text-ink">{person.name}</span>
             <span className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1.5">
@@ -309,6 +314,13 @@ function PersonRow({ person }: { person: CrewPerson }) {
                 </span>
               )}
             </span>
+            {/* How busy, against the busiest: the thing that decides who to
+                ask for the next evening, drawn instead of read. */}
+            {typeof person.events === 'number' && maxEvents > 0 && (
+              <span aria-hidden className="mt-2.5 block h-1.5 overflow-hidden rounded-full bg-surface-200">
+                <span className="grow-x block h-full rounded-full bg-accent" style={{ width: `${Math.round((person.events / maxEvents) * 100)}%` }} />
+              </span>
+            )}
           </span>
           <ChevronDown
             size={18} strokeWidth={1.5} aria-hidden
@@ -337,6 +349,7 @@ export function CrewDesk({ people }: { people: CrewPerson[] }) {
   const [q, setQ] = useState('');
 
   const live = useMemo(() => people.filter((p) => !p.archived_at), [people]);
+  const maxEvents = useMemo(() => Math.max(0, ...people.filter((p) => !p.archived_at).map((p) => p.events ?? 0)), [people]);
   const archived = useMemo(() => people.filter((p) => p.archived_at), [people]);
 
   /* Every word has to appear somewhere in the row, in any order, so "טל 052"
@@ -415,8 +428,8 @@ export function CrewDesk({ people }: { people: CrewPerson[] }) {
               className="shrink-0 text-ink-mute transition-transform duration-touch group-open/list:rotate-180"
             />
           </summary>
-          <ul id="crew-list" className="mt-3 list-none space-y-3 p-0">
-            {shown.map((p) => <PersonRow key={p.id} person={p} />)}
+          <ul id="crew-list" className="mt-3 grid list-none grid-cols-1 gap-3 p-0 lg:grid-cols-2 xl:grid-cols-3">
+            {shown.map((p) => <PersonRow key={p.id} person={p} maxEvents={maxEvents} />)}
           </ul>
         </details>
       )}
@@ -435,7 +448,7 @@ export function CrewDesk({ people }: { people: CrewPerson[] }) {
             />
           </summary>
           <p className="mt-1 text-body text-ink-mute">{c.deskArchivedSub}</p>
-          <ul className="mt-3 list-none space-y-3 p-0">
+          <ul className="mt-3 grid list-none grid-cols-1 gap-3 p-0 lg:grid-cols-2 xl:grid-cols-3">
             {archived.map((p) => <PersonRow key={p.id} person={p} />)}
           </ul>
         </details>

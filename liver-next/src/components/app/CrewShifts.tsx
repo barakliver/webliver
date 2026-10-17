@@ -116,3 +116,59 @@ export function CrewShifts({ shifts, today }: { shifts: Shift[]; today: string }
     </ul>
   );
 }
+
+
+/**
+ * The same evenings as a column of rows, for beside the open one.
+ *
+ * From a laptop up the evening is the screen and the list is the margin: a
+ * circle with the day, the couple, and what time and what job. The open one
+ * sits on the card colour. What is already over is under a quiet word, last
+ * night first, as it is on the full list.
+ */
+export function ShiftRail({ shifts, today, current }: { shifts: Shift[]; today: string; current?: string }) {
+  const c = useCopy().crew;
+  const locale = useCopy().locale;
+  const labels: Record<CrewSlot, string> = {
+    manager: c.slotManager, assistant: c.slotAssistant, social: c.slotSocial,
+  };
+  const day = new Intl.DateTimeFormat(locale === 'en' ? 'en-GB' : 'he-IL', { timeZone: EVENT_ZONE, day: 'numeric' });
+  const mon = new Intl.DateTimeFormat(locale === 'en' ? 'en-GB' : 'he-IL', { timeZone: EVENT_ZONE, month: 'short' });
+  const sorted = sortShifts(shifts, today);
+  const ahead = sorted.filter((s) => shiftWhen(s.event_date, today) !== 'past');
+  const past = sorted.filter((s) => shiftWhen(s.event_date, today) === 'past');
+
+  const row = (s: Shift) => {
+    const slot = s.slot && s.slot in labels ? labels[s.slot as CrewSlot] : s.role;
+    const d = s.event_date ? new Date(s.event_date) : null;
+    const isPast = shiftWhen(s.event_date, today) === 'past';
+    return (
+      <li key={s.client_id}>
+        <Link href={`/app/shifts/${s.client_id}`} aria-current={s.client_id === current ? 'page' : undefined}
+          className={`flex items-center gap-3 rounded-card px-4 py-3 transition-colors duration-touch ${s.client_id === current ? 'bg-card' : 'hover:bg-surface-100'}`}>
+          <span aria-hidden className={`grid size-12 shrink-0 place-items-center rounded-full text-center text-micro leading-tight ${isPast ? 'border border-line-strong text-ink-soft' : 'bg-accent text-surface'}`}>
+            {d ? <span>{day.format(d)}<br />{mon.format(d)}</span> : '?'}
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block truncate text-lead text-ink">{s.display_name}</span>
+            <span className="block truncate text-meta text-ink-mute">
+              {slot}{s.call_time ? <> · <Ltr>{hhmm(s.call_time)}</Ltr></> : ''}
+            </span>
+          </span>
+        </Link>
+      </li>
+    );
+  };
+
+  return (
+    <nav aria-label={c.shiftsTitle}>
+      <ul className="m-0 list-none space-y-0.5 p-0">{ahead.map(row)}</ul>
+      {past.length > 0 && (
+        <>
+          <p className="mb-1 mt-5 px-4 text-meta text-ink-mute">{c.shiftPast}</p>
+          <ul className="m-0 list-none space-y-0.5 p-0">{past.map(row)}</ul>
+        </>
+      )}
+    </nav>
+  );
+}

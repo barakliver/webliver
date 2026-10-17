@@ -199,31 +199,38 @@ export default async function CrewPage() {
         title={ui.crew.deskTitle} sub={ui.crew.deskSub}
         report={<IssueReporter userId={account.id} context={ui.crew.deskTitle} />}
       />
-      {/* First on the screen, because it is the only thing on it that has a
-          deadline. It disappears when it is fixed. */}
-      {clashRows.length > 0 && (
-        <div className="mb-5"><CrewClashes rows={clashRows} /></div>
-      )}
+      {/* One column whose order is chosen per screen. On a desk the people
+          come first, as cards, and the season under them; on a phone the
+          season comes first, as a card per evening, because who is on
+          Saturday is the question a phone is opened for and the book of
+          people is the thing you scroll to when you need a number. */}
+      <div className="flex flex-col">
+        {/* First on the screen, because it is the only thing on it that has a
+            deadline. It disappears when it is fixed. */}
+        {clashRows.length > 0 && (
+          <div className="order-1 mb-5"><CrewClashes rows={clashRows} /></div>
+        )}
 
-      <CrewDesk people={rows} />
+        <div className="order-3 lg:order-2"><CrewDesk people={rows} /></div>
 
-      {/* The season, under the people it is staffed from. Folded, like
-          everything else on his screens, and open because it is the thing
-          the week is planned on. */}
-      <div className="mt-8">
-        <Fold id="crew-board" title={ui.crew.boardTitle} sub={ui.crew.boardSub} open>
-          <CrewBoard events={board} people={rows} assignments={placed} />
-        </Fold>
-      </div>
-      {/* What to pay, under the season it was earned in. Folded, and closed
-          at rest: it is a once-a-month screen sitting on a weekly one. */}
-      <div className="mt-8">
-        <Fold id="crew-months" title={ui.crew.monthsTitle} sub={ui.crew.monthsSub}>
-          {/* First inside the drawer, because a month that adds up wrong adds
-              up wrong for this reason nine times out of ten. */}
-          <div className="mb-4"><FillFees missing={missingFees} /></div>
-          <CrewMonths months={months} />
-        </Fold>
+        {/* The season, under the people it is staffed from. Folded, like
+            everything else on his screens, and open because it is the thing
+            the week is planned on. */}
+        <div className="order-2 lg:order-3 lg:mt-8">
+          <Fold id="crew-board" title={ui.crew.boardTitle} sub={ui.crew.boardSub} open>
+            <CrewBoard events={board} people={rows} assignments={placed} />
+          </Fold>
+        </div>
+        {/* What to pay, under the season it was earned in. Folded, and closed
+            at rest: it is a once-a-month screen sitting on a weekly one. */}
+        <div className="order-4 mt-8">
+          <Fold id="crew-months" title={ui.crew.monthsTitle} sub={ui.crew.monthsSub}>
+            {/* First inside the drawer, because a month that adds up wrong adds
+                up wrong for this reason nine times out of ten. */}
+            <div className="mb-4"><FillFees missing={missingFees} /></div>
+            <CrewMonths months={months} />
+          </Fold>
+        </div>
       </div>
 
       <Live sources={[{ table: 'crew_members' }, { table: 'crew' }]} />

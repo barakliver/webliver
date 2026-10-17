@@ -2,7 +2,8 @@ import { notFound } from 'next/navigation';
 import { requireCrew } from '@/lib/auth';
 import { supabaseServer } from '@/lib/supabase/server';
 import { CrewShift } from '@/components/app/CrewShift';
-import type { ShiftDetail } from '@/lib/crewPortal';
+import { ShiftRail } from '@/components/app/CrewShifts';
+import type { Shift, ShiftDetail } from '@/lib/crewPortal';
 import { serverCopy } from '@/lib/serverLocale';
 import { todayInZone } from '@/lib/clock';
 
@@ -24,9 +25,19 @@ export default async function ShiftPage({ params }: { params: Promise<{ id: stri
   await requireCrew();
   const sb = await supabaseServer();
 
-  const { data, error } = await sb.rpc('crew_my_event', { p_client: id });
+  const [{ data, error }, { data: list }] = await Promise.all([
+    sb.rpc('crew_my_event', { p_client: id }),
+    /* The rest of the evenings, for the margin on a wide screen. */
+    sb.rpc('crew_my_events'),
+  ]);
   if (error) console.error('[shift] read failed', error);
   if (!data) notFound();
 
-  return <CrewShift detail={data as ShiftDetail} today={todayInZone()} />;
+  const today = todayInZone();
+  return (
+    <CrewShift
+      detail={data as ShiftDetail} today={today}
+      rail={<ShiftRail shifts={(list ?? []) as Shift[]} today={today} current={id} />}
+    />
+  );
 }
