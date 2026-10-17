@@ -161,9 +161,15 @@ export const INTAKE: readonly Chapter[] = [
   {
     key: 'f', he: 'תקציב ותקשורת', en: 'Budget and contact', minutesHe: 'שתי דקות', minutesEn: 'two minutes',
     questions: [
-      { key: 'f34_budget', type: 'single', he: 'טווח התקציב הכולל', en: 'The overall budget range', required: true, options: [
-        opt('lt100', 'עד מאה אלף', 'Under 100k'), opt('100_150', 'מאה עד מאה וחמישים אלף', '100k to 150k'), opt('150_250', 'מאה וחמישים עד מאתיים וחמישים אלף', '150k to 250k'),
-        opt('250_400', 'מאתיים וחמישים עד ארבע מאות אלף', '250k to 400k'), opt('gt400', 'מעל ארבע מאות אלף', 'Over 400k'),
+      /* Numbers, not words: a range spelled out in Hebrew is read twice.
+         The hint gives the one figure a couple can do arithmetic with, the
+         going rate per guest, and says plainly that this is an estimate. */
+      { key: 'f34_budget', type: 'single', he: 'טווח התקציב הכולל', en: 'The overall budget range', required: true,
+        hintHe: 'זה אומדן, לא התחייבות: תמיד אפשר מעל ותמיד אפשר מתחת, השאלה למה אתם מצפים. להתמצאות: חתונה מכובדת בישראל עולה היום בממוצע בערך 800 ש"ח לאורח, מקצה לקצה.',
+        hintEn: 'An estimate, not a commitment: you can always go above or below, the question is what you expect. For orientation: a proper wedding in Israel today averages about 800 shekels per guest, end to end.',
+        options: [
+        opt('lt100', 'עד 100,000 ש"ח', 'Under 100,000'), opt('100_150', '100,000 עד 150,000 ש"ח', '100,000 to 150,000'), opt('150_250', '150,000 עד 250,000 ש"ח', '150,000 to 250,000'),
+        opt('250_400', '250,000 עד 400,000 ש"ח', '250,000 to 400,000'), opt('gt400', 'מעל 400,000 ש"ח', 'Over 400,000'),
       ] },
       { key: 'f34_paid_by', type: 'single', he: 'מי משלם?', en: 'Who pays?', required: true, options: [
         opt('couple', 'אנחנו', 'Us'), opt('parents', 'ההורים', 'The parents'), opt('mixed', 'מעורב', 'Mixed'),
