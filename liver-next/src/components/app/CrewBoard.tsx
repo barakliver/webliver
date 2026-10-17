@@ -64,6 +64,15 @@ function Saving() {
   );
 }
 
+/* The three roles of an evening as three tones, so a column is told from the
+   next by colour as well as by its word. Written out in full: Tailwind reads
+   class names as text. */
+const SLOT_DOT: Record<string, string> = {
+  manager: 'bg-tone-rubine',
+  assistant: 'bg-tone-boho',
+  social: 'bg-tone-camel',
+};
+
 /**
  * What the event is worth, typed on the row it decides.
  *
@@ -450,7 +459,8 @@ export function CrewBoard({
                               : 'border-line-soft bg-surface-100'
                         }`}
                       >
-                        <p className="text-meta text-ink-mute">
+                        <p className="flex items-center gap-1.5 text-meta text-ink-mute">
+                          <span aria-hidden className={`size-2 rounded-full ${SLOT_DOT[slot]}`} />
                           {labels[slot]}
                           {state.need > 0 && <> · <Ltr>{`${state.filled}/${state.need}`}</Ltr></>}
                         </p>

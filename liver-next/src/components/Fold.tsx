@@ -36,8 +36,17 @@ import { Ltr } from '@/components/Ltr';
  * a drawer nobody has to open to check, which is the whole of why the screen
  * is allowed to be closed at rest.
  */
+/* The mark's square, in one of the card's four tones. Written out in full
+   because Tailwind reads class names as text. */
+const MARK = {
+  camel:    'bg-tone-camel text-tone-camel-on',
+  boho:     'bg-tone-boho text-tone-boho-on',
+  rubine:   'bg-tone-rubine text-tone-rubine-on',
+  tamarind: 'bg-tone-tamarind text-tone-tamarind-on',
+} as const;
+
 export function Fold({
-  id, title, sub, icon: Icon, count, open = false, grouped = false, children,
+  id, title, sub, icon: Icon, tone, count, open = false, grouped = false, children,
 }: {
   id: string;
   title: string;
@@ -45,6 +54,9 @@ export function Fold({
   sub: string;
   /** The section's own mark. Absent on the rows that are not a section. */
   icon?: LucideIcon;
+  /** The tone the mark is filled with. Six rows that are one colour read as
+   *  one thing; without it the mark is the quiet accent wash it always was. */
+  tone?: keyof typeof MARK;
   /** How much is behind the row. Undefined means there is nothing honest to
    *  count — which is different from nought, and is drawn as nothing rather
    *  than as a zero somebody has to interpret. */
@@ -79,7 +91,7 @@ export function Fold({
         {Icon && (
           <span
             aria-hidden
-            className="grid size-9 shrink-0 place-items-center rounded-[11px] bg-accent-wash text-accent"
+            className={`grid size-9 shrink-0 place-items-center rounded-[11px] ${tone ? MARK[tone] : 'bg-accent-wash text-accent'}`}
           >
             <Icon size={18} strokeWidth={1.6} />
           </span>

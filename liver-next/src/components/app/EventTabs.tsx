@@ -30,6 +30,17 @@ export { EVENT_TABS, readTab, type EventTab };
  * A badge on every tab is decoration, and decoration on a number is how a
  * number stops being read.
  */
+/* One tone to a group, in the order the groups are drawn, so the four sets of
+   links are four colours down the rail and the open one is told from the rest
+   by hue as well as by position. Written out in full: Tailwind reads class
+   names as text. */
+const GROUP_TONE = {
+  plan:   { dot: 'bg-tone-rubine',   wash: 'lg:bg-tone-rubine-wash',   ink: 'text-tone-rubine-ink' },
+  people: { dot: 'bg-tone-boho',     wash: 'lg:bg-tone-boho-wash',     ink: 'text-tone-boho-ink' },
+  money:  { dot: 'bg-tone-tamarind', wash: 'lg:bg-tone-tamarind-wash', ink: 'text-tone-tamarind-ink' },
+  talk:   { dot: 'bg-tone-camel',    wash: 'lg:bg-tone-camel-wash',    ink: 'text-tone-camel-ink' },
+} as const;
+
 export async function EventTabs({
   clientId, active, counts,
 }: {
@@ -61,7 +72,10 @@ export async function EventTabs({
       <TabKeys hrefs={order.map(href)} active={order.indexOf(active)} />
       {EVENT_TAB_GROUPS.map((g) => (
         <div key={g.key} className="[display:contents] lg:flex lg:flex-col lg:gap-0.5 lg:[&:not(:first-of-type)]:mt-5">
-          <span className="mb-1 hidden px-3.5 text-micro text-ink-mute lg:block">{groupLabels[g.key]}</span>
+          <span className="mb-1 hidden items-center gap-2 px-3.5 text-micro text-ink-mute lg:flex">
+            <span aria-hidden className={`size-2 rounded-full ${GROUP_TONE[g.key].dot}`} />
+            {groupLabels[g.key]}
+          </span>
           {g.tabs.map((tab) => {
             const on = tab === active;
             const count = counts?.[tab];
@@ -73,11 +87,11 @@ export async function EventTabs({
                 scroll={false}
                 className={`inline-flex min-h-[44px] shrink-0 items-center gap-2 whitespace-nowrap border-b-2 text-body transition lg:min-h-[36px] lg:rounded-control lg:border-b-0 lg:px-3.5 ${
                   on
-                    ? 'border-accent text-accent lg:bg-surface-200'
+                    ? `border-accent text-accent ${GROUP_TONE[g.key].wash}`
                     : 'border-transparent text-ink-soft hover:text-ink lg:hover:bg-surface-200'
                 }`}
               >
-                {on && <span aria-hidden className="hidden size-1.5 rounded-full bg-accent lg:block" />}
+                {on && <span aria-hidden className={`hidden size-1.5 rounded-full lg:block ${GROUP_TONE[g.key].dot}`} />}
                 {labels[tab]}
                 <LinkHint />
                 {count !== undefined && count > 0 && (

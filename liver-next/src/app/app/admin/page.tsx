@@ -16,7 +16,7 @@ import { supabaseServer } from '@/lib/supabase/server';
 import { safeRows } from '@/lib/safe';
 import { publicEnv } from '@/lib/env';
 import { FeatureFlags } from '@/components/app/FeatureFlags';
-import { MetricBlock } from '@/components/app/Metric';
+import { MetricBlock, type Fill } from '@/components/app/Metric';
 import { Live } from '@/components/app/Live';
 import { ReleaseState } from '@/components/app/ReleaseState';
 import { readReleaseState } from '@/lib/releaseFs';
@@ -34,8 +34,8 @@ export async function generateMetadata() {
  *  This used to set the headline at `text-panel`, which is why the console
  *  carried the right palette and still did not look like the design: the
  *  numbers were the smallest thing on a screen that is entirely numbers. */
-function Band({ title, rows, href }: {
-  title: string; rows: { label: string; value: number }[]; href?: string;
+function Band({ title, rows, href, fill }: {
+  title: string; rows: { label: string; value: number }[]; href?: string; fill: Fill;
 }) {
   const [lead, ...rest] = rows;
   return (
@@ -43,6 +43,7 @@ function Band({ title, rows, href }: {
       kicker={title}
       value={lead.value.toLocaleString('en-US')}
       sub={lead.label}
+      fill={fill}
       href={href}
       rows={rest.map((r) => ({ label: r.label, value: r.value.toLocaleString('en-US'), href }))}
     />
@@ -56,7 +57,7 @@ async function Telemetry({ s }: { s: Stats }) {
     <section>
       <h2 className="eyebrow mb-3">{c.stats.title}</h2>
       <div className="grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
-        <Band title={c.stats.users} rows={[
+        <Band fill="camel" title={c.stats.users} rows={[
           { label: c.stats.users, value: s.usersTotal },
           { label: c.stats.active30, value: s.usersActive30d },
           { label: c.stats.neverSeen, value: s.usersNeverSeen },
@@ -66,17 +67,17 @@ async function Telemetry({ s }: { s: Stats }) {
             console deliberately cannot open: 0030 took root's master key away,
             so there is no couple to click through to and saying otherwise
             with an arrow would be a promise the database refuses to keep. */}
-        <Band href="#producers" title={c.stats.producers} rows={[
+        <Band fill="boho" href="#producers" title={c.stats.producers} rows={[
           { label: c.stats.approved, value: s.producersApproved },
           { label: c.stats.pending, value: s.producersPending },
           { label: c.stats.blocked, value: s.producersBlocked },
         ]} />
-        <Band title={c.stats.couples} rows={[
+        <Band fill="rubine" title={c.stats.couples} rows={[
           { label: c.stats.couples, value: s.couplesTotal },
           { label: c.stats.managed, value: s.couplesManaged },
           { label: c.stats.diy, value: s.couplesDiy },
         ]} />
-        <Band title={c.stats.events} rows={[
+        <Band fill="tamarind" title={c.stats.events} rows={[
           { label: c.stats.live, value: s.eventsLive },
           { label: c.stats.events, value: s.eventsTotal },
           { label: `${c.stats.leads} · ${c.stats.last30}`, value: s.leads30d },

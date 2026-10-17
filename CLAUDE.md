@@ -356,6 +356,37 @@ that has happened once.
   impression of one. A test walks every id to its file and back and asserts
   the three undealt ones are undealt, so a card without a picture fails the
   build rather than drawing a broken image inside his frame.
+- **The palette is varied by tone, not only used.** 3.12. The five colours on
+  the card were one rubine action on a camel page, and the card itself is
+  four blocks of colour with something written on each. So the four that are
+  not the ink are tones - camel, boho, rubine, tamarind - each as four tokens:
+  `--tone-X-rgb` the fill, `-on` what is written on it, `-wash` a ground that
+  sits under ink, `-ink` the colour that reads on that wash, in `globals.css`,
+  `tone-X` in Tailwind (`bg-tone-boho text-tone-boho-on`, always written out
+  in full because Tailwind reads class names as text), in both palettes and
+  collapsed to one in the high-contrast mode, where four browns told apart by
+  hue is not what was asked for. After dark the rubine and the tamarind are
+  lifted so a fill stands off the roast. Every fill against its label, the
+  label at 90% (80% of white over the boho is 4.2), every wash against its
+  ink and the accent on every wash are in `npm run contrast`, and the hand
+  copy is compared with the stylesheet token by token like the rest.
+  Where they are used, and the rule behind each: **a figure is a swatch**
+  (`Metric`/`MetricBlock` take `fill`, used by the numbers screen, the admin
+  console, the couple's four figures, which are two by two now, and the leads
+  column of the producer's desk); **a set is told apart by colour as well as by
+  word** (the four groups of the event rail, the five stages of the leads
+  board, the three roles of an evening, the two things a couple can be buying,
+  the kinds on the calendar, and the six drawers of the couple's screen, whose
+  mark is a filled square); and **a screen carries its area** (`AreaBar` over
+  every title, `areaOf` in `lib/area.ts`, tested: events and the home are the
+  rubine, leads, the crew and the brand the boho, the inbox, calendar and
+  suppliers the camel, the numbers and the console the tamarind). A path nobody
+  owns gets the default, so a new screen is coloured on the day it is made.
+  What was kept off the tones on purpose: late money and the waiting count
+  on the desk's money card stay white with the brick, because the red on a
+  camel fill measures 3.2 and a figure that is late must be readable before it
+  is pretty. The tone is which figure it is; the label and the number still
+  say what is wrong.
 - **The way in is Google's alone, and a new account says what it came for.**
   3.11, migration 0107. The sign-in screen is one button: the emailed code
   and the form that asked for it are off the screen, and the two actions

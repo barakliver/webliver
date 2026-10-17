@@ -4,7 +4,7 @@ import { serverCopy } from '@/lib/serverLocale';
 import type { Conversion } from '@/lib/analytics';
 import type { Funnel, SourceRow, Response, Cash, CashMonth } from '@/lib/analytics';
 import { Money, Ratio, ils } from '@/components/Ltr';
-import { Metric } from '@/components/app/Metric';
+import { Metric, MetricBlock, type Fill } from '@/components/app/Metric';
 
 
 /** A rate, or the reason there isn't one. Never a percentage sign with three
@@ -122,14 +122,18 @@ export async function Sources({ rows }: { rows: SourceRow[] }) {
  *  money that is late is a list of events, and enquiries still waiting are a
  *  list of people. Sending all of them to the same page so that everything
  *  looks clickable teaches the opposite of what it is meant to. */
-function Figure({ label, value, tone = 'ink', note, href }: {
+function Figure({ label, value, tone = 'ink', fill, note, href }: {
   /* ReactNode rather than string: an amount arrives as <Money>, which is an
      element, because a bare shekel string inside a Hebrew page renders with
      the sign on the wrong side. */
   label: string; value: React.ReactNode; tone?: 'ink' | 'ok' | 'warn' | 'bad';
+  /** On a block of one of the card's four tones. The number still says what
+   *  is late in words and in its label; the colour says which figure it is. */
+  fill?: Fill;
   note?: string; href?: string;
 }) {
-  /* No box. On this palette a figure is a figure and a hairline separates
+  if (fill) return <MetricBlock kicker={label} value={value} sub={note} fill={fill} href={href} />;
+  /* No box unless it was asked for. On this palette a figure is a figure and a hairline separates
      it from the next one; the filled tile it used to sit in belonged to the
      version with cards. The tone stays on the numeral, where it is measured
      against the ivory rather than against a wash. */
@@ -151,12 +155,13 @@ export async function CashPanel({ cash, months }: { cash: Cash; months: CashMont
           the numerals collide, which on a money panel reads as one wrong
           number rather than as three cramped ones. */}
       <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        <Figure label={c.cash.collected} value=<Money value={cash.collected} /> tone="ok" />
-        <Figure label={c.cash.due} value=<Money value={cash.due} /> href="/app/clients" />
+        <Figure label={c.cash.collected} value=<Money value={cash.collected} /> tone="ok" fill="boho" />
+        <Figure label={c.cash.due} value=<Money value={cash.due} /> fill="camel" href="/app/clients" />
         <Figure
           label={c.cash.overdue}
           value=<Money value={cash.overdue} />
           tone={cash.overdue > 0 ? 'bad' : 'ink'}
+          fill={cash.overdue > 0 ? 'rubine' : 'tamarind'}
           note={cash.overdueCount > 0 ? plural(c.cash.overdueCount, cash.overdueCount) : undefined}
           href={cash.overdue > 0 ? '/app/clients' : undefined}
         />
@@ -201,12 +206,14 @@ export async function ResponsePanel({ r }: { r: Response }) {
             : r.medianHours < 2 ? c.response.hours.one
             : fill(c.response.hours.many, { n: r.medianHours })}
           note={r.medianHours === null ? c.response.none : undefined}
+          fill="camel"
         />
-        <Figure label={c.response.answered} value={String(r.answered)} href="/app/leads" />
+        <Figure label={c.response.answered} value={String(r.answered)} href="/app/leads" fill="boho" />
         <Figure
           label={c.response.waiting}
           value={String(r.waiting)}
           tone={r.waiting > 0 ? 'bad' : 'ok'}
+          fill={r.waiting > 0 ? 'rubine' : 'tamarind'}
           href={r.waiting > 0 ? '/app/leads' : undefined}
         />
       </div>
@@ -227,29 +234,33 @@ export async function Health({ signed, overdue, waiting, overdueMoney }: {
           waiting. Nothing here is amber: late is the wine and nothing is
           the ink. */}
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <div className="card"><Figure
+        <Figure
+          fill="camel"
           label={c.health.signed}
           value={<Ratio of={signed.signed} total={signed.of} />}
           href="/app/clients"
-        /></div>
-        <div className="card"><Figure
+        />
+        <Figure
+          fill="boho"
           label={c.health.overdueTasks}
           value={String(overdue)}
           tone={overdue > 0 ? 'bad' : 'ok'}
           href={overdue > 0 ? '/app/clients' : undefined}
-        /></div>
-        <div className="card"><Figure
+        />
+        <Figure
+          fill="rubine"
           label={c.cash.overdue}
           value=<Money value={overdueMoney} />
           tone={overdueMoney > 0 ? 'bad' : 'ok'}
           href={overdueMoney > 0 ? '/app/clients' : undefined}
-        /></div>
-        <div className="card"><Figure
+        />
+        <Figure
+          fill="tamarind"
           label={c.health.waiting}
           value={String(waiting)}
           tone={waiting > 0 ? 'bad' : 'ok'}
           href={waiting > 0 ? '/app/leads' : undefined}
-        /></div>
+        />
       </div>
 
       {clear ? (
@@ -295,11 +306,13 @@ export async function ConversionPanel({ r }: { r: Conversion }) {
         <Figure
           label={cc.rate}
           value={<Ratio of={r.converted} total={r.leads} />}
+          fill="rubine"
           href="/app/leads"
         />
         <Figure
           label={cc.wait}
           value={r.medianDays === null ? '·' : cc.days.replace('{n}', String(r.medianDays))}
+          fill="camel"
         />
       </div>
       <p className="mt-3 text-body text-ink-mute">{cc.count.replace('{n}', String(r.leads))}</p>

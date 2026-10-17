@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
+import { AreaBar } from '@/components/app/AreaBar';
 import { SignupPath } from '@/components/app/SignupPath';
 import { appUiFor, prepFor, envelopesFor, vehiclesFor, meetingTemplatesFor } from '@/content/appUi';
 import { CopyProvider } from '@/components/app/CopyProvider';
@@ -1418,6 +1419,18 @@ export default async function DesignPage() {
         {/* The first screen anybody new sees, and the one nobody could open
             without being somebody new: the question, its second step, and
             what it says once it was answered. */}
+        {/* The bar over every page title, in the four tones of the card. */}
+        <Panel name="AreaBar · one colour to an area" note="events, leads, the calendar and the numbers: the four tones the card has, so a screen is told from the next at a glance">
+          <div className="flex flex-wrap gap-8">
+            {(['events', 'leads', 'calendar', 'insights'] as const).map((a) => (
+              <div key={a}>
+                <AreaBar area={a} />
+                <p className="text-meta text-ink-mute">{a}</p>
+              </div>
+            ))}
+          </div>
+        </Panel>
+
         <Panel name="Sign-up · the question, then the wait" note="what a new account is asked once, which event, and what it reads after answering">
           <div className="grid gap-5 lg:grid-cols-3">
             <SignupPath p={appUiFor('he').pending} intent={null} status="pending" mayAnswer />

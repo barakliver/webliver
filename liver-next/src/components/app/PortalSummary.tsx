@@ -42,47 +42,55 @@ export type SummaryRow = {
   figure?: boolean;
 };
 
+/* The four swatches of the palette card, in its order. Written out in full:
+   Tailwind reads class names as text, and the second class is the label at 90%
+   and not less, because 80% of white over the boho measures 4.2 against the
+   4.5 these 14px words need. */
+const SWATCH = [
+  { box: 'bg-tone-camel text-tone-camel-on', soft: 'text-tone-camel-on/90' },
+  { box: 'bg-tone-boho text-tone-boho-on', soft: 'text-tone-boho-on/90' },
+  { box: 'bg-tone-rubine text-tone-rubine-on', soft: 'text-tone-rubine-on/90' },
+  { box: 'bg-tone-tamarind text-tone-tamarind-on', soft: 'text-tone-tamarind-on/90' },
+] as const;
+
 export function PortalSummary({ rows, label }: { rows: SummaryRow[]; label: string }) {
   const live = rows.filter((r) => r.shown && r.figure);
   if (live.length === 0) return null;
 
   return (
     <nav aria-label={label} className="mt-8">
-      {/* One object rather than four.
-          These were four full-width rules with a figure on each, which is a
-          list, and a list of four is four things to look at. Inside a single
-          rounded surface they are one thing with four lines in it, which is
-          what the rest of this screen is being counted down to.
-
-          The separator starts where the label starts instead of at the edge,
-          which is the detail that makes a list read as drawn rather than as
-          stacked; it is done with a border on the row inside the padding,
-          so it inherits the row's inset for free and never doubles at the
-          top. */}
-      <ul className="list-none overflow-hidden rounded-card bg-surface-100 p-0">
-        {live.map((r, i) => (
-          <li key={r.key}>
-            <Link
-              href={r.href}
-              className={`mx-4 flex min-h-[52px] items-center justify-between gap-4
-                          transition-colors duration-touch hover:text-accent
-                          ${i > 0 ? 'border-t border-line' : ''}`}
-            >
-              <span className="text-lead">{r.label}</span>
-              <span className="flex items-center gap-2.5">
+      {/* Four swatches rather than four lines. This was one rounded surface
+          with a figure on each row, which reads as organised; it also read as
+          one white thing, and the card the palette came from is four blocks of
+          colour with something written on each. Two across, because a figure
+          in display type needs about this much room, and an odd one out takes
+          the whole row. */}
+      <ul className="grid list-none grid-cols-2 gap-3 p-0">
+        {live.map((r, i) => {
+          const sw = SWATCH[i % SWATCH.length];
+          return (
+            <li key={r.key} className={live.length % 2 === 1 && i === live.length - 1 ? 'col-span-2' : undefined}>
+              <Link
+                href={r.href}
+                className={`flex h-full min-h-[96px] flex-col justify-between gap-3 rounded-card p-4
+                            transition-transform duration-touch hover:-translate-y-0.5 ${sw.box}`}
+              >
+                <span className={`flex items-start justify-between gap-2 text-body ${sw.soft}`}>
+                  {r.label}
+                  {/* Points the way the language runs. In a right-to-left
+                      page a chevron aimed right is aimed backwards. */}
+                  <ChevronLeft size={15} strokeWidth={1.5} className="chev-onward shrink-0 opacity-70" aria-hidden />
+                </span>
                 {/* Some sections have a number worth showing beside the name
                     and some do not: the thread has no count that means
                     anything, and a made-up one is worse than the arrow alone. */}
                 {r.value !== null && (
-                  <span className="text-head font-medium tabular-nums">{r.value}</span>
+                  <span className="font-display text-figure font-light tabular-nums">{r.value}</span>
                 )}
-                {/* Points the way the language runs. In a right-to-left page
-                    a chevron aimed right is aimed backwards. */}
-                <ChevronLeft size={15} strokeWidth={1.5} className="chev-onward text-ink-mute" aria-hidden />
-              </span>
-            </Link>
-          </li>
-        ))}
+              </Link>
+            </li>
+          );
+        })}
       </ul>
     </nav>
   );

@@ -111,7 +111,12 @@ async function Row({ s }: { s: ClientStatus }) {
                 {s.color && <span aria-hidden className="size-2.5 shrink-0 rounded-full" style={{ background: s.color }} />}
                 <span className="truncate">{s.name}</span>
               </h3>
-              <span className="shrink-0 rounded-full bg-surface-200 px-3 py-0.5 text-micro text-ink-soft">
+              {/* The two things a couple can be buying, told apart by colour as
+                  well as by word: the whole year in the rubine, the evening in
+                  the boho. */}
+              <span className={`shrink-0 rounded-full px-3 py-0.5 text-micro ${
+                s.service === 'management' ? 'bg-tone-boho-wash text-tone-boho-ink' : 'bg-tone-rubine-wash text-tone-rubine-ink'
+              }`}>
                 {s.service === 'management' ? c.serviceManagement : c.serviceProduction}
               </span>
             </div>

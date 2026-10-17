@@ -41,12 +41,12 @@ const SHOW = 2;
 
 const TONE: Record<CalItem['kind'], string> = {
   event: 'bg-accent text-surface',
-  task: 'bg-surface-200 text-ink',
-  payment: 'border border-accent text-accent',
-  entry: 'bg-ok-wash text-ok',
+  task: 'bg-tone-boho text-tone-boho-on',
+  payment: 'border border-tone-tamarind text-tone-tamarind-ink',
+  entry: 'bg-tone-camel text-tone-camel-on',
 };
 const DOT: Record<CalItem['kind'], string> = {
-  event: 'bg-accent', task: 'bg-ink-mute', payment: 'border border-accent', entry: 'bg-ok',
+  event: 'bg-accent', task: 'bg-tone-boho', payment: 'border border-tone-tamarind', entry: 'bg-tone-camel',
 };
 const DAY_TINT: Record<Verdict, string> = {
   clear: '',
@@ -201,9 +201,9 @@ export function MonthGrid({ items, month, today, locale, ui, open = '', switches
 
       <div className="mt-3 flex flex-wrap gap-2 text-meta text-ink-soft">
         <span className="inline-flex items-center gap-1.5"><span aria-hidden className="size-2.5 rounded-full bg-accent" />{c.legendEvent}</span>
-        <span className="inline-flex items-center gap-1.5"><span aria-hidden className="size-2.5 rounded-full bg-ink-mute" />{c.legendTask}</span>
-        <span className="inline-flex items-center gap-1.5"><span aria-hidden className="size-2.5 rounded-full border border-accent" />{c.legendPayment}</span>
-        <span className="inline-flex items-center gap-1.5"><span aria-hidden className="size-2.5 rounded-full bg-ok" />{c.legendEntry}</span>
+        <span className="inline-flex items-center gap-1.5"><span aria-hidden className="size-2.5 rounded-full bg-tone-boho" />{c.legendTask}</span>
+        <span className="inline-flex items-center gap-1.5"><span aria-hidden className="size-2.5 rounded-full border border-tone-tamarind" />{c.legendPayment}</span>
+        <span className="inline-flex items-center gap-1.5"><span aria-hidden className="size-2.5 rounded-full bg-tone-camel" />{c.legendEntry}</span>
         <span className="inline-flex items-center gap-1.5"><span aria-hidden className="size-2.5 rounded-full bg-bad" />{ui.hebrewCal.blockedLegend}</span>
         <span className="inline-flex items-center gap-1.5"><span aria-hidden className="size-2.5 rounded-full bg-accent-wash outline outline-1 -outline-offset-1 outline-accent/40" />{ui.hebrewCal.checkLegend}</span>
         {anyHoliday && <span className="inline-flex items-center gap-1.5 text-accent">{c.holidayLegend}</span>}

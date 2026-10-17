@@ -1,4 +1,5 @@
 import { LoadTrouble } from '@/components/app/LoadTrouble';
+import { AreaBar } from '@/components/app/AreaBar';
 /**
  * Every screen's first two lines, and the controls that belong beside them.
  *
@@ -29,6 +30,7 @@ export function PageHead({ title, sub, actions, report }: {
 
     <div className="mb-8 flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
       <div className="min-w-0 flex-1">
+        <AreaBar />
         <h1 className="inline-flex items-center gap-2 font-display text-title font-light text-ink">
           {title}
         </h1>

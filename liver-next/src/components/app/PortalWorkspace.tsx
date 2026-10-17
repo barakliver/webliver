@@ -347,7 +347,7 @@ export function PortalWorkspace({
       {(() => {
         const folds: [string, React.ReactNode][] = [
         ['mine', (can('tasks') && (
-          <Fold id="fold-mine" grouped icon={ListChecks} count={filteredTasks.filter((t) => !t.done).length} title={ui.portal.jumpMine} sub={ui.portal.foldMineSub}>
+          <Fold id="fold-mine" grouped tone="rubine" icon={ListChecks} count={filteredTasks.filter((t) => !t.done).length} title={ui.portal.jumpMine} sub={ui.portal.foldMineSub}>
             <div id="tasks" data-jump={ui.portal.rowTasks} data-jump-group="me" className="scroll-mt-28"><TaskList clientId={c.id} tasks={filteredTasks} viewer="client" viewerId={viewerId} /></div>
           </Fold>
         ))],
@@ -358,7 +358,7 @@ export function PortalWorkspace({
             than inside the list's, because a game stacked on top of a
             checklist is a checklist that got longer. */
         ['bingo', (can('bingo') && (
-          <Fold id="fold-bingo" grouped icon={Grid3x3} title={ui.portal.rowBingo} sub={ui.portal.bingo.sub}>
+          <Fold id="fold-bingo" grouped tone="camel" icon={Grid3x3} title={ui.portal.rowBingo} sub={ui.portal.bingo.sub}>
             <div id="bingo" data-jump={ui.portal.rowBingo} data-jump-group="me" className="scroll-mt-28">
               <WeddingBingo clientId={c.id} tasks={filteredTasks} />
             </div>
@@ -370,7 +370,7 @@ export function PortalWorkspace({
             sales screen wearing the clothes of a tool. Money is one door for
             both the payments and the budget. */
         ['money', (can('budget') && (
-          <Fold id="fold-money" grouped icon={Wallet} count={budget.length} title={ui.portal.jumpMoney} sub={ui.portal.foldMoneySub}>
+          <Fold id="fold-money" grouped tone="tamarind" icon={Wallet} count={budget.length} title={ui.portal.jumpMoney} sub={ui.portal.foldMoneySub}>
             {/* The working shown before the lists, and only once there is a
                 budget to show: without lines the five figures are five
                 zeros. */}
@@ -400,7 +400,7 @@ export function PortalWorkspace({
         ))],
 
         ['guests', ((can('guests') || can('seating') || (c.guest_site_on && c.guest_token)) && (
-          <Fold id="fold-guests" grouped icon={Users} count={guests.length} title={ui.portal.jumpGuests} sub={ui.portal.foldGuestsSub}>
+          <Fold id="fold-guests" grouped tone="boho" icon={Users} count={guests.length} title={ui.portal.jumpGuests} sub={ui.portal.foldGuestsSub}>
             {/* The link they paste into the family group, once the producer
                 has switched the page on. First in this drawer because
                 sending it is what a couple comes here to do before anybody
@@ -421,7 +421,7 @@ export function PortalWorkspace({
             two files and five places on the screen; a couple looking for
             "the photographer" was never going to guess which. */
         ['vendors', ((can('vendors') || can('meetings') || slots.vendorhq || slots.contracts || slots.venues) && (
-          <Fold id="fold-vendors" grouped icon={Handshake} count={data.vendorsFor(c.id).length} title={ui.portal.jumpVendors} sub={ui.portal.foldVendorsSub}>
+          <Fold id="fold-vendors" grouped tone="rubine" icon={Handshake} count={data.vendorsFor(c.id).length} title={ui.portal.jumpVendors} sub={ui.portal.foldVendorsSub}>
             {can('vendors') && (
               <div id="vendors" data-jump={ui.portal.rowVendors} data-jump-group="vendors" className="scroll-mt-28 space-y-10">
                 <PortalVendors vendors={data.vendorsFor(c.id)} c={ui.portal} locale={ui.locale} />
@@ -458,7 +458,7 @@ export function PortalWorkspace({
             calendar that carries the dates onto their phones. */
         ['day', ((can('runsheet') || can('moodboard') || slots.studio || slots.files || slots.lists
           || slots.prep || slots.envelopes || slots.transport || slots.calendar || slots.bar) && (
-          <Fold id="fold-day" grouped icon={CalendarHeart} title={ui.portal.jumpDay} sub={ui.portal.foldDaySub}>
+          <Fold id="fold-day" grouped tone="camel" icon={CalendarHeart} title={ui.portal.jumpDay} sub={ui.portal.foldDaySub}>
             {can('runsheet') && (
               <div id="runsheet" data-jump={ui.portal.rowRunsheet} data-jump-group="day" className="scroll-mt-28"><DaySchedule
                 clientId={c.id}
@@ -485,7 +485,7 @@ export function PortalWorkspace({
         ))],
 
         ['talk', (slots.thread && (
-          <Fold id="fold-talk" grouped icon={MessageCircle} title={ui.portal.jumpTalk} sub={ui.portal.foldTalkSub}>
+          <Fold id="fold-talk" grouped tone="tamarind" icon={MessageCircle} title={ui.portal.jumpTalk} sub={ui.portal.foldTalkSub}>
             {slots.thread}
           </Fold>
         ))],

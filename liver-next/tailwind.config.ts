@@ -133,6 +133,32 @@ const config: Config = {
           DEFAULT: 'rgb(var(--blush-rgb, 244 228 228) / <alpha-value>)',
           wash:    'rgb(var(--blush-wash-rgb, 250 241 241) / <alpha-value>)',
         },
+        /* The card's four tones, each as fill, the colour written on the fill,
+           a wash and the ink that reads on the wash. See globals.css. */
+        'tone-camel': {
+          DEFAULT: 'rgb(var(--tone-camel-rgb) / <alpha-value>)',
+          on:      'rgb(var(--tone-camel-on-rgb) / <alpha-value>)',
+          wash:    'rgb(var(--tone-camel-wash-rgb) / <alpha-value>)',
+          ink:     'rgb(var(--tone-camel-ink-rgb) / <alpha-value>)',
+        },
+        'tone-boho': {
+          DEFAULT: 'rgb(var(--tone-boho-rgb) / <alpha-value>)',
+          on:      'rgb(var(--tone-boho-on-rgb) / <alpha-value>)',
+          wash:    'rgb(var(--tone-boho-wash-rgb) / <alpha-value>)',
+          ink:     'rgb(var(--tone-boho-ink-rgb) / <alpha-value>)',
+        },
+        'tone-rubine': {
+          DEFAULT: 'rgb(var(--tone-rubine-rgb) / <alpha-value>)',
+          on:      'rgb(var(--tone-rubine-on-rgb) / <alpha-value>)',
+          wash:    'rgb(var(--tone-rubine-wash-rgb) / <alpha-value>)',
+          ink:     'rgb(var(--tone-rubine-ink-rgb) / <alpha-value>)',
+        },
+        'tone-tamarind': {
+          DEFAULT: 'rgb(var(--tone-tamarind-rgb) / <alpha-value>)',
+          on:      'rgb(var(--tone-tamarind-on-rgb) / <alpha-value>)',
+          wash:    'rgb(var(--tone-tamarind-wash-rgb) / <alpha-value>)',
+          ink:     'rgb(var(--tone-tamarind-ink-rgb) / <alpha-value>)',
+        },
 
         /* State, deliberately nowhere near the accent. On a gold system a gold
            "good" is unreadable as good, so good is green, waiting is amber and

@@ -27,9 +27,9 @@ export type DiaryEntryRow = {
 const ICON = { event: CalendarHeart, task: CheckCircle2, payment: Wallet, entry: NotebookPen };
 const TONE: Record<CalItem['kind'], string> = {
   event: 'bg-accent-wash text-accent',
-  task: 'bg-surface-200 text-ink-soft',
-  payment: 'border border-accent text-accent',
-  entry: 'bg-ok-wash text-ok',
+  task: 'bg-tone-boho-wash text-tone-boho-ink',
+  payment: 'border border-tone-tamarind text-tone-tamarind-ink',
+  entry: 'bg-tone-camel-wash text-tone-camel-ink',
 };
 
 function Save() {

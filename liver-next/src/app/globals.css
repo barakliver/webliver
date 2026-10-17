@@ -183,6 +183,29 @@
     --blush-rgb: 232 217 200; /* #E8D9C8 oat */
     --blush-wash-rgb: 243 235 224; /* #F3EBE0 */
 
+    /* The card's four lights and darks as tones, so a screen can be told
+       apart from the next by colour and not only by its title. Each tone is
+       four numbers: the fill, what is written on the fill, a wash to sit
+       under ink, and the ink that reads on that wash. The roast is the ink
+       and so is not a fifth tone. Fills carry words only in their own `on`
+       colour and washes only in `ink`; measured in npm run contrast. */
+    --tone-camel-rgb: 198 179 154;    /* #C6B39A Camel Coat */
+    --tone-camel-on-rgb: 40 11 15;    /* #280B0F */
+    --tone-camel-wash-rgb: 239 228 210; /* #EFE4D2 */
+    --tone-camel-ink-rgb: 106 89 66;  /* #6A5942 */
+    --tone-boho-rgb: 123 105 78;      /* #7B694E Boho */
+    --tone-boho-on-rgb: 255 255 255;
+    --tone-boho-wash-rgb: 230 224 208; /* #E6E0D0 */
+    --tone-boho-ink-rgb: 94 79 56;    /* #5E4F38 */
+    --tone-rubine-rgb: 109 58 60;     /* #6D3A3C Rubine */
+    --tone-rubine-on-rgb: 255 255 255;
+    --tone-rubine-wash-rgb: 238 221 219; /* #EEDDDB */
+    --tone-rubine-ink-rgb: 109 58 60;
+    --tone-tamarind-rgb: 54 19 25;    /* #361319 Tamarind */
+    --tone-tamarind-on-rgb: 218 203 182; /* #DACBB6 */
+    --tone-tamarind-wash-rgb: 227 214 214; /* #E3D6D6 */
+    --tone-tamarind-ink-rgb: 54 19 25;
+
     /* The veil under a modal. Its own token rather than the ink at 40%,
        which is what it used to be: on the dark palette the ink is near-white,
        so every scrim in the product lit the page up instead of dimming it.
@@ -876,6 +899,23 @@
   }
   [dir='rtl'] .rule-gold { transform: scaleX(-1); }
 
+  /* Which part of the product this screen belongs to, said in colour. The shell
+     writes `data-area` on the page and everything that wants to carry it reads
+     `--area-rgb`: the short bar over the title, and nothing else, because the
+     point is that a screen can be told from the next at a glance and not that
+     the page is painted. Four areas on four tones, the way the card has four. */
+  [data-area] { --area-rgb: var(--tone-rubine-rgb); }
+  [data-area='leads'], [data-area='crew'], [data-area='brand'] { --area-rgb: var(--tone-boho-rgb); }
+  [data-area='inbox'], [data-area='calendar'], [data-area='vendors'] { --area-rgb: var(--tone-camel-rgb); }
+  [data-area='insights'], [data-area='admin'], [data-area='money'] { --area-rgb: var(--tone-tamarind-rgb); }
+  .area-bar {
+    display: block;
+    width: 44px;
+    height: 4px;
+    border-radius: 9999px;
+    background: rgb(var(--area-rgb));
+  }
+
   /* A chevron that means "onward".
 
      Every one of these was drawn as a left chevron, which is correct in Hebrew
@@ -1015,6 +1055,26 @@
     --sage-wash-rgb: 42 58 48; /* #2A3A30 */
     --blush-rgb: 74 42 48; /* #4A2A30 */
     --blush-wash-rgb: 63 35 40; /* #3F2328 */
+
+    /* The same four on the roast. A fill has to stand off the ground it sits
+       on, so the rubine and the tamarind are lifted; the washes are the tones
+       dimmed under the card. */
+    --tone-camel-rgb: 198 179 154;
+    --tone-camel-on-rgb: 40 11 15;
+    --tone-camel-wash-rgb: 78 56 50;  /* #4E3832 */
+    --tone-camel-ink-rgb: 198 179 154;
+    --tone-boho-rgb: 123 105 78;
+    --tone-boho-on-rgb: 255 255 255;
+    --tone-boho-wash-rgb: 70 58 42;   /* #463A2A */
+    --tone-boho-ink-rgb: 205 190 160; /* #CDBEA0 */
+    --tone-rubine-rgb: 150 76 80;     /* #964C50 */
+    --tone-rubine-on-rgb: 255 255 255;
+    --tone-rubine-wash-rgb: 84 38 44; /* #54262C */
+    --tone-rubine-ink-rgb: 240 190 190; /* #F0BEBE */
+    --tone-tamarind-rgb: 106 64 72;   /* #6A4048 */
+    --tone-tamarind-on-rgb: 218 203 182;
+    --tone-tamarind-wash-rgb: 66 34 42; /* #42222A */
+    --tone-tamarind-ink-rgb: 218 203 182;
   }
 
   /* A producer's own accent arrives as a style attribute, which outranks any
@@ -1111,6 +1171,12 @@
     --accent-line-rgb: 58 19 24;
     --accent-light-rgb: 255 255 255;
     --accent-wash: #f4efe4;
+    /* One tone, because a mode asked for the maximum is not the place for
+       four shades of brown to be told apart by. */
+    --tone-camel-rgb: 58 19 24; --tone-camel-on-rgb: 255 255 255; --tone-camel-wash-rgb: 240 240 240; --tone-camel-ink-rgb: 0 0 0;
+    --tone-boho-rgb: 58 19 24; --tone-boho-on-rgb: 255 255 255; --tone-boho-wash-rgb: 240 240 240; --tone-boho-ink-rgb: 0 0 0;
+    --tone-rubine-rgb: 58 19 24; --tone-rubine-on-rgb: 255 255 255; --tone-rubine-wash-rgb: 240 240 240; --tone-rubine-ink-rgb: 0 0 0;
+    --tone-tamarind-rgb: 58 19 24; --tone-tamarind-on-rgb: 255 255 255; --tone-tamarind-wash-rgb: 240 240 240; --tone-tamarind-ink-rgb: 0 0 0;
     /* Glass is the first thing to go. A translucent panel over a gradient is
        exactly the surface somebody turns this mode on to escape: the text sits
        on a ground that changes across the page and the edge is barely there.

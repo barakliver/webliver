@@ -33,6 +33,21 @@ import { cn } from '@/lib/utils';
 type Size = 'lead' | 'tile';
 type Tone = 'ink' | 'accent' | 'ok' | 'warn' | 'bad';
 
+/** The four tones of the palette card, for a figure that is drawn as a block
+ *  of colour rather than as ink on paper. */
+export type Fill = 'camel' | 'boho' | 'rubine' | 'tamarind';
+
+/* Written out in full, never assembled from the name: Tailwind reads class
+   names as text and a class built with a template string is never generated.
+   `soft` is 90% of the on-colour and not less, because 80% of white over the
+   boho measures 4.2 and these are 12px and 14px words. */
+const FILL: Record<Fill, { box: string; on: string; soft: string; rule: string }> = {
+  camel:    { box: 'bg-tone-camel text-tone-camel-on',       on: 'text-tone-camel-on',    soft: 'text-tone-camel-on/90',    rule: 'border-tone-camel-on/25' },
+  boho:     { box: 'bg-tone-boho text-tone-boho-on',         on: 'text-tone-boho-on',     soft: 'text-tone-boho-on/90',     rule: 'border-tone-boho-on/25' },
+  rubine:   { box: 'bg-tone-rubine text-tone-rubine-on',     on: 'text-tone-rubine-on',   soft: 'text-tone-rubine-on/90',   rule: 'border-tone-rubine-on/25' },
+  tamarind: { box: 'bg-tone-tamarind text-tone-tamarind-on', on: 'text-tone-tamarind-on', soft: 'text-tone-tamarind-on/90', rule: 'border-tone-tamarind-on/25' },
+};
+
 /* Large text clears AA at 3:1 rather than 4.5:1, which is the whole reason
    `accent-bright` exists: the readable-as-words gold is too dark to sing at
    62px, and the decorative one cannot carry a number that means something.
@@ -119,7 +134,7 @@ function Way({ on }: { on?: boolean }) {
 }
 
 export function Metric({
-  kicker, value, sub, size = 'tile', tone = 'ink', href, onClick, label, className,
+  kicker, value, sub, size = 'tile', tone = 'ink', fill, href, onClick, label, className,
 }: {
   kicker?: string;
   /** Already isolated where it needs to be: <Money>, <Ratio>, or a bare count. */
@@ -127,6 +142,10 @@ export function Metric({
   sub?: ReactNode;
   size?: Size;
   tone?: Tone;
+  /** Drawn on a block of one of the four tones instead of on the page. The
+   *  figure takes the tone's own on-colour and `tone` is ignored: a numeral
+   *  in the warning colour on a rubine block would be two decisions fighting. */
+  fill?: Fill;
   /** Where this figure is explained. Makes the whole block the way in. */
   href?: string;
   /** Or, when the detail is on this same screen, what to do instead. */
@@ -138,7 +157,7 @@ export function Metric({
   return (
     <Shell href={href} onClick={onClick} label={label ?? kicker} className={className}>
       {kicker && (
-        <p className="eyebrow flex items-center gap-1.5">
+        <p className={cn('eyebrow flex items-center gap-1.5', fill && FILL[fill].soft)}>
           {kicker}
           <Way on={!!href || !!onClick} />
         </p>
@@ -148,12 +167,12 @@ export function Metric({
           anyway, so writing it would only look like it did something. */}
       <p className={cn(
         'font-display font-light tabular-nums transition-colors duration-touch',
-        SIZE[size], TONE[tone], kicker && 'mt-3',
-        (href || onClick) && 'group-hover/metric:text-accent-bright',
+        SIZE[size], fill ? FILL[fill].on : TONE[tone], kicker && 'mt-3',
+        (href || onClick) && !fill && 'group-hover/metric:text-accent-bright',
       )}>
         {value}
       </p>
-      {sub && <p className="mt-2.5 text-body leading-relaxed text-ink-mute">{sub}</p>}
+      {sub && <p className={cn('mt-2.5 text-body leading-relaxed', fill ? FILL[fill].soft : 'text-ink-mute')}>{sub}</p>}
     </Shell>
   );
 }
@@ -170,13 +189,13 @@ export function Metric({
  */
 export type Row = { label: string; value: ReactNode; tone?: Tone; href?: string };
 
-export function MetricRows({ rows, className }: { rows: Row[]; className?: string }) {
+export function MetricRows({ rows, className, fill }: { rows: Row[]; className?: string; fill?: Fill }) {
   return (
     <ul className={cn('list-none p-0', className)}>
       {rows.map((row) => {
         const body = (
           <>
-            <span className="flex items-center gap-1.5 text-body text-ink-soft">
+            <span className={cn('flex items-center gap-1.5 text-body', fill ? FILL[fill].soft : 'text-ink-soft')}>
               {row.label}
               <Way on={!!row.href} />
             </span>
@@ -187,15 +206,15 @@ export function MetricRows({ rows, className }: { rows: Row[]; className?: strin
                 rather than as the borrowed value it was. */}
             <span className={cn(
               'font-display text-head font-light tabular-nums transition-colors duration-touch',
-              ROW_TONE[row.tone ?? 'ink'],
-              row.href && 'group-hover/metric:text-accent',
+              fill ? FILL[fill].on : ROW_TONE[row.tone ?? 'ink'],
+              row.href && !fill && 'group-hover/metric:text-accent',
             )}>
               {row.value}
             </span>
           </>
         );
         return (
-          <li key={row.label} className="border-b border-line last:border-0">
+          <li key={row.label} className={cn('border-b last:border-0', fill ? FILL[fill].rule : 'border-line')}>
             {row.href ? (
               <Link
                 href={row.href}
@@ -217,7 +236,7 @@ export function MetricRows({ rows, className }: { rows: Row[]; className?: strin
 
 /** A metric with its own supporting rows, which is how most screens use it. */
 export function MetricBlock({
-  kicker, value, sub, rows, size = 'tile', tone = 'ink', href, label, className,
+  kicker, value, sub, rows, size = 'tile', tone = 'ink', fill, href, label, className,
 }: {
   kicker?: string;
   value: ReactNode;
@@ -225,17 +244,20 @@ export function MetricBlock({
   rows?: Row[];
   size?: Size;
   tone?: Tone;
+  /** The whole block on one of the four tones: the card's own way of showing
+   *  a figure, a swatch with a number written on it. */
+  fill?: Fill;
   href?: string;
   label?: string;
   className?: string;
 }) {
   return (
-    <div className={cn('min-w-0', className)}>
-      <Metric kicker={kicker} value={value} sub={sub} size={size} tone={tone} href={href} label={label} />
+    <div className={cn('min-w-0', fill && ['rounded-kpi p-5 sm:p-6', FILL[fill].box], className)}>
+      <Metric kicker={kicker} value={value} sub={sub} size={size} tone={tone} fill={fill} href={href} label={label} />
       {rows && rows.length > 0 && (
         <>
-          <hr className="rule-gold my-5" />
-          <MetricRows rows={rows} />
+          {fill ? <hr className={cn('my-5 border-0 border-t', FILL[fill].rule)} /> : <hr className="rule-gold my-5" />}
+          <MetricRows rows={rows} fill={fill} />
         </>
       )}
     </div>

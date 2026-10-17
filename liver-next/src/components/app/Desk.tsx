@@ -111,17 +111,20 @@ export function LeadFigures({ stats, copy }: { stats: Stats; copy: LeadCopy }) {
     { label: copy.leadsHours, value: stats.responseHours === null ? copy.unknown : String(stats.responseHours) },
   ];
   return (
-    <section className="card animate-rise" style={{ animationDelay: '.3s' }} aria-labelledby="desk-leads">
-      <h2 id="desk-leads" className="eyebrow">{copy.leads}</h2>
+    /* A swatch of the card's Boho rather than a white card like its
+       neighbours: three columns in one white are three columns of the same
+       thing, and the leads are the one that is about people waiting. */
+    <section className="animate-rise rounded-card bg-tone-boho p-5 text-tone-boho-on sm:p-6" style={{ animationDelay: '.3s' }} aria-labelledby="desk-leads">
+      <h2 id="desk-leads" className="eyebrow text-tone-boho-on/90">{copy.leads}</h2>
       <dl className="mt-2">
         {rows.map((r) => (
-          <div key={r.label} className="flex items-baseline justify-between gap-3 border-b border-line py-2.5 last:border-b-0">
-            <dt className="text-body text-ink-soft">{r.label}</dt>
-            <dd className="font-display text-figure font-light text-ink tabular-nums"><bdi>{r.value}</bdi></dd>
+          <div key={r.label} className="flex items-baseline justify-between gap-3 border-b border-tone-boho-on/25 py-2.5 last:border-b-0">
+            <dt className="text-body text-tone-boho-on/90">{r.label}</dt>
+            <dd className="font-display text-figure font-light tabular-nums text-tone-boho-on"><bdi>{r.value}</bdi></dd>
           </div>
         ))}
       </dl>
-      <Link href="/app/leads" className="btn-quiet mt-2 px-0 text-body">
+      <Link href="/app/leads" className="mt-2 inline-flex min-h-[44px] items-center gap-1 text-body text-tone-boho-on underline-offset-4 hover:underline">
         {copy.allLeads}
         <ChevronLeft size={16} strokeWidth={1.5} aria-hidden className="chev-onward" />
       </Link>

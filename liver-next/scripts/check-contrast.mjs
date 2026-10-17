@@ -80,6 +80,12 @@ const c = {
   warn: '#7D511B', warnWash: '#F1E4CF',
   bad: '#A33A33', badWash: '#F3DDD8',
   white: '#FFFFFF',
+  /* The card's four tones as fills, the colour written on each, a wash to sit
+     under ink and the ink that reads on that wash. */
+  toneCamel: '#C6B39A',    toneCamelOn: '#280B0F',    toneCamelWash: '#EFE4D2',    toneCamelInk: '#6A5942',
+  toneBoho: '#7B694E',     toneBohoOn: '#FFFFFF',     toneBohoWash: '#E6E0D0',     toneBohoInk: '#5E4F38',
+  toneRubine: '#6D3A3C',   toneRubineOn: '#FFFFFF',   toneRubineWash: '#EEDDDB',   toneRubineInk: '#6D3A3C',
+  toneTamarind: '#361319', toneTamarindOn: '#DACBB6', toneTamarindWash: '#E3D6D6', toneTamarindInk: '#361319',
 };
 
 /* ── the two copies have to agree ─────────────────────────────────────────
@@ -136,6 +142,10 @@ const TOKENS = {
   warn: 'warn', warnWash: 'warn-wash',
   bad: 'bad', badWash: 'bad-wash',
   line: 'line', lineStrong: 'line-strong', lineControl: 'line-control',
+  toneCamel: 'tone-camel', toneCamelOn: 'tone-camel-on', toneCamelWash: 'tone-camel-wash', toneCamelInk: 'tone-camel-ink',
+  toneBoho: 'tone-boho', toneBohoOn: 'tone-boho-on', toneBohoWash: 'tone-boho-wash', toneBohoInk: 'tone-boho-ink',
+  toneRubine: 'tone-rubine', toneRubineOn: 'tone-rubine-on', toneRubineWash: 'tone-rubine-wash', toneRubineInk: 'tone-rubine-ink',
+  toneTamarind: 'tone-tamarind', toneTamarindOn: 'tone-tamarind-on', toneTamarindWash: 'tone-tamarind-wash', toneTamarindInk: 'tone-tamarind-ink',
 };
 
 function assertMatchesStylesheet() {
@@ -181,6 +191,14 @@ const over = (rgba, ground) => {
   return '#' + [
     mix(+m[1], (g >> 16) & 255), mix(+m[2], (g >> 8) & 255), mix(+m[3], g & 255),
   ].map((v) => v.toString(16).padStart(2, '0')).join('');
+};
+
+/* A colour at a given strength over another, flattened, so a translucent label
+   is measured as what the eye sees. */
+const mixHex = (fg, bg, a) => {
+  const [f, b] = [parseInt(fg.slice(1), 16), parseInt(bg.slice(1), 16)];
+  const m = (sh) => Math.round(((f >> sh) & 255) * a + ((b >> sh) & 255) * (1 - a));
+  return '#' + [16, 8, 0].map((sh) => m(sh).toString(16).padStart(2, '0')).join('').toUpperCase();
 };
 
 const checks = [
@@ -236,6 +254,31 @@ const checks = [
   ['the focus ring, on the ground', c.focus,     c.surface,     3.0],
   ['the focus ring, on the card',  c.focus,      c.card,        3.0],
   ['the focus ring, on the step up', c.focus,    c.surface200,  3.0],
+  /* The four tones. A fill carries words only in its own on-colour, and a wash
+     carries words only in its own ink; the soft text on a fill is the on-colour
+     at 90%, so that is checked as well, flattened over the fill. */
+  ['camel fill, its label',        c.toneCamelOn,    c.toneCamel,    4.5],
+  ['boho fill, its label',         c.toneBohoOn,     c.toneBoho,     4.5],
+  ['rubine fill, its label',       c.toneRubineOn,   c.toneRubine,   4.5],
+  ['tamarind fill, its label',     c.toneTamarindOn, c.toneTamarind, 4.5],
+  ['camel fill, soft label',       mixHex(c.toneCamelOn, c.toneCamel, .9),       c.toneCamel,    4.5],
+  ['boho fill, soft label',        mixHex(c.toneBohoOn, c.toneBoho, .9),         c.toneBoho,     4.5],
+  ['rubine fill, soft label',      mixHex(c.toneRubineOn, c.toneRubine, .9),     c.toneRubine,   4.5],
+  ['tamarind fill, soft label',    mixHex(c.toneTamarindOn, c.toneTamarind, .9), c.toneTamarind, 4.5],
+  ['camel wash, its ink',          c.toneCamelInk,    c.toneCamelWash,    4.5],
+  ['boho wash, its ink',           c.toneBohoInk,     c.toneBohoWash,     4.5],
+  ['rubine wash, its ink',         c.toneRubineInk,   c.toneRubineWash,   4.5],
+  ['tamarind wash, its ink',       c.toneTamarindInk, c.toneTamarindWash, 4.5],
+  ['body ink on the camel wash',   c.ink, c.toneCamelWash,    4.5],
+  ['body ink on the boho wash',    c.ink, c.toneBohoWash,     4.5],
+  ['body ink on the rubine wash',  c.ink, c.toneRubineWash,   4.5],
+  ['body ink on the tamarind wash', c.ink, c.toneTamarindWash, 4.5],
+  /* The open tab in the event rail is the accent on the wash of its group's
+     tone, so the accent has to read on all four. */
+  ['accent on the camel wash',     c.accent, c.toneCamelWash,    4.5],
+  ['accent on the boho wash',      c.accent, c.toneBohoWash,     4.5],
+  ['accent on the rubine wash',    c.accent, c.toneRubineWash,   4.5],
+  ['accent on the tamarind wash',  c.accent, c.toneTamarindWash, 4.5],
 ];
 
 let failed = 0;
@@ -334,6 +377,10 @@ const d = {
   warn: '#D9A066', warnWash: '#3C2616',
   bad: '#F0A39B', badWash: '#4A1C20',
   sage: '#2F3D33', blush: '#4A2A30',
+  toneCamel: '#C6B39A',    toneCamelOn: '#280B0F',    toneCamelWash: '#4E3832',    toneCamelInk: '#C6B39A',
+  toneBoho: '#7B694E',     toneBohoOn: '#FFFFFF',     toneBohoWash: '#463A2A',     toneBohoInk: '#CDBEA0',
+  toneRubine: '#964C50',   toneRubineOn: '#FFFFFF',   toneRubineWash: '#54262C',   toneRubineInk: '#F0BEBE',
+  toneTamarind: '#6A4048', toneTamarindOn: '#DACBB6', toneTamarindWash: '#42222A', toneTamarindInk: '#DACBB6',
 };
 
 console.log('\n  כהה');
@@ -374,6 +421,16 @@ line('the edge of a field',            d.lineControl, d.surface, 3.0);
 line('the focus ring, on the ground',  d.focus,       d.surface, 3.0);
 line('the focus ring, on the card',    d.focus,       d.card,    3.0);
 line('the focus ring, on the step up', d.focus,       d.surface200, 3.0);
+
+/* The four tones after dark. Fills are lifted so they stand off the roast; the
+   washes are the tones dimmed under the card. */
+for (const [n, k] of [['camel','Camel'],['boho','Boho'],['rubine','Rubine'],['tamarind','Tamarind']]) {
+  line(`${n} fill, its label`,      d[`tone${k}On`],  d[`tone${k}`],     4.5);
+  line(`${n} fill, soft label`,     mixHex(d[`tone${k}On`], d[`tone${k}`], .9), d[`tone${k}`], 4.5);
+  line(`${n} wash, its ink`,        d[`tone${k}Ink`], d[`tone${k}Wash`], 4.5);
+  line(`body ink on the ${n} wash`, d.ink,             d[`tone${k}Wash`], 4.5);
+  line(`accent on the ${n} wash`,   d.accent,          d[`tone${k}Wash`], 4.5);
+}
 
 /* Every producer's accent, after dark. Their `light` tone becomes the main
    one, which is the tone already solved for a dark ground — so this is not a

@@ -103,6 +103,21 @@ const VIEW_KEY = 'leads-view';
 const PATH = ['new', 'contacted', 'meeting', 'proposal_sent', 'won'] as const;
 const SIDE = ['nurture', 'lost'] as const;
 
+/* A tone to a stage, light at both ends of the path and the deepest at the
+   proposal, so a board is read left to right as a colour that gathers and
+   then lets go. The two side stages are the quiet ones. Written out in full
+   because Tailwind reads class names as text. */
+const STAGE_TONE: Record<string, { dot: string; pill: string }> = {
+  new:           { dot: 'bg-tone-camel',    pill: 'bg-tone-camel text-tone-camel-on' },
+  contacted:     { dot: 'bg-tone-boho',     pill: 'bg-tone-boho text-tone-boho-on' },
+  meeting:       { dot: 'bg-tone-rubine',   pill: 'bg-tone-rubine text-tone-rubine-on' },
+  proposal_sent: { dot: 'bg-tone-tamarind', pill: 'bg-tone-tamarind text-tone-tamarind-on' },
+  won:           { dot: 'bg-tone-camel',    pill: 'bg-tone-camel text-tone-camel-on' },
+  nurture:       { dot: 'bg-tone-boho',     pill: 'bg-tone-boho-wash text-tone-boho-ink' },
+  lost:          { dot: 'bg-tone-tamarind', pill: 'bg-tone-tamarind-wash text-tone-tamarind-ink' },
+};
+const toneOf = (stage: string) => STAGE_TONE[stage] ?? STAGE_TONE.new;
+
 /** Five marks that say how far along: the stage it is at is the long one. */
 function Dots({ stage }: { stage: string }) {
   const at = (PATH as readonly string[]).indexOf(stage);
@@ -233,9 +248,12 @@ export function LeadBoard({ leads, now, list }: {
       )}
     >
       <h3 className="flex items-baseline justify-between px-1 pb-2 pt-1">
-        <span className="text-body font-medium text-ink">{statuses[stage] ?? stage}</span>
+        <span className="flex items-center gap-2 text-body font-medium text-ink">
+          <span aria-hidden className={cn('size-2.5 rounded-full', toneOf(stage).dot)} />
+          {statuses[stage] ?? stage}
+        </span>
         <span className="flex items-center gap-2">
-          <span className="rounded-full bg-surface-200 px-2 text-meta tabular-nums text-ink-soft">{cols[stage].length}</span>
+          <span className={cn('rounded-full px-2 text-meta tabular-nums', toneOf(stage).pill)}>{cols[stage].length}</span>
           {(SIDE as readonly string[]).includes(stage) && (
             <button type="button" onClick={() => setOpenSide((o) => ({ ...o, [stage]: false }))}
               className="text-meta text-ink-mute hover:text-ink">{c.lane.close}</button>
@@ -260,7 +278,7 @@ export function LeadBoard({ leads, now, list }: {
       <button type="button" onClick={() => setOpenSide((o) => ({ ...o, [stage]: true }))}
         aria-expanded={false} aria-label={`${c.lane.open}: ${statuses[stage] ?? stage}`}
         className="flex h-full min-h-[220px] w-full flex-col items-center gap-3 px-1 py-4 text-ink-soft hover:text-ink">
-        <span className="rounded-full bg-surface-200 px-2 text-meta tabular-nums">{cols[stage].length}</span>
+        <span className={cn('rounded-full px-2 text-meta tabular-nums', toneOf(stage).pill)}>{cols[stage].length}</span>
         <span className="text-body [writing-mode:vertical-rl]">{statuses[stage] ?? stage}</span>
       </button>
     </section>
