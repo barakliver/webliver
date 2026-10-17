@@ -1,6 +1,7 @@
 import type { Task } from '@/components/app/TaskList';
 import type { Payment } from '@/components/app/PaymentsPanel';
 import type { GridItem as BudgetItem, GridPayment } from '@/lib/budgetGrid';
+import type { Answer } from '@/lib/intake';
 import type { BoardImage } from '@/components/app/WinningBoard';
 import type { Guest } from '@/components/app/GuestList';
 import type { SeatTable, SeatGuest } from '@/components/app/SeatingPlan';
@@ -816,4 +817,31 @@ export const fixtureVenues: VenueRow[] = [
     contact: 'יונתן', phone: '0524444444', touredOn: '2026-08-21',
     notes: '',
   },
+];
+
+/* Two partners part way through the questionnaire: the first chapter
+   answered by both, a disagreement on the style, one private answer each. */
+const ans = (question_key: string, answered_by: string, value: unknown, visibility: 'couple' | 'private' = 'couple'): Answer =>
+  ({ question_key, answered_by, value, visibility, updated_at: day(-3) });
+export const fixtureAnswers: Answer[] = [
+  ans('a1_names', FIXTURE_VIEWER, 'נועה כהן ואיתי לוי'),
+  ans('a1_nickname', FIXTURE_VIEWER, 'נועה ואיתי'),
+  ans('a3_how_met', FIXTURE_VIEWER, 'בטיול בפרו, בתור לאוטובוס שלא הגיע.'),
+  ans('a5_home', 'partner-b', 'תל אביב. נועה מחיפה, איתי מירושלים, המשפחה של איתי חצי בניו יורק.'),
+  ans('b9_guests', FIXTURE_VIEWER, 380),
+  ans('b10_region', FIXTURE_VIEWER, 'sharon'),
+  ans('b10_venue_type', FIXTURE_VIEWER, 'garden'),
+  ans('b11_style', FIXTURE_VIEWER, ['boho', 'rustic']),
+  ans('b11_style', 'partner-b', ['classic']),
+  ans('b13_religious', FIXTURE_VIEWER, 'traditional'),
+  ans('b13_ceremony', FIXTURE_VIEWER, 'rabbinate'),
+  ans('b14_shabbat', FIXTURE_VIEWER, 'after_shabbat'),
+  ans('b15_kosher', FIXTURE_VIEWER, 'regular'),
+  ans('c16_parents', FIXTURE_VIEWER, 'דליה ומשה כהן, מעורבים מאוד. רחל לוי, אבא נפטר.'),
+  ans('c19_children', FIXTURE_VIEWER, 15),
+  ans('c20_key_people', FIXTURE_VIEWER, [{ name: 'סבתא רחל', relation: 'סבתא של נועה', role: 'ברכה בחופה' }]),
+  ans('d23_genres', FIXTURE_VIEWER, { israeli: 5, mizrahi: 4, pop: 3, eighties: 4 }),
+  ans('d28_priorities', FIXTURE_VIEWER, ['music', 'food', 'vibe', 'photo']),
+  ans('e29_stress', FIXTURE_VIEWER, 'הנאומים של ההורים.', 'private'),
+  ans('e29_stress', 'partner-b', 'שהאוכל ייגמר.', 'private'),
 ];

@@ -22,6 +22,9 @@ export type Workspace = {
   budget_target: number | null;
   budget_approved_at: string | null;
   budget_approval_asked_at: string | null;
+  /** From the questionnaire (0105): the name they asked to be called, and
+   *  how much of it they answered. Absent until the first answer. */
+  profile?: { nickname: string; completeness: number; priorities: string[] } | null;
   /** The doors the producer has closed on the couple's screen. Empty means
    *  all open. */
   shared_sections: SharedSections;
@@ -147,6 +150,14 @@ export async function loadPortal(
   const { data } = await q.order('event_date', { ascending: true, nullsFirst: false });
 
   const workspaces = ((data ?? []) as Workspace[]).map((w) => ({ ...w, shared_sections: readShares(w.shared_sections), budget_plan: readPlan(w.budget_plan) }));
+  /* The questionnaire's profile, one row per workspace, read through the
+     couple's own policy so the preview shows what they see. */
+  const { data: profiles } = await sb.from('couple_profiles').select('client_id,nickname,completeness,priorities')
+    .in('client_id', workspaces.map((w) => w.id));
+  for (const w of workspaces) {
+    const p = (profiles ?? []).find((x) => x.client_id === w.id) as { nickname: string; completeness: number | string; priorities: string[] } | undefined;
+    w.profile = p ? { nickname: p.nickname, completeness: Number(p.completeness) || 0, priorities: p.priorities ?? [] } : null;
+  }
   const ids = workspaces.map((w) => w.id);
 
   const empty: PortalData = {

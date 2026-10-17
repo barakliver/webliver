@@ -93,7 +93,7 @@ import { NewLeadForm } from '@/components/app/NewLeadForm';
 import { CalendarFeed } from '@/components/app/CalendarFeed';
 import {
   FIXTURE_CLIENT, FIXTURE_VIEWER,
-  fixtureTasks, fixtureBingoTasks, fixturePayments, fixtureBudget, fixtureBudgetPayments, fixtureGuests, fixtureTables,
+  fixtureTasks, fixtureBingoTasks, fixturePayments, fixtureBudget, fixtureBudgetPayments, fixtureAnswers, fixtureGuests, fixtureTables,
   fixtureSeatGuests, fixtureDay, fixtureMessages, fixtureContracts, fixtureFiles, fixtureMedia,
   fixtureSongs, fixtureKit, fixturePeople, fixtureBoard, fixtureShopItems,
   fixtureStatus, fixtureAttention, fixtureOrders, fixtureShelf, fixtureCrew,
@@ -155,6 +155,8 @@ import type { Account } from '@/lib/auth';
 import { PortalSummary, summaryRows } from '@/components/app/PortalSummary';
 import { Metric, MetricRows, MetricBlock } from '@/components/app/Metric';
 import { StatBar } from '@/components/app/StatBar';
+import { Questionnaire } from '@/components/app/Questionnaire';
+import { CoupleProfile } from '@/components/app/CoupleProfile';
 import { StatusDot } from '@/components/app/StatusDot';
 import { WeekLogView } from '@/components/app/WeekLog';
 import { PageHead, Empty } from '@/components/app/PageHead';
@@ -1838,6 +1840,20 @@ export default async function DesignPage() {
             <StatusDot tone="paid" label="paid" />
             <StatusDot tone="lost" label="lost" />
             <StatusDot tone="nonsense" label="unknown falls to faint" />
+          </div>
+        </Panel>
+
+        <Panel name="Questionnaire" note="the couple's six chapters: two answered, one half way; press a chapter to answer">
+          <div className="max-w-3xl">
+            <Questionnaire clientId={client} viewerId={FIXTURE_VIEWER} locale="he" answers={fixtureAnswers} />
+          </div>
+        </Panel>
+
+        <Panel name="CoupleProfile" note="the producer's card of the same answers: a gap on the style, the private chapter in two columns, a note, no brief yet">
+          <div className="max-w-3xl">
+            <CoupleProfile clientId={client} answers={fixtureAnswers} writers={[FIXTURE_VIEWER, 'partner-b']}
+              notes={[{ id: 'n1', question_key: 'c16_parents', note: 'אמא של נועה רוצה להיות בכל פגישה', created_at: '2026-10-10T09:00:00Z' }]}
+              priv={{ sensitivities: 'לא להושיב את דוד יוסי ליד משפחת לוי.', surprises: '', brief: '', brief_at: null }} />
           </div>
         </Panel>
 

@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { CalendarHeart, Grid3x3, Handshake, ListChecks, MessageCircle, Users, Wallet } from 'lucide-react';
 import type { AppUi } from '@/content/appUi';
 import { weekdayDate } from '@/lib/appDates';
@@ -28,6 +29,7 @@ import { nextAction, upcoming, type PayFact, type TaskFact } from '@/lib/nextAct
 import { standing, timeline, type StandingFacts } from '@/lib/standing';
 import { track } from '@/lib/budgetPlan';
 import { todayInZone } from '@/lib/clock';
+import { fill } from '@/lib/copyText';
 
 /** Counts the page loads beside this component rather than inside it —
  *  contracts, halls, files and the two night-of lists — so the summary strip
@@ -216,7 +218,7 @@ export function PortalWorkspace({
 
         <div className="px-5 py-8 sm:px-8 sm:py-10">
           <h2 className="font-display text-display font-light leading-[1.12] text-ink">
-            {c.display_name}
+            {c.profile?.nickname || c.display_name}
           </h2>
 
           <p className="mt-2 text-body text-ink-mute">
@@ -264,6 +266,21 @@ export function PortalWorkspace({
       {/* And what happened without them: the lines the producer marked for
           them this week. The part of the screen that proves the system is
           working between visits. */}
+      {/* The questionnaire, until it is answered. Under what to do next
+          because that is what it is, and gone at seventy percent because a
+          card that asks for the last three answers forever is a card nobody
+          believes in. */}
+      {(c.profile?.completeness ?? 0) < 0.7 && (
+        <Link href={`/app/portal/questionnaire?w=${c.id}`} className="mt-6 flex items-center justify-between gap-3 rounded-card-sm border border-accent-line bg-accent-wash px-4 py-3 text-start transition-colors duration-touch hover:border-accent">
+          <span className="min-w-0">
+            <span className="block text-lead text-ink">
+              {c.profile ? fill(ui.intake.cardTitle, { n: Math.max(1, Math.round((1 - c.profile.completeness) * 52)) }) : ui.intake.cardTitleStart}
+            </span>
+            <span className="block text-meta text-ink-soft">{ui.intake.cardSub}</span>
+          </span>
+          <span className="shrink-0 text-body text-accent">{c.profile ? ui.intake.cardCta : ui.intake.cardStart}</span>
+        </Link>
+      )}
       {slots.week}
 
       {/* And after "what now", when everything else falls. The figures below

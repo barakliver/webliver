@@ -453,6 +453,31 @@ that has happened once.
   as panels at the radius of a button. Nested surfaces step down rather than
   matching: an inner box at the outer box's radius is what makes a card look
   like a sticker on a card.
+- **A couple is known from one questionnaire, and the screen bends to
+  it.** Six chapters in `content/intake.ts`, fifty-two questions with
+  stable keys, answered in stages from a phone by either partner;
+  `Questionnaire` draws eleven kinds of answer and saves each one on its
+  own eight hundred milliseconds after the typing stops, so nothing is
+  lost to a refresh and nobody presses save. The questions are code and
+  not a table, because they are Hebrew wording versioned with the product.
+  The answers are `questionnaire_responses`, one row per partner per
+  question, and a trigger in 0105 derives `couple_profiles` from them so
+  every screen reads one row; a node test reads the migration and fails if
+  the trigger names a key the content does not ask, or divides by a count
+  that is not the number of questions. Three things are private and each
+  is a row or a table rather than a column: the "between us" chapter is
+  written `private` by the action whatever the form says, and the policy
+  hands it to its writer and the producer only; the producer's note on an
+  answer is `questionnaire_notes`; and the sensitivities and surprises are
+  `couple_profiles_private`, which also holds the one-page meeting brief
+  the model writes from the answers. The checklist in `content/timeline.ts`
+  carries `needs` on six steps (kashrut, the rabbinate file, a start after
+  Shabbat, a kids corner, the after party, outdoor gear), and a blank
+  answer keeps the step: a condition that removes a step on a question
+  nobody answered removes it from every couple who never opened the
+  questionnaire. The greeting is the nickname they asked for, and a card
+  under "what now" asks for the rest until seventy percent is answered.
+
 - **The budget is a sheet now, and "paid" is never typed.** `BudgetGrid`
   replaced the list of rows that each opened onto a form: press a cell,
   type, Enter, and every total moves before the server is told. The sheet

@@ -86,3 +86,24 @@ test('a bad date builds nothing rather than a plan for the year 0', () => {
   assert.deepEqual(buildTimeline({ ...local, eventDate: 'soon' }).rows, []);
   assert.equal(offsetFor(TIMELINE[0], { guests: null, abroad: false }), TIMELINE[0].offsetDays);
 });
+
+test('a step the questionnaire rules out is not planted, and a blank answer keeps it', () => {
+  const base = { eventDate: '2027-06-10', today: '2026-06-10', guests: 200, abroad: false };
+  const ids = (profile: Parameters<typeof buildTimeline>[0]['profile']) =>
+    new Set(buildTimeline({ ...base, profile }).rows.map((r) => r.title));
+  const all = ids(null);
+  assert.ok(all.has('לסגור השגחת כשרות לערב'), 'no profile: every step');
+  const secular = ids({ religious_level: 'secular', ceremony: 'civil', kosher_level: 'none', shabbat_constraint: false, children: 0, afterparty: false, venue_type: 'hall' });
+  assert.ok(!secular.has('לסגור השגחת כשרות לערב'));
+  assert.ok(!secular.has('לפתוח תיק נישואין ברבנות ולהזמין כתובה'));
+  assert.ok(!secular.has('לסגור פינת ילדים ובייביסיטר לערב'));
+  assert.ok(!secular.has('לסגור אפטר פארטי: מקום, די-ג׳יי והסעה'));
+  const religious = ids({ religious_level: 'religious', ceremony: 'rabbinate', kosher_level: 'badatz', shabbat_constraint: true, children: 12, afterparty: true, venue_type: 'garden' });
+  assert.ok(religious.has('לסגור השגחת כשרות לערב'));
+  assert.ok(religious.has('לקבוע שעת התחלה אחרי צאת שבת ולעדכן את כל הספקים'));
+  assert.ok(religious.has('לסגור פינת ילדים ובייביסיטר לערב'));
+  /* Answered nothing about kashrut yet: the step stays. */
+  const partial = ids({ religious_level: 'secular', kosher_level: '' });
+  assert.ok(partial.has('לסגור השגחת כשרות לערב'));
+  assert.ok(partial.has('לפתוח תיק נישואין ברבנות ולהזמין כתובה'));
+});

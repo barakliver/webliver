@@ -51,7 +51,49 @@ export type TimelineStep = {
   small?: number;
   /** Only on the plan at all when the wedding is abroad. */
   abroadOnly?: true;
+  /** Only on the plan when the couple's profile says so. A blank profile
+   *  field is "not known yet" and keeps the step: a condition that removes
+   *  a step on a question nobody answered removes it from every couple
+   *  who has not opened the questionnaire. */
+  needs?: StepNeeds;
 };
+
+/** What a step may ask of the profile (0105). Each list is the values
+ *  that keep the step; `children` and `afterparty` are yes or no. */
+export type StepNeeds = {
+  religious?: readonly string[];
+  ceremony?: readonly string[];
+  kosher?: readonly string[];
+  shabbat?: boolean;
+  children?: boolean;
+  afterparty?: boolean;
+  venue?: readonly string[];
+};
+
+export type ProfileFacts = {
+  religious_level?: string;
+  ceremony?: string;
+  kosher_level?: string;
+  shabbat_constraint?: boolean | null;
+  children?: number | null;
+  afterparty?: boolean | null;
+  venue_type?: string;
+};
+
+/** Whether a step stays on the plan for this couple. No profile, or a
+ *  blank answer, keeps it. */
+export function stepFits(needs: StepNeeds | undefined, p: ProfileFacts | null | undefined): boolean {
+  if (!needs || !p) return true;
+  const inList = (v: string | undefined, list: readonly string[] | undefined) => !list || !v || list.includes(v);
+  if (!inList(p.religious_level, needs.religious)) return false;
+  if (!inList(p.ceremony, needs.ceremony)) return false;
+  if (!inList(p.kosher_level, needs.kosher)) return false;
+  if (!inList(p.venue_type, needs.venue)) return false;
+  if (needs.shabbat !== undefined && p.shabbat_constraint !== null && p.shabbat_constraint !== undefined && p.shabbat_constraint !== needs.shabbat) return false;
+  if (needs.children !== undefined && p.children !== null && p.children !== undefined && (p.children > 0) !== needs.children) return false;
+  if (needs.afterparty !== undefined && p.afterparty !== null && p.afterparty !== undefined && p.afterparty !== needs.afterparty) return false;
+  return true;
+}
 
 /* Reminder lead times, from the kind of step rather than typed per step, so
    two steps of the same weight cannot drift apart. */
@@ -130,6 +172,28 @@ export const TIMELINE: readonly TimelineStep[] = [
   { id: 'rabbinate', title: 'להסדיר את רישום הנישואין', offsetDays: -100, abroad: -180, category: 'legal', owner: 'client', visibleToClient: true, remindDays: COMMS,
     note: 'בארץ: פתיחת תיק ברבנות והדרכת כלה. בחו"ל: מסמכים מתורגמים ואפוסטיל, וזה לוקח חודשים.' },
 
+  // ── from the questionnaire ────────────────────────────────────────────────
+  // Each of these is on the plan only when the couple's answers say so,
+  // and on it for everybody until they answer.
+  { id: 'ketubah', title: 'לפתוח תיק נישואין ברבנות ולהזמין כתובה', offsetDays: -120, category: 'legal', owner: 'client', visibleToClient: true, remindDays: COMMS,
+    needs: { ceremony: ['rabbinate'] },
+    note: 'התיק נפתח ברבנות המקומית, ההדרכה נקבעת דרכה, והכתובה מוזמנת אחרי שיש רב.' },
+  { id: 'kashrut', title: 'לסגור השגחת כשרות לערב', offsetDays: -120, category: 'vendors', owner: 'producer', visibleToClient: true, remindDays: BOOKING,
+    needs: { kosher: ['mehadrin', 'badatz'] },
+    note: 'מהדרין ובד"ץ הם משגיח בערב ותעודה על הקייטרינג. סוגרים את זה עם האולם, לא אחריו.' },
+  { id: 'shabbat-start', title: 'לקבוע שעת התחלה אחרי צאת שבת ולעדכן את כל הספקים', offsetDays: -90, category: 'ceremony', owner: 'producer', visibleToClient: true, remindDays: COMMS,
+    needs: { shabbat: true },
+    note: 'בקיץ צאת שבת אחרי שמונה, וקבלת פנים שמתחילה לפני היא קבלת פנים שחצי מהאורחים מפספסים.' },
+  { id: 'kids-corner', title: 'לסגור פינת ילדים ובייביסיטר לערב', offsetDays: -60, category: 'vendors', owner: 'producer', visibleToClient: true, remindDays: BOOKING,
+    needs: { children: true },
+    note: 'שעתיים של הפעלה בזמן החופה והארוחה הן ההבדל בין הורים שרוקדים להורים שהולכים בעשר.' },
+  { id: 'afterparty', title: 'לסגור אפטר פארטי: מקום, די-ג׳יי והסעה', offsetDays: -60, category: 'vendors', owner: 'producer', visibleToClient: true, remindDays: BOOKING,
+    needs: { afterparty: true },
+    note: 'האולם סוגר בשתיים. מי שרוצה להמשיך צריך לאן, ומי מסיע.' },
+  { id: 'outdoor-gear', title: 'להשכיר ציוד לשטח: שירותים, גנרטור, תאורה', offsetDays: -75, category: 'vendors', owner: 'producer', visibleToClient: true, remindDays: BOOKING,
+    needs: { venue: ['beach', 'home'] },
+    note: 'חוף ובית הם אולם שצריך להביא איתך. הציוד נסגר לפני העיצוב, כי העיצוב עומד עליו.' },
+
   // ── the last month ────────────────────────────────────────────────────────
   { id: 'seating', title: 'לבנות סידור הושבה ראשוני', offsetDays: -35, big: -45, category: 'guests', owner: 'producer', visibleToClient: true, remindDays: MID,
     note: 'ראשוני בכוונה. הוא ישתנה עוד שלוש פעמים לפני הערב.' },
@@ -188,6 +252,8 @@ export type TimelineInput = {
   abroad: boolean;
   /** Per area of work. Absent means the step's own owner. */
   owners?: Partial<Record<TimelineCategory, Owner>>;
+  /** The couple's answers, when they have given any. */
+  profile?: ProfileFacts | null;
 };
 
 export type TimelineRow = {
@@ -251,6 +317,7 @@ export function buildTimeline(input: TimelineInput, steps: readonly TimelineStep
 
   const picked = steps
     .filter((s) => !s.abroadOnly || input.abroad)
+    .filter((s) => stepFits(s.needs, input.profile))
     .map((s) => ({ step: s, offset: offsetFor(s, input) }))
     .sort((a, b) => a.offset - b.offset || a.step.offsetDays - b.step.offsetDays);
 

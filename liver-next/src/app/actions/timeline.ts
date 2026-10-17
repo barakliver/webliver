@@ -5,7 +5,7 @@ import { supabaseServer } from '@/lib/supabase/server';
 import { requireLiveProducer } from '@/lib/auth';
 import { todayInZone } from '@/lib/clock';
 import {
-  buildTimeline, TIMELINE_CATEGORIES, type Owner, type TimelineCategory,
+  buildTimeline, TIMELINE_CATEGORIES, type Owner, type TimelineCategory, type ProfileFacts,
 } from '@/content/timeline';
 
 export type TimelineResult = { ok: boolean; error?: string; added?: number; skipped?: number };
@@ -57,12 +57,18 @@ export async function applyTimeline(clientId: string, raw: unknown): Promise<Tim
   if (clientError || !client) return { ok: false, error: 'לא מצאנו את האירוע' };
   if (!client.event_date) return { ok: false, error: 'לאירוע אין עדיין תאריך, ואי אפשר לפרוס תוכנית בלי אחד' };
 
+  /* The couple's answers, when they have given any: a step the profile
+     rules out is not planted. A couple with no profile gets every step. */
+  const { data: profile } = await sb.from('couple_profiles')
+    .select('religious_level,ceremony,kosher_level,shabbat_constraint,children,afterparty,venue_type')
+    .eq('client_id', clientId).maybeSingle();
   const plan = buildTimeline({
     eventDate: String(client.event_date),
     today: todayInZone(),
     guests: choice.guests,
     abroad: choice.abroad,
     owners: choice.owners,
+    profile: (profile as ProfileFacts | null) ?? null,
   });
   if (plan.rows.length === 0) return { ok: false, error: 'לא הצלחנו לבנות את התוכנית' };
 

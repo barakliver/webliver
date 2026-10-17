@@ -92,3 +92,37 @@ export async function flagStaleQuotes(sb: SupabaseClient, now: Date = new Date()
   }
   return out;
 }
+
+/**
+ * The questionnaire nobody opened.
+ *
+ * Five days after a couple's workspace is opened, if less than a third of
+ * the questionnaire is answered, one gentle line on their bell. Once, by
+ * the same title rule as the rest. The producer is not told: a reminder
+ * about a questionnaire is between the product and the couple.
+ */
+export async function remindQuestionnaire(sb: SupabaseClient, today: string): Promise<{ sent: number; errors: string[] }> {
+  const out = { sent: 0, errors: [] as string[] };
+  const cutoff = shift(today, -5);
+  const { data, error } = await sb.from('clients').select('id,display_name,created_at')
+    .is('archived_at', null).lte('created_at', `${cutoff}T23:59:59+02:00`);
+  if (error) { out.errors.push(`clients: ${error.message}`); return out; }
+  const title = 'עוד לא סיפרתם לנו מי אתם';
+  for (const c of (data ?? []) as { id: string; display_name: string }[]) {
+    const { data: p } = await sb.from('couple_profiles').select('completeness').eq('client_id', c.id).maybeSingle();
+    if (p && Number((p as { completeness: number | string }).completeness) >= 0.3) continue;
+    const { data: people } = await sb.from('client_authorized_emails').select('profile_id').eq('client_id', c.id);
+    for (const row of (people ?? []) as { profile_id: string | null }[]) {
+      if (!row.profile_id) continue;
+      const { data: before } = await sb.from('notifications').select('id').eq('profile_id', row.profile_id).eq('title', title).limit(1);
+      if (before?.length) continue;
+      await sb.rpc('notify', {
+        p_profile: row.profile_id, p_kind: 'task', p_title: title,
+        p_body: 'שאלון היכרות קצר, עשרים דקות, אפשר מהטלפון ובשלבים. מאותו רגע המסך שלכם מתאים את עצמו אליכם.',
+        p_href: `/app/portal/questionnaire?w=${c.id}`,
+      });
+      out.sent += 1;
+    }
+  }
+  return out;
+}

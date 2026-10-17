@@ -33,6 +33,9 @@ import { InviteBox, type Invite } from '@/components/app/InviteBox';
 import { TaskList, type Task } from '@/components/app/TaskList';
 import { PaymentsPanel, type Payment } from '@/components/app/PaymentsPanel';
 import { BudgetGrid } from '@/components/app/BudgetGrid';
+import { CoupleProfile, type IntakeNote, type PrivateProfile } from '@/components/app/CoupleProfile';
+import { INTAKE_KEY } from '@/content/intake';
+import type { Answer } from '@/lib/intake';
 import type { GridItem as BudgetItem, GridPayment } from '@/lib/budgetGrid';
 import { FinanceSummary } from '@/components/app/FinanceSummary';
 import { ProducerLedger } from '@/components/app/ProducerLedger';
@@ -411,6 +414,21 @@ async function Section({ tab, client, viewerId, isRoot }: {
         <SeatingPlan clientId={id} tables={tables} guests={guests as never} />
       </div>
     );
+  }
+
+  if (tab === 'profile') {
+    const [answers, notes, privRows] = await Promise.all([
+      safeRows<Answer>('answers', sb.from('questionnaire_responses')
+        .select('question_key,answered_by,value,visibility,updated_at').eq('client_id', id).eq('form_key', INTAKE_KEY)),
+      safeRows<IntakeNote>('intake notes', sb.from('questionnaire_notes')
+        .select('id,question_key,note,created_at').eq('client_id', id).order('created_at')),
+      safeRows<NonNullable<PrivateProfile>>('private profile', sb.from('couple_profiles_private')
+        .select('sensitivities,surprises,brief,brief_at').eq('client_id', id)),
+    ]);
+    /* Who is A and who is B: by first answer, so the label is stable
+       across the chapters rather than per row. */
+    const writers = [...new Set(answers.map((a) => a.answered_by))];
+    return <CoupleProfile clientId={id} answers={answers} notes={notes} priv={privRows[0] ?? null} writers={writers} />;
   }
 
   if (tab === 'details') {

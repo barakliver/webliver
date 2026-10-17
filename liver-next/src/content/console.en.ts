@@ -721,6 +721,7 @@ export const consoleEn: ConsoleCopy = {
 
     tabs: {
       overview: 'Overview',
+      profile: 'Who they are',
       tasks: 'Tasks',
       day: 'Schedule',
       guests: 'Guests',

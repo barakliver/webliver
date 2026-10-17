@@ -48,6 +48,7 @@ const SHARED = {
   'app/portal/journal/page.tsx': "the couple's journal, which their producer also reads; the rows are fenced by can_read_client",
   'app/portal/community/page.tsx': "the circle of couples around one producer, which the producer reads too; the reader behind it is fenced by in_circle",
   'app/portal/community/[id]/page.tsx': 'one post in that circle, read through the same fenced reader',
+  'app/portal/questionnaire/page.tsx': "the couple's own questionnaire; the answers are fenced by can_read_client and a partner's private rows by answered_by",
 };
 
 const walk = (dir, out = []) => {

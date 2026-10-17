@@ -11,7 +11,7 @@ import {
   noticeCopyEn, ticketCopyEn, companionCopyEn, prepCopyEn, venueCopyEn, envelopesCopyEn, vehiclesCopyEn, confirmEn,
   meetingTemplatesCopyEn, timelineCopyEn, studioCopyEn, journalEn, circleEn,
   portalEn, filesEn, sheetsEn, tasksEn, myTasksEn, moneyEn, boardEn, bookEn,
-  guestsEn, seatingEn, dayEn, threadEn, partyEn, contractEn, eventFileEn,
+  guestsEn, seatingEn, dayEn, threadEn, partyEn, contractEn, eventFileEn, intakeEn,
 } from './app.en.ts';
 import {
   consoleEn, leadEn, crewEn, vendorEn, templateEn, barEn, updateEn, linkEn, signEn,
@@ -48,6 +48,7 @@ type Wide<T> =
   : { readonly [K in keyof T]: Wide<T[K]> };
 
 export type PortalCopy = Wide<typeof appCopy.portal>;
+export type IntakeCopy = Wide<typeof appCopy.intake>;
 export type FilesCopy = Wide<typeof appCopy.files>;
 export type SheetsCopy = Wide<typeof appCopy.sheets>;
 export type TasksCopy = Wide<typeof appCopy.tasks>;
@@ -168,6 +169,7 @@ export type AppUi = {
   studio: StudioCopy;
   journal: JournalCopy;
   circle: CircleCopy;
+  intake: IntakeCopy;
   /** The question every delete asks first, and its two answers. */
   confirm: ConfirmCopy;
 } & ConsoleCopy;
@@ -203,6 +205,7 @@ export const APP_UI_HE: AppUi = {
   timeline: timelineCopy,
   studio: studioCopy,
   journal: journalCopy, circle: circleCopy,
+  intake: appCopy.intake,
   confirm: confirmCopy,
   ...consoleHe,
 };
@@ -228,6 +231,7 @@ const APP_UI_EN: AppUi = {
   timeline: timelineCopyEn,
   studio: studioCopyEn,
   journal: journalEn, circle: circleEn,
+  intake: intakeEn,
   confirm: confirmEn,
   ...consoleEn,
 };
