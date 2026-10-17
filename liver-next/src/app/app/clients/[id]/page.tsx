@@ -1,4 +1,4 @@
-import { CalendarPlus, Eye, Hash, ListOrdered, Pencil, Radio, BookOpen, NotebookPen, PenLine , Ellipsis } from 'lucide-react';
+import { CalendarPlus, Eye, Hash, ListOrdered, Radio, BookOpen, NotebookPen, PenLine , Ellipsis } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { requireLiveProducer } from '@/lib/auth';
@@ -6,7 +6,9 @@ import { supabaseServer } from '@/lib/supabase/server';
 import { serverCopy } from '@/lib/serverLocale';
 import { Live } from '@/components/app/Live';
 import { workspaceSources } from '@/lib/liveSources';
-import { PageHead } from '@/components/app/PageHead';
+import { LoadTrouble } from '@/components/app/LoadTrouble';
+import { EventHead } from '@/components/app/EventHead';
+import { getBoard, type ClientStatus } from '@/lib/status';
 import { EventTabs, readTab, type EventTab } from '@/components/app/EventTabs';
 import { IssueReporter } from '@/components/app/IssueReporter';
 import { GameSwitch } from '@/components/app/GameSwitch';
@@ -152,6 +154,11 @@ export default async function ClientPage({
   const tags = await loadLabels(sb, 'event_tag');
 
   const c = ui.clientPage;
+  /* The list's own reading of this one event, for the ring and the gaps. If
+     it ever comes back empty the heading is drawn from the row already in
+     hand rather than the page failing. */
+  const [boardRow] = await getBoard({ only: client.id });
+  const status = boardRow ?? fallbackStatus(client);
 
   return (
     <>
@@ -228,67 +235,46 @@ export default async function ClientPage({
         </div>
       </div>
 
-      <PageHead title={client.display_name}
-        /* A pencil on the name itself. The form that renames an event has
-           always existed, on the overview, under the templates — far enough
-           down that the one person who most needed it went looking for a
-           feature that was already there. A typo in a couple's name is seen
-           at the top of the screen, so the way to fix it belongs there. */
-        actions={
-          /* A plain anchor, not the router's link. From the overview itself
-             the router saw the same path and did nothing with the hash, so
-             the pencil did nothing; from any other tab it navigated and then
-             did not scroll. A full navigation honours the hash both times. */
-          <a
-            href={`/app/clients/${client.id}#event-details`}
-            aria-label={ui.clientPage.rename}
-            title={ui.clientPage.rename}
-            className="grid size-9 place-items-center rounded-xl2 text-ink-mute transition hover:bg-surface-200 hover:text-ink"
-          >
-            <Pencil size={15} strokeWidth={1.5} aria-hidden />
-          </a>
-        }
-        report={<IssueReporter userId={account.id} context={ui.clientPage.tabs[tab]} />}
-      />
+      {/* Above the title rather than beside it, as PageHead has always drawn
+          it: a screen that did not fully load is a fact about everything
+          below. */}
+      <LoadTrouble />
 
-      {/* Above the tabs and outside them: which kind of thing this event is
-          does not belong to any one section of its file. */}
-      {/* The colour and the kind of engagement, side by side. Neither belongs
-          to a section of the file: one says which event this is at a glance,
-          the other says what was actually sold, and both govern the whole of
-          it rather than any one tab. */}
-      <div className="-mt-4 mb-5 flex flex-wrap items-center gap-3">
+      {/* The colour and the kind of engagement sit inside the heading, one
+          line under it. Neither belongs to a section of the file: one says
+          which event this is at a glance, the other says what was actually
+          sold, and both govern the whole of it. */}
+      <EventHead s={status} renameHref={`/app/clients/${client.id}#event-details`}>
         <EventTagPicker clientId={client.id} labels={tags} current={client.label_id ?? null} />
         <ServiceSwitch clientId={client.id} service={isService(client.service) ? client.service : 'production'} />
-      </div>
-      {/* Stuck to the top, because the sections are the way around this file
-          and a way around that scrolls off the screen is no way around at
-          all. Fourteen sections, each of them long: he was scrolling back to
-          the top of a page to reach the top of a page. It travels with him
-          now, and the strip still scrolls sideways inside it. */}
+      </EventHead>
+
+      {/* The sections are a rail beside the file from a laptop up and a row
+          stuck to the top of the page below that: the sections are the way
+          around this file and a way around that scrolls off the screen is no
+          way around at all. */}
+      <div className="lg:grid lg:grid-cols-[13.5rem_minmax(0,1fr)] lg:items-start lg:gap-10">
       <div
         /* Under the phone's own header, which is already stuck to the top at
-           z-40 and is 56px tall, 64 from the small breakpoint up. Landing on
-           top of it would have hidden the brand and the search; landing at
-           zero on a phone would have put the sections behind it. On a wide
-           screen that header is not rendered at all and this is the only
-           thing at the top. */
-        /* The producer's shell grounds itself in surface-100, not surface. A
+           z-40 and is 56px tall, 64 from the small breakpoint up. On a wide
+           screen that header is not rendered at all and the rail is the only
+           thing at the top, so it sits a little way down instead. The
+           producer's shell grounds itself in surface-100, not surface: a
            sticky bar painted the other one is a band of the wrong tone
-           sliding over the page, which reads as a rendering fault rather
-           than as a bar. */
-        className="sticky top-14 z-30 -mx-5 mb-6 flex items-start gap-2 border-b border-line bg-surface-100 px-5 pt-3 sm:top-16 sm:mx-0 sm:px-0 lg:top-0"
+           sliding over the page. */
+        className="sticky top-14 z-30 -mx-5 mb-6 flex items-start gap-2 border-b border-line bg-surface-100 px-5 sm:top-16 sm:mx-0 sm:px-0 lg:top-6 lg:mx-0 lg:mb-0 lg:flex-col lg:border-b-0 lg:bg-transparent lg:px-0"
       >
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1 lg:w-full lg:flex-none">
           <EventTabs clientId={client.id} active={tab} />
         </div>
         {/* Named by the open tab, so a report from the money tab arrives
             saying so rather than costing a round trip to find out. */}
-        <div className="mt-1 shrink-0 pb-3">
+        <div className="mt-1 shrink-0 lg:mt-5 lg:px-3.5">
           <IssueReporter userId={account.id} context={`${client.display_name} · ${ui.clientPage.tabs[tab]}`} />
         </div>
       </div>
 
+      <div className="min-w-0">
       {/* The door to the couple's side of this section, on the section
           itself. The same switch is on the preview with all the others; here
           it is beside the rows it governs, where the question comes up. */}
@@ -301,9 +287,26 @@ export default async function ClientPage({
 
       <Section tab={tab} client={client} viewerId={account.id} isRoot={account.role === 'super_admin'} />
 
+      </div>
+      </div>
+
       <Live sources={workspaceSources(client.id)} />
     </>
   );
+}
+
+/** What the heading needs when the list's reading of this event is not there:
+ *  the name, the date and the place, and nothing claimed about gaps. */
+function fallbackStatus(c: { id: string; display_name: string; kind: string; event_date: string | null; venue: string | null; guest_estimate: number | null; service?: string | null }): ClientStatus {
+  const daysLeft = c.event_date
+    ? Math.round((new Date(c.event_date + 'T00:00:00').getTime() - new Date(new Date().toISOString().slice(0, 10) + 'T00:00:00').getTime()) / 86_400_000)
+    : null;
+  return {
+    id: c.id, name: c.display_name, kind: c.kind, eventDate: c.event_date, venue: c.venue ?? '',
+    guestEstimate: c.guest_estimate, archivedAt: null, daysLeft, gaps: [], nextTask: null,
+    guests: { invited: 0, attending: 0 }, money: { owed: 0, overdue: 0 }, needsClosing: false,
+    color: null, service: isService(c.service) ? c.service : 'production',
+  };
 }
 
 type Client = {

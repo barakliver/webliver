@@ -58,7 +58,10 @@ function daysUntil(iso: string, today: number): number {
   return Math.round((new Date(iso + 'T00:00:00').getTime() - today) / DAY);
 }
 
-export async function getBoard(opts: { archived?: boolean } = {}): Promise<ClientStatus[]> {
+/** `only` reads one event whatever its state: the event file wants the same
+ *  reading the list gives it, so the gaps on a card and the gaps at the top of
+ *  its file are one answer. */
+export async function getBoard(opts: { archived?: boolean; only?: string } = {}): Promise<ClientStatus[]> {
   const sb = await supabaseServer();
   const todayIso = new Date().toISOString().slice(0, 10);
   const today = new Date(todayIso + 'T00:00:00').getTime();
@@ -66,7 +69,8 @@ export async function getBoard(opts: { archived?: boolean } = {}): Promise<Clien
   let q = sb
     .from('clients')
     .select('id,display_name,kind,event_date,venue,guest_estimate,archived_at,service,producer_labels(color)');
-  q = opts.archived ? q.not('archived_at', 'is', null) : q.is('archived_at', null);
+  if (opts.only) q = q.eq('id', opts.only);
+  else q = opts.archived ? q.not('archived_at', 'is', null) : q.is('archived_at', null);
 
   const { data } = await q.order('event_date', { ascending: true, nullsFirst: false });
   const rows = (data ?? []) as {

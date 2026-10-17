@@ -755,6 +755,13 @@ export const consoleEn: ConsoleCopy = {
       venues: 'Venues',
     },
 
+    tabGroups: {
+      plan: 'Plan',
+      people: 'People',
+      money: 'Money and papers',
+      talk: 'Talk and inspiration',
+    },
+
     edit: 'Edit details',
     editSave: 'Save',
     editSaving: 'Saving',

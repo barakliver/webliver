@@ -1591,6 +1591,15 @@ export const appCopy = {
       venues: 'אולמות',
     },
 
+    /* The four groups the rail beside the file sorts its sixteen sections
+       into. */
+    tabGroups: {
+      plan: 'תכנון',
+      people: 'אנשים',
+      money: 'כסף ומסמכים',
+      talk: 'שיחה והשראה',
+    },
+
     edit: 'עריכת פרטים',
     editSave: 'שמירה',
     editSaving: 'שומר',

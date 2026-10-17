@@ -174,6 +174,7 @@ import { Ltr, Money, Ratio, Name } from '@/components/Ltr';
 import { REGIONS } from '@/content/site';
 import { PortalActions } from '@/components/app/PortalActions';
 import { EventTabs } from '@/components/app/EventTabs';
+import { EventHead } from '@/components/app/EventHead';
 import { EventDetails } from '@/components/app/EventDetails';
 import { EventVendors } from '@/components/app/EventVendors';
 import { FeatureFlags } from '@/components/app/FeatureFlags';
@@ -1749,7 +1750,13 @@ export default async function DesignPage() {
           </div>
         </Panel>
 
-        <Panel name="EventTabs" note="fourteen sections on a phone: one row that scrolls, cut off on purpose">
+        <Panel name="EventHead" note="the event's file opens on the same ring, pill and gap chips its card wears on the list">
+          <EventHead s={fixtureStatus[0]} renameHref="#event-details">
+            <span className="text-body text-ink-mute">{fixtureStatus[0].name}</span>
+          </EventHead>
+        </Panel>
+
+        <Panel name="EventTabs" note="sixteen sections in four groups: a rail from a laptop up, one row that scrolls on a phone, cut off on purpose">
           <EventTabs clientId={client} active="prep" counts={{ tasks: 4, guests: 180, money: 2 }} />
         </Panel>
 

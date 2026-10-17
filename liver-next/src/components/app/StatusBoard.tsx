@@ -20,13 +20,14 @@ const dateFmtFor = (l: Locale) => new Intl.DateTimeFormat(l === 'en' ? 'en-GB' :
  *  eight months and a phone call at five weeks. The ring is a year: empty at
  *  a year away or more, full on the day, so two cards side by side can be
  *  compared without reading either number. */
-async function Countdown({ days }: { days: number | null }) {
+export async function Countdown({ days, size = 76 }: { days: number | null; size?: number }) {
   const c = (await serverCopy()).statusBoard;
-  const box = 'relative grid size-[76px] shrink-0 place-items-center text-center';
+  const box = 'relative grid shrink-0 place-items-center text-center';
+  const boxStyle = { width: size, height: size };
   if (days === null) {
     return (
-      <div className={box} role="img" aria-label={c.noDate}>
-        <span aria-hidden className="grid size-[76px] place-items-center rounded-full border border-dashed border-line-strong font-display text-figure font-light text-ink-mute">?</span>
+      <div className={box} style={boxStyle} role="img" aria-label={c.noDate}>
+        <span aria-hidden className="grid size-full place-items-center rounded-full border border-dashed border-line-strong font-display text-figure font-light text-ink-mute">?</span>
       </div>
     );
   }
@@ -40,8 +41,8 @@ async function Countdown({ days }: { days: number | null }) {
      draws the line from there down to what is left undrawn. */
   const rest = Math.round(176 * (1 - filled));
   return (
-    <div className={box}>
-      <svg aria-hidden width="76" height="76" viewBox="0 0 64 64" className="absolute inset-0 -rotate-90 rtl:rotate-90 rtl:-scale-x-100">
+    <div className={box} style={boxStyle}>
+      <svg aria-hidden width={size} height={size} viewBox="0 0 64 64" className="absolute inset-0 -rotate-90 rtl:rotate-90 rtl:-scale-x-100">
         <circle cx="32" cy="32" r="28" fill="none" stroke="currentColor" strokeWidth="3" className="text-surface-200" />
         <circle
           cx="32" cy="32" r="28" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"
@@ -66,7 +67,7 @@ async function Countdown({ days }: { days: number | null }) {
   );
 }
 
-function GapChip({ label, level }: { label: string; level: 'now' | 'soon' }) {
+export function GapChip({ label, level }: { label: string; level: 'now' | 'soon' }) {
   return (
     <span
       className={`inline-flex items-center rounded-full border px-3 py-1 text-meta ${

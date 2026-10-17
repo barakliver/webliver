@@ -403,6 +403,18 @@ that has happened once.
   in one year. The tabs are a pill track, the summary under the title writes
   itself in. A grid column is `grid-cols-1` and the card `min-w-0`: a long
   event name pushed a card past the edge of a phone until both were there.
+  **Group 2, chosen as a mix of a and b: the event file.** He took the
+  rail from a and the ring from b. The sixteen sections stand in four groups
+  (`EVENT_TAB_GROUPS` in `content/eventTabs.ts`, a test holds that each tab is
+  in exactly one) and `EventTabs` draws one set of links two ways: a rail
+  beside the file from `lg` up, group names over it and a rose dot on the open
+  section, and below that the same links as one row that scrolls with an
+  accent underline, in the groups' order, so the arrow keys walk what the eye
+  sees. Over it is `EventHead`: the same ring, service pill and gap chips as
+  the card for this event on the list, drawn from `getBoard({ only })`, which
+  is the list's own reading of one event, because a second reading of what
+  is missing would give two answers by the first week somebody fixed one.
+  `PageHead` is gone from this screen, so `LoadTrouble` is drawn by the page.
 - **The screens are the plum design's screens, not only its colours.**
   He asked why the app did not look like the mockups, and the answer was
   that 3.1 had changed the skin and not the layout. So 3.2 rebuilt three:
