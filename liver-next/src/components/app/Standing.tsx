@@ -59,7 +59,7 @@ export function Standing({ s, ui }: { s: Verdict; ui: AppUi }) {
             className={`mt-[3px] shrink-0 ${s.code === 'behind' ? 'text-ink-soft' : 'text-ok'}`}
           />
         )}
-        <span className="font-medium text-ink">{say.head}</span>
+        <span className="write-in font-medium text-ink">{say.head}</span>
       </p>
       <p className="mx-auto mt-1 max-w-prose2 text-center text-meta leading-relaxed text-ink-mute">
         {why}

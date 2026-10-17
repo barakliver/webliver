@@ -116,7 +116,7 @@ export default async function OverviewPage() {
                 <CalendarHeart size={16} strokeWidth={1.5} aria-hidden />
                 <span className="eyebrow">{c.nextEvent}</span>
               </div>
-              <p className="mt-3 font-display text-figure font-normal leading-tight text-ink">
+              <p className="mt-3 font-display text-figure font-light leading-tight text-ink">
                 {next.name}
               </p>
               <p className="mt-1 text-body text-ink-soft">{next.date}</p>

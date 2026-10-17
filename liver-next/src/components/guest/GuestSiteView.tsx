@@ -57,7 +57,7 @@ export function GuestSiteView({ site, token, c, locale }: {
       <div className="mx-auto w-full max-w-xl">
         <header className="text-center">
           <p className="eyebrow">{c.eyebrow}</p>
-          <h1 className="mt-4 font-display text-display-xl font-normal leading-tight text-ink">
+          <h1 className="mt-4 font-display text-display-xl font-light leading-tight text-ink">
             {site.event_name}
           </h1>
           <p className="mt-5 text-head text-ink-soft">

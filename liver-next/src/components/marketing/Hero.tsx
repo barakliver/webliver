@@ -60,7 +60,7 @@ export function Hero({ site }: { site: SiteCopy }) {
           {site.hero.headline}
         </h1>
 
-        <p className="mt-6 animate-veil font-display text-title font-normal text-surface/95 [animation-delay:120ms]">
+        <p className="mt-6 animate-veil font-display text-title font-light text-surface/95 [animation-delay:120ms]">
           {site.hero.name}
         </p>
 

@@ -36,8 +36,9 @@
  *  re-measured against it and all six survived unchanged, because the new
  *  ground is lighter than the ivory and a lighter ground is kinder to dark
  *  text than a darker one. And then, a fourth time, white: HoneyBook's
- *  ground, which this had stopped matching two palettes ago. */
-export const PAGE_GROUND = '#FFFFFF';
+ *  ground, which this had stopped matching two palettes ago. And a fifth
+ *  time, powder blush, for the plum design. */
+export const PAGE_GROUND = '#FAF3F0';
 
 export type Accent = {
   key: string;
@@ -67,7 +68,10 @@ export type Accent = {
 /* And five of the six `night` tones moved by two to three percent when the
    dark step up went from the warm #2A2621 to HoneyBook's cooler and lighter
    #25353C: each read 4.1 on it against a bar of 4.5. Teal was already
-   clear. */
+   clear. Then the plum design moved them again, and four `light` tones
+   with them: the plum step up #45373E and the plum band #2B2228 are warmer
+   and a touch lighter than the slate they replaced, and each tone moved the
+   two to four percent that clears 4.5 on them. Teal cleared both as it was. */
 export const ACCENTS: Accent[] = [
   {
     key: 'gold',
@@ -76,7 +80,7 @@ export const ACCENTS: Accent[] = [
     bright: '#9E7F4E',
     line:   '#B08D57',
     light:  '#B08D57',
-    night:  '#B69563',
+    night:  '#BEA073',
     wash:   'rgba(176, 141, 87, .07)',
   },
   {
@@ -85,8 +89,8 @@ export const ACCENTS: Accent[] = [
     base:   '#62713F',
     bright: '#7B8E4F',
     line:   '#7A8C4E',
-    light:  '#7C8F50',
-    night:  '#91A06B',
+    light:  '#809255',
+    night:  '#9DAA7B',
     wash:   'rgba(122, 140, 78, .07)',
   },
   {
@@ -99,8 +103,8 @@ export const ACCENTS: Accent[] = [
     base:   '#985839',
     bright: '#C2724D',
     line:   '#C0714C',
-    light:  '#C2724D',
-    night:  '#CC8B6C',
+    light:  '#C47854',
+    night:  '#D2987C',
     wash:   'rgba(192, 113, 76, .07)',
   },
   {
@@ -109,8 +113,8 @@ export const ACCENTS: Accent[] = [
     base:   '#905685',
     bright: '#B76DA9',
     line:   '#9A5C8E',
-    light:  '#AA76A0',
-    night:  '#B88DB0',
+    light:  '#AE7CA4',
+    night:  '#BF99B8',
     wash:   'rgba(154, 92, 142, .07)',
   },
   {
@@ -129,8 +133,8 @@ export const ACCENTS: Accent[] = [
     base:   '#63676F',
     bright: '#828792',
     line:   '#6B6F78',
-    light:  '#84878F',
-    night:  '#989AA1',
+    light:  '#888B93',
+    night:  '#A3A5AB',
     wash:   'rgba(107, 111, 120, .07)',
   },
 ];

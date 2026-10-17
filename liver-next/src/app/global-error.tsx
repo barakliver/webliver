@@ -28,7 +28,7 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
            soft and muted inks, and the deep teal action. If the palette in
            globals.css moves, these move with it by hand. */
         background: '#F8F8F0', color: '#292823', padding: '24px',
-        fontFamily: 'system-ui, -apple-system, "Segoe UI", sans-serif',
+        fontFamily: 'Heebo, system-ui, -apple-system, "Segoe UI", sans-serif',
       }}>
         <main style={{ maxWidth: '30rem', textAlign: 'center' }}>
           <h1 style={{ margin: 0, fontSize: '24px', fontWeight: 600, lineHeight: 1.3 }}>

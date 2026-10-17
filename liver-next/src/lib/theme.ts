@@ -37,6 +37,27 @@ export function isPlatform(path: string): boolean {
     || path === '/design' || path.startsWith('/design/');
 }
 
+/**
+ * The couple's own screen, as a path.
+ *
+ * The plum design was drawn as two rooms: the producer's desk on deep plum
+ * and the couple's screen on powder blush. So "auto", which is what
+ * everybody who never touched the control has, means that split rather than
+ * one rule for both: the desk is dark, and the couple's screen follows their
+ * device, which for most phones in daylight is the blush. Light and dark are
+ * still a decision that outranks it, on either side.
+ */
+export function isCoupleScreen(path: string): boolean {
+  return path === '/app/portal' || path.startsWith('/app/portal/');
+}
+
+/** The producer's own screens: the platform, less the couple's screen and
+ *  the component gallery, which follows the device so both palettes get
+ *  looked at. */
+function isDesk(path: string): boolean {
+  return (path === '/app' || path.startsWith('/app/')) && !isCoupleScreen(path);
+}
+
 export const THEMES: Theme[] = ['auto', 'light', 'dark'];
 
 /** Its own key, not folded into the accessibility settings. The boot script
@@ -51,9 +72,12 @@ export function readTheme(raw: string | null | undefined): Theme {
   return raw === 'light' || raw === 'dark' || raw === 'auto' ? raw : 'auto';
 }
 
-/** What to actually draw, given the choice and what the device says. */
-export function resolve(theme: Theme, deviceIsDark: boolean): 'light' | 'dark' {
+/** What to actually draw, given the choice, what the device says and which
+ *  screen this is. On auto the producer's desk is plum whatever the device
+ *  says; everywhere else auto follows the device. */
+export function resolve(theme: Theme, deviceIsDark: boolean, path = ''): 'light' | 'dark' {
   if (theme === 'light' || theme === 'dark') return theme;
+  if (isDesk(path)) return 'dark';
   return deviceIsDark ? 'dark' : 'light';
 }
 
@@ -77,7 +101,9 @@ export const BOOT_SCRIPT = `(function(){try{
 var p=location.pathname;
 var app=p==='/app'||p.indexOf('/app/')===0||p==='/design'||p.indexOf('/design/')===0;
 var t=localStorage.getItem('${THEME_KEY}');
-var d=app&&(t==='dark'||((!t||t==='auto')&&window.matchMedia('(prefers-color-scheme: dark)').matches));
+var couple=p==='/app/portal'||p.indexOf('/app/portal/')===0;
+var desk=(p==='/app'||p.indexOf('/app/')===0)&&!couple;
+var d=app&&(t==='dark'||((!t||t==='auto')&&(desk||window.matchMedia('(prefers-color-scheme: dark)').matches)));
 var e=document.documentElement;
 e.classList.toggle('${DARK_CLASS}',d);
 e.style.colorScheme=d?'dark':'light';
@@ -95,8 +121,8 @@ e.style.colorScheme=d?'dark':'light';
  */
 export function apply(theme: Theme): void {
   const deviceIsDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const dark = isPlatform(window.location.pathname)
-    && resolve(theme, deviceIsDark) === 'dark';
+  const path = window.location.pathname;
+  const dark = isPlatform(path) && resolve(theme, deviceIsDark, path) === 'dark';
   const root = document.documentElement;
   root.classList.toggle(DARK_CLASS, dark);
   root.style.colorScheme = dark ? 'dark' : 'light';

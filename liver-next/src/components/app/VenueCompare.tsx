@@ -206,7 +206,7 @@ function Column({ c, clientId, v, k, guests, isBest, over, quoteUrl, canChoose, 
       {/* The figure the hall never quotes, given the most room on the card. */}
       <div className="mt-4 border-t border-line pt-3">
         <p className="eyebrow">{c.perGuest}</p>
-        <p className="font-display text-figure font-normal text-ink">
+        <p className="font-display text-figure font-light text-ink">
           <Money value={k.perGuest} />
         </p>
         <p className="mt-0.5 text-meta leading-snug text-ink-mute">{c.perGuestHint}</p>

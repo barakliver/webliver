@@ -145,7 +145,7 @@ export function BrandStudio({ clientId, viewer, brand, images, data, canAi, prin
     <section className="card">
       {hrefs.map((h) => <link key={h} rel="stylesheet" href={h} precedence="default" />)}
       <p className="eyebrow">{c.eyebrow}</p>
-      <h2 className="mt-2 font-display text-figure font-normal text-ink">{c.title}</h2>
+      <h2 className="mt-2 font-display text-figure font-light text-ink">{c.title}</h2>
       <p className="mt-2 max-w-2xl text-body leading-relaxed text-ink-soft">{producer ? c.sub : c.subClient}</p>
 
       {!producer && !hasBrand && <p className="mt-6 text-body text-ink-mute">{c.none}</p>}

@@ -54,14 +54,14 @@ export default async function RsvpPage({ params }: { params: Promise<{ token: st
 
         {!guest ? (
           <div className="card text-center">
-            <h1 className="font-display text-title font-normal text-ink">{rsvpCopy.badLink}</h1>
+            <h1 className="font-display text-title font-light text-ink">{rsvpCopy.badLink}</h1>
             <p className="mt-3 text-lead leading-relaxed text-ink-soft">{rsvpCopy.badLinkBody}</p>
           </div>
         ) : (
           <>
             <header className="mb-6 text-center">
               <p className="eyebrow">{rsvpCopy.eyebrow}</p>
-              <h1 className="mt-2 font-display text-title font-normal text-ink">
+              <h1 className="mt-2 font-display text-title font-light text-ink">
                 {rsvpCopy.hello} <bdi>{guest.guest_name}</bdi>
               </h1>
               <p className="mt-3 text-head text-ink-soft">

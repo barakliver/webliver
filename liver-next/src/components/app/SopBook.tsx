@@ -80,7 +80,7 @@ export function SopBook() {
           {SOP.map((chapter) => (
             <section key={chapter.id} id={chapter.id} className="sop-chapter">
               <header className="border-b-2 border-ink pb-3">
-                <h2 className="inline-flex items-center gap-2 font-display text-figure font-normal text-ink">
+                <h2 className="inline-flex items-center gap-2 font-display text-figure font-light text-ink">
                   <BookOpen size={20} aria-hidden strokeWidth={1.5} className="no-print" />
                   {chapter.title}
                 </h2>

@@ -478,7 +478,7 @@ export const a11yCopyEn: A11yCopy = {
   title: 'Accessibility settings',
   sub: 'Adjust the display to suit you. The settings apply on every screen and are kept in this browser.',
   theme: 'Screen colours',
-  themeAuto: 'Match device',
+  themeAuto: 'Automatic',
   themeLight: 'Light',
   themeDark: 'Dark',
   font: 'Larger text',

@@ -25,7 +25,7 @@ export default async function OfflinePage() {
         {brand.isPlatform ? <PromiseLine className="mb-6 mt-2" /> : <div className="mb-6 mt-2" />}
         <div className="card">
           <div aria-hidden className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-surface-200 text-panel">📶</div>
-          <h1 className="mt-4 font-display text-title font-normal text-ink">אין חיבור לאינטרנט</h1>
+          <h1 className="mt-4 font-display text-title font-light text-ink">אין חיבור לאינטרנט</h1>
           <p className="mt-3 text-lead leading-relaxed text-ink-soft">
             האפליקציה צריכה חיבור כדי להראות לכם מידע עדכני.
             ברגע שהחיבור יחזור, פשוט רעננו את הדף.

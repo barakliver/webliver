@@ -85,7 +85,7 @@ export async function RunSheet({
     <div className="print-doc">
       <header className="print-block border-b-2 border-ink pb-4">
         <p className="text-meta uppercase tracking-[0.14em] text-ink-soft">{brand.name}</p>
-        <h1 className="mt-1.5 font-display text-figure font-normal text-ink">{client.display_name}</h1>
+        <h1 className="mt-1.5 font-display text-figure font-light text-ink">{client.display_name}</h1>
         <p className="mt-1.5 text-lead text-ink-soft">
           {dateLabel || c.noDate}
           {client.venue ? ` · ${client.venue}` : ''}

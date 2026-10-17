@@ -647,7 +647,7 @@ export const a11yCopy = {
   /* The palette. Worded as what the screen will be rather than as a setting
      name, because "מצב כהה" is a term and "כהה" is what somebody sees. */
   theme: 'צבעי המסך',
-  themeAuto: 'לפי המכשיר',
+  themeAuto: 'אוטומטי',
   themeLight: 'בהיר',
   themeDark: 'כהה',
   font: 'הגדלת טקסט',

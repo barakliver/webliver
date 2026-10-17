@@ -37,7 +37,7 @@ export default async function NotFound() {
       <div className="measure">
         <p className="font-mono text-body tracking-[.2em] text-ink-mute" dir="ltr">{c.code}</p>
 
-        <h1 className="mt-4 font-display text-display font-normal leading-tight text-ink">
+        <h1 className="mt-4 font-display text-display font-light leading-tight text-ink">
           {c.title}
         </h1>
 

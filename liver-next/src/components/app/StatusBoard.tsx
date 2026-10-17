@@ -204,7 +204,7 @@ export async function StatusBoard({ items }: { items: ClientStatus[] }) {
             className="mb-4 flex cursor-pointer list-none items-center gap-3 py-1
                        [&::-webkit-details-marker]:hidden"
           >
-            <h2 className="font-display text-figure font-normal leading-none text-ink">
+            <h2 className="font-display text-figure font-light leading-none text-ink">
               {g.year ? <Ltr>{g.year}</Ltr> : c.noYear}
             </h2>
             <span className="text-body text-ink-mute">

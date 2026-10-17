@@ -200,7 +200,7 @@ export function EventDetails({ event }: { event: EventCore }) {
               <span className="text-lead text-ink-mute">{c.daysLeft}</span>
             </>
           ) : (
-            <span className="font-display text-figure font-normal leading-none text-ink">
+            <span className="font-display text-figure font-light leading-none text-ink">
               {left === 0 ? c.today : left === 1 ? c.tomorrow : `${c.passed} ${fill(c.daysAgo, { n: -left })}`}
             </span>
           )}

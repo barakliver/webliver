@@ -222,8 +222,12 @@ export function PortalWorkspace({
             className="aspect-[16/9] w-full object-cover sm:aspect-[21/9]" decoding="async" />
         )}
 
-        <div className="px-5 py-8 sm:px-8 sm:py-10">
-          <h2 className="font-display text-display font-light leading-[1.12] text-ink">
+        {/* The plum band from the design he chose: their name on deep plum,
+            the line under it in the light rose. The heading takes its colour
+            from the band rather than naming one, because the band turns
+            over in the dark palette and a named colour would not. */}
+        <div className="band-dark px-5 py-8 sm:px-8 sm:py-10">
+          <h2 className="font-display text-display font-light leading-[1.12]">
             {c.profile?.nickname || c.display_name}
           </h2>
 
@@ -232,7 +236,7 @@ export function PortalWorkspace({
               at figure size, and the brief is right that a number drawn that
               way is a timer. It is still the first figure on the screen; it
               is simply said rather than displayed. */}
-          <p className="mt-2 text-body text-ink-mute">
+          <p className="mt-2 text-body text-accent-light">
             {left !== null && left >= 0 && (
               <>
                 <span className="tabular-nums"><Ltr>{left.toLocaleString('en-US')}</Ltr></span> {ui.portal.daysLeft}

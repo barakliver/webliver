@@ -68,14 +68,14 @@ export default async function SignPage({ params }: { params: Promise<{ token: st
              page that distinguished "signed already" from "never existed"
              would confirm a guess to whoever was guessing. */
           <div className="card text-center">
-            <h1 className="font-display text-title font-normal text-ink">{c.badLink}</h1>
+            <h1 className="font-display text-title font-light text-ink">{c.badLink}</h1>
             <p className="mt-3 text-lead leading-relaxed text-ink-soft">{c.badLinkBody}</p>
           </div>
         ) : (
           <>
             <header className="mb-5 text-center">
               <p className="eyebrow">{c.eyebrow}</p>
-              <h1 className="mt-2 font-display text-title font-normal text-ink">{deal.title}</h1>
+              <h1 className="mt-2 font-display text-title font-light text-ink">{deal.title}</h1>
               {(deal.party_name || deal.party_role) && (
                 <p className="mt-1.5 text-body text-ink-soft">
                   {[deal.party_name, deal.party_role].filter(Boolean).join(' · ')}
@@ -87,7 +87,7 @@ export default async function SignPage({ params }: { params: Promise<{ token: st
               {deal.amount !== null && (
                 <div className="flex items-baseline justify-between gap-4 border-b border-line pb-4">
                   <span className="text-body text-ink-soft">{c.amount}</span>
-                  <span className="font-display text-figure font-normal tabular-nums text-ink">
+                  <span className="font-display text-figure font-light tabular-nums text-ink">
                     <Money value={Number(deal.amount)} />
                   </span>
                 </div>

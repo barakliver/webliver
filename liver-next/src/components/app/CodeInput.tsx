@@ -76,7 +76,7 @@ export function CodeInput({ name, label, length }: {
           aria-label={label}
           value={plain}
           onChange={(e) => setPlain(e.target.value.replace(/\D/g, '').slice(0, 12))}
-          className="field mt-1.5 w-full text-center font-display text-figure font-normal tracking-[0.4em] tabular-nums"
+          className="field mt-1.5 w-full text-center font-display text-figure font-light tracking-[0.4em] tabular-nums"
         />
       ) : (
         /* Left to right inside a right-to-left page, because a number reads

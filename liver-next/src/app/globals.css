@@ -80,6 +80,22 @@
        are the sans at regular weight; the serif is kept for the one accent
        word, which is how theirs is used too.
 
+       And then plum at night, number 17 of the seventeen directions put in
+       front of him, chosen by number, with one condition in his own words:
+       one font, the same everywhere. So no serif at all any more, and no
+       yellow, which he ruled out a round earlier as not beautiful. The
+       couple's screen is powder blush, #FAF3F0, with white cards that lift on
+       a soft shadow and a deep plum band, #2B2228, holding their name; the
+       one action is a dusty rose. The producer's desk is the same plum as a
+       whole screen, with the rose as its light, and that is the dark palette
+       below: on "auto", which is everybody who never chose, the desk is dark
+       and the couple's screen follows their device, which is the split the
+       design was drawn as. Two of the design's tones were solved a step
+       darker on the way in, because as small text they read under the bar:
+       the secondary ink #8A6E75 at 4.19 and the rose #A6616F at 4.20 on the
+       blush. The drawn rose is kept as `accent-bright`, for the large
+       numerals where 3:1 is the bar and it clears it.
+
        Old notes, kept because the measurements in them still hold:
        #F1F4F9 is a pale blue that is not grey: the card above it is white,
        and the canvas has to sit under that without either of them reading as
@@ -117,26 +133,20 @@
        top of an accent-coloured control.
 
        Structure is untouched, as it was the last three times. */
-    --ink-rgb: 20 33 39;             /* #142127, HoneyBook's black */
-    --ink-soft-rgb: 99 105 108;      /* #63696C, their secondary text */
-    --ink-mid-rgb: 125 132 136;      /* #7D8488, large text only: their
-                                        #B0B8BC is 2.0:1 and is a line here */
-    --ink-mute-rgb: 94 100 103;      /* #5E6467. Solved against #F3F5F6, the
-                                        darkest ground a kicker sits on. */
+    --ink-rgb: 59 46 51;              /* #3B2E33, plum ink */
+    --ink-soft-rgb: 122 95 103;       /* #7A5F67. The design drew #8A6E75, 4.19 on the ground */
+    --ink-mid-rgb: 149 122 129;       /* #957A81, large text only */
+    --ink-mute-rgb: 115 90 98;        /* #735A62. Solved against #F4E9E7, the step up */
 
-    --surface-rgb: 255 255 255;      /* #FFFFFF, the canvas: white, as theirs */
-    --surface-100-rgb: 255 255 255;  /* #FFFFFF, the card: white on white,
-                                        held by its hairline */
-    --surface-200-rgb: 243 245 246;  /* #F3F5F6, the step up */
+    --surface-rgb: 250 243 240;      /* #FAF3F0, powder blush */
+    --surface-100-rgb: 255 255 255;   /* #FFFFFF, the card */
+    --surface-200-rgb: 244 233 231;   /* #F4E9E7, the step up */
     /* Lifted off the ink rather than equal to it, but only barely. The dark
        band is a surface somebody reads a paragraph on, and it also carries
        each producer's own accent as words: the six white-label accents are
        checked against it, and the palest of them needs the ground this dark
        to clear 4.5. A warmer, lighter band failed three of the six. */
-    --dark-rgb: 20 33 39;            /* #142127. The ink itself, which is dark enough:
-                                        it carries each producer's own accent
-                                        as words, and the palest of the six
-                                        needs this much ground to clear 4.5. */
+    --dark-rgb: 43 34 40;             /* #2B2228, deep plum: the band */
 
     /* The whole-colour forms, derived. Anything that needs a colour rather
        than a Tailwind class reads these: a gradient stop, `accent-color`, an
@@ -159,25 +169,25 @@
        class checker caught what that costs: eight `bg-bad-wash/40` and the
        like across the product, each compiling to no declaration at all. A
        wash a modifier cannot reach is a row that stops being tinted. */
-    --ok-rgb: 2 122 72;              /* #027A48, their success */
-    --ok-wash-rgb: 236 253 243;      /* #ECFDF3 */
-    --warn-rgb: 181 71 8;            /* #B54708, the warning of the same set */
-    --warn-wash-rgb: 255 250 235;    /* #FFFAEB */
-    --bad-rgb: 180 35 24;            /* #B42318, their error */
-    --bad-wash-rgb: 254 243 242;     /* #FEF3F2 */
+    --ok-rgb: 79 107 82;              /* #4F6B52, sage */
+    --ok-wash-rgb: 234 241 232;       /* #EAF1E8 */
+    --warn-rgb: 138 90 31;            /* #8A5A1F */
+    --warn-wash-rgb: 248 238 223;     /* #F8EEDF */
+    --bad-rgb: 142 59 70;             /* #8E3B46, wine rather than red */
+    --bad-wash-rgb: 248 230 232;      /* #F8E6E8 */
     /* Their two secondary grounds, under the two names the product has for
        a soft ground: mist and earl grey for the planning moment, oat and
        tofu for the editorial one. Grounds only, never words in their hue. */
-    --sage-rgb: 199 213 217;         /* #C7D5D9, earl grey */
-    --sage-wash-rgb: 237 241 243;    /* #EDF1F3, mist */
-    --blush-rgb: 244 234 224;        /* #F4EAE0, oat */
-    --blush-wash-rgb: 250 245 239;   /* #FAF5EF, tofu */
+    --sage-rgb: 220 229 218;          /* #DCE5DA */
+    --sage-wash-rgb: 238 242 235;     /* #EEF2EB */
+    --blush-rgb: 232 201 207;         /* #E8C9CF */
+    --blush-wash-rgb: 248 237 238;    /* #F8EDEE */
 
     /* The veil under a modal. Its own token rather than the ink at 40%,
        which is what it used to be: on the dark palette the ink is near-white,
        so every scrim in the product lit the page up instead of dimming it.
        A scrim darkens in both palettes or it is not a scrim. */
-    --scrim-rgb: 20 33 39;           /* the ink, in daylight */
+    --scrim-rgb: 43 34 40;            /* the plum, in daylight */
 
     /* The focus ring, and deliberately not the accent. A ring drawn in the
        accent disappears on top of an accent-coloured control, which is the
@@ -189,15 +199,15 @@
        a blue ring on a blue button, which is no ring at all. */
     /* A blue, because the accent is the ink now: a ring in the ink is a
        ring that looks like the black button it is drawn beside. */
-    --focus-rgb: 30 91 214;          /* #1E5BD6 */
+    --focus-rgb: 74 46 69;            /* #4A2E45, a deep plum: a ring in the rose is a ring on a rose button */
     --focus: rgb(var(--focus-rgb));
 
-    --line: #E0E5E7;                 /* their neutral-200 */
-    --line-strong: #B0B8BC;          /* their neutral-300 */
+    --line: #EBDCDD;
+    --line-strong: #D9C2C6;
     /* The design source's own two: a panel edge and the glass it edges. Not
        derived from the ink like the separators above, because these are the
        slate line colour itself rather than a percentage of the text. */
-    --line-soft: rgba(224, 229, 231, .7);
+    --line-soft: rgba(235, 220, 221, .7);
     /* Opaque. It was a translucent panel over a gradient, which is the
        surface a brief asked to stop using: text on a ground that changes
        across the page, with an edge that is barely an edge. */
@@ -212,12 +222,14 @@
        The warm palette cleared it at .48; a cooler, lighter ground does not. */
     /* Their input edge is the #B0B8BC above, at 2.0:1; the 3:1 rule for a
        control boundary outranks it, and this is the same grey clearing it. */
-    --line-control: #7D8488;
+    --line-control: #957A81;          /* 3.56 on the ground */
     /* The inside of an input. A token rather than a literal because one
        section of this product inverts the whole palette for a dark band, and
        a hardcoded white here meant a near-white label inside a light grey box
        on that band: 1.44:1, which is not dim, it is gone. */
     --field-bg: #FFFFFF;
+    /* The lift under a card on the blush, from the plum design. */
+    --card-shadow: 0 12px 30px rgba(59, 46, 51, .06);
 
     /* The gold is the one thing both designs share, and it moves only as far
        as the cooler ground makes it. Re-solved against #F1F5F9 rather than
@@ -242,31 +254,28 @@
        colour in the brand is honey, below, and honey is never asked to carry
        a word. A producer's own accent still replaces this through
        accentVars, exactly as before. */
-    --accent-rgb: 20 33 39;          /* #142127, as words and as the fill */
-    --accent-hover-rgb: 52 60 64;    /* #343C40, their hover, neutral-500 */
-    --accent-pressed-rgb: 11 19 22;  /* #0B1316 */
+    --accent-rgb: 151 83 95;          /* #97535F, the rose. The design drew #A6616F, 4.20 on the ground */
+    --accent-hover-rgb: 126 68 80;    /* #7E4450 */
+    --accent-pressed-rgb: 104 56 68;  /* #683844 */
     /* #6A85BE, two percent down from #6C88C2 for the same reason: 2.95
        against a bar of 3 on the step up. A large numeral at 2.95 is not a
        different design from one at 3.07; it is the same design, failing. */
-    --accent-bright-rgb: 52 60 64;   /* #343C40, large numerals only */
+    --accent-bright-rgb: 166 97 111;  /* #A6616F, the design rose, large numerals only */
     /* Honey, in the two roles the product keeps for decoration: the rule
        under a section, the line under the selected tab, and the words that
        sit on the dark band, where #FFFA56 reads 14.9:1. */
-    --accent-line-rgb: 255 250 86;   /* #FFFA56, honey */
-    --accent-light-rgb: 255 218 0;   /* #FFDA00, manuka, on the dark ground only */
-    --honey-rgb: 255 250 86;         /* #FFFA56, the brand's one colour */
-    --honey-wash-rgb: 255 253 204;   /* #FFFDCC, honey at a third over white */
+    --accent-line-rgb: 227 181 188;   /* #E3B5BC, rose light: hairlines, and words on the plum */
+    --accent-light-rgb: 237 203 208;  /* #EDCBD0, on the plum only */
     /* The one warm thing left, and it is kept small on purpose: a brand
        detail and a welcoming moment, never an operational state. Danger has
        its own red, and a save that looks like a delete is the failure this
        separation exists to prevent. */
-    --coral-rgb: 239 69 61;          /* #EF453D, never as small text on white */
-    --coral-strong-rgb: 214 50 41;   /* #D63229, when words are needed */
+    --coral-rgb: 217 142 154;         /* #D98E9A, a brand detail, never small text */
+    --coral-strong-rgb: 166 97 111;   /* #A6616F */
     /* And the accent on the dark palette, which is a different question from
        the dark band: that band was darker than the dark palette's own card,
        so four of the six white-label tones clear 4.5:1 on it and not here. */
-    --accent-night-rgb: 255 250 86;  /* #FFFA56: on the dark palette the
-                                        action is the honey, with the ink on it */
+    --accent-night-rgb: 227 181 188;  /* #E3B5BC: on the dark palette the action is the rose, with the plum on it */
 
     --accent: rgb(var(--accent-rgb));
     --accent-hover: rgb(var(--accent-hover-rgb));
@@ -274,7 +283,6 @@
     --accent-line: rgb(var(--accent-line-rgb));
     --accent-light: rgb(var(--accent-light-rgb));
     --accent-night: rgb(var(--accent-night-rgb));
-    --honey: rgb(var(--honey-rgb));
     /* A wash is translucent by definition, so it stays whole and takes no
        opacity modifier of its own. */
     --accent-wash: rgb(var(--accent-rgb) / .08);
@@ -313,7 +321,7 @@
        display face is Heebo again and the serif is reachable only as
        `font-serif`, through the editorial token. */
     --font-ui: var(--font-heebo);
-    --font-editorial: var(--font-frank);
+    --font-editorial: var(--font-heebo);
     --font-display: var(--font-heebo);
     /* Hebrew is never tracked; a serif display face wants none either. */
     --display-track: 0;
@@ -624,9 +632,14 @@
      existed, which is the proof that nothing structural was resting on them.
      Shadow still belongs to things that genuinely sit above the page: a
      sheet, a dialog, the dock. `.panel` keeps its lift for the same reason. */
+  /* A soft lift and a hairline barely darker than the card, which is what
+     the plum design drew: a white card resting on blush rather than a box
+     drawn around it. The shadow is a token so the dark palette can take it
+     away; on plum a shadow is invisible and the step in tone does the job. */
   .card {
     @apply rounded-card border border-line p-4 sm:p-6;
     background: var(--surface-glass);
+    box-shadow: var(--card-shadow);
   }
   /* The solid variant. Where a panel has to hold its own against whatever is
      behind it rather than borrow from it: a sheet, a login card, the result
@@ -636,6 +649,32 @@
   }
   .panel-dark {
     @apply rounded-panel bg-dark p-5 text-surface;
+  }
+  /* The plum band: the dark object at the top of the couple's screen that
+     holds their name. A band rather than a panel, so it carries no padding
+     or corner of its own and takes the shape of whatever it sits in. */
+  .band-dark {
+    @apply bg-dark text-surface;
+  }
+
+  /* A sentence that writes itself in, once, from the side Hebrew starts on.
+     Clipped rather than typed letter by letter, so a screen reader reads
+     the whole sentence from the first frame and nothing is ever half there
+     in the document. */
+  .write-in {
+    animation: write-in 1.4s cubic-bezier(.2,.9,.2,1) .3s both;
+  }
+  @keyframes write-in {
+    from { clip-path: inset(0 0 0 100%); }
+    to   { clip-path: inset(0 0 0 0); }
+  }
+  [dir='ltr'] .write-in { animation-name: write-in-ltr; }
+  @keyframes write-in-ltr {
+    from { clip-path: inset(0 100% 0 0); }
+    to   { clip-path: inset(0 0 0 0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .write-in { animation: none; }
   }
   /* And the third: an outline with almost no fill, for a group that needs an
      edge without becoming another panel in a column of panels. */
@@ -794,16 +833,15 @@
        brand became a blue: the ends kept a palette the middle had left. A
        hairline is the last place anybody looks for a bug and the first place
        a screen stops feeling like one thing. */
-    /* Honey, solid, which is the marker HoneyBook draws under a word. A
-       producer's accent does not reach it: it is the brand's line, not the
-       action's. */
+    /* The light rose, the plum design's hairline colour. A producer's
+       accent does not reach it: it is the brand's line, not the action's. */
     background: linear-gradient(
       90deg,
-      rgb(var(--honey-rgb) / 0) 0%,
-      rgb(var(--honey-rgb)) 30%,
-      rgb(var(--honey-rgb) / .35) 100%
+      rgb(var(--accent-line-rgb) / 0) 0%,
+      rgb(var(--accent-line-rgb)) 30%,
+      rgb(var(--accent-line-rgb) / .35) 100%
     );
-    height: 3px;
+    height: 1px;
   }
   [dir='rtl'] .rule-gold { transform: scaleX(-1); }
 
@@ -888,20 +926,20 @@
        page with scripting off. */
     color-scheme: dark;
 
-    /* HoneyBook has no dark palette; this is their black band as a whole
-       screen. Their alternate ground is #142127 with white words on it. */
-    --ink-rgb: 243 245 246;          /* #F3F5F6 on the ground */
-    --ink-soft-rgb: 176 184 188;     /* #B0B8BC */
-    --ink-mid-rgb: 138 146 150;      /* #8A9296, large text only */
-    --ink-mute-rgb: 184 192 196;     /* #B8C0C4 on the step up, the
-                                        darkest ground a kicker sits on */
+    /* The producer's desk from the plum design: the band that holds the
+       couple's name, as a whole screen, with the rose as its light. On
+       "auto" every producer screen draws this; see `resolve` in lib/theme. */
+    --ink-rgb: 246 238 240;           /* #F6EEF0 on the plum */
+    --ink-soft-rgb: 201 174 180;      /* #C9AEB4 */
+    --ink-mid-rgb: 156 133 140;       /* #9C858C, large text only */
+    --ink-mute-rgb: 210 186 192;      /* #D2BAC0 on the step up */
 
-    --surface-rgb: 20 33 39;         /* #142127, the canvas */
-    --surface-100-rgb: 28 43 50;     /* #1C2B32, the card, lifted off it */
-    --surface-200-rgb: 37 53 60;     /* #25353C, the step up */
+    --surface-rgb: 43 34 40;         /* #2B2228, deep plum */
+    --surface-100-rgb: 58 46 52;      /* #3A2E34, the card */
+    --surface-200-rgb: 69 55 62;      /* #45373E, the step up */
     /* The band that was the dark one. Now the step up, because a charcoal
        panel on a charcoal page is not a panel. */
-    --dark-rgb: 37 53 60;
+    --dark-rgb: 69 55 62;
 
     /* Black, not the ink. The ink is near-white here. */
     --scrim-rgb: 0 0 0;
@@ -910,16 +948,17 @@
        not a quieter ring, it is an absent one. Same hue, lifted. */
     /* Lighter than the night accent, for the same reason the daylight ring
        is darker than the daylight one: the accent is a blue on both sides. */
-    --focus-rgb: 138 180 248;        /* #8AB4F8, the daylight blue lifted */
+    --focus-rgb: 242 217 221;         /* #F2D9DD */
 
-    --line: #25353C;
-    --line-strong: #34464E;
-    --line-soft: rgba(37, 53, 60, .7);
+    --line: #4A3B42;
+    --line-strong: #5A4951;
+    --line-soft: rgba(74, 59, 66, .7);
     /* The edge of a control, held to the same 3:1 it is held to in daylight.
        This one measures 3.9:1 on the canvas. */
-    --line-control: #7A868C;
-    --surface-glass: #1C2B32;
-    --field-bg: #1C2B32;
+    --line-control: #8E7680;          /* 3.71 on the canvas */
+    --surface-glass: #3A2E34;
+    --field-bg: #3A2E34;
+    --card-shadow: none;
 
     /* The accent's own night tone. Written as a reference rather
        than as a value so a producer's accent follows: their five tones
@@ -931,21 +970,20 @@
 
     /* State. Solved against this ground rather than carried over: the light
        palette's green is 2.3:1 here. */
-    --ok-rgb: 117 224 167;           /* #75E0A7 */
-    --ok-wash-rgb: 16 40 28;         /* #10281C */
-    --warn-rgb: 254 200 75;          /* #FEC84B */
-    --warn-wash-rgb: 46 33 16;       /* #2E2110 */
-    --bad-rgb: 253 162 155;          /* #FDA29B */
-    --bad-wash-rgb: 46 22 20;        /* #2E1614 */
+    --ok-rgb: 159 195 163;            /* #9FC3A3 */
+    --ok-wash-rgb: 34 48 42;          /* #22302A */
+    --warn-rgb: 230 185 122;          /* #E6B97A */
+    --warn-wash-rgb: 58 46 30;        /* #3A2E1E */
+    --bad-rgb: 244 163 173;           /* #F4A3AD */
+    --bad-wash-rgb: 62 34 41;         /* #3E2229 */
     /* Softened for the night, where the daylight coral glares. */
-    --coral-rgb: 244 122 115;        /* #F47A73 */
-    --coral-strong-rgb: 239 69 61;   /* #EF453D */
+    --coral-rgb: 232 154 166;         /* #E89AA6 */
+    --coral-strong-rgb: 244 163 173;  /* #F4A3AD */
     /* Grounds only, never carrying words in their own hue. */
-    --sage-rgb: 42 58 65;            /* #2A3A41 */
-    --sage-wash-rgb: 34 48 55;       /* #223037 */
-    --blush-rgb: 46 42 51;           /* #2E2A33 */
-    --blush-wash-rgb: 38 36 44;      /* #26242C */
-    --honey-wash-rgb: 39 50 43;      /* #27322B, honey at 8% over the canvas */
+    --sage-rgb: 51 64 58;             /* #33403A */
+    --sage-wash-rgb: 46 56 51;        /* #2E3833 */
+    --blush-rgb: 74 54 64;            /* #4A3640 */
+    --blush-wash-rgb: 63 47 55;       /* #3F2F37 */
   }
 
   /* A producer's own accent arrives as a style attribute, which outranks any
@@ -979,7 +1017,8 @@
 
   /* It inverted against a light page. Here it is a step up with ordinary
      ink on it, which is the same idea drawn the other way round. */
-  :root.theme-dark .panel-dark {
+  :root.theme-dark .panel-dark,
+  :root.theme-dark .band-dark {
     color: rgb(var(--ink-rgb));
   }
 

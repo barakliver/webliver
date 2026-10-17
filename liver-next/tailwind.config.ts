@@ -161,14 +161,6 @@ const config: Config = {
           DEFAULT: 'rgb(var(--coral-rgb, 239 69 61) / <alpha-value>)',
           strong:  'rgb(var(--coral-strong-rgb, 214 50 41) / <alpha-value>)',
         },
-        /* HoneyBook's one colour. Never words and never a ground under
-           words: the marker under a heading, the line under the selected
-           tab, the glow on the dark band. The wash is the pale tint their
-           hero sections sit on, and ink reads 14:1 on it. */
-        honey: {
-          DEFAULT: 'rgb(var(--honey-rgb, 255 250 86) / <alpha-value>)',
-          wash:    'rgb(var(--honey-wash-rgb, 255 253 204) / <alpha-value>)',
-        },
       },
       /* Two families again, and this time by his ruling rather than by a
          document's. The comment that used to sit here said "the day a display
@@ -278,15 +270,15 @@ const config: Config = {
            reading as the flat surface the brief asks for. */
         /* HoneyBook's two: the barely-there one and the one under a thing
            that floats. Read out of their stylesheet. */
-        soft: '0 1px 4px rgba(19,20,22,.15)',
+        soft: '0 1px 4px rgba(59,46,51,.12)',
         lift: 'none',
-        cta:  '0 8px 20px rgba(19,20,22,.10)',
+        cta:  '0 12px 30px rgba(59,46,51,.10)',
         /* Chrome that floats over arbitrary content rather than over the
            page's own ground: a dropdown, the concierge panel. A hairline
            alone cannot say "above" on a ground this light. */
-        pop:  '0 8px 20px rgba(19,20,22,.10)',
+        pop:  '0 12px 30px rgba(59,46,51,.10)',
         dock: '0 -1px 0 var(--line, rgba(15,23,42,.10))',
-        fab:  '0 8px 20px rgba(19,20,22,.10)',
+        fab:  '0 12px 30px rgba(59,46,51,.10)',
       },
       backdropBlur: { xl: '22px', '2xl': '34px' },
       /* Rounded, and rounded through these two names rather than at a
@@ -300,11 +292,11 @@ const config: Config = {
       /* The planning system's geometry: 12px on anything pressed or typed
          in, 16px on a card, a little more on the things that float. */
       borderRadius: {
-        /* HoneyBook's geometry: a button is a pill, a card is 20, a surface
-           inside one is 12, and anything typed in is 10. */
-        control: '10px', button: '9999px', 'card-sm': '12px', kpi: '20px',
-        card: '20px', panel: '20px', sheet: '20px',
-        xl2: '10px', '4xl': '20px',
+        /* The plum design's geometry: a button is a pill, a card is 22, a
+           surface inside one is 14, and anything typed in is 12. */
+        control: '12px', button: '9999px', 'card-sm': '14px', kpi: '22px',
+        card: '22px', panel: '22px', sheet: '22px',
+        xl2: '12px', '4xl': '22px',
       },
       maxWidth: { content: '70rem', prose2: '44rem' },
       spacing: { safe: 'env(safe-area-inset-bottom, 0px)' },

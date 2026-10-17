@@ -36,7 +36,7 @@ const platformMail = (locale: Locale): MailBrand => (locale === 'en'
 function shell(inner: string, brand?: MailBrand, locale: Locale = 'he'): string {
   const sign = brand ?? platformMail(locale);
   return `
-<div dir="${locale === 'en' ? 'ltr' : 'rtl'}" style="font-family:Assistant,Heebo,Arial,sans-serif;background:#f4f8fd;padding:28px">
+<div dir="${locale === 'en' ? 'ltr' : 'rtl'}" style="font-family:Heebo,Arial,sans-serif;background:#f4f8fd;padding:28px">
   <div style="max-width:560px;margin:0 auto;background:#fff;border-radius:20px;padding:28px;border:1px solid #e6eef8">
     ${inner}
     <hr style="border:none;border-top:1px solid #eef2f7;margin:22px 0">

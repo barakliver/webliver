@@ -110,7 +110,7 @@ export function PhoneStage({
       <div className="shell grid items-center gap-14 lg:grid-cols-[1fr_auto] lg:gap-20">
         <div>
           <p className="eyebrow">{kicker}</p>
-          <h2 className="mt-4 max-w-[14ch] font-display text-display font-normal text-ink">{title}</h2>
+          <h2 className="mt-4 max-w-[14ch] font-display text-display font-light text-ink">{title}</h2>
           <Prose lines={body} className="mt-5 leading-relaxed" />
         </div>
 

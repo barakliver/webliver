@@ -50,31 +50,32 @@ const ratio = (a, b) => {
    compared on every run and the build fails naming the token, the value here
    and the value in the stylesheet. */
 const c = {
-  /* HoneyBook's own, out of their stylesheet: black #142127, the grey ramp
-     under it, white, and honey. */
-  ink: '#142127', inkSoft: '#63696C', inkMid: '#7D8488',
-  inkMute: '#5E6467',              /* solved against the step up */
-  surface: '#FFFFFF', surface100: '#FFFFFF', surface200: '#F3F5F6',
+  /* Plum at night, number 17: powder blush, plum ink, a dusty rose. The
+     secondary ink and the rose are a step darker than the design drew them,
+     because as small text the drawn ones read 4.19 and 4.20 on the blush. */
+  ink: '#3B2E33', inkSoft: '#7A5F67', inkMid: '#957A81',
+  inkMute: '#735A62',              /* solved against the step up */
+  surface: '#FAF3F0', surface100: '#FFFFFF', surface200: '#F4E9E7',
   card: '#FFFFFF',
-  dark: '#142127',
-  line: '#E0E5E7', lineStrong: '#B0B8BC',
-  lineControl: '#7D8488',
+  dark: '#2B2228',
+  line: '#EBDCDD', lineStrong: '#D9C2C6',
+  lineControl: '#957A81',
   /* The focus ring, which is not the accent and is measured as a control
      boundary: a ring nobody can find is the accessibility failure this
      token exists to prevent. */
-  focus: '#1E5BD6',
-  accent: '#142127',               /* the primary action, safe as words: the ink */
-  accentHover: '#343C40',
-  accentBright: '#343C40',         /* large numerals only, 3:1 bar   */
-  accentLine: '#FFFA56',           /* honey, as words on the dark ground only */
-  accentLight: '#FFDA00',          /* manuka, on the dark ground only */
+  focus: '#4A2E45',
+  accent: '#97535F',               /* the rose, safe as words */
+  accentHover: '#7E4450',
+  accentBright: '#A6616F',         /* the drawn rose, large numerals only */
+  accentLine: '#E3B5BC',           /* words on the plum band             */
+  accentLight: '#EDCBD0',
   /* The accent at 8% over the canvas, which is what --accent-wash ships.
      Filled in below from the two tones it is made of rather than written,
      so the one blended token cannot drift from its own ingredients. */
   accentWash: '',
-  ok: '#027A48', okWash: '#ECFDF3',
-  warn: '#B54708', warnWash: '#FFFAEB',
-  bad: '#B42318', badWash: '#FEF3F2',
+  ok: '#4F6B52', okWash: '#EAF1E8',
+  warn: '#8A5A1F', warnWash: '#F8EEDF',
+  bad: '#8E3B46', badWash: '#F8E6E8',
   white: '#FFFFFF',
 };
 
@@ -310,25 +311,26 @@ line('an inverted control edge',         over2(c.surface, 0.45, c.dark),  c.dark
    the dark one becomes the step up, so what is written on it is ordinary
    ink rather than the inverted kind. */
 const d = {
-  /* HoneyBook's black band as a whole screen: #142127 under white. */
-  ink: '#F3F5F6', inkSoft: '#B0B8BC', inkMid: '#8A9296', inkMute: '#B8C0C4',
-  surface: '#142127', surface100: '#1C2B32', surface200: '#25353C',
-  card: '#1C2B32',
+  /* The producer's desk: the same plum as a whole screen, the rose as its
+     light. */
+  ink: '#F6EEF0', inkSoft: '#C9AEB4', inkMid: '#9C858C', inkMute: '#D2BAC0',
+  surface: '#2B2228', surface100: '#3A2E34', surface200: '#45373E',
+  card: '#3A2E34',
   /* The band, which in this palette is the step up. */
-  dark: '#25353C',
-  line: '#25353C', lineStrong: '#34464E', lineControl: '#7A868C',
-  focus: '#8AB4F8',
-  /* The accent's night tone, promoted to the main one: honey, with the
-     ink as its label. */
-  accent: '#FFFA56',
-  accentLine: '#FFFA56',
-  /* 8% of honey over the canvas, which is what --accent-wash
+  dark: '#45373E',
+  line: '#4A3B42', lineStrong: '#5A4951', lineControl: '#8E7680',
+  focus: '#F2D9DD',
+  /* The accent's night tone, promoted to the main one: the rose, with the
+     plum as its label. */
+  accent: '#E3B5BC',
+  accentLine: '#E3B5BC',
+  /* 8% of the rose over the canvas, which is what --accent-wash
      resolves to once --accent-rgb has moved. */
-  accentWash: '#27322B',
-  ok: '#75E0A7', okWash: '#10281C',
-  warn: '#FEC84B', warnWash: '#2E2110',
-  bad: '#FDA29B', badWash: '#2E1614',
-  sage: '#2A3A41', blush: '#2E2A33',
+  accentWash: '#383035',
+  ok: '#9FC3A3', okWash: '#22302A',
+  warn: '#E6B97A', warnWash: '#3A2E1E',
+  bad: '#F4A3AD', badWash: '#3E2229',
+  sage: '#33403A', blush: '#4A3640',
 };
 
 console.log('\n  כהה');

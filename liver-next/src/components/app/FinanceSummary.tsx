@@ -136,7 +136,7 @@ export function FinanceSummary({ clientId, viewer, target, items, payments }: {
               <t.icon size={13} strokeWidth={1.5} aria-hidden />
               {t.kicker}
             </p>
-            <p className={cn('font-display font-normal leading-none tabular-nums text-lead sm:mt-2 sm:text-figure', t.tone ?? 'text-ink')}>
+            <p className={cn('font-display font-light leading-none tabular-nums text-lead sm:mt-2 sm:text-figure', t.tone ?? 'text-ink')}>
               {t.value}
             </p>
             {t.sub && <p className="hidden text-meta leading-snug text-ink-mute sm:mt-2 sm:block">{t.sub}</p>}
@@ -158,7 +158,7 @@ export function FinanceSummary({ clientId, viewer, target, items, payments }: {
             {variance === null ? c.variance : underTarget ? c.surplus : c.overrun}
           </p>
           <p className={cn(
-            'font-display font-normal leading-none tabular-nums text-lead sm:mt-2 sm:text-figure',
+            'font-display font-light leading-none tabular-nums text-lead sm:mt-2 sm:text-figure',
             variance === null ? 'text-ink-mute' : underTarget ? 'text-ok' : 'text-bad',
           )}>
             {variance === null ? <span className="text-meta sm:text-head">{c.setTargetFirst}</span> : <Money value={Math.abs(variance)} />}

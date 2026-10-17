@@ -356,7 +356,36 @@ that has happened once.
   impression of one. A test walks every id to its file and back and asserts
   the three undealt ones are undealt, so a card without a picture fails the
   build rather than drawing a broken image inside his frame.
-- **The palette is HoneyBook's, exactly, read out of their own stylesheet
+- **The palette is plum at night, number 17 of seventeen directions, and
+  there is one font, Heebo, everywhere.** He picked it by number with one
+  condition: the font the same for everything. So Frank Ruhl Libre is no
+  longer downloaded at all, `--font-display` and `--font-editorial` are both
+  Heebo, `font-serif` is a name whose face is Heebo, and the large display
+  lines that were regular are Heebo at 300, which is where the elegance the
+  serif carried now lives. The one place a second face still appears is a
+  wedding's own brand kit, on its invitation pieces and guests' page: that is
+  the couple's chosen typeface for their wedding, not the platform's.
+  The couple's screen is powder blush #FAF3F0 under plum ink #3B2E33, white
+  cards on a hairline #EBDCDD with a soft lift (`--card-shadow`, none in the
+  dark palette), and their name sits on a deep plum band #2B2228
+  (`.band-dark`) in the light rose. The action is the rose #97535F with a
+  white label; the design drew #A6616F, which is 4.20 on the blush, so the
+  drawn rose is `accent-bright` for large numerals and the secondary ink is
+  #7A5F67 rather than the drawn #8A6E75 for the same reason. `bad` is a wine
+  #8E3B46 rather than a red, because red on blush shouts. No yellow anywhere;
+  he ruled it out. The producer's desk is the dark palette: #2B2228 under
+  #F6EEF0, card #3A2E34, step up #45373E, the rose #E3B5BC as the action
+  with the plum on it. **On "auto" the desk is dark and the couple's screen
+  follows the device** (`isCoupleScreen` and `resolve` in `lib/theme.ts`,
+  and the same rule inside the boot script), which is the split the design
+  was drawn as; light and dark stay a choice that outranks it. Radii are
+  22 for a card, 14 inside one, 12 for a control, buttons pills. The
+  standing sentence writes itself in with a clip, not letter by letter, so a
+  screen reader has the whole sentence from the first frame. Four producer
+  `light` tones and five `night` tones moved two to four percent to clear
+  the new plum grounds. The paragraph below is the history of the
+  HoneyBook move.
+- **The palette was HoneyBook's, exactly, read out of their own stylesheet
   rather than guessed from a screenshot.** He asked for it in one sentence
   and his latest instruction wins. White ground, #FFFFFF, with the card
   white on a hairline #E0E5E7 at a 20px corner and the step up #F3F5F6;
