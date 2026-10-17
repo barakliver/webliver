@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Check, ChevronRight, ChevronLeft, Lock } from 'lucide-react';
 import { useCopy } from '@/components/app/CopyProvider';
 import { useWide } from '@/lib/useWide';
-import { Ratio } from '@/components/Ltr';
+import { Ratio, Money } from '@/components/Ltr';
 import { fill } from '@/lib/copyText';
 import { cn } from '@/lib/utils';
 import { INTAKE_KEY, type Chapter, type Question } from '@/content/intake';
@@ -28,6 +28,11 @@ import { saveAnswer } from '@/app/actions/intake';
  * answer and draws the one the question asks for.
  */
 const SAVE_AFTER = 800;
+/** The going rate for a proper wedding in Israel, per guest, end to end.
+ *  One figure, said in the hint and used in the sum, so they cannot differ. */
+const PER_GUEST = 800;
+const bucketOf = (sum: number): string =>
+  sum < 100_000 ? 'lt100' : sum < 150_000 ? '100_150' : sum < 250_000 ? '150_250' : sum < 400_000 ? '250_400' : 'gt400';
 
 export function Questionnaire({ clientId, viewerId, answers: given, locale, backHref = '/app/portal', formKey = INTAKE_KEY }: {
   clientId: string; viewerId: string; answers: Answer[]; locale: 'he' | 'en'; backHref?: string;
@@ -156,6 +161,8 @@ export function Questionnaire({ clientId, viewerId, answers: given, locale, back
   /* ── a chapter ────────────────────────────────────────────────────────── */
   const onePerScreen = wide === false;
   const shown = onePerScreen ? [chapter.questions[q]] : chapter.questions;
+  const guestsRaw = answerFor(answers, 'b9_guests', viewerId)?.value;
+  const guests = Number(guestsRaw) > 0 ? Math.round(Number(guestsRaw)) : null;
   const share = completeness(answers, chapter);
 
   return (
@@ -185,8 +192,16 @@ export function Questionnaire({ clientId, viewerId, answers: given, locale, back
                 {(qq.hintHe || qq.hintEn) && <span className="mt-1 block text-body text-ink-soft">{t(qq.hintHe ?? '', qq.hintEn ?? '')}</span>}
                 {chapter.private && <span className="mt-1 inline-flex items-center gap-1 text-meta text-ink-mute"><Lock size={12} strokeWidth={1.5} aria-hidden />{c.privateMark}</span>}
               </label>
+              {/* The one sum a couple can check: their own guest count at the
+                  going rate, and the range it lands in marked on the buttons. */}
+              {qq.key === 'f34_budget' && guests !== null && (
+                <p className="mt-2 text-body text-ink-soft">
+                  {fill(c.budgetMath, { n: guests })} <Money value={guests * PER_GUEST} className="text-ink" />
+                </p>
+              )}
               <div className="mt-3">
-                <Field q={qq} value={mine?.value} locale={locale} c={c} onChange={(v) => write(qq.key, v)} />
+                <Field q={qq} value={mine?.value} locale={locale} c={c} onChange={(v) => write(qq.key, v)}
+                  suggest={qq.key === 'f34_budget' && guests !== null ? bucketOf(guests * PER_GUEST) : undefined} />
               </div>
               <div className="mt-1 flex items-center justify-between text-meta text-ink-mute">
                 <span>{st === 'saving' ? c.saving : st === 'saved' ? c.saved : st === 'failed' ? <span className="text-bad">{c.saveFailed}</span> : ''}</span>
@@ -242,7 +257,7 @@ function textOf(q: Question, value: unknown, locale: 'he' | 'en'): string {
 type C = ReturnType<typeof useCopy>['intake'];
 type Person = { name: string; relation: string; role: string };
 
-function Field({ q, value, locale, c, onChange }: { q: Question; value: unknown; locale: 'he' | 'en'; c: C; onChange: (v: unknown) => void }) {
+function Field({ q, value, locale, c, onChange, suggest }: { q: Question; value: unknown; locale: 'he' | 'en'; c: C; onChange: (v: unknown) => void; suggest?: string }) {
   const t = (he: string, en: string) => (locale === 'en' ? en : he);
   const str = typeof value === 'string' ? value : value === undefined || value === null ? '' : typeof value === 'number' ? String(value) : '';
 
@@ -299,8 +314,9 @@ function Field({ q, value, locale, c, onChange }: { q: Question; value: unknown;
           {q.options?.map((o) => (
             <button key={o.value} type="button" role="radio" aria-checked={str === o.value} onClick={() => onChange(o.value)}
               className={cn('min-h-[44px] rounded-control border px-4 text-body transition-colors duration-touch',
-                str === o.value ? 'border-accent bg-accent-wash text-accent' : 'border-line bg-card text-ink hover:border-line-strong')}>
+                str === o.value ? 'border-accent bg-accent-wash text-accent' : suggest === o.value ? 'border-accent-line bg-card text-ink' : 'border-line bg-card text-ink hover:border-line-strong')}>
               {t(o.he, o.en)}
+              {suggest === o.value && str !== o.value && <span className="ms-2 text-micro text-accent">{c.budgetSuggest}</span>}
             </button>
           ))}
         </div>

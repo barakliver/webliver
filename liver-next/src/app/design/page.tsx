@@ -613,6 +613,7 @@ export default async function DesignPage() {
               event_date: '2026-12-05',
               venue: 'אחוזת הכפר', guest_estimate: 180, region: 'השרון', budget_visible: true, shared_sections: {}, budget_plan: null,
               budget_target: 260000, budget_approved_at: null, budget_approval_asked_at: null, track_a_label: 'נועה', track_b_label: 'איתי',
+              profile: { nickname: 'נועה ואיתי', completeness: 0.35, priorities: ['music', 'food'] }, dayAnswered: 0,
               guest_token: 'demo-token', guest_site_on: true,
               game_token: '0123456789abcdef0123456789abcdef', game_on: true, brand: null,
             }}
@@ -1845,7 +1846,7 @@ export default async function DesignPage() {
           </div>
         </Panel>
 
-        <Panel name="Questionnaire" note="the couple's six chapters: two answered, one half way; press a chapter to answer">
+        <Panel name="Questionnaire" note="the couple's six chapters: two answered, one half way; press a chapter to answer. Chapter F shows the guests times the going rate and marks the range it lands in">
           <div className="max-w-3xl">
             <Questionnaire clientId={client} viewerId={FIXTURE_VIEWER} locale="he" answers={fixtureAnswers} />
           </div>

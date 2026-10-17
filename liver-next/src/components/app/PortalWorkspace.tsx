@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Fragment } from 'react';
 import { CalendarHeart, Grid3x3, Handshake, ListChecks, MessageCircle, Users, Wallet } from 'lucide-react';
 import type { AppUi } from '@/content/appUi';
 import { weekdayDate } from '@/lib/appDates';
@@ -36,6 +37,11 @@ import { fill } from '@/lib/copyText';
  *  can point at every section without this component fetching six more
  *  things. Absent means zero, which is what a preview with no rows has. */
 export type PortalExtra = { contracts: number; venues: number; files: number; envelopes: number; vehicles: number };
+/** Which drawer each ranked priority lives in. */
+const FOLD_FOR_PRIORITY: Record<string, string> = {
+  food: 'vendors', music: 'vendors', design: 'vendors', photo: 'vendors', attire: 'vendors', vibe: 'day', guests: 'guests',
+};
+
 const NO_EXTRA: PortalExtra = { contracts: 0, venues: 0, files: 0, envelopes: 0, vehicles: 0 };
 
 /** The panels the portal page loads for itself, handed back here to be filed
@@ -328,31 +334,38 @@ export function PortalWorkspace({
           after it; the panel underneath is where that gets done, and a list
           of sixteen open tasks is the single heaviest thing on this screen to
           arrive to. */}
+      {/* The drawers in the order the couple asked for. The questionnaire
+          ranks what matters to them, and the drawer that holds the first
+          answer goes to the top: suppliers for food, music, design, photo
+          and attire; the guests for the guests' comfort; the day for the
+          atmosphere. Nobody who has not answered sees anything move. */}
       <FoldGroup className="mt-8">
-        {can('tasks') && (
+      {(() => {
+        const folds: [string, React.ReactNode][] = [
+        ['mine', (can('tasks') && (
           <Fold id="fold-mine" grouped icon={ListChecks} count={filteredTasks.filter((t) => !t.done).length} title={ui.portal.jumpMine} sub={ui.portal.foldMineSub}>
             <div id="tasks" data-jump={ui.portal.rowTasks} data-jump-group="me" className="scroll-mt-28"><TaskList clientId={c.id} tasks={filteredTasks} viewer="client" viewerId={viewerId} /></div>
           </Fold>
-        )}
+        ))],
 
-        {/* The same rows in a square, behind their own row. Under the tasks
+        /* The same rows in a square, behind their own row. Under the tasks
             rather than over them because it is the lighter of the two and the
             list is where the work is done; and behind a fold of its own rather
             than inside the list's, because a game stacked on top of a
-            checklist is a checklist that got longer. */}
-        {can('bingo') && (
+            checklist is a checklist that got longer. */
+        ['bingo', (can('bingo') && (
           <Fold id="fold-bingo" grouped icon={Grid3x3} title={ui.portal.rowBingo} sub={ui.portal.bingo.sub}>
             <div id="bingo" data-jump={ui.portal.rowBingo} data-jump-group="me" className="scroll-mt-28">
               <WeddingBingo clientId={c.id} tasks={filteredTasks} />
             </div>
           </Fold>
-        )}
+        ))],
 
-        {/* Gated modules. A closed one is absent rather than greyed out: a
+        /* Gated modules. A closed one is absent rather than greyed out: a
             locked panel advertising something the couple was not sold is a
             sales screen wearing the clothes of a tool. Money is one door for
-            both the payments and the budget. */}
-        {can('budget') && (
+            both the payments and the budget. */
+        ['money', (can('budget') && (
           <Fold id="fold-money" grouped icon={Wallet} count={budget.length} title={ui.portal.jumpMoney} sub={ui.portal.foldMoneySub}>
             {/* The working shown before the lists, and only once there is a
                 budget to show: without lines the five figures are five
@@ -380,9 +393,9 @@ export function PortalWorkspace({
               />
             </div>
           </Fold>
-        )}
+        ))],
 
-        {(can('guests') || can('seating') || (c.guest_site_on && c.guest_token)) && (
+        ['guests', ((can('guests') || can('seating') || (c.guest_site_on && c.guest_token)) && (
           <Fold id="fold-guests" grouped icon={Users} count={guests.length} title={ui.portal.jumpGuests} sub={ui.portal.foldGuestsSub}>
             {/* The link they paste into the family group, once the producer
                 has switched the page on. First in this drawer because
@@ -396,14 +409,14 @@ export function PortalWorkspace({
               <div id="seating" data-jump={ui.portal.rowSeating} data-jump-group="guests" className="scroll-mt-28"><SeatingPlan clientId={c.id} tables={data.tablesFor(c.id)} guests={data.guestsFor(c.id) as never} /></div>
             )}
           </Fold>
-        )}
+        ))],
 
-        {/* Everything about who is hired: the suppliers, the desk the
+        /* Everything about who is hired: the suppliers, the desk the
             producer works them from, what was signed, the halls still being
             compared and what was agreed in a meeting. They were spread over
             two files and five places on the screen; a couple looking for
-            "the photographer" was never going to guess which. */}
-        {(can('vendors') || can('meetings') || slots.vendorhq || slots.contracts || slots.venues) && (
+            "the photographer" was never going to guess which. */
+        ['vendors', ((can('vendors') || can('meetings') || slots.vendorhq || slots.contracts || slots.venues) && (
           <Fold id="fold-vendors" grouped icon={Handshake} count={data.vendorsFor(c.id).length} title={ui.portal.jumpVendors} sub={ui.portal.foldVendorsSub}>
             {can('vendors') && (
               <div id="vendors" data-jump={ui.portal.rowVendors} data-jump-group="vendors" className="scroll-mt-28 space-y-10">
@@ -434,12 +447,12 @@ export function PortalWorkspace({
               <div id="meetings" data-jump={ui.portal.rowMeetings} data-jump-group="vendors" className="scroll-mt-28"><PortalMeetings meetings={data.meetingsFor(c.id)} ui={ui} /></div>
             )}
           </Fold>
-        )}
+        ))],
 
-        {/* The day itself and everything that dresses it: the hour-by-hour,
+        /* The day itself and everything that dresses it: the hour-by-hour,
             the look, the songs, the faces, the cars, the envelopes — and the
-            calendar that carries the dates onto their phones. */}
-        {(can('runsheet') || can('moodboard') || slots.studio || slots.files || slots.lists
+            calendar that carries the dates onto their phones. */
+        ['day', ((can('runsheet') || can('moodboard') || slots.studio || slots.files || slots.lists
           || slots.prep || slots.envelopes || slots.transport || slots.calendar || slots.bar) && (
           <Fold id="fold-day" grouped icon={CalendarHeart} title={ui.portal.jumpDay} sub={ui.portal.foldDaySub}>
             {can('runsheet') && (
@@ -465,13 +478,18 @@ export function PortalWorkspace({
             {slots.files}
             {slots.calendar}
           </Fold>
-        )}
+        ))],
 
-        {slots.thread && (
+        ['talk', (slots.thread && (
           <Fold id="fold-talk" grouped icon={MessageCircle} title={ui.portal.jumpTalk} sub={ui.portal.foldTalkSub}>
             {slots.thread}
           </Fold>
-        )}
+        ))],
+        ];
+        const first = FOLD_FOR_PRIORITY[c.profile?.priorities?.[0] ?? ''];
+        const ordered = first ? [...folds.filter(([k]) => k === first), ...folds.filter(([k]) => k !== first)] : folds;
+        return ordered.map(([k, n]) => <Fragment key={k}>{n}</Fragment>);
+      })()}
       </FoldGroup>
 
       {/* Before I Do, after the drawers and outside all of them.

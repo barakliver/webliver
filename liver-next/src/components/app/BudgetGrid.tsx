@@ -116,6 +116,7 @@ export function BudgetGrid({
   const [cardSheet, setCardSheet] = useState<string | null>(null);
   const [removed, setRemoved] = useState<{ item: GridItem; status: string } | null>(null);
   const [folded, setFolded] = useState<Set<string>>(new Set());
+  const [compare, setCompare] = useState<Set<string>>(new Set());
   const [, start] = useTransition();
   const timers = useRef(new Map<string, ReturnType<typeof setTimeout>>());
   const sheetRef = useRef<HTMLDivElement>(null);
@@ -468,6 +469,7 @@ export function BudgetGrid({
   const groupHead = (g: Group, cols: number) => {
     const t = groupTotal(g);
     const open = !folded.has(g.key);
+    const quoted = g.items.map((it, k) => [it, g.math[k]] as const).filter(([, m]) => m.quoted !== null || m.agreedIncl !== null);
     return (
       <tr key={`h-${g.key}`} className="bg-surface-200" {...drag.zone(`cat:${g.key}`)}>
         <td colSpan={cols} className={cn('border-b border-line px-2 py-1.5', drag.over === `cat:${g.key}` && 'bg-accent-wash')}>
@@ -482,6 +484,33 @@ export function BudgetGrid({
               <span>{c.colRemaining} <Money value={t.remaining} /></span>
             </span>
           </button>
+          {/* Three photographers with three quotes are three rows; the
+              producer's question is which. One press lays them side by side
+              under the heading, nothing stored. */}
+          {producer && quoted.length >= 2 && (
+            <button type="button" className="mt-1 text-meta text-accent underline-offset-2 hover:underline"
+              onClick={(e) => { e.stopPropagation(); setCompare((prev) => { const n = new Set(prev); if (n.has(g.key)) n.delete(g.key); else n.add(g.key); return n; }); }}>
+              {c.compare} · {quoted.length}
+            </button>
+          )}
+          {producer && compare.has(g.key) && quoted.length >= 2 && (
+            <table className="mt-2 w-full max-w-xl text-meta">
+              <thead><tr className="text-ink-mute">
+                <th className="py-1 text-start font-medium">{c.compareLabel}</th><th className="py-1 text-start font-medium">{c.colVendor}</th>
+                <th className="py-1 text-end font-medium">{c.colQuoted}</th><th className="py-1 text-end font-medium">{c.colAgreed}</th><th className="py-1 text-start font-medium">{c.colStatus}</th>
+              </tr></thead>
+              <tbody>
+                {quoted.map(([it, m]) => (
+                  <tr key={it.id} className="border-t border-line">
+                    <td className="py-1">{it.label}</td><td className="py-1 text-ink-soft">{it.vendor}</td>
+                    <td className="py-1 text-end tabular-nums"><Money value={m.quoted ?? m.agreedIncl} /></td>
+                    <td className="py-1 text-end tabular-nums">{m.agreedIncl === null ? '·' : <Money value={m.agreedIncl} />}</td>
+                    <td className="py-1"><StatusDot tone={it.status} label={c.statuses[it.status as keyof typeof c.statuses] ?? it.status} className="text-meta" /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </td>
       </tr>
     );

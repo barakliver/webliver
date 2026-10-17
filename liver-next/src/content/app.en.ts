@@ -470,6 +470,11 @@ export const intakeEn: IntakeCopy = {
   rosDelayed: '{n} lines got an actual time.',
   rosNoteLive: 'Note from the evening',
   rosNoteSave: 'Save',
+  budgetMath: '{n} guests × 800 shekels, roughly',
+  budgetSuggest: 'By the arithmetic',
+  closeDay: 'Close the day',
+  closeDayHint: 'What moved, what was skipped, and the notes from the evening. Written to the event log, with a task to debrief the couple.',
+  closeDayDone: 'The day is closed. The summary is in the event log and the task is on your list.',
 };
 
 export const moneyEn: MoneyCopy = {
@@ -656,6 +661,11 @@ export const moneyEn: MoneyCopy = {
     history: 'What changed',
     historyNone: 'No change recorded yet.',
     vendorNew: 'New supplier',
+    seedKashrut: 'Kashrut supervision',
+    seedKids: 'Kids corner and babysitter',
+    seedAfter: 'After party',
+    seedOutdoor: 'Outdoor gear: toilets, generator, lighting',
+    compareLabel: 'Item',
   },
   plan: {
     title: 'The budget plan',

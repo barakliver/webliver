@@ -376,6 +376,20 @@ export async function seedBudget(_prev: CellResult | null, form: FormData): Prom
   const splits = plan?.splits ?? BASE_SPLITS;
   const labels = appCopy.money.plan.categories as Record<PlanCategory, string>;
   const lines = seedLines(total, splits, labels).map((l, k) => ({ client_id: clientId, ...l, sort_order: k + 1, source: 'calculator' }));
+  /* What the questionnaire says this wedding needs that the split does not
+     name: lines with a rough planned figure each, to be corrected, which is
+     better than a line that is not there. The checklist adds the same four
+     steps by the same answers. */
+  const { data: profile } = await sb.from('couple_profiles')
+    .select('kosher_level,children,afterparty,venue_type').eq('client_id', clientId).maybeSingle();
+  const p = profile as { kosher_level?: string; children?: number | null; afterparty?: boolean; venue_type?: string } | null;
+  const g = appCopy.money.grid;
+  const extras: { category: PlanCategory; label: string; estimate: number }[] = [];
+  if (p?.kosher_level === 'mehadrin' || p?.kosher_level === 'badatz') extras.push({ category: 'venue', label: g.seedKashrut, estimate: 4000 });
+  if ((p?.children ?? 0) > 0) extras.push({ category: 'other', label: g.seedKids, estimate: 2500 });
+  if (p?.afterparty) extras.push({ category: 'other', label: g.seedAfter, estimate: 8000 });
+  if (p?.venue_type === 'beach' || p?.venue_type === 'home') extras.push({ category: 'venue', label: g.seedOutdoor, estimate: 15000 });
+  extras.forEach((e, k) => lines.push({ client_id: clientId, ...e, sort_order: lines.length + k + 1, source: 'calculator' }));
   const { error } = await sb.from('budget_items').insert(lines);
   if (error) return { ok: false, error: whyNotSaved(error) };
   touch(clientId);

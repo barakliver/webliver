@@ -4,7 +4,7 @@ import { useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { useCopy } from '@/components/app/CopyProvider';
 import { fill } from '@/lib/copyText';
-import { delaySchedule, liveNote, type ShowResult } from '@/app/actions/runOfShow';
+import { delaySchedule, liveNote, closeDay, type ShowResult } from '@/app/actions/runOfShow';
 
 /**
  * Two things the evening writes, on the producer's phone.
@@ -27,6 +27,7 @@ export function LiveTools({ clientId, lines }: {
   const c = useCopy().intake;
   const [delayed, delay] = useActionState<ShowResult | null, FormData>(delaySchedule, null);
   const [noted, note] = useActionState<ShowResult | null, FormData>(liveNote, null);
+  const [closed, close] = useActionState<ShowResult | null, FormData>(closeDay, null);
   const open = lines.filter((l) => !l.done_at).slice(0, 3);
 
   return (
@@ -64,6 +65,19 @@ export function LiveTools({ clientId, lines }: {
           {noted && !noted.ok && <li role="alert" className="text-meta text-bad">{noted.error}</li>}
         </ul>
       )}
+
+      <form action={close} className="mt-6 border-t border-line pt-4">
+        <input type="hidden" name="client_id" value={clientId} />
+        <p className="text-meta text-ink-mute">{c.closeDayHint}</p>
+        <div className="mt-2"><Busy label={c.closeDay} busy={c.rosBuilding} /></div>
+        {closed?.ok && (
+          <div role="status" className="mt-3 text-body text-ink">
+            <p className="text-ok">{c.closeDayDone}</p>
+            <pre className="mt-2 whitespace-pre-wrap font-sans text-meta text-ink-soft">{closed.summary}</pre>
+          </div>
+        )}
+        {closed && !closed.ok && <p role="alert" className="mt-2 text-meta text-bad">{closed.error}</p>}
+      </form>
     </section>
   );
 }

@@ -20,7 +20,7 @@ import type { Answer } from '@/lib/intake';
  * same press as "build" the first time. A locked sheet refuses a build
  * and a shift until it is opened, and opening it is a new version.
  */
-export type ShowResult = { ok: boolean; error?: string; added?: number };
+export type ShowResult = { ok: boolean; error?: string; added?: number; summary?: string };
 
 function touch(clientId: string) {
   revalidatePath(`/app/clients/${clientId}`);
@@ -139,4 +139,51 @@ export async function liveNote(_prev: ShowResult | null, form: FormData): Promis
   if (!data?.length) return { ok: false, error: whyNotSaved({ code: 'PGRST116' }) };
   touch(clientId);
   return { ok: true };
+}
+
+/**
+ * The evening, closed.
+ *
+ * One press after the last song: what moved, what was never ticked, and
+ * every note typed during the night, as one entry in the event's log and
+ * one task on the producer's own list for the debrief with the couple.
+ * Nothing on the sheet is changed; the sheet is the record and this is
+ * the reading of it.
+ */
+export async function closeDay(_prev: ShowResult | null, form: FormData): Promise<ShowResult> {
+  const clientId = String(form.get('client_id') ?? '');
+  if (!clientId) return { ok: false, error: 'חסר מזהה אירוע' };
+  const account = await requireAccount();
+  if (account.role === 'client') return { ok: false, error: 'רק המפיק' };
+  const sb = await supabaseServer();
+  const [{ data: rows }, { data: client }] = await Promise.all([
+    sb.from('day_schedule').select('at_time,title,done_at,actual_at,note_live').eq('client_id', clientId).order('at_time'),
+    sb.from('clients').select('display_name,producer_id').eq('id', clientId).maybeSingle(),
+  ]);
+  const cl = client as { display_name?: string; producer_id?: string } | null;
+  if (!cl?.producer_id) return { ok: false, error: 'לא מצאנו את האירוע' };
+  const lines = (rows ?? []) as { at_time: string; title: string; done_at: string | null; actual_at: string | null; note_live: string }[];
+  const hhmm = (t: string | null) => (t ?? '').slice(0, 5);
+  const moved = lines.filter((l) => l.actual_at && hhmm(l.actual_at) !== hhmm(l.at_time));
+  const skipped = lines.filter((l) => !l.done_at);
+  const notes = lines.filter((l) => l.note_live.trim());
+  const parts = [
+    moved.length ? `זז (${moved.length}): ` + moved.map((l) => `${l.title} ${hhmm(l.at_time)} ל-${hhmm(l.actual_at)}`).join('; ') : 'שום דבר לא זז.',
+    skipped.length ? `לא סומן (${skipped.length}): ` + skipped.map((l) => l.title).join('; ') : 'הכול סומן.',
+    notes.length ? 'הערות: ' + notes.map((l) => `${l.title}: ${l.note_live.trim()}`).join('; ') : 'בלי הערות.',
+  ];
+  const summary = parts.join('\n');
+  await sb.from('activity_log').insert({
+    producer_id: cl.producer_id, client_id: clientId, kind: 'day_closed', title: 'סיכום הערב',
+    body: summary.slice(0, 4000), ref_table: 'day_schedule', actor: 'producer',
+  });
+  const title = `סיכום ומשוב לזוג: ${cl.display_name ?? ''}`;
+  const { data: open } = await sb.from('producer_tasks').select('id').eq('producer_id', cl.producer_id).eq('title', title).eq('done', false).limit(1);
+  if (!open?.length) {
+    const tomorrow = new Date(Date.now() + 86_400_000).toISOString().slice(0, 10);
+    await sb.from('producer_tasks').insert({ producer_id: cl.producer_id, title, note: summary.slice(0, 500), due_on: tomorrow, created_by: account.id });
+  }
+  touch(clientId);
+  revalidatePath('/app');
+  return { ok: true, summary };
 }

@@ -1841,6 +1841,11 @@ export const appCopy = {
     rosDelayed: '{n} שורות קיבלו שעה בפועל.',
     rosNoteLive: 'הערה מהערב',
     rosNoteSave: 'שמירה',
+    budgetMath: '{n} אורחים × 800 ש"ח, בערך',
+    budgetSuggest: 'לפי החשבון',
+    closeDay: 'סגירת היום',
+    closeDayHint: 'מה זז, מה דולג, וההערות מהערב. נרשם ביומן האירוע ונפתחת משימה לסיכום ומשוב לזוג.',
+    closeDayDone: 'היום נסגר. הסיכום ביומן האירוע, והמשימה ברשימה שלך.',
   },
 
   money: {
@@ -2036,6 +2041,11 @@ export const appCopy = {
       history: 'מה השתנה',
       historyNone: 'עוד לא נרשם שינוי.',
       vendorNew: 'ספק חדש',
+      seedKashrut: 'השגחת כשרות',
+      seedKids: 'פינת ילדים ובייביסיטר',
+      seedAfter: 'אפטר פארטי',
+      seedOutdoor: 'ציוד לשטח: שירותים, גנרטור, תאורה',
+      compareLabel: 'פריט',
     },
 
     /* The plan, the tracker and the Sunday letter. Handed to client
