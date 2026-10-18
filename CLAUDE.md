@@ -356,6 +356,28 @@ that has happened once.
   impression of one. A test walks every id to its file and back and asserts
   the three undealt ones are undealt, so a card without a picture fails the
   build rather than drawing a broken image inside his frame.
+- **Group 8, chosen as a mix: the profile, the knowledge shelf and the wait,
+  in the tones.** 3.14. He said the pages were good, asked for a mix and said
+  the colours should be as on the numbers screen, so each took its structure
+  from one option and its colour from the system in the tone entry below.
+  **The profile** is b's head and rail with a's cards: who this is on a swatch
+  of the tamarind (picture, name, and the address the account is keyed on,
+  which is the one thing there that cannot be edited), a rail of anchors
+  beside it from `lg` with a colour dot each and the way out at the foot, and
+  under it the details, the alerts and a new display card with the three
+  buttons (`DisplayChoice`, through `useTheme`, so it moves the header switch
+  and the accessibility menu). **The knowledge shelf** is b's three shelves as
+  three swatches that say what is inside them (`shelfSubs`, the count in the
+  corner), the open one ringed and the others not dimmed, because colours that
+  fade when not chosen read as disabled; and a's chapters beside the page,
+  which is `GuideBookView`'s own change and so reaches the couple's guide as
+  well: first steps as swatches with the number written on them, a rail of
+  chapters with a dot each, a filled mark on every chapter title. **The wait**
+  puts the one sentence that is about the reader, what they asked for, on a
+  tamarind swatch. Not done, and said so: b's "the last chapter you read" needs
+  a place to remember it, and a column on the profile for a reading position
+  is not worth the migration; and `/app/sop` is still a redirect that never
+  renders, with no screen of its own to design.
 - **An instalment says who paid it, how, and on what day, and the panel cuts
   the money at the evening.** 3.13, migration 0108. `payments` is the
   couple's schedule to the producer, and it could say what, how much, when due

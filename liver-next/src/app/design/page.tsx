@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
+import { DisplayChoice } from '@/components/app/DisplayChoice';
 import { AreaBar } from '@/components/app/AreaBar';
 import { SignupPath } from '@/components/app/SignupPath';
 import { appUiFor, prepFor, envelopesFor, vehiclesFor, meetingTemplatesFor } from '@/content/appUi';
@@ -1420,6 +1421,10 @@ export default async function DesignPage() {
             without being somebody new: the question, its second step, and
             what it says once it was answered. */}
         {/* The bar over every page title, in the four tones of the card. */}
+        <Panel name="DisplayChoice · light, dark or the device" note="the profile's three buttons, which move the header switch and the accessibility menu with them">
+          <div className="max-w-xl"><DisplayChoice /></div>
+        </Panel>
+
         <Panel name="AreaBar · one colour to an area" note="events, leads, the calendar and the numbers: the four tones the card has, so a screen is told from the next at a glance">
           <div className="flex flex-wrap gap-8">
             {(['events', 'leads', 'calendar', 'insights'] as const).map((a) => (

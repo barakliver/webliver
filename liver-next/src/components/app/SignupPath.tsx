@@ -86,7 +86,13 @@ export function SignupPath({ p, step, change, intent, status, mayAnswer }: {
 
   return (
     <div className="card space-y-4">
-      {intent && <p className="text-head leading-relaxed text-ink">{p.sent[intent]}</p>}
+      {/* What was asked, on a swatch of the tamarind: the one sentence on this
+          screen that is about the person reading it. */}
+      {intent && (
+        <p className="rounded-card-sm bg-tone-tamarind px-4 py-3.5 font-display text-subhead font-light text-tone-tamarind-on">
+          {p.sent[intent]}
+        </p>
+      )}
       {(intent ? [p.sent.waiting] : p.body).map((line) => (
         <p key={line} className="text-head leading-relaxed text-ink-soft">{line}</p>
       ))}

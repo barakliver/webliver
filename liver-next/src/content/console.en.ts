@@ -83,6 +83,14 @@ export const consoleEn: ConsoleCopy = {
     tooBig: 'That file is over 5MB. Choose a smaller picture.',
     notImage: 'Only an image can be uploaded.',
     uploadFailed: 'The upload failed. Try again.',
+    sections: { details: 'My details', alerts: 'Alerts', display: 'Display', exit: 'Sign out' },
+    display: {
+      title: 'Display',
+      sub: 'Automatic: the desk is dark and the couple\'s screen follows the device.',
+      auto: 'Automatic',
+      light: 'Light',
+      dark: 'Dark',
+    },
   },
 
   insights: {
@@ -1596,6 +1604,11 @@ export const knowledgeEn: KnowledgeCopy = {
     book: 'Using the system',
     playbook: 'The production book',
     templates: 'Your templates',
+  },
+  shelfSubs: {
+    book: 'How to work with the system, chapter by chapter',
+    playbook: 'What to do when… in your own words, for print',
+    templates: 'Workflow steps and meetings to copy',
   },
 };
 

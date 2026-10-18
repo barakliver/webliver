@@ -774,6 +774,16 @@ export const appCopy = {
     tooBig: 'הקובץ גדול מ-5MB. בחרו תמונה קטנה יותר.',
     notImage: 'אפשר להעלות רק תמונה.',
     uploadFailed: 'ההעלאה נכשלה. נסו שוב.',
+    /* The sections of the screen, as the rail names them, and the display
+       choice that used to live only in two controls elsewhere. */
+    sections: { details: 'הפרטים שלי', alerts: 'התראות', display: 'תצוגה', exit: 'יציאה' },
+    display: {
+      title: 'תצוגה',
+      sub: 'אוטומטי: השולחן כהה והמסך של הזוג לפי המכשיר.',
+      auto: 'אוטומטי',
+      light: 'בהיר',
+      dark: 'כהה',
+    },
   },
 
   insights: {
@@ -4253,6 +4263,13 @@ export const knowledgeCopy = {
     book: 'הפעלת המערכת',
     playbook: 'ספר ההפקה',
     templates: 'התבניות שלך',
+  },
+  /* One line under each shelf's name, so a shelf can be chosen from what is
+     inside it and not only from what it is called. */
+  shelfSubs: {
+    book: 'איך עובדים עם המערכת, פרק אחרי פרק',
+    playbook: 'מה עושים כש… בשפה שלכם, להדפסה',
+    templates: 'שלבי עבודה ופגישות להעתקה',
   },
 } as const;
 

@@ -23,6 +23,13 @@ export const dynamic = 'force-dynamic';
 
 const SHELVES = ['book', 'playbook', 'templates'] as const;
 type Shelf = (typeof SHELVES)[number];
+/* One tone to a shelf. Written out in full: Tailwind reads class names as
+   text. `soft` is the on-colour at 90%, which is what clears 4.5 on the boho. */
+const SHELF_TONE: Record<Shelf, { box: string; soft: string }> = {
+  book:      { box: 'bg-tone-rubine text-tone-rubine-on',     soft: 'text-tone-rubine-on/90' },
+  playbook:  { box: 'bg-tone-boho text-tone-boho-on',         soft: 'text-tone-boho-on/90' },
+  templates: { box: 'bg-tone-tamarind text-tone-tamarind-on', soft: 'text-tone-tamarind-on/90' },
+};
 const readShelf = (raw: string | undefined): Shelf =>
   (SHELVES as readonly string[]).includes(raw ?? '') ? (raw as Shelf) : 'book';
 
@@ -90,12 +97,17 @@ export default async function KnowledgePage({
         report={<IssueReporter userId={account.id} context={`${c.title} · ${c.shelves[shelf]}`} />}
       />
 
-      {/* Links rather than client state, so a shelf is an address somebody can
-          send, reopen and come back to — the same reason the event file's own
-          sections are links. */}
-      <nav aria-label={c.title} className="no-print -mx-5 mb-7 flex gap-1.5 overflow-x-auto border-b border-line px-5 pb-3 sm:mx-0 sm:px-0">
+      {/* The three shelves as three swatches of the card's colours, each with
+          what is inside it, so a shelf is chosen from its contents and not only
+          from its name. Still links rather than client state, so a shelf is an
+          address somebody can send, reopen and come back to - the same reason
+          the event file's own sections are links. The open one is ringed and
+          the others are not dimmed, because three colours that fade when they
+          are not chosen read as disabled. */}
+      <nav aria-label={c.title} className="no-print mb-8 grid gap-3 sm:grid-cols-3">
         {SHELVES.map((s) => {
           const on = s === shelf;
+          const tone = SHELF_TONE[s];
           return (
             <Link
               key={s}
@@ -103,19 +115,18 @@ export default async function KnowledgePage({
               aria-current={on ? 'page' : undefined}
               scroll={false}
               className={cn(
-                'inline-flex min-h-[44px] shrink-0 items-center gap-1.5 rounded-xl2 px-4 text-body transition sm:min-h-[38px]',
-                on ? 'bg-ink font-medium text-surface' : 'text-ink-soft hover:bg-surface-200 hover:text-ink',
+                'flex min-h-[112px] flex-col justify-between gap-4 rounded-card p-5 transition-transform duration-touch hover:-translate-y-0.5',
+                tone.box,
+                on && 'outline outline-2 outline-offset-2 outline-ink',
               )}
             >
-              {c.shelves[s]}
-              {counts[s] > 0 && (
-                <span className={cn(
-                  'rounded-xl2 px-1.5 text-micro tabular-nums',
-                  on ? 'bg-card/20 text-surface' : 'bg-surface-200 text-ink-mute',
-                )}>
-                  {counts[s]}
-                </span>
-              )}
+              <span className={cn('text-meta tabular-nums', tone.soft)}>
+                {counts[s] > 0 ? counts[s] : ''}
+              </span>
+              <span>
+                <span className="block font-display text-subhead font-light">{c.shelves[s]}</span>
+                <span className={cn('mt-1 block text-body', tone.soft)}>{c.shelfSubs[s]}</span>
+              </span>
             </Link>
           );
         })}
