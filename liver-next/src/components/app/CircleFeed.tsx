@@ -10,6 +10,13 @@ import { addCirclePost, toggleCircleVote, deleteCirclePost, type CircleResult } 
 import type { CirclePost } from '@/lib/circle';
 import { count } from '@/lib/copyText';
 import { CIRCLE_CATEGORIES, CATEGORY_MARK, type CircleCategory } from '@/content/critique';
+import { TONE, toneAt } from '@/lib/tone';
+
+/** A topic keeps its tone wherever it is drawn: the rail, the chip on a post
+ *  and the dot on a phone are the same colour, so a couple learns the four
+ *  once. By position in the list, which is closed, so a fifth topic is a tone
+ *  on the day it is added. */
+const toneOf = (k: CircleCategory) => toneAt(CIRCLE_CATEGORIES.indexOf(k));
 
 /**
  * The circle, as a feed.
@@ -128,29 +135,71 @@ export function CircleFeed({ producerId, clientId, posts, category, viewer }: {
   const c = useCopy().circle;
   const [asking, setAsking] = useState(false);
 
+  const tabs = [{ k: '' as const, label: c.all, mark: '' }, ...CIRCLE_CATEGORIES.map((k) => ({ k, label: c.categories[k], mark: CATEGORY_MARK[k] }))];
+  const href = (k: string) => (k ? `/app/portal/community?c=${k}` : '/app/portal/community');
+
   return (
-    <div className="space-y-5">
-      <nav aria-label={c.title} className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0">
-        {[{ k: '' as const, label: c.all, mark: '' }, ...CIRCLE_CATEGORIES.map((k) => ({ k, label: c.categories[k], mark: CATEGORY_MARK[k] }))].map((t) => (
+    <div className="lg:grid lg:grid-cols-[220px_minmax(0,1fr)] lg:items-start lg:gap-8">
+      {/* The topics, twice and one of them always hidden: a rail of swatches
+          beside the feed on a desk, where there is room for four blocks of
+          colour that say what is inside them, and a row of pills on a phone,
+          where four blocks would be the whole first screen. The open one is
+          ringed and the others are not dimmed, because a colour that fades
+          when it is not chosen reads as disabled. */}
+      <nav aria-label={c.title} className="hidden lg:sticky lg:top-24 lg:block">
+        <ul className="list-none space-y-2 p-0">
+          {tabs.map((t) => {
+            const on = category === t.k;
+            const tone = t.k ? TONE[toneOf(t.k)] : null;
+            return (
+              <li key={t.k || 'all'}>
+                <Link
+                  href={href(t.k)}
+                  aria-current={on ? 'page' : undefined}
+                  className={`flex min-h-[56px] items-center gap-3 rounded-card-sm px-4 py-3 text-lead transition-transform duration-touch hover:-translate-y-0.5
+                    ${tone ? tone.fill : 'border border-line-strong bg-card text-ink'}
+                    ${on ? 'outline outline-2 outline-offset-2 outline-ink' : ''}`}
+                >
+                  {t.mark && <span aria-hidden>{t.mark}</span>}
+                  {t.label}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
+
+      <div className="min-w-0 space-y-5">
+      <nav aria-label={c.title} className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0 lg:hidden">
+        {tabs.map((t) => (
           <Link
             key={t.k || 'all'}
-            href={t.k ? `/app/portal/community?c=${t.k}` : '/app/portal/community'}
+            href={href(t.k)}
             aria-current={category === t.k ? 'page' : undefined}
             className={`inline-flex min-h-[40px] shrink-0 items-center gap-1.5 rounded-button border px-3.5 text-body transition ${
               category === t.k ? 'border-accent bg-accent text-white' : 'border-line-strong bg-card text-ink-soft hover:border-accent/50'
             }`}
           >
-            {t.mark && <span aria-hidden>{t.mark}</span>}
+            {t.k && category !== t.k
+              ? <span aria-hidden className={`size-2 rounded-full ${TONE[toneOf(t.k)].dot}`} />
+              : t.mark && <span aria-hidden>{t.mark}</span>}
             {t.label}
           </Link>
         ))}
       </nav>
 
+      {/* The composer is where the feed starts, drawn as the field it opens
+          rather than as a button over it: a question is asked by somebody who
+          can see the question is welcome. */}
       {asking
         ? <AskForm producerId={producerId} clientId={clientId} category={(category || 'general') as CircleCategory} onDone={() => setAsking(false)} />
         : (
-          <button type="button" onClick={() => setAsking(true)} className="btn-primary inline-flex items-center gap-2">
-            <Plus size={17} aria-hidden strokeWidth={1.5} />{c.ask}
+          <button type="button" onClick={() => setAsking(true)}
+            className="card flex w-full items-center gap-3 text-start transition-colors duration-touch hover:border-line-strong">
+            <span className="grid size-10 shrink-0 place-items-center rounded-full bg-accent text-white">
+              <Plus size={18} aria-hidden strokeWidth={1.5} />
+            </span>
+            <span className="text-lead text-ink-soft">{c.ask}</span>
           </button>
         )}
 
@@ -168,8 +217,9 @@ export function CircleFeed({ producerId, clientId, posts, category, viewer }: {
                     <AuthorLine post={p} />
                     <EditedMark at={p.edited_at} />
                   </span>
-                  <span className="text-meta text-ink-mute">
-                    <span aria-hidden>{CATEGORY_MARK[p.category as CircleCategory] ?? ''} </span>
+                  <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-meta ${
+                    (CIRCLE_CATEGORIES as readonly string[]).includes(p.category) ? TONE[toneOf(p.category as CircleCategory)].wash : 'bg-surface-200 text-ink-soft'}`}>
+                    <span aria-hidden>{CATEGORY_MARK[p.category as CircleCategory] ?? ''}</span>
                     {c.categories[p.category as CircleCategory] ?? p.category}
                   </span>
                 </div>
@@ -201,6 +251,7 @@ export function CircleFeed({ producerId, clientId, posts, category, viewer }: {
           ))}
         </ul>
       )}
+      </div>
     </div>
   );
 }

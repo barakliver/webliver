@@ -213,6 +213,14 @@ export function PortalWorkspace({
           the lid of this object rather than a picture floating above it: a
           couple who has saved nothing gets a card that starts at their name,
           which is a first screen rather than a gap where something failed. */}
+      {/* Two columns from a laptop up, one on a phone, in the same order
+          either way: who they are, what to do and how far the year has got on
+          the one side; the four figures and the six drawers on the other. It
+          is the second column that makes a wide screen feel organised, and it
+          costs a phone nothing, because a grid with one column is the stack
+          it always was and the document order has not moved. */}
+      <div className="lg:grid lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-start lg:gap-x-8">
+      <div className="min-w-0">
       <header className="mt-6 overflow-hidden rounded-panel border border-line-soft bg-card">
         {cover && (
           /* Decoration, so it is hidden from a screen reader rather than
@@ -311,7 +319,11 @@ export function PortalWorkspace({
           getting somewhere comes from. It reads one line and carries no row
           the screen does not already have. */}
       <MonthsLeft t={year} s={stand} ui={ui} />
+      </div>
 
+      {/* The first thing in the column sits level with the header opposite
+          it, so the margin that separates them on a phone is dropped here. */}
+      <div className="min-w-0 lg:pt-6 lg:[&>:first-child]:mt-0">
       <PortalSummary rows={rows} label={ui.portal.summary} />
 
       {/* The drawers, and now one object rather than six.
@@ -496,6 +508,8 @@ export function PortalWorkspace({
         return ordered.map(([k, n]) => <Fragment key={k}>{n}</Fragment>);
       })()}
       </FoldGroup>
+      </div>
+      </div>
 
       {/* Before I Do, after the drawers and outside all of them.
           Outside on purpose: every drawer on this screen is closed at rest,

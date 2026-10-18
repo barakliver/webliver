@@ -9,6 +9,7 @@ import { supabaseBrowser } from '@/lib/supabase/client';
 import { saveCritiqueLog, updateCritiqueLog, deleteCritiqueLog, type JournalResult } from '@/app/actions/journal';
 import type { JournalLog } from '@/lib/circle';
 import { fill } from '@/lib/copyText';
+import { TONE, type Tone } from '@/lib/tone';
 import {
   PRO_TAGS, CON_TAGS, EVENT_STYLES, summarise,
   type CritiqueArea,
@@ -186,6 +187,14 @@ function LogForm({ clientId, log, onDone }: { clientId: string; log?: JournalLog
   );
 }
 
+/** Which cells a picture takes. One alone fills the width, two share it, and
+ *  from three up the first is large. Written out for Tailwind to read. */
+function mosaic(i: number, n: number): string {
+  if (n === 1) return 'col-span-3 row-span-2';
+  if (n === 2) return 'row-span-2';
+  return i === 0 ? 'col-span-2 row-span-2' : '';
+}
+
 function LogCard({ log, clientId, viewer }: {
   log: JournalLog; clientId: string; viewer: 'producer' | 'client';
 }) {
@@ -257,12 +266,16 @@ function LogCard({ log, clientId, viewer }: {
       )}
 
       {log.photoUrls.length > 0 && (
-        <ul className="mt-4 grid list-none grid-cols-3 gap-2 p-0 sm:grid-cols-4">
-          {log.photoUrls.map((u) => (
-            <li key={u} className="overflow-hidden rounded-card-sm border border-line">
+        /* A mosaic and not a row of equal squares: the first picture is the
+           one that was chosen to lead, so it takes four cells and the rest
+           take one. Row heights are fixed so the page does not move when a
+           signed picture lands. */
+        <ul className={`mt-4 grid list-none auto-rows-[84px] gap-2 p-0 sm:auto-rows-[110px] ${log.photoUrls.length === 2 ? 'grid-cols-2' : 'grid-cols-3'}`}>
+          {log.photoUrls.map((u, i) => (
+            <li key={u} className={`overflow-hidden rounded-card-sm border border-line ${mosaic(i, log.photoUrls.length)}`}>
               {/* signed one-off links, not a fixed asset path */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={u} alt={`${c.card.photos} · ${log.venue_name}`} className="h-24 w-full object-cover" loading="lazy" decoding="async" />
+              <img src={u} alt={`${c.card.photos} · ${log.venue_name}`} className="size-full object-cover" loading="lazy" decoding="async" />
             </li>
           ))}
         </ul>
@@ -271,8 +284,11 @@ function LogCard({ log, clientId, viewer }: {
   );
 }
 
-const AREA_TONE: Record<CritiqueArea, string> = {
-  catering: 'bg-blush-wash', bar: 'bg-sage-wash', design: 'bg-accent-wash', timing: 'bg-surface-200', other: 'bg-surface-200',
+/* An area is a tone, so the summary reads as four swatches that say what is
+   inside them rather than as four boxes of one grey. The wash is the ground
+   and the ink is what reads on it, solved together in the palette. */
+const AREA_TONE: Record<CritiqueArea, Tone> = {
+  catering: 'rubine', bar: 'camel', design: 'boho', timing: 'tamarind', other: 'camel',
 };
 
 export function JournalBook({ clientId, logs, viewer }: {
@@ -300,7 +316,7 @@ export function JournalBook({ clientId, logs, viewer }: {
           <p className="mt-1 max-w-2xl text-body leading-relaxed text-ink-soft">{c.summary.sub}</p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             {rows.map((r) => (
-              <div key={r.area} className={`rounded-card-sm p-4 ${AREA_TONE[r.area]}`}>
+              <div key={r.area} className={`rounded-card-sm p-4 ${TONE[AREA_TONE[r.area]].wash}`}>
                 <h3 className="text-lead font-medium text-ink">{c.summary.areas[r.area]}</h3>
                 {r.pros.length > 0 && (
                   <p className="mt-2 text-body text-ink-soft">
@@ -333,9 +349,18 @@ export function JournalBook({ clientId, logs, viewer }: {
       {logs.length === 0 ? (
         <p className="card text-lead text-ink-mute">{viewer === 'client' ? c.none : c.noneProducer}</p>
       ) : (
-        <div className="space-y-4">
-          {logs.map((log) => <LogCard key={log.id} log={log} clientId={clientId} viewer={viewer} />)}
-        </div>
+        /* In the order they happened, down a line with a mark on it for each
+           wedding: a notebook is read as a sequence, and a stack of cards
+           hides that it is one. The line is drawn on the start side so the
+           marks sit where a right-to-left eye begins. */
+        <ol className="relative list-none space-y-4 p-0 ps-7 before:absolute before:inset-y-3 before:start-[9px] before:w-px before:bg-line-strong">
+          {logs.map((log, i) => (
+            <li key={log.id} className="relative">
+              <span aria-hidden className={`absolute -start-7 top-6 size-[19px] rounded-full border-4 border-surface ${TONE[(['rubine', 'boho', 'camel', 'tamarind'] as const)[i % 4]].dot}`} />
+              <LogCard log={log} clientId={clientId} viewer={viewer} />
+            </li>
+          ))}
+        </ol>
       )}
     </div>
   );

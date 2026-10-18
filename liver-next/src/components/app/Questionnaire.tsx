@@ -8,6 +8,7 @@ import { useWide } from '@/lib/useWide';
 import { Ratio, Money } from '@/components/Ltr';
 import { fill } from '@/lib/copyText';
 import { cn } from '@/lib/utils';
+import { TONE, toneAt } from '@/lib/tone';
 import { INTAKE_KEY, type Chapter, type Question } from '@/content/intake';
 import { answerFor, completeness, isAnswered, nextChapter, formOf, type Answer } from '@/lib/intake';
 import { saveAnswer } from '@/app/actions/intake';
@@ -114,15 +115,19 @@ export function Questionnaire({ clientId, viewerId, answers: given, locale, back
         </div>
         <p className="mt-1 text-meta text-ink-mute">{fill(c.progress, { pct: Math.round(total * 100) })}</p>
         <ul className="mt-5 grid list-none gap-3 p-0 sm:grid-cols-2">
-          {form.chapters.map((ch) => {
+          {form.chapters.map((ch, i) => {
             const share = completeness(answers, ch);
+            const tone = TONE[toneAt(i)];
             const openN = ch.questions.filter((qq) => !isAnswered(answerFor(answers, qq.key, viewerId)?.value)).length;
             return (
               <li key={ch.key}>
                 <button type="button" onClick={() => open(ch)}
                   className="flex min-h-[72px] w-full items-center gap-3 rounded-card-sm border border-line bg-card px-4 py-3 text-start transition-colors duration-touch hover:border-line-strong">
-                  <span className={cn('flex size-9 shrink-0 items-center justify-center rounded-full text-body', share >= 1 ? 'bg-ok-wash text-ok' : 'bg-surface-200 text-ink-soft')}>
-                    {share >= 1 ? <Check size={16} strokeWidth={1.5} aria-hidden /> : ch.key.toUpperCase()}
+                  {/* The chapter's own tone, so six chapters are six things
+                      and not one list: the letter is the chapter's, the tick
+                      replaces it when it is finished. */}
+                  <span className={cn('flex size-10 shrink-0 items-center justify-center rounded-full text-body', tone.fill)}>
+                    {share >= 1 ? <Check size={17} strokeWidth={1.75} aria-hidden /> : ch.key.toUpperCase()}
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="flex items-center gap-1.5 text-lead font-medium text-ink">
@@ -131,6 +136,9 @@ export function Questionnaire({ clientId, viewerId, answers: given, locale, back
                     </span>
                     <span className="block text-meta text-ink-mute">
                       {share >= 1 ? c.chapterDone : fill(c.chapterOpen, { n: openN })} · {t(ch.minutesHe, ch.minutesEn)}
+                    </span>
+                    <span className="mt-2 block h-[3px] w-full overflow-hidden rounded-full bg-line" role="presentation">
+                      <span className={cn('block h-full rounded-full transition-[width] duration-slow', tone.bar)} style={{ width: `${Math.round(share * 100)}%` }} />
                     </span>
                   </span>
                   <span className="text-meta text-accent">{share > 0 && share < 1 ? c.continueCh : share >= 1 ? '' : c.start}</span>
@@ -166,7 +174,34 @@ export function Questionnaire({ clientId, viewerId, answers: given, locale, back
   const share = completeness(answers, chapter);
 
   return (
-    <section className="card">
+    <div className="lg:grid lg:grid-cols-[230px_minmax(0,1fr)] lg:items-start lg:gap-6">
+    {/* The chapters beside the one being answered, from a laptop up. On a
+        phone the chapter is the whole screen and the way back is the button
+        in its head; on a desk there is room to see where you are in the six
+        and to move without going back first. Moving is safe: every answer is
+        already on its own timer, and nothing here holds one. */}
+    <nav aria-label={form.key === INTAKE_KEY ? c.title : c.dayTitle} className="hidden lg:sticky lg:top-24 lg:block">
+      <ol className="list-none space-y-1 p-0">
+        {form.chapters.map((ch, i) => {
+          const done = completeness(answers, ch) >= 1;
+          const here = ch.key === chapter.key;
+          return (
+            <li key={ch.key}>
+              <button type="button" onClick={() => open(ch)} aria-current={here ? 'step' : undefined}
+                className={cn('flex min-h-[44px] w-full items-center gap-3 rounded-control px-3 py-2 text-start text-body transition-colors duration-touch',
+                  here ? 'border border-line-strong bg-card font-medium text-ink' : 'border border-transparent text-ink-soft hover:bg-card')}>
+                <span aria-hidden className={cn('grid size-5 shrink-0 place-items-center rounded-full', TONE[toneAt(i)].dot, here ? 'ring-2 ring-offset-2 ring-ink ring-offset-card' : '')}>
+                  {done && <Check size={12} strokeWidth={2} className={TONE[toneAt(i)].fill.split(' ')[1]} />}
+                </span>
+                <span className="min-w-0 flex-1 truncate">{t(ch.he, ch.en)}</span>
+                {ch.private && <Lock size={12} strokeWidth={1.5} aria-label={c.privateMark} className="shrink-0 text-ink-mute" />}
+              </button>
+            </li>
+          );
+        })}
+      </ol>
+    </nav>
+    <section className="card min-w-0">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <button type="button" onClick={() => setChapter(null)} className="btn-quiet inline-flex items-center gap-1 px-0 text-body">
           <ChevronRight size={16} strokeWidth={1.5} aria-hidden className="rtl:rotate-0 ltr:rotate-180" />{c.toChapters}
@@ -239,6 +274,7 @@ export function Questionnaire({ clientId, viewerId, answers: given, locale, back
         )}
       </div>
     </section>
+    </div>
   );
 }
 

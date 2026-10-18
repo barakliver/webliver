@@ -356,6 +356,31 @@ that has happened once.
   impression of one. A test walks every id to its file and back and asserts
   the three undealt ones are undealt, so a card without a picture fails the
   build rather than drawing a broken image inside his frame.
+- **Group 10, chosen as a mix, and the pages now carry letters.** 3.16. He
+  said "a mix" and asked that every page he is sent be named with an English
+  letter so he can say "this from A, that from B"; from here a board is
+  `<group><A|B>` and each page inside it is lettered, and the mix is said back
+  to him in the same letters. **The couple's screen** took b's two columns
+  from `lg` up and a's order everywhere: the header, what to do and the year
+  on one side, the four figures and the six drawers on the other, in the same
+  document order as the phone, so a grid with one column is the stack it
+  always was and nothing about tab order moved. **The circle** has b's topics
+  as four swatches in a rail from `lg` (the open one ringed, the others not
+  dimmed, because a colour that fades reads as disabled) and pills with a
+  dot on a phone, and a's composer as the first row of the feed, drawn as the
+  field it opens; a topic keeps its tone on the rail, on the chip of a post
+  and on the dot (`toneAt` over the closed list in `lib/tone.ts`, which is
+  also where the class strings for the four tones live, written out in full).
+  **The journal** is a's timeline down a line on the start side, a mark for
+  each wedding, with b's mosaic inside an entry (the first picture takes four
+  cells, rows have a fixed height so a signed picture landing moves nothing),
+  and the summary areas are tones. **The questionnaire** is b's chapter cards
+  with a bar each and the chapter's own tone on its letter, and from `lg` a's
+  rail of the six chapters beside the one being answered; moving along the
+  rail is safe because every answer already has its own timer and nothing on
+  the rail holds one. Not done: counts on the topics (the feed is filtered
+  before it arrives, so a count would be a second query for a number that
+  changes every time somebody posts).
 - **Group 9, chosen as a mix: the documents of the event, with the colour on the
   screen and the paper left white.** 3.15. The run sheet, the numbers sheet and
   the production book are print-first, and paper stays white, so what was
