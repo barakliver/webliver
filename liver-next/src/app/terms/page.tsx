@@ -1,8 +1,9 @@
 import Link from 'next/link';
 import { getSiteCopy } from '@/lib/siteCopy';
 import { supabasePublic } from '@/lib/supabase/public';
-import { privacyFor, termsFor } from '@/content/ui';
+import { privacyFor, termsFor, readingFor } from '@/content/ui';
 import { publicEnv } from '@/lib/env';
+import { ReadingProgress } from '@/components/ReadingProgress';
 import { currentLocale, dateFormat } from '@/lib/serverLocale';
 
 export async function generateMetadata() {
@@ -36,6 +37,7 @@ export default async function Page() {
       <p className="eyebrow">{site.brand}</p>
       <h1 className="mt-4 font-display text-display font-light text-ink">{c.title}</h1>
       <p className="measure mt-4 text-head leading-relaxed text-ink-soft">{c.sub}</p>
+      <ReadingProgress minutes={readingFor(locale).minutes} />
 
       <hr className="rule-gold my-10" />
 
@@ -144,7 +146,7 @@ function List({ lines }: { lines: readonly string[] }) {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="mt-10 first:mt-0">
+    <section className="reveal mt-10 first:mt-0">
       <h2 className="font-display text-title font-light text-ink">{title}</h2>
       <div className="measure mt-4 text-lead leading-relaxed text-ink-soft">{children}</div>
     </section>

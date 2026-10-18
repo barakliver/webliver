@@ -761,9 +761,14 @@
       }
     }
   }
+  /* It rises and does not fade. A block that starts transparent is text the
+     accessibility audit measures at a contrast of nothing while it waits below
+     the fold, and a screenshot or a print of the page would show the gap; a
+     block that only starts a little lower is always readable, which is the
+     property worth keeping over the softer entrance. */
   @keyframes reveal-in {
-    from { opacity: 0; transform: translateY(18px); }
-    to   { opacity: 1; transform: none; }
+    from { transform: translateY(22px); }
+    to   { transform: none; }
   }
 
   /* A tick that draws itself. The path is 24 long in its own units. */
@@ -778,6 +783,30 @@
   @media (prefers-reduced-motion: reduce) {
     .draw-check path { animation: none; stroke-dashoffset: 0; }
     .pop-in { animation: none; }
+  }
+
+  /* The install guide that is the visitor's own, marked by a script that
+     knows what the device said. The words ride in the attribute, so the
+     page that draws the card stays a server component. */
+  [data-you] { border-color: rgb(var(--accent-rgb)); box-shadow: 0 0 0 3px rgb(var(--accent-rgb) / .12); animation: rise .5s cubic-bezier(.16,1,.3,1) both; }
+  [data-you]::before {
+    content: attr(data-you); display: inline-block; margin-block-end: .6rem;
+    padding: .1rem .7rem; border-radius: 9999px; font-size: .78rem;
+    background: rgb(var(--accent-rgb)); color: #fff;
+  }
+
+  /* A ring that breathes outward from a mark, for a state that is waiting:
+     the offline screen's signal, which is the only thing there that moves. */
+  .pulse-ring { position: relative; }
+  .pulse-ring::before, .pulse-ring::after {
+    content: ''; position: absolute; inset: 0; border-radius: 9999px;
+    border: 2px solid currentColor; opacity: 0;
+    animation: pulse-ring 2.4s cubic-bezier(.2,.6,.3,1) infinite;
+  }
+  .pulse-ring::after { animation-delay: 1.2s; }
+  @keyframes pulse-ring { 0% { transform: scale(1); opacity: .45; } 100% { transform: scale(1.9); opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) {
+    .pulse-ring::before, .pulse-ring::after { animation: none; }
   }
 
   /* Petals for a yes. Sixteen small marks that leave the middle, drift out

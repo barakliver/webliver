@@ -99,7 +99,7 @@ export function Shop({ producerId, items, copy: c }: {
         {items.map((i) => {
           const qty = cart[i.id] ?? 0;
           return (
-            <li key={i.id} className="card flex flex-col overflow-hidden p-0">
+            <li key={i.id} className="card reveal flex flex-col overflow-hidden p-0 transition-transform duration-touch hover:-translate-y-0.5">
               {i.image && (
                 /* eslint-disable-next-line @next/next/no-img-element */
                 <img src={i.image} alt="" className="h-44 w-full object-cover" loading="lazy" decoding="async" />

@@ -19,7 +19,7 @@ export function Section({
     <section id={id} className={cn('section', className)}>
       <div className="shell">
         {(eyebrow || title || sub) && (
-          <header className={cn('mb-10 sm:mb-14', center && 'text-center')}>
+          <header className={cn('reveal mb-10 sm:mb-14', center && 'text-center')}>
             {eyebrow && <p className="eyebrow mb-3">{eyebrow}</p>}
             {title && <Heading className="font-display text-display font-light text-editorial">{title}</Heading>}
             {sub && <p className="measure mt-3 text-head text-ink-soft">{sub}</p>}

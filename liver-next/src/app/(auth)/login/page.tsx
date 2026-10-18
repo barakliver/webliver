@@ -62,7 +62,7 @@ export default async function LoginPage({
             face where a person is trying to find a field, and on a phone the
             input landed under the keyboard. The wordmark carries the same
             reassurance in a tenth of the height. */}
-        <Link href="/" className="mb-7 block text-center">
+        <Link href="/" className="animate-rise mb-7 block text-center">
           <span className="font-display text-figure font-light text-ink">{host.isPlatform ? site.brand : host.name}</span>
           <span className="mt-1 block text-body text-ink-mute">{host.isPlatform ? site.tagline : host.tagline}</span>
         </Link>

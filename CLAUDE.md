@@ -356,6 +356,33 @@ that has happened once.
   impression of one. A test walks every id to its file and back and asserts
   the three undealt ones are undealt, so a card without a picture fails the
   build rather than drawing a broken image inside his frame.
+- **Group 12, the doors, on the same terms: movement, and one thing each
+  page knows that it did not use before.** 3.18. **The sign-in page** says
+  what happens after the button, in three beats (Google, say what you are here
+  for, come in once approved) with a line for the invited, who skip the last
+  two - because the next screen asks a question a stranger did not expect and
+  somebody who has been told is not surprised. **The offline screen** listens
+  for the connection coming back and reloads after a breath (`OfflineWatcher`),
+  and it deliberately never reads `navigator.onLine` on arrival: a page that
+  believed it would reload itself on every visit to a screen opened while the
+  connection was fine, and again when it arrived; the transition is the only
+  thing worth acting on and everybody else gets a button. **The install guide**
+  marks the list that matches the visitor's own device and moves it to the top
+  after mount (`YourDevice`), as an addition only: the page still gives all
+  three lists and never chooses on the server, because a phone opening it from
+  inside another app reports a browser that cannot install anything. **The
+  three long documents** carry a line across the top that fills as they go past
+  and the minutes they take (`ReadingProgress`: words over two hundred a
+  minute, rounded up, counted after hydration and never during it). **The
+  public site** has its section heads, its rows and its cards rise as they
+  scroll into view (they rise and do not fade: a block that starts transparent
+  is text the accessibility audit measures at nothing while it waits below the
+  fold, which is how it failed the first run), and the journey's rows lift on
+  hover. All of it is CSS where
+  it can be (`reveal` is a view timeline, `pulse-ring` and `draw-check` are
+  keyframes) and all of it is off under reduced motion. Not touched: the
+  marketing hero's parallax and veil, which were already movement, and the
+  producer's own site at its other address.
 - **From group 11 he stopped choosing and asked me to run the rest on my own,
   with movement and something to be curious about on every page.** 3.17.
   The canvas stays as the record of the two options drawn for group 11

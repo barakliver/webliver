@@ -295,6 +295,8 @@ export const auth = {
   brandLabel: 'שם העסק (למפיקים)',
   submit: 'שליחת קוד',
   sending: 'שולח',
+  flow: ['נכנסים עם גוגל', 'אומרים מה אתם מחפשים', 'נכנסים אחרי אישור'],
+  flowInvited: 'מי שהוזמן מדלג על שני האחרונים.',
   note: 'מי שהוזמן נכנס ישר לאזור שלו, עם אותה כתובת שאליה נשלחה ההזמנה. מי שנכנס בפעם הראשונה בלי הזמנה אומר מה הוא מחפש, ונכנס אחרי אישור.',
   codeTitle: 'הקוד בדרך',
   codeSentEmail: 'שלחנו קוד חד פעמי לכתובת',
@@ -3571,6 +3573,7 @@ export const siteErrorCopy = {
 } as const;
 
 export const installCopy = {
+  yourDevice: 'זה המכשיר שלכם',
   title: 'להתקין בטלפון',
   sub: 'האזור שלכם נפתח כמו אפליקציה רגילה, עם אייקון במסך הבית. אין מה להוריד מחנות, וזה לוקח פחות מדקה.',
   why: 'למה שווה',
@@ -5170,4 +5173,10 @@ export const circleCopy = {
   noneCategory: 'אין עדיין פוסטים בנושא הזה.',
   closed: 'המעגל נפתח על ידי המפיק. אם הוא לא פתוח לכם, שווה לשאול אותו.',
   rules: 'זה מקום של זוגות שמתכננים אצל אותו מפיק. שם של ספק, מחיר שקיבלתם, מה עבד ומה לא: הכל בסדר. מה שלא בסדר זה שם של אדם פרטי.',
+} as const;
+
+/* The line above a long document: how long it is, and how far along the
+   reader is. Said once for the three documents rather than once in each. */
+export const readingCopy = {
+  minutes: 'כ-{n} דקות קריאה',
 } as const;

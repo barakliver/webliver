@@ -1,6 +1,6 @@
 import type { SiteCopy } from './site.ts';
 import type {
-  AuthCopy, PrivacyCopy, TermsCopy, A11yCopy, InstallCopy, ShopCopy, RsvpCopy,
+  AuthCopy, PrivacyCopy, TermsCopy, A11yCopy, InstallCopy, ShopCopy, RsvpCopy, ReadingCopy,
   GuestSiteCopy, ProducerEntryCopy, BudgetSimCopy, ConciergeCopy, EventKinds,
   NotFoundCopy, SiteErrorCopy, EventOsCopy } from './ui.ts';
 
@@ -216,6 +216,8 @@ export const authEn: AuthCopy = {
   brandLabel: 'Business name (producers)',
   submit: 'Send code',
   sending: 'Sending',
+  flow: ['Sign in with Google', 'Tell us what you are here for', 'Come in once approved'],
+  flowInvited: 'Anyone invited skips the last two.',
   note: 'Anyone who was invited goes straight to their own area, with the address the invitation was sent to. Anyone signing in for the first time without an invitation says what they are looking for, and gets in after approval.',
   codeTitle: 'The code is on its way',
   codeSentEmail: 'We sent a one time code to',
@@ -550,6 +552,7 @@ export const siteErrorCopyEn: SiteErrorCopy = {
 };
 
 export const installCopyEn: InstallCopy = {
+  yourDevice: 'This is your device',
   title: 'Install it on your phone',
   sub: 'Your area opens like an ordinary app, with an icon on the home screen. There is nothing to download from a store, and it takes under a minute.',
   why: 'Why it is worth it',
@@ -798,4 +801,8 @@ export const eventOsCopyEn: EventOsCopy = {
     { title: 'We approve it', body: 'By hand, the same day. Nobody should open a production workspace by accident.' },
     { title: 'Open a first event', body: 'A name, a date, a venue. The plan builds itself from there, and you edit it.' },
   ],
+};
+
+export const readingCopyEn: ReadingCopy = {
+  minutes: 'About {n} min read',
 };

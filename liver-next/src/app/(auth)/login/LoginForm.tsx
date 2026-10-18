@@ -52,6 +52,22 @@ export function LoginForm({ next, prefill, reason, referral, copy, legal }: {
 
       <GoogleButton next={next ?? '/app'} copy={copy} referral={referral} />
 
+      {/* What happens after the button, in three beats, because the next
+          screen asks a question the person did not expect and a stranger
+          who has been told is not a stranger who is surprised. The line
+          between them draws itself once. */}
+      <div>
+        <ol className="flex list-none items-start justify-between gap-2 p-0">
+          {copy.flow.map((step, i) => (
+            <li key={step} className="animate-rise flex min-w-0 flex-1 flex-col items-center gap-2 text-center" style={{ animationDelay: `${0.25 + i * 0.12}s` }}>
+              <span className={`grid size-7 place-items-center rounded-full text-meta ${i === 0 ? 'bg-tone-rubine text-tone-rubine-on' : 'border border-line-strong text-ink-soft'}`}>{i + 1}</span>
+              <span className="text-meta leading-snug text-ink-soft">{step}</span>
+            </li>
+          ))}
+        </ol>
+        <p className="mt-3 text-center text-meta text-ink-mute">{copy.flowInvited}</p>
+      </div>
+
       <p className="text-body leading-relaxed text-ink-mute">{copy.note}</p>
 
       {/* Reachable from the screen where somebody is about to hand something

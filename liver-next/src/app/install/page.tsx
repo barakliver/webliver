@@ -6,6 +6,7 @@ import { supabasePublic } from '@/lib/supabase/public';
 import { brandForHost } from '@/lib/branding';
 import { installFor } from '@/content/ui';
 import { currentLocale } from '@/lib/serverLocale';
+import { YourDevice } from '@/components/YourDevice';
 
 export async function generateMetadata(): Promise<Metadata> {
   const c = installFor(await currentLocale());
@@ -26,18 +27,20 @@ export async function generateMetadata(): Promise<Metadata> {
  * and the honest fix for that is a sentence, which is the last thing on the
  * page.
  */
-function Steps({ icon: Icon, title, steps }: {
+function Steps({ icon: Icon, title, steps, device }: {
   icon: typeof Smartphone; title: string; steps: readonly string[];
+  /** Which device this guide is for, so the page can say which one is yours. */
+  device: 'ios' | 'android' | 'desktop';
 }) {
   return (
-    <section className="card">
+    <section className="card" data-device={device}>
       <h2 className="head-panel inline-flex items-center gap-2">
         <Icon size={18} aria-hidden strokeWidth={1.5} />
         {title}
       </h2>
       <ol className="mt-4 space-y-3">
         {steps.map((step, i) => (
-          <li key={step} className="flex gap-3">
+          <li key={step} className="reveal flex gap-3">
             <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-accent-wash text-meta font-medium tabular-nums text-accent">
               {i + 1}
             </span>
@@ -76,10 +79,11 @@ export default async function InstallPage() {
           ))}
         </ul>
 
-        <div className="mt-8 space-y-4">
-          <Steps icon={Smartphone} title={c.iphone} steps={c.iphoneSteps} />
-          <Steps icon={Smartphone} title={c.android} steps={c.androidSteps} />
-          <Steps icon={Monitor} title={c.desktop} steps={c.desktopSteps} />
+        <div className="mt-8 flex flex-col gap-4">
+          <YourDevice label={c.yourDevice} />
+          <Steps icon={Smartphone} title={c.iphone} steps={c.iphoneSteps} device="ios" />
+          <Steps icon={Smartphone} title={c.android} steps={c.androidSteps} device="android" />
+          <Steps icon={Monitor} title={c.desktop} steps={c.desktopSteps} device="desktop" />
         </div>
 
         <section className="card mt-6">

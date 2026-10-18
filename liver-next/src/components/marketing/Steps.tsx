@@ -25,7 +25,7 @@ export function Steps({ site }: { site: SiteCopy }) {
         {site.journey.steps.map((step, i) => (
           <li
             key={step}
-            className="flex items-baseline gap-5 border-t border-line py-5 sm:gap-8 sm:py-6"
+            className="reveal group flex items-baseline gap-5 border-t border-line py-5 transition-colors duration-touch hover:border-accent sm:gap-8 sm:py-6"
           >
             <span
               aria-hidden
@@ -36,7 +36,7 @@ export function Steps({ site }: { site: SiteCopy }) {
                  by the accessibility audit, which is not part of `npm run
                  check` because it needs a server, which is most of why it sat
                  here. */
-              className="w-8 shrink-0 font-display text-subhead font-normal tracking-[.06em] text-accent sm:w-12 sm:text-panel"
+              className="w-8 shrink-0 font-display text-subhead font-normal tracking-[.06em] text-accent transition-transform duration-touch group-hover:-translate-x-1 sm:w-12 sm:text-panel"
             >
               {ROMAN[i] ?? i + 1}
             </span>

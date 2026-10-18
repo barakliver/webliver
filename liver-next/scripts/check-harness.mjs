@@ -56,6 +56,7 @@ const NOT_DRAWN = {
   ThemeScope: 'puts the palette back in step on every navigation and renders nothing; what it does is visible as the whole page, not as a panel',
   'brand/Pieces': 'the seven printed pieces, drawn fourteen times inside the BrandStudio panel and never on their own',
   ViewTransition: 'names the halves of a navigation for the browser and adds nothing to the page; what it does is only visible as one screen replacing another, which is not a panel',
+  YourDevice: 'marks the install guide that matches the visitor\'s own device after mount and renders nothing; what it does shows on the install page, not as a panel',
   'app/TabKeys': 'the arrow keys on the strip of sections, and a key listener draws nothing; it is looked at through EventTabs, which is in the harness and is the only thing that mounts it',
 };
 

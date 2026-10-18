@@ -203,6 +203,8 @@ import { CountUp } from '@/components/guest/CountUp';
 import { Petals } from '@/components/guest/Petals';
 import { LiveMoments } from '@/components/guest/LiveMoments';
 import { ZoomPhoto } from '@/components/ZoomPhoto';
+import { ReadingProgress } from '@/components/ReadingProgress';
+import { OfflineWatcher } from '@/components/OfflineWatcher';
 import { VendorCaptureDemo } from './VendorCaptureDemo';
 import { EnvelopesPanel } from '@/components/app/EnvelopesPanel';
 import { VehiclesPanel } from '@/components/app/VehiclesPanel';
@@ -1345,6 +1347,16 @@ export default async function DesignPage() {
               moments={[{ at: '19:00:00', title: 'קבלת פנים' }, { at: '19:45:00', title: 'חופה' }, { at: '20:30:00', title: 'ארוחה' }, { at: '22:00:00', title: 'ריקודים' }]}
               labels={{ now: 'עכשיו', next: 'הבא' }}
             />
+          </div>
+        </Panel>
+
+        <Panel name="ReadingProgress" note="the minutes a long document takes, and (fixed to the top of this page while it is here) the line that fills as it goes past">
+          <ReadingProgress minutes="כ-{n} דקות קריאה" />
+        </Panel>
+
+        <Panel name="OfflineWatcher" note="the offline screen; online in this browser it shows the reconnected state and reloads, so the harness only ever sees it when the machine really is offline">
+          <div className="max-w-md text-center">
+            <OfflineWatcher reload={false} copy={{ offline: 'אין חיבור לאינטרנט', offlineBody: 'ברגע שהחיבור יחזור, הדף יחזור לבד.', back: 'החיבור חזר', backBody: 'מחזירים אתכם למקום שבו הייתם.', retry: 'לנסות עכשיו' }} />
           </div>
         </Panel>
 
