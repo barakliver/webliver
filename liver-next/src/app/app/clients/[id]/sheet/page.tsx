@@ -7,6 +7,9 @@ import { brandFor } from '@/lib/branding';
 import { serverCopy } from '@/lib/serverLocale';
 import { safeRows } from '@/lib/safe';
 import { PrintButton } from '@/components/app/PrintButton';
+import { DocSwatches } from '@/components/app/DocSwatches';
+import { hhmm, inDayOrder } from '@/lib/runsheet';
+import { cn } from '@/lib/utils';
 import {
   NumbersSheet, type SheetGuest, type SheetTable, type SheetMoment, type SheetArrival,
 } from '@/components/app/NumbersSheet';
@@ -41,10 +44,21 @@ type VendorRow = { id: string; name: string; category: string; call_time: string
  * The footer signs with the resolved brand, never the platform: the paper a
  * caterer holds is a tenant's stationery.
  */
-export default async function NumbersSheetPage({ params }: { params: Promise<{ id: string }> }) {
+/* The parts of the sheet, in the order it prints. A supplier is handed the
+   parts they ask for: the caterer wants the meals and the seating and has no
+   use for the DJ's call time, and the DJ the other way round. Which parts are
+   left off lives in the address (`?off=diet,seating`) so a choice is a link
+   somebody can send, and the paper it prints is the paper they chose. */
+const PARTS = ['counts', 'diet', 'seating', 'schedule', 'arrivals'] as const;
+
+export default async function NumbersSheetPage({ params, searchParams }: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ off?: string }>;
+}) {
   const c = (await serverCopy()).numbers;
   const account = await requireLiveProducer();
   const { id } = await params;
+  const off = ((await searchParams).off ?? '').split(',').filter((p) => (PARTS as readonly string[]).includes(p));
 
   const sb = await supabaseServer();
   const [{ data: client }, brand] = await Promise.all([
@@ -82,7 +96,56 @@ export default async function NumbersSheetPage({ params }: { params: Promise<{ i
         <PrintButton label={c.print} />
       </div>
 
+      {/* On screen only: the four numbers, and which parts this copy carries. */}
+      {(() => {
+        const attending = guests.filter((g) => g.status === 'attending');
+        const heads = attending.reduce((n, g) => n + Number(g.party_size || 0), 0);
+        const special = attending
+          .filter((g) => g.diet && g.diet !== 'none')
+          .reduce((n, g) => n + Number(g.party_size || 0), 0);
+        const first = inDayOrder(arrivals.filter((a) => a.call_time).map((a) => ({ ...a, at_time: a.call_time! })))[0];
+        return (
+          <>
+            <DocSwatches
+              className="mb-6"
+              items={[
+                { key: 'heads', tone: 'rubine', label: c.heads, value: heads },
+                { key: 'tables', tone: 'boho', label: c.figTables, value: tables.length },
+                { key: 'special', tone: 'camel', label: c.figSpecial, value: special },
+                { key: 'first', tone: 'tamarind', label: c.figFirstCall, value: <span dir="ltr">{first ? hhmm(first.at_time) : '·'}</span> },
+              ]}
+            />
+            <nav aria-label={c.pick} className="no-print mb-7">
+              <p className="mb-2 text-meta text-ink-mute">{c.pick}</p>
+              <ul className="flex list-none flex-wrap gap-2 p-0">
+                {PARTS.map((part) => {
+                  const on = !off.includes(part);
+                  const next = on ? [...off, part] : off.filter((p) => p !== part);
+                  const label = { counts: c.counts, diet: c.diet, seating: c.seating, schedule: c.schedule, arrivals: c.arrivals }[part];
+                  return (
+                    <li key={part}>
+                      <Link
+                        href={next.length ? `/app/clients/${id}/sheet?off=${next.join(',')}` : `/app/clients/${id}/sheet`}
+                        scroll={false}
+                        aria-current={on ? 'true' : undefined}
+                        className={cn(
+                          'inline-flex min-h-[44px] items-center gap-2 rounded-button border px-4 text-body transition sm:min-h-[38px]',
+                          on ? 'border-tone-rubine bg-tone-rubine text-tone-rubine-on' : 'border-line-strong text-ink-mute line-through hover:text-ink',
+                        )}
+                      >
+                        {label}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </nav>
+          </>
+        );
+      })()}
+
       <NumbersSheet
+        off={off}
         client={client}
         guests={guests}
         tables={tables}

@@ -1441,6 +1441,12 @@ export const appCopy = {
     audience: 'למי הלוז',
     everyone: 'הכול',
     sheetFor: 'לוז עבור:',
+    /* The screen's own strip over the paper: which version this is and
+       whether it is locked, which is what a producer says on the phone. */
+    version: 'גרסה',
+    lockedAt: 'ננעל',
+    stillOpen: 'פתוח לשינויים',
+    lines: 'שורות',
     noDate: 'טרם נקבע תאריך',
     empty: 'עוד לא נבנה לוז ליום האירוע.',
     emptyForRole: 'אין שורות המסומנות לתפקיד הזה. שורה בלי סימון מופיעה אצל כולם.',
@@ -1464,6 +1470,11 @@ export const appCopy = {
     back: 'חזרה לאירוע',
     print: 'הדפסה / שמירה כ-PDF',
     counts: 'כמה מגיעים',
+    /* Over the paper: what this supplier is given, and the four figures. */
+    pick: 'מה הספק מקבל',
+    figTables: 'שולחנות',
+    figSpecial: 'מנות מיוחדות',
+    figFirstCall: 'הגעה ראשונה',
     invited: 'הוזמנו',
     attending: 'אישרו',
     pending: 'טרם ענו',
@@ -1798,6 +1809,13 @@ export const appCopy = {
     reachCouple: 'ליצירת קשר עם הזוג',
     arrivals: 'מי מגיע ומתי',
     noArrivals: 'עוד לא נקבעו שעות הגעה.',
+    /* The tiles over the book: what is in it and what is still empty. A blank
+       running order is information, so empty is said and not hidden. */
+    contents: 'מה יש בספר',
+    full: 'מלא',
+    partial: 'חלקי',
+    empty: 'ריק',
+    sections: { order: 'סדר הערב', suppliers: 'ספקים', guests: 'אורחים', crew: 'צוות', money: 'כסף', open: 'משימות' },
     runningOrder: 'סדר הערב',
     noOrder: 'עוד לא נבנה לוח זמנים.',
     noSuppliers: 'עוד לא נוספו ספקים.',
@@ -4532,6 +4550,9 @@ export const noteCopy = {
   bodyPh: 'לכתוב כאן.',
   held: 'תאריך',
   back: 'חזרה לאירוע',
+  others: 'פתקים של האירוע',
+  newNote: 'פתק חדש',
+  untitled: 'בלי כותרת',
   done: 'סיום',
   saving: 'שומר',
   saved: 'נשמר',

@@ -12,6 +12,8 @@ import { daysBetween, todayInZone } from '@/lib/clock';
 import { standingOf } from '@/lib/phase';
 import { inDayOrder } from '@/lib/runsheet';
 import { PrintButton } from '@/components/app/PrintButton';
+import { DocSwatches, type DocSwatch } from '@/components/app/DocSwatches';
+import { bookSections } from '@/lib/bookSections';
 import {
   ProductionBook, type BookVendor, type BookCrew, type BookMoment,
   type BookTask, type BookPayment,
@@ -117,6 +119,30 @@ export default async function ProductionBookPage({ params }: { params: Promise<{
           {c.back}
         </Link>
         <PrintButton label={c.print} />
+      </div>
+
+      {/* What is in the book and what is still empty, on screen only. The
+          paper below prints white; this is the folder's index. */}
+      <div className="no-print mb-7">
+        <p className="mb-2 text-meta text-ink-mute">{c.contents}</p>
+        <DocSwatches
+          items={bookSections({
+            moments: moments.length,
+            vendors: { total: vendors.length, booked: vendors.filter((v) => v.status === 'booked').length },
+            guests: { invited: guestRows.length, pending: guestRows.filter((g) => g.status === 'pending').length },
+            crew: crew.length,
+            payments: { total: payments.length, unpaid: payments.filter((p) => !p.paid).length },
+            tasks: { total: tasks.length, open: tasks.filter((t) => !t.done).length },
+          }).map((s): DocSwatch => ({
+            key: s.key,
+            label: c.sections[s.key],
+            value: s.n,
+            note: c[s.state],
+            quiet: s.state === 'empty',
+            tone: ({ order: 'rubine', suppliers: 'boho', guests: 'camel', crew: 'tamarind', money: 'boho', open: 'rubine' } as const)[s.key],
+          }))}
+          className="lg:grid-cols-6"
+        />
       </div>
 
       <ProductionBook

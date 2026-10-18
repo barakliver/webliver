@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
+import { DocSwatches } from '@/components/app/DocSwatches';
 import { DisplayChoice } from '@/components/app/DisplayChoice';
 import { AreaBar } from '@/components/app/AreaBar';
 import { SignupPath } from '@/components/app/SignupPath';
@@ -1421,6 +1422,16 @@ export default async function DesignPage() {
             without being somebody new: the question, its second step, and
             what it says once it was answered. */}
         {/* The bar over every page title, in the four tones of the card. */}
+        <Panel name="DocSwatches · the strip over a document" note="version and lock over the run sheet, the four numbers over the supplier sheet, and what is empty over the book; on screen only, the paper is white">
+          <DocSwatches items={[
+            { key: 'a', tone: 'rubine', label: 'גרסה', value: 3 },
+            { key: 'b', tone: 'camel', label: 'ננעל', value: '03/12/2026' },
+            { key: 'c', tone: 'boho', label: 'שורות', value: 7 },
+            { key: 'd', tone: 'tamarind', label: 'סועדים', value: 183, note: 'מתוך 420' },
+            { key: 'e', tone: 'camel', label: 'מקום ורישוי', value: 0, note: 'ריק', quiet: true },
+          ]} />
+        </Panel>
+
         <Panel name="DisplayChoice · light, dark or the device" note="the profile's three buttons, which move the header switch and the accessibility menu with them">
           <div className="max-w-xl"><DisplayChoice /></div>
         </Panel>

@@ -36,7 +36,7 @@ const withParty = (g: SheetGuest) =>
  * real ones. All the arithmetic a supplier cares about lives here: heads,
  * meals, seats, and the two clocks.
  */
-export async function NumbersSheet({ client, guests, tables, day, arrivals: arrivalsIn, brand }: {
+export async function NumbersSheet({ client, guests, tables, day, arrivals: arrivalsIn, brand, off = [] }: {
   client: { display_name: string; event_date: string | null; venue: string | null };
   guests: SheetGuest[];
   tables: SheetTable[];
@@ -44,7 +44,11 @@ export async function NumbersSheet({ client, guests, tables, day, arrivals: arri
   /** Crew and event vendors, already merged: a call time is a call time. */
   arrivals: SheetArrival[];
   brand: { name: string; tagline?: string };
+  /** Parts left off this copy, so each supplier is given only what they ask
+   *  for. Empty is the whole sheet, which is what it always was. */
+  off?: readonly string[];
 }) {
+  const show = (part: string) => !off.includes(part);
   const locale = (await serverCopy()).locale;
   const ui = await serverCopy();
   const c = (await serverCopy()).numbers;
@@ -97,6 +101,7 @@ export async function NumbersSheet({ client, guests, tables, day, arrivals: arri
       </header>
 
       {/* ── how many ──────────────────────────────────────────────────── */}
+      {show('counts') && (
       <section className="print-block mt-8">
         <h2 className="font-display text-subhead font-light text-ink">{c.counts}</h2>
         <div className="mt-4 grid grid-cols-2 gap-x-8 gap-y-6 sm:grid-cols-4">
@@ -106,8 +111,10 @@ export async function NumbersSheet({ client, guests, tables, day, arrivals: arri
           <Stat label={c.declined} value={declined} />
         </div>
       </section>
+      )}
 
       {/* ── the meals ─────────────────────────────────────────────────── */}
+      {show('diet') && (
       <section className="print-block mt-9">
         <h2 className="font-display text-subhead font-light text-ink">{c.diet}</h2>
         {heads === 0 ? (
@@ -132,8 +139,10 @@ export async function NumbersSheet({ client, guests, tables, day, arrivals: arri
           </ul>
         )}
       </section>
+      )}
 
       {/* ── who sits where ────────────────────────────────────────────── */}
+      {show('seating') && (
       <section className="mt-9">
         <h2 className="font-display text-subhead font-light text-ink">{c.seating}</h2>
         {tables.length === 0 ? (
@@ -170,9 +179,11 @@ export async function NumbersSheet({ client, guests, tables, day, arrivals: arri
           </div>
         )}
       </section>
+      )}
 
       {/* ── when ──────────────────────────────────────────────────────── */}
       <div className="mt-9 grid gap-9 sm:grid-cols-2">
+        {show('schedule') && (
         <section className="print-block">
           <h2 className="font-display text-subhead font-light text-ink">{c.schedule}</h2>
           {moments.length === 0 ? (
@@ -188,7 +199,9 @@ export async function NumbersSheet({ client, guests, tables, day, arrivals: arri
             </ul>
           )}
         </section>
+        )}
 
+        {show('arrivals') && (
         <section className="print-block">
           <h2 className="font-display text-subhead font-light text-ink">{c.arrivals}</h2>
           {arrivals.length === 0 ? (
@@ -207,6 +220,7 @@ export async function NumbersSheet({ client, guests, tables, day, arrivals: arri
             </ul>
           )}
         </section>
+        )}
       </div>
 
       <footer className="mt-10 border-t border-line pt-4 text-meta text-ink-mute">

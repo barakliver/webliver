@@ -108,6 +108,15 @@ export function DayOfCockpit({
         </div>
       )}
 
+      {/* The clock, the biggest thing on the screen while the evening runs: it
+          is what somebody looks for when they glance down, and it is the
+          browser's own, so it matches the watch on the wrist reading it. */}
+      {live && now && (
+        <p className="font-display text-[72px] font-light leading-none tabular-nums text-ink sm:text-[96px]" dir="ltr">
+          {timeOf(now.toISOString())}
+        </p>
+      )}
+
       {live && (
         <div className="grid gap-3 sm:grid-cols-2">
           <Headline label={c.now} placed={current} fallback={c.nothingNow} tone="now" />
@@ -151,21 +160,27 @@ function Headline({ label, placed, fallback, tone }: {
 }) {
   const locale = useCopy().locale;
   return (
-    <div className={cn('card', tone === 'now' && 'border-accent bg-accent-wash')}>
-      <div className="text-meta font-medium text-ink-mute">{label}</div>
+    /* Two swatches of the card: what is happening now is the rubine, what is
+       next is the camel. Colour says which is which at a glance, in a hall
+       with the lights down, before anybody reads a word. */
+    <div className={cn(
+      'rounded-card p-5',
+      tone === 'now' ? 'bg-tone-rubine text-tone-rubine-on' : 'bg-tone-camel text-tone-camel-on',
+    )}>
+      <div className={cn('text-meta font-medium', tone === 'now' ? 'text-tone-rubine-on/90' : 'text-tone-camel-on/90')}>{label}</div>
       {placed ? (
         <>
-          <div className="mt-1 font-display text-panel font-normal leading-tight text-ink">
+          <div className={cn('mt-1 font-display font-light leading-tight', tone === 'now' ? 'text-figure sm:text-[34px]' : 'text-panel')}>
             {placed.line.title}
           </div>
-          <div className="mt-1 text-body text-ink-soft">
+          <div className={cn('mt-1 text-body', tone === 'now' ? 'text-tone-rubine-on/90' : 'text-tone-camel-on/90')}>
             <span className="tabular-nums">{hhmm(placed.line.at_time)}</span>
             {placed.inMinutes !== null && tone === 'next' && ` · ${relative(placed.inMinutes, locale)}`}
             {placed.line.duration_min ? ` · ${humanSpan(placed.line.duration_min, locale)}` : ''}
           </div>
         </>
       ) : (
-        <div className="mt-1 text-lead text-ink-soft">{fallback}</div>
+        <div className={cn('mt-1 text-lead', tone === 'now' ? 'text-tone-rubine-on/90' : 'text-tone-camel-on/90')}>{fallback}</div>
       )}
     </div>
   );

@@ -8,6 +8,7 @@ import { serverCopy } from '@/lib/serverLocale';
 import { AUDIENCES } from '@/content/lists';
 import { PrintButton } from '@/components/app/PrintButton';
 import { RunSheet } from '@/components/app/RunSheet';
+import { DocSwatches } from '@/components/app/DocSwatches';
 import { brandFor } from '@/lib/branding';
 import { safeRows } from '@/lib/safe';
 import { forAudience } from '@/lib/runOfShow';
@@ -62,7 +63,7 @@ export default async function RunsheetPage({
 
   const sb = await supabaseServer();
   const [{ data: client }, { data: rows }, brand] = await Promise.all([
-    sb.from('clients').select('id,display_name,event_date,venue').eq('id', id).maybeSingle(),
+    sb.from('clients').select('id,display_name,event_date,venue,runsheet_version,runsheet_locked_at').eq('id', id).maybeSingle(),
     sb.from('day_schedule').select('id,track,at_time,title,note,audience,owner,duration_min,is_secret,song_title,song_artist,song_cue')
       .eq('client_id', id).order('at_time'),
     brandFor(account),
@@ -112,6 +113,30 @@ export default async function RunsheetPage({
         <PrintButton label={c.print} />
       </div>
 
+      {/* What the paper cannot say, on screen only: which version this is, and
+          whether it is locked. Producer's side - the couple holding their own
+          sheet is not shown the staffing machinery around it. */}
+      {staffVisible && (
+        <DocSwatches
+          className="mb-6"
+          items={[
+            { key: 'v', tone: 'rubine', label: c.version, value: client.runsheet_version ?? 1 },
+            {
+              key: 'lock', tone: 'camel', label: c.lockedAt,
+              value: client.runsheet_locked_at
+                ? formatDate(dateFmt, client.runsheet_locked_at.slice(0, 10), '')
+                : c.stillOpen,
+            },
+            { key: 'lines', tone: 'boho', label: c.lines, value: items.length },
+            {
+              key: 'span', tone: 'tamarind', label: c.sheetFor.replace(/:$/, ''),
+              value: <span dir="ltr">{items.length > 0 ? `${hhmm(items[0].at_time)}–${hhmm(items[items.length - 1].at_time)}` : '·'}</span>,
+              note: roleLabel ?? c.everyone,
+            },
+          ]}
+        />
+      )}
+
       {/* Role switcher. Four sheets from one schedule, because on the day
           nobody has time to read past the lines that are not theirs. */}
       <nav className="no-print mb-7 flex flex-wrap gap-2" aria-label={c.audience}>
@@ -123,7 +148,7 @@ export default async function RunsheetPage({
               href={a.value ? `/app/clients/${id}/runsheet?for=${a.value}` : `/app/clients/${id}/runsheet`}
               aria-current={on ? 'page' : undefined}
               className={`min-h-[44px] rounded-xl2 border px-4 text-body leading-[42px] sm:min-h-[38px] sm:leading-[36px] transition ${
-                on ? 'border-ink bg-ink font-medium text-surface' : 'border-line-strong text-ink-soft hover:border-accent/40 hover:text-accent'
+                on ? 'border-tone-rubine bg-tone-rubine font-medium text-tone-rubine-on' : 'border-line-strong text-ink-soft hover:border-accent/40 hover:text-accent'
               }`}
             >
               {a.label}

@@ -1,4 +1,6 @@
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { Plus } from 'lucide-react';
 import { requireLiveProducer } from '@/lib/auth';
 import { supabaseServer } from '@/lib/supabase/server';
 import { serverCopy } from '@/lib/serverLocale';
@@ -65,7 +67,51 @@ export default async function NotePage({ params, searchParams }: {
     };
   }
 
+  /* The other pages written on this event, beside the one that is open: a
+     producer keeps several, and finding the one from Tuesday should not mean
+     going back to the file. Newest first, and capped, because this is a margin
+     and not a library. */
+  const { data: others } = await sb
+    .from('meeting_logs')
+    .select('id,title,held_on,updated_at')
+    .eq('client_id', clientId)
+    .eq('kind', 'note')
+    .order('updated_at', { ascending: false })
+    .limit(30);
+  const c = (await serverCopy()).note;
+  const dots = ['bg-tone-camel', 'bg-tone-boho', 'bg-tone-rubine', 'bg-tone-tamarind'];
+
   /* The shell above this page already put the copy in context, in whichever
      language the producer is reading. */
-  return <NotePad clientId={clientId} eventName={client.display_name as string} note={note} />;
+  return (
+    <div className="lg:grid lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-10">
+      {/* From a laptop up only. On a phone the page is the whole screen, which
+          is what it was asked to be. */}
+      <aside className="no-print hidden self-start lg:block" aria-label={c.others}>
+        <p className="mb-2 px-3 text-meta text-ink-mute">{c.others}</p>
+        <ul className="list-none space-y-0.5 p-0">
+          {(others ?? []).map((n, i) => {
+            const open = n.id === noteId;
+            return (
+              <li key={n.id as string}>
+                <Link
+                  href={`/app/clients/${clientId}/note?id=${n.id}`}
+                  aria-current={open ? 'page' : undefined}
+                  className={`flex min-h-[44px] items-center gap-2.5 rounded-control px-3 text-body transition ${open ? 'bg-surface-200 text-ink' : 'text-ink-soft hover:bg-surface-200 hover:text-ink'}`}
+                >
+                  <span aria-hidden className={`size-2 shrink-0 rounded-full ${dots[i % dots.length]}`} />
+                  <span className="truncate">{(n.title as string) || c.untitled}</span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+        <Link href={`/app/clients/${clientId}/note`} className="btn-quiet mt-2 inline-flex items-center gap-1.5 px-3 text-body">
+          <Plus size={15} strokeWidth={1.5} aria-hidden />
+          {c.newNote}
+        </Link>
+      </aside>
+      <NotePad clientId={clientId} eventName={client.display_name as string} note={note} />
+    </div>
+  );
 }

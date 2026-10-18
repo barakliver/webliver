@@ -356,6 +356,34 @@ that has happened once.
   impression of one. A test walks every id to its file and back and asserts
   the three undealt ones are undealt, so a card without a picture fails the
   build rather than drawing a broken image inside his frame.
+- **Group 9, chosen as a mix: the documents of the event, with the colour on the
+  screen and the paper left white.** 3.15. The run sheet, the numbers sheet and
+  the production book are print-first, and paper stays white, so what was
+  redesigned is the screen around the paper and nothing printed. `DocSwatches`
+  is the strip over a document, `no-print` by construction: over the run sheet
+  the version, whether it is locked and when, how many lines and the span of the
+  evening (producer's side only; a couple holding their own sheet is not shown
+  the machinery); over the numbers sheet the four figures a supplier asks for;
+  over the book a tile per section saying how much of it is there. **A blank
+  tile is drawn as an outline and not a fill** - `quiet` - because a running
+  order that is empty is information and should not look like a swatch of
+  something. What is in the book is `bookSections` in `lib/bookSections.ts`,
+  pure and tested: a supplier list with an unsigned supplier, an invitation
+  list with unanswered invitations and a payment list with an unpaid instalment
+  are partial and not full, and the task list is full when nothing is *open*,
+  the reverse of how a count usually reads. **The numbers sheet** takes b's
+  idea that each supplier is given what they ask for: five parts, left off with
+  `?off=diet,seating`, so the choice is an address somebody can send and the
+  paper is the paper they chose; `NumbersSheet` takes `off` and defaults to the
+  whole sheet, which is what it always was. **The live screen** has the clock as
+  the biggest thing on it while the evening runs (the browser's, so it matches
+  the watch on the wrist), what is happening now as the rubine and what is next
+  as the camel, so colour says which is which in a hall with the lights down.
+  **The note** has the other pages of the event in a margin from `lg` up, newest
+  first and capped; on a phone it is still the whole screen. Not done: b's
+  "delay ten minutes" button on the live screen already exists as `shiftAfter`
+  in the run of show and was left where it is, and the couple's preview is
+  group 10's screen.
 - **Group 8, chosen as a mix: the profile, the knowledge shelf and the wait,
   in the tones.** 3.14. He said the pages were good, asked for a mix and said
   the colours should be as on the numbers screen, so each took its structure
