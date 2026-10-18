@@ -2650,6 +2650,8 @@ export const guestSiteCopy = {
   maps: 'מפות גוגל',
   calendar: 'הוספה ליומן',
   moments: 'סדר הערב',
+  momentNow: 'עכשיו',
+  momentNext: 'הבא',
   note: 'כמה מילים מאיתנו',
   rsvpTitle: 'אישור הגעה',
   rsvpSub: 'הקלידו את מספר הטלפון שאליו נשלחה ההזמנה, ונעביר אתכם לאישור האישי שלכם.',
@@ -2696,6 +2698,14 @@ export const rsvpCopy = {
   okNotComing: 'תודה שעדכנתם',
   okNotComingBody: 'חבל שלא תוכלו להגיע. תודה שהודעתם.',
   changeLater: 'אם משהו ישתנה, אפשר לחזור לקישור הזה ולעדכן.',
+  daysLeft: 'ימים לחתונה',
+  today: 'החתונה היום',
+  less: 'אחד פחות',
+  more: 'אחד יותר',
+  seatsKept: 'שמרנו לכם מקום ל-{n}',
+  seatKept: 'שמרנו לכם מקום',
+  addToCalendar: 'להוסיף ליומן',
+  calendarDay: 'ביומן יופיע יום שלם, והשעה נמצאת בדף של הזוג.',
   badLink: 'הקישור לא נמצא',
   badLinkBody: 'יכול להיות שהקישור הועתק חלקית, או שההזמנה כבר לא בתוקף. אפשר לפנות לזוג.',
 } as const;
@@ -3717,6 +3727,9 @@ export const signCopy = {
   /* Said before the button, not after it. Somebody should know what pressing
      it does while they can still not press it. */
   before: 'לחיצה על הכפתור היא חתימה. מרגע זה אי אפשר לשנות את התנאים שלמעלה, לא על ידכם ולא על ידי מי ששלח.',
+  stepRead: 'קריאה',
+  stepSign: 'חתימה',
+  stepDone: 'נשלח',
   doneTitle: 'נחתם',
   doneBy: 'נחתם על ידי',
   doneAt: 'בתאריך',

@@ -4,9 +4,9 @@ import type { Locale } from '@/lib/locale';
 import type { GuestSiteCopy } from '@/content/ui';
 import { weekdayDate } from '@/lib/appDates';
 import { formatDate, daysUntil } from '@/lib/dates';
-import { hhmm } from '@/lib/runsheet';
-import { Ltr } from '@/components/Ltr';
 import { FindInvite } from './FindInvite';
+import { CountUp } from './CountUp';
+import { LiveMoments } from './LiveMoments';
 import { brandVars, fontHref, readBrand } from '@/content/brandKit';
 
 export type GuestSite = {
@@ -56,8 +56,8 @@ export function GuestSiteView({ site, token, c, locale }: {
       {brand && <link rel="stylesheet" href={fontHref(brand.fonts)} precedence="default" />}
       <div className="mx-auto w-full max-w-xl">
         <header className="text-center">
-          <p className="eyebrow">{c.eyebrow}</p>
-          <h1 className="mt-4 font-display text-display-xl font-light leading-tight text-ink">
+          <p className="eyebrow animate-rise">{c.eyebrow}</p>
+          <h1 className="animate-rise mt-4 font-display text-display-xl font-light leading-tight text-ink" style={{ animationDelay: '.1s' }}>
             {site.event_name}
           </h1>
           <p className="mt-5 text-head text-ink-soft">
@@ -74,8 +74,10 @@ export function GuestSiteView({ site, token, c, locale }: {
             <div className="mt-9">
               {left > 0 ? (
                 <>
+                  {/* It counts up from nothing when the page opens, once: the
+                      one figure a guest comes for arrives as an event. */}
                   <p className="font-display text-[88px] font-normal leading-none text-ink sm:text-[112px]">
-                    <Ltr>{left.toLocaleString('en-US')}</Ltr>
+                    <CountUp n={left} />
                   </p>
                   <p className="mt-2 text-body tracking-[.06em] text-ink-mute">{c.daysLeft}</p>
                 </>
@@ -107,24 +109,15 @@ export function GuestSiteView({ site, token, c, locale }: {
 
         {/* ── the evening ───────────────────────────────────────────────── */}
         {site.moments.length > 0 && (
-          <section className="mt-12">
+          <section className="reveal mt-12">
             <h2 className="eyebrow text-center">{c.moments}</h2>
-            <ul className="mx-auto mt-5 max-w-sm list-none divide-y divide-line border-y border-line p-0">
-              {site.moments.map((m, i) => (
-                <li key={i} className="flex items-baseline gap-5 py-3 text-head">
-                  <span className="w-[52px] shrink-0 font-display text-subhead font-normal tabular-nums text-ink" dir="ltr">
-                    {hhmm(m.at)}
-                  </span>
-                  <span className="text-ink">{m.title}</span>
-                </li>
-              ))}
-            </ul>
+            <LiveMoments moments={site.moments} eventDate={site.event_date} labels={{ now: c.momentNow, next: c.momentNext }} />
           </section>
         )}
 
         {/* ── a few words ───────────────────────────────────────────────── */}
         {site.note.trim() && (
-          <section className="mt-12">
+          <section className="reveal mt-12">
             <h2 className="eyebrow text-center">{c.note}</h2>
             <p className="measure mx-auto mt-4 whitespace-pre-line text-center text-head leading-relaxed text-ink-soft">
               {site.note}
@@ -133,7 +126,7 @@ export function GuestSiteView({ site, token, c, locale }: {
         )}
 
         {/* ── the reply ─────────────────────────────────────────────────── */}
-        <section className="card mt-12">
+        <section className="card reveal mt-12">
           <h2 className="head-section">{c.rsvpTitle}</h2>
           <p className="mt-2 text-body leading-relaxed text-ink-soft">{c.rsvpSub}</p>
           <div className="mt-5">

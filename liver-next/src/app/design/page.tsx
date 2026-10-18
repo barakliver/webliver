@@ -199,6 +199,10 @@ import ConsoleLoading from '@/app/app/loading';
 import EventLoading from '@/app/app/clients/[id]/loading';
 import PortalLoading from '@/app/app/portal/loading';
 import { EventSelector } from '@/components/portal/EventSelector';
+import { CountUp } from '@/components/guest/CountUp';
+import { Petals } from '@/components/guest/Petals';
+import { LiveMoments } from '@/components/guest/LiveMoments';
+import { ZoomPhoto } from '@/components/ZoomPhoto';
 import { VendorCaptureDemo } from './VendorCaptureDemo';
 import { EnvelopesPanel } from '@/components/app/EnvelopesPanel';
 import { VehiclesPanel } from '@/components/app/VehiclesPanel';
@@ -1306,19 +1310,52 @@ export default async function DesignPage() {
         {/* The one thing a guest is ever asked to fill in. Two hundred people
             per wedding touch this and nobody had rendered it. */}
         <Panel name="RsvpForm · not yet answered" note="the choice, then the questions that only make sense after it">
-          <RsvpForm
+          <div className="max-w-lg overflow-hidden rounded-panel border border-line-soft bg-card"><RsvpForm
             token="demo"
             initial={{ status: '', partySize: 1, diet: 'none', note: '', responded: false }}
             copy={rsvpFor('he')}
-          />
+          
+            event={{ name: 'נועה ואיתי', date: '2026-12-05', venue: 'אחוזת הכפר' }}
+          /></div>
         </Panel>
 
         <Panel name="RsvpForm · already replied" note="a guest coming back to change their answer">
-          <RsvpForm
+          <div className="max-w-lg overflow-hidden rounded-panel border border-line-soft bg-card"><RsvpForm
             token="demo"
             initial={{ status: 'attending', partySize: 3, diet: 'vegan', note: 'נגיע קצת אחרי החופה', responded: true }}
             copy={rsvpFor('he')}
-          />
+          
+            event={{ name: 'נועה ואיתי', date: '2026-12-05', venue: 'אחוזת הכפר' }}
+          /></div>
+        </Panel>
+
+        {/* The three things the guest-facing pages borrow, looked at alone. */}
+        <Panel name="CountUp" note="the days left, counting up from nothing once when the page opens; the real figure is in text beside it">
+          <p className="font-display text-[88px] font-light leading-none text-ink"><CountUp n={49} /></p>
+        </Panel>
+
+        <Panel name="Petals" note="the burst that follows a yes, decoration only and gone under reduced motion">
+          <div className="relative h-48 overflow-hidden rounded-card border border-line bg-card"><Petals /></div>
+        </Panel>
+
+        <Panel name="LiveMoments" note="the evening as a line; on the day itself the marker follows the clock in Israel, drawn here for any other day">
+          <div className="max-w-md rounded-card border border-line bg-card p-5">
+            <LiveMoments
+              eventDate="2000-01-01"
+              moments={[{ at: '19:00:00', title: 'קבלת פנים' }, { at: '19:45:00', title: 'חופה' }, { at: '20:30:00', title: 'ארוחה' }, { at: '22:00:00', title: 'ריקודים' }]}
+              labels={{ now: 'עכשיו', next: 'הבא' }}
+            />
+          </div>
+        </Panel>
+
+        <Panel name="ZoomPhoto" note="a picture that opens large when pressed; a face on a supplier's page, a reference in the mosaic">
+          <ZoomPhoto
+            src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600'%3E%3Crect width='600' height='600' fill='%237B694E'/%3E%3C/svg%3E"
+            alt="דודה רחל" caption="לא אוהבת להצטלם לבד" label="להגדלה: דודה רחל" close="סגירה"
+            className="block size-28 overflow-hidden rounded-full bg-tone-boho"
+          >
+            <span aria-hidden className="block size-full" />
+          </ZoomPhoto>
         </Panel>
 
         <Panel name="GuestSite" note="the page the couple sends everyone: whose, when, where, how, what, and the reply">

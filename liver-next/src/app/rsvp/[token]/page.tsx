@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
-import { formatDate } from '@/lib/dates';
+import { formatDate, daysUntil } from '@/lib/dates';
+import { CountUp } from '@/components/guest/CountUp';
 import { supabaseServer } from '@/lib/supabase/server';
 import { getSiteCopy } from '@/lib/siteCopy';
 import { supabasePublic } from '@/lib/supabase/public';
@@ -46,6 +47,7 @@ export default async function RsvpPage({ params }: { params: Promise<{ token: st
   const sb = await supabaseServer();
   const { data } = await sb.rpc('rsvp_lookup', { p_token: token });
   const guest = (Array.isArray(data) ? data[0] : null) as Lookup | null;
+  const left = guest ? daysUntil(guest.event_date) : null;
 
   return (
     <main id="main" className="flex min-h-dvh items-center justify-center px-5 py-14">
@@ -58,28 +60,38 @@ export default async function RsvpPage({ params }: { params: Promise<{ token: st
             <p className="mt-3 text-lead leading-relaxed text-ink-soft">{rsvpCopy.badLinkBody}</p>
           </div>
         ) : (
-          <>
-            <header className="mb-6 text-center">
-              <p className="eyebrow">{rsvpCopy.eyebrow}</p>
-              <h1 className="mt-2 font-display text-title font-light text-ink">
-                {rsvpCopy.hello} <bdi>{guest.guest_name}</bdi>
-              </h1>
-              <p className="mt-3 text-head text-ink-soft">
-                {rsvpCopy.invitedTo}
-                <b className="text-ink"> {guest.event_name}</b>
+          <div className="overflow-hidden rounded-panel border border-line-soft bg-card">
+            {/* The invitation as an object: their names on the band, the day and
+                the place under them, and the days left as the one number that
+                counts up when the page opens. The form is the lower half of the
+                same thing and not a second card under it. */}
+            <header className="band-dark px-6 py-8 text-center sm:px-8 sm:py-10">
+              <p className="animate-rise text-body text-accent-light">
+                {rsvpCopy.hello} <bdi>{guest.guest_name}</bdi>, {rsvpCopy.invitedTo}
               </p>
+              <h1 className="animate-rise mt-2 font-display text-display font-light leading-[1.1]" style={{ animationDelay: '.1s' }}>
+                {guest.event_name}
+              </h1>
               {(guest.event_date || guest.venue) && (
-                <p className="mt-1 text-body text-ink-mute">
+                <p className="animate-rise mt-3 text-body text-accent-light" style={{ animationDelay: '.2s' }}>
                   {formatDate(dateFmt, guest.event_date, '')}
                   {guest.event_date && guest.venue ? ' · ' : ''}
                   {guest.venue}
                 </p>
               )}
+              {left !== null && left > 0 && (
+                <p className="mt-5 flex items-end justify-center gap-3">
+                  <span className="font-display text-[56px] font-light leading-[.9] text-accent-light"><CountUp n={left} /></span>
+                  <span className="pb-1 text-body text-accent-light">{rsvpCopy.daysLeft}</span>
+                </p>
+              )}
+              {left === 0 && <p className="mt-5 font-display text-panel font-light text-accent-light">{rsvpCopy.today}</p>}
             </header>
 
             <RsvpForm
               token={token}
               copy={rsvpCopy}
+              event={{ name: guest.event_name, date: guest.event_date, venue: guest.venue }}
               initial={{
                 status: guest.status,
                 partySize: guest.party_size,
@@ -88,7 +100,7 @@ export default async function RsvpPage({ params }: { params: Promise<{ token: st
                 responded: guest.responded,
               }}
             />
-          </>
+          </div>
         )}
       </div>
     </main>

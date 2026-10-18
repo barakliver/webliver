@@ -356,6 +356,44 @@ that has happened once.
   impression of one. A test walks every id to its file and back and asserts
   the three undealt ones are undealt, so a card without a picture fails the
   build rather than drawing a broken image inside his frame.
+- **From group 11 he stopped choosing and asked me to run the rest on my own,
+  with movement and something to be curious about on every page.** 3.17.
+  The canvas stays as the record of the two options drawn for group 11
+  (R, W, S, P, E, U, each A and B); what shipped is a mix decided here, and
+  nothing in it is invented for the sake of motion: each thing that moves or
+  surprises is a fact the page already held. **R, the reply:** a's single
+  object with b's colour - the invitation's names on the band, the days left
+  counting up, the two answers as the two largest things on the screen (a yes
+  is the rubine and a no is the camel, so what somebody has said reads from
+  across a room), a stepper for how many (nobody on a phone wants the keyboard
+  to say they are two) with the line "we are keeping N seats for you", and a
+  yes ends in a burst of petals and a button that adds the day to their
+  calendar, built in the browser as a data address because the invitation link
+  is a credential and a second route that answers to it is a second thing to
+  protect. **W, the guests' page:** the days counted up, sections that rise as
+  they scroll into view, and the evening as a line down the page that on the
+  day itself knows which moment is under way and which is next (`LiveMoments`,
+  read in Israel's zone after hydration and never during it, so server and
+  client draw the same list). It stays in the couple's own brand: no band, only
+  the ink and surface tokens, because their accent is chosen to be beautiful
+  and not to be read. **S, signing:** three steps and a line that fills as the
+  terms go past (`SignSteps` reads the page and gates nothing - a button
+  disabled because a scrollbar has not arrived is a rule about how people read
+  dressed as a safeguard), the amount as the figure on the band, and a drawn
+  tick with petals once it is signed. **P, the supplier's page:** faces as
+  portraits with their instruction at the size of the name, a face with no
+  picture gets its tone and first letter rather than a hole, the references as
+  a mosaic, and any picture opens large (`ZoomPhoto`, on `useOverlay`) because
+  a thumbnail is not a face you can find across a hall. **E and U:** the door
+  is a card with the cover to its edges and its three ways in arriving one
+  after another; unsubscribe is a sentence and a tick, and nothing else moves,
+  because the person reading it wanted out. The three pieces of motion are CSS
+  and nothing else - `count-up` is generated content on a registered integer so
+  there is nothing to hydrate and an engine that cannot animate it shows the
+  final figure; `reveal` is a view timeline, so there is no observer and no
+  flash of hidden content; `petals` and `draw-check` are keyframes - and all of
+  it is off under reduced motion. The card game (`/play`) is not in this group
+  and was not touched: its pictures are his.
 - **Group 10, chosen as a mix, and the pages now carry letters.** 3.16. He
   said "a mix" and asked that every page he is sent be named with an English
   letter so he can say "this from A, that from B"; from here a board is

@@ -19,6 +19,8 @@ const HE: Copy = {
   looks: 'השראה',
   categories: { hair: 'שיער', makeup: 'איפור', outfit: 'לבוש', other: 'שונות' },
   by: 'מאת',
+  enlarge: 'להגדלה',
+  close: 'סגירה',
   onlyFaces: 'הקישור הזה פותח את רשימת האנשים בלבד.',
   onlyLooks: 'הקישור הזה פותח את תמונות ההשראה בלבד.',
   /* One sentence for a token that never existed, one that was revoked and one
@@ -34,6 +36,8 @@ const EN: Copy = {
   looks: 'References',
   categories: { hair: 'Hair', makeup: 'Makeup', outfit: 'Outfit', other: 'Other' },
   by: 'From',
+  enlarge: 'Enlarge',
+  close: 'Close',
   onlyFaces: 'This link opens the list of people only.',
   onlyLooks: 'This link opens the references only.',
   gone: 'This link is no longer active',

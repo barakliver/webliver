@@ -99,37 +99,46 @@ export default async function ProducerEntryPage({ params }: { params: Promise<{ 
       className="brand-scope app-type flex min-h-dvh items-center justify-center px-5 py-14"
       style={accentVars(accentByKey(b.accent)) as React.CSSProperties}
     >
-      <div className="w-full max-w-md text-center">
+      {/* The door as a card: the cover runs to its edges, the mark and the
+          words come up one after another, and the three ways in are three
+          full-width buttons, the first of them the one that matters. Each
+          arrives a beat after the last, which is the only thing on this page
+          that moves. */}
+      <div className="w-full max-w-md overflow-hidden rounded-panel border border-line-soft bg-card text-center">
         {b.cover_url && (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={b.cover_url} alt=""
-            className="mb-8 aspect-video w-full rounded-card-sm object-cover" decoding="async" />
+            className="aspect-video w-full object-cover" decoding="async" />
         )}
-        {b.logo_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={b.logo_url} alt={b.brand} className="mx-auto h-14 w-[220px] max-w-[220px] object-contain" decoding="async" />
-        ) : (
-          <p className="font-display text-[34px] font-normal leading-tight text-ink">{b.brand}</p>
-        )}
-        {b.tagline && <p className="mt-2 text-body text-ink-mute">{b.tagline}</p>}
-        <hr className="rule-gold mx-auto mt-8 w-24" />
-        <p className="eyebrow mt-8">{c.eyebrow}</p>
-        <p className="measure mx-auto mt-3 text-lead leading-relaxed text-ink-soft">{c.sub}</p>
-        <div className="mt-8 flex flex-wrap justify-center gap-2.5">
-          <Link href="/login" className="btn-primary">{c.enter}</Link>
-          {wa && (
-            <a href={`https://wa.me/${wa.replace('+', '')}`} target="_blank" rel="noopener noreferrer" className="btn-ghost">
-              <MessageCircle size={16} strokeWidth={1.5} aria-hidden />
-              {c.whatsapp}
-            </a>
-          )}
-          {booking && (
-            <a href={booking} target="_blank" rel="noopener noreferrer" className="btn-ghost">
-              <CalendarDays size={16} strokeWidth={1.5} aria-hidden />
-              {c.booking}
-            </a>
-          )}
+        <div className="px-6 pb-8 pt-8 sm:px-8">
+          <div className="animate-rise">
+            {b.logo_url ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={b.logo_url} alt={b.brand} className="mx-auto h-14 w-[220px] max-w-[220px] object-contain" decoding="async" />
+            ) : (
+              <p className="font-display text-[34px] font-light leading-tight text-ink">{b.brand}</p>
+            )}
+          </div>
+          {b.tagline && <p className="animate-rise mt-2 text-body text-ink-mute" style={{ animationDelay: '.1s' }}>{b.tagline}</p>}
+          <hr className="rule-gold mx-auto mt-6 w-24" />
+          <p className="eyebrow animate-rise mt-6" style={{ animationDelay: '.2s' }}>{c.eyebrow}</p>
+          <p className="measure animate-rise mx-auto mt-3 text-lead leading-relaxed text-ink-soft" style={{ animationDelay: '.28s' }}>{c.sub}</p>
+          <div className="mt-7 flex flex-col gap-2.5">
+            <Link href="/login" className="btn-primary animate-rise justify-center" style={{ animationDelay: '.36s' }}>{c.enter}</Link>
+            {wa && (
+              <a href={`https://wa.me/${wa.replace('+', '')}`} target="_blank" rel="noopener noreferrer" className="btn-ghost animate-rise justify-center" style={{ animationDelay: '.44s' }}>
+                <MessageCircle size={16} strokeWidth={1.5} aria-hidden />
+                {c.whatsapp}
+              </a>
+            )}
+            {booking && (
+              <a href={booking} target="_blank" rel="noopener noreferrer" className="btn-ghost animate-rise justify-center" style={{ animationDelay: '.52s' }}>
+                <CalendarDays size={16} strokeWidth={1.5} aria-hidden />
+                {c.booking}
+              </a>
+            )}
+          </div>
         </div>
       </div>
     </main>

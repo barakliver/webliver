@@ -54,6 +54,12 @@ export default async function UnsubscribePage({ params }: { params: Promise<{ to
         <p className="text-center head-panel">{site.brand}</p>
         <PromiseLine className="mb-7 mt-2" />
         <div className="card text-center">
+          {/* The tick draws itself once. Nothing else on the page moves: this
+              is read by somebody who wanted out, and the whole of what it owes
+              them is a clear sentence and the sign that it worked. */}
+          <div aria-hidden className="pop-in mx-auto mb-4 grid size-14 place-items-center rounded-full bg-tone-rubine text-tone-rubine-on">
+            <svg className="draw-check" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12l5 5 9-10" /></svg>
+          </div>
           <h1 className="head-section">{c.title}</h1>
           <p className="mt-3 text-lead leading-relaxed text-ink-soft">{c.body}</p>
           <p className="mt-4 text-body text-ink-mute">{c.note}</p>

@@ -730,6 +730,76 @@
   @media (prefers-reduced-motion: reduce) {
     .ring-arc { animation: none; stroke-dashoffset: var(--to, 88); }
   }
+  /* A number that counts up to what it is, once. Pure CSS on a registered
+     integer, so there is no script and nothing to hydrate: where the browser
+     cannot animate a custom property the counter simply starts at its final
+     value, which is what the page said before it moved. The real figure
+     travels in a visually hidden sibling, because generated content is read
+     unevenly by screen readers. */
+  @property --count { syntax: '<integer>'; initial-value: 0; inherits: false; }
+  .count-up {
+    --count: var(--to, 0);
+    counter-reset: count var(--count);
+    animation: count-up 1.8s cubic-bezier(.2,.9,.2,1) .25s both;
+  }
+  .count-up::after { content: counter(count); }
+  @keyframes count-up { from { --count: 0; } }
+  @media (prefers-reduced-motion: reduce) {
+    .count-up { animation: none; }
+  }
+
+  /* A block that rises into place as it scrolls into view. The browser does
+     the watching (a view timeline), so there is no observer and no flash of
+     hidden content before a script wakes up; a browser without view timelines
+     shows the block where it always was. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .reveal {
+        animation: reveal-in linear both;
+        animation-timeline: view();
+        animation-range: entry 0% entry 35%;
+      }
+    }
+  }
+  @keyframes reveal-in {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  /* A tick that draws itself. The path is 24 long in its own units. */
+  .draw-check path {
+    stroke-dasharray: 26;
+    stroke-dashoffset: 26;
+    animation: draw-check .7s cubic-bezier(.2,.9,.2,1) .35s forwards;
+  }
+  @keyframes draw-check { to { stroke-dashoffset: 0; } }
+  .pop-in { animation: pop-in .5s cubic-bezier(.2,1.4,.4,1) both; }
+  @keyframes pop-in { from { transform: scale(.4); opacity: 0; } to { transform: none; opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) {
+    .draw-check path { animation: none; stroke-dashoffset: 0; }
+    .pop-in { animation: none; }
+  }
+
+  /* Petals for a yes. Sixteen small marks that leave the middle, drift out
+     and fall, each with its own angle, distance and delay passed in as custom
+     properties. Decoration only: nothing in the document, nothing to read,
+     and none of it under reduced motion. */
+  .petals { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+  .petal {
+    position: absolute; inset-block-start: 38%; inset-inline-start: 50%;
+    width: 9px; height: 14px; border-radius: 9999px 9999px 9999px 0;
+    opacity: 0;
+    animation: petal 1.9s cubic-bezier(.2,.7,.3,1) var(--d, 0s) forwards;
+  }
+  @keyframes petal {
+    0%   { opacity: 0; transform: translate(0, 0) rotate(0) scale(.4); }
+    12%  { opacity: 1; }
+    100% { opacity: 0; transform: translate(var(--x, 0), var(--y, 140px)) rotate(var(--r, 200deg)) scale(1); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .petals { display: none; }
+  }
+
   /* And the third: an outline with almost no fill, for a group that needs an
      edge without becoming another panel in a column of panels. */
   .panel-outline {

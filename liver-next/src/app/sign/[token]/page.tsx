@@ -6,6 +6,9 @@ import { CopyProvider } from '@/components/app/CopyProvider';
 import { PromiseLine } from '@/components/Promise';
 import { Money } from '@/components/Ltr';
 import { SignForm } from './SignForm';
+import { SignSteps } from './SignSteps';
+import { CountUp } from '@/components/guest/CountUp';
+import { Petals } from '@/components/guest/Petals';
 import { EVENT_ZONE } from '@/lib/clock';
 
 /**
@@ -45,6 +48,9 @@ type Agreement = {
   brand: string;
 };
 
+/* One place for the sign, so a page that draws it is not building a price by hand. */
+const SHEKEL = '\u20AA';
+
 export default async function SignPage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
   const ui = await serverCopy();
@@ -73,36 +79,46 @@ export default async function SignPage({ params }: { params: Promise<{ token: st
           </div>
         ) : (
           <>
-            <header className="mb-5 text-center">
-              <p className="eyebrow">{c.eyebrow}</p>
-              <h1 className="mt-2 font-display text-title font-light text-ink">{deal.title}</h1>
+            <SignSteps signed={deal.status === 'signed'} />
+            {/* The agreement's head is a band: what it is, who it is with, and
+                the amount as the one number on it, counted up when the page
+                opens. The terms are the paper under it. */}
+            <header className="band-dark mt-5 overflow-hidden rounded-panel px-6 py-7 text-center sm:px-8">
+              <p className="eyebrow text-accent-light">{c.eyebrow}</p>
+              <h1 className="animate-rise mt-2 font-display text-title font-light">{deal.title}</h1>
               {(deal.party_name || deal.party_role) && (
-                <p className="mt-1.5 text-body text-ink-soft">
+                <p className="mt-1.5 text-body text-accent-light">
                   {[deal.party_name, deal.party_role].filter(Boolean).join(' · ')}
+                </p>
+              )}
+              {deal.amount !== null && (
+                <p className="mt-5 flex items-end justify-center gap-2 text-accent-light">
+                  <span className="pb-1.5 text-body">{c.amount}</span>
+                  <span className="font-display text-[44px] font-light leading-none">
+                    {Number.isInteger(Number(deal.amount))
+                      ? <CountUp n={Number(deal.amount)} prefix={SHEKEL} />
+                      : <Money value={Number(deal.amount)} />}
+                  </span>
                 </p>
               )}
             </header>
 
-            <article className="card">
-              {deal.amount !== null && (
-                <div className="flex items-baseline justify-between gap-4 border-b border-line pb-4">
-                  <span className="text-body text-ink-soft">{c.amount}</span>
-                  <span className="font-display text-figure font-light tabular-nums text-ink">
-                    <Money value={Number(deal.amount)} />
-                  </span>
-                </div>
-              )}
+            <article id="terms" className="card mt-5">
 
               {/* The terms as they were written, line breaks and all. This is
                   the text the fingerprint is taken of, so what is shown here is
                   exactly what is being agreed to. */}
-              <p className="mt-4 whitespace-pre-line text-lead leading-[1.9] text-ink">
+              <p className="whitespace-pre-line text-lead leading-[1.9] text-ink">
                 {deal.body}
               </p>
             </article>
 
             {deal.status === 'signed' ? (
-              <div className="panel mt-5 text-center">
+              <div className="panel relative mt-5 overflow-hidden text-center">
+                <Petals />
+                <div aria-hidden className="pop-in mx-auto mb-3 grid size-14 place-items-center rounded-full bg-tone-rubine text-tone-rubine-on">
+                  <svg className="draw-check" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12l5 5 9-10" /></svg>
+                </div>
                 <p className="eyebrow text-ok">{c.doneTitle}</p>
                 <p className="mt-2 text-lead text-ink">
                   {c.doneBy} {deal.signed_name}
