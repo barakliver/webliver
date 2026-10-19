@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { a11yFor, privacyFor, termsFor } from '@/content/ui';
+import { a11yFor, privacyFor, siteLinksFor, termsFor } from '@/content/ui';
+import { publicEnv } from '@/lib/env';
 import type { Locale } from '@/lib/locale';
 
 /**
@@ -20,6 +21,7 @@ export function SiteFooter({ brand, note, locale }: {
   const a11y = a11yFor(locale);
   const privacy = privacyFor(locale);
   const terms = termsFor(locale);
+  const links = siteLinksFor(locale);
 
   return (
     <footer className="border-t border-line py-10">
@@ -37,6 +39,13 @@ export function SiteFooter({ brand, note, locale }: {
         <Link href="/terms" className="underline underline-offset-4 transition-colors hover:text-accent">
           {terms.title}
         </Link>
+        <span aria-hidden>·</span>
+        {/* The game lives on its own domain and this is the one door to it from
+            the business. An ordinary link and not a new tab: it is a sibling,
+            not an outside reference. */}
+        <a href={publicEnv.gameUrl} title={links.gameTitle} className="underline underline-offset-4 transition-colors hover:text-accent">
+          {links.game}
+        </a>
       </div>
     </footer>
   );

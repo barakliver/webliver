@@ -202,7 +202,16 @@ MYIP="$(curl -fsS --max-time 10 https://api.ipify.org 2>/dev/null || true)"
 HOSTIP="$(getent hosts "$HOST" 2>/dev/null | awk '{print $1; exit}' || true)"
 PROXIED=0
 
-if [ -n "$HOSTIP" ] && [ "$HOSTIP" = "$MYIP" ]; then
+# Once scripts/go-rebrand.sh has run, Caddy is described by one file that holds
+# every name this business answers on, and this script must not write the
+# single-host block it used to. If it did, the next release would put the old
+# hostname back beside the new map and Caddy would refuse a config that claims
+# one address twice.
+if [ -e /etc/liver-next.rebrand ]; then
+  echo "→ Caddy is managed by scripts/go-rebrand.sh - leaving it alone"
+  HOST="$(cat /etc/liver-next.rebrand)"
+  PROXIED=1
+elif [ -n "$HOSTIP" ] && [ "$HOSTIP" = "$MYIP" ]; then
   SNIPPET=/etc/caddy/liver-next.caddy
   cat > "$SNIPPET" <<EOF
 $HOST {

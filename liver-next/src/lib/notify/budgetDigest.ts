@@ -62,7 +62,7 @@ export async function sendBudgetDigests(sb: SupabaseClient, today: string): Prom
     const html = budgetDigestEmail({
       eventName: String(c.display_name ?? ''),
       week: w,
-      url: `${publicEnv.siteUrl}/app/clients/${c.id}?tab=money`,
+      url: `${publicEnv.appUrl}/app/clients/${c.id}?tab=money`,
       brand: producer?.brand_name ? { name: String(producer.brand_name) } : undefined,
     });
 

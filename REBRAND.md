@@ -1,5 +1,102 @@
 # Liver Productions → Before I Do
 
+## The guidelines, as of 19 October 2026
+
+The map he sent is the standard. Everything below the line is what was found
+while it was being worked out; this part is what the code, the scripts and the
+next person are held to.
+
+```
+beforeidoevent.co.il   ─301─┐
+beforeidoevents.co.il  ─301─┼──→  beforeidoevent.com        the business, he + en
+liverproductions.com   ─301─┘           │                    (old, 301, except /api and /feed)
+                                        ├──→  app.beforeidoevent.com   the platform: sign in
+                                        └──→  beforeido.co.il          the game: one box
+```
+
+1. **Three kinds of name, and each does one thing.** The two `.co.il` names and
+   `liverproductions.com` only redirect. `beforeidoevent.com` is the business and
+   serves everything a stranger or a guest opens: the site, the shop, the legal
+   pages, and every link already sitting in a phone (`/rsvp`, `/w`, `/sign`,
+   `/prep`, `/feed`). `app.beforeidoevent.com` is the platform: `/login`, `/app`
+   (the producer's console and the couple's portal) and `/auth`. The apex does not
+   serve those three; it sends them to `app.` with the path and query kept
+   (`consoleRedirect` in `lib/tenant.ts`, tested), and does nothing until
+   `NEXT_PUBLIC_ROOT_DOMAIN` is set.
+2. **One session, on the app host.** Every cookie here is host-only. This takes
+   option A below, which was the recommendation and which asks for no code at all:
+   the session lives on `app.` and nowhere else, `__Host-` stays intact, and a
+   producer's own subdomain can never read a platform session. The cost is that
+   the shopfront cannot greet somebody by name. If he wants B, it is a decision
+   and a change to every auth cookie, not a setting.
+3. **The old name keeps answering `/api/*` and `/feed/*`, for real.** A redirect is
+   followed by a person in a browser; a webhook from Meta, Google, Twilio or Resend
+   is a POST from somebody's infrastructure that is not obliged to follow one, and
+   a subscribed calendar is re-read for ever by a client that may not either. Both
+   are addresses pasted into places this business cannot see inside. Nothing may
+   turn them into redirects until every one has been re-pasted, and only the person
+   who owns each account can say so. `rebrandCaddy.test.ts` fails if the exception
+   goes.
+4. **Two addresses, not one.** `publicEnv.siteUrl` is the business and is what a
+   guest, a supplier or a signer is sent to. `publicEnv.appUrl` is the platform and
+   is what anything that lands in the console is sent to: the Google calendar
+   return address, the lead alert on a producer's phone, the invitation and the
+   crew's sign-in. `appUrl` is `app.` + the root, and only when the site address
+   *is* the root, so it equals `siteUrl` everywhere else and nothing moves until
+   the root is set. A link that names the wrong one lands somebody on a host that
+   has never heard of them.
+5. **`UID_HOST` stays `liverproductions.com`, for ever.** It names no website.
+6. **`beforeido.co.il` is the game's own site and is never touched by this
+   repository or these scripts.** It is on its own DNS and its own host. The
+   business links to it from the footer (`NEXT_PUBLIC_GAME_URL`), and it is its
+   owner's to link back. The in-app `/play/<token>` is unchanged.
+7. **"ברק ליור" is not the brand.** It is his name and stays as it is.
+
+### How it is switched on
+
+`scripts/go-rebrand.sh`, run on the droplet as root. It is safe to run any number
+of times, and `--status` only looks. Phase 1 adds the new names beside the old
+ones, so no address is claimed twice, and waits until they answer over HTTPS from
+outside. Phase 2 does not start until somebody has typed that the two dashboard
+settings are done (below); it then changes `NEXT_PUBLIC_SITE_URL`,
+`NEXT_PUBLIC_PLATFORM_HOST` and `NEXT_PUBLIC_ROOT_DOMAIN` together, rebuilds with
+the release agent paused, and turns the old names into redirects. Every Caddy
+change is validated before it is loaded and put back if it fails; the environment
+file is copied first; and `deploy-next.sh` leaves Caddy alone from then on
+(`/etc/liver-next.rebrand`), because it would otherwise write the old single-host
+block back on the next release.
+
+What it cannot do, and says so when it meets it:
+
+- **DNS.** Measured on 19 October 2026: `liverproductions.com` and
+  `app.liverproductions.com` point at the droplet; the two `.co.il` names point at
+  their registrar's parked page (`80.244.162.32`, name servers at sitesdepot, with
+  mail on the same names that must not be disturbed: only `@` and `www` move);
+  `beforeido.co.il` is on Vercel and is not ours to move.
+- **`beforeidoevent.com` is suspended.** Its name servers are
+  `failed-whois-verification.namecheap.com` and `verify-contact-details.namecheap.com`,
+  which is what Namecheap installs when the registrant has not confirmed the contact
+  email. Nothing added to it will be served until that is done, whatever the records
+  say; it is not a DNS fault and the script says so.
+- **Supabase** (Authentication, URL Configuration): Site URL and a redirect URL for
+  `https://app.beforeidoevent.com`. Without it Google sign-in from the new address
+  does not come back.
+- **Google Cloud** (the calendar OAuth client): the authorised redirect URI
+  `https://app.beforeidoevent.com/api/google/callback`. Without it calendar sync
+  stops.
+- **Resend**: verify `beforeidoevent.com`, then move `MAIL_FROM`. Until then mail
+  leaves from the old domain, which still works.
+- **Producers' subdomains** (`keren.beforeidoevent.com`) need a wildcard record and
+  a certificate per name, which Caddy cannot issue for a wildcard without a DNS
+  challenge. Separate, and nothing depends on it.
+
+Everybody signs in once more on the new address, installed apps are installed
+again, and push notifications are allowed again: all three belong to a host, and
+the host is new.
+
+---
+
+
 Written the night of 30 September 2026, from the diagram he sent. Everything
 here was read out of the code rather than remembered. Where something is a
 decision rather than a fact, it says so.

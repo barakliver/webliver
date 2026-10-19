@@ -246,7 +246,7 @@ export async function inviteCrewMember(
   if (!to) return { ok: false, error: 'צריך מייל כדי לשלוח הזמנה.' };
 
   const brand = account.producer.brandName || account.fullName || '';
-  const url = `${publicEnv.siteUrl}/login`;
+  const url = `${publicEnv.appUrl}/login`;
   const html = crewInviteEmail({ name: String(person.name ?? ''), brand, signInUrl: url });
 
   const sent = await sendMail({

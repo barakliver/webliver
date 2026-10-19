@@ -61,7 +61,7 @@ export function leadAlertText(l: AlertLead, kind: 'new' | 'returning'): string {
     `🔔 ${kind === 'returning' ? 'ליד חוזר' : 'ליד חדש'} · ${sourceLabel(l.source)}`,
     `${who} · ${when} · ${guests}`,
     [score, summary].filter(Boolean).join(' · '),
-    `👉 ${publicEnv.siteUrl}/app/leads/${l.id}`,
+    `👉 ${publicEnv.appUrl}/app/leads/${l.id}`,
   ].filter(Boolean).join('\n');
 }
 

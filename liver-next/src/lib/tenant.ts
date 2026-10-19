@@ -132,3 +132,34 @@ export function surfaceOf(rawHost: string | null | undefined, root = platformRoo
   if (!host || !root) return 'site';
   return host === `${APP_LABEL}.${root}` ? 'console' : 'site';
 }
+
+/* ── the business sends the platform to its own host ───────────────────────
+   Cookies here are host-only, so a session exists on one host. If somebody
+   signs in on the apex they hold a session the console cannot see, and the
+   console then asks them to sign in again; worse, a link or a bookmark to
+   `beforeidoevent.com/app/...` would show a sign-in that works and lands
+   nowhere. So the apex does not serve the platform at all. It sends the three
+   places a platform lives - the sign-in, the console and the couple's portal
+   (both under /app) and the auth callback - to the host that does, with the
+   path and the query kept, and serves everything else itself.
+
+   Only the apex, and only when a root is configured. A producer's own
+   subdomain or domain is a white label and keeps its own sign-in on its own
+   host, which is the point of it being a white label. */
+
+/** The address a request for the platform should have been made to, or null
+ *  when this host is not the one that should hand it on. */
+export function consoleRedirect(
+  rawHost: string | null | undefined,
+  pathname: string,
+  search = '',
+  root = platformRoot(),
+): string | null {
+  if (!root) return null;
+  if (cleanHost(rawHost) !== root) return null;
+  const platform = pathname === '/login'
+    || pathname === '/app' || pathname.startsWith('/app/')
+    || pathname === '/auth' || pathname.startsWith('/auth/');
+  if (!platform) return null;
+  return `https://${APP_LABEL}.${root}${pathname}${search}`;
+}

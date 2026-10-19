@@ -27,7 +27,8 @@ export type InviteLink =
 /** Where the link lands. The address rides along so a spent link can send
  *  somebody to the sign-in screen with it already filled in. */
 function callbackFor(email: string, next: string): string {
-  const site = publicEnv.siteUrl.replace(/\/+$/, '');
+  /* The console's host: the session this link opens is written there. */
+  const site = publicEnv.appUrl.replace(/\/+$/, '');
   const to = new URL(`${site}/auth/callback`);
   to.searchParams.set('email', email);
   if (next !== '/app') to.searchParams.set('next', next);
@@ -35,7 +36,7 @@ function callbackFor(email: string, next: string): string {
 }
 
 export async function inviteLinkFor(email: string, next = '/app/portal'): Promise<InviteLink> {
-  const site = publicEnv.siteUrl.replace(/\/+$/, '');
+  const site = publicEnv.appUrl.replace(/\/+$/, '');
   const plain = `${site}/login?email=${encodeURIComponent(email)}`;
 
   if (!optional('SUPABASE_SERVICE_ROLE_KEY')) {

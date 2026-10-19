@@ -47,7 +47,7 @@ export async function sendVendorDigests(sb: SupabaseClient, today: string): Prom
       to = String(prof?.email ?? '').trim();
     }
 
-    const url = `${publicEnv.siteUrl}/app/clients/${c.id}?tab=crew`;
+    const url = `${publicEnv.appUrl}/app/clients/${c.id}?tab=crew`;
     if (to) {
       const r = await sendMail({
         to,

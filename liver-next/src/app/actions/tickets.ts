@@ -80,7 +80,7 @@ export async function fileTicket(input: {
       role: account.role,
       producer: account.producer?.brandName ?? '',
       screenshotUrl,
-      consoleUrl: `${publicEnv.siteUrl}/app/admin/tickets`,
+      consoleUrl: `${publicEnv.appUrl}/app/admin/tickets`,
     }),
   });
   if (!mail.sent) console.error('[tickets] alert not sent', { id: row.id, reason: mail.error });

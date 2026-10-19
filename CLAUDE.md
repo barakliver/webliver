@@ -356,6 +356,27 @@ that has happened once.
   impression of one. A test walks every id to its file and back and asserts
   the three undealt ones are undealt, so a card without a picture fails the
   build rather than drawing a broken image inside his frame.
+- **The business is `beforeidoevent.com`, the platform is
+  `app.beforeidoevent.com`, and the map he drew is the standard.** The two
+  `.co.il` names and `liverproductions.com` redirect; the game,
+  `beforeido.co.il`, is its own site and is not touched from here. The full
+  rules are the top of `REBRAND.md` and the short version is this. The apex serves
+  everything a stranger or a guest opens and sends `/login`, `/app` and `/auth` to
+  the app host (`consoleRedirect`); the session lives on the app host alone,
+  because every cookie is host-only and that is a property worth keeping. There
+  are two addresses in `publicEnv` and a link must name the right one: `siteUrl`
+  for what a guest opens, `appUrl` for anything that lands in the console - the
+  Google calendar return address, lead alerts, invitations. The old name keeps
+  answering `/api/*` and `/feed/*` for real, because those are webhooks and
+  subscribed calendars pasted into places nobody here can see inside, and a
+  redirect turns them into silence; a test fails if that exception goes.
+  `UID_HOST` never moves. It is switched on by `scripts/go-rebrand.sh` on the
+  droplet, in two phases, validated and reversible, and after it `deploy-next.sh`
+  leaves Caddy alone (`/etc/liver-next.rebrand`) or the next release would write
+  the old host back beside the new map. Two things are not in the repository and
+  are why it is not done: the domain `beforeidoevent.com` is suspended at its
+  registrar until the contact email is confirmed (its name servers say so), and
+  Supabase and Google Cloud each need the new app address added.
 - **Every row in the phone's "more" sheet did nothing, and the cause was the
   hook that was written to fix the sheets.** 3.18.1. `useOverlay` pushes one
   history entry when a panel opens so that Back closes the panel and not the

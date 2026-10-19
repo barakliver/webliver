@@ -14,7 +14,7 @@ export const dynamic = 'force-dynamic';
 
 export async function GET() {
   const account = await currentAccount();
-  if (!account?.producer) return NextResponse.redirect(`${publicEnv.siteUrl}/app/calendar?google=denied`);
-  if (!googleConfigured()) return NextResponse.redirect(`${publicEnv.siteUrl}/app/calendar?google=unconfigured`);
+  if (!account?.producer) return NextResponse.redirect(`${publicEnv.appUrl}/app/calendar?google=denied`);
+  if (!googleConfigured()) return NextResponse.redirect(`${publicEnv.appUrl}/app/calendar?google=unconfigured`);
   return NextResponse.redirect(authUrl(makeState(account.producer.id)));
 }

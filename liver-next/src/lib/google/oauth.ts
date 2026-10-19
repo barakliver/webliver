@@ -25,7 +25,10 @@ const SCOPES = [
 
 export const googleConfigured = () => !!optional('GOOGLE_CLIENT_ID') && !!optional('GOOGLE_CLIENT_SECRET');
 
-export const redirectUri = () => `${publicEnv.siteUrl}/api/google/callback`;
+/* On the console's host, which is where the producer's session is. Google
+   returns them to exactly this address, so it must also be the one registered
+   in the Google Cloud console. */
+export const redirectUri = () => `${publicEnv.appUrl}/api/google/callback`;
 
 /* Signed with the cron key, which is already a server-only secret that
    exists on every deployment where the sweep runs. */

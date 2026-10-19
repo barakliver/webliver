@@ -5180,3 +5180,10 @@ export const circleCopy = {
 export const readingCopy = {
   minutes: 'כ-{n} דקות קריאה',
 } as const;
+
+/* The links between the two sites. The business and the game are different
+   domains on purpose, and each says so to the other. */
+export const siteLinksCopy = {
+  game: 'Before I Do · משחק הקלפים',
+  gameTitle: 'משחק הקלפים של הזוג, באתר משלו',
+} as const;

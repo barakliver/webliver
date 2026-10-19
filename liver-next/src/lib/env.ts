@@ -81,8 +81,42 @@ function resolveSiteUrl(): string {
   return raw;
 }
 
+/**
+ * Where the console lives, which is not where the business does.
+ *
+ * `beforeidoevent.com` is the shopfront and `app.beforeidoevent.com` is the
+ * platform, and the two are different hosts for a reason that is not cosmetic:
+ * every cookie in this product is host-only, so a session exists on exactly one
+ * of them. A link that sends somebody into the console - the address Google
+ * returns a calendar connection to, the lead alert on a producer's phone, the
+ * sign-in a crew member is mailed - has to name the host the session is on, or
+ * it lands on a host that has never heard of them.
+ *
+ * Derived rather than configured: it is `app.` in front of the root domain,
+ * and only when the site address *is* that root. Anywhere else (the old
+ * address, a staging box, a laptop, a deployment with no root set) it is the
+ * site address, so nothing moves until the root is set.
+ */
+function resolveAppUrl(site: string): string {
+  const root = (process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? '').trim().toLowerCase().replace(/^www\./, '');
+  if (!root) return site;
+  try {
+    return new URL(site).hostname === root ? `https://app.${root}` : site;
+  } catch {
+    return site;
+  }
+}
+
+const SITE_URL = resolveSiteUrl();
+
 export const publicEnv = {
-  siteUrl:   resolveSiteUrl(),
+  siteUrl:   SITE_URL,
+  /** The console's own address: see `resolveAppUrl`. */
+  appUrl:    resolveAppUrl(SITE_URL),
+  /** The game's own domain. A different registrable domain on purpose, so
+   *  nothing is shared with it and nothing needs to be; the business links to
+   *  it and it links back. */
+  gameUrl:   (process.env.NEXT_PUBLIC_GAME_URL || 'https://beforeido.co.il').replace(/\/+$/, ''),
   /* His number, in the international form wa.me needs.
      It has a real default for the same reason the booking link does: it is a
      property of the business rather than of a deployment, and the empty

@@ -91,6 +91,11 @@ const nextConfig = {
          "Missing 'origin' header from a forwarded Server Actions request" and
          refuses. Naming the real hosts is what that check is for. */
       allowedOrigins: [
+        'beforeidoevent.com',
+        'www.beforeidoevent.com',
+        'app.beforeidoevent.com',
+        /* The old address keeps answering the paths that cannot be redirected,
+           and a server action posted from it must still be accepted. */
         'liverproductions.com',
         'www.liverproductions.com',
       ],

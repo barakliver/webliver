@@ -91,7 +91,7 @@ export async function sendMorningDigest(sb: SupabaseClient, now: Date = new Date
         ? `• היום: ${todays.map((l) => `${l.full_name}: ${l.next_action} (${timeFmt.format(new Date(l.next_action_at as string))})`).join(' · ')}`
         : '',
       box,
-      `👉 ${publicEnv.siteUrl}/app/leads`,
+      `👉 ${publicEnv.appUrl}/app/leads`,
     ].filter(Boolean);
     const text = lines.join('\n');
 
@@ -148,7 +148,7 @@ export async function sendLeadSla(sb: SupabaseClient, now: Date = new Date()): P
     const href = `/app/leads/${l.id}`;
 
     if (age > DAY && !done.has(`${l.id}:24h`)) {
-      const r = await sendWhatsApp(`⏰ ${l.full_name} מחכים יותר מיממה בלי מענה\n👉 ${publicEnv.siteUrl}${href}`);
+      const r = await sendWhatsApp(`⏰ ${l.full_name} מחכים יותר מיממה בלי מענה\n👉 ${publicEnv.appUrl}${href}`);
       if (r.error && !/not configured/.test(r.error)) out.errors.push(`${l.id}: ${r.error}`);
       await sb.from('lead_events').insert({
         lead_id: l.id, type: 'notification_sent', channel: 'system',

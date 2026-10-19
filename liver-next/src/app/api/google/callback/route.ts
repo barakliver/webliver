@@ -15,7 +15,7 @@ import { syncProducer } from '@/lib/google/sync';
  */
 export const dynamic = 'force-dynamic';
 
-const back = (word: string) => NextResponse.redirect(`${publicEnv.siteUrl}/app/calendar?google=${word}`);
+const back = (word: string) => NextResponse.redirect(`${publicEnv.appUrl}/app/calendar?google=${word}`);
 
 export async function GET(req: Request) {
   const url = new URL(req.url);

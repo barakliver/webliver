@@ -1,10 +1,10 @@
 import type { Locale } from '../lib/locale.ts';
 import {
-  auth, privacyCopy, termsCopy, eventOsCopy, a11yCopy, installCopy, storeCopy, rsvpCopy, readingCopy, budgetSimCopy,
+  auth, privacyCopy, termsCopy, eventOsCopy, a11yCopy, installCopy, storeCopy, rsvpCopy, readingCopy, siteLinksCopy, budgetSimCopy,
   conciergeCopy, guestSiteCopy, producerEntryCopy, EVENT_KINDS, notFoundCopy, siteErrorCopy,
 } from './site.ts';
 import {
-  authEn, privacyCopyEn, termsCopyEn, eventOsCopyEn, a11yCopyEn, installCopyEn, storeCopyEn, rsvpCopyEn, readingCopyEn,
+  authEn, privacyCopyEn, termsCopyEn, eventOsCopyEn, a11yCopyEn, installCopyEn, storeCopyEn, rsvpCopyEn, readingCopyEn, siteLinksCopyEn,
   budgetSimCopyEn, conciergeCopyEn, guestSiteCopyEn, producerEntryCopyEn, EVENT_KINDS_EN,
   notFoundCopyEn, siteErrorCopyEn,
 } from './site.en.ts';
@@ -69,6 +69,7 @@ export type ShopCopy = Wide<Pick<typeof storeCopy, (typeof SHOP_KEYS)[number]>>;
 const shopHe = Object.fromEntries(SHOP_KEYS.map((k) => [k, storeCopy[k]])) as ShopCopy;
 export type RsvpCopy = Wide<typeof rsvpCopy>;
 export type ReadingCopy = Wide<typeof readingCopy>;
+export type SiteLinksCopy = Wide<typeof siteLinksCopy>;
 export type GuestSiteCopy = Wide<typeof guestSiteCopy>;
 export type ProducerEntryCopy = Wide<typeof producerEntryCopy>;
 export type BudgetSimCopy = Wide<typeof budgetSimCopy>;
@@ -85,6 +86,7 @@ export const a11yFor = (l: Locale): A11yCopy => (l === 'en' ? a11yCopyEn : a11yC
 export const installFor = (l: Locale): InstallCopy => (l === 'en' ? installCopyEn : installCopy);
 export const storeFor = (l: Locale): ShopCopy => (l === 'en' ? storeCopyEn : shopHe);
 export const readingFor = (l: Locale): ReadingCopy => (l === 'en' ? readingCopyEn : readingCopy);
+export const siteLinksFor = (l: Locale): SiteLinksCopy => (l === 'en' ? siteLinksCopyEn : siteLinksCopy);
 export const rsvpFor = (l: Locale): RsvpCopy => (l === 'en' ? rsvpCopyEn : rsvpCopy);
 export const guestSiteFor = (l: Locale): GuestSiteCopy => (l === 'en' ? guestSiteCopyEn : guestSiteCopy);
 export const producerEntryFor = (l: Locale): ProducerEntryCopy => (l === 'en' ? producerEntryCopyEn : producerEntryCopy);

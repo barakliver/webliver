@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { tenantOf, cleanHost, isLocal, lookupKey, platformRoot, surfaceOf, APP_LABEL } from '../tenant.ts';
+import { tenantOf, cleanHost, isLocal, lookupKey, platformRoot, surfaceOf, consoleRedirect, APP_LABEL } from '../tenant.ts';
 
 const ROOT = 'liverproductions.com';
 
@@ -95,4 +95,38 @@ test('the console label can never be taken by a producer', () => {
      their branding over the platform's own console. */
   assert.deepEqual(tenantOf(`${APP_LABEL}.${ROOT}`, ROOT), { kind: 'platform' });
   assert.equal(surfaceOf(`${APP_LABEL}.${ROOT}`, ROOT), 'console');
+});
+
+/* ── the apex hands the platform to its own host ─────────────────────────── */
+
+const NEW = 'beforeidoevent.com';
+
+test('the apex sends the sign-in, the console and the callback to the app host', () => {
+  assert.equal(consoleRedirect(NEW, '/login', '?next=%2Fapp', NEW), 'https://app.beforeidoevent.com/login?next=%2Fapp');
+  assert.equal(consoleRedirect('www.' + NEW, '/app', '', NEW), 'https://app.beforeidoevent.com/app');
+  assert.equal(consoleRedirect(NEW, '/app/clients/abc', '?tab=money', NEW), 'https://app.beforeidoevent.com/app/clients/abc?tab=money');
+  assert.equal(consoleRedirect(NEW, '/auth/callback', '?code=x', NEW), 'https://app.beforeidoevent.com/auth/callback?code=x');
+});
+
+test('everything the business itself serves stays on the apex', () => {
+  /* The guests' page, the reply, the contract, the supplier sheet and the
+     calendar feeds are all links already sitting in somebody's phone. */
+  for (const path of ['/', '/store', '/privacy', '/rsvp/abc', '/w/abc', '/sign/abc', '/prep/abc', '/feed/abc.ics',
+    '/api/leads/webhook', '/api/version', '/play/abc', '/apple', '/application', '/login-help']) {
+    assert.equal(consoleRedirect(NEW, path, '', NEW), null, path);
+  }
+});
+
+test('only the apex does it', () => {
+  /* The app host is already there, a producer's subdomain is a white label that
+     keeps its own sign-in, and the old address is not the apex of anything. */
+  assert.equal(consoleRedirect('app.' + NEW, '/app', '', NEW), null);
+  assert.equal(consoleRedirect('keren.' + NEW, '/login', '', NEW), null);
+  assert.equal(consoleRedirect('events.keren-weddings.com', '/login', '', NEW), null);
+  assert.equal(consoleRedirect('liverproductions.com', '/login', '', NEW), null);
+});
+
+test('with no root configured it does nothing, which is how it ships', () => {
+  assert.equal(consoleRedirect('liverproductions.com', '/app', '', ''), null);
+  assert.equal(consoleRedirect(null, '/app', '', ''), null);
 });

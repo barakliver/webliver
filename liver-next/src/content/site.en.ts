@@ -1,6 +1,6 @@
 import type { SiteCopy } from './site.ts';
 import type {
-  AuthCopy, PrivacyCopy, TermsCopy, A11yCopy, InstallCopy, ShopCopy, RsvpCopy, ReadingCopy,
+  AuthCopy, PrivacyCopy, TermsCopy, A11yCopy, InstallCopy, ShopCopy, RsvpCopy, ReadingCopy, SiteLinksCopy,
   GuestSiteCopy, ProducerEntryCopy, BudgetSimCopy, ConciergeCopy, EventKinds,
   NotFoundCopy, SiteErrorCopy, EventOsCopy } from './ui.ts';
 
@@ -805,4 +805,9 @@ export const eventOsCopyEn: EventOsCopy = {
 
 export const readingCopyEn: ReadingCopy = {
   minutes: 'About {n} min read',
+};
+
+export const siteLinksCopyEn: SiteLinksCopy = {
+  game: 'Before I Do · the card game',
+  gameTitle: 'The couple\'s card game, on its own site',
 };

@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
-import { tenantOf, lookupKey, surfaceOf } from '@/lib/tenant';
+import { tenantOf, lookupKey, surfaceOf, consoleRedirect } from '@/lib/tenant';
 
 type CookieToSet = { name: string; value: string; options?: CookieOptions };
 
@@ -27,6 +27,11 @@ export default async function proxy(request: NextRequest) {
   const headers = new Headers(request.headers);
   headers.delete(TENANT_HEADER);
   headers.delete(TENANT_KIND_HEADER);
+
+  /* The apex does not serve the platform: see `consoleRedirect`. A 308 keeps
+     the method, so a form that somehow posted here is not turned into a GET. */
+  const away = consoleRedirect(request.headers.get('host'), request.nextUrl.pathname, request.nextUrl.search);
+  if (away) return NextResponse.redirect(away, 308);
 
   const tenant = tenantOf(request.headers.get('host'));
   const tenantKey = lookupKey(tenant);
