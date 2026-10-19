@@ -103,7 +103,16 @@ export function useOverlay(
       /* Closed by Escape, the backdrop or a save rather than by Back, so the
          entry we pushed is still on the stack and has to come off. Closed by
          Back and the browser already took it. */
-      if (ours) { try { history.back(); } catch { /* nothing to go back to */ } }
+      /* But only while the entry on top is still ours. A link inside the panel
+         navigates, the screen changes under it, and the panel closes because
+         the path moved: by then the top of the stack is the page just opened,
+         and going back would undo the very press that closed us. That was
+         every row in the phone's "more" sheet, which did nothing at all.
+         Next's own history patch copies what it needs onto the state object
+         and keeps the rest, so the mark survives until somebody leaves. */
+      if (ours && (history.state as { overlay?: boolean } | null)?.overlay === true) {
+        try { history.back(); } catch { /* nothing to go back to */ }
+      }
       document.body.style.overflow = overflow;
       window.scrollTo(0, scrollY);
       (opener as HTMLElement | null)?.focus?.();

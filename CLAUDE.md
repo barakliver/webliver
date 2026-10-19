@@ -356,6 +356,21 @@ that has happened once.
   impression of one. A test walks every id to its file and back and asserts
   the three undealt ones are undealt, so a card without a picture fails the
   build rather than drawing a broken image inside his frame.
+- **Every row in the phone's "more" sheet did nothing, and the cause was the
+  hook that was written to fix the sheets.** 3.18.1. `useOverlay` pushes one
+  history entry when a panel opens so that Back closes the panel and not the
+  screen, and pops it when the panel closes. A link inside the panel navigates,
+  the path changes, the panel closes because the path moved - and the pop then
+  went back past the page that had just opened, so the press was undone before
+  anybody saw it. It only showed on a real phone, because nothing in the suite
+  presses a link inside an overlay and then reads the address. The pop now
+  happens only while the entry on top is still ours (`history.state.overlay`,
+  which Next's own history patch preserves), so a close that was caused by a
+  navigation leaves the stack alone. One cost, accepted: after following a link
+  out of a panel there is one extra Back press that lands on the same page
+  with the panel shut, because an entry cannot be removed from the middle of
+  the stack. Every overlay in the product goes through this hook, so every
+  link inside any of them was affected the same way.
 - **Group 12, the doors, on the same terms: movement, and one thing each
   page knows that it did not use before.** 3.18. **The sign-in page** says
   what happens after the button, in three beats (Google, say what you are here
