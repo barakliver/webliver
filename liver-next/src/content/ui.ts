@@ -1,4 +1,6 @@
 import type { Locale } from '../lib/locale.ts';
+import { quoteCopy } from './quote.ts';
+import { quoteCopyEn } from './quote.en.ts';
 import {
   auth, privacyCopy, termsCopy, eventOsCopy, a11yCopy, installCopy, storeCopy, rsvpCopy, readingCopy, siteLinksCopy, budgetSimCopy,
   conciergeCopy, guestSiteCopy, producerEntryCopy, EVENT_KINDS, notFoundCopy, siteErrorCopy,
@@ -68,6 +70,7 @@ export type ShopCopy = Wide<Pick<typeof storeCopy, (typeof SHOP_KEYS)[number]>>;
    serialised into the page of anybody browsing the shop. */
 const shopHe = Object.fromEntries(SHOP_KEYS.map((k) => [k, storeCopy[k]])) as ShopCopy;
 export type RsvpCopy = Wide<typeof rsvpCopy>;
+export type QuoteCopy = Wide<typeof quoteCopy>;
 export type ReadingCopy = Wide<typeof readingCopy>;
 export type SiteLinksCopy = Wide<typeof siteLinksCopy>;
 export type GuestSiteCopy = Wide<typeof guestSiteCopy>;
@@ -87,6 +90,7 @@ export const installFor = (l: Locale): InstallCopy => (l === 'en' ? installCopyE
 export const storeFor = (l: Locale): ShopCopy => (l === 'en' ? storeCopyEn : shopHe);
 export const readingFor = (l: Locale): ReadingCopy => (l === 'en' ? readingCopyEn : readingCopy);
 export const siteLinksFor = (l: Locale): SiteLinksCopy => (l === 'en' ? siteLinksCopyEn : siteLinksCopy);
+export const quoteFor = (l: Locale): QuoteCopy => (l === 'en' ? quoteCopyEn : quoteCopy);
 export const rsvpFor = (l: Locale): RsvpCopy => (l === 'en' ? rsvpCopyEn : rsvpCopy);
 export const guestSiteFor = (l: Locale): GuestSiteCopy => (l === 'en' ? guestSiteCopyEn : guestSiteCopy);
 export const producerEntryFor = (l: Locale): ProducerEntryCopy => (l === 'en' ? producerEntryCopyEn : producerEntryCopy);

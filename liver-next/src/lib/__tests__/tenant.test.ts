@@ -111,7 +111,7 @@ test('the apex sends the sign-in, the console and the callback to the app host',
 test('everything the business itself serves stays on the apex', () => {
   /* The guests' page, the reply, the contract, the supplier sheet and the
      calendar feeds are all links already sitting in somebody's phone. */
-  for (const path of ['/', '/store', '/privacy', '/rsvp/abc', '/w/abc', '/sign/abc', '/prep/abc', '/feed/abc.ics',
+  for (const path of ['/', '/store', '/privacy', '/rsvp/abc', '/w/abc', '/sign/abc', '/q/abc', '/prep/abc', '/feed/abc.ics',
     '/api/leads/webhook', '/api/version', '/play/abc', '/apple', '/application', '/login-help']) {
     assert.equal(consoleRedirect(NEW, path, '', NEW), null, path);
   }

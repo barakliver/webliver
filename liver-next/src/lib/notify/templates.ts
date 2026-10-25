@@ -4,6 +4,7 @@
 import { site, PROMISE } from '../../content/site.ts';
 import { siteEn } from '../../content/site.en.ts';
 import type { Locale } from '../locale.ts';
+import { esc } from '../quote.ts';
 
 /**
  * The identity at the foot of a letter.
@@ -111,6 +112,41 @@ export function adminLeadWhatsApp(l: LeadPayload) {
     l.guest_count ? `אורחים: ${l.guest_count}` : '',
     l.message ? `הודעה: ${l.message}` : '',
   ].filter(Boolean).join('\n');
+}
+
+/** A price, put to an enquiry. The letter carries the amount, the date it holds
+ *  until, the producer's own words and one button; the two ways to pay are on
+ *  the page behind the button and not in the letter, because a bank account in
+ *  a mailbox is a bank account in every forward of it. Signs as the producer. */
+export function priceQuoteEmail(opts: {
+  name: string;
+  title: string;
+  amount: number;
+  validUntil: string | null;
+  note: string;
+  url: string;
+  brand?: MailBrand;
+}) {
+  const p = 'margin:0 0 10px;font-size:15px;line-height:1.8;color:#3c4657';
+  const money = new Intl.NumberFormat('he-IL', { style: 'currency', currency: 'ILS', maximumFractionDigits: 2 }).format(opts.amount);
+  const until = opts.validUntil
+    ? new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Jerusalem' })
+        .format(new Date(`${opts.validUntil}T12:00:00Z`))
+    : '';
+  const hello = opts.name ? `שלום ${esc(opts.name)},` : 'שלום,';
+  return shell(`
+    <h2 style="margin:0 0 10px;font-size:20px;color:#0b1220">${esc(opts.title || 'הצעת מחיר')}</h2>
+    <p style="${p}">${hello}</p>
+    <p style="${p}">מצורפת הצעת המחיר שלנו. בלחיצה על הכפתור אפשר לראות אותה, ולבחור איך נוח לכם לשלם: בקישור תשלום, או בהעברה בנקאית.</p>
+    <p style="margin:14px 0;font-size:28px;font-weight:300;color:#0b1220" dir="ltr">${esc(money)}</p>
+    ${until ? `<p style="${p}">ההצעה תקפה עד <span dir="ltr">${esc(until)}</span>.</p>` : ''}
+    ${opts.note ? `<p style="${p};white-space:pre-wrap">${esc(opts.note)}</p>` : ''}
+    <a href="${esc(opts.url)}"
+       style="display:inline-block;margin-top:12px;background:#6d3a3c;color:#fff;text-decoration:none;
+              border-radius:999px;padding:13px 28px;font-size:15px;font-weight:600">
+      לצפייה בהצעה
+    </a>
+    <p style="margin:16px 0 0;font-size:12.5px;color:#6b7686">אפשר גם פשוט להשיב למייל הזה.</p>`, opts.brand);
 }
 
 /** Sent to a couple the moment their address is authorised on a workspace.

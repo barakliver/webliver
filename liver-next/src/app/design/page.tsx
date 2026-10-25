@@ -203,6 +203,10 @@ import { CountUp } from '@/components/guest/CountUp';
 import { Petals } from '@/components/guest/Petals';
 import { LiveMoments } from '@/components/guest/LiveMoments';
 import { ZoomPhoto } from '@/components/ZoomPhoto';
+import { LeadQuotes } from '@/components/app/LeadQuotes';
+import { PayWays } from '@/components/app/PayWays';
+import { QuoteWays } from '@/app/q/[token]/QuoteWays';
+import { quoteFor } from '@/content/ui';
 import { ReadingProgress } from '@/components/ReadingProgress';
 import { OfflineWatcher } from '@/components/OfflineWatcher';
 import { VendorCaptureDemo } from './VendorCaptureDemo';
@@ -1906,6 +1910,49 @@ export default async function DesignPage() {
         <Panel name="SignLink" note="the link that lets one side sign without an account">
           <div className="max-w-md">
             <SignLink contractId="00000000-0000-4000-8000-0000000000c1" clientId={client} party="נועה" />
+          </div>
+        </Panel>
+
+        <Panel name="LeadQuotes" note="the price quote on an enquiry: ask the amount, send, and see what became of each one sent">
+          <div className="max-w-xl">
+            <LeadQuotes
+              leadId="00000000-0000-4000-8000-0000000000d1" defaultEmail="noa@example.com" ready
+              copy={quoteFor(locale)} locale={locale}
+              quotes={[
+                { id: 'q1', title: 'הצעת מחיר להפקת האירוע', amount: 48000, stage: 'chose_bank', created_at: '2026-10-20T09:00:00Z', valid_until: '2026-11-20', url: 'https://beforeidoevent.com/q/design', live: true },
+                { id: 'q2', title: '', amount: 36500.5, stage: 'paid', created_at: '2026-09-02T09:00:00Z', valid_until: null, url: 'https://beforeidoevent.com/q/design', live: false },
+                { id: 'q3', title: 'הצעה ראשונה', amount: 52000, stage: 'expired', created_at: '2026-08-02T09:00:00Z', valid_until: '2026-08-30', url: 'https://beforeidoevent.com/q/design', live: true },
+              ]}
+            />
+          </div>
+        </Panel>
+
+        <Panel name="LeadQuotesSetup" note="the same card before the producer has said where they are paid: no form, a way to the settings">
+          <div className="max-w-xl">
+            <LeadQuotes
+              leadId="00000000-0000-4000-8000-0000000000d2" defaultEmail="" ready={false}
+              copy={quoteFor(locale)} locale={locale} quotes={[]}
+            />
+          </div>
+        </Panel>
+
+        <Panel name="PayWays" note="where the producer is paid: a payment page link and a block of bank details">
+          <div className="max-w-xl">
+            <PayWays
+              copy={quoteFor(locale).settings}
+              paymentLink="https://pay.example.com/p/abc123" bankDetails={'בנק הפועלים (12)\nסניף 600\nחשבון 123456\nעל שם: ברק ליור'}
+            />
+          </div>
+        </Panel>
+
+        <Panel name="QuoteWays" note="what a couple sees under the amount: pay by link, or say they transferred">
+          <div className="max-w-2xl">
+            <QuoteWays
+              token="0123456789abcdef0123456789abcdef0123456789abcdef" copy={quoteFor(locale).page}
+              payLink="https://pay.example.com/p/abc123"
+              bankText={'בנק הפועלים (12)\nסניף 600\nחשבון 123456\nעל שם: ברק ליור'}
+              choice={null}
+            />
           </div>
         </Panel>
 

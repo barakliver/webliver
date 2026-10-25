@@ -362,6 +362,21 @@ async function main() {
     );
   }
 
+  /* A price quote opened from a link, the same rule a third time: a token
+     nobody minted must read exactly like a quote that was withdrawn. */
+  const quote = await page(
+    '/q/0000000000000000000000000000000000000000000000000000',
+    'a price quote link answers a stranger',
+    { expect: [200] },
+  );
+  if (quote) {
+    const html = await quote.text();
+    record(
+      html.includes('הקישור הזה כבר לא פעיל'),
+      'an unknown quote token looks exactly like a withdrawn one',
+    );
+  }
+
   /* The guests' page, this release's new public surface. Same rule as the
      signing link: a token nobody minted must read exactly like a page that is
      switched off, so the two are indistinguishable from outside. */

@@ -5,7 +5,7 @@ import { publicEnv } from '@/lib/env';
  * What a crawler may read, and where the map is.
  *
  * The disallow list is not an SEO preference, it is a privacy one. A guest's
- * reply link and a supplier's signing link are addresses that carry their own
+ * reply link and a supplier's signing link and a couple's price quote are addresses that carry their own
  * credential in the path, and the pages themselves already say `noindex`; this
  * stops a well behaved crawler ever fetching one. `/app` is behind sign in and
  * has nothing to rank, and `/auth` is a callback that would be followed into a
@@ -23,7 +23,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: [{
       userAgent: '*',
       allow: '/',
-      disallow: ['/app', '/api/', '/auth/', '/rsvp/', '/sign/', '/offline', '/design'],
+      disallow: ['/app', '/api/', '/auth/', '/rsvp/', '/sign/', '/q/', '/offline', '/design'],
     }],
     sitemap: `${publicEnv.siteUrl}/sitemap.xml`,
     host: publicEnv.siteUrl,

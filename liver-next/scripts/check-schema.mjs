@@ -1011,6 +1011,63 @@ try {
     say(kept === '2026-09-01/card/נועה' && /payments_method_known|violates check/.test(badMethod) && blank === '1',
       'a payment keeps the day, the payer and the method it was given, an unknown method is refused, and older rows read as not said',
       `kept:${kept} refused:${/violates check|payments_method_known/.test(badMethod)} blank:${blank}`);
+
+    // ── 8. a price quote, and the two ways to pay it ─────────────────────────
+    /* 0109. The producer is asked an amount and the couple gets a link. Four
+       things are proved against a real Postgres: a quote cannot be made before
+       there is somewhere to be paid, the two ways to pay are COPIED at send
+       time so a later change to the settings cannot move a transfer somebody
+       has not q_made yet, a stranger holding the token reads the amount and the
+       ways and nothing about the enquiry, and a withdrawn quote and a wrong
+       token answer identically. Another producer sees none of it. */
+    psql('one', `-c "insert into public.leads (full_name, email, producer_id) values ('נועה ואיתי','noa@example.com','${pidA}')"`);
+    const q_leadQ = ask('one', `select id from public.leads where producer_id='${pidA}' and email='noa@example.com'`);
+    const q_anon = (sql) => sh(
+      `${BIN}/psql -h ${dir} -U postgres -d one -tAq -v ON_ERROR_STOP=1 -c "set role anon" -c "${sql}" 2>&1`,
+    ).trim();
+    const q_attempt = (fn) => { try { return fn(); } catch (e) { return (e.stdout || e.message || '').toString(); } };
+
+    const q_noWays = q_attempt(() => asAccount(uidA, mailA, `select public.create_price_quote('${q_leadQ}', 48000, 'הצעה', '', null, '')`));
+    psql('one', `-c "update public.producers set payment_link='https://pay.example.com/p/one', bank_details=E'בנק 12\\nחשבון 123456' where id='${pidA}'"`);
+    const q_made = asAccount(uidA, mailA, `select public.create_price_quote('${q_leadQ}', 48000, 'הצעה', 'הערה', '2099-01-01', '')`).split('\n').pop();
+    const q_badAmount = q_attempt(() => asAccount(uidA, mailA, `select public.create_price_quote('${q_leadQ}', 0, 'x', '', null, '')`));
+    say(/לאן משלמים/.test(q_noWays) && /^[0-9a-f]{48}$/.test(q_made) && /סכום/.test(q_badAmount),
+      'a quote cannot be made before there is somewhere to be paid, nor for nothing, and a made one gets a long token',
+      `noWays:${/לאן משלמים/.test(q_noWays)} token:${q_made.length} zero:${/סכום/.test(q_badAmount)}`);
+
+    psql('one', `-c "update public.producers set payment_link='https://pay.example.com/p/two', bank_details='חשבון אחר' where id='${pidA}'"`);
+    const q_seen = q_anon(`select amount::text||'|'||pay_link||'|'||replace(bank_text, chr(10), '/')||'|'||to_name from public.price_quote_by_token('${q_made}')`);
+    say(q_seen === '48000.00|https://pay.example.com/p/one|בנק 12/חשבון 123456|נועה ואיתי',
+      'the ways to pay are copied when the quote is sent, so changing the settings later cannot move a transfer not yet made',
+      `got: ${q_seen}`);
+
+    const q_strangerRead = q_attempt(() => q_anon('select count(*) from public.price_quotes'));
+    say(/permission denied/.test(q_strangerRead) || q_strangerRead === '0', 'a stranger cannot read the table, only the function', q_strangerRead.split('\n')[0].slice(0, 60));
+
+    const q_opened = q_anon(`select public.price_quote_opened('${q_made}')`);
+    const q_chose = q_anon(`select public.price_quote_choose('${q_made}', 'bank')`);
+    const q_row = ask('one', `select choice||'/'||(viewed_at is not null)::text||'/'||(choice_at is not null)::text||'/'||status from public.price_quotes where token='${q_made}'`);
+    const q_rang = ask('one', `select count(*) from public.notifications n join public.producers p on p.owner_id = n.profile_id where p.id='${pidA}' and n.kind = 'payment' and n.href = '/app/leads/${q_leadQ}'`);
+    const q_badChoice = q_attempt(() => q_anon(`select public.price_quote_choose('${q_made}', 'cash')`));
+    const q_badToken = q_attempt(() => q_anon(`select public.price_quote_choose('${'0'.repeat(48)}', 'bank')`));
+    say(q_row === 'bank/true/true/sent' && q_rang === '1' && /does not exist/.test(q_badChoice) && /does not exist/.test(q_badToken),
+      'the couple opening and choosing is recorded and rings the producer once; an unknown choice or token is refused alike',
+      `row:${q_row} bell:${q_rang} choice:${/does not exist/.test(q_badChoice)} token:${/does not exist/.test(q_badToken)}`);
+
+    const q_otherSees = asAccount(uidB, mailB, 'select count(*) from public.price_quotes').split('\n').pop();
+    const q_otherMakes = q_attempt(() => asAccount(uidB, mailB, `select public.create_price_quote('${q_leadQ}', 1, 'x', '', null, '')`));
+    const q_otherPays = asAccount(uidB, mailB, `update public.price_quotes set status='paid' where token='${q_made}' returning id`);
+    say(q_otherSees === '0' && /does not exist/.test(q_otherMakes) && q_otherPays === '',
+      'another producer cannot see, make against or mark paid a quote that is not theirs',
+      `sees:${q_otherSees} makes:${/does not exist/.test(q_otherMakes)} marks:${q_otherPays === '' ? 'nothing' : q_otherPays}`);
+
+    asAccount(uidA, mailA, `update public.price_quotes set status='withdrawn' where token='${q_made}'`);
+    const q_gone = q_anon(`select count(*) from public.price_quote_by_token('${q_made}')`);
+    const q_never = q_anon(`select count(*) from public.price_quote_by_token('${'f'.repeat(48)}')`);
+    const q_afterWithdraw = q_attempt(() => q_anon(`select public.price_quote_choose('${q_made}', 'link')`));
+    say(q_gone === '0' && q_never === '0' && /does not exist/.test(q_afterWithdraw),
+      'a withdrawn quote answers exactly like one that never existed, and can no longer be chosen',
+      `withdrawn:${q_gone} never:${q_never}`);
   }
 } catch (e) {
   failures++;

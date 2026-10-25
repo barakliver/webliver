@@ -356,6 +356,40 @@ that has happened once.
   impression of one. A test walks every id to its file and back and asserts
   the three undealt ones are undealt, so a card without a picture fails the
   build rather than drawing a broken image inside his frame.
+- **A price quote is asked for, and goes out with two ways to pay.** 3.20,
+  migration 0109. He types an amount on the enquiry card and nothing else is
+  required; the system emails the couple a link, and the page behind it shows
+  the amount and two options, a payment page and a bank transfer. `price_quotes`
+  is born only through `create_price_quote()`, which has no insert policy beside
+  it on purpose: the function mints the token and **copies the two ways to pay
+  onto the quote**, so changing the account in settings next March cannot move a
+  transfer a couple has not yet made. It refuses a quote with nowhere to be paid
+  and one for nothing, in the database and not only on the screen. The payment
+  link is a URL he pastes from whichever clearing service he already has
+  (`producers.payment_link`, with `bank_details` beside it, edited in `PayWays`
+  at the foot of `/app/brand`): **the system holds no card number and learns
+  nothing by itself**, so "paid" is written only by him (`markQuotePaid`) and
+  what the couple presses is recorded as what they said - `choice` is `link` or
+  `bank`, and pressing rings his bell through `notify()`. If a clearing provider
+  is ever integrated, the place for it is a webhook that sets `paid_at`, not a
+  second way to say it. `/q/<token>` is the third link of the kind after
+  `/sign/` and `/rsvp/`, read by anon through `price_quote_by_token`, which
+  returns the amount, the ways and the producer's brand and nothing of the
+  enquiry; a withdrawn quote and a token nobody minted answer identically, and
+  `verify.mjs` checks it live. It stays on the apex (only `/login`, `/app` and
+  `/auth` go to the app host) and is disallowed in `robots.ts`. The letter
+  (`priceQuoteEmail`) carries the amount, the date and one button and **never
+  the bank details**: an account number in a mailbox is in every forward of it.
+  The rules are `lib/quote.ts`, pure and tested: `parseAmount` takes `48k` and
+  `48 אלף` and refuses blank, zero and words; `safeUrl` allows only http(s), and
+  runs again where the link is drawn because that is what protects the visitor;
+  `quoteStage` is a ladder read from the top, withdrawn first, paid before
+  expired, and the last day of validity still counts. Sending moves the lead to
+  `proposal_sent` only from new, contacted or meeting, never back from won or
+  lost, and writes the `proposal_sent` timeline entry that the table had a name
+  for and nothing ever wrote. Copy is `content/quote.ts` and `quote.en.ts`,
+  passed as props rather than through `useCopy`, because the couple's page has
+  no provider. Opened is "opened" and not "read": mail scanners open links too.
 - **The business is `beforeidoevent.com`, the platform is
   `app.beforeidoevent.com`, and the map he drew is the standard.** The two
   `.co.il` names and `liverproductions.com` redirect; the game,
