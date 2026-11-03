@@ -1,0 +1,132 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { tenantOf, cleanHost, isLocal, lookupKey, platformRoot, surfaceOf, consoleRedirect, APP_LABEL } from '../tenant.ts';
+
+const ROOT = 'liverproductions.com';
+
+test('a host header is not a hostname until the port and the www come off', () => {
+  assert.equal(cleanHost('WWW.Example.COM:3000'), 'example.com');
+  assert.equal(cleanHost(null), '');
+  assert.equal(cleanHost('  Example.com  '), 'example.com');
+});
+
+test('development is never a tenant', () => {
+  for (const h of ['localhost', '127.0.0.1', '[::1]', 'app.local', 'x.localhost', '10.0.0.4']) {
+    assert.equal(isLocal(h), true, h);
+    assert.deepEqual(tenantOf(h, ROOT), { kind: 'platform' });
+  }
+});
+
+test('the platform root and its www are the platform', () => {
+  assert.deepEqual(tenantOf(ROOT, ROOT), { kind: 'platform' });
+  assert.deepEqual(tenantOf('www.' + ROOT, ROOT), { kind: 'platform' });
+});
+
+test('a producer subdomain resolves by its label', () => {
+  assert.deepEqual(tenantOf('keren.' + ROOT, ROOT), { kind: 'slug', value: 'keren' });
+  assert.deepEqual(tenantOf('KEREN.' + ROOT + ':443', ROOT), { kind: 'slug', value: 'keren' });
+});
+
+test('the platform keeps its own subdomains', () => {
+  /* A producer whose slug is "app" must not answer on the platform's own app
+     subdomain, which is exactly the collision this list exists for. */
+  for (const label of ['app', 'api', 'admin', 'staging', 'preview']) {
+    assert.deepEqual(tenantOf(`${label}.${ROOT}`, ROOT), { kind: 'platform' }, label);
+  }
+});
+
+test('a typo with two labels is not routed to whoever owns the first one', () => {
+  assert.deepEqual(tenantOf('keren.old.' + ROOT, ROOT), { kind: 'platform' });
+});
+
+test("a producer's own domain resolves whole, not by its first label", () => {
+  assert.deepEqual(
+    tenantOf('events.keren-weddings.com', ROOT),
+    { kind: 'domain', value: 'events.keren-weddings.com' },
+  );
+  assert.deepEqual(
+    tenantOf('www.keren-weddings.com', ROOT),
+    { kind: 'domain', value: 'keren-weddings.com' },
+  );
+});
+
+test('with no root configured nothing is a tenant', () => {
+  /* Which is the state this ships in. Reading every host as a tenant before
+     anybody has set a root domain would send the platform's own site through
+     a lookup that returns nothing. */
+  assert.deepEqual(tenantOf('anything.example.com', ''), { kind: 'platform' });
+  assert.equal(platformRoot(undefined), '');
+  assert.equal(platformRoot('WWW.Example.com '), 'example.com');
+});
+
+test('the lookup key is the whole host for a domain and the label for a slug', () => {
+  assert.equal(lookupKey(tenantOf('keren.' + ROOT, ROOT)), 'keren');
+  assert.equal(lookupKey(tenantOf('events.keren-weddings.com', ROOT)), 'events.keren-weddings.com');
+  assert.equal(lookupKey({ kind: 'platform' }), null);
+});
+
+test('only the app subdomain is the console, and everything else is the site', () => {
+  assert.equal(surfaceOf(`app.${ROOT}`, ROOT), 'console');
+  assert.equal(surfaceOf(`APP.${ROOT}:443`, ROOT), 'console');
+
+  /* The shopfront, a producer's subdomain, a producer's own domain and a
+     laptop. A host this does not recognise serves what a stranger expects
+     rather than a sign-in screen. */
+  assert.equal(surfaceOf(ROOT, ROOT), 'site');
+  assert.equal(surfaceOf(`www.${ROOT}`, ROOT), 'site');
+  assert.equal(surfaceOf(`keren.${ROOT}`, ROOT), 'site');
+  assert.equal(surfaceOf('events.keren-weddings.com', ROOT), 'site');
+  assert.equal(surfaceOf('localhost:3000', ROOT), 'site');
+  assert.equal(surfaceOf(null, ROOT), 'site');
+
+  /* Two labels is a mistake and not the console, the same way it is not a
+     tenant. */
+  assert.equal(surfaceOf(`a.app.${ROOT}`, ROOT), 'site');
+
+  /* And with no root configured nothing is the console, which is what makes
+     this safe to ship before any DNS moves: the behaviour today is exactly
+     the behaviour yesterday until somebody sets the variable. */
+  assert.equal(surfaceOf(`app.${ROOT}`, ''), 'site');
+});
+
+test('the console label can never be taken by a producer', () => {
+  /* The two halves have to agree. If `app` ever left PLATFORM_LABELS, the
+     subdomain would resolve to a producer whose slug is "app" and serve
+     their branding over the platform's own console. */
+  assert.deepEqual(tenantOf(`${APP_LABEL}.${ROOT}`, ROOT), { kind: 'platform' });
+  assert.equal(surfaceOf(`${APP_LABEL}.${ROOT}`, ROOT), 'console');
+});
+
+/* ── the apex hands the platform to its own host ─────────────────────────── */
+
+const NEW = 'beforeidoevent.com';
+
+test('the apex sends the sign-in, the console and the callback to the app host', () => {
+  assert.equal(consoleRedirect(NEW, '/login', '?next=%2Fapp', NEW), 'https://app.beforeidoevent.com/login?next=%2Fapp');
+  assert.equal(consoleRedirect('www.' + NEW, '/app', '', NEW), 'https://app.beforeidoevent.com/app');
+  assert.equal(consoleRedirect(NEW, '/app/clients/abc', '?tab=money', NEW), 'https://app.beforeidoevent.com/app/clients/abc?tab=money');
+  assert.equal(consoleRedirect(NEW, '/auth/callback', '?code=x', NEW), 'https://app.beforeidoevent.com/auth/callback?code=x');
+});
+
+test('everything the business itself serves stays on the apex', () => {
+  /* The guests' page, the reply, the contract, the supplier sheet and the
+     calendar feeds are all links already sitting in somebody's phone. */
+  for (const path of ['/', '/store', '/privacy', '/rsvp/abc', '/w/abc', '/sign/abc', '/q/abc', '/join/abc', '/prep/abc', '/feed/abc.ics',
+    '/api/leads/webhook', '/api/version', '/play/abc', '/apple', '/application', '/login-help']) {
+    assert.equal(consoleRedirect(NEW, path, '', NEW), null, path);
+  }
+});
+
+test('only the apex does it', () => {
+  /* The app host is already there, a producer's subdomain is a white label that
+     keeps its own sign-in, and the old address is not the apex of anything. */
+  assert.equal(consoleRedirect('app.' + NEW, '/app', '', NEW), null);
+  assert.equal(consoleRedirect('keren.' + NEW, '/login', '', NEW), null);
+  assert.equal(consoleRedirect('events.keren-weddings.com', '/login', '', NEW), null);
+  assert.equal(consoleRedirect('liverproductions.com', '/login', '', NEW), null);
+});
+
+test('with no root configured it does nothing, which is how it ships', () => {
+  assert.equal(consoleRedirect('liverproductions.com', '/app', '', ''), null);
+  assert.equal(consoleRedirect(null, '/app', '', ''), null);
+});
