@@ -13,6 +13,7 @@ import { IssueReporter } from '@/components/app/IssueReporter';
 import { CampaignForm } from '@/components/app/CampaignForm';
 import { BroadcastPanel } from '@/components/app/BroadcastPanel';
 import { CopyUrl } from '@/components/app/CopyUrl';
+import { Live } from '@/components/app/Live';
 import { DeleteForm } from '@/components/app/ConfirmDelete';
 import { setCampaignActive, deleteContact, saveContactNote } from '@/app/actions/conference';
 
@@ -73,6 +74,10 @@ export default async function ConferencePage({ searchParams }: { searchParams: P
         sub="קוד QR להדפסה, מי נכנס דרכו, ורשימת תפוצה עם הוכחה למה כל אחד אישר."
         report={<IssueReporter userId={account.id} context="conference" />}
       />
+
+      {/* The count goes up on the day, so the page listens: a person arriving
+          refreshes it without anybody pressing anything. */}
+      <Live sources={[{ table: 'contacts' }, { table: 'signup_campaigns' }]} />
 
       <div className="space-y-10">
         <section aria-labelledby="conf-codes" className="space-y-4">

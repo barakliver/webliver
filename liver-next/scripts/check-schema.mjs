@@ -1159,6 +1159,11 @@ try {
 
     const k_dj = asAccount(uidX, mailX, "select public.choose_my_path('dj')").split('\n').pop();
     say(k_dj === 'dj', 'a new account can name a DJ as what it came for', k_dj);
+
+    /* 0111. The conference counts itself while people arrive: both tables go out
+       over the socket, and the policies that decide who hears them are unchanged. */
+    const live = ask('one', "select count(*) from pg_publication_tables where pubname = 'supabase_realtime' and schemaname = 'public' and tablename in ('contacts','signup_campaigns')");
+    say(live === '2', 'the conference screen is live: contacts and campaigns are in the realtime publication', `live:${live}`);
   }
 } catch (e) {
   failures++;
