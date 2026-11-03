@@ -398,7 +398,9 @@ that has happened once.
   rather than from the form, and `/dj` is the page for them on the platform's
   own address only, with the same guard as `/eventos`. The terms and the
   privacy page each gained the conference sign-up; the wording is Barak's to
-  approve, it is not legal advice.
+  approve, it is not legal advice. `/join` is weighed with the sign-in page
+  (288KB) and not with the guests (240KB): it carries the same Google button,
+  so the same auth client, and came in at 271.
 - **A price quote is asked for, and goes out with two ways to pay.** 3.20,
   migration 0109. He types an amount on the enquiry card and nothing else is
   required; the system emails the couple a link, and the page behind it shows
