@@ -111,6 +111,7 @@ export default async function AdminPage() {
   return (
     <>
       <PageHead title={c.title} sub={c.sub}
+        actions={<Link href="/app/admin/conference" className="btn-ghost inline-flex">כנס והרשמות</Link>}
         report={<IssueReporter userId={account.id} context={c.title} />}
       />
 

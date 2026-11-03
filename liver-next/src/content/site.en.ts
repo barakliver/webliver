@@ -277,6 +277,10 @@ export const privacyCopyEn: PrivacyCopy = {
      'What is written in the conversation inside the system, so there is a record of what was agreed.'],
     ['Sign in data',
      'An email address or a phone number, and a one time code. We store no passwords, because there are none here.'],
+    ['Conference sign-up',
+     'The name, phone and email you gave when signing up through a QR code, the version of the terms you accepted and when, '
+     + 'and whether you agreed to receive updates and when. Anyone who agreed receives messages by email and WhatsApp, and can '
+     + 'leave with one press in any message. You can also ask for your details to be deleted completely.'],
   ],
 
   cookiesTitle: 'Cookies',
@@ -391,6 +395,7 @@ export const termsCopyEn: TermsCopy = {
     'Sign in is by a one time code sent to your email, or through a Google account. There are no passwords here.',
     'The code is personal. Whoever has access to your inbox has access to your area, so it is worth protecting.',
     'Administrator rights belong to the business owner. An account that opens on its own waits for approval and sees nothing until then.',
+    'Signing up through a QR code at a conference opens an account without waiting for approval, and requires accepting these terms of use. Agreeing to receive updates is separate, optional, and not a condition of using the system.',
     'If you think somebody else has been in your area, write to us and we will block access immediately.',
   ],
 

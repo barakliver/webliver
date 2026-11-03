@@ -45,7 +45,7 @@ function navFor(a: Account, nav: AppUi['nav'], clientNav?: ClientNavLabels): Nav
 
      Two entries left. The playbook and the guides were adjacent and neither
      name said which kind of knowledge it held, so they are one shelf now. */
-  const items: NavItem[] = [
+  const all: NavItem[] = [
     { href: '/app',          label: nav.overview,  icon: 'overview' },
     { href: '/app/clients',  label: nav.clients,   icon: 'clients' },
     { href: '/app/leads',    label: nav.leads,     icon: 'leads' },
@@ -58,6 +58,13 @@ function navFor(a: Account, nav: AppUi['nav'], clientNav?: ClientNavLabels): Nav
     { href: '/app/store',    label: nav.store,     icon: 'store' },
     { href: '/app/brand',    label: nav.brand,     icon: 'brand' },
   ];
+  /* A DJ runs the evening alone, so a season board of crew and a book of
+     suppliers are two doors into nothing. Hidden, not removed: the screens
+     and their data are the same, and the root address, which sees everything,
+     is unaffected. */
+  const items = a.role !== 'super_admin' && a.producer?.vertical === 'dj'
+    ? all.filter((i) => i.icon !== 'crew' && i.icon !== 'vendors')
+    : all;
   if (a.role === 'super_admin') {
     /* The public site is one site and it belongs to the account the enquiry
        form files leads under. Offering the editor to every producer would be

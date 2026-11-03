@@ -356,6 +356,85 @@ that has happened once.
   impression of one. A test walks every id to its file and back and asserts
   the three undealt ones are undealt, so a card without a picture fails the
   build rather than drawing a broken image inside his frame.
+- **A conference door, a list that can prove it was invited, and a DJ.** 3.21,
+  migration 0110. A **campaign** (`signup_campaigns`) is a code printed as a QR,
+  with a kind (`producer` or `dj`), an end date and a ceiling; past either, or
+  switched off, or unknown, `campaign_open()` answers the same nothing and
+  `/join/<token>` reads "this link is no longer active". It lives on the **app
+  host** (`joinUrl` uses `appUrl`) because that is the only host a session
+  exists on, which is what lets Google fill the form in: signed in, the name
+  arrives and the address is fixed to the account's own; signed out there is a
+  Google button and a form. A visitor leaves name, phone and address and gives
+  **two separate ticks**: the terms (required, stored with the version
+  `TERMS_VERSION` in `lib/campaign.ts` and the time) and the list (optional,
+  unticked, stored with its own time, a link minted only while it stands). The
+  browser never says which version it accepted; the action does. The record
+  is `contacts`, one per address per campaign, read, corrected and deleted by
+  the root address alone; there is no insert policy, and the two doors are
+  `campaign_contact()` (anon, no account) and `join_campaign()` (signed in).
+  **The only thing a campaign can grant** is an approved producer account of
+  its kind, and only to an account that is still pending: root, a couple, crew
+  and anything rejected or suspended are recorded on the list and left as they
+  were, so a printed code can never reopen a decision. The exception to
+  "only root changes a producer's status" is one transaction-local setting
+  holding the joining account's own id, tested against a hand-made self
+  approval that is still refused. `broadcasts` records each mailing; the mail
+  goes through `broadcastEmail` (sender named, reason stated, one link out),
+  only to `mayBeWritten()` rows, re-read at the second press because somebody
+  may have left between the two, one at a time inside `after()`. Leaving is
+  `contact_unsubscribe()` behind the same `/unsubscribe/<token>` page as the
+  leads, which asks both lists and says the same thing either way. The
+  consent day is left standing when someone leaves: it is the evidence the
+  earlier mail was lawful. **The QR is drawn on the server** (`qrcode`, the
+  only new dependency, plus `jsqr` and `pngjs` in dev so a test decodes the
+  picture back to the address); no third party is asked, because every scan
+  sent elsewhere is a list of who stood at the stand. Screens: `/app/admin/
+  conference` (codes, people, send), a print sheet per code, and a CSV that
+  Excel opens (byte order mark, and any cell starting `=`, `+`, `-` or `@`
+  is made text). **DJ** is `producers.vertical` (`events` or `dj`), a flag
+  that only decides which screens are offered: `navFor` hides crew and the
+  supplier book from a DJ, never from root. A new account can name `dj` as
+  what it came for, root approving it sets the vertical from the profile
+  rather than from the form, and `/dj` is the page for them on the platform's
+  own address only, with the same guard as `/eventos`. The terms and the
+  privacy page each gained the conference sign-up; the wording is Barak's to
+  approve, it is not legal advice. `/join` is weighed with the sign-in page
+  (288KB) and not with the guests (240KB): it carries the same Google button,
+  so the same auth client, and came in at 271.
+- **A price quote is asked for, and goes out with two ways to pay.** 3.20,
+  migration 0109. He types an amount on the enquiry card and nothing else is
+  required; the system emails the couple a link, and the page behind it shows
+  the amount and two options, a payment page and a bank transfer. `price_quotes`
+  is born only through `create_price_quote()`, which has no insert policy beside
+  it on purpose: the function mints the token and **copies the two ways to pay
+  onto the quote**, so changing the account in settings next March cannot move a
+  transfer a couple has not yet made. It refuses a quote with nowhere to be paid
+  and one for nothing, in the database and not only on the screen. The payment
+  link is a URL he pastes from whichever clearing service he already has
+  (`producers.payment_link`, with `bank_details` beside it, edited in `PayWays`
+  at the foot of `/app/brand`): **the system holds no card number and learns
+  nothing by itself**, so "paid" is written only by him (`markQuotePaid`) and
+  what the couple presses is recorded as what they said - `choice` is `link` or
+  `bank`, and pressing rings his bell through `notify()`. If a clearing provider
+  is ever integrated, the place for it is a webhook that sets `paid_at`, not a
+  second way to say it. `/q/<token>` is the third link of the kind after
+  `/sign/` and `/rsvp/`, read by anon through `price_quote_by_token`, which
+  returns the amount, the ways and the producer's brand and nothing of the
+  enquiry; a withdrawn quote and a token nobody minted answer identically, and
+  `verify.mjs` checks it live. It stays on the apex (only `/login`, `/app` and
+  `/auth` go to the app host) and is disallowed in `robots.ts`. The letter
+  (`priceQuoteEmail`) carries the amount, the date and one button and **never
+  the bank details**: an account number in a mailbox is in every forward of it.
+  The rules are `lib/quote.ts`, pure and tested: `parseAmount` takes `48k` and
+  `48 אלף` and refuses blank, zero and words; `safeUrl` allows only http(s), and
+  runs again where the link is drawn because that is what protects the visitor;
+  `quoteStage` is a ladder read from the top, withdrawn first, paid before
+  expired, and the last day of validity still counts. Sending moves the lead to
+  `proposal_sent` only from new, contacted or meeting, never back from won or
+  lost, and writes the `proposal_sent` timeline entry that the table had a name
+  for and nothing ever wrote. Copy is `content/quote.ts` and `quote.en.ts`,
+  passed as props rather than through `useCopy`, because the couple's page has
+  no provider. Opened is "opened" and not "read": mail scanners open links too.
 - **The business is `beforeidoevent.com`, the platform is
   `app.beforeidoevent.com`, and the map he drew is the standard.** The two
   `.co.il` names and `liverproductions.com` redirect; the game,

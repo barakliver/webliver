@@ -21,7 +21,7 @@ function Choice({ intent, label, note }: { intent: string; label: string; note: 
 }
 
 
-type Intent = 'producer' | 'wedding' | 'business';
+type Intent = 'producer' | 'wedding' | 'business' | 'dj';
 
 /**
  * What a not-yet-let-in account sees under the page title: the question the
@@ -69,6 +69,7 @@ export function SignupPath({ p, step, change, intent, status, mayAnswer }: {
         ) : (
           <div className="grid gap-3 sm:grid-cols-2">
             <Choice intent="producer" label={p.ask.producer} note={p.ask.producerNote} />
+            <Choice intent="dj" label={p.ask.dj} note={p.ask.djNote} />
             {/* A link rather than a form: this one asks a second question
                 and writes nothing yet. */}
             <Link

@@ -82,7 +82,11 @@ const BUDGET = [
      the product that needs the auth client, nobody arrives at it by
      following an invitation, and everybody who does arrive has an account.
      A number of its own rather than a hole in the guests' one. */
-  { kb: 288, is: (r) => r.includes('/login') || r.startsWith('/auth/'), say: 'the way in' },
+  /* /join is a way in as well: it carries the same Google button and so the same
+     auth client as /login, and a stranger scanning a code at a stand is reading it
+     on mobile data. It is in this group because it needs what this group needs, not
+     because the budget was short. */
+  { kb: 288, is: (r) => r.includes('/login') || r.startsWith('/auth/') || r.startsWith('/join/'), say: 'the way in' },
   /* A stranger, a guest, a couple playing the card game, a supplier signing.
      Everything else outside `/app`. */
   { kb: 240, is: (r) => !r.startsWith('/app/'), say: 'a stranger or a guest' },

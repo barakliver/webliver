@@ -7,7 +7,7 @@ import { currentAccount } from '@/lib/auth';
 import { logFailure } from '@/lib/log';
 import { noteFailure } from '@/lib/flash';
 
-const PATHS = ['producer', 'wedding', 'business'] as const;
+const PATHS = ['producer', 'wedding', 'business', 'dj'] as const;
 
 /**
  * A new account saying what it came for.

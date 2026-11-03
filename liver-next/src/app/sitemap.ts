@@ -22,6 +22,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     /* The platform's own pitch. It lives on this address only: a tenant host
        404s it on purpose, and this sitemap is built from the platform's URL. */
     { url: `${url}/eventos`,       lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${url}/dj`,            lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${url}/install`,       lastModified: now, changeFrequency: 'yearly',  priority: 0.3 },
     { url: `${url}/accessibility`, lastModified: now, changeFrequency: 'yearly',  priority: 0.2 },
     { url: `${url}/privacy`,       lastModified: now, changeFrequency: 'yearly',  priority: 0.2 },

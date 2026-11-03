@@ -25,6 +25,19 @@ export async function setProducerStatus(formData: FormData): Promise<void> {
   if (error) {
     console.error('[admin] setProducerStatus failed', error);
     await noteFailure('הסטטוס לא נשמר. אפשר לנסות שוב.');
+  } else if (status === 'approved') {
+    /* Somebody who asked to join as a DJ is approved as one: the screens they
+       are offered follow what they said they came for. Read from the profile
+       here rather than carried in the form, which anybody could post. */
+    const { data: owner } = await sb.from('producers').select('owner_id').eq('id', id).maybeSingle();
+    const ownerId = (owner as { owner_id?: string } | null)?.owner_id;
+    if (ownerId) {
+      const { data: prof } = await sb.from('profiles').select('signup_intent').eq('id', ownerId).maybeSingle();
+      if ((prof as { signup_intent?: string } | null)?.signup_intent === 'dj') {
+        const { error: vErr } = await sb.from('producers').update({ vertical: 'dj' }).eq('id', id);
+        if (vErr) console.error('[admin] could not mark the account as a DJ', vErr);
+      }
+    }
   }
 
   revalidatePath('/app/admin');

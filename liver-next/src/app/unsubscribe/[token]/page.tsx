@@ -47,6 +47,11 @@ export default async function UnsubscribePage({ params }: { params: Promise<{ to
      the sentence below, which names a person to write to. */
   const { error } = await sb.rpc('lead_unsubscribe', { p_token: token });
   if (error) console.error('[unsubscribe] refused', { code: error.code, message: error.message });
+  /* A token belongs to one list only, and each function answers true for one it
+     never saw, so asking both costs nothing and the reader never learns which
+     list they were on. */
+  const { error: contactErr } = await sb.rpc('contact_unsubscribe', { p_token: token });
+  if (contactErr) console.error('[unsubscribe] contact list refused', { code: contactErr.code, message: contactErr.message });
 
   return (
     <main id="main" className="flex min-h-dvh items-center justify-center px-5 py-14">

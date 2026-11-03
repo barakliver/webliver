@@ -76,7 +76,11 @@ function Field({ label, name, defaultValue, type = 'text', dir, inputMode }: {
   );
 }
 
-export function LeadCard({ lead, events, calls, now }: { lead: FullLead; events: LeadEvent[]; calls: LeadCall[]; now: number }) {
+export function LeadCard({ lead, events, calls, now, quotes }: {
+  lead: FullLead; events: LeadEvent[]; calls: LeadCall[]; now: number;
+  /** The price quotes, drawn by the page: it reads them, and this card is only the enquiry. */
+  quotes?: React.ReactNode;
+}) {
   const ui = useCopy();
   const c = ui.pipeline.page;
   const lc = ui.lead;
@@ -320,6 +324,7 @@ export function LeadCard({ lead, events, calls, now }: { lead: FullLead; events:
         </div>
 
         <div className="space-y-6">
+          {quotes}
           <section className="card" aria-labelledby="lead-details">
             <h2 id="lead-details" className="head-section">{c.details}</h2>
             <form action={editAction} className="mt-3 grid gap-3 sm:grid-cols-2">

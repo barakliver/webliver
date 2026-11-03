@@ -6,6 +6,10 @@ import { IssueReporter } from '@/components/app/IssueReporter';
 import { BrandEditor } from '@/components/app/BrandEditor';
 import { ProducerLinkCard } from '@/components/app/ProducerLinkCard';
 import { BrandAssets } from '@/components/app/BrandAssets';
+import { PayWays } from '@/components/app/PayWays';
+import { quoteFor } from '@/content/ui';
+import { currentLocale } from '@/lib/serverLocale';
+import { supabaseServer } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
 export async function generateMetadata() {
@@ -16,6 +20,9 @@ export default async function BrandPage() {
   const ui = await serverCopy();
   const account = await requireLiveProducer();
   const p = account.producer;
+  const sb = await supabaseServer();
+  const { data: pay } = await sb.from('producers').select('payment_link,bank_details').eq('id', p?.id ?? '').maybeSingle();
+  const ways = (pay as { payment_link: string; bank_details: string } | null) ?? { payment_link: '', bank_details: '' };
 
   return (
     <>
@@ -41,6 +48,10 @@ export default async function BrandPage() {
           domain: p?.domain ?? null,
           logoUrl: p?.logoUrl ?? null,
         }}
+      />
+      <PayWays
+        copy={quoteFor(await currentLocale()).settings}
+        paymentLink={ways.payment_link} bankDetails={ways.bank_details}
       />
     </>
   );
