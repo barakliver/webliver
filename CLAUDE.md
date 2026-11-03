@@ -60,6 +60,18 @@ that has happened once.
   him for the log, before saying a release is live. `scripts/verify.mjs`
   reads its expected palette from `globals.css`, so a design change cannot
   fail it again; do not put literals back.
+- **A release has to be a commit that is already on `design-overhaul`.** The
+  agent refuses any `release` that is not an ancestor of that branch ("Refusing",
+  every five minutes, and says so only in the log): it is how it knows the
+  checks ran. Merging a pull request on GitHub makes a *new* merge commit that
+  exists only on `release`, so the first release made that way (3.21, merged by
+  hand in Chrome from a phone) sat there unserved for an hour with the site
+  healthy and the old version live. The cure is one step and needs only the
+  working branch: fetch `release` and merge it into `design-overhaul`, which
+  fast-forwards because the merge commit's parent is the branch's head, then
+  push `design-overhaul`. Whoever moves `release` from the GitHub page owes
+  that step; whoever moves it with `git push origin design-overhaul:release`
+  owes nothing, which is the better way when a terminal is to hand.
 - Releases have numbers, because a commit hash is not a thing he can say out
   loud. `liver-next/version.json` holds the current one and is bumped by hand
   in the commit worth a number: a fix is the third digit, a batch of work the
