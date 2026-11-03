@@ -412,7 +412,13 @@ that has happened once.
   privacy page each gained the conference sign-up; the wording is Barak's to
   approve, it is not legal advice. `/join` is weighed with the sign-in page
   (288KB) and not with the guests (240KB): it carries the same Google button,
-  so the same auth client, and came in at 271.
+  so the same auth client, and came in at 271. **The ceiling was a soft one in
+  0110 and is exact in 0111**: the count and the insert were two steps, so
+  eight people asking in the same instant at a stand that held one all got in
+  (measured: up to eight). `contact_upsert` now takes a lock per campaign and
+  counts again under it, and `check-schema` races forty one-person stands with
+  eight sessions each, which fails with the lock taken out and passes with it.
+  The conference screen listens to `contacts` and `signup_campaigns` (0111).
 - **A price quote is asked for, and goes out with two ways to pay.** 3.20,
   migration 0109. He types an amount on the enquiry card and nothing else is
   required; the system emails the couple a link, and the page behind it shows

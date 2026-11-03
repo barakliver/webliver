@@ -31,7 +31,7 @@
  * suite ends up green and blind.
  */
 import { execFileSync, execSync } from 'node:child_process';
-import { mkdtempSync, rmSync, existsSync, readdirSync } from 'node:fs';
+import { mkdtempSync, rmSync, existsSync, readdirSync, writeFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
@@ -1162,6 +1162,54 @@ try {
 
     /* 0111. The conference counts itself while people arrive: both tables go out
        over the socket, and the policies that decide who hears them are unchanged. */
+    /* The ceiling holds under load. Six sessions arrive at once at a stand that
+       lets sixty in, each trying twenty people, and the same address turning up
+       twice is one person: sequential counting would let this overshoot. */
+    const cap = 60, rushTok = 'b'.repeat(48);
+    psql('one', `-c "insert into public.signup_campaigns (token, name, kind, max_signups) values ('${rushTok}','עומס','producer',${cap})"`);
+    for (let n = 1; n <= 6; n++) {
+      writeFileSync(join(dir, `rush${n}.sql`), [
+        'do $$ declare j int; begin',
+        '  for j in 1..20 loop',
+        '    begin',
+        `      perform public.campaign_contact('${rushTok}', 'אורח ' || ${n} || '-' || j, '050123' || lpad((${n} * 100 + j)::text, 4, '0'),`,
+        // the first five of each session repeat an address another session also uses
+        `        case when j <= 5 then 'shared' || j || '@example.com' else 's${n}-' || j || '@example.com' end, '2026-11', j % 2 = 0);`,
+        '    exception when others then null; end;',
+        '  end loop;',
+        'end $$;',
+      ].join('\n'));
+    }
+    const t0 = Date.now();
+    sh(`for n in 1 2 3 4 5 6; do (${BIN}/psql -h ${dir} -U postgres -d one -q -f ${dir}/rush$n.sql >/dev/null 2>&1) & done; wait`);
+    const took = Date.now() - t0;
+    const rushed = ask('one', `select count(*)||'/'||count(distinct lower(email)) from public.contacts c join public.signup_campaigns s on s.id = c.campaign_id where s.token = '${rushTok}'`);
+    const sharedOnce = ask('one', `select count(*) from public.contacts c join public.signup_campaigns s on s.id = c.campaign_id where s.token = '${rushTok}' and c.email like 'shared%'`);
+    say(rushed === `${cap}/${cap}` && Number(sharedOnce) <= 5 && took < 20000,
+      'a stand of sixty with six people arriving at once lets in exactly sixty, folds repeats, and does not slow down',
+      `rows/distinct:${rushed} shared:${sharedOnce} took:${took}ms`);
+
+    /* The sharper form of the same claim: forty stands that each let in ONE
+       person, and eight sessions racing for every one of them. Counting without
+       a lock lets two through when they ask in the same instant, so this is the
+       test that fails if the lock goes. */
+    const tens = [...Array(40).keys()].map((k) => `${String(k).padStart(2, '0')}`.padEnd(48, '9'));
+    psql('one', tens.map((t, k) => `-c "insert into public.signup_campaigns (token, name, kind, max_signups) values ('${t}','יחיד ${k}','producer',1)"`).join(' '));
+    for (let n = 1; n <= 8; n++) {
+      writeFileSync(join(dir, `solo${n}.sql`), [
+        'do $$ declare t text; begin',
+        `  for t in select token from public.signup_campaigns where name like 'יחיד %' order by name loop`,
+        '    begin',
+        `      perform public.campaign_contact(t, 'אורח ${n}', '0501234${n}00', 'solo${n}-' || left(t, 2) || '@example.com', '2026-11', false);`,
+        '    exception when others then null; end;',
+        '  end loop;',
+        'end $$;',
+      ].join('\n'));
+    }
+    sh(`for n in 1 2 3 4 5 6 7 8; do (${BIN}/psql -h ${dir} -U postgres -d one -q -f ${dir}/solo$n.sql >/dev/null 2>&1) & done; wait`);
+    const solos = ask('one', "select count(*)||'/'||count(distinct campaign_id)||'/'||coalesce(max(per), 0) from (select campaign_id, count(*) per from public.contacts c join public.signup_campaigns s on s.id = c.campaign_id where s.name like 'יחיד %' group by campaign_id) x");
+    say(solos === '40/40/1', 'forty stands that each hold one person hold exactly one, however many ask in the same instant', `stands/with-people/most-in-one:${solos}`);
+
     const live = ask('one', "select count(*) from pg_publication_tables where pubname = 'supabase_realtime' and schemaname = 'public' and tablename in ('contacts','signup_campaigns')");
     say(live === '2', 'the conference screen is live: contacts and campaigns are in the realtime publication', `live:${live}`);
   }
