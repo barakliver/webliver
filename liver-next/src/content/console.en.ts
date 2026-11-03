@@ -334,6 +334,8 @@ export const consoleEn: ConsoleCopy = {
       sub: 'One question, then you wait for approval. Anyone invited to an event never sees this: they go straight to their own area.',
       producer: 'I am an event producer',
       producerNote: 'I run a production business and want to manage my clients in it.',
+      dj: 'I am a DJ',
+      djNote: 'I want to manage my clients\' enquiries, quotes and contracts through the system.',
       event: 'I am making an event',
       eventNote: 'I am planning an event of my own.',
       eventTitle: 'Which event?',
@@ -346,6 +348,7 @@ export const consoleEn: ConsoleCopy = {
     },
     sent: {
       producer: 'You asked to join as an event producer.',
+      dj: 'You asked to join as a DJ.',
       wedding: 'You asked to make a wedding.',
       business: 'You asked to make a business event.',
       waiting: 'The request has reached Barak. Once it is approved, this screen opens onto your area and signing in works from this same address.',
@@ -398,6 +401,7 @@ export const consoleEn: ConsoleCopy = {
     request: {
       none: 'Has not said what they are looking for',
       producer: 'Asking to join as event producers',
+      dj: 'Asking to join as a DJ',
       wedding: 'Asking to make a wedding',
       business: 'Asking to make a business event',
       approveEvent: 'Approve and open their event',

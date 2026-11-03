@@ -149,6 +149,22 @@ export function priceQuoteEmail(opts: {
     <p style="margin:16px 0 0;font-size:12.5px;color:#6b7686">אפשר גם פשוט להשיב למייל הזה.</p>`, opts.brand);
 }
 
+/** One message to the list. The sender is named, the reason the reader is
+ *  getting it is said, and the way out is a link in the foot of every copy:
+ *  the three things a marketing message has to carry to be one somebody
+ *  agreed to. The body is plain text, escaped, with its line breaks kept. */
+export function broadcastEmail(opts: {
+  subject: string; body: string; why: string; leaveUrl: string; leaveLabel: string; brand?: MailBrand;
+}) {
+  const paragraphs = opts.body.trim().split(/\n{2,}/).map((p) =>
+    `<p style="margin:0 0 14px;font-size:15px;line-height:1.8;color:#3c4657">${esc(p).replace(/\n/g, '<br>')}</p>`).join('');
+  return shell(`
+    <h2 style="margin:0 0 14px;font-size:20px;color:#0b1220">${esc(opts.subject)}</h2>
+    ${paragraphs}
+    <p style="margin:18px 0 0;font-size:12px;line-height:1.7;color:#6b7686">${esc(opts.why)}
+      <a href="${esc(opts.leaveUrl)}" style="color:#6b7686">${esc(opts.leaveLabel)}</a></p>`, opts.brand);
+}
+
 /** Sent to a couple the moment their address is authorised on a workspace.
  *  There is no password to deliver: the address itself is the credential,
  *  and a code arrives per sign in. */

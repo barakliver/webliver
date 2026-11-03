@@ -16,7 +16,7 @@ export type Account = {
   avatarUrl: string | null;
   role: Role;
   /** What they said they came for, the first time. A request, never a permission. */
-  intent: 'producer' | 'wedding' | 'business' | null;
+  intent: 'producer' | 'wedding' | 'business' | 'dj' | null;
   producer: {
     id: string; brandName: string; status: ProducerStatus;
     /* Branding travels with the account rather than being fetched again by
@@ -24,6 +24,8 @@ export type Account = {
     accent: string; logoUrl: string | null; tagline: string;
     whatsapp: string; slug: string | null; domain: string | null;
     iconUrl: string | null; coverUrl: string | null;
+    /** What kind of business it runs; only decides which screens are offered. */
+    vertical: 'events' | 'dj';
   } | null;
 };
 
@@ -68,7 +70,7 @@ export const currentAccount = cache(async function currentAccount(): Promise<Acc
 
   const { data: producer } = await sb
     .from('producers')
-    .select('id,brand_name,status,accent,logo_url,tagline,whatsapp,slug,domain,icon_url,cover_url')
+    .select('id,brand_name,status,accent,logo_url,tagline,whatsapp,slug,domain,icon_url,cover_url,vertical')
     .eq('owner_id', user.id)
     .order('created_at')
     .limit(1)
@@ -80,7 +82,7 @@ export const currentAccount = cache(async function currentAccount(): Promise<Acc
     fullName: profile?.full_name ?? '',
     avatarUrl: profile?.avatar_url ?? null,
     role,
-    intent: (['producer', 'wedding', 'business'].includes(String(profile?.signup_intent))
+    intent: (['producer', 'wedding', 'business', 'dj'].includes(String(profile?.signup_intent))
       ? profile?.signup_intent : null) as Account['intent'],
     producer: producer
       ? {
@@ -95,6 +97,7 @@ export const currentAccount = cache(async function currentAccount(): Promise<Acc
           domain: producer.domain ?? null,
           iconUrl: producer.icon_url ?? null,
           coverUrl: producer.cover_url ?? null,
+          vertical: producer.vertical === 'dj' ? 'dj' : 'events',
         }
       : null,
   };

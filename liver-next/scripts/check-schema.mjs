@@ -1068,6 +1068,97 @@ try {
     say(q_gone === '0' && q_never === '0' && /does not exist/.test(q_afterWithdraw),
       'a withdrawn quote answers exactly like one that never existed, and can no longer be chosen',
       `withdrawn:${q_gone} never:${q_never}`);
+
+    // ── 9. a conference door, and a list with proof of consent ───────────────
+    /* 0110. A campaign lets people in without waiting, and the narrowness is
+       the thing to prove: it approves the caller as a producer and nothing
+       more, never reopens a decision, closes on its date and its ceiling like
+       a code that never existed, and the contacts it collects are readable by
+       the root address alone. The same address twice is one person, and the
+       list tick is a record that can be withdrawn by link. */
+    const cTok = 'c'.repeat(48), cOld = 'd'.repeat(48), cFull = 'e'.repeat(48), cDj = 'f'.repeat(48);
+    psql('one', [
+      `-c "insert into public.signup_campaigns (token, name, kind) values ('${cTok}','כנס','producer')"`,
+      `-c "insert into public.signup_campaigns (token, name, kind) values ('${cDj}','כנס DJ','dj')"`,
+      `-c "insert into public.signup_campaigns (token, name, kind, expires_at) values ('${cOld}','ישן','producer', now() - interval '1 day')"`,
+      `-c "insert into public.signup_campaigns (token, name, kind, max_signups) values ('${cFull}','מלא','producer',1)"`,
+    ].join(' '));
+    const k_open = (t) => ask('one', `select count(*) from public.campaign_open('${t}')`);
+    const cAnon = (sql) => sh(
+      `${BIN}/psql -h ${dir} -U postgres -d one -tAq -v ON_ERROR_STOP=1 -c "set role anon" -c "${sql}" 2>&1`,
+    ).trim();
+    const cTry = (fn) => { try { return fn(); } catch (e) { return (e.stdout || e.message || '').toString(); } };
+
+    cAnon(`select public.campaign_contact('${cFull}','ראשון','0501111111','first@example.com','2026-11',false)`);
+    const k_fullNow = cTry(() => cAnon(`select public.campaign_contact('${cFull}','שני','0502222222','second@example.com','2026-11',false)`));
+    say(k_open(cTok) === '1' && k_open(cOld) === '0' && k_open(cFull) === '0' && k_open('x'.repeat(48)) === '0' && /not active/.test(k_fullNow),
+      'a campaign is open until its date or its ceiling, and a closed one answers like one that never existed',
+      `open:${k_open(cTok)} old:${k_open(cOld)} full:${k_open(cFull)} unknown:${k_open('x'.repeat(48))}`);
+
+    cAnon(`select public.campaign_contact('${cTok}','דנה לוי','050-123 4567','Dana@Example.com','2026-11',true)`);
+    cAnon(`select public.campaign_contact('${cTok}','דנה לוי כהן','0501234567','dana@example.com','2026-11',true)`);
+    const k_dana = ask('one', "select count(*)||'/'||max(name)||'/'||bool_and(broadcast_consent)||'/'||bool_and(broadcast_consent_at is not null)||'/'||bool_and(unsubscribe_token is not null)"
+      + " from public.contacts where lower(email)='dana@example.com'");
+    const k_noTerms = cTry(() => cAnon(`select public.campaign_contact('${cTok}','בלי תנאים','0503333333','x@example.com','',false)`));
+    const k_badMail = cTry(() => cAnon(`select public.campaign_contact('${cTok}','מייל שבור','0503333333','not-an-address','2026-11',false)`));
+    const k_noPhone = cTry(() => cAnon(`select public.campaign_contact('${cTok}','בלי טלפון','12','y@example.com','2026-11',false)`));
+    say(k_dana === '1/דנה לוי כהן/true/true/true' && /תנאי השימוש/.test(k_noTerms) && /המייל/.test(k_badMail) && /טלפון/.test(k_noPhone),
+      'the same address twice is one person, the list tick stamps and mints a link, and terms, address and phone are required',
+      `dana:${k_dana} terms:${/תנאי/.test(k_noTerms)} mail:${/המייל/.test(k_badMail)} phone:${/טלפון/.test(k_noPhone)}`);
+
+    const strangerContacts = cTry(() => cAnon('select count(*) from public.contacts'));
+    const otherContacts = asAccount(uidB, mailB, 'select count(*) from public.contacts').split('\n').pop();
+    const rootContacts = asAccount(uid, 'barakliver@gmail.com', 'select count(*) from public.contacts').split('\n').pop();
+    say((/permission denied/.test(strangerContacts) || strangerContacts === '0') && otherContacts === '0' && Number(rootContacts) >= 2,
+      'the contacts are readable by the root address and by nobody else',
+      `stranger:${strangerContacts.split('\n')[0].slice(0, 30)} producer:${otherContacts} root:${rootContacts}`);
+
+    const dTok = ask('one', "select unsubscribe_token from public.contacts where lower(email)='dana@example.com'");
+    cAnon(`select public.contact_unsubscribe('${dTok}')`);
+    const k_bogus = cAnon(`select public.contact_unsubscribe('${'0'.repeat(40)}')`);
+    const k_after = ask('one', "select broadcast_consent::text||'/'||(broadcast_consent_at is not null)::text||'/'||(broadcast_revoked_at is not null)::text||'/'||(unsubscribe_token is null)::text from public.contacts where lower(email)='dana@example.com'");
+    say(k_after === 'false/true/true/true' && k_bogus.endsWith('t'),
+      'leaving the list is one link: consent off, the day it was given kept as evidence, the link spent, and a wrong token answers the same',
+      `after:${k_after} bogus:${k_bogus}`);
+
+    const [uidN, uidD, uidX] = [person(5), person(6), person(7)];
+    const [mailN, mailD, mailX] = ['newcomer-two@example.com', 'dj-guest@example.com', 'ordinary@example.com'];
+    for (const [id, mail] of [[uidN, mailN], [uidD, mailD], [uidX, mailX]]) {
+      psql('one', `-c "insert into auth.users (id, email) values ('${id}','${mail}') on conflict do nothing"`);
+    }
+    const k_before = ask('one', `select status::text from public.producers where owner_id='${uidN}'`);
+    const k_joined = asAccount(uidN, mailN, `select public.join_campaign('${cTok}','נועם','0505555555','2026-11',true)`).split('\n').pop();
+    const nowN = ask('one', `select pr.status::text||'/'||pr.vertical||'/'||p.signup_intent from public.producers pr join public.profiles p on p.id = pr.owner_id where pr.owner_id='${uidN}'`);
+    const k_linked = ask('one', `select count(*) from public.contacts where profile_id='${uidN}' and email='${mailN}'`);
+    const bellJoin = ask('one', "select count(*) from public.notifications where title = 'נכנס/ה דרך הכנס' and body like '%newcomer-two@example.com%'");
+    say(k_before === 'pending' && k_joined === 'approved' && nowN === 'approved/events/producer' && k_linked === '1' && bellJoin === '1',
+      'joining through a campaign approves the account as a producer, links the contact, and rings the root bell once',
+      `before:${k_before} joined:${k_joined} now:${nowN} linked:${k_linked} bell:${bellJoin}`);
+
+    const k_djJoined = asAccount(uidD, mailD, `select public.join_campaign('${cDj}','דני די.ג׳יי','0506666666','2026-11',false)`).split('\n').pop();
+    const k_djNow = ask('one', `select pr.status::text||'/'||pr.vertical||'/'||p.signup_intent from public.producers pr join public.profiles p on p.id = pr.owner_id where pr.owner_id='${uidD}'`);
+    const k_again = asAccount(uidN, mailN, `select public.join_campaign('${cTok}','נועם','0505555555','2026-11',true)`).split('\n').pop();
+    say(k_djJoined === 'approved' && k_djNow === 'approved/dj/dj' && k_again === 'already',
+      'a DJ campaign opens a DJ account, and joining twice changes nothing',
+      `dj:${k_djJoined}/${k_djNow} again:${k_again}`);
+
+    const k_deadJoin = cTry(() => asAccount(uidX, mailX, `select public.join_campaign('${cOld}','אקס','0507777777','2026-11',false)`));
+    const stillX = ask('one', `select status::text from public.producers where owner_id='${uidX}'`);
+    const k_rootJoin = asAccount(uid, 'barakliver@gmail.com', `select public.join_campaign('${cTok}','בעל הבית','0508888888','2026-11',false)`).split('\n').pop();
+    const k_coupleJoin = asAccount(uidC, mailC, `select public.join_campaign('${cTok}','בני זוג','0509999999','2026-11',false)`).split('\n').pop();
+    const coupleRole = ask('one', `select role::text from public.profiles where id='${uidC}'`);
+    say(/not active/.test(k_deadJoin) && stillX === 'pending' && k_rootJoin === 'recorded' && k_coupleJoin === 'recorded' && coupleRole === 'client',
+      'an expired code approves nobody, and root and a couple are recorded on the list without being changed',
+      `dead:${/not active/.test(k_deadJoin)} x:${stillX} root:${k_rootJoin} couple:${k_coupleJoin}/${coupleRole}`);
+
+    const k_selfApprove = cTry(() => asAccount(uidX, mailX, `update public.producers set status='approved' where owner_id='${uidX}'`));
+    const stillX2 = ask('one', `select status::text from public.producers where owner_id='${uidX}'`);
+    say(/only .* may change a producer status/.test(k_selfApprove) && stillX2 === 'pending',
+      'the exception is the campaign\'s alone: approving yourself by hand is still refused',
+      `refused:${/may change a producer status/.test(k_selfApprove)} status:${stillX2}`);
+
+    const k_dj = asAccount(uidX, mailX, "select public.choose_my_path('dj')").split('\n').pop();
+    say(k_dj === 'dj', 'a new account can name a DJ as what it came for', k_dj);
   }
 } catch (e) {
   failures++;

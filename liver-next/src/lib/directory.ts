@@ -61,8 +61,8 @@ export type ProducerRow = {
 
 export type AccountKind = 'producer' | 'diy' | 'managed';
 
-export type SignupIntent = 'producer' | 'wedding' | 'business';
-export const SIGNUP_INTENTS: readonly SignupIntent[] = ['producer', 'wedding', 'business'];
+export type SignupIntent = 'producer' | 'wedding' | 'business' | 'dj';
+export const SIGNUP_INTENTS: readonly SignupIntent[] = ['producer', 'wedding', 'business', 'dj'];
 
 export type Flag = { key: string; label: string; diy: boolean; managed: boolean };
 

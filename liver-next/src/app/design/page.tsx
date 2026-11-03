@@ -205,6 +205,11 @@ import { LiveMoments } from '@/components/guest/LiveMoments';
 import { ZoomPhoto } from '@/components/ZoomPhoto';
 import { LeadQuotes } from '@/components/app/LeadQuotes';
 import { PayWays } from '@/components/app/PayWays';
+import { CopyUrl } from '@/components/app/CopyUrl';
+import { CampaignForm } from '@/components/app/CampaignForm';
+import { BroadcastPanel } from '@/components/app/BroadcastPanel';
+import { JoinForm } from '@/app/join/[token]/JoinForm';
+import { joinFor, authFor } from '@/content/ui';
 import { QuoteWays } from '@/app/q/[token]/QuoteWays';
 import { quoteFor } from '@/content/ui';
 import { ReadingProgress } from '@/components/ReadingProgress';
@@ -1943,6 +1948,30 @@ export default async function DesignPage() {
               paymentLink="https://pay.example.com/p/abc123" bankDetails={'בנק הפועלים (12)\nסניף 600\nחשבון 123456\nעל שם: ברק ליור'}
             />
           </div>
+        </Panel>
+
+        <Panel name="JoinForm" note="what a conference visitor fills in: name, phone, address, the terms, and a separate unticked tick for the list">
+          <div className="max-w-md">
+            <JoinForm token="0123456789abcdef0123456789abcdef0123456789abcdef" copy={joinFor(locale)} auth={authFor(locale)} mode="details" />
+          </div>
+        </Panel>
+
+        <Panel name="JoinFormSignedIn" note="the same form from somebody signed in with Google: the name filled in, the address fixed, only the phone left">
+          <div className="max-w-md">
+            <JoinForm token="0123456789abcdef0123456789abcdef0123456789abcdef" copy={joinFor(locale)} auth={authFor(locale)} mode="account" defaultName="דנה לוי" fixedEmail="dana@example.com" />
+          </div>
+        </Panel>
+
+        <Panel name="CampaignForm" note="a new conference code: a name, who it is for, when it closes, how many it lets in">
+          <div className="max-w-xl"><CampaignForm /></div>
+        </Panel>
+
+        <Panel name="CopyUrl" note="an address kept on screen so it can be checked, with a button that copies it">
+          <div className="max-w-md"><CopyUrl url="https://app.beforeidoevent.com/join/0123456789abcdef0123456789abcdef" label="העתקת הקישור" done="הועתק" /></div>
+        </Panel>
+
+        <Panel name="BroadcastPanel" note="a message to the list in two presses: who it would reach, then send">
+          <div className="max-w-xl"><BroadcastPanel campaigns={[{ id: 'c1', name: 'כנס מפיקים, נובמבר' }]} /></div>
         </Panel>
 
         <Panel name="QuoteWays" note="what a couple sees under the amount: pay by link, or say they transferred">
