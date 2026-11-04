@@ -29,6 +29,11 @@ Two rules that follow from it:
 - **One block, one place.** Never mix a server command and an SQL statement in
   the same block.
 
+## How to talk to him
+
+Do not open a message with his name. He said so plainly ("תפסיק להתחיל איתי
+שיחות עם ברק, זה נורא"). Start with the answer or the next step.
+
 ## His name
 
 ברק ליור in Hebrew, Barak Liver in English. The two do not match and that is
